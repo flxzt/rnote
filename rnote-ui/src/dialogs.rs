@@ -1,8 +1,8 @@
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
-    gio, AboutDialog, Dialog, FileChooserAction, FileChooserNative, FileFilter, Label,
-    MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
+    gio, AboutDialog, Button, ColorButton, Dialog, Entry, FileChooserAction, FileChooserNative,
+    FileFilter, Label, MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
 };
 use gtk4::{glib, glib::clone, Builder};
 use num_traits::ToPrimitive;
@@ -10,6 +10,7 @@ use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPr
 
 use crate::appwindow::RnoteAppWindow;
 use crate::globals;
+use crate::workspacebrowser::WorkspaceRow;
 use crate::{app::RnoteApp, config};
 
 // About Dialog
@@ -344,6 +345,113 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
     }
 }
 
+pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
+    let builder =
+        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
+    let edit_workspace_preview_row: WorkspaceRow =
+        builder.object("edit_workspace_preview_row").unwrap();
+    let change_workspace_name_entry: Entry = builder.object("change_workspace_name_entry").unwrap();
+    let change_workspace_color_button: ColorButton =
+        builder.object("change_workspace_color_button").unwrap();
+    let change_workspace_dir_button: Button =
+        builder.object("change_workspace_dir_button").unwrap();
+    let change_workspace_dir_label: Label = builder.object("change_workspace_dir_label").unwrap();
+
+    edit_workspace_preview_row.init(appwindow);
+    dialog_edit_workspace.set_transient_for(Some(appwindow));
+
+    let dialog_change_workspace_dir: FileChooserNative = FileChooserNative::builder()
+        .title(&gettext("Change workspace directory"))
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label(&gettext("Select"))
+        .cancel_label(&gettext("Cancel"))
+        .action(FileChooserAction::SelectFolder)
+        .select_multiple(false)
+        .build();
+
+    if let Some(row) = appwindow
+        .workspacebrowser()
+        .current_selected_workspace_row()
+    {
+        if let Err(e) =
+            dialog_change_workspace_dir.set_file(&gio::File::for_path(&row.entry().dir()))
+        {
+            log::error!("set file in change workspace dialog failed with Err {}", e);
+        }
+
+        // update dialog UI
+        edit_workspace_preview_row
+            .entry()
+            .replace_data(&row.entry());
+        change_workspace_name_entry.set_text(row.entry().name().as_str());
+        change_workspace_color_button.set_rgba(&row.entry().color());
+        change_workspace_dir_label.set_label(&row.entry().dir().as_str());
+    }
+
+    change_workspace_name_entry.connect_changed(
+        clone!(@weak edit_workspace_preview_row => move |entry| {
+            let text = entry.text().to_string();
+            edit_workspace_preview_row.entry().set_name(text);
+        }),
+    );
+
+    change_workspace_color_button.connect_color_set(
+        clone!(@weak edit_workspace_preview_row => move |button| {
+            let color = button.rgba();
+            edit_workspace_preview_row.entry().set_color(color);
+        }),
+    );
+
+    dialog_change_workspace_dir.connect_response(
+        clone!(@weak edit_workspace_preview_row, @weak change_workspace_dir_label, @weak dialog_edit_workspace, @weak appwindow => move |dialog_change_workspace_dir, responsetype| {
+            match responsetype {
+                ResponseType::Accept => {
+                    if let Some(p) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
+                        let path_string = p.to_string_lossy().to_string();
+                        change_workspace_dir_label.set_label(&path_string);
+                        edit_workspace_preview_row.entry().set_dir(path_string);
+                    } else {
+                        change_workspace_dir_label.set_label(&gettext("- no directory selected -"));
+                    }
+                }
+                _ => {}
+            }
+
+            dialog_change_workspace_dir.hide();
+            dialog_edit_workspace.show();
+        }),
+    );
+
+    dialog_edit_workspace.connect_response(
+        clone!(@weak change_workspace_name_entry, @weak change_workspace_color_button, @weak dialog_change_workspace_dir, @weak appwindow => move |dialog_modify_workspace, responsetype| {
+            match responsetype {
+                ResponseType::Apply => {
+                    // update the actual row
+                    appwindow.workspacebrowser().set_current_workspace_name(change_workspace_name_entry.text().to_string());
+                    appwindow.workspacebrowser().set_current_workspace_color(change_workspace_color_button.rgba());
+                    if let Some(dir) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
+                        appwindow.workspacebrowser().set_current_workspace_dir(dir);
+                    }
+                }
+                _ => {}
+            }
+
+            dialog_modify_workspace.close();
+        }));
+
+    change_workspace_dir_button.connect_clicked(
+        clone!(@weak dialog_edit_workspace, @weak dialog_change_workspace_dir, @weak appwindow => move |_| {
+            dialog_edit_workspace.hide();
+            dialog_change_workspace_dir.show();
+        }),
+    );
+
+    dialog_edit_workspace.show();
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_change_workspace_dir);
+}
+
 // FileChooserNative Dialogs
 
 pub fn dialog_open_doc(appwindow: &RnoteAppWindow) {
@@ -385,38 +493,6 @@ pub fn dialog_open_doc(appwindow: &RnoteAppWindow) {
 
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_open_file);
-}
-
-pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
-    let dialog_open_workspace: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Open workspace"))
-        .modal(true)
-        .transient_for(appwindow)
-        .accept_label(&gettext("Open"))
-        .cancel_label(&gettext("Cancel"))
-        .action(FileChooserAction::SelectFolder)
-        .select_multiple(false)
-        .build();
-
-    dialog_open_workspace.connect_response(
-        clone!(@weak appwindow => move |dialog_open_workspace, responsetype| {
-            match responsetype {
-                ResponseType::Accept => {
-                    if let Some(file) = dialog_open_workspace.file() {
-                        if let Some(workspace_path) = file.path() {
-                            appwindow.workspacebrowser().set_primary_path(Some(&workspace_path));
-                        }
-                    }
-
-                }
-                _ => {}
-            }
-        }),
-    );
-
-    dialog_open_workspace.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive
-    *appwindow.filechoosernative().borrow_mut() = Some(dialog_open_workspace);
 }
 
 pub fn dialog_save_doc_as(appwindow: &RnoteAppWindow) {

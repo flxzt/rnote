@@ -277,6 +277,126 @@
     </child>
   </object>
 
+  <object class="GtkDialog" id="dialog_edit_workspace">
+    <property name="use-header-bar">1</property>
+    <property name="modal">true</property>
+    <property name="title" translatable="yes">Edit workspace</property>
+    <child type="action">
+      <object class="GtkButton" id="edit_workspace_button_cancel">
+        <property name="label" translatable="yes">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="edit_workspace_button_apply">
+        <property name="label" translatable="yes">Apply</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">edit_workspace_button_cancel</action-widget>
+      <action-widget response="apply" default="true">edit_workspace_button_apply</action-widget>
+    </action-widgets>
+    <child>
+      <object class="AdwClamp">
+        <property name="maximum-size">800</property>
+        <property name="tightening-threshold">600</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">false</property>
+        <property name="valign">fill</property>
+        <property name="halign">fill</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">24</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <style>
+              <class name="background" />
+            </style>
+            <child>
+              <object class="WorkspaceRow" id="edit_workspace_preview_row">
+                <property name="halign">center</property>
+                <style>
+                  <class name="preview"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="halign">fill</property>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Name</property>
+                    <property name="subtitle" translatable="yes">Change the workspace name</property>
+                    <child type="suffix">
+                      <object class="GtkEntry" id="change_workspace_name_entry">
+                        <property name="hexpand">false</property>
+                        <property name="hexpand">true</property>
+                        <property name="valign">center</property>
+                        <property name="halign">fill</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Color</property>
+                    <property name="subtitle" translatable="yes">Change the workspace color</property>
+                    <child type="suffix">
+                      <object class="GtkColorButton" id="change_workspace_color_button">
+                        <property name="hexpand">false</property>
+                        <property name="hexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="halign">end</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Directory</property>
+                    <property name="subtitle" translatable="yes">Change the workspace directory</property>
+                    <child type="suffix">
+                      <object class="GtkBox">
+                        <property name="valign">center</property>
+                        <property name="halign">end</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkLabel" id="change_workspace_dir_label">
+                            <property name="label" translatable="yes">- no directory selected -</property>
+                            <property name="ellipsize">start</property>
+                            <style>
+                              <class name="dim-label" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="change_workspace_dir_button">
+                            <layout>
+                              <property name="column">1</property>
+                              <property name="row">1</property>
+                            </layout>
+                            <property name="icon_name">folder-open-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Change workspace directory</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
   <object class="GtkMessageDialog" id="dialog_clear_doc">
     <property name="modal">true</property>
     <property name="title" translatable="yes">Clear document</property>

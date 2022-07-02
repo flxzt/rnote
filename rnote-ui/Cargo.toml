@@ -25,9 +25,9 @@ futures = "0.3.21"
 rayon = "1.5"
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
-gtk4 = {version = "0.4.7", features = ["v4_6"]}
+gtk4 = {version = "0.4.8", features = ["v4_6"]}
 adw = {version = "0.1.1", package="libadwaita"}
-cairo-rs = {version = "0.15.10", features = ["png", "svg", "pdf"]}
+cairo-rs = {version = "0.15.11", features = ["png", "svg", "pdf"]}
 poppler-rs = {version = "0.19.0", features = ["v20_9"] }
 svg = "0.10.0"
 image = "0.23.14"
@@ -37,3 +37,4 @@ piet = { path = "../piet/piet" }
 piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}
 url = "2.2.2"
+unicode-segmentation = "1.9.0"

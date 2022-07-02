@@ -11,6 +11,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
@@ -36,6 +37,10 @@
         <file compressed="true">icons/scalable/actions/right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/up-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/down-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/plus-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/minus-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/edit-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/trash-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>

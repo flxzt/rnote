@@ -36,6 +36,7 @@
                     </style>
                     <child>
                       <object class="GtkListBoxRow" id="dir_up_row">
+                        <property name="tooltip_text" translatable="yes">Move directory up</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="margin-start">12</property>

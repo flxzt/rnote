@@ -31,7 +31,6 @@
                     <property name="selection-mode">none</property>
                     <property name="activate-on-single-click">false</property>
                     <style>
-                      <class name="rich-list" />
                       <class name="separators"></class>
                     </style>
                     <child>
@@ -39,6 +38,8 @@
                         <property name="tooltip_text" translatable="yes">Move directory up</property>
                         <child>
                           <object class="GtkLabel">
+                            <property name="margin-top">3</property>
+                            <property name="margin-bottom">3</property>
                             <property name="margin-start">12</property>
                             <property name="margin-end">12</property>
                             <property name="halign">start</property>
@@ -52,7 +53,6 @@
                 <child>
                   <object class="GtkListView" id="files_listview">
                     <style>
-                      <class name="rich-list"></class>
                       <class name="separators"></class>
                     </style>
                     <property name="hexpand">false</property>

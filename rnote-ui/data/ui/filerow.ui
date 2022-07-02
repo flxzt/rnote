@@ -11,11 +11,17 @@
     <property name="valign">fill</property>
     <property name="hexpand">true</property>
     <property name="vexpand">true</property>
+    <property name="margin-top">3</property>
+    <property name="margin-bottom">3</property>
+    <property name="margin-start">6</property>
+    <property name="margin-end">6</property>
     <child>
       <object class="GtkImage" id="file_image">
         <property name="name">file_image</property>
-        <property name="margin-start">6</property>
         <property name="margin-end">12</property>
+        <style>
+          <class name="large-icons" />
+        </style>
       </object>
     </child>
     <child>

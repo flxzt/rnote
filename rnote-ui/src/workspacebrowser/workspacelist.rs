@@ -75,13 +75,13 @@ impl WorkspaceList {
     pub fn push(&self, item: WorkspaceListEntry) {
         self.imp().list.borrow_mut().push(item);
 
-        self.items_changed(self.n_items().saturating_sub(2), 0, 1);
+        self.items_changed(self.n_items().saturating_sub(1), 0, 1);
     }
 
     pub fn pop(&self) -> Option<WorkspaceListEntry> {
         let popped = self.imp().list.borrow_mut().pop();
 
-        self.items_changed(self.n_items().saturating_sub(2), 1, 0);
+        self.items_changed(self.n_items().saturating_sub(1), 1, 0);
 
         popped
     }

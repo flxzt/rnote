@@ -155,6 +155,9 @@ impl WorkspaceBrowser {
             clone!(@weak self as workspacebrowser, @weak appwindow => move |_add_workspace_button| {
                 let dir = workspacebrowser.selected_workspace_dir().unwrap_or(PathBuf::from("./"));
                 workspacebrowser.add_workspace(dir);
+
+                // Popup the edit dialog after creation
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
             }),
         );
 

@@ -191,7 +191,7 @@ impl WorkspaceBrowser {
         // Setup prefix listbox
         self.imp().files_prefix_listbox.connect_row_activated(clone!(@weak self as workspacebrowser, @weak appwindow => move |_, row| {
             if row == &workspacebrowser.imp().dir_up_row.get() {
-                if let Some(parent_dir) = workspacebrowser.selected_workspace_dir().unwrap_or(PathBuf::from("./")).parent() {
+                if let Some(parent_dir) = workspacebrowser.selected_workspace_dir().and_then(|p| p.parent().map(|p| p.to_path_buf())) {
                     workspacebrowser.set_current_workspace_dir(parent_dir.to_path_buf());
                 }
 
@@ -373,8 +373,8 @@ impl WorkspaceBrowser {
                 .get()
                 .set_model(Some(&primary_selection_model));
 
-            self.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |primary_listview, position| {
-                let model = primary_listview.model().expect("model for primary_listview does not exist.");
+            self.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
+                let model = files_listview.model().expect("model for primary_listview does not exist.");
                 let fileinfo = model.item(position).expect("selected item in primary_listview does not exist.").downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
                 if let Some(file) = fileinfo.attribute_object("standard::file") {
@@ -388,7 +388,10 @@ impl WorkspaceBrowser {
             }));
 
             self.imp().files_dirlist.connect_file_notify(
-                clone!(@weak appwindow, @weak filefilter, @weak multisorter => move |_primary_dirlist| {
+                clone!(@weak self as workspacebrowser, @weak appwindow, @weak filefilter, @weak multisorter => move |files_dirlist| {
+                    // Disable the dir up row when no file is set or has no parent
+                    workspacebrowser.imp().dir_up_row.set_sensitive(files_dirlist.file().and_then(|f| f.parent()).is_some());
+
                     multisorter.changed(SorterChange::Different);
                     filefilter.changed(FilterChange::Different);
                 }),

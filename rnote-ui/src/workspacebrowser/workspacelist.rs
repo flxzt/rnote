@@ -149,7 +149,9 @@ impl Iterator for Iter {
 
 impl glib::StaticVariantType for WorkspaceList {
     fn static_variant_type() -> std::borrow::Cow<'static, glib::VariantTy> {
-        glib::VariantTy::new("a(ayus)").unwrap().into()
+        let ty = WorkspaceListEntry::static_variant_type();
+        let variant_type = glib::VariantType::new(format!("a({})", ty.as_str()).as_str()).unwrap();
+        std::borrow::Cow::from(variant_type)
     }
 }
 

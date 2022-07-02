@@ -189,7 +189,9 @@ impl WorkspaceListEntry {
 
 impl glib::StaticVariantType for WorkspaceListEntry {
     fn static_variant_type() -> std::borrow::Cow<'static, glib::VariantTy> {
-        std::borrow::Cow::from(glib::VariantTy::new("(ayus)").unwrap())
+        let ty = WorkspaceListEntryInner::static_variant_type();
+        let variant_type = glib::VariantType::new(ty.as_str()).unwrap();
+        std::borrow::Cow::from(variant_type)
     }
 }
 

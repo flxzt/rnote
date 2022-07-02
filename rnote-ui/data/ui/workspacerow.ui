@@ -3,21 +3,25 @@
 <interface>
   <template class="WorkspaceRow" parent="GtkWidget">
     <property name="layout-manager">
-      <object class="GtkBinLayout"></object>
-    </property>
-    <child>
-      <object class="GtkBox">
+      <object class="GtkBoxLayout">
         <property name="orientation">vertical</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
-        <child>
-          <object class="GtkImage" id="folder_image">
-            <property name="icon_name">folder-symbolic</property>
-            <property name="icon-size">large</property>
-          </object>
-        </child>
+        <property name="spacing">3</property>
+      </object>
+    </property>
+    <property name="margin-top">3</property>
+    <property name="margin-bottom">3</property>
+    <property name="margin-start">3</property>
+    <property name="margin-end">3</property>
+    <child>
+      <object class="GtkImage" id="folder_image">
+        <property name="icon_name">folder-symbolic</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="name_label">
+        <property name="label"></property>
+        <property name="selectable">false</property>
+        <property name="ellipsize">end</property>
       </object>
     </child>
   </template>

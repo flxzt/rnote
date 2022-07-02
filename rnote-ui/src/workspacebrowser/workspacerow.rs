@@ -1,7 +1,7 @@
 use crate::RnoteAppWindow;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider,
-    GestureClick, GestureLongPress, Image, Widget,
+    GestureClick, GestureLongPress, Image, Label, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
@@ -15,11 +15,12 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacerow.ui")]
     pub struct WorkspaceRow {
         pub entry: RefCell<WorkspaceListEntry>,
-
         #[template_child]
         pub folder_image: TemplateChild<Image>,
+        #[template_child]
+        pub name_label: TemplateChild<Label>,
 
-        pub css: CssProvider,
+        pub image_css: CssProvider,
     }
 
     impl Default for WorkspaceRow {
@@ -27,8 +28,9 @@ mod imp {
             Self {
                 entry: RefCell::new(WorkspaceListEntry::default()),
                 folder_image: TemplateChild::<Image>::default(),
+                name_label: TemplateChild::<Label>::default(),
 
-                css: CssProvider::new(),
+                image_css: CssProvider::new(),
             }
         }
     }
@@ -53,10 +55,16 @@ mod imp {
             self.parent_constructed(obj);
 
             obj.set_css_classes(&["workspacerow"]);
+            self.folder_image
+                .set_css_classes(&["large-icons", "workspacerow-image"]);
+            self.name_label
+                .set_css_classes(&["caption", "workspacerow-label"]);
+
             self.connect_entry();
 
-            obj.style_context()
-                .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
+            self.folder_image
+                .style_context()
+                .add_provider(&self.image_css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -139,12 +147,13 @@ mod imp {
             let color = self.entry.borrow().color();
             let name = self.entry.borrow().name();
 
+            self.name_label.set_label(name.as_str());
             self.instance()
                 .set_tooltip_text(Some(format!("{}\n{}", name, dir).as_str()));
 
             let custom_css = format!(
                 "
-.workspacerow {{
+.workspacerow-image {{
     color: rgba({0}, {1}, {2}, {3:.3});
     transition: color 0.15s ease-out;
 }}
@@ -155,7 +164,8 @@ mod imp {
                 (color.alpha() * 1000.0).round() / 1000.0
             );
 
-            self.css.load_from_data(custom_css.as_bytes());
+            self.image_css.load_from_data(custom_css.as_bytes());
+
             self.instance().queue_draw();
         }
     }
@@ -183,10 +193,6 @@ impl WorkspaceRow {
 
     pub fn set_entry(&self, entry: WorkspaceListEntry) {
         self.set_property("entry", entry.to_value());
-    }
-
-    pub fn folder_image(&self) -> Image {
-        self.imp().folder_image.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

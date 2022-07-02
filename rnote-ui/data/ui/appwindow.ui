@@ -151,7 +151,8 @@
                         <child>
                           <object class="GtkRevealer" id="canvas_fixedsize_quickactions_revealer">
                             <property name="transition-type">slide-right</property>
-                            <property name="transition_duration">300</property>
+                            <property name="transition-duration">300</property>
+                            <property name="overflow">visible</property>
                             <child>
                               <object class="GtkBox">
                                 <property name="homogeneous">true</property>
@@ -164,6 +165,7 @@
                                     <style>
                                       <class name="osd" />
                                       <class name="circular" />
+                                      <class name="quickaction-button" />
                                     </style>
                                   </object>
                                 </child>
@@ -175,6 +177,7 @@
                                     <style>
                                       <class name="osd" />
                                       <class name="circular" />
+                                      <class name="quickaction-button" />
                                     </style>
                                   </object>
                                 </child>
@@ -190,6 +193,7 @@
                             <style>
                               <class name="osd" />
                               <class name="circular" />
+                              <class name="quickaction-button" />
                             </style>
                           </object>
                         </child>
@@ -202,6 +206,7 @@
                             <style>
                               <class name="osd" />
                               <class name="circular" />
+                              <class name="quickaction-button" />
                             </style>
                           </object>
                         </child>
@@ -214,6 +219,7 @@
                             <style>
                               <class name="osd" />
                               <class name="circular" />
+                              <class name="quickaction-button" />
                             </style>
                           </object>
                         </child>

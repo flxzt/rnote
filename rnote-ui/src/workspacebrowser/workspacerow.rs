@@ -5,6 +5,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
+use unicode_segmentation::UnicodeSegmentation;
 
 use super::WorkspaceListEntry;
 
@@ -19,8 +20,6 @@ mod imp {
         pub folder_image: TemplateChild<Image>,
         #[template_child]
         pub name_label: TemplateChild<Label>,
-
-        pub image_css: CssProvider,
     }
 
     impl Default for WorkspaceRow {
@@ -29,8 +28,6 @@ mod imp {
                 entry: RefCell::new(WorkspaceListEntry::default()),
                 folder_image: TemplateChild::<Image>::default(),
                 name_label: TemplateChild::<Label>::default(),
-
-                image_css: CssProvider::new(),
             }
         }
     }
@@ -55,16 +52,8 @@ mod imp {
             self.parent_constructed(obj);
 
             obj.set_css_classes(&["workspacerow"]);
-            self.folder_image
-                .set_css_classes(&["large-icons", "workspacerow-image"]);
-            self.name_label
-                .set_css_classes(&["caption", "workspacerow-label"]);
 
             self.connect_entry();
-
-            self.folder_image
-                .style_context()
-                .add_provider(&self.image_css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -147,24 +136,32 @@ mod imp {
             let color = self.entry.borrow().color();
             let name = self.entry.borrow().name();
 
-            self.name_label.set_label(name.as_str());
+            let fg_color = gdk::RGBA::WHITE;
+
+            let css = CssProvider::new();
+
+            self.name_label
+                .set_label(name.graphemes(true).take(2).collect::<String>().as_str());
             self.instance()
                 .set_tooltip_text(Some(format!("{}\n{}", name, dir).as_str()));
 
             let custom_css = format!(
-                "
-.workspacerow-image {{
-    color: rgba({0}, {1}, {2}, {3:.3});
-    transition: color 0.15s ease-out;
-}}
-            ",
+                "@define-color workspacerow_color rgba({0}, {1}, {2}, {3:.3});@define-color workspacerow_fg_color rgba({4}, {5}, {6}, {7:.3});",
                 (color.red() * 255.0) as i32,
                 (color.green() * 255.0) as i32,
                 (color.blue() * 255.0) as i32,
-                (color.alpha() * 1000.0).round() / 1000.0
+                (color.alpha() * 1000.0).round() / 1000.0,
+                (fg_color.red() * 255.0) as i32,
+                (fg_color.green() * 255.0) as i32,
+                (fg_color.blue() * 255.0) as i32,
+                (fg_color.alpha() * 1000.0).round() / 1000.0
             );
 
-            self.image_css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(custom_css.as_bytes());
+
+            self.instance()
+                .style_context()
+                .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
             self.instance().queue_draw();
         }

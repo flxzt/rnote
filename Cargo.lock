@@ -2875,6 +2875,7 @@ dependencies = [
  "serde",
  "serde_json",
  "svg",
+ "unicode-segmentation",
  "url",
 ]
 

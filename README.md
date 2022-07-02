@@ -37,8 +37,7 @@ Written in Rust and GTK4.
 - Autosave, printing
 
 **Disclaimer**  
-This is my first Rust and GTK project and I am learning as I go along. Expect some bugs and crashes.  
-Also: The file format is still unstable. It might change and break compatibility between versions.
+The file format is still unstable. It might change and break compatibility between versions.
 
 ## Installation
 Rnote is available as a flatpak on Flathub:

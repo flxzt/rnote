@@ -19,9 +19,6 @@
       <object class="GtkImage" id="file_image">
         <property name="name">file_image</property>
         <property name="margin-end">12</property>
-        <style>
-          <class name="large-icons" />
-        </style>
       </object>
     </child>
     <child>

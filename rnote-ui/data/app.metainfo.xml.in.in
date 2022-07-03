@@ -64,7 +64,7 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
-    <release version="0.5.4-beta1" date="2022-06-06">
+    <release version="0.5.4-beta2" date="2022-07-03">
       <description>
         <p>this release changes: (BETA)</p>
         <ul>

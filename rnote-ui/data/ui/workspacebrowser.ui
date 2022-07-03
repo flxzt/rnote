@@ -99,6 +99,7 @@
                     <property name="selection-mode">single</property>
                     <style>
                       <class name="background" />
+                      <class name="workspace-listbox" />
                     </style>
                   </object>
                 </child>

@@ -74,6 +74,8 @@
           <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @RickStanley!)</li>
           <li>proportial shapes / input constraints (thanks @sei0o!)</li>
           <li>additional selector modes: apiece, intersecting path</li>
+          <li>improved workspace browser, added sidebar to select between different workspaces (inspired by the `Paper` app: https://posidon.io/paper)</li>
+          <li>bug fixes</li>
         </ul>
       </description>
     </release>

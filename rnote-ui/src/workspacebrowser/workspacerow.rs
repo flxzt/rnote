@@ -119,6 +119,13 @@ mod imp {
             );
 
             self.entry.borrow().connect_notify_local(
+                Some("icon"),
+                clone!(@strong obj => move |_, _| {
+                    obj.imp().update_apearance();
+                }),
+            );
+
+            self.entry.borrow().connect_notify_local(
                 Some("color"),
                 clone!(@strong obj => move |_, _| {
                     obj.imp().update_apearance();
@@ -135,6 +142,7 @@ mod imp {
 
         fn update_apearance(&self) {
             let dir = self.entry.borrow().dir();
+            let icon = self.entry.borrow().icon();
             let color = self.entry.borrow().color();
             let name = self.entry.borrow().name();
 
@@ -161,6 +169,8 @@ mod imp {
                 .set_label(name.graphemes(true).take(2).collect::<String>().as_str());
             self.instance()
                 .set_tooltip_text(Some(format!("{}\n{}", name, dir).as_str()));
+
+            self.folder_image.set_icon_name(Some(&icon));
 
             let custom_css = format!(
                 "@define-color workspacerow_color {};@define-color workspacerow_fg_color {};",

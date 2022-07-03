@@ -1,17 +1,18 @@
 use adw::prelude::*;
 use gettextrs::gettext;
+use gtk4::MenuButton;
 use gtk4::{
-    gio, AboutDialog, Button, ColorButton, Dialog, Entry, FileChooserAction, FileChooserNative,
-    FileFilter, Label, MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
+    gio, glib, glib::clone, AboutDialog, Builder, Button, ColorButton, Dialog, Entry,
+    FileChooserAction, FileChooserNative, FileFilter, Label, MessageDialog, ResponseType,
+    ShortcutsWindow, SpinButton, StringList, ToggleButton,
 };
-use gtk4::{glib, glib::clone, Builder};
 use num_traits::ToPrimitive;
 use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::RnoteAppWindow;
-use crate::globals;
 use crate::workspacebrowser::WorkspaceRow;
 use crate::{app::RnoteApp, config};
+use crate::{globals, IconPicker};
 
 // About Dialog
 pub fn dialog_about(appwindow: &RnoteAppWindow) {
@@ -357,9 +358,16 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     let change_workspace_dir_button: Button =
         builder.object("change_workspace_dir_button").unwrap();
     let change_workspace_dir_label: Label = builder.object("change_workspace_dir_label").unwrap();
+    let change_workspace_icon_menubutton: MenuButton =
+        builder.object("change_workspace_icon_menubutton").unwrap();
+    let change_workspace_icon_picker: IconPicker =
+        builder.object("change_workspace_icon_picker").unwrap();
 
     edit_workspace_preview_row.init(appwindow);
     dialog_edit_workspace.set_transient_for(Some(appwindow));
+
+    // Sets the icons
+    change_workspace_icon_picker.set_list(StringList::new(globals::WORKSPACELISTENTRY_ICONS_LIST));
 
     let dialog_change_workspace_dir: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Change workspace directory"))
@@ -381,11 +389,12 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
             log::error!("set file in change workspace dialog failed with Err {}", e);
         }
 
-        // update dialog UI
+        // set initial dialog UI on popup
         edit_workspace_preview_row
             .entry()
             .replace_data(&row.entry());
         change_workspace_name_entry.set_text(row.entry().name().as_str());
+        change_workspace_icon_menubutton.set_icon_name(row.entry().icon().as_str());
         change_workspace_color_button.set_rgba(&row.entry().color());
         change_workspace_dir_label.set_label(&row.entry().dir().as_str());
     }
@@ -394,6 +403,18 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         clone!(@weak edit_workspace_preview_row => move |entry| {
             let text = entry.text().to_string();
             edit_workspace_preview_row.entry().set_name(text);
+        }),
+    );
+
+    change_workspace_icon_picker.connect_local(
+        "icon-picked",
+        false,
+        clone!(@weak change_workspace_icon_menubutton, @weak edit_workspace_preview_row, @weak appwindow =>@default-return None, move |args| {
+            let picked = args[1].get::<String>().unwrap();
+
+            change_workspace_icon_menubutton.set_icon_name(&picked);
+            edit_workspace_preview_row.entry().set_icon(picked);
+            None
         }),
     );
 
@@ -425,14 +446,12 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     );
 
     dialog_edit_workspace.connect_response(
-        clone!(@weak change_workspace_name_entry, @weak change_workspace_color_button, @weak dialog_change_workspace_dir, @weak appwindow => move |dialog_modify_workspace, responsetype| {
+        clone!(@weak edit_workspace_preview_row, @weak appwindow => move |dialog_modify_workspace, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
                     // update the actual row
-                    appwindow.workspacebrowser().set_current_workspace_name(change_workspace_name_entry.text().to_string());
-                    appwindow.workspacebrowser().set_current_workspace_color(change_workspace_color_button.rgba());
-                    if let Some(dir) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
-                        appwindow.workspacebrowser().set_current_workspace_dir(dir);
+                    if let Some(current_row) = appwindow.workspacebrowser().current_selected_workspace_row() {
+                        current_row.entry().replace_data(&edit_workspace_preview_row.entry());
                     }
                 }
                 _ => {}

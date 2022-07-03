@@ -13,6 +13,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/iconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>
@@ -104,5 +105,48 @@
         <file compressed="true">icons/scalable/actions/stylus-button-eraser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-primary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-secondary-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-bank-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-bookmark-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-book-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-bread-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-build-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-calendar-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-camera-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-chip-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-code-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-compose-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-drinks-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-feet-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-flag-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-folder-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-gamepad-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-gear-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-heal-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-heart-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-help-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-hourglass-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-key-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-language-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-lightbulb-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-math-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-meeting-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-money-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-musicnote-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-paintbrush-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-pencilandpaper-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-people-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-person-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-present-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-richtext-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-scratchpad-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-shapes-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-shopping-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-speedometer-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-star-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-terminal-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-text-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-travel-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-weather-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-weight-symbolic.svg</file>
     </gresource>
 </gresources>

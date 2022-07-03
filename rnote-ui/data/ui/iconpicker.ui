@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### IconPicker ### -->
+<interface>
+  <template class="IconPicker" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <property name="hexpand">true</property>
+    <property name="vexpand">true</property>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="propagate-natural-width">true</property>
+        <property name="propagate-natural-height">false</property>
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="height-request">400</property>
+        <child>
+          <object class="GtkGridView" id="gridview">
+            <property name="max-columns">7</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <style>
+              <class name="view" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

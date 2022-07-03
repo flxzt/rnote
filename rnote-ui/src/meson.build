@@ -47,6 +47,7 @@ rnote_ui_sources = files(
     'mainheader.rs',
     'dialogs.rs',
     'unitentry.rs',
+    'iconpicker.rs',
     'penssidebar/mod.rs',
     'penssidebar/brushpage.rs',
     'penssidebar/shaperpage.rs',

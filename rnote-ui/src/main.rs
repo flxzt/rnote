@@ -17,6 +17,7 @@ mod mainheader;
 pub mod penssidebar;
 mod settingspanel;
 mod unitentry;
+mod iconpicker;
 mod workspacebrowser;
 
 // Re-exports
@@ -30,6 +31,7 @@ pub use mainheader::MainHeader;
 pub use penssidebar::PensSideBar;
 pub use settingspanel::SettingsPanel;
 pub use unitentry::UnitEntry;
+pub use iconpicker::IconPicker;
 pub use workspacebrowser::WorkspaceBrowser;
 
 use gettextrs::LocaleCategory;

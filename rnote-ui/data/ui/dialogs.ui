@@ -321,7 +321,7 @@
               <object class="WorkspaceRow" id="edit_workspace_preview_row">
                 <property name="halign">center</property>
                 <style>
-                  <class name="preview"/>
+                  <class name="preview" />
                 </style>
               </object>
             </child>
@@ -338,6 +338,26 @@
                         <property name="hexpand">true</property>
                         <property name="valign">center</property>
                         <property name="halign">fill</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Icon</property>
+                    <property name="subtitle" translatable="yes">Change the workspace icon</property>
+                    <child type="suffix">
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkMenuButton" id="change_workspace_icon_menubutton">
+                            <property name="hexpand">false</property>
+                            <property name="hexpand">false</property>
+                            <property name="valign">center</property>
+                            <property name="halign">end</property>
+                            <property name="icon-name">folder-symbolic</property>
+                            <property name="popover">change_workspace_icon_popover</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -394,6 +414,11 @@
           </object>
         </child>
       </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="change_workspace_icon_popover">
+    <child>
+      <object class="IconPicker" id="change_workspace_icon_picker"></object>
     </child>
   </object>
 

@@ -11,6 +11,7 @@ rnote-ui/data/ui/mainheader.ui
 rnote-ui/data/ui/settingspanel.ui
 rnote-ui/data/ui/shortcuts.ui
 rnote-ui/data/ui/unitentry.ui
+rnote-ui/data/ui/iconpicker.ui
 rnote-ui/data/ui/workspacebrowser.ui
 rnote-ui/data/ui/penssidebar/brushpage.ui
 rnote-ui/data/ui/penssidebar/eraserpage.ui

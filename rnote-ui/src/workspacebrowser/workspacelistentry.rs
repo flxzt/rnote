@@ -17,6 +17,8 @@ mod imp {
     pub struct WorkspaceListEntryInner {
         #[serde(rename = "dir")]
         pub dir: PathBuf,
+        #[serde(rename = "icon")]
+        pub icon: String,
         #[serde(rename = "color")]
         pub color: u32,
         #[serde(rename = "name")]
@@ -27,6 +29,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 dir: PathBuf::from("./"),
+                icon: String::from("folder-symbolic"),
                 color: super::WorkspaceListEntry::COLOR_DEFAULT.as_rgba_u32(),
                 name: String::from("default"),
             }
@@ -52,6 +55,13 @@ mod imp {
                         "dir",
                         "dir",
                         "dir",
+                        None,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpecString::new(
+                        "icon",
+                        "icon",
+                        "icon",
                         None,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -89,6 +99,10 @@ mod imp {
 
                     self.inner.borrow_mut().dir = PathBuf::from(dir);
                 }
+                "icon" => {
+                    let icon = value.get::<String>().expect("value not of type `String`");
+                    self.inner.borrow_mut().icon = icon;
+                }
                 "color" => {
                     let color = value
                         .get::<gdk::RGBA>()
@@ -112,6 +126,7 @@ mod imp {
                     .to_string_lossy()
                     .to_string()
                     .to_value(),
+                "icon" => self.inner.borrow().icon.to_value(),
                 "color" => gdk::RGBA::from_compose_color(rnote_compose::Color::from(
                     self.inner.borrow().color,
                 ))
@@ -139,6 +154,7 @@ impl WorkspaceListEntry {
     pub fn new(inner: WorkspaceListEntryInner) -> Self {
         glib::Object::new(&[
             ("dir", &inner.dir.to_string_lossy().to_string().to_value()),
+            ("icon", &inner.icon.to_value()),
             (
                 "color",
                 &gdk::RGBA::from_compose_color(rnote_compose::Color::from(inner.color)).to_value(),
@@ -150,6 +166,7 @@ impl WorkspaceListEntry {
 
     pub fn replace_data(&self, entry: &Self) {
         self.set_name(entry.name());
+        self.set_icon(entry.icon());
         self.set_color(entry.color());
         self.set_dir(entry.dir());
     }
@@ -168,6 +185,14 @@ impl WorkspaceListEntry {
 
     pub fn set_dir(&self, dir: String) {
         self.set_property("dir", dir.to_value());
+    }
+
+    pub fn icon(&self) -> String {
+        self.property::<String>("icon")
+    }
+
+    pub fn set_icon(&self, icon: String) {
+        self.set_property("icon", icon.to_value());
     }
 
     pub fn color(&self) -> gdk::RGBA {

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-11 18:05+0200\n"
-"PO-Revision-Date: 2022-05-11 18:10+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2022-06-25 16:48+0000\n"
+"Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13.1-dev\n"
 
 #. Translators: This is the App name, don't translate this.
 #: rnote-ui/data/app.desktop.in.in:4 rnote-ui/data/app.metainfo.xml.in.in:7
@@ -184,7 +184,7 @@ msgstr "Zeichne mit Touch-Eingabe"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
 msgid "Document layout"
-msgstr "Dokument Layout"
+msgstr "Dokument-Layout"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "Fixed size"
@@ -574,7 +574,7 @@ msgstr "Stylus sekundäre Taste Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:375
 msgid "Set the action for the secondary stylus button"
-msgstr "Ändere  die Aktion für die sekundäre Taste des Stylus"
+msgstr "Ändere die Aktion für die sekundäre Taste des Stylus"
 
 #: rnote-ui/data/ui/settingspanel.ui:386
 msgid "Stylus \"Eraser\" button action"

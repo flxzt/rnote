@@ -7,8 +7,8 @@
         <property name="orientation">vertical</property>
       </object>
     </property>
-    <property name="margin-top">3</property>
-    <property name="margin-bottom">3</property>
+    <property name="margin-top">6</property>
+    <property name="margin-bottom">6</property>
     <property name="margin-start">3</property>
     <property name="margin-end">3</property>
     <child>

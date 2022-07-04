@@ -37,7 +37,7 @@
             </style>
             <child>
               <object class="GtkImage" id="shaperstyle_image">
-                <property name="icon-name">pen-shaper-style-smoooth-symbolic</property>
+                <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>

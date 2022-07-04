@@ -349,7 +349,7 @@ impl ShaperPage {
             appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.disable_multistroke = !roughconfig_multistroke_switch.state();
         }));
 
-        // Smooth / Rough shaper style
+        // Shaper style
         self.shaperstyle_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shaperstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
@@ -369,6 +369,8 @@ impl ShaperPage {
                     if let Err(e) = appwindow.save_engine_config() {
                         log::error!("saving engine config failed after changing shaper style, Err `{}`", e);
                     }
+                    // Need to refresh the whole page, because changing the style affects multiple widgets
+                    shaperpage.refresh_ui(&appwindow);
                 }
             }),
         );
@@ -439,6 +441,8 @@ impl ShaperPage {
                     if let Err(e) = appwindow.save_engine_config() {
                         log::error!("saving engine config failed after changing shape builder type, Err `{}`", e);
                     }
+                    // Need to refresh the whole page, because changing the builder type affects multiple widgets
+                    shaperpage.refresh_ui(&appwindow);
                 }
             }),
         );

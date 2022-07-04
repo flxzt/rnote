@@ -241,6 +241,8 @@ impl BrushPage {
                     if let Err(e) = appwindow.save_engine_config() {
                         log::error!("saving engine config failed after changing brush style, Err `{}`", e);
                     }
+                    // Need to refresh the whole page, because changing the style affects multiple widgets
+                    brushpage.refresh_ui(&appwindow);
                 }
             }),
         );

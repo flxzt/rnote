@@ -34,7 +34,7 @@
       <summary>the current workspace index</summary>
     </key>
     <key name="workspace-list" type="a(aysus)">
-      <default>[]</default>
+      <default>[(b'./', 'folder-symbolic', 442479871, 'default')]</default>
       <summary>the workspaces entries list</summary>
     </key>
     <key name="autosave" type="b">

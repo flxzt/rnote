@@ -150,6 +150,7 @@ impl WorkspaceBrowser {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let remove_workspace_button = self.imp().remove_workspace_button.get();
+        let edit_workspace_button = self.imp().edit_workspace_button.get();
 
         self.imp().add_workspace_button.get().connect_clicked(
             clone!(@weak self as workspacebrowser, @weak appwindow => move |_add_workspace_button| {
@@ -174,8 +175,9 @@ impl WorkspaceBrowser {
         );
 
         self.imp().workspace_list.connect_items_changed(
-            clone!(@weak self as workspacebrowser, @weak appwindow, @weak remove_workspace_button => move |folders_model, _, _, _| {
+            clone!(@weak self as workspacebrowser, @weak appwindow, @weak remove_workspace_button, @weak edit_workspace_button => move |folders_model, _, _, _| {
                 remove_workspace_button.set_sensitive(folders_model.n_items() > 1);
+                edit_workspace_button.set_sensitive(folders_model.n_items() > 0);
                 workspacebrowser.save_to_settings(&appwindow.app_settings());
             }),
         );

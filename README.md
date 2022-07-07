@@ -46,7 +46,6 @@ Rnote is available as a flatpak on Flathub:
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 </div><br>
 
-
 **Downgrading**  
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
 | version | command                                                                                                                |

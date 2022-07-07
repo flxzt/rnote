@@ -134,5 +134,5 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
 </div><br>
 
 
-## Building, contributing
-Build instructions and guidelines how to contribute are outlined in [CONTRIBUTING.md](./CONTRIBUTING.md)
+## Building
+Build instructions for Linux are documented in [BUILDING.md](./BUILDING.md) and for Non-Linux platforms in  https://github.com/flxzt/rnote/tree/main/misc/building

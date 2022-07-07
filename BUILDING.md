@@ -1,6 +1,3 @@
-# Contribute
-Please ask in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section if you need help with anything!
-
 # Building
 
 First clone the repository and init its submodules

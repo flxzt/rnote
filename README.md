@@ -135,4 +135,4 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
 
 
 ## Building
-Build instructions for Linux are documented in [BUILDING.md](./BUILDING.md) and for Non-Linux platforms in  https://github.com/flxzt/rnote/tree/main/misc/building
+Build instructions for Linux are documented in [BUILDING.md](./BUILDING.md) and for other platforms [here](./misc/building)

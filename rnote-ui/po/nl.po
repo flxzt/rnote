@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 12:25+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -526,8 +526,7 @@ msgstr "Schuifbalken verbergen"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr ""
-"Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
+msgstr "Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"

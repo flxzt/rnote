@@ -13,11 +13,11 @@ mod appwindow;
 mod canvas;
 mod canvasmenu;
 mod colorpicker;
+mod iconpicker;
 mod mainheader;
 pub mod penssidebar;
 mod settingspanel;
 mod unitentry;
-mod iconpicker;
 mod workspacebrowser;
 
 // Re-exports
@@ -27,11 +27,11 @@ pub use appwindow::RnoteAppWindow;
 pub use canvas::RnoteCanvas;
 pub use canvasmenu::CanvasMenu;
 pub use colorpicker::ColorPicker;
+pub use iconpicker::IconPicker;
 pub use mainheader::MainHeader;
 pub use penssidebar::PensSideBar;
 pub use settingspanel::SettingsPanel;
 pub use unitentry::UnitEntry;
-pub use iconpicker::IconPicker;
 pub use workspacebrowser::WorkspaceBrowser;
 
 use gettextrs::LocaleCategory;

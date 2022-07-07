@@ -7,21 +7,23 @@ rnote-ui/data/ui/canvasmenu.ui
 rnote-ui/data/ui/colorpicker.ui
 rnote-ui/data/ui/dialogs.ui
 rnote-ui/data/ui/filerow.ui
+rnote-ui/data/ui/iconpicker.ui
 rnote-ui/data/ui/mainheader.ui
+rnote-ui/data/ui/penshortcutrow.ui
 rnote-ui/data/ui/settingspanel.ui
 rnote-ui/data/ui/shortcuts.ui
 rnote-ui/data/ui/unitentry.ui
-rnote-ui/data/ui/iconpicker.ui
 rnote-ui/data/ui/workspacebrowser.ui
+rnote-ui/data/ui/workspacerow.ui
 rnote-ui/data/ui/penssidebar/brushpage.ui
 rnote-ui/data/ui/penssidebar/eraserpage.ui
 rnote-ui/data/ui/penssidebar/penssidebar.ui
 rnote-ui/data/ui/penssidebar/selectorpage.ui
 rnote-ui/data/ui/penssidebar/shaperpage.ui
 rnote-ui/data/ui/penssidebar/toolspage.ui
+rnote-ui/data/ui/penssidebar/typewriterpage.ui
 
 rnote-ui/src/dialogs.rs
 rnote-ui/src/appwindow/mod.rs
 rnote-ui/src/appwindow/appwindowactions.rs
-rnote-ui/src/workspacebrowser/mod.rs
 rnote-ui/src/workspacebrowser/filerow.rs

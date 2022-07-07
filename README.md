@@ -100,14 +100,17 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 - [Pizarra](https://pizarra.categulario.tk/en/) is a innovative drawing app with advanced shaping and featuring a infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
 ## Translations
-A great way to contribute to the project without writing code is adding and maintaining a new translation language. The translations files are located in `rnote-ui/po/`. New translations or updating existing ones can be done in two ways:
-- take `rnote.pot` and generate a new `.po` from it, add the new translation language to `LINGUAS` and submit a PR.
+
+<a href="https://hosted.weblate.org/engage/rnote/">
+<img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
+</a><br><br>
+
+A great way to contribute to the project without writing code is adding and maintaining a new translation language. The translations files are located in `rnote-ui/po/`.
+
+ Creating translations for new languages or updating existing ones can be done in two ways:
+- take `rnote.pot` and generate a new `.po` translation file from it, add the new translation language to `LINGUAS` and submit a PR.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
-
-<a href="https://hosted.weblate.org/engage/rnote/de/">
-<img src="https://hosted.weblate.org/widgets/rnote/de/repo/multi-auto.svg" alt="Translation status" />
-</a>
 
 ## Community
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  

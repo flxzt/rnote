@@ -163,7 +163,7 @@ impl Default for Format {
             height: Self::HEIGHT_DEFAULT,
             dpi: Self::DPI_DEFAULT,
             orientation: Orientation::default(),
-            border_color: Color::from(color::GNOME_REDS[3]),
+            border_color: Color::from(Self::BORDER_COLOR_DEFAULT),
             show_borders: true,
         }
     }
@@ -181,6 +181,8 @@ impl Format {
     pub const DPI_MIN: f64 = 1.0;
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
+
+    pub const BORDER_COLOR_DEFAULT: piet::Color = color::GNOME_BRIGHTS[2];
 
     fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
         const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-03 14:48+0200\n"
+"POT-Creation-Date: 2022-07-07 16:19+0200\n"
 "PO-Revision-Date: 2022-07-04 17:51+0200\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -279,7 +279,9 @@ msgstr "Inzoomen"
 msgid "Zoom to fit page width"
 msgstr "Aanpassen aan paginabreedte"
 
-#: rnote-ui/data/ui/colorpicker.ui:61 rnote-ui/src/dialogs.rs:376
+#: rnote-ui/data/ui/colorpicker.ui:61
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
+#: rnote-ui/src/dialogs.rs:376
 msgid "Select"
 msgstr "Selecteren"
 
@@ -295,6 +297,7 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:43
 #: rnote-ui/data/ui/dialogs.ui:75 rnote-ui/data/ui/dialogs.ui:107
 #: rnote-ui/data/ui/dialogs.ui:286 rnote-ui/data/ui/dialogs.ui:431
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
 #: rnote-ui/src/dialogs.rs:377 rnote-ui/src/dialogs.rs:488
 #: rnote-ui/src/dialogs.rs:528 rnote-ui/src/dialogs.rs:588
 #: rnote-ui/src/dialogs.rs:625 rnote-ui/src/dialogs.rs:677
@@ -456,6 +459,10 @@ msgstr "Concept"
 #: rnote-ui/data/ui/mainheader.ui:37
 msgid "Save document"
 msgstr "Document opslaan"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:8
+msgid "perm."
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
@@ -1067,6 +1074,53 @@ msgstr "Penseelstreek-elementen verslepen op basis van afstand"
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:65
 msgid "Offset the camera by dragging"
 msgstr "Camerahoek verschuiven door te verslepen"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
+msgid ""
+"Font chooser\n"
+"(double-click, click on select\n"
+"or press Enter to select a new font)"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
+msgid "Pick and insert an emoji"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+msgid "Reset text attributes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:148
+msgid "Bold"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:154
+msgid "Italic"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:160
+msgid "Underline"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:166
+msgid "Strikethrough"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:195
+msgid "Align left"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:202
+msgid "Align center"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:209
+msgid "Align right"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:216
+msgid "Fill"
+msgstr ""
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs.rs:33

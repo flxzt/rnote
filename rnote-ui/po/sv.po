@@ -68,7 +68,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
 msgstr "Använd inställningar för systemfärger"
 
@@ -388,7 +387,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "Lägg till sida"
 
@@ -1156,8 +1154,8 @@ msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
 msgstr ""
-"Hur kurviga linjerna är när man ritar en grov form. 0,0 är en rak "
-"linje.Standardvärdet är 1.0"
+"Hur kurviga linjerna är när man ritar en grov form. 0,0 är en rak linje."
+"Standardvärdet är 1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
 msgid "Curve step count"

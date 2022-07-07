@@ -104,6 +104,11 @@ A great way to contribute to the project without writing code is adding and main
 - take `rnote.pot` and generate a new `.po` from it, add the new translation language to `LINGUAS` and submit a PR.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
+
+<a href="https://hosted.weblate.org/engage/rnote/de/">
+<img src="https://hosted.weblate.org/widgets/rnote/de/repo/multi-auto.svg" alt="Translation status" />
+</a>
+
 ## Community
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  
 There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) chat room.  

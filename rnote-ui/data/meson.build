@@ -43,7 +43,7 @@ desktop_file = i18n.merge_file(
   input: desktop_file_in,
   output: app_id + '.desktop',
   type: 'desktop',
-  po_dir: podir,
+  po_dir: '../po',
   install: true,
   install_dir: datadir / 'applications',
 )
@@ -96,7 +96,7 @@ appdata_file_in = configure_file(
 appdata_file = i18n.merge_file(
   input: appdata_file_in,
   output: app_id + '.metainfo.xml',
-  po_dir: podir,
+  po_dir: '../po',
   install: true,
   install_dir: datadir / 'metainfo',
 )

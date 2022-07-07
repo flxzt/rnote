@@ -43,7 +43,6 @@ localedir = prefix / get_option('localedir')
 datadir = prefix / get_option('datadir')
 pkgdatadir = datadir / app_name
 iconsdir = datadir / 'icons'
-podir = meson.project_source_root() / 'po'
 gettext_package = app_name
 
 user_home_dir = fs.expanduser('~')

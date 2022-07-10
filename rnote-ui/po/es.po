@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-07 16:19+0200\n"
-"PO-Revision-Date: 2022-06-04 19:16+0200\n"
+"PO-Revision-Date: 2022-07-11 11:19+0000\n"
 "Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
-"Language-Team: none\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:23
@@ -90,7 +90,7 @@ msgstr "Atajos del teclado"
 
 #: rnote-ui/data/ui/appmenu.ui:54
 msgid "Donate 💝"
-msgstr ""
+msgstr "Donar 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:58
 msgid "About Rnote"
@@ -390,10 +390,8 @@ msgid "One per document page"
 msgstr "Una por página de documento"
 
 #: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:142
-#, fuzzy
-#| msgid "Open workspace"
 msgid "Edit workspace"
-msgstr "Abrir área de trabajo"
+msgstr "Editar área de trabajo"
 
 #: rnote-ui/data/ui/dialogs.ui:291 rnote-ui/data/ui/settingspanel.ui:210
 #: rnote-ui/src/workspacebrowser/filerow.rs:235
@@ -402,49 +400,39 @@ msgstr "Aplicar"
 
 #: rnote-ui/data/ui/dialogs.ui:333
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #: rnote-ui/data/ui/dialogs.ui:334
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace name"
-msgstr "Cambiar el directorio del área de trabajo"
+msgstr "Cambiar el nombre del área de trabajo"
 
 #: rnote-ui/data/ui/dialogs.ui:347
 msgid "Icon"
-msgstr ""
+msgstr "Icono"
 
 #: rnote-ui/data/ui/dialogs.ui:348
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace icon"
-msgstr "Cambiar el directorio del área de trabajo"
+msgstr "Cambiar el icono del área de trabajo"
 
 #: rnote-ui/data/ui/dialogs.ui:367 rnote-ui/data/ui/settingspanel.ui:226
 msgid "Color"
 msgstr "Color"
 
 #: rnote-ui/data/ui/dialogs.ui:368
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace color"
-msgstr "Cambiar el directorio del área de trabajo"
+msgstr "Cambiar el color del área de trabajo"
 
 #: rnote-ui/data/ui/dialogs.ui:381
-#, fuzzy
-#| msgid "Vector"
 msgid "Directory"
-msgstr "Vectorial"
+msgstr "Directorio"
 
 #: rnote-ui/data/ui/dialogs.ui:382
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace directory"
 msgstr "Cambiar el directorio del área de trabajo"
 
 #: rnote-ui/data/ui/dialogs.ui:391 rnote-ui/src/dialogs.rs:437
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- ningún directorio seleccionado -"
 
 #: rnote-ui/data/ui/dialogs.ui:405 rnote-ui/src/dialogs.rs:373
 msgid "Change workspace directory"
@@ -476,7 +464,7 @@ msgstr "Guardar documento"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
-msgstr ""
+msgstr "perm."
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
@@ -795,19 +783,15 @@ msgstr "Rehacer"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:38
 msgid "Move directory up"
-msgstr ""
+msgstr "Mover directorio hacia arriba"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:127
-#, fuzzy
-#| msgid "Open workspace"
 msgid "Add workspace"
-msgstr "Abrir área de trabajo"
+msgstr "Añadir área de trabajo"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:133
-#, fuzzy
-#| msgid "Open workspace"
 msgid "Remove workspace"
-msgstr "Abrir área de trabajo"
+msgstr "Quitar área de trabajo"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1100,46 +1084,49 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
+"Selector de tipografías\n"
+"(doble clic, clic en seleccionar\n"
+"o pulse Intro para seleccionar un tipo de letra nuevo)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
 msgid "Pick and insert an emoji"
-msgstr ""
+msgstr "Elija e inserte un emoji"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
 msgid "Reset text attributes"
-msgstr ""
+msgstr "Restablecer atributos de texto"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:148
 msgid "Bold"
-msgstr ""
+msgstr "Negrita"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:154
 msgid "Italic"
-msgstr ""
+msgstr "Cursiva"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:160
 msgid "Underline"
-msgstr ""
+msgstr "Subrayado"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:166
 msgid "Strikethrough"
-msgstr ""
+msgstr "Tachado"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:195
 msgid "Align left"
-msgstr ""
+msgstr "Alinear a la izquierda"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:202
 msgid "Align center"
-msgstr ""
+msgstr "Centrar"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:209
 msgid "Align right"
-msgstr ""
+msgstr "Alinear a la derecha"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:216
 msgid "Fill"
-msgstr ""
+msgstr "Rellenar"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs.rs:33

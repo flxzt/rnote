@@ -370,7 +370,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "Aggiungi pagina"
 

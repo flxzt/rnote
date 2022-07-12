@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-07 16:19+0200\n"
-"PO-Revision-Date: 2022-07-12 10:39+0000\n"
-"Last-Translator: Eric Kushi <erickushi17@gmail.com>\n"
+"PO-Revision-Date: 2022-07-12 16:27+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -192,7 +192,7 @@ msgstr "Disegna con l'imput touch"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
 msgid "Document layout"
-msgstr ""
+msgstr "Layout del documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "Fixed size"
@@ -352,7 +352,7 @@ msgstr "Preferenze sull'importazione dei PDF"
 
 #: rnote-ui/data/ui/dialogs.ui:210
 msgid "Pages type"
-msgstr ""
+msgstr "Tipo di pagine"
 
 #: rnote-ui/data/ui/dialogs.ui:211
 msgid "Set whether PDFs should be imported as vector or bitmap images"
@@ -382,15 +382,15 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:260
 msgid "Page spacing"
-msgstr ""
+msgstr "Spaziatura delle pagine"
 
 #: rnote-ui/data/ui/dialogs.ui:261
 msgid "How PDF pages are spaced"
-msgstr ""
+msgstr "Come sono distanziate le pagine PDF"
 
 #: rnote-ui/data/ui/dialogs.ui:265
 msgid "Continuous"
-msgstr ""
+msgstr "Continuo"
 
 #: rnote-ui/data/ui/dialogs.ui:266
 #, fuzzy
@@ -625,7 +625,7 @@ msgstr "Linee"
 
 #: rnote-ui/data/ui/settingspanel.ui:251
 msgid "Grid"
-msgstr ""
+msgstr "Griglia"
 
 #: rnote-ui/data/ui/settingspanel.ui:252
 msgid "Dots"
@@ -657,7 +657,7 @@ msgstr "Impostare l'altezza del modello di sfondo"
 
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Button Shortcuts"
-msgstr ""
+msgstr "Tasti di scelta rapida"
 
 #: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Stylus primary button action"
@@ -677,11 +677,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Mouse secondary button action"
-msgstr ""
+msgstr "Azione del pulsante secondario del mouse"
 
 #: rnote-ui/data/ui/settingspanel.ui:337
 msgid "Set the action for the secondary mouse button"
-msgstr ""
+msgstr "Imposta l'azione per il pulsante secondario del mouse"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"

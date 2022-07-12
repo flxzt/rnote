@@ -40,7 +40,7 @@ Then, you can install the rest of the required dependencies using the
 `brew install` command.
 
 ```sh
-brew install git ninja meson glib appstream-glib gtk4 gstreamer poppler desktop-file-utils
+brew install git ninja meson glib appstream-glib gtk4 poppler desktop-file-utils
 ```
 
 ## Cloning the Repository
@@ -61,7 +61,7 @@ installation steps.
 
 First, we have to setup the build directory. These steps will differ slightly
 from those listed in the
-[CONTRIBUTIONS.md](https://github.com/flxzt/rnote/blob/main/CONTRIBUTING.md#build-with-meson)
+[BUILDING.md](https://github.com/flxzt/rnote/blob/main/BUILDING.md#build-with-meson)
 file.
 
 First, we must setup the build directory. The `prefix` will be set to

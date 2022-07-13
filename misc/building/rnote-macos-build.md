@@ -51,6 +51,7 @@ following command:
 
 ```sh
 git clone https://github.com/flxzt/rnote.git
+cd rnote
 git submodule update --init --recursive
 ```
 

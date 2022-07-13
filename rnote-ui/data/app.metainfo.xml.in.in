@@ -49,6 +49,8 @@
     <control>keyboard</control>
     <control>pointing</control>
     <control>touch</control>
+    <control>tablet</control>
+    <display_length compare="ge">500</display_length>
   </recommends>
 
   <url type="homepage">https://github.com/flxzt/rnote</url>

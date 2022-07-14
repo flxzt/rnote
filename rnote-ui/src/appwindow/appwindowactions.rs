@@ -8,7 +8,7 @@ use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
+use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, Document};
 
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
@@ -567,11 +567,7 @@ impl RnoteAppWindow {
 
         // Zoom fit to width
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let mut new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
-
-            for _ in 0..2 {
-                new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().engine().borrow().document.format.width as f64;
-            }
+            let new_zoom = f64::from(appwindow.canvas_scroller().width()) / (appwindow.canvas().engine().borrow().document.format.width as f64 + 2.0 * Document::SHADOW_WIDTH);
 
             let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));

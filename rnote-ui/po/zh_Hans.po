@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-07 16:19+0200\n"
-"PO-Revision-Date: 2022-07-15 13:51+0000\n"
+"PO-Revision-Date: 2022-07-15 14:09+0000\n"
 "Last-Translator: BobH <dev@mail.bobh.cool>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -31,7 +31,7 @@ msgstr "Gnome；GTK；Office；图形；笔记；"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr "新窗口"
+msgstr "新建窗口"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -1209,23 +1209,23 @@ msgstr "导出"
 
 #: rnote-ui/src/dialogs.rs:648
 msgid "Export selection as SVG failed."
-msgstr "导出所选为SVG失败。"
+msgstr "导出所选为 SVG 失败。"
 
 #: rnote-ui/src/dialogs.rs:650
 msgid "Exported selection as SVG successfully."
-msgstr "导出所选为SVG成功。"
+msgstr "导出所选为 SVG 成功。"
 
 #: rnote-ui/src/dialogs.rs:670
 msgid "PNG file"
-msgstr "PNG文件"
+msgstr "PNG 文件"
 
 #: rnote-ui/src/dialogs.rs:700
 msgid "Export selection as PNG failed."
-msgstr "导出所选为PNG失败。"
+msgstr "导出所选为 PNG 失败。"
 
 #: rnote-ui/src/dialogs.rs:702
 msgid "Exported selection as PNG successfully."
-msgstr "导出所选为PNG成功。"
+msgstr "导出所选为 PNG 成功。"
 
 #: rnote-ui/src/dialogs.rs:725 rnote-ui/src/dialogs.rs:776
 #: rnote-ui/src/dialogs.rs:827
@@ -1234,71 +1234,71 @@ msgstr "导出文档"
 
 #: rnote-ui/src/dialogs.rs:749
 msgid "Export document as SVG failed."
-msgstr "导出文档为SVG失败。"
+msgstr "导出文档为 SVG 失败。"
 
 #: rnote-ui/src/dialogs.rs:751
 msgid "Exported document as SVG successfully."
-msgstr "导出文档为SVG成功。"
+msgstr "导出文档为 SVG 成功。"
 
 #: rnote-ui/src/dialogs.rs:773
 msgid "PDF file"
-msgstr "PDF文件"
+msgstr "PDF 文件"
 
 #: rnote-ui/src/dialogs.rs:800
 msgid "Export document as PDF failed."
-msgstr "导出文档为PDF失败。"
+msgstr "导出文档为 PDF 失败。"
 
 #: rnote-ui/src/dialogs.rs:802
 msgid "Exported document as PDF successfully."
-msgstr "导出文档为PDF成功。"
+msgstr "导出文档为 PDF 成功。"
 
 #: rnote-ui/src/dialogs.rs:824
 msgid ".xopp file"
-msgstr ".xopp文件"
+msgstr ".xopp 文件"
 
 #: rnote-ui/src/dialogs.rs:851
 msgid "Exporting document as .xopp failed."
-msgstr "导出文档为.xopp失败。"
+msgstr "导出文档为 .xopp 失败。"
 
 #: rnote-ui/src/dialogs.rs:853
 msgid "Exported document as .xopp successfully."
-msgstr "导出文档为.xopp成功。"
+msgstr "导出文档为 .xopp 成功。"
 
 #: rnote-ui/src/dialogs.rs:874 rnote-ui/src/dialogs.rs:928
 msgid "JSON file"
-msgstr "JSON文件"
+msgstr "JSON 文件"
 
 #: rnote-ui/src/dialogs.rs:905
 msgid "Export engine state failed."
-msgstr "导出引擎状态失败。"
+msgstr "引擎状态导出失败。"
 
 #: rnote-ui/src/dialogs.rs:907
 msgid "Exported engine state successfully."
-msgstr "导出引擎状态成功。"
+msgstr "引擎状态导出成功。"
 
 #: rnote-ui/src/dialogs.rs:959
 msgid "Export engine config failed."
-msgstr "导出引擎设置失败。"
+msgstr "引擎设置导出失败。"
 
 #: rnote-ui/src/dialogs.rs:961
 msgid "Exported engine config successfully."
-msgstr "导出引擎设置成功。"
+msgstr "引擎设置导出成功。"
 
 #: rnote-ui/src/appwindow/mod.rs:1414
 msgid "Opening .rnote file failed."
-msgstr "打开.rnote文件失败。"
+msgstr ".rnote 文件打开失败。"
 
 #: rnote-ui/src/appwindow/mod.rs:1433
 msgid "Opening .xopp file failed."
-msgstr "打开.xopp文件失败。"
+msgstr ".xopp 文件打开失败。"
 
 #: rnote-ui/src/appwindow/mod.rs:1452
 msgid "Opening vector image file failed."
-msgstr "打开矢量图文件失败。"
+msgstr "矢量图文件打开失败。"
 
 #: rnote-ui/src/appwindow/mod.rs:1471
 msgid "Opening bitmap image file failed."
-msgstr "打开位图文件失败。"
+msgstr "位图文件打开失败。"
 
 #: rnote-ui/src/appwindow/mod.rs:1507
 msgid "Error: Tried opening folder as file"
@@ -1306,12 +1306,12 @@ msgstr "错误：将文件夹作为文件打开"
 
 #: rnote-ui/src/appwindow/mod.rs:1516
 msgid "Failed to open file, is a unsupported file type."
-msgstr "打开文件失败，不支持的文件类型。"
+msgstr "打开文件失败：不支持的文件类型。"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:784
 msgid "Printed document successfully"
-msgstr "打印文档成功"
+msgstr "打印成功"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:793
 msgid "Printing document failed"
-msgstr "打印文档失败"
+msgstr "打印失败"

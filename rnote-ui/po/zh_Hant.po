@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-07 16:19+0200\n"
-"PO-Revision-Date: 2022-06-28 07:19+0000\n"
-"Last-Translator: matriz <wboy111@outlook.com>\n"
+"PO-Revision-Date: 2022-07-15 17:10+0000\n"
+"Last-Translator: BobH <dev@mail.bobh.cool>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:23
@@ -381,10 +381,8 @@ msgid "One per document page"
 msgstr "分頁"
 
 #: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:142
-#, fuzzy
-#| msgid "Workspace"
 msgid "Edit workspace"
-msgstr "工作區"
+msgstr "編輯工作區"
 
 #: rnote-ui/data/ui/dialogs.ui:291 rnote-ui/data/ui/settingspanel.ui:210
 #: rnote-ui/src/workspacebrowser/filerow.rs:235
@@ -393,49 +391,39 @@ msgstr "應用"
 
 #: rnote-ui/data/ui/dialogs.ui:333
 msgid "Name"
-msgstr ""
+msgstr "名稱"
 
 #: rnote-ui/data/ui/dialogs.ui:334
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace name"
-msgstr "更改工作區目錄"
+msgstr "更改工作區名稱"
 
 #: rnote-ui/data/ui/dialogs.ui:347
 msgid "Icon"
-msgstr ""
+msgstr "圖標"
 
 #: rnote-ui/data/ui/dialogs.ui:348
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace icon"
-msgstr "更改工作區目錄"
+msgstr "更改工作區圖標"
 
 #: rnote-ui/data/ui/dialogs.ui:367 rnote-ui/data/ui/settingspanel.ui:226
 msgid "Color"
 msgstr "顏色"
 
 #: rnote-ui/data/ui/dialogs.ui:368
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace color"
-msgstr "更改工作區目錄"
+msgstr "更改工作區顏色"
 
 #: rnote-ui/data/ui/dialogs.ui:381
-#, fuzzy
-#| msgid "Vector"
 msgid "Directory"
-msgstr "向量圖"
+msgstr "目錄"
 
 #: rnote-ui/data/ui/dialogs.ui:382
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace directory"
 msgstr "更改工作區目錄"
 
 #: rnote-ui/data/ui/dialogs.ui:391 rnote-ui/src/dialogs.rs:437
 msgid "- no directory selected -"
-msgstr ""
+msgstr "—— 沒有選擇目錄 ——"
 
 #: rnote-ui/data/ui/dialogs.ui:405 rnote-ui/src/dialogs.rs:373
 msgid "Change workspace directory"
@@ -466,8 +454,9 @@ msgid "Save document"
 msgstr "儲存文檔"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
+#, fuzzy
 msgid "perm."
-msgstr ""
+msgstr "perm."
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
@@ -786,19 +775,15 @@ msgstr "重做"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:38
 msgid "Move directory up"
-msgstr ""
+msgstr "向上移動目錄"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:127
-#, fuzzy
-#| msgid "Workspace"
 msgid "Add workspace"
-msgstr "工作區"
+msgstr "添加工作區"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:133
-#, fuzzy
-#| msgid "Workspace"
 msgid "Remove workspace"
-msgstr "工作區"
+msgstr "移除工作區"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1083,6 +1068,9 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
+"字體選擇器\n"
+"（雙擊，單擊以選擇\n"
+"或按回車以選擇新字體）"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
 msgid "Pick and insert an emoji"

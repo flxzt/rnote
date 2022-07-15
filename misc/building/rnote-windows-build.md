@@ -20,7 +20,7 @@ rustup toolchain install stable-gnu
 rustup default stable-gnu
 ```
 
-then clone the repo somwhere and also init the submodules
+then clone the repo somewhere and also init the submodules
 ```
 git clone https://github.com/flxzt/rnote
 git submodule update --init --recursive

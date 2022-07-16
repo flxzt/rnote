@@ -69,7 +69,7 @@ If a native build on the host is wanted, meson can be called directly.
 
 Install all needed dependencies and build tools, e.g. for fedora 36:
 ```bash
-sudo dnf install meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data
+sudo dnf install meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:

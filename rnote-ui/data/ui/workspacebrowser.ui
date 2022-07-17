@@ -26,12 +26,16 @@
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
+                <style>
+                  <class name="view"></class>
+                </style>
                 <child>
                   <object class="GtkListBox" id="files_prefix_listbox">
                     <property name="selection-mode">none</property>
                     <property name="activate-on-single-click">false</property>
+                    <property name="margin-top">6</property>
                     <style>
-                      <class name="separators"></class>
+                      <class name="files-prefix-listbox"></class>
                     </style>
                     <child>
                       <object class="GtkListBoxRow" id="dir_up_row">
@@ -52,13 +56,14 @@
                 </child>
                 <child>
                   <object class="GtkListView" id="files_listview">
-                    <style>
-                      <class name="separators"></class>
-                    </style>
                     <property name="hexpand">false</property>
                     <property name="vexpand">true</property>
                     <property name="valign">fill</property>
                     <property name="halign">fill</property>
+                    <property name="margin-bottom">6</property>
+                    <style>
+                      <class name="files-listview"></class>
+                    </style>
                   </object>
                 </child>
               </object>

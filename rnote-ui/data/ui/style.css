@@ -101,6 +101,14 @@
     transition: color 0.15s;
 }
 
+.files-listview row, .files-prefix-listbox row {
+    border-radius: 9px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    margin-left: 9px;
+    margin-right: 9px;
+}
+
 /*
 .workspace-listbox row:selected {
 }

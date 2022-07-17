@@ -9,6 +9,8 @@ git submodule update --init --recursive
 ## Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
 
+Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
+
 Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode) to build and run the application for you. **This is the easiest and recommended way.**
 
 ### Bugs and workarounds

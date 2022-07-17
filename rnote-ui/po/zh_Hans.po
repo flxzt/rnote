@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-07 16:19+0200\n"
-"PO-Revision-Date: 2022-07-15 14:09+0000\n"
+"PO-Revision-Date: 2022-07-18 13:39+0000\n"
 "Last-Translator: BobH <dev@mail.bobh.cool>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -456,7 +456,6 @@ msgid "Save document"
 msgstr "保存文档"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
-#, fuzzy
 msgid "perm."
 msgstr "perm."
 

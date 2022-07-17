@@ -3,6 +3,7 @@
 First clone the repository and init its submodules
 ```
 git clone https://github.com/flxzt/rnote
+cd rnote
 git submodule update --init --recursive
 ```
 

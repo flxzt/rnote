@@ -102,7 +102,7 @@
 }
 
 .files-listview row, .files-prefix-listbox row {
-    border-radius: 9px;
+    border-radius: 6px;
     margin-top: 3px;
     margin-bottom: 3px;
     margin-left: 6px;

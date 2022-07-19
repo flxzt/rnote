@@ -76,42 +76,38 @@ mod imp {
             _baseline: i32,
         ) {
             let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            let doc_layout = canvas.engine().borrow().doc_layout();
-
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
+
+            let engine = canvas.engine();
+            let mut engine = engine.borrow_mut();
+            let total_zoom = engine.camera.total_zoom();
+            let doc_layout = engine.doc_layout();
+
             let new_size = na::vector![f64::from(width), f64::from(height)];
 
             // Update the adjustments
             let (h_lower, h_upper) = match doc_layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    (canvas.engine().borrow().document.x - Document::SHADOW_WIDTH) * total_zoom,
-                    (canvas.engine().borrow().document.x
-                        + canvas.engine().borrow().document.width
-                        + Document::SHADOW_WIDTH)
+                    (engine.document.x - Document::SHADOW_WIDTH) * total_zoom,
+                    (engine.document.x + engine.document.width + Document::SHADOW_WIDTH)
                         * total_zoom,
                 ),
                 Layout::Infinite => (
-                    canvas.engine().borrow().document.x * total_zoom,
-                    (canvas.engine().borrow().document.x + canvas.engine().borrow().document.width)
-                        * total_zoom,
+                    engine.document.x * total_zoom,
+                    (engine.document.x + engine.document.width) * total_zoom,
                 ),
             };
 
-            let (v_lower, v_upper) = match canvas.engine().borrow().doc_layout() {
+            let (v_lower, v_upper) = match doc_layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    (canvas.engine().borrow().document.y - Document::SHADOW_WIDTH) * total_zoom,
-                    (canvas.engine().borrow().document.y
-                        + canvas.engine().borrow().document.height
-                        + Document::SHADOW_WIDTH)
+                    (engine.document.y - Document::SHADOW_WIDTH) * total_zoom,
+                    (engine.document.y + engine.document.height + Document::SHADOW_WIDTH)
                         * total_zoom,
                 ),
                 Layout::Infinite => (
-                    canvas.engine().borrow().document.y * total_zoom,
-                    (canvas.engine().borrow().document.y
-                        + canvas.engine().borrow().document.height)
-                        * total_zoom,
+                    engine.document.y * total_zoom,
+                    (engine.document.y + engine.document.height) * total_zoom,
                 ),
             };
 
@@ -134,16 +130,13 @@ mod imp {
             );
 
             // Update the camera
-            canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
-            canvas.engine().borrow_mut().camera.size = new_size;
+            engine.camera.offset = na::vector![hadj.value(), vadj.value()];
+            engine.camera.size = new_size;
 
             // always update the background rendering
-            canvas
-                .engine()
-                .borrow_mut()
-                .update_background_rendering_current_viewport();
+            engine.update_background_rendering_current_viewport();
 
-            let viewport = canvas.engine().borrow().camera.viewport();
+            let viewport = engine.camera.viewport();
             let old_viewport = self.old_viewport.get();
 
             // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering before we reach it.
@@ -165,10 +158,7 @@ mod imp {
             // But after zoom ins we need to update old_viewport with layout_manager.update_state()
             if !old_viewport_extended.contains(&viewport) {
                 // Because we don't set the rendering of strokes that are already in the view dirty, we only render those that may come into the view.
-                canvas
-                    .engine()
-                    .borrow_mut()
-                    .update_rendering_current_viewport();
+                engine.update_rendering_current_viewport();
 
                 self.old_viewport.set(viewport);
             }

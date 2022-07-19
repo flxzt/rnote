@@ -147,8 +147,8 @@ impl Document {
         let format_height = self.format.height;
 
         let new_width = self.format.width;
-        // +1.0 because then 'fraction'.ceil() is at least 1
-        let new_height = ((store.calc_height() + 1.0) / format_height).ceil() * format_height;
+        // max(1.0) because then 'fraction'.ceil() is at least 1
+        let new_height = ((store.calc_height().max(1.0)) / format_height).ceil() * format_height;
 
         self.x = 0.0;
         self.y = 0.0;

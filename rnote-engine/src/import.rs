@@ -340,9 +340,7 @@ impl RnoteEngine {
         // after inserting the strokes, but before set the inserted strokes selected
         self.resize_to_fit_strokes();
 
-        inserted.into_iter().for_each(|key| {
-            self.store.set_selected(key, true);
-        });
+        self.store.set_selected_keys(&inserted, true);
 
         self.update_pens_states();
         self.update_rendering_current_viewport();

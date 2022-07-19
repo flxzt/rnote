@@ -126,23 +126,15 @@ impl StrokeStore {
 
     /// Calculates the height needed to fit all strokes
     pub fn calc_height(&self) -> f64 {
-        let strokes_iter = self.stroke_keys_unordered().into_iter().filter_map(|key| {
-            let stroke = self.stroke_components.get(key)?;
-            let trash_comp = self.trash_components.get(key)?;
-
-            if !trash_comp.trashed {
-                Some(stroke)
-            } else {
-                None
-            }
-        });
+        let strokes_iter = self
+            .stroke_keys_unordered()
+            .into_iter()
+            .filter_map(|key| self.stroke_components.get(key));
 
         let strokes_min_y = strokes_iter
             .clone()
             .fold(0.0, |acc, stroke| stroke.bounds().mins[1].min(acc));
-        let strokes_max_y = strokes_iter
-            .clone()
-            .fold(0.0, |acc, stroke| stroke.bounds().maxs[1].max(acc));
+        let strokes_max_y = strokes_iter.fold(0.0, |acc, stroke| stroke.bounds().maxs[1].max(acc));
 
         strokes_max_y - strokes_min_y
     }
@@ -150,21 +142,17 @@ impl StrokeStore {
     /// Generates the enclosing bounds for the given stroke keys
     pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
         let mut keys_iter = keys.iter();
-        if let Some(&key) = keys_iter.next() {
-            if let Some(first) = self.stroke_components.get(key) {
-                let mut bounds = first.bounds();
+        let key = keys_iter.next()?;
+        let first = self.stroke_components.get(*key)?;
+        let mut bounds = first.bounds();
 
-                keys_iter
-                    .filter_map(|&key| self.stroke_components.get(key))
-                    .for_each(|stroke| {
-                        bounds.merge(&stroke.bounds());
-                    });
+        keys_iter
+            .filter_map(|&key| self.stroke_components.get(key))
+            .for_each(|stroke| {
+                bounds.merge(&stroke.bounds());
+            });
 
-                return Some(bounds);
-            }
-        }
-
-        None
+        Some(bounds)
     }
 
     /// Collects all bounds for the given strokes

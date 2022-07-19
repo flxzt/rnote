@@ -1264,9 +1264,6 @@ impl RnoteAppWindow {
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
-        if widget_flags.quit {
-            return true;
-        }
         if widget_flags.redraw {
             self.canvas().queue_draw();
         }
@@ -1301,7 +1298,7 @@ impl RnoteAppWindow {
             self.redo_button().set_sensitive(!hide_redo);
         }
 
-        false
+        widget_flags.quit
     }
 
     pub fn save_engine_config(&self) -> anyhow::Result<()> {

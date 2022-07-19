@@ -129,6 +129,7 @@ impl StrokeStore {
         let strokes_iter = self
             .stroke_keys_unordered()
             .into_iter()
+            .chain(self.selection_keys_unordered())
             .filter_map(|key| self.stroke_components.get(key));
 
         let strokes_min_y = strokes_iter

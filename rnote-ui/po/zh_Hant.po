@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-11 14:23+0200\n"
-"PO-Revision-Date: 2022-06-28 07:19+0000\n"
-"Last-Translator: matriz <wboy111@outlook.com>\n"
+"POT-Creation-Date: 2022-07-07 16:19+0200\n"
+"PO-Revision-Date: 2022-07-18 13:39+0000\n"
+"Last-Translator: BobH <dev@mail.bobh.cool>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -17,33 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs.rs:21
+#: rnote-ui/src/dialogs.rs:23
 msgid "Sketch and take handwritten notes"
-msgstr "描畫及手寫筆記"
+msgstr "素描與手寫筆記"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;圖形;筆記;"
+msgstr "Gnome；GTK；Office；圖形；筆記；"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr "新視窗"
+msgstr "新建視窗"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr ""
+msgstr "Rnote "
+"是一款基於向量繪圖的軟體，用於素描、手寫筆記、以及為檔案和圖片添加註釋。"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
-msgstr "免責聲明：此文件格式仍未完全支持，可能會於不同版本下改變甚至損壞。"
+msgstr "免責宣告：該檔案格式尚未完全支援，它可能改變並損壞不同版本之間的相容性。"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -55,7 +56,7 @@ msgstr "暗色主視窗"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A PDF annotation"
-msgstr "PDF註釋"
+msgstr "PDF 註釋"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:44
 msgid "A selection"
@@ -71,15 +72,15 @@ msgstr "開發者選單"
 
 #: rnote-ui/data/ui/appmenu.ui:34
 msgid "Visual debugging"
-msgstr "可視化調試"
+msgstr "視覺化除錯"
 
-#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:782
+#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:877
 msgid "Export engine state"
 msgstr "匯出引擎狀態"
 
-#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:836
+#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:931
 msgid "Export engine config"
-msgstr "匯出引擎設定"
+msgstr "匯出引擎配置"
 
 #: rnote-ui/data/ui/appmenu.ui:50
 msgid "Keyboard shortcuts"
@@ -87,27 +88,27 @@ msgstr "快捷鍵"
 
 #: rnote-ui/data/ui/appmenu.ui:54
 msgid "Donate 💝"
-msgstr "捐贈 💝"
+msgstr "捐贈💝"
 
 #: rnote-ui/data/ui/appmenu.ui:58
 msgid "About Rnote"
-msgstr "關於Rnote"
+msgstr "關於 Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:89
 msgid "Sidebar on the left side"
-msgstr "側邊欄靠左"
+msgstr "左側側邊欄"
 
 #: rnote-ui/data/ui/appmenu.ui:98
 msgid "Sidebar on the right side"
-msgstr "側邊欄靠右"
+msgstr "右側側邊欄"
 
 #: rnote-ui/data/ui/appmenu.ui:108
 msgid "Toggle fullscreen"
-msgstr "全螢幕"
+msgstr "切換全屏"
 
 #: rnote-ui/data/ui/appmenu.ui:121
 msgid "Use system colors preference"
-msgstr "使用系統主題"
+msgstr "跟隨系統"
 
 #: rnote-ui/data/ui/appmenu.ui:135
 msgid "Use light colors"
@@ -130,12 +131,12 @@ msgstr "形狀工具"
 #: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
 msgid "Typewriter"
-msgstr "文本"
+msgstr "文字"
 
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Eraser"
-msgstr "擦膠"
+msgstr "橡皮"
 
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
@@ -147,49 +148,49 @@ msgstr "選擇"
 msgid "Tools"
 msgstr "工具"
 
-#: rnote-ui/data/ui/appwindow.ui:162
+#: rnote-ui/data/ui/appwindow.ui:163
 msgid "Add page"
-msgstr "新頁"
+msgstr "新建頁面"
 
-#: rnote-ui/data/ui/appwindow.ui:173
+#: rnote-ui/data/ui/appwindow.ui:175
 msgid "Resize document to fit the strokes"
-msgstr "調整文檔以適應筆畫"
+msgstr "調整文件大小以適應畫筆"
 
-#: rnote-ui/data/ui/appwindow.ui:188
+#: rnote-ui/data/ui/appwindow.ui:191
 msgid "Return to the origin page"
 msgstr "返回初始頁面"
 
-#: rnote-ui/data/ui/appwindow.ui:200
+#: rnote-ui/data/ui/appwindow.ui:204
 msgid "Undo"
-msgstr "恢復"
+msgstr "撤銷"
 
-#: rnote-ui/data/ui/appwindow.ui:212
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Redo"
 msgstr "重做"
 
-#: rnote-ui/data/ui/appwindow.ui:390
+#: rnote-ui/data/ui/appwindow.ui:396
 msgid "Close the folded flap"
-msgstr "關閉折疊"
+msgstr "關閉摺疊"
 
-#: rnote-ui/data/ui/appwindow.ui:407
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Workspace"
 msgstr "工作區"
 
-#: rnote-ui/data/ui/appwindow.ui:418
+#: rnote-ui/data/ui/appwindow.ui:424
 msgid "Settings"
 msgstr "設定"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "Draw with touch input"
-msgstr "觸摸繪圖"
+msgstr "觸控繪圖"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
 msgid "Document layout"
-msgstr "文檔佈局"
+msgstr "文件佈局"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "Fixed size"
-msgstr "固定大小"
+msgstr "固定頁面"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 msgid "Continuous vertical"
@@ -201,23 +202,22 @@ msgstr "無限"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show format borders"
-msgstr "顯示邊框綫"
+msgstr "顯示邊框線"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Pen sounds"
 msgstr "書寫音效"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:282
+#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:427
 msgid "Clear document"
-msgstr "清空文檔"
+msgstr "清空文件"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65 rnote-ui/data/ui/dialogs.ui:24
 msgid "New"
 msgstr "新建"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/dialogs.ui:88
-#: rnote-ui/data/ui/filerow.ui:55 rnote-ui/src/dialogs.rs:360
-#: rnote-ui/src/dialogs.rs:395
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs.rs:487
 msgid "Open"
 msgstr "開啟"
 
@@ -225,17 +225,17 @@ msgstr "開啟"
 msgid "Save"
 msgstr "儲存"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:432
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:527
 msgid "Save as"
-msgstr "另存"
+msgstr "另存為"
 
 #: rnote-ui/data/ui/canvasmenu.ui:81
 msgid "Print"
 msgstr "列印"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:489
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:584
 msgid "Import file"
-msgstr "匯入文件"
+msgstr "匯入檔案"
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
 msgid "Export…"
@@ -243,23 +243,23 @@ msgstr "匯出…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91
 msgid "Export selection as SVG"
-msgstr "匯出所選為SVG"
+msgstr "匯出所選為 SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Export selection as PNG"
-msgstr "匯出所選為PNG"
+msgstr "匯出所選為 PNG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99
 msgid "Export document as SVG"
-msgstr "匯出文檔為SVG"
+msgstr "匯出文件為 SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:103
 msgid "Export document as PDF"
-msgstr "匯出文檔為PDF"
+msgstr "匯出文件為 PDF"
 
 #: rnote-ui/data/ui/canvasmenu.ui:107
 msgid "Export document as Xournal++ .xopp"
-msgstr "匯出文檔為Xournal++ .xopp"
+msgstr "匯出文件為 Xoutnal++ .xopp"
 
 #: rnote-ui/data/ui/canvasmenu.ui:134
 msgid "Zoom out"
@@ -275,36 +275,39 @@ msgstr "放大"
 
 #: rnote-ui/data/ui/canvasmenu.ui:162
 msgid "Zoom to fit page width"
-msgstr "縮放以適合頁寛"
+msgstr "縮放以適合頁寬"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
+#: rnote-ui/src/dialogs.rs:376
 msgid "Select"
 msgstr "選擇"
 
 #: rnote-ui/data/ui/dialogs.ui:7 rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
-msgstr "新檔"
+msgstr "新建文件"
 
 #: rnote-ui/data/ui/dialogs.ui:8
 msgid "Creating a new document erases any unsaved changes. Are you sure?"
-msgstr "建立新檔將刪引入不所有未存修改。確定？"
+msgstr "建立新文件將會刪除所有未儲存的修改。確定？"
 
 #: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:43
 #: rnote-ui/data/ui/dialogs.ui:75 rnote-ui/data/ui/dialogs.ui:107
-#: rnote-ui/data/ui/dialogs.ui:286 rnote-ui/src/dialogs.rs:361
-#: rnote-ui/src/dialogs.rs:396 rnote-ui/src/dialogs.rs:433
-#: rnote-ui/src/dialogs.rs:493 rnote-ui/src/dialogs.rs:530
-#: rnote-ui/src/dialogs.rs:582 rnote-ui/src/dialogs.rs:634
-#: rnote-ui/src/dialogs.rs:685 rnote-ui/src/dialogs.rs:736
-#: rnote-ui/src/dialogs.rs:786 rnote-ui/src/dialogs.rs:840
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/data/ui/dialogs.ui:286 rnote-ui/data/ui/dialogs.ui:431
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
+#: rnote-ui/src/dialogs.rs:377 rnote-ui/src/dialogs.rs:488
+#: rnote-ui/src/dialogs.rs:528 rnote-ui/src/dialogs.rs:588
+#: rnote-ui/src/dialogs.rs:625 rnote-ui/src/dialogs.rs:677
+#: rnote-ui/src/dialogs.rs:729 rnote-ui/src/dialogs.rs:780
+#: rnote-ui/src/dialogs.rs:831 rnote-ui/src/dialogs.rs:881
+#: rnote-ui/src/dialogs.rs:935 rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "取消"
 
 #: rnote-ui/data/ui/dialogs.ui:16 rnote-ui/data/ui/dialogs.ui:48
 #: rnote-ui/data/ui/dialogs.ui:80
 msgid "Save current document as"
-msgstr "另存當前文檔為"
+msgstr "將當前文件另存為"
 
 #: rnote-ui/data/ui/dialogs.ui:39
 msgid "Quit Application"
@@ -312,7 +315,7 @@ msgstr "退出應用"
 
 #: rnote-ui/data/ui/dialogs.ui:40
 msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
-msgstr "所有未存修改將被刪。確定退出？"
+msgstr "所有未儲存更改都將丟失。繼續退出？"
 
 #: rnote-ui/data/ui/dialogs.ui:56
 msgid "Quit"
@@ -320,31 +323,31 @@ msgstr "退出"
 
 #: rnote-ui/data/ui/dialogs.ui:71
 msgid "Open File"
-msgstr "開啟文件"
+msgstr "開啟檔案"
 
 #: rnote-ui/data/ui/dialogs.ui:72
 msgid "Opening this file overwrites any unsaved changes."
-msgstr "開啟該文件將覆蓋所有未存修改。"
+msgstr "開啟該檔案將覆蓋所有未儲存更改。"
 
 #: rnote-ui/data/ui/dialogs.ui:104
 msgid "Import PDF"
-msgstr "匯入PDF"
+msgstr "匯入 PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:112 rnote-ui/src/dialogs.rs:492
+#: rnote-ui/data/ui/dialogs.ui:112 rnote-ui/src/dialogs.rs:587
 msgid "Import"
 msgstr "匯入"
 
 #: rnote-ui/data/ui/dialogs.ui:176
 msgid "PDF import preferences"
-msgstr "PDF匯入設定"
+msgstr "PDF 匯入偏好"
 
 #: rnote-ui/data/ui/dialogs.ui:210
 msgid "Pages type"
-msgstr "頁面類型"
+msgstr "頁面型別"
 
 #: rnote-ui/data/ui/dialogs.ui:211
 msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgstr "設置PDF匯入為向量圖或點陣圖"
+msgstr "設定匯入 PDF 為向量圖或點陣圖"
 
 #: rnote-ui/data/ui/dialogs.ui:223
 msgid "Vector"
@@ -360,7 +363,7 @@ msgstr "頁面寬度(%)"
 
 #: rnote-ui/data/ui/dialogs.ui:240
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr "設置匯入PDF相對頁面寬度百分比"
+msgstr "設定匯入 PDF 相對頁面的寬度百分比"
 
 #: rnote-ui/data/ui/dialogs.ui:260
 msgid "Page spacing"
@@ -368,7 +371,7 @@ msgstr "頁間距"
 
 #: rnote-ui/data/ui/dialogs.ui:261
 msgid "How PDF pages are spaced"
-msgstr "PDF頁間距大小"
+msgstr "PDF 頁間距大小"
 
 #: rnote-ui/data/ui/dialogs.ui:265
 msgid "Continuous"
@@ -378,21 +381,70 @@ msgstr "連續"
 msgid "One per document page"
 msgstr "分頁"
 
-#: rnote-ui/data/ui/dialogs.ui:283
-msgid "This clears the entire document. Please confirm."
-msgstr "這會清空整個文檔。請確認。"
+#: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:142
+msgid "Edit workspace"
+msgstr "編輯工作區"
 
-#: rnote-ui/data/ui/dialogs.ui:291
+#: rnote-ui/data/ui/dialogs.ui:291 rnote-ui/data/ui/settingspanel.ui:210
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
+msgid "Apply"
+msgstr "應用"
+
+#: rnote-ui/data/ui/dialogs.ui:333
+msgid "Name"
+msgstr "名稱"
+
+#: rnote-ui/data/ui/dialogs.ui:334
+msgid "Change the workspace name"
+msgstr "更改工作區名稱"
+
+#: rnote-ui/data/ui/dialogs.ui:347
+msgid "Icon"
+msgstr "圖示"
+
+#: rnote-ui/data/ui/dialogs.ui:348
+msgid "Change the workspace icon"
+msgstr "更改工作區圖示"
+
+#: rnote-ui/data/ui/dialogs.ui:367 rnote-ui/data/ui/settingspanel.ui:226
+msgid "Color"
+msgstr "顏色"
+
+#: rnote-ui/data/ui/dialogs.ui:368
+msgid "Change the workspace color"
+msgstr "更改工作區顏色"
+
+#: rnote-ui/data/ui/dialogs.ui:381
+msgid "Directory"
+msgstr "目錄"
+
+#: rnote-ui/data/ui/dialogs.ui:382
+msgid "Change the workspace directory"
+msgstr "更改工作區目錄"
+
+#: rnote-ui/data/ui/dialogs.ui:391 rnote-ui/src/dialogs.rs:437
+msgid "- no directory selected -"
+msgstr "—— 沒有選擇目錄 ——"
+
+#: rnote-ui/data/ui/dialogs.ui:405 rnote-ui/src/dialogs.rs:373
+msgid "Change workspace directory"
+msgstr "更改工作區目錄"
+
+#: rnote-ui/data/ui/dialogs.ui:428
+msgid "This clears the entire document. Please confirm."
+msgstr "這將清空整個文件。請確認。"
+
+#: rnote-ui/data/ui/dialogs.ui:436
 msgid "Clear"
 msgstr "清空"
 
-#: rnote-ui/data/ui/filerow.ui:59 rnote-ui/src/workspacebrowser/filerow.rs:240
+#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
-msgstr "命名"
+msgstr "重新命名"
 
-#: rnote-ui/data/ui/filerow.ui:63
+#: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
-msgstr "移至垃圾桶"
+msgstr "移至回收站"
 
 #: rnote-ui/data/ui/mainheader.ui:19
 msgid "Draft"
@@ -400,35 +452,39 @@ msgstr "草稿"
 
 #: rnote-ui/data/ui/mainheader.ui:37
 msgid "Save document"
-msgstr "儲存文檔"
+msgstr "儲存文件"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:8
+msgid "perm."
+msgstr "perm."
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
-msgstr "一般"
+msgstr "通用"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr "自動保存"
+msgstr "自動儲存"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr "啟用／關閉自動保存"
+msgstr "啟用/關閉自動儲存"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave interval (secs)"
-msgstr "自動保存間隔（秒）"
+msgstr "自動儲存間隔(秒)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr "設置自動保存間隔秒數"
+msgstr "設定自動儲存間隔秒數"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Format border color"
-msgstr "格式界綫顏色"
+msgstr "格式界線顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 msgid "Set the format border color"
-msgstr "設置格式界綫顏色"
+msgstr "設定格式界線顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:97
 msgid "Page format"
@@ -464,7 +520,7 @@ msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:110
 msgid "US letter"
-msgstr "US信件"
+msgstr "US letter"
 
 #: rnote-ui/data/ui/settingspanel.ui:111
 msgid "US legal"
@@ -472,7 +528,7 @@ msgstr "US legal"
 
 #: rnote-ui/data/ui/settingspanel.ui:112
 msgid "Custom"
-msgstr "自定"
+msgstr "自定義"
 
 #: rnote-ui/data/ui/settingspanel.ui:120
 msgid "Orientation"
@@ -480,11 +536,11 @@ msgstr "方向"
 
 #: rnote-ui/data/ui/settingspanel.ui:121
 msgid "Set the format orientation"
-msgstr "設置格式方向"
+msgstr "設定格式方向"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 msgid "Portrait"
-msgstr "豎立"
+msgstr "豎向"
 
 #: rnote-ui/data/ui/settingspanel.ui:139
 msgid "Landscape"
@@ -496,7 +552,7 @@ msgstr "寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:150
 msgid "Set the format width"
-msgstr "設置格式寬度"
+msgstr "設定格式寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:163
 msgid "Height"
@@ -504,36 +560,27 @@ msgstr "高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Set the format height"
-msgstr "設置紙張高度"
+msgstr "設定紙張高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "DPI"
-msgstr "DPI"
+msgstr "畫素密度(DPI)"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr "設置DPI，預設96"
+msgstr "設定畫素密度(DPI)，預設值96"
 
 #: rnote-ui/data/ui/settingspanel.ui:201
 msgid "Revert"
 msgstr "撤銷"
 
-#: rnote-ui/data/ui/settingspanel.ui:210
-#: rnote-ui/src/workspacebrowser/filerow.rs:237
-msgid "Apply"
-msgstr "應用"
-
 #: rnote-ui/data/ui/settingspanel.ui:223
 msgid "Document background"
-msgstr "文檔背景"
-
-#: rnote-ui/data/ui/settingspanel.ui:226
-msgid "Color"
-msgstr "顏色"
+msgstr "文件背景"
 
 #: rnote-ui/data/ui/settingspanel.ui:227
 msgid "Set the background color"
-msgstr "設置背景顏色"
+msgstr "設定背景顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:244
 msgid "Pattern"
@@ -541,7 +588,7 @@ msgstr "紋理"
 
 #: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Choose a background pattern"
-msgstr "設置背景紋理"
+msgstr "設定背景紋理"
 
 #: rnote-ui/data/ui/settingspanel.ui:249
 msgid "None"
@@ -549,7 +596,7 @@ msgstr "無"
 
 #: rnote-ui/data/ui/settingspanel.ui:250
 msgid "Lines"
-msgstr "綫"
+msgstr "線"
 
 #: rnote-ui/data/ui/settingspanel.ui:251
 msgid "Grid"
@@ -565,7 +612,7 @@ msgstr "紋理顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:261
 msgid "Set the background pattern color"
-msgstr "設置背景紋理顏色"
+msgstr "設定背景紋理顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:278
 msgid "Pattern Width"
@@ -573,7 +620,7 @@ msgstr "紋理寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:279
 msgid "Set the background pattern width"
-msgstr "設置背景紋理寬度"
+msgstr "設定背景紋理寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:292
 msgid "Pattern Height"
@@ -581,7 +628,7 @@ msgstr "紋理高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Set the background pattern height"
-msgstr "設置背景紋理高度"
+msgstr "設定背景紋理高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Button Shortcuts"
@@ -593,7 +640,7 @@ msgstr "手寫筆主按鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:313
 msgid "Set the action for the primary stylus button"
-msgstr "設置手寫筆主按鍵動作"
+msgstr "設定手寫筆主按鍵執行的動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:324
 msgid "Stylus secondary button action"
@@ -601,7 +648,7 @@ msgstr "手寫筆副按鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:325
 msgid "Set the action for the secondary stylus button"
-msgstr "設置手寫筆副按鍵動作"
+msgstr "設定手寫筆副按鍵執行的動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Mouse secondary button action"
@@ -609,12 +656,12 @@ msgstr "滑鼠次鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:337
 msgid "Set the action for the secondary mouse button"
-msgstr "設置滑鼠次鍵動作"
+msgstr "設定滑鼠次鍵執行的動作"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"
 msgid "General"
-msgstr "一般"
+msgstr "通用"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgctxt "shortcut window"
@@ -624,7 +671,7 @@ msgstr "顯示快捷鍵"
 #: rnote-ui/data/ui/shortcuts.ui:20
 msgctxt "shortcut window"
 msgid "Close the active window"
-msgstr "關閉現行視窗"
+msgstr "關閉活動視窗"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
@@ -644,7 +691,7 @@ msgstr "開啟應用選單"
 #: rnote-ui/data/ui/shortcuts.ui:44
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr "全螢幕"
+msgstr "切換全屏"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
 msgctxt "shortcut window"
@@ -664,17 +711,17 @@ msgstr "縮小"
 #: rnote-ui/data/ui/shortcuts.ui:81
 msgctxt "shortcut window"
 msgid "Document"
-msgstr "文檔"
+msgstr "文件"
 
 #: rnote-ui/data/ui/shortcuts.ui:84
 msgctxt "shortcut window"
 msgid "New document"
-msgstr "新檔"
+msgstr "新建文件"
 
 #: rnote-ui/data/ui/shortcuts.ui:90
 msgctxt "shortcut window"
 msgid "Open document"
-msgstr "開啟文檔"
+msgstr "開啟文件"
 
 #: rnote-ui/data/ui/shortcuts.ui:96
 msgctxt "shortcut window"
@@ -684,7 +731,7 @@ msgstr "儲存"
 #: rnote-ui/data/ui/shortcuts.ui:102
 msgctxt "shortcut window"
 msgid "Save document as"
-msgstr "另存"
+msgstr "另存為"
 
 #: rnote-ui/data/ui/shortcuts.ui:108
 msgctxt "shortcut window"
@@ -699,7 +746,7 @@ msgstr "列印"
 #: rnote-ui/data/ui/shortcuts.ui:120
 msgctxt "shortcut window"
 msgid "Import file"
-msgstr "匯入文件"
+msgstr "匯入檔案"
 
 #: rnote-ui/data/ui/shortcuts.ui:126
 msgctxt "shortcut window"
@@ -709,34 +756,42 @@ msgstr "繪畫"
 #: rnote-ui/data/ui/shortcuts.ui:129
 msgctxt "shortcut window"
 msgid "Copy into clipboard"
-msgstr "複製到剪貼簿"
+msgstr "複製到剪下板"
 
 #: rnote-ui/data/ui/shortcuts.ui:135
 msgctxt "shortcut window"
 msgid "Paste clipboard"
-msgstr "貼上剪貼簿"
+msgstr "貼上剪下板"
 
 #: rnote-ui/data/ui/shortcuts.ui:141
 msgctxt "shortcut window"
 msgid "Undo"
-msgstr "復原"
+msgstr "撤銷"
 
 #: rnote-ui/data/ui/shortcuts.ui:147
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "重做"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:104
-msgid "Change workspace directory"
-msgstr "更改工作區目錄"
+#: rnote-ui/data/ui/workspacebrowser.ui:38
+msgid "Move directory up"
+msgstr "向上移動目錄"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:127
+msgid "Add workspace"
+msgstr "新增工作區"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:133
+msgid "Remove workspace"
+msgstr "移除工作區"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
-msgstr "畫筆樣式"
+msgstr "刷子樣式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:57
 msgid "Brush styles"
-msgstr "畫筆樣式"
+msgstr "刷子樣式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:75
 msgid "Marker"
@@ -753,7 +808,7 @@ msgstr "紋理"
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:120
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:137
 msgid "Brush configuration"
-msgstr "畫筆設定"
+msgstr "刷子設定"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:147
 msgid "Solid style"
@@ -777,7 +832,7 @@ msgstr "線性"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:157
 msgid "Square root"
-msgstr "開方根"
+msgstr "平方根"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Cubic root"
@@ -801,7 +856,7 @@ msgstr "密度"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "The density is the amount of dots per 10x10 area"
-msgstr "密度指的是10x10區域內點的数量"
+msgstr "密度指的是10x10區域內點的數量"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:190
 msgid "Stroke dots radii"
@@ -817,7 +872,7 @@ msgstr "筆畫點位分佈"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:250
 msgid "Choose a dots position probability distribution"
-msgstr "選擇點的分佈概率"
+msgstr "選擇點的分佈機率"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Uniform"
@@ -825,7 +880,7 @@ msgstr "集中"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgid "Normal"
-msgstr "正常"
+msgstr "一般"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:256
 msgid "Exponential"
@@ -837,11 +892,11 @@ msgstr "對數"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
 msgid "Trash strokes"
-msgstr "消除筆畫"
+msgstr "垃圾筆畫"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 msgid "Split strokes"
-msgstr "分割筆畫"
+msgstr "分割畫筆"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
 msgid "Selecting with a polygon"
@@ -873,11 +928,11 @@ msgstr "取消選中所有筆畫"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:154
 msgid "Duplicate selection"
-msgstr "複製選項"
+msgstr "複製所選內容"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
-msgstr "消除選項"
+msgstr "刪除所選內容"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"
@@ -911,7 +966,7 @@ msgstr "粗糙度"
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:140
 msgid ""
 "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr "表明繪圖的粗糙程度。0.0為平滑，預設1.0"
+msgstr "表明繪圖的粗糙程度。0.0為平滑，預設值1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:155
 msgid "Bowing"
@@ -921,7 +976,7 @@ msgstr "彎曲"
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
-msgstr "表明粗糙形狀的線條彎曲程度。0.0為平滑，預設1.0"
+msgstr "表明粗糙形狀的線條彎曲程度。0.0為平滑，預設值1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
 msgid "Curve step count"
@@ -929,7 +984,7 @@ msgstr "曲線步數"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
 msgid "How many steps make up a curve. Defaults to 12"
-msgstr "𤖔一條曲線的步數，預設12"
+msgstr "多少步組成一條曲線，預設為12"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Multistroke"
@@ -942,273 +997,319 @@ msgstr "生成多條筆跡以獲得擬真的素描效果。預設啟用"
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
 msgid "Shape builders"
-msgstr ""
+msgstr "形狀構建工具"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:272
 msgid "Line"
-msgstr ""
+msgstr "直線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "Rectangle"
-msgstr ""
+msgstr "矩形"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "Ellipse"
-msgstr ""
+msgstr "橢圓"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
 msgid "Ellipse with foci"
-msgstr ""
+msgstr "焦點橢圓"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
 msgid "Quadratic bezier curve"
-msgstr ""
+msgstr "二次貝塞爾曲線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "Cubic bezier curve"
-msgstr ""
+msgstr "三次貝塞爾曲線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:350
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:367
 msgid "Constraints"
-msgstr ""
+msgstr "約束條件"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
 msgid "Enabled"
-msgstr ""
+msgstr "啟用"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints when this switch is off/"
 "on"
-msgstr ""
+msgstr "按住Ctrl以暫時切換約束條件開關狀態"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
 msgid "1:1"
-msgstr ""
+msgstr "1:1"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:405
 msgid "3:2"
-msgstr ""
+msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:415
 msgid "Golden ratio (1:1.618)"
-msgstr ""
+msgstr "黃金比例(1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:32
 msgid "Insert vertical space"
-msgstr ""
+msgstr "插入豎直空白"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:48
 msgid "Drag stroke elements based on proximity"
-msgstr ""
+msgstr "根據接近程度拖動筆畫元素"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:65
 msgid "Offset the camera by dragging"
+msgstr "拖動來偏移視角"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
+msgid ""
+"Font chooser\n"
+"(double-click, click on select\n"
+"or press Enter to select a new font)"
 msgstr ""
+"字型選擇器\n"
+"（雙擊，單擊以選擇\n"
+"或按回車以選擇新字型）"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
+msgid "Pick and insert an emoji"
+msgstr "選擇並插入表情符號"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+msgid "Reset text attributes"
+msgstr "重置文字屬性"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:148
+msgid "Bold"
+msgstr "粗體"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:154
+msgid "Italic"
+msgstr "斜體"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:160
+msgid "Underline"
+msgstr "下劃線"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:166
+msgid "Strikethrough"
+msgstr "刪除線"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:195
+msgid "Align left"
+msgstr "靠左對齊"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:202
+msgid "Align center"
+msgstr "居中對齊"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:209
+msgid "Align right"
+msgstr "靠右對齊"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:216
+msgid "Fill"
+msgstr "填充"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs.rs:31
+#: rnote-ui/src/dialogs.rs:33
 msgid "translator-credits"
-msgstr ""
+msgstr "譯者注"
 
-#: rnote-ui/src/dialogs.rs:169
+#: rnote-ui/src/dialogs.rs:171
 msgid "Opening file failed."
-msgstr ""
+msgstr "檔案開啟失敗。"
 
-#: rnote-ui/src/dialogs.rs:240
+#: rnote-ui/src/dialogs.rs:242
 msgid "- no file name -"
-msgstr ""
+msgstr "—— 沒有檔名 ——"
 
-#: rnote-ui/src/dialogs.rs:245
+#: rnote-ui/src/dialogs.rs:247
 msgid "- no title -"
-msgstr ""
+msgstr "—— 無標題 ——"
 
-#: rnote-ui/src/dialogs.rs:248
+#: rnote-ui/src/dialogs.rs:250
 msgid "- no author -"
-msgstr ""
+msgstr "—— 無作者 ——"
 
-#: rnote-ui/src/dialogs.rs:252
+#: rnote-ui/src/dialogs.rs:254
 msgid "- no date -"
-msgstr ""
+msgstr "—— 無日期 ——"
 
-#: rnote-ui/src/dialogs.rs:259
+#: rnote-ui/src/dialogs.rs:261
 msgid "File name:"
-msgstr ""
+msgstr "檔名："
 
-#: rnote-ui/src/dialogs.rs:263
+#: rnote-ui/src/dialogs.rs:265
 msgid "Title:"
-msgstr ""
+msgstr "標題："
 
-#: rnote-ui/src/dialogs.rs:267
+#: rnote-ui/src/dialogs.rs:269
 msgid "Author:"
-msgstr ""
+msgstr "作者："
 
-#: rnote-ui/src/dialogs.rs:271
+#: rnote-ui/src/dialogs.rs:273
 msgid "Modification date:"
-msgstr ""
+msgstr "修改日期："
 
-#: rnote-ui/src/dialogs.rs:275
+#: rnote-ui/src/dialogs.rs:277
 msgid "Pages:"
-msgstr ""
+msgstr "頁碼："
 
-#: rnote-ui/src/dialogs.rs:318 rnote-ui/src/appwindow/mod.rs:1418
+#: rnote-ui/src/dialogs.rs:320 rnote-ui/src/appwindow/mod.rs:1490
 msgid "Opening PDF file failed."
-msgstr ""
+msgstr "PDF開啟失敗。"
 
-#: rnote-ui/src/dialogs.rs:354
+#: rnote-ui/src/dialogs.rs:481
 msgid ".rnote / .xopp File"
-msgstr ""
+msgstr ".rnote/.xopp檔案"
 
-#: rnote-ui/src/dialogs.rs:357
+#: rnote-ui/src/dialogs.rs:484
 msgid "Open file"
-msgstr ""
+msgstr "開啟檔案"
 
-#: rnote-ui/src/dialogs.rs:392
-msgid "Open workspace"
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:426
+#: rnote-ui/src/dialogs.rs:521
 msgid ".rnote file"
-msgstr ""
+msgstr ".rnote檔案"
 
-#: rnote-ui/src/dialogs.rs:429
+#: rnote-ui/src/dialogs.rs:524
 msgid "Save document as"
-msgstr ""
+msgstr "另存文件為"
 
-#: rnote-ui/src/dialogs.rs:456 rnote-ui/src/appwindow/mod.rs:383
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/dialogs.rs:551 rnote-ui/src/appwindow/mod.rs:383
+#: rnote-ui/src/appwindow/appwindowactions.rs:666
 msgid "Saving document failed."
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:458
-msgid "Saved document successfully."
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:486
-msgid "PNG / SVG / JPG / PDF file"
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:523 rnote-ui/src/dialogs.rs:627
-msgid "SVG file"
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:526 rnote-ui/src/dialogs.rs:578
-msgid "Export Selection"
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:529 rnote-ui/src/dialogs.rs:581
-#: rnote-ui/src/dialogs.rs:633 rnote-ui/src/dialogs.rs:684
-#: rnote-ui/src/dialogs.rs:735 rnote-ui/src/dialogs.rs:785
-#: rnote-ui/src/dialogs.rs:839
-msgid "Export"
-msgstr ""
+msgstr "文件儲存失敗。"
 
 #: rnote-ui/src/dialogs.rs:553
+msgid "Saved document successfully."
+msgstr "文件儲存成功。"
+
+#: rnote-ui/src/dialogs.rs:581
+msgid "PNG / SVG / JPG / PDF file"
+msgstr "PNG/SVG/JPG/PDF檔案"
+
+#: rnote-ui/src/dialogs.rs:618 rnote-ui/src/dialogs.rs:722
+msgid "SVG file"
+msgstr "SVG檔案"
+
+#: rnote-ui/src/dialogs.rs:621 rnote-ui/src/dialogs.rs:673
+msgid "Export Selection"
+msgstr "匯出所選"
+
+#: rnote-ui/src/dialogs.rs:624 rnote-ui/src/dialogs.rs:676
+#: rnote-ui/src/dialogs.rs:728 rnote-ui/src/dialogs.rs:779
+#: rnote-ui/src/dialogs.rs:830 rnote-ui/src/dialogs.rs:880
+#: rnote-ui/src/dialogs.rs:934
+msgid "Export"
+msgstr "匯出"
+
+#: rnote-ui/src/dialogs.rs:648
 msgid "Export selection as SVG failed."
-msgstr ""
+msgstr "匯出所選為 SVG 失敗。"
 
-#: rnote-ui/src/dialogs.rs:555
+#: rnote-ui/src/dialogs.rs:650
 msgid "Exported selection as SVG successfully."
-msgstr ""
+msgstr "匯出所選為 SVG 成功。"
 
-#: rnote-ui/src/dialogs.rs:575
+#: rnote-ui/src/dialogs.rs:670
 msgid "PNG file"
-msgstr ""
+msgstr "PNG 檔案"
 
-#: rnote-ui/src/dialogs.rs:605
+#: rnote-ui/src/dialogs.rs:700
 msgid "Export selection as PNG failed."
-msgstr ""
+msgstr "匯出所選為 PNG 失敗。"
 
-#: rnote-ui/src/dialogs.rs:607
+#: rnote-ui/src/dialogs.rs:702
 msgid "Exported selection as PNG successfully."
-msgstr ""
+msgstr "匯出所選為 PNG 成功。"
 
-#: rnote-ui/src/dialogs.rs:630 rnote-ui/src/dialogs.rs:681
-#: rnote-ui/src/dialogs.rs:732
+#: rnote-ui/src/dialogs.rs:725 rnote-ui/src/dialogs.rs:776
+#: rnote-ui/src/dialogs.rs:827
 msgid "Export document"
-msgstr ""
+msgstr "匯出文件"
 
-#: rnote-ui/src/dialogs.rs:654
+#: rnote-ui/src/dialogs.rs:749
 msgid "Export document as SVG failed."
-msgstr ""
+msgstr "匯出文件為 SVG 失敗。"
 
-#: rnote-ui/src/dialogs.rs:656
+#: rnote-ui/src/dialogs.rs:751
 msgid "Exported document as SVG successfully."
-msgstr ""
+msgstr "匯出文件為 SVG 成功。"
 
-#: rnote-ui/src/dialogs.rs:678
+#: rnote-ui/src/dialogs.rs:773
 msgid "PDF file"
-msgstr ""
+msgstr "PDF 檔案"
 
-#: rnote-ui/src/dialogs.rs:705
+#: rnote-ui/src/dialogs.rs:800
 msgid "Export document as PDF failed."
-msgstr ""
+msgstr "匯出文件為 PDF 失敗。"
 
-#: rnote-ui/src/dialogs.rs:707
+#: rnote-ui/src/dialogs.rs:802
 msgid "Exported document as PDF successfully."
-msgstr ""
+msgstr "匯出文件為 PDF 成功。"
 
-#: rnote-ui/src/dialogs.rs:729
+#: rnote-ui/src/dialogs.rs:824
 msgid ".xopp file"
-msgstr ""
+msgstr ".xopp 檔案"
 
-#: rnote-ui/src/dialogs.rs:756
+#: rnote-ui/src/dialogs.rs:851
 msgid "Exporting document as .xopp failed."
-msgstr ""
+msgstr "匯出文件為 .xopp 失敗。"
 
-#: rnote-ui/src/dialogs.rs:758
+#: rnote-ui/src/dialogs.rs:853
 msgid "Exported document as .xopp successfully."
-msgstr ""
+msgstr "匯出文件為 .xopp 成功。"
 
-#: rnote-ui/src/dialogs.rs:779 rnote-ui/src/dialogs.rs:833
+#: rnote-ui/src/dialogs.rs:874 rnote-ui/src/dialogs.rs:928
 msgid "JSON file"
-msgstr ""
+msgstr "JSON 檔案"
 
-#: rnote-ui/src/dialogs.rs:810
+#: rnote-ui/src/dialogs.rs:905
 msgid "Export engine state failed."
-msgstr ""
+msgstr "引擎狀態匯出失敗。"
 
-#: rnote-ui/src/dialogs.rs:812
+#: rnote-ui/src/dialogs.rs:907
 msgid "Exported engine state successfully."
-msgstr ""
+msgstr "引擎狀態匯出成功。"
 
-#: rnote-ui/src/dialogs.rs:864
+#: rnote-ui/src/dialogs.rs:959
 msgid "Export engine config failed."
-msgstr ""
+msgstr "引擎設定匯出失敗。"
 
-#: rnote-ui/src/dialogs.rs:866
+#: rnote-ui/src/dialogs.rs:961
 msgid "Exported engine config successfully."
-msgstr ""
+msgstr "引擎設定匯出成功。"
 
-#: rnote-ui/src/appwindow/mod.rs:1342
+#: rnote-ui/src/appwindow/mod.rs:1414
 msgid "Opening .rnote file failed."
-msgstr ""
+msgstr ".rnote 檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1361
+#: rnote-ui/src/appwindow/mod.rs:1433
 msgid "Opening .xopp file failed."
-msgstr ""
+msgstr ".xopp 檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1380
+#: rnote-ui/src/appwindow/mod.rs:1452
 msgid "Opening vector image file failed."
-msgstr ""
+msgstr "向量圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1399
+#: rnote-ui/src/appwindow/mod.rs:1471
 msgid "Opening bitmap image file failed."
-msgstr ""
+msgstr "點陣圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1435
+#: rnote-ui/src/appwindow/mod.rs:1507
 msgid "Error: Tried opening folder as file"
-msgstr ""
+msgstr "錯誤：將資料夾作為檔案開啟"
 
-#: rnote-ui/src/appwindow/mod.rs:1444
+#: rnote-ui/src/appwindow/mod.rs:1516
 msgid "Failed to open file, is a unsupported file type."
-msgstr ""
+msgstr "開啟檔案失敗：不支援的檔案型別。"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:959
+#: rnote-ui/src/appwindow/appwindowactions.rs:784
 msgid "Printed document successfully"
-msgstr ""
+msgstr "列印成功"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:968
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 msgid "Printing document failed"
-msgstr ""
+msgstr "列印失敗"

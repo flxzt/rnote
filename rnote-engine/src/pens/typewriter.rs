@@ -430,7 +430,7 @@ impl PenBehaviour for Typewriter {
 
                         let stroke_key = engine_view
                             .store
-                            .insert_stroke(Stroke::TextStroke(textstroke));
+                            .insert_stroke(Stroke::TextStroke(textstroke), None);
 
                         if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
@@ -1357,7 +1357,7 @@ impl Typewriter {
 
                 let stroke_key = engine_view
                     .store
-                    .insert_stroke(Stroke::TextStroke(textstroke));
+                    .insert_stroke(Stroke::TextStroke(textstroke), None);
 
                 if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,

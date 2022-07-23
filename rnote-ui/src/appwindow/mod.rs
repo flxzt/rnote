@@ -1617,7 +1617,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow_mut()
-            .import_generated_strokes(vec![Stroke::VectorImage(vectorimage)]);
+            .import_generated_strokes(vec![(Stroke::VectorImage(vectorimage), None)]);
         self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
@@ -1651,7 +1651,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow_mut()
-            .import_generated_strokes(vec![Stroke::BitmapImage(bitmapimage)]);
+            .import_generated_strokes(vec![(Stroke::BitmapImage(bitmapimage), None)]);
         self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);

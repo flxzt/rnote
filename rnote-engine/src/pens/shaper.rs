@@ -180,9 +180,10 @@ impl PenBehaviour for Shaper {
                         }
 
                         for shape in shapes {
-                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(
-                                ShapeStroke::new(shape, drawstyle.clone()),
-                            ));
+                            let key = engine_view.store.insert_stroke(
+                                Stroke::ShapeStroke(ShapeStroke::new(shape, drawstyle.clone())),
+                                None,
+                            );
                             if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
@@ -215,9 +216,10 @@ impl PenBehaviour for Shaper {
                         }
 
                         for shape in shapes {
-                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(
-                                ShapeStroke::new(shape, drawstyle.clone()),
-                            ));
+                            let key = engine_view.store.insert_stroke(
+                                Stroke::ShapeStroke(ShapeStroke::new(shape, drawstyle.clone())),
+                                None,
+                            );
                             if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),

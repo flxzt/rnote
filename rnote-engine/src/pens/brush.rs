@@ -1,6 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
+use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::AudioPlayer;
@@ -126,9 +127,9 @@ impl PenBehaviour for Brush {
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
                         Segment::Dot { element },
-                        self.gen_style_for_current_options(),
+                        self.style_for_current_options(),
                     ));
-                    let current_stroke_key = engine_view.store.insert_stroke(brushstroke);
+                    let current_stroke_key = engine_view.store.insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
                     let path_builder = PenPathBuilder::start(element);
 
@@ -283,7 +284,7 @@ impl PenBehaviour for Brush {
 
 impl DrawOnDocBehaviour for Brush {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
-        let style = self.gen_style_for_current_options();
+        let style = self.style_for_current_options();
 
         match &self.state {
             BrushState::Idle => None,
@@ -303,7 +304,7 @@ impl DrawOnDocBehaviour for Brush {
         match &self.state {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
-                let style = self.gen_style_for_current_options();
+                let style = self.style_for_current_options();
                 path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
             }
         }
@@ -339,7 +340,15 @@ impl Brush {
         }
     }
 
-    pub fn gen_style_for_current_options(&self) -> Style {
+    pub fn layer_for_current_options(&self) -> StrokeLayer {
+        match &self.style {
+            BrushStyle::Marker => StrokeLayer::Highlighter,
+            BrushStyle::Solid |
+            BrushStyle::Textured => StrokeLayer::UserLayer(0),
+        }
+    }
+
+    pub fn style_for_current_options(&self) -> Style {
         match &self.style {
             BrushStyle::Marker => {
                 let mut options = self.smooth_options.clone();

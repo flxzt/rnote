@@ -4,6 +4,7 @@ use super::shapestroke::ShapeStroke;
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
 use super::{StrokeBehaviour, TextStroke};
+use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, RnoteEngine};
 use crate::{utils, DrawBehaviour};
 use rnote_compose::helpers::AABBHelpers;
@@ -162,10 +163,18 @@ impl TransformBehaviour for Stroke {
 }
 
 impl Stroke {
+    pub fn extract_default_layer(&self) -> StrokeLayer {
+        match self {
+            Stroke::BrushStroke(_) => StrokeLayer::UserLayer(0),
+            Stroke::ShapeStroke(_) => StrokeLayer::UserLayer(0),
+            Stroke::TextStroke(_) => StrokeLayer::UserLayer(0),
+            Stroke::VectorImage(_) | Stroke::BitmapImage(_) => StrokeLayer::Image,
+        }
+    }
     pub fn from_xoppstroke(
         stroke: xoppformat::XoppStroke,
         offset: na::Vector2<f64>,
-    ) -> Result<Self, anyhow::Error> {
+    ) -> Result<(Self, StrokeLayer), anyhow::Error> {
         let mut widths = stroke.width;
 
         if widths.is_empty() {
@@ -176,9 +185,10 @@ impl Stroke {
 
         let mut smooth_options = SmoothOptions::default();
 
-        match stroke.tool {
+        let layer = match stroke.tool {
             xoppformat::XoppTool::Pen => {
                 smooth_options.stroke_color = Some(Color::from(stroke.color));
+                StrokeLayer::UserLayer(0)
             }
             xoppformat::XoppTool::Highlighter => {
                 let mut color = Color::from(stroke.color);
@@ -186,9 +196,11 @@ impl Stroke {
                 color.a = 0.5;
 
                 smooth_options.stroke_color = Some(color);
+                StrokeLayer::Highlighter
             }
             xoppformat::XoppTool::Eraser => {
                 smooth_options.stroke_color = Some(Color::WHITE);
+                StrokeLayer::UserLayer(0)
             }
         };
 
@@ -231,7 +243,7 @@ impl Stroke {
                 anyhow::anyhow!("creating brushstroke from penpath in from_xoppstroke() failed.")
             })?;
 
-        Ok(Stroke::BrushStroke(brushstroke))
+        Ok((Stroke::BrushStroke(brushstroke), layer))
     }
 
     pub fn from_xoppimage(

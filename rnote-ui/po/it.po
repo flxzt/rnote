@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-07 16:19+0200\n"
-"PO-Revision-Date: 2022-07-19 23:30+0000\n"
+"PO-Revision-Date: 2022-07-27 06:01+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -372,13 +372,10 @@ msgid "Page width (%)"
 msgstr "Larghezza pagina (%)"
 
 #: rnote-ui/data/ui/dialogs.ui:240
-#, fuzzy
-#| msgid ""
-#| "Set the width of imported PDF's in percentage to the sheet format width"
 msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
 "Imposta la larghezza dei PDF importati in percentuale sulla larghezza del "
-"formato del foglio"
+"formato"
 
 #: rnote-ui/data/ui/dialogs.ui:260
 msgid "Page spacing"
@@ -393,16 +390,12 @@ msgid "Continuous"
 msgstr "Continuo"
 
 #: rnote-ui/data/ui/dialogs.ui:266
-#, fuzzy
-#| msgid "New document"
 msgid "One per document page"
-msgstr "Nuovo documento"
+msgstr "Uno per ogni pagina del documento"
 
 #: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:142
-#, fuzzy
-#| msgid "Open workspace"
 msgid "Edit workspace"
-msgstr "Apri spazio di lavoro"
+msgstr "Modifica area di lavoro"
 
 #: rnote-ui/data/ui/dialogs.ui:291 rnote-ui/data/ui/settingspanel.ui:210
 #: rnote-ui/src/workspacebrowser/filerow.rs:235
@@ -414,30 +407,24 @@ msgid "Name"
 msgstr "Nome"
 
 #: rnote-ui/data/ui/dialogs.ui:334
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace name"
-msgstr "Cambia directory dell'area di lavoro"
+msgstr "Cambia il nome dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs.ui:347
 msgid "Icon"
 msgstr "Icona"
 
 #: rnote-ui/data/ui/dialogs.ui:348
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace icon"
-msgstr "Cambia directory dell'area di lavoro"
+msgstr "Cambia l'icona dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs.ui:367 rnote-ui/data/ui/settingspanel.ui:226
 msgid "Color"
 msgstr "Colore"
 
 #: rnote-ui/data/ui/dialogs.ui:368
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace color"
-msgstr "Cambia directory dell'area di lavoro"
+msgstr "Cambia il colore dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs.ui:381
 msgid "Directory"
@@ -734,11 +721,9 @@ msgid "Zoom out"
 msgstr "Rimpicciolire"
 
 #: rnote-ui/data/ui/shortcuts.ui:81
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Document"
-msgstr "Nuovo documento"
+msgstr "Documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:84
 #, fuzzy
@@ -748,39 +733,29 @@ msgid "New document"
 msgstr "Nuovo documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:90
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Open document"
-msgstr "Nuovo documento"
+msgstr "Apri documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:96
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Save document"
-msgstr "Nuovo documento"
+msgstr "Salva documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:102
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Save document as"
-msgstr "Nuovo documento"
+msgstr "Salva documento come"
 
 #: rnote-ui/data/ui/shortcuts.ui:108
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Clear document"
-msgstr "Nuovo documento"
+msgstr "Pulisci documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:114
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Print document"
-msgstr "Nuovo documento"
+msgstr "Stampa documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:120
 msgctxt "shortcut window"
@@ -793,46 +768,36 @@ msgid "Drawing"
 msgstr "Disegno"
 
 #: rnote-ui/data/ui/shortcuts.ui:129
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy selection into clipboard"
 msgctxt "shortcut window"
 msgid "Copy into clipboard"
-msgstr "Copia la selezione negli appunti"
+msgstr "Copia negli appunti"
 
 #: rnote-ui/data/ui/shortcuts.ui:135
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard as selection"
 msgctxt "shortcut window"
 msgid "Paste clipboard"
-msgstr "Incolla gli appunti come selezione"
+msgstr "Incolla gli appunti"
 
 #: rnote-ui/data/ui/shortcuts.ui:141
 msgctxt "shortcut window"
 msgid "Undo"
-msgstr ""
+msgstr "Annulla"
 
 #: rnote-ui/data/ui/shortcuts.ui:147
 msgctxt "shortcut window"
 msgid "Redo"
-msgstr ""
+msgstr "Ripristina"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:38
 msgid "Move directory up"
-msgstr ""
+msgstr "Vai alla cartella superiore"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:127
-#, fuzzy
-#| msgid "Open workspace"
 msgid "Add workspace"
-msgstr "Apri spazio di lavoro"
+msgstr "Aggiungi area di lavoro"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:133
-#, fuzzy
-#| msgid "Open workspace"
 msgid "Remove workspace"
-msgstr "Apri spazio di lavoro"
+msgstr "Rimuovi area di lavoro"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -885,11 +850,11 @@ msgstr "Linea"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:157
 msgid "Square root"
-msgstr ""
+msgstr "Radice quadrata"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Cubic root"
-msgstr ""
+msgstr "Radice cubica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Quadratic Parabola"
@@ -933,21 +898,19 @@ msgstr "Scegli una distribuzione di probabilità della posizione dei punti"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Uniform"
-msgstr ""
+msgstr "Uniforme"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:255
-#, fuzzy
-#| msgid "Format"
 msgid "Normal"
-msgstr "Formato"
+msgstr "Normale"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:256
 msgid "Exponential"
-msgstr ""
+msgstr "Esponenziale"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "Logaritmica"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
 #, fuzzy

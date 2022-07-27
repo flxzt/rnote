@@ -58,6 +58,57 @@ impl TryFrom<u32> for BrushStyle {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "marker_options")]
+pub struct MarkerOptions(SmoothOptions);
+
+impl Default for MarkerOptions {
+    fn default() -> Self {
+        let mut options = SmoothOptions::default();
+        options.pressure_curve = PressureCurve::Const;
+
+        Self(options)
+    }
+}
+
+impl std::ops::Deref for MarkerOptions {
+    type Target = SmoothOptions;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for MarkerOptions {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "solid_options")]
+pub struct SolidOptions(SmoothOptions);
+
+impl Default for SolidOptions {
+    fn default() -> Self {
+        Self(SmoothOptions::default())
+    }
+}
+
+impl std::ops::Deref for SolidOptions {
+    type Target = SmoothOptions;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for SolidOptions {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 #[derive(Debug, Clone)]
 enum BrushState {
     Idle,
@@ -72,8 +123,10 @@ enum BrushState {
 pub struct Brush {
     #[serde(rename = "style")]
     pub style: BrushStyle,
-    #[serde(rename = "smooth_options")]
-    pub smooth_options: SmoothOptions,
+    #[serde(rename = "marker_options")]
+    pub marker_options: MarkerOptions,
+    #[serde(rename = "solid_options")]
+    pub solid_options: SolidOptions,
     #[serde(rename = "textured_options")]
     pub textured_options: TexturedOptions,
 
@@ -83,14 +136,17 @@ pub struct Brush {
 
 impl Default for Brush {
     fn default() -> Self {
-        let mut smooth_options = SmoothOptions::default();
+        let mut marker_options = MarkerOptions::default();
+        let mut solid_options = SolidOptions::default();
         let mut textured_options = TexturedOptions::default();
-        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        marker_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        solid_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
         textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
 
         Self {
             style: BrushStyle::default(),
-            smooth_options,
+            marker_options,
+            solid_options,
             textured_options,
             state: BrushState::Idle,
         }
@@ -351,15 +407,14 @@ impl Brush {
     pub fn style_for_current_options(&self) -> Style {
         match &self.style {
             BrushStyle::Marker => {
-                let mut options = self.smooth_options.clone();
-                options.pressure_curve = PressureCurve::Const;
+                let options = self.marker_options.clone();
 
-                Style::Smooth(options)
+                Style::Smooth(options.0)
             }
             BrushStyle::Solid => {
-                let options = self.smooth_options.clone();
+                let options = self.solid_options.clone();
 
-                Style::Smooth(options)
+                Style::Smooth(options.0)
             }
             BrushStyle::Textured => {
                 let options = self.textured_options.clone();

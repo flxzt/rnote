@@ -197,8 +197,8 @@ impl BrushPage {
                 let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
                 match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(color),
-                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(color),
+                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.marker_options.stroke_color = Some(color),
+                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.stroke_color = Some(color),
                     BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(color),
                 }
 
@@ -213,8 +213,8 @@ impl BrushPage {
                 let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
                 match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.marker_options.stroke_width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.stroke_width = brush_widthscale_spinbutton.value(),
                     BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_width = brush_widthscale_spinbutton.value(),
                 }
 
@@ -232,10 +232,19 @@ impl BrushPage {
                         let engine = &mut *engine.borrow_mut();
 
                         engine.penholder.brush.style = BrushStyle::try_from(selected_row.index() as u32).unwrap_or_default();
-                        engine.penholder.brush.smooth_options.stroke_width = brushpage.width_spinbutton().value();
-                        engine.penholder.brush.smooth_options.stroke_color = Some(brushpage.colorpicker().current_color());
-                        engine.penholder.brush.textured_options.stroke_width = brushpage.width_spinbutton().value();
-                        engine.penholder.brush.textured_options.stroke_color = Some(brushpage.colorpicker().current_color());
+
+                        // Overwrite the color, but not the width
+                        match engine.penholder.brush.style {
+                            BrushStyle::Marker => {
+                                engine.penholder.brush.marker_options.stroke_color = Some(brushpage.colorpicker().current_color());
+                            },
+                            BrushStyle::Solid => {
+                                engine.penholder.brush.solid_options.stroke_color = Some(brushpage.colorpicker().current_color());
+                            },
+                            BrushStyle::Textured => {
+                                engine.penholder.brush.textured_options.stroke_color = Some(brushpage.colorpicker().current_color());
+                            },
+                        }
                     }
 
                     if let Err(e) = appwindow.save_engine_config() {
@@ -250,7 +259,7 @@ impl BrushPage {
         // Solid style
         // Pressure curve
         self.imp().solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
-            appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.pressure_curve = brushpage.solidstyle_pressure_curve();
+            appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
 
             if let Err(e) = appwindow.save_engine_config() {
                 log::error!("saving engine config failed after changing brush pressure curve, Err `{}`", e);
@@ -353,7 +362,7 @@ impl BrushPage {
     pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
 
-        self.set_solidstyle_pressure_curve(brush.smooth_options.pressure_curve);
+        self.set_solidstyle_pressure_curve(brush.solid_options.pressure_curve);
         self.texturedstyle_density_spinbutton()
             .set_value(brush.textured_options.density);
         self.texturedstyle_radius_x_spinbutton()
@@ -361,14 +370,15 @@ impl BrushPage {
         self.texturedstyle_radius_y_spinbutton()
             .set_value(brush.textured_options.radii[1]);
         self.set_texturedstyle_distribution_variant(brush.textured_options.distribution);
+
         match brush.style {
             BrushStyle::Marker => {
                 self.brushstyle_listbox()
                     .select_row(Some(&self.brushstyle_marker_row()));
                 self.width_spinbutton()
-                    .set_value(brush.smooth_options.stroke_width);
+                    .set_value(brush.marker_options.stroke_width);
                 self.colorpicker()
-                    .set_current_color(brush.smooth_options.stroke_color);
+                    .set_current_color(brush.marker_options.stroke_color);
                 self.brushstyle_image()
                     .set_icon_name(Some("pen-brush-style-marker-symbolic"));
             }
@@ -376,9 +386,9 @@ impl BrushPage {
                 self.brushstyle_listbox()
                     .select_row(Some(&self.brushstyle_solid_row()));
                 self.width_spinbutton()
-                    .set_value(brush.smooth_options.stroke_width);
+                    .set_value(brush.solid_options.stroke_width);
                 self.colorpicker()
-                    .set_current_color(brush.smooth_options.stroke_color);
+                    .set_current_color(brush.solid_options.stroke_color);
                 self.brushstyle_image()
                     .set_icon_name(Some("pen-brush-style-solid-symbolic"));
             }

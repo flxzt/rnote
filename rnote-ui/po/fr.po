@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-07 16:19+0200\n"
+"POT-Creation-Date: 2022-07-27 09:21+0200\n"
 "PO-Revision-Date: 2022-06-20 16:17+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -412,7 +412,7 @@ msgstr "Vertical continue"
 msgid "One per document page"
 msgstr "Ouvrir un document"
 
-#: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:142
+#: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:147
 #, fuzzy
 #| msgid "Open workspace"
 msgid "Edit workspace"
@@ -828,17 +828,17 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Rétablir"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:38
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacebrowser.ui:127
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 #, fuzzy
 #| msgid "Open workspace"
 msgid "Add workspace"
 msgstr "Ouvrir un espace de travail"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:133
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 #, fuzzy
 #| msgid "Open workspace"
 msgid "Remove workspace"
@@ -856,102 +856,116 @@ msgstr "Styles du pinceau"
 msgid "Marker"
 msgstr "Marqueur"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:86
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:76
+msgid "Mark underneath other brush strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:87
 msgid "Solid"
 msgstr "Continue"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:97
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:88
+msgid "Draw solid color strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:99
 msgid "Textured"
 msgstr "Texturé"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:120
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:137
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:100
+#, fuzzy
+#| msgid "Textured style"
+msgid "Draw textured strokes"
+msgstr "Style de texture"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:123
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:140
 msgid "Brush configuration"
 msgstr "Configuration du pinceau"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:147
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
 #, fuzzy
 #| msgid "Rough style"
 msgid "Solid style"
 msgstr "Style de trait approximatif"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 msgid "Pressure curve"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:151
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 msgid "Choose a pressure curve"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:155
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Constant"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:156
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 #, fuzzy
 #| msgid "Line"
 msgid "Linear"
 msgstr "Ligne"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:157
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Square root"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:161
 msgid "Cubic root"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:162
 msgid "Quadratic Parabola"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Cubic Parabola"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:171
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Textured style"
 msgstr "Style de texture"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:177
 msgid "Density"
 msgstr "Densité"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:178
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "La densité est la quantité de points par zone 10x10"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:190
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Stroke dots radii"
 msgstr "Rayons des points du trait"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "Les rayons de chaque point dans le trait texturé"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:249
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:252
 #, fuzzy
 #| msgid "Choose a dots position probability distribution"
 msgid "Stroke dots position distribution"
 msgstr "Choisir une distribution de probabilité pour la position des points"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:250
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgid "Choose a dots position probability distribution"
 msgstr "Choisir une distribution de probabilité pour la position des points"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Uniform"
 msgstr "Uniforme"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:258
 msgid "Normal"
 msgstr "Normale"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:259
 msgid "Exponential"
 msgstr "Exponentielle"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:260
 msgid "Reverse Exponential"
 msgstr "Exponentielle inverse"
 
@@ -1232,7 +1246,7 @@ msgstr ""
 msgid "Pages:"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:320 rnote-ui/src/appwindow/mod.rs:1490
+#: rnote-ui/src/dialogs.rs:320 rnote-ui/src/appwindow/mod.rs:1487
 msgid "Opening PDF file failed."
 msgstr "L'ouverture du fichier PDF a échoué."
 
@@ -1253,7 +1267,7 @@ msgid "Save document as"
 msgstr "Enregistrer document sous"
 
 #: rnote-ui/src/dialogs.rs:551 rnote-ui/src/appwindow/mod.rs:383
-#: rnote-ui/src/appwindow/appwindowactions.rs:666
+#: rnote-ui/src/appwindow/appwindowactions.rs:662
 msgid "Saving document failed."
 msgstr "Échec de l'enregistrement du document."
 
@@ -1363,35 +1377,35 @@ msgstr "Échec de l'exportation de la configuration du moteur."
 msgid "Exported engine config successfully."
 msgstr "La configuration du moteur a été exportée avec succès."
 
-#: rnote-ui/src/appwindow/mod.rs:1414
+#: rnote-ui/src/appwindow/mod.rs:1411
 msgid "Opening .rnote file failed."
 msgstr "L'ouverture du fichier .rnote a échoué."
 
-#: rnote-ui/src/appwindow/mod.rs:1433
+#: rnote-ui/src/appwindow/mod.rs:1430
 msgid "Opening .xopp file failed."
 msgstr "L'ouverture du fichier .xopp a échoué."
 
-#: rnote-ui/src/appwindow/mod.rs:1452
+#: rnote-ui/src/appwindow/mod.rs:1449
 msgid "Opening vector image file failed."
 msgstr "L'ouverture du fichier image vectorielle a échoué."
 
-#: rnote-ui/src/appwindow/mod.rs:1471
+#: rnote-ui/src/appwindow/mod.rs:1468
 msgid "Opening bitmap image file failed."
 msgstr "L'ouverture du fichier image matricielle a échoué."
 
-#: rnote-ui/src/appwindow/mod.rs:1507
+#: rnote-ui/src/appwindow/mod.rs:1504
 msgid "Error: Tried opening folder as file"
 msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
 
-#: rnote-ui/src/appwindow/mod.rs:1516
+#: rnote-ui/src/appwindow/mod.rs:1513
 msgid "Failed to open file, is a unsupported file type."
 msgstr "Impossible d'ouvrir le fichier : type de fichier non pris en charge."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:784
+#: rnote-ui/src/appwindow/appwindowactions.rs:776
 msgid "Printed document successfully"
 msgstr "Document imprimé avec succès"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:793
+#: rnote-ui/src/appwindow/appwindowactions.rs:785
 msgid "Printing document failed"
 msgstr "Échec de l'impression du document"
 

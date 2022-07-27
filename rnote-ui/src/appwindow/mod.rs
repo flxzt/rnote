@@ -657,6 +657,11 @@ mod imp {
                 appwindow
                     .penssidebar()
                     .shaper_page()
+                    .shaperstyle_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
                     .shapeconfig_menubutton()
                     .set_direction(ArrowType::Right);
                 appwindow
@@ -769,6 +774,11 @@ mod imp {
                     .shaper_page()
                     .fill_colorpicker()
                     .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shaperstyle_menubutton()
+                    .set_direction(ArrowType::Left);
                 appwindow
                     .penssidebar()
                     .shaper_page()

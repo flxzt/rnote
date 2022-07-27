@@ -103,7 +103,8 @@ impl StrokeStore {
         let new_selected = old_selected
             .iter()
             .filter_map(|&key| {
-                let new_key = self.insert_stroke((**self.stroke_components.get(key)?).clone(), None);
+                let new_key =
+                    self.insert_stroke((**self.stroke_components.get(key)?).clone(), None);
                 self.set_selected(new_key, true);
                 Some(new_key)
             })

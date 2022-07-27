@@ -359,9 +359,10 @@ impl PenBehaviour for Typewriter {
                 let mut refresh_state = false;
                 let mut new_state = TypewriterState::Start(element.pos);
 
-                if let Some(stroke_key) = engine_view
+                if let Some(&stroke_key) = engine_view
                     .store
                     .stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
+                    .last()
                 {
                     // When clicked on a textstroke, we start modifying it
                     if let Some(Stroke::TextStroke(textstroke)) =

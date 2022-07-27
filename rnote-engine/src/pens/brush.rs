@@ -1,7 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
-use crate::store::StrokeKey;
 use crate::store::chrono_comp::StrokeLayer;
+use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::AudioPlayer;
@@ -185,7 +185,9 @@ impl PenBehaviour for Brush {
                         Segment::Dot { element },
                         self.style_for_current_options(),
                     ));
-                    let current_stroke_key = engine_view.store.insert_stroke(brushstroke, Some(self.layer_for_current_options()));
+                    let current_stroke_key = engine_view
+                        .store
+                        .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
                     let path_builder = PenPathBuilder::start(element);
 
@@ -399,8 +401,7 @@ impl Brush {
     pub fn layer_for_current_options(&self) -> StrokeLayer {
         match &self.style {
             BrushStyle::Marker => StrokeLayer::Highlighter,
-            BrushStyle::Solid |
-            BrushStyle::Textured => StrokeLayer::UserLayer(0),
+            BrushStyle::Solid | BrushStyle::Textured => StrokeLayer::UserLayer(0),
         }
     }
 

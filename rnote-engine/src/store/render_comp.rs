@@ -381,8 +381,8 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Draws the strokes without the selection
-    pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, doc_bounds: AABB, viewport: AABB) {
+    /// Draws all strokes on the snapshot
+    pub fn draw_strokes_to_snapshot(&self, snapshot: &Snapshot, doc_bounds: AABB, viewport: AABB) {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
@@ -405,27 +405,7 @@ impl StrokeStore {
         snapshot.pop();
     }
 
-    /// Draws the selection
-    pub fn draw_selection_snapshot(&self, snapshot: &Snapshot, _doc_bounds: AABB, viewport: AABB) {
-        self.selection_keys_as_rendered_intersecting_bounds(viewport)
-            .into_iter()
-            .for_each(|key| {
-                if let (Some(stroke), Some(render_comp)) = (
-                    self.stroke_components.get(key),
-                    self.render_components.get(key),
-                ) {
-                    if render_comp.rendernodes.is_empty() {
-                        Self::draw_stroke_placeholder(snapshot, stroke.bounds())
-                    }
-
-                    for rendernode in render_comp.rendernodes.iter() {
-                        snapshot.append_node(rendernode);
-                    }
-                }
-            });
-    }
-
-    // Draws the given strokes on a piet render context. Note that even trashed strokes get drawn
+    // Draws the given strokes on a piet render context. Note that every given stroke get drawn, even the trashed ones.
     pub fn draw_stroke_keys_to_piet(
         &self,
         keys: &[StrokeKey],
@@ -448,8 +428,7 @@ impl StrokeStore {
         );
     }
 
-    /// Draws the stroke on the piet context. In immediate mode, without the image cache.
-    /// Not drawing the selection
+    /// Draws all strokes on the piet context. In immediate mode, without the image cache.
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
@@ -457,7 +436,7 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        self.keys_sorted_chrono_intersecting_bounds(viewport)
+        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
                 if let Some(stroke) = self.stroke_components.get(key) {

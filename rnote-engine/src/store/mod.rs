@@ -440,8 +440,10 @@ impl StrokeStore {
         Arc::make_mut(&mut self.trash_components).insert(key, Arc::new(TrashComponent::default()));
         Arc::make_mut(&mut self.selection_components)
             .insert(key, Arc::new(SelectionComponent::default()));
-        Arc::make_mut(&mut self.chrono_components)
-            .insert(key, Arc::new(ChronoComponent::new(self.chrono_counter, layer)));
+        Arc::make_mut(&mut self.chrono_components).insert(
+            key,
+            Arc::new(ChronoComponent::new(self.chrono_counter, layer)),
+        );
         self.render_components
             .insert(key, RenderComponent::default());
 

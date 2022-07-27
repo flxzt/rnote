@@ -4,7 +4,7 @@ project(
     version: '0.5.4',
     meson_version: '>= 0.56',
 )
-# add a version suffix for alpha or beta version. the dash is automatically inserted.
+# add a patch suffix for alpha or beta version, starting with a dash.
 patch = ''
 
 i18n = import('i18n')
@@ -33,7 +33,7 @@ if get_option('profile') == 'devel'
 else
   profile = 'default'
   app_id = base_id
-  version_suffix = '-' + patch
+  version_suffix = patch
 endif
 
 app_idpath = '/com/github/flxzt/' + app_name + '/'

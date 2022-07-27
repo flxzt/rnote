@@ -8,7 +8,7 @@ use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, Document};
+use rnote_engine::{render, Camera, Document, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
@@ -714,13 +714,9 @@ impl RnoteAppWindow {
                 if let Err(e) = || -> anyhow::Result<()> {
                     let page_bounds = pages_bounds[page_no as usize];
 
-                    let mut page_strokes = appwindow.canvas().engine().borrow()
+                    let page_strokes = appwindow.canvas().engine().borrow()
                         .store
                         .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-                    page_strokes.extend(
-                        appwindow.canvas().engine().borrow().store
-                            .selection_keys_as_rendered_intersecting_bounds(page_bounds),
-                    );
 
                     let print_zoom = {
                         let width_scale = print_cx.width() / format_size[0];

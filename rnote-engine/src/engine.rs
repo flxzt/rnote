@@ -454,8 +454,7 @@ impl RnoteEngine {
     // Generates bounds for each page on the document which contains content
     pub fn pages_bounds_w_content(&self) -> Vec<AABB> {
         let doc_bounds = self.document.bounds();
-        let mut keys = self.store.stroke_keys_as_rendered();
-        keys.extend(self.store.selection_keys_as_rendered());
+        let keys = self.store.stroke_keys_as_rendered();
 
         let strokes_bounds = self.store.strokes_bounds(&keys);
 
@@ -664,8 +663,7 @@ impl RnoteEngine {
     pub fn gen_doc_svg(&self, with_background: bool) -> Result<render::Svg, anyhow::Error> {
         let doc_bounds = self.document.bounds();
 
-        let mut strokes = self.store.stroke_keys_as_rendered();
-        strokes.extend(self.store.selection_keys_as_rendered());
+        let strokes = self.store.stroke_keys_as_rendered();
 
         let mut doc_svg = if with_background {
             let mut background_svg = self.document.background.gen_svg(doc_bounds)?;
@@ -736,13 +734,9 @@ impl RnoteEngine {
             }
         };
 
-        let mut strokes_in_viewport = self
+        let strokes_in_viewport = self
             .store
             .stroke_keys_as_rendered_intersecting_bounds(viewport);
-        strokes_in_viewport.extend(
-            self.store
-                .selection_keys_as_rendered_intersecting_bounds(viewport),
-        );
 
         doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
             |piet_cx| {
@@ -915,13 +909,9 @@ impl RnoteEngine {
             .pages_bounds_w_content()
             .iter()
             .map(|&page_bounds| {
-                let mut page_keys = self
+                let page_keys = self
                     .store
                     .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-                page_keys.extend(
-                    self.store
-                        .selection_keys_as_rendered_intersecting_bounds(page_bounds),
-                );
 
                 let strokes = self.store.clone_strokes(&page_keys);
 
@@ -1038,13 +1028,9 @@ impl RnoteEngine {
             .pages_bounds_w_content()
             .into_iter()
             .map(|page_bounds| {
-                let mut strokes_in_viewport = self
+                let strokes_in_viewport = self
                     .store
                     .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-                strokes_in_viewport.extend(
-                    self.store
-                        .selection_keys_as_rendered_intersecting_bounds(page_bounds),
-                );
 
                 (page_bounds, strokes_in_viewport)
             })
@@ -1156,9 +1142,7 @@ impl RnoteEngine {
             .draw(snapshot, doc_bounds, &self.camera)?;
 
         self.store
-            .draw_strokes_snapshot(snapshot, doc_bounds, viewport);
-        self.store
-            .draw_selection_snapshot(snapshot, doc_bounds, viewport);
+            .draw_strokes_to_snapshot(snapshot, doc_bounds, viewport);
 
         snapshot.restore();
 

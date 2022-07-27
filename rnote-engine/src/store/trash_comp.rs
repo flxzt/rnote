@@ -234,7 +234,7 @@ impl StrokeStore {
         modified_keys.append(
             &mut new_strokes
                 .into_iter()
-                .map(|new_stroke| self.insert_stroke(new_stroke))
+                .map(|new_stroke| self.insert_stroke(new_stroke, None))
                 .collect(),
         );
 

@@ -56,34 +56,27 @@ impl StrokeStore {
         self.key_tree.keys_intersecting_bounds(bounds)
     }
 
-    /// All stroke keys unordered, excluding selected or trashed keys
+    /// All stroke keys, unordered.
     pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
-            .filter(|&key| {
-                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
-            })
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect()
     }
 
-    /// Returns the stroke keys in the order that they should be rendered. Exluding selected or trashed keys.
+    /// Returns the stroke keys in the order that they should be rendered.
     pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
-            .filter(|&key| {
-                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
-            })
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect::<Vec<StrokeKey>>()
     }
 
     /// Returns the stroke keys in the order that they should be rendered, intersecting the given bounds.
-    /// Exluding selected or trashed keys.
     pub fn stroke_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
-            .filter(|&key| {
-                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
-            })
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect::<Vec<StrokeKey>>()
     }
 
@@ -129,7 +122,6 @@ impl StrokeStore {
         let strokes_iter = self
             .stroke_keys_unordered()
             .into_iter()
-            .chain(self.selection_keys_unordered())
             .filter_map(|key| self.stroke_components.get(key));
 
         let strokes_min_y = strokes_iter
@@ -516,15 +508,15 @@ impl StrokeStore {
             .collect()
     }
 
-    /// returns the key if coord is inside at least one of the stroke hitboxes
+    /// returns the strokes for the given coord is inside at least one of the stroke hitboxes
     pub fn stroke_hitboxes_contain_coord(
         &self,
         viewport: AABB,
         coord: na::Vector2<f64>,
-    ) -> Option<StrokeKey> {
+    ) -> Vec<StrokeKey> {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
-            .find(|&key| {
+            .filter(|&key| {
                 if let Some(stroke) = self.stroke_components.get(key) {
                     stroke
                         .hitboxes()
@@ -534,6 +526,7 @@ impl StrokeStore {
                     false
                 }
             })
+            .collect()
     }
 
     /// Returns all keys below the y_pos

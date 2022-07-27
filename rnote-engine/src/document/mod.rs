@@ -185,8 +185,7 @@ impl Document {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
-        let mut keys = store.stroke_keys_as_rendered();
-        keys.append(&mut store.selection_keys_as_rendered());
+        let keys = store.stroke_keys_as_rendered();
 
         let new_bounds = if let Some(new_bounds) = store.bounds_for_strokes(&keys) {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])

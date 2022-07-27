@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::document::{background, Background, Format};
 use crate::pens::penholder::PenStyle;
+use crate::store::chrono_comp::StrokeLayer;
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
@@ -183,8 +184,8 @@ impl RnoteEngine {
                 // import strokes
                 for new_xoppstroke in layers.strokes.into_iter() {
                     match Stroke::from_xoppstroke(new_xoppstroke, offset) {
-                        Ok(new_stroke) => {
-                            store.insert_stroke(new_stroke);
+                        Ok((new_stroke, layer)) => {
+                            store.insert_stroke(new_stroke, Some(layer));
                         }
                         Err(e) => {
                             log::error!(
@@ -199,7 +200,7 @@ impl RnoteEngine {
                 for new_xoppimage in layers.images.into_iter() {
                     match Stroke::from_xoppimage(new_xoppimage, offset) {
                         Ok(new_image) => {
-                            store.insert_stroke(new_image);
+                            store.insert_stroke(new_image, None);
                         }
                         Err(e) => {
                             log::error!(
@@ -277,14 +278,15 @@ impl RnoteEngine {
         bytes: Vec<u8>,
         insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
-    ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
-        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
+    ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
         let pdf_import_prefs = self.pdf_import_prefs;
 
         let format = self.document.format.clone();
 
         rayon::spawn(move || {
-            let result = || -> anyhow::Result<Vec<Stroke>> {
+            let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {
                 match pdf_import_prefs.pages_type {
                     PdfImportPagesType::Bitmap => {
                         let bitmapimages = BitmapImage::import_from_pdf_bytes(
@@ -295,8 +297,8 @@ impl RnoteEngine {
                             &format,
                         )?
                         .into_iter()
-                        .map(Stroke::BitmapImage)
-                        .collect::<Vec<Stroke>>();
+                        .map(|s| (Stroke::BitmapImage(s), Some(StrokeLayer::Document)))
+                        .collect::<Vec<(Stroke, Option<StrokeLayer>)>>();
                         Ok(bitmapimages)
                     }
                     PdfImportPagesType::Vector => {
@@ -308,8 +310,8 @@ impl RnoteEngine {
                             &format,
                         )?
                         .into_iter()
-                        .map(Stroke::VectorImage)
-                        .collect::<Vec<Stroke>>();
+                        .map(|s| (Stroke::VectorImage(s), Some(StrokeLayer::Document)))
+                        .collect::<Vec<(Stroke, Option<StrokeLayer>)>>();
                         Ok(vectorimages)
                     }
                 }
@@ -324,7 +326,10 @@ impl RnoteEngine {
     }
 
     /// Imports the generated strokes into the store
-    pub fn import_generated_strokes(&mut self, strokes: Vec<Stroke>) -> WidgetFlags {
+    pub fn import_generated_strokes(
+        &mut self,
+        strokes: Vec<(Stroke, Option<StrokeLayer>)>,
+    ) -> WidgetFlags {
         let mut widget_flags = self.store.record();
 
         let all_strokes = self.store.keys_unordered();
@@ -334,7 +339,7 @@ impl RnoteEngine {
 
         let inserted = strokes
             .into_iter()
-            .map(|stroke| self.store.insert_stroke(stroke))
+            .map(|(stroke, layer)| self.store.insert_stroke(stroke, layer))
             .collect::<Vec<StrokeKey>>();
 
         // after inserting the strokes, but before set the inserted strokes selected

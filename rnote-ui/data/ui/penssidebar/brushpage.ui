@@ -73,6 +73,7 @@
               <child>
                 <object class="AdwActionRow" id="brushstyle_marker_row">
                   <property name="title" translatable="yes">Marker</property>
+                  <property name="tooltip-text">Mark underneath other brush strokes</property>
                   <child type="prefix">
                     <object class="GtkImage">
                       <property name="icon-name">pen-brush-style-marker-symbolic</property>
@@ -84,6 +85,7 @@
               <child>
                 <object class="AdwActionRow" id="brushstyle_solid_row">
                   <property name="title" translatable="yes">Solid</property>
+                  <property name="tooltip-text">Draw solid color strokes</property>
                   <child type="prefix">
                     <object class="GtkImage">
                       <property name="icon-name">pen-brush-style-solid-symbolic</property>
@@ -95,6 +97,7 @@
               <child>
                 <object class="AdwActionRow" id="brushstyle_textured_row">
                   <property name="title" translatable="yes">Textured</property>
+                  <property name="tooltip-text">Draw textured strokes</property>
                   <child type="prefix">
                     <object class="GtkImage">
                       <property name="icon-name">pen-brush-style-textured-symbolic</property>

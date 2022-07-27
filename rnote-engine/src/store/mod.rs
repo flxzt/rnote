@@ -21,6 +21,8 @@ use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
+use self::chrono_comp::StrokeLayer;
+
 slotmap::new_key_type! {
     pub struct StrokeKey;
 }
@@ -425,10 +427,11 @@ impl StrokeStore {
         self.history_pos = None;
     }
 
-    /// inserts a new stroke into the store
+    /// inserts a new stroke into the store. Optionally a desired layer can be specified, or the default stroke layer is used.
     /// stroke then needs to update its rendering
-    pub fn insert_stroke(&mut self, stroke: Stroke) -> StrokeKey {
+    pub fn insert_stroke(&mut self, stroke: Stroke, layer: Option<StrokeLayer>) -> StrokeKey {
         let bounds = stroke.bounds();
+        let layer = layer.unwrap_or(stroke.extract_default_layer());
 
         let key = Arc::make_mut(&mut self.stroke_components).insert(Arc::new(stroke));
         self.key_tree.insert_with_key(key, bounds);
@@ -437,8 +440,10 @@ impl StrokeStore {
         Arc::make_mut(&mut self.trash_components).insert(key, Arc::new(TrashComponent::default()));
         Arc::make_mut(&mut self.selection_components)
             .insert(key, Arc::new(SelectionComponent::default()));
-        Arc::make_mut(&mut self.chrono_components)
-            .insert(key, Arc::new(ChronoComponent::new(self.chrono_counter)));
+        Arc::make_mut(&mut self.chrono_components).insert(
+            key,
+            Arc::new(ChronoComponent::new(self.chrono_counter, layer)),
+        );
         self.render_components
             .insert(key, RenderComponent::default());
 

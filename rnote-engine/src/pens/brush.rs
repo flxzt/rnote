@@ -1,5 +1,6 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
+use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
@@ -57,6 +58,57 @@ impl TryFrom<u32> for BrushStyle {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "marker_options")]
+pub struct MarkerOptions(SmoothOptions);
+
+impl Default for MarkerOptions {
+    fn default() -> Self {
+        let mut options = SmoothOptions::default();
+        options.pressure_curve = PressureCurve::Const;
+
+        Self(options)
+    }
+}
+
+impl std::ops::Deref for MarkerOptions {
+    type Target = SmoothOptions;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for MarkerOptions {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "solid_options")]
+pub struct SolidOptions(SmoothOptions);
+
+impl Default for SolidOptions {
+    fn default() -> Self {
+        Self(SmoothOptions::default())
+    }
+}
+
+impl std::ops::Deref for SolidOptions {
+    type Target = SmoothOptions;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for SolidOptions {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 #[derive(Debug, Clone)]
 enum BrushState {
     Idle,
@@ -71,8 +123,10 @@ enum BrushState {
 pub struct Brush {
     #[serde(rename = "style")]
     pub style: BrushStyle,
-    #[serde(rename = "smooth_options")]
-    pub smooth_options: SmoothOptions,
+    #[serde(rename = "marker_options")]
+    pub marker_options: MarkerOptions,
+    #[serde(rename = "solid_options")]
+    pub solid_options: SolidOptions,
     #[serde(rename = "textured_options")]
     pub textured_options: TexturedOptions,
 
@@ -82,14 +136,17 @@ pub struct Brush {
 
 impl Default for Brush {
     fn default() -> Self {
-        let mut smooth_options = SmoothOptions::default();
+        let mut marker_options = MarkerOptions::default();
+        let mut solid_options = SolidOptions::default();
         let mut textured_options = TexturedOptions::default();
-        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        marker_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        solid_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
         textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
 
         Self {
             style: BrushStyle::default(),
-            smooth_options,
+            marker_options,
+            solid_options,
             textured_options,
             state: BrushState::Idle,
         }
@@ -126,9 +183,11 @@ impl PenBehaviour for Brush {
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
                         Segment::Dot { element },
-                        self.gen_style_for_current_options(),
+                        self.style_for_current_options(),
                     ));
-                    let current_stroke_key = engine_view.store.insert_stroke(brushstroke);
+                    let current_stroke_key = engine_view
+                        .store
+                        .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
                     let path_builder = PenPathBuilder::start(element);
 
@@ -283,7 +342,7 @@ impl PenBehaviour for Brush {
 
 impl DrawOnDocBehaviour for Brush {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
-        let style = self.gen_style_for_current_options();
+        let style = self.style_for_current_options();
 
         match &self.state {
             BrushState::Idle => None,
@@ -303,8 +362,15 @@ impl DrawOnDocBehaviour for Brush {
         match &self.state {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
-                let style = self.gen_style_for_current_options();
-                path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
+                match self.style {
+                    BrushStyle::Marker => {
+                        // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
+                    }
+                    BrushStyle::Solid | BrushStyle::Textured => {
+                        let style = self.style_for_current_options();
+                        path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
+                    }
+                }
             }
         }
 
@@ -339,18 +405,24 @@ impl Brush {
         }
     }
 
-    pub fn gen_style_for_current_options(&self) -> Style {
+    pub fn layer_for_current_options(&self) -> StrokeLayer {
+        match &self.style {
+            BrushStyle::Marker => StrokeLayer::Highlighter,
+            BrushStyle::Solid | BrushStyle::Textured => StrokeLayer::UserLayer(0),
+        }
+    }
+
+    pub fn style_for_current_options(&self) -> Style {
         match &self.style {
             BrushStyle::Marker => {
-                let mut options = self.smooth_options.clone();
-                options.pressure_curve = PressureCurve::Const;
+                let options = self.marker_options.clone();
 
-                Style::Smooth(options)
+                Style::Smooth(options.0)
             }
             BrushStyle::Solid => {
-                let options = self.smooth_options.clone();
+                let options = self.solid_options.clone();
 
-                Style::Smooth(options)
+                Style::Smooth(options.0)
             }
             BrushStyle::Textured => {
                 let options = self.textured_options.clone();

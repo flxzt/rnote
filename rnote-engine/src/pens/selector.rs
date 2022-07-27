@@ -145,9 +145,7 @@ impl PenBehaviour for Selector {
                 widget_flags.merge_with_other(engine_view.store.record());
 
                 // Deselect on start
-                let selection_keys = engine_view
-                    .store
-                    .selection_keys_as_rendered_intersecting_bounds(engine_view.camera.viewport());
+                let selection_keys = engine_view.store.selection_keys_as_rendered();
                 engine_view.store.set_selected_keys(&selection_keys, false);
 
                 self.state = SelectorState::Selecting {
@@ -252,16 +250,20 @@ impl PenBehaviour for Selector {
                     }
                     SelectorStyle::Apiece => {
                         if let Some(last) = path.last() {
-                            engine_view
+                            if let Some(&new_key) = engine_view
                                 .store
                                 .stroke_hitboxes_contain_coord(
                                     engine_view.camera.viewport(),
                                     last.pos,
                                 )
-                                .map(|stroke_key| {
-                                    engine_view.store.set_selected(stroke_key, true);
-                                    vec![stroke_key]
-                                })
+                                .last()
+                            {
+                                engine_view.store.set_selected(new_key, true);
+
+                                Some(vec![new_key])
+                            } else {
+                                None
+                            }
                         } else {
                             None
                         }
@@ -352,9 +354,7 @@ impl PenBehaviour for Selector {
                 self.state = SelectorState::Idle;
 
                 // Deselect on cancel
-                let selection_keys = engine_view
-                    .store
-                    .selection_keys_as_rendered_intersecting_bounds(engine_view.camera.viewport());
+                let selection_keys = engine_view.store.selection_keys_as_rendered();
                 engine_view.store.set_selected_keys(&selection_keys, false);
 
                 widget_flags.redraw = true;
@@ -380,26 +380,24 @@ impl PenBehaviour for Selector {
                     ModifyState::Up => {
                         widget_flags.merge_with_other(engine_view.store.record());
 
-                        if let Some(key_to_add) = engine_view
-                            .store
-                            .stroke_hitboxes_contain_coord(
-                                engine_view.camera.viewport(),
-                                element.pos,
-                            )
-                            .and_then(|key_to_add| {
-                                if self.style == SelectorStyle::Apiece
-                                    || shortcut_keys.contains(&ShortcutKey::KeyboardShift)
-                                {
-                                    Some(key_to_add)
-                                } else {
-                                    None
-                                }
-                            })
+                        // If we click on another, not-already selected stroke while in apiece style or while pressing Shift, we add it to the selection
+                        let keys = engine_view.store.stroke_hitboxes_contain_coord(
+                            engine_view.camera.viewport(),
+                            element.pos,
+                        );
+                        let key_to_add = keys.last();
+
+                        if (self.style == SelectorStyle::Apiece
+                            || shortcut_keys.contains(&ShortcutKey::KeyboardShift))
+                            && key_to_add
+                                .and_then(|&key| engine_view.store.selected(key).map(|s| !s))
+                                .unwrap_or(false)
                         {
-                            // If we click on another stroke while in apiece style or while pressing Shift, we add it to the selection
+                            let key_to_add = *key_to_add.unwrap();
                             engine_view.store.set_selected(key_to_add, true);
 
                             selection.push(key_to_add);
+
                             engine_view
                                 .store
                                 .bounds_for_strokes(selection)

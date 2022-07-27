@@ -1,9 +1,12 @@
 project(
     'rnote',
     'rust',
-    version: '0.5.4-beta2',
+    version: '0.5.4',
     meson_version: '>= 0.56',
 )
+# add a version suffix for alpha or beta version. the dash is automatically inserted.
+patch = ''
+
 i18n = import('i18n')
 gnome = import('gnome')
 fs = import('fs')
@@ -17,9 +20,7 @@ app_authors = run_command(
   'cat', meson.project_source_root() / 'AUTHORS',
 ).stdout().strip()
 
-version_raw_split = meson.project_version().split('-')
-version = version_raw_split[0]
-patch = version_raw_split[1]
+version = meson.project_version()
 version_array = version.split('.')
 version_major = version_array[0].to_int()
 version_minor = version_array[1].to_int()

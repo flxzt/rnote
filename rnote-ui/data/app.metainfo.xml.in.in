@@ -66,9 +66,9 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
-    <release version="0.5.4-beta2" date="2022-07-03">
+    <release version="0.5.4" date="2022-07-27">
       <description>
-        <p>this release changes: (BETA)</p>
+        <p>this release changes:</p>
         <ul>
           <li>A new app icon and symbolic! (based on @bertob's design and with his help. Thanks a ton!)</li>
           <li>long awaited: write and edit text with the typewriter</li>

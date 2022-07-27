@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
-"PO-Revision-Date: 2022-07-07 15:17+0000\n"
+"PO-Revision-Date: 2022-07-28 20:15+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:23
@@ -807,7 +807,7 @@ msgstr "Markeerstift"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:76
 msgid "Mark underneath other brush strokes"
-msgstr ""
+msgstr "Markeren onder andere penseelstreken"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:87
 msgid "Solid"
@@ -815,17 +815,15 @@ msgstr "Vaste kleur"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:88
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "Penseelstreken met vlakke kleur tekenen"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:99
 msgid "Textured"
 msgstr "Textuur"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:100
-#, fuzzy
-#| msgid "Textured style"
 msgid "Draw textured strokes"
-msgstr "Textuur"
+msgstr "Penseelstreken met textuur tekenen"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:123
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:140

@@ -339,7 +339,7 @@
             <child>
               <object class="GtkBox" id="flap_resizer">
                 <property name="orientation">horizontal</property>
-                <property name="width-request">4</property>
+                <property name="width-request">3</property>
                 <style>
                   <class name="flap_resizer" />
                   <class name="view" />
@@ -351,7 +351,7 @@
                     <property name="halign">start</property>
                     <property name="vexpand">true</property>
                     <property name="valign">fill</property>
-                    <property name="margin-end">2</property>
+                    <property name="margin-end">1</property>
                   </object>
                 </child>
                 <child type="end">

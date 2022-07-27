@@ -508,7 +508,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// returns the strokes where the given coord is inside at least one of the stroke hitboxes
+    /// returns the strokes for the given coord is inside at least one of the stroke hitboxes
     pub fn stroke_hitboxes_contain_coord(
         &self,
         viewport: AABB,

@@ -250,13 +250,20 @@ impl PenBehaviour for Selector {
                     }
                     SelectorStyle::Apiece => {
                         if let Some(last) = path.last() {
-                            let new_keys = engine_view.store.stroke_hitboxes_contain_coord(
-                                engine_view.camera.viewport(),
-                                last.pos,
-                            );
+                            if let Some(&new_key) = engine_view
+                                .store
+                                .stroke_hitboxes_contain_coord(
+                                    engine_view.camera.viewport(),
+                                    last.pos,
+                                )
+                                .last()
+                            {
+                                engine_view.store.set_selected(new_key, true);
 
-                            engine_view.store.set_selected_keys(&new_keys, true);
-                            Some(new_keys)
+                                Some(vec![new_key])
+                            } else {
+                                None
+                            }
                         } else {
                             None
                         }
@@ -374,29 +381,27 @@ impl PenBehaviour for Selector {
                         widget_flags.merge_with_other(engine_view.store.record());
 
                         // If we click on another, not-already selected stroke while in apiece style or while pressing Shift, we add it to the selection
-                        let keys_to_add = engine_view
-                            .store
-                            .stroke_hitboxes_contain_coord(
-                                engine_view.camera.viewport(),
-                                element.pos,
-                            )
-                            .into_iter();
+                        let keys = engine_view.store.stroke_hitboxes_contain_coord(
+                            engine_view.camera.viewport(),
+                            element.pos,
+                        );
+                        let key_to_add = keys.last();
 
                         if (self.style == SelectorStyle::Apiece
                             || shortcut_keys.contains(&ShortcutKey::KeyboardShift))
-                            && keys_to_add
-                                .clone()
-                                .any(|key| !engine_view.store.selected(key).unwrap_or(false))
+                            && key_to_add
+                                .and_then(|&key| engine_view.store.selected(key).map(|s| !s))
+                                .unwrap_or(false)
                         {
-                            for key_to_add in keys_to_add {
-                                engine_view.store.set_selected(key_to_add, true);
+                            let key_to_add = *key_to_add.unwrap();
+                            engine_view.store.set_selected(key_to_add, true);
 
-                                selection.push(key_to_add);
-                                engine_view
-                                    .store
-                                    .bounds_for_strokes(selection)
-                                    .map(|new_bounds| *selection_bounds = new_bounds);
-                            }
+                            selection.push(key_to_add);
+
+                            engine_view
+                                .store
+                                .bounds_for_strokes(selection)
+                                .map(|new_bounds| *selection_bounds = new_bounds);
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
                         {

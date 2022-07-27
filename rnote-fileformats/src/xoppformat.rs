@@ -1013,7 +1013,10 @@ mod tests {
     static INIT: Once = Once::new();
 
     fn setup() {
-        INIT.call_once(pretty_env_logger::init);
+        INIT.call_once(|| {
+            pretty_env_logger::init();
+            std::fs::create_dir_all(&std::path::PathBuf::from("./temp")).unwrap();
+        });
     }
 
     #[test]

@@ -64,7 +64,7 @@ update_mime_database = find_program('update-mime-database', required: false)
 
 meson.add_dist_script(
   'build-aux/dist-vendor.sh',
-  meson.project_build_root() / 'meson-dist' / app_name + '-' + version + '-' + patch,
+  meson.project_build_root() / 'meson-dist' / app_name + '-' + version,
   meson.project_source_root()
 )
 

@@ -362,8 +362,15 @@ impl DrawOnDocBehaviour for Brush {
         match &self.state {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
-                let style = self.style_for_current_options();
-                path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
+                match self.style {
+                    BrushStyle::Marker => {
+                        // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
+                    }
+                    BrushStyle::Solid | BrushStyle::Textured => {
+                        let style = self.style_for_current_options();
+                        path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
+                    }
+                }
             }
         }
 

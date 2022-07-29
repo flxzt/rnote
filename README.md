@@ -75,24 +75,6 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
     Again, granting them in Flatseal fixes this issue.
 * Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
 
-## Reviews, media:
-> It's a perfect on-demand user experience that — and this might be controversial — is more akin to professional-grade iPadOS apps than GTK apps.
-> I know this will sound like a minor thing on paper but spatially, within the user experience, it reduces friction, and makes it so much easier to get things done.  
-> 
-> -- omg!ubuntu! - https://www.omgubuntu.co.uk/2022/01/rnote-frehand-notetaking-app-for-linux-gtk4
-
-> #Linux always felt behind #Windows in supporting stylus-equipped 2-in-1 laptops. One of the reasons: the  lack of a good, simple handwritten notes app.
-> Until now: https://github.com/flxzt/rnote  
-> Thank you, @flx_zt  
-> !  This is my favorite app release of 2022. For the rest of the year.  
-> 
-> -- Jorge Toledo, Twitter - https://twitter.com/eldelacajita/status/1482116515717648386
-
-> I[t] has everything it needs for note taking. I'm using this app for university, loading in the Data files and handwriting notes.
-> I'm using a microsoft surface go 3 and an original pen. All functions are working like a charm. Best app i used so far.  
->
-> -- Leroy, Gnome Software review section
-
 ## Credits
 - A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
 - [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`

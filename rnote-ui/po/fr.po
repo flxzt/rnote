@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
-"PO-Revision-Date: 2022-07-28 20:15+0000\n"
-"Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
+"PO-Revision-Date: 2022-07-31 13:17+0000\n"
+"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "Dessinez et prenez des notes manuscrites"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Dessin;Notes;"
+msgstr "Gnome;GTK;Office;Dessin;Notes;Bureau;Graphisme;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -46,8 +46,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"ATTENTION: le format de fichier est toujours instable. Cela pourrait changer "
-"à l'avenir et rompre la compatibilité entre les versions."
+"ATTENTION : le format de fichier est toujours instable. Cela pourrait "
+"changer à l'avenir et rompre la compatibilité entre les versions."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -390,11 +390,8 @@ msgid "Continuous"
 msgstr "Continu"
 
 #: rnote-ui/data/ui/dialogs.ui:266
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open document"
 msgid "One per document page"
-msgstr "Ouvrir un document"
+msgstr "Un par page de document"
 
 #: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
@@ -434,10 +431,8 @@ msgid "Directory"
 msgstr "Répertoire"
 
 #: rnote-ui/data/ui/dialogs.ui:382
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace directory"
-msgstr "Changer d'espace de travail"
+msgstr "Changer d’espace de travail"
 
 #: rnote-ui/data/ui/dialogs.ui:391 rnote-ui/src/dialogs.rs:437
 msgid "- no directory selected -"
@@ -473,7 +468,7 @@ msgstr "Enregistrer le document"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
-msgstr ""
+msgstr "perm."
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
@@ -541,7 +536,7 @@ msgstr "Lettre américaine"
 
 #: rnote-ui/data/ui/settingspanel.ui:111
 msgid "US legal"
-msgstr ""
+msgstr "US légal"
 
 #: rnote-ui/data/ui/settingspanel.ui:112
 msgid "Custom"
@@ -816,7 +811,7 @@ msgstr "Marqueur"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:76
 msgid "Mark underneath other brush strokes"
-msgstr ""
+msgstr "Marquer en dessous d’autres coups de pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:87
 msgid "Solid"
@@ -824,17 +819,15 @@ msgstr "Continue"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:88
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "Dessiner des traits de couleur continus"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:99
 msgid "Textured"
 msgstr "Texturé"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:100
-#, fuzzy
-#| msgid "Textured style"
 msgid "Draw textured strokes"
-msgstr "Style de texture"
+msgstr "Dessiner des traits texturés"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:123
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:140
@@ -842,22 +835,20 @@ msgid "Brush configuration"
 msgstr "Configuration du pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
-#, fuzzy
-#| msgid "Rough style"
 msgid "Solid style"
-msgstr "Style de trait approximatif"
+msgstr "Style de trait solide"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 msgid "Pressure curve"
-msgstr ""
+msgstr "Courbe de pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "Choisissez une courbe de pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Constant"
-msgstr ""
+msgstr "Constante"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Linear"
@@ -944,10 +935,8 @@ msgid "Selecting apiece"
 msgstr "Sélectionner un élément"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select intersecting path"
-msgstr "Rectangle de sélection"
+msgstr "Sélectionner le chemin d’intersection"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
@@ -1077,6 +1066,8 @@ msgid ""
 "Hold Ctrl to temporarily enable/disable constraints when this switch is off/"
 "on"
 msgstr ""
+"Maintenez Ctrl pour activer / désactiver temporairement les contraintes "
+"selon la position de ce commutateur"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
 msgid "1:1"
@@ -1108,14 +1099,17 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
+"Sélectionneur de police\n"
+"(double-cliquez, cliquez sur la sélection\n"
+"ou pressez Entrée pour sélectionner une nouvelle police)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
 msgid "Pick and insert an emoji"
-msgstr ""
+msgstr "Choisissez et insérez un émoji"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
 msgid "Reset text attributes"
-msgstr ""
+msgstr "Réinitialiser les attributs de texte"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:148
 msgid "Bold"
@@ -1259,10 +1253,8 @@ msgid "Export selection as PNG failed."
 msgstr "Échec de l'exportation de la sélection au format PNG."
 
 #: rnote-ui/src/dialogs.rs:702
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection as PNG successfully."
-msgstr "La sélection a été exportée au format SVG avec succès."
+msgstr "La sélection a été exportée au format PNG avec succès."
 
 #: rnote-ui/src/dialogs.rs:725 rnote-ui/src/dialogs.rs:776
 #: rnote-ui/src/dialogs.rs:827

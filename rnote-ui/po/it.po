@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
-"PO-Revision-Date: 2022-08-02 21:29+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2022-08-04 11:16+0000\n"
+"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -644,19 +644,19 @@ msgstr "Tasti di scelta rapida"
 
 #: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Stylus primary button action"
-msgstr "Azione del pulsante principale dello stilo"
+msgstr "Azione del pulsante principale della penna"
 
 #: rnote-ui/data/ui/settingspanel.ui:313
 msgid "Set the action for the primary stylus button"
-msgstr "Imposta l'azione per il pulsante principale dello stilo"
+msgstr "Imposta l'azione per il pulsante principale della penna"
 
 #: rnote-ui/data/ui/settingspanel.ui:324
 msgid "Stylus secondary button action"
-msgstr "Azione del pulsante secondario dello stilo"
+msgstr "Azione del pulsante secondario della penna"
 
 #: rnote-ui/data/ui/settingspanel.ui:325
 msgid "Set the action for the secondary stylus button"
-msgstr "Impostare l'azione per il pulsante dello stilo secondario"
+msgstr "Impostare l'azione per il pulsante secondario della penna"
 
 #: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Mouse secondary button action"
@@ -803,7 +803,7 @@ msgstr "Stili di pennello"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:75
 msgid "Marker"
-msgstr "Marcatore"
+msgstr "Evidenziatore"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:76
 msgid "Mark underneath other brush strokes"

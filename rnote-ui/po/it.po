@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
-"PO-Revision-Date: 2022-07-27 06:01+0000\n"
+"PO-Revision-Date: 2022-08-02 21:20+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -77,16 +77,12 @@ msgid "Visual debugging"
 msgstr "Debug visivo"
 
 #: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:877
-#, fuzzy
-#| msgid "Export Sheet"
 msgid "Export engine state"
-msgstr "Esporta foglio"
+msgstr "Esporta 'engine state'"
 
 #: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:931
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export engine config"
-msgstr "Esporta selezione"
+msgstr "Esporta 'engine config'"
 
 #: rnote-ui/data/ui/appmenu.ui:50
 msgid "Keyboard shortcuts"
@@ -164,7 +160,7 @@ msgstr "Ridimensiona per adattare il formato del documento"
 
 #: rnote-ui/data/ui/appwindow.ui:191
 msgid "Return to the origin page"
-msgstr "Ritorna alla pagina di origine"
+msgstr "Ritorna alla pagina iniziale"
 
 #: rnote-ui/data/ui/appwindow.ui:204
 msgid "Undo"
@@ -172,7 +168,7 @@ msgstr "Annulla"
 
 #: rnote-ui/data/ui/appwindow.ui:217
 msgid "Redo"
-msgstr "Ripeti"
+msgstr "Ripristina"
 
 #: rnote-ui/data/ui/appwindow.ui:396
 msgid "Close the folded flap"
@@ -726,8 +722,6 @@ msgid "Document"
 msgstr "Documento"
 
 #: rnote-ui/data/ui/shortcuts.ui:84
-#, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "New document"
 msgstr "Nuovo documento"
@@ -813,7 +807,7 @@ msgstr "Marcatore"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:76
 msgid "Mark underneath other brush strokes"
-msgstr ""
+msgstr "Disegna sotto ad altri stili del pennello"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:87
 msgid "Solid"
@@ -821,17 +815,15 @@ msgstr "Solido"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:88
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "Disegna tratti solidi"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:99
 msgid "Textured"
 msgstr "Testurizzato"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:100
-#, fuzzy
-#| msgid "Textured"
 msgid "Draw textured strokes"
-msgstr "Testurizzato"
+msgstr "Disegna tratti testurizzati"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:123
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:140
@@ -839,28 +831,24 @@ msgid "Brush configuration"
 msgstr "Configurazione pennello"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
-#, fuzzy
-#| msgid "Solid"
 msgid "Solid style"
-msgstr "Solido"
+msgstr "Stile solido"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 msgid "Pressure curve"
-msgstr ""
+msgstr "Pressione del tratto"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "Scegli la pressione del tratto"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Constant"
-msgstr ""
+msgstr "Costante"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
-#, fuzzy
-#| msgid "Line"
 msgid "Linear"
-msgstr "Linea"
+msgstr "Lineare"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Square root"
@@ -872,17 +860,15 @@ msgstr "Radice cubica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:162
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "Parabolica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "Cubica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
-#, fuzzy
-#| msgid "Textured"
 msgid "Textured style"
-msgstr "Testurizzato"
+msgstr "Stile testurizzato"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:177
 msgid "Density"
@@ -894,17 +880,15 @@ msgstr "La densità è la quantità di punti per area 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Stroke dots radii"
-msgstr ""
+msgstr "Raggio dei punti del tratto"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
+msgstr "Scegli il raggio dei singoli punti componenti il tratto testurizzato"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:252
-#, fuzzy
-#| msgid "Choose a dots position probability distribution"
 msgid "Stroke dots position distribution"
-msgstr "Scegli una distribuzione di probabilità della posizione dei punti"
+msgstr "Scegli una distribuzione della posizione dei punti"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgid "Choose a dots position probability distribution"
@@ -927,16 +911,12 @@ msgid "Reverse Exponential"
 msgstr "Logaritmica"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Trash strokes"
-msgstr "Stili di pennello"
+msgstr "Elimina tratto"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
-#, fuzzy
-#| msgid "Select all strokes"
 msgid "Split strokes"
-msgstr "Seleziona tutti i tratti"
+msgstr "Cancella punto de tratto"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
 msgid "Selecting with a polygon"
@@ -947,16 +927,12 @@ msgid "Selecting with a rectangle"
 msgstr "Selezione con un rettangolo"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Selecting apiece"
-msgstr "Selezione con un rettangolo"
+msgstr "Selezione singola"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select intersecting path"
-msgstr "Selezione con un rettangolo"
+msgstr "Seleziona i tratti intersecati"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
@@ -979,41 +955,29 @@ msgid "Delete selection"
 msgstr "Elimina selezione"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper style"
-msgstr "Forma"
+msgstr "Stile delle forme"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Shaper styles"
-msgstr "Stili di pennello"
+msgstr "Stile delle forme"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
-#, fuzzy
-#| msgid "Smooth shapes"
 msgid "Smooth"
-msgstr "Forme lisce"
+msgstr "Lisce"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:86
-#, fuzzy
-#| msgid "Roughness"
 msgid "Rough"
-msgstr "Ruvidità"
+msgstr "Ruvide"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:109
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
-#, fuzzy
-#| msgid "Rough shapes configuration"
 msgid "Shape configuration"
-msgstr "Configurazione di forme ruvide"
+msgstr "Opzioni delle forme"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
-#, fuzzy
-#| msgid "Brush style"
 msgid "Rough style"
-msgstr "Stile pennello"
+msgstr "Stile ruvido"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:139
 msgid "Roughness"
@@ -1043,10 +1007,8 @@ msgid "Curve step count"
 msgstr "Conteggio passi curva"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
-#, fuzzy
-#| msgid "How many steps make up a curve. Defaults to 9"
 msgid "How many steps make up a curve. Defaults to 12"
-msgstr "Quanti gradini compongono una curva. Il valore predefinito è 9"
+msgstr "Quanti passi compongono una curva. Il valore predefinito è 12"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Multistroke"
@@ -1060,10 +1022,8 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shape builders"
-msgstr "Forma"
+msgstr "Costruzione delle forme"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:272
 msgid "Line"
@@ -1079,22 +1039,20 @@ msgstr "Ellisse"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
 msgid "Ellipse with foci"
-msgstr ""
+msgstr "Ellisse con i fuochi"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
 msgid "Quadratic bezier curve"
-msgstr ""
+msgstr "Curva di Bézier quadratica"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "Cubic bezier curve"
-msgstr ""
+msgstr "Curva di Bézier cubica"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:350
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:367
-#, fuzzy
-#| msgid "Portrait"
 msgid "Constraints"
-msgstr "Ritratto"
+msgstr "Limitazioni"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
 msgid "Enabled"
@@ -1108,19 +1066,19 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
 msgid "1:1"
-msgstr ""
+msgstr "1:1"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:405
 msgid "3:2"
-msgstr ""
+msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:415
 msgid "Golden ratio (1:1.618)"
-msgstr ""
+msgstr "Sezione Aurea (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:32
 msgid "Insert vertical space"
-msgstr ""
+msgstr "Inserisci spazio verticale"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:48
 msgid "Drag stroke elements based on proximity"
@@ -1128,7 +1086,7 @@ msgstr "Trascina gli elementi del tratto in base alla vicinanza"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:65
 msgid "Offset the camera by dragging"
-msgstr ""
+msgstr "Sposta la visuale trascinando"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
 msgid ""
@@ -1139,43 +1097,43 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
 msgid "Pick and insert an emoji"
-msgstr ""
+msgstr "Inserire emoji"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
 msgid "Reset text attributes"
-msgstr ""
+msgstr "Cancella la formattazione"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:148
 msgid "Bold"
-msgstr ""
+msgstr "Grassetto"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:154
 msgid "Italic"
-msgstr ""
+msgstr "Corsivo"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:160
 msgid "Underline"
-msgstr ""
+msgstr "Sottolineato"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:166
 msgid "Strikethrough"
-msgstr ""
+msgstr "Barrato"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:195
 msgid "Align left"
-msgstr ""
+msgstr "Allinea a sinistra"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:202
 msgid "Align center"
-msgstr ""
+msgstr "Allinea al centro"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:209
 msgid "Align right"
-msgstr ""
+msgstr "Allinea a destra"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:216
 msgid "Fill"
-msgstr ""
+msgstr "Giustificato"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs.rs:33
@@ -1208,19 +1166,19 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:265
 msgid "Title:"
-msgstr ""
+msgstr "Titolo:"
 
 #: rnote-ui/src/dialogs.rs:269
 msgid "Author:"
-msgstr ""
+msgstr "Autore:"
 
 #: rnote-ui/src/dialogs.rs:273
 msgid "Modification date:"
-msgstr ""
+msgstr "Data di modifica:"
 
 #: rnote-ui/src/dialogs.rs:277
 msgid "Pages:"
-msgstr ""
+msgstr "Pagine:"
 
 #: rnote-ui/src/dialogs.rs:320 rnote-ui/src/appwindow/mod.rs:1487
 msgid "Opening PDF file failed."
@@ -1333,19 +1291,19 @@ msgstr "File JSON"
 
 #: rnote-ui/src/dialogs.rs:905
 msgid "Export engine state failed."
-msgstr ""
+msgstr "Esportazione del ' engine state' fallita."
 
 #: rnote-ui/src/dialogs.rs:907
 msgid "Exported engine state successfully."
-msgstr ""
+msgstr "Esportazione del ' engine state' avvenuta con successo."
 
 #: rnote-ui/src/dialogs.rs:959
 msgid "Export engine config failed."
-msgstr ""
+msgstr "Esportazione del 'engine config' fallita."
 
 #: rnote-ui/src/dialogs.rs:961
 msgid "Exported engine config successfully."
-msgstr ""
+msgstr "Esportazione del 'engine config' avvenuta con successo."
 
 #: rnote-ui/src/appwindow/mod.rs:1411
 msgid "Opening .rnote file failed."

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
 "PO-Revision-Date: 2022-08-02 21:20+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -1056,7 +1056,7 @@ msgstr "Limitazioni"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
 msgid "Enabled"
-msgstr ""
+msgstr "Abilitato"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
 msgid ""
@@ -1146,23 +1146,23 @@ msgstr "Apertura file fallita."
 
 #: rnote-ui/src/dialogs.rs:242
 msgid "- no file name -"
-msgstr ""
+msgstr "- nessun nome file -"
 
 #: rnote-ui/src/dialogs.rs:247
 msgid "- no title -"
-msgstr ""
+msgstr "- senza titolo -"
 
 #: rnote-ui/src/dialogs.rs:250
 msgid "- no author -"
-msgstr ""
+msgstr "- nessun autore -"
 
 #: rnote-ui/src/dialogs.rs:254
 msgid "- no date -"
-msgstr ""
+msgstr "- nessuna data -"
 
 #: rnote-ui/src/dialogs.rs:261
 msgid "File name:"
-msgstr ""
+msgstr "Nome file:"
 
 #: rnote-ui/src/dialogs.rs:265
 msgid "Title:"
@@ -1203,11 +1203,11 @@ msgstr "Salva documento come"
 #: rnote-ui/src/dialogs.rs:551 rnote-ui/src/appwindow/mod.rs:383
 #: rnote-ui/src/appwindow/appwindowactions.rs:662
 msgid "Saving document failed."
-msgstr ""
+msgstr "Salvataggio del documento non riuscito."
 
 #: rnote-ui/src/dialogs.rs:553
 msgid "Saved document successfully."
-msgstr ""
+msgstr "Documento salvato con successo."
 
 #: rnote-ui/src/dialogs.rs:581
 msgid "PNG / SVG / JPG / PDF file"
@@ -1315,15 +1315,15 @@ msgstr "Apertura file .xopp fallita."
 
 #: rnote-ui/src/appwindow/mod.rs:1449
 msgid "Opening vector image file failed."
-msgstr ""
+msgstr "Apertura del file immagine vettoriale non riuscita."
 
 #: rnote-ui/src/appwindow/mod.rs:1468
 msgid "Opening bitmap image file failed."
-msgstr ""
+msgstr "Apertura del file immagine bitmap non riuscita."
 
 #: rnote-ui/src/appwindow/mod.rs:1504
 msgid "Error: Tried opening folder as file"
-msgstr ""
+msgstr "Errore: provato ad aprire la cartella come file"
 
 #: rnote-ui/src/appwindow/mod.rs:1513
 msgid "Failed to open file, is a unsupported file type."

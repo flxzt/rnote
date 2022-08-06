@@ -26,28 +26,7 @@ git clone https://github.com/flxzt/rnote
 git submodule update --init --recursive
 ```
 
-in the repo `build-aux/meson_post_install.py` must be overwritten with ( renaming the executables ):
-```
-#!/usr/bin/env python3
-
-from os import environ, path
-from subprocess import call
-
-if not environ.get('DESTDIR', ''):
-    PREFIX = environ.get('MESON_INSTALL_PREFIX', '/usr/local')
-    DATA_DIR = path.join(PREFIX, 'share')
-    print('Updating icon cache...')
-    call(['gtk-update-icon-cache-3.0.exe', '-qtf', path.join(DATA_DIR, 'icons/hicolor')])
-    print("Compiling new schemas...")
-    call(["glib-compile-schemas.exe", path.join(DATA_DIR, 'glib-2.0/schemas')])
-    print("Updating desktop database...")
-    call(["update-desktop-database.exe", path.join(DATA_DIR, 'applications')])
-    print("Updating MIME-type database...")
-    call(["update-mime-database.exe", path.join(DATA_DIR, 'mime')])
-
-```
-
-then Rnote can built with meson inside a **mingw64 shell**:
+Rnote can be built with meson inside a **mingw64 shell**:
 ```
 meson setup --prefix=C:/gnome _mesonbuild
 meson compile -C _mesonbuild

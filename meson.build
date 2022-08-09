@@ -55,7 +55,7 @@ dependency('libadwaita-1', version: '>= 1.0')
 dependency('poppler-glib', version: '>= 21.08')
 
 cargo = find_program('cargo', required: true)
-cargo_script = find_program('build-aux/cargo.sh')
+cargo_script = find_program('build-aux/cargo.py')
 glib_compile_resources = find_program('glib-compile-resources', required: true)
 glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
@@ -84,11 +84,18 @@ subdir('rnote-ui')
 
 sources = [rnote_compose_sources, rnote_engine_sources, rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
 
+# see https://mesonbuild.com/Reference-tables.html#operating-system-names
+if host_machine.system() == 'windows' or host_machine.system()  == 'cygwin'
+  bin_output = app_name + '.exe'
+else
+  bin_output = app_name
+endif
+
 custom_target(
   'cargo-build',
   build_by_default: true,
   input: sources,
-  output: app_name,
+  output: bin_output,
   console: true,
   install: true,
   install_dir: bindir,
@@ -103,4 +110,4 @@ custom_target(
   ]
 )
 
-meson.add_install_script('build-aux/meson_post_install.py')
+meson.add_install_script('build-aux/meson_post_install.py', datadir, bindir, app_name)

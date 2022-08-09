@@ -27,17 +27,20 @@ git submodule update --init --recursive
 ```
 
 Rnote can be built with meson inside a **mingw64 shell**:
+
+setup meson
 ```
 meson setup --prefix=C:/gnome _mesonbuild
-meson compile -C _mesonbuild
 ```
 
-then in `_mesonbuild/rnote.exe` rename to `rnote` .
+compile
+```
+meson compile -C _mesonbuild
+```
 
 then install: 
 ```
 meson install -C _mesonbuild
 ```
 
-and execute from the prefix binary path:
-the binary should be installed in `C:/gnome/bin/rnote`. To execute rename it to `rnote.exe`
+the installed binary can now be executed from binary path `C:/gnome/bin/rnote.exe`.

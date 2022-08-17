@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
-"PO-Revision-Date: 2022-07-18 13:39+0000\n"
+"PO-Revision-Date: 2022-08-22 08:17+0000\n"
 "Last-Translator: BobH <dev@mail.bobh.cool>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hant/>\n"
@@ -801,7 +801,7 @@ msgstr "記號筆"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:76
 msgid "Mark underneath other brush strokes"
-msgstr ""
+msgstr "馬克筆顯示在其他筆觸下方"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:87
 msgid "Solid"
@@ -809,17 +809,15 @@ msgstr "硬筆"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:88
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "繪製純色筆劃"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:99
 msgid "Textured"
 msgstr "紋理"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:100
-#, fuzzy
-#| msgid "Textured style"
 msgid "Draw textured strokes"
-msgstr "紋理樣式"
+msgstr "繪製紋理筆劃"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:123
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:140

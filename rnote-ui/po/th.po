@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-08-22 08:17+0000\n"
+"PO-Revision-Date: 2022-10-04 20:29+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
 "Language: th\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -45,7 +45,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
+"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร "
+"อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -382,7 +383,9 @@ msgstr "ความกว้างหน้ากระดาษ (%)"
 
 #: rnote-ui/data/ui/dialogs.ui:191
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr "ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
+msgstr ""
+"ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา "
+"เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
 
 #: rnote-ui/data/ui/dialogs.ui:211
 msgid "Page spacing"
@@ -1016,7 +1019,8 @@ msgstr "ความโค้งงอ"
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
-msgstr "ความโค้งงอของเส้นในขณะวาดรูปทรงแบบหยาบ 0.0 คือ เส้นตรง ค่าเริ่มต้นคือ 1.0"
+msgstr ""
+"ความโค้งงอของเส้นในขณะวาดรูปทรงแบบหยาบ 0.0 คือ เส้นตรง ค่าเริ่มต้นคือ 1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
 msgid "Curve step count"
@@ -1076,7 +1080,9 @@ msgstr "เปิดใช้งาน"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints when this switch is off/"
 "on"
-msgstr "กด Ctrl ค้างไว้ เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว เมื่อสวิตช์นี้ปิด/เปิด"
+msgstr ""
+"กด Ctrl ค้างไว้ เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว "
+"เมื่อสวิตช์นี้ปิด/เปิด"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
 msgid "1:1"

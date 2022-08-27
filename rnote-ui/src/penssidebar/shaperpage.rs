@@ -62,6 +62,8 @@ mod imp {
         #[template_child]
         pub shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
         #[template_child]
+        pub constraint_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
         pub constraint_enabled_switch: TemplateChild<Switch>,
         #[template_child]
         pub constraint_one_to_one_switch: TemplateChild<Switch>,
@@ -207,6 +209,10 @@ impl ShaperPage {
 
     pub fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_cubbez_row.get()
+    }
+
+    pub fn constraint_menubutton(&self) -> MenuButton {
+        self.imp().shapebuildertype_menubutton.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

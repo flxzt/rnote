@@ -671,6 +671,11 @@ mod imp {
                     .set_direction(ArrowType::Right);
                 appwindow
                     .penssidebar()
+                    .shaper_page()
+                    .constraint_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
                     .typewriter_page()
                     .colorpicker()
                     .set_property("position", PositionType::Left.to_value());
@@ -788,6 +793,11 @@ mod imp {
                     .penssidebar()
                     .shaper_page()
                     .shapebuildertype_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .constraint_menubutton()
                     .set_direction(ArrowType::Left);
                 appwindow
                     .penssidebar()

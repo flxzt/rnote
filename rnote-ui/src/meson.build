@@ -12,13 +12,28 @@ global_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
 global_conf.set_quoted('APP_DONATE_URL', app_donate_url)
 global_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
 global_conf.set_quoted('APP_AUTHORS', app_authors)
-global_conf.set_quoted('PKG_DATA_DIR', pkgdatadir)
-global_conf.set_quoted('RESOURCES_FILE', pkgdatadir / 'resources.gresource')
 global_conf.set_quoted('PROFILE', profile)
 global_conf.set_quoted('VERSION', version)
 global_conf.set_quoted('VERSION_SUFFIX', version_suffix)
 global_conf.set_quoted('GETTEXT_PACKAGE', gettext_package)
-global_conf.set_quoted('LOCALEDIR', localedir)
+
+# Use relative paths for windows installations to make them portable
+if host_machine.system() == 'windows'
+  win_datadir = '../' / get_option('datadir')
+  win_pkgdatadir = '../' / get_option('datadir') / app_name
+  win_localedir = '../' / get_option('localedir')
+
+  global_conf.set_quoted('DATA_DIR', win_datadir)
+  global_conf.set_quoted('PKG_DATA_DIR', win_pkgdatadir)
+  global_conf.set_quoted('RESOURCES_FILE', win_pkgdatadir / 'resources.gresource')
+  global_conf.set_quoted('LOCALEDIR', win_localedir )
+else
+  global_conf.set_quoted('DATA_DIR', datadir)
+  global_conf.set_quoted('PKG_DATA_DIR', pkgdatadir)
+  global_conf.set_quoted('RESOURCES_FILE', pkgdatadir / 'resources.gresource')
+  global_conf.set_quoted('LOCALEDIR', localedir)
+endif
+
 config = configure_file(
     input: 'config.rs.in',
     output: 'config.rs',

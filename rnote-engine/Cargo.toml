@@ -34,7 +34,8 @@ nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
 gtk4 = {version = "0.5.3", features = ["v4_8"]}
 cairo-rs = {version = "0.16.3", features = ["png", "svg", "pdf"]}
-poppler-rs = {version = "0.20.0", features = ["v21_12"] }
+# newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
+poppler-rs = {version = "0.20.0", features = ["v20_9"] }
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9.0"

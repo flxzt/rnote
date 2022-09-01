@@ -14,6 +14,8 @@ pub(crate) const APP_DONATE_URL: &str = @APP_DONATE_URL@;
 pub(crate) const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
 pub(crate) const LOCALEDIR: &str = @LOCALEDIR@;
 
+#[allow(unused)]
+pub(crate) const DATA_DIR: &str = @DATA_DIR@;
 pub(crate) const PKG_DATA_DIR: &str = @PKG_DATA_DIR@;
 pub(crate) const RESOURCES_FILE: &str = @RESOURCES_FILE@;
 pub(crate) const PROFILE: &str = @PROFILE@;

@@ -2,7 +2,7 @@ use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::MenuButton;
 use gtk4::{
-    gio, glib, glib::clone, AboutDialog, Builder, Button, ColorButton, Dialog, Entry,
+    gio, glib, glib::clone, Builder, Button, ColorButton, Dialog,
     FileChooserAction, FileChooserNative, FileFilter, Label, MessageDialog, ResponseType,
     ShortcutsWindow, SpinButton, StringList, ToggleButton,
 };
@@ -16,14 +16,14 @@ use crate::{globals, IconPicker};
 
 // About Dialog
 pub fn dialog_about(appwindow: &RnoteAppWindow) {
-    let aboutdialog = AboutDialog::builder()
+    let aboutdialog = adw::AboutWindow::builder()
         .modal(true)
         .transient_for(appwindow)
-        .program_name(config::APP_NAME_CAPITALIZED)
+        .application_name(config::APP_NAME_CAPITALIZED)
+        .application_icon(config::APP_ID)
         .comments(&gettext("Sketch and take handwritten notes"))
-        .logo_icon_name(config::APP_ID)
         .website(config::APP_WEBSITE)
-        .authors(
+        .developers(
             config::APP_AUTHORS
                 .iter()
                 .map(|&s| String::from(s))
@@ -352,7 +352,7 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
     let edit_workspace_preview_row: WorkspaceRow =
         builder.object("edit_workspace_preview_row").unwrap();
-    let change_workspace_name_entry: Entry = builder.object("change_workspace_name_entry").unwrap();
+    let change_workspace_name_entryrow: adw::EntryRow = builder.object("change_workspace_name_entryrow").unwrap();
     let change_workspace_color_button: ColorButton =
         builder.object("change_workspace_color_button").unwrap();
     let change_workspace_dir_button: Button =
@@ -393,13 +393,13 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         edit_workspace_preview_row
             .entry()
             .replace_data(&row.entry());
-        change_workspace_name_entry.set_text(row.entry().name().as_str());
+        change_workspace_name_entryrow.set_text(row.entry().name().as_str());
         change_workspace_icon_menubutton.set_icon_name(row.entry().icon().as_str());
         change_workspace_color_button.set_rgba(&row.entry().color());
         change_workspace_dir_label.set_label(&row.entry().dir().as_str());
     }
 
-    change_workspace_name_entry.connect_changed(
+    change_workspace_name_entryrow.connect_apply(
         clone!(@weak edit_workspace_preview_row => move |entry| {
             let text = entry.text().to_string();
             edit_workspace_preview_row.entry().set_name(text);

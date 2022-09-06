@@ -25,10 +25,10 @@ futures = "0.3.21"
 rayon = "1.5"
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
-gtk4 = {version = "0.4.8", features = ["v4_6"]}
-adw = {version = "0.1.1", package="libadwaita"}
-cairo-rs = {version = "0.15.11", features = ["png", "svg", "pdf"]}
-poppler-rs = {version = "0.19.0", features = ["v20_9"] }
+gtk4 = {version = "0.4.8", features = ["v4_8"]}
+adw = {version = "0.2.0-alpha.2", package="libadwaita", features = ["v1_2"]}
+cairo-rs = {version = "0.15.12", features = ["png", "svg", "pdf"]}
+poppler-rs = {version = "0.19.0", features = ["v21_12"] }
 svg = "0.10.0"
 image = "0.23.14"
 gettext-rs = { version = "0.7.0", features = ["gettext-system"] }

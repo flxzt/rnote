@@ -11,11 +11,11 @@ use std::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Align, Application, ArrowType, Box, Button,
-    CompositeTemplate, CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags,
-    EventSequenceState, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit,
-    PackType, PolicyType, PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow,
-    Separator, StyleContext, ToggleButton,
+    gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
+    CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
+    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
+    PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext,
+    ToggleButton,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::PenEvent;

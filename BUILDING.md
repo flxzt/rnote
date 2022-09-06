@@ -27,7 +27,7 @@ If you don't have an IDE or extension to handle building flatpaks, you can also 
 First the Gnome 42 SDK and some extensions are needed:
 
 ```bash
-flatpak install org.gnome.Sdk//42 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//42 org.freedesktop.Sdk.Extension.llvm13
+flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14
 ```
 ### Build
 Building the app with flatpak is done with:

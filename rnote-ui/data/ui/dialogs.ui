@@ -329,17 +329,9 @@
               <object class="AdwPreferencesGroup">
                 <property name="halign">fill</property>
                 <child>
-                  <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Name</property>
-                    <property name="subtitle" translatable="yes">Change the workspace name</property>
-                    <child type="suffix">
-                      <object class="GtkEntry" id="change_workspace_name_entry">
-                        <property name="hexpand">false</property>
-                        <property name="hexpand">true</property>
-                        <property name="valign">center</property>
-                        <property name="halign">fill</property>
-                      </object>
-                    </child>
+                  <object class="AdwEntryRow" id="change_workspace_name_entryrow">
+                    <property name="title" translatable="yes">Workspace Name</property>
+                    <property name="show-apply-button">true</property>
                   </object>
                 </child>
                 <child>

@@ -3,7 +3,7 @@ use crate::settingspanel::penshortcutmodels::{
 };
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{
-    glib, glib::clone, glib::subclass::*, subclass::prelude::*, CheckButton, CompositeTemplate,
+    glib, glib::clone, glib::subclass::*, CheckButton, CompositeTemplate,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::ShortcutKey;

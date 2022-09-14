@@ -13,7 +13,7 @@
         <property name="propagate-natural-height">false</property>
         <property name="vexpand">true</property>
         <property name="hexpand">true</property>
-        <property name="height-request">400</property>
+        <property name="height-request">240</property>
         <child>
           <object class="GtkGridView" id="gridview">
             <property name="max-columns">7</property>

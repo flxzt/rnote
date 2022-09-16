@@ -2,9 +2,9 @@ use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::MenuButton;
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, ColorButton, Dialog,
-    FileChooserAction, FileChooserNative, FileFilter, Label, MessageDialog, ResponseType,
-    ShortcutsWindow, SpinButton, StringList, ToggleButton,
+    gio, glib, glib::clone, Builder, Button, ColorButton, Dialog, FileChooserAction,
+    FileChooserNative, FileFilter, Label, ResponseType, ShortcutsWindow, SpinButton, StringList,
+    ToggleButton,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
@@ -60,16 +60,15 @@ pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
 pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_clear_doc: MessageDialog = builder.object("dialog_clear_doc").unwrap();
+    let dialog_clear_doc: adw::MessageDialog = builder.object("dialog_clear_doc").unwrap();
 
     dialog_clear_doc.set_transient_for(Some(appwindow));
 
     dialog_clear_doc.connect_response(
-        clone!(@weak appwindow => move |dialog_clear_doc, responsetype| {
-            match responsetype {
-                ResponseType::Ok => {
-                    dialog_clear_doc.close();
-
+        None,
+        clone!(@weak appwindow => move |_dialog_clear_doc, response| {
+            match response {
+                "clear" => {
                     appwindow.canvas().engine().borrow_mut().clear();
 
                     appwindow.canvas().return_to_origin_page();
@@ -80,7 +79,6 @@ pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().set_empty(true);
                 },
                 _ => {
-                    dialog_clear_doc.close();
                 }
             }
         }),
@@ -92,14 +90,15 @@ pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
 pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_new_doc: MessageDialog = builder.object("dialog_new_doc").unwrap();
+    let dialog_new_doc: adw::MessageDialog = builder.object("dialog_new_doc").unwrap();
 
     dialog_new_doc.set_transient_for(Some(appwindow));
-    dialog_new_doc.connect_response(clone!(@weak appwindow => move |dialog_new_doc, responsetype| {
-        match responsetype {
-            ResponseType::Ok => {
-                dialog_new_doc.close();
-
+    dialog_new_doc.connect_response(None, clone!(@weak appwindow => move |_dialog_new_doc, response| {
+        match response{
+            "save_current_doc" => {
+                dialog_save_doc_as(&appwindow);
+            },
+            "new" => {
                 appwindow.canvas().engine().borrow_mut().clear();
 
                 appwindow.canvas().return_to_origin_page();
@@ -111,12 +110,7 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.canvas().set_output_file(None);
             },
-            ResponseType::Apply => {
-                dialog_new_doc.close();
-                dialog_save_doc_as(&appwindow);
-            }
             _ => {
-                dialog_new_doc.close();
             }
         }
     }));
@@ -127,23 +121,21 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
 pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_quit_save: MessageDialog = builder.object("dialog_quit_save").unwrap();
+    let dialog_quit_save: adw::MessageDialog = builder.object("dialog_quit_save").unwrap();
 
     dialog_quit_save.set_transient_for(Some(appwindow));
 
     dialog_quit_save.connect_response(
-        clone!(@weak appwindow => move |dialog_quit_save, responsetype| {
-            match responsetype {
-                ResponseType::Ok => {
-                    dialog_quit_save.close();
+        None,
+        clone!(@weak appwindow => move |_dialog_quit_save, response| {
+            match response {
+                "save_current_doc" => {
+                    dialog_save_doc_as(&appwindow);
+                },
+                "quit" => {
                     appwindow.close_force();
                 },
-                ResponseType::Apply => {
-                    dialog_quit_save.close();
-                    dialog_save_doc_as(&appwindow);
-                }
                 _ => {
-                    dialog_quit_save.close();
                 }
             }
         }),
@@ -155,16 +147,19 @@ pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
 pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_open_input_file: MessageDialog = builder.object("dialog_open_overwrite").unwrap();
+    let dialog_open_input_file: adw::MessageDialog =
+        builder.object("dialog_open_overwrite").unwrap();
 
     dialog_open_input_file.set_transient_for(Some(appwindow));
 
     dialog_open_input_file.connect_response(
-        clone!(@weak appwindow => move |dialog_open_input_file, responsetype| {
-            match responsetype {
-                ResponseType::Ok => {
-                    dialog_open_input_file.close();
-
+        None,
+        clone!(@weak appwindow => move |_dialog_open_input_file, response| {
+            match response {
+                "save_current_doc" => {
+                    dialog_save_doc_as(&appwindow);
+                },
+                "open" => {
                     if let Some(input_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().as_ref() {
                         if let Err(e) = appwindow.load_in_file(input_file, None) {
                             log::error!("failed to load in input file, {}", e);
@@ -172,13 +167,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                         }
                         }
                     },
-                ResponseType::Apply => {
-                    dialog_open_input_file.close();
-
-                    dialog_save_doc_as(&appwindow);
-                }
                 _ => {
-                    dialog_open_input_file.close();
                 }
             }
         }),
@@ -352,7 +341,8 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
     let edit_workspace_preview_row: WorkspaceRow =
         builder.object("edit_workspace_preview_row").unwrap();
-    let change_workspace_name_entryrow: adw::EntryRow = builder.object("change_workspace_name_entryrow").unwrap();
+    let change_workspace_name_entryrow: adw::EntryRow =
+        builder.object("change_workspace_name_entryrow").unwrap();
     let change_workspace_color_button: ColorButton =
         builder.object("change_workspace_color_button").unwrap();
     let change_workspace_dir_button: Button =

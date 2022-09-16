@@ -1,10 +1,7 @@
 use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
 use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{
-    gio, glib, CompositeTemplate, MenuButton, PopoverMenu, ToggleButton,
-    Widget,
-};
+use gtk4::{gio, glib, CompositeTemplate, MenuButton, PopoverMenu, ToggleButton, Widget};
 
 mod imp {
     use super::*;

@@ -2,9 +2,7 @@ use crate::settingspanel::penshortcutmodels::{
     ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
 };
 use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{
-    glib, glib::clone, glib::subclass::*, CheckButton, CompositeTemplate,
-};
+use gtk4::{glib, glib::clone, glib::subclass::*, CheckButton, CompositeTemplate};
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::ShortcutKey;
 use rnote_engine::pens::penholder::PenStyle;

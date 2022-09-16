@@ -1,101 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- RnoteDialogs -->
+<!-- Rnote Dialogs -->
 <interface>
 
-  <object class="GtkMessageDialog" id="dialog_new_doc">
-    <property name="modal">true</property>
-    <property name="title" translatable="yes">New document</property>
-    <property name="text" translatable="yes">Creating a new document erases any unsaved changes. Are you sure?</property>
-    <child type="action">
-      <object class="GtkButton" id="new_doc_button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="new_doc_button_save_as">
-        <property name="label" translatable="yes">Save current document as</property>
-        <style>
-          <class name="suggested-action" />
-        </style>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="new_doc_button_ok">
-        <property name="label" translatable="yes">New</property>
-        <style>
-          <class name="destructive-action" />
-        </style>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="cancel" default="true">new_doc_button_cancel</action-widget>
-      <action-widget response="ok">new_doc_button_ok</action-widget>
-      <action-widget response="apply">new_doc_button_save_as</action-widget>
-    </action-widgets>
+  <object class="AdwMessageDialog" id="dialog_clear_doc">
+    <property name="heading" translatable="yes">Clear document</property>
+    <property name="body" translatable="yes">This clears the entire document. Please confirm.</property>
+    <property name="default-response">clear</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="clear" appearance="destructive" translatable="yes">Clear</response>
+    </responses>
   </object>
 
-  <object class="GtkMessageDialog" id="dialog_quit_save">
-    <property name="modal">true</property>
-    <property name="title" translatable="yes">Quit Application</property>
-    <property name="text" translatable="yes">Any unsaved changes will be lost. Do you want to quit anyways?</property>
-    <child type="action">
-      <object class="GtkButton" id="quit_save_button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="quit_save_button_save_as">
-        <property name="label" translatable="yes">Save current document as</property>
-        <style>
-          <class name="suggested-action" />
-        </style>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="quit_save_button_ok">
-        <property name="label" translatable="yes">Quit</property>
-        <style>
-          <class name="destructive-action" />
-        </style>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="cancel" default="true">quit_save_button_cancel</action-widget>
-      <action-widget response="ok">quit_save_button_ok</action-widget>
-      <action-widget response="apply">quit_save_button_save_as</action-widget>
-    </action-widgets>
+  <object class="AdwMessageDialog" id="dialog_new_doc">
+    <property name="heading" translatable="yes">New Document</property>
+    <property name="body" translatable="yes">Creating a new document will erase any unsaved changes. Do you want to continue?</property>
+    <property name="default-response">new</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="save_current_doc" appearance="suggested" translatable="yes">Save current document</response>
+      <response id="new" appearance="destructive" translatable="yes">New</response>
+    </responses>
   </object>
 
-  <object class="GtkMessageDialog" id="dialog_open_overwrite">
-    <property name="modal">true</property>
-    <property name="title" translatable="yes">Open File</property>
-    <property name="text" translatable="yes">Opening this file overwrites any unsaved changes.</property>
-    <child type="action">
-      <object class="GtkButton" id="open_overwrite_button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="open_overwrite_button_save_as">
-        <property name="label" translatable="yes">Save current document as</property>
-        <style>
-          <class name="suggested-action" />
-        </style>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="open_overwrite_button_ok">
-        <property name="label" translatable="yes">Open</property>
-        <style>
-          <class name="destructive-action" />
-        </style>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="cancel" default="true">open_overwrite_button_cancel</action-widget>
-      <action-widget response="ok">open_overwrite_button_ok</action-widget>
-      <action-widget response="apply">open_overwrite_button_save_as</action-widget>
-    </action-widgets>
+  <object class="AdwMessageDialog" id="dialog_quit_save">
+    <property name="heading" translatable="yes">Quit Application</property>
+    <property name="body" translatable="yes">Any unsaved changes will be lost. Do you want to quit anyways?</property>
+    <property name="default-response">quit</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="save_current_doc" appearance="suggested" translatable="yes">Save current document</response>
+      <response id="quit" appearance="destructive" translatable="yes">Quit</response>
+    </responses>
+  </object>
+
+  <object class="AdwMessageDialog" id="dialog_open_overwrite">
+    <property name="heading" translatable="yes">Open File</property>
+    <property name="body" translatable="yes">Opening this file overwrites any unsaved changes. Do you want to continue?</property>
+    <property name="default-response">open</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="save_current_doc" appearance="suggested" translatable="yes">Save current document</response>
+      <response id="open" appearance="destructive" translatable="yes">Open</response>
+    </responses>
   </object>
 
   <object class="GtkDialog" id="dialog_import_pdf_w_prefs">
@@ -412,28 +363,5 @@
     <child>
       <object class="IconPicker" id="change_workspace_icon_picker"></object>
     </child>
-  </object>
-
-  <object class="GtkMessageDialog" id="dialog_clear_doc">
-    <property name="modal">true</property>
-    <property name="title" translatable="yes">Clear document</property>
-    <property name="text" translatable="yes">This clears the entire document. Please confirm.</property>
-    <child type="action">
-      <object class="GtkButton" id="clear_doc_button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="clear_doc_button_ok">
-        <property name="label" translatable="yes">Clear</property>
-        <style>
-          <class name="destructive-action" />
-        </style>
-      </object>
-    </child>
-    <action-widgets>
-      <action-widget response="cancel" default="true">clear_doc_button_cancel</action-widget>
-      <action-widget response="ok">clear_doc_button_ok</action-widget>
-    </action-widgets>
   </object>
 </interface>

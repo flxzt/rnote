@@ -23,6 +23,9 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .application_icon(config::APP_ID)
         .comments(&gettext("Sketch and take handwritten notes"))
         .website(config::APP_WEBSITE)
+        .issue_url(config::APP_ISSUES_URL)
+        .support_url(config::APP_SUPPORT_URL)
+        .developer_name(config::APP_AUTHOR_NAME)
         .developers(
             config::APP_AUTHORS
                 .iter()

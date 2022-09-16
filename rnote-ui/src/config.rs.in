@@ -4,8 +4,11 @@ pub const APP_ID: &str = @APP_ID@;
 pub const APP_IDPATH: &str = @APP_IDPATH@;
 pub const APP_VERSION: &str = @VERSION@;
 pub const APP_VERSION_SUFFIX: &str = @VERSION_SUFFIX@;
+pub const APP_AUTHOR_NAME: &str = @APP_AUTHOR_NAME@;
 pub const APP_AUTHORS: &[&str] = &[@APP_AUTHORS@];
 pub const APP_WEBSITE: &str = @APP_WEBSITE@;
+pub const APP_ISSUES_URL: &str = @APP_ISSUES_URL@;
+pub const APP_SUPPORT_URL: &str = @APP_SUPPORT_URL@;
 pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
 pub const LOCALEDIR: &str = @LOCALEDIR@;
 

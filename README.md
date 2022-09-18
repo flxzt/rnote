@@ -15,7 +15,7 @@
 # Rnote
 > Sketch and take handwritten notes.  
 
-Rnote is a vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures. Targeted at students, teachers and those who own a drawing tablet, it provides features like PDF and picture import and export, an infinite canvas and an adaptive UI for big and small screens.  
+Rnote is a open-source vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures. Targeted at students, teachers and those who own a drawing tablet, it provides features like PDF and picture import and export, an infinite canvas and an adaptive UI for big and small screens.  
 
 Written in Rust and GTK4.
 
@@ -79,7 +79,7 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 - A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
 - [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
 - [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
-- [Pizarra](https://pizarra.categulario.xyz/en/) is a innovative drawing app with advanced shaping and featuring a infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
+- [Pizarra](https://pizarra.categulario.xyz/en/) is an innovative drawing app with advanced shaping and featuring an infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
 ## Translations
 

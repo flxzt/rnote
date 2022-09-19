@@ -38,6 +38,8 @@ mod imp {
         #[template_child]
         pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
+        pub general_permanently_hide_scrollbars_switch: TemplateChild<Switch>,
+        #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub format_orientation_row: TemplateChild<adw::ActionRow>,
@@ -429,6 +431,12 @@ impl SettingsPanel {
         self.imp().general_format_border_color_choosebutton.clone()
     }
 
+    pub fn general_permanently_hide_scrollbars_switch(&self) -> Switch {
+        self.imp()
+            .general_permanently_hide_scrollbars_switch
+            .clone()
+    }
+
     pub fn format_width_unitentry(&self) -> UnitEntry {
         self.imp().format_width_unitentry.clone()
     }
@@ -593,6 +601,14 @@ impl SettingsPanel {
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, value| Some((value.get::<f64>().unwrap().round() as u32).to_value()))
             .transform_from(|_, value| Some(f64::from(value.get::<u32>().unwrap()).to_value()))
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
+        // permanently hide canvas scrollbars
+        self.imp()
+            .general_permanently_hide_scrollbars_switch
+            .get()
+            .bind_property("state", appwindow, "permanently-hide-canvas-scrollbars")
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
 

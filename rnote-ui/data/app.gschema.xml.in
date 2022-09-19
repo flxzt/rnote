@@ -45,6 +45,10 @@
       <default>120</default>
       <summary>the sec interval for the autosave</summary>
     </key>
+    <key name="permanently-hide-canvas-scrollbars" type="b">
+      <default>false</default>
+      <summary>Wether the canvas scrollbars are permanently hidden</summary>
+    </key>
     <key name="righthanded" type="b">
       <default>true</default>
       <summary>Wether the user is righthanded (or lefthanded)</summary>

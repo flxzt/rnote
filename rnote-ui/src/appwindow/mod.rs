@@ -54,6 +54,7 @@ mod imp {
         pub autosave: Cell<bool>,
         pub autosave_interval_secs: Cell<u32>,
         pub righthanded: Cell<bool>,
+        pub permanently_hide_canvas_scrollbars: Cell<bool>,
 
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -133,6 +134,7 @@ mod imp {
                 autosave: Cell::new(true),
                 autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
+                permanently_hide_canvas_scrollbars: Cell::new(false),
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
@@ -282,6 +284,14 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // permanently hide canvas scrollbars
+                    glib::ParamSpecBoolean::new(
+                        "permanently-hide-canvas-scrollbars",
+                        "permanently-hide-canvas-scrollbars",
+                        "permanently-hide-canvas-scrollbars",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -293,6 +303,9 @@ mod imp {
                 "autosave" => self.autosave.get().to_value(),
                 "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
+                "permanently-hide-canvas-scrollbars" => {
+                    self.permanently_hide_canvas_scrollbars.get().to_value()
+                }
                 _ => unimplemented!(),
             }
         }
@@ -344,6 +357,22 @@ mod imp {
                     self.righthanded.replace(righthanded);
 
                     self.handle_righthanded_property(righthanded);
+                }
+                "permanently-hide-canvas-scrollbars" => {
+                    let permanently_hide_canvas_scrollbars = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.permanently_hide_canvas_scrollbars
+                        .replace(permanently_hide_canvas_scrollbars);
+
+                    if permanently_hide_canvas_scrollbars {
+                        self.canvas_scroller
+                            .set_policy(PolicyType::Never, PolicyType::Never);
+                    } else {
+                        self.canvas_scroller
+                            .set_policy(PolicyType::Automatic, PolicyType::Automatic);
+                    }
                 }
                 _ => unimplemented!(),
             }
@@ -621,7 +650,7 @@ mod imp {
 
                 appwindow
                     .canvas_scroller()
-                    .set_window_placement(CornerType::BottomLeft);
+                    .set_window_placement(CornerType::BottomRight);
                 appwindow
                     .sidebar_scroller()
                     .set_window_placement(CornerType::TopRight);
@@ -746,7 +775,7 @@ mod imp {
 
                 appwindow
                     .canvas_scroller()
-                    .set_window_placement(CornerType::BottomRight);
+                    .set_window_placement(CornerType::BottomLeft);
                 appwindow
                     .sidebar_scroller()
                     .set_window_placement(CornerType::TopLeft);
@@ -890,6 +919,17 @@ impl RnoteAppWindow {
 
     pub fn set_righthanded(&self, righthanded: bool) {
         self.set_property("righthanded", righthanded.to_value());
+    }
+
+    pub fn permanently_hide_canvas_scrollbars(&self) -> bool {
+        self.property::<bool>("permanently_hide_canvas_scrollbars")
+    }
+
+    pub fn set_permanently_hide_canvas_scrollbars(&self, permanently_hide_canvas_scrollbars: bool) {
+        self.set_property(
+            "permanently_hide_canvas_scrollbars",
+            permanently_hide_canvas_scrollbars.to_value(),
+        );
     }
 
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
@@ -1302,13 +1342,15 @@ impl RnoteAppWindow {
             // this updates the canvas adjustment values with the ones from the camera
             self.canvas().update_camera_offset(camera_offset);
         }
-        if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
-            if hide_scrollbars {
-                self.canvas_scroller()
-                    .set_policy(PolicyType::Never, PolicyType::Never);
-            } else {
-                self.canvas_scroller()
-                    .set_policy(PolicyType::Automatic, PolicyType::Automatic);
+        if !self.permanently_hide_canvas_scrollbars() {
+            if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
+                if hide_scrollbars {
+                    self.canvas_scroller()
+                        .set_policy(PolicyType::Never, PolicyType::Never);
+                } else {
+                    self.canvas_scroller()
+                        .set_policy(PolicyType::Automatic, PolicyType::Automatic);
+                }
             }
         }
         if let Some(hide_undo) = widget_flags.hide_undo {

@@ -46,6 +46,15 @@ impl RnoteAppWindow {
             .bind("autosave-interval-secs", self, "autosave-interval-secs")
             .build();
 
+        // permanently hide canvas scrollbars
+        self.app_settings()
+            .bind(
+                "permanently-hide-canvas-scrollbars",
+                self,
+                "permanently-hide-canvas-scrollbars",
+            )
+            .build();
+
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")

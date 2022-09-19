@@ -89,6 +89,17 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_permanently_hide_scrollbars_row">
+                        <property name="title" translatable="yes">Permanently hidden scrollbars</property>
+                        <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are hidden permanently.</property>
+                        <child type="suffix">
+                          <object class="GtkSwitch" id="general_permanently_hide_scrollbars_switch">
+                            <property name="valign">center</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Format Group -->

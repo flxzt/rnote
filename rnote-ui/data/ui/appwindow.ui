@@ -240,7 +240,7 @@
                             <property name="valign">fill</property>
                             <property name="vexpand">true</property>
                             <property name="hexpand">true</property>
-                            <property name="window-placement">top-left</property>
+                            <property name="window-placement">bottom-right</property>
                             <property name="overlay-scrolling">true</property>
                             <property name="focusable">true</property>
                             <child>

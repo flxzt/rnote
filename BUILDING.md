@@ -24,7 +24,7 @@ Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.vis
 ### Prerequisites
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
-First the Gnome 42 SDK and some extensions are needed:
+First the Gnome 43 SDK and some extensions are needed:
 
 ```bash
 flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14

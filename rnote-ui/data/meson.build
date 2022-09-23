@@ -87,6 +87,11 @@ appdata_conf = configuration_data()
 appdata_conf.set('APP_ID', app_id)
 appdata_conf.set('APP_NAME', app_name)
 appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
+appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
+appdata_conf.set_quoted('APP_WEBSITE', app_website)
+appdata_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
+appdata_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
+appdata_conf.set_quoted('APP_DONATE_URL', app_donate_url)
 appdata_file_in = configure_file(
   input: 'app.metainfo.xml.in.in',
   output: '@BASENAME@',

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Felix Zwettler 2021 <f.zwettler@posteo.de> -->
+<!-- Felix Zwettler 2022 <f.zwettler@posteo.de> -->
 <component type="desktop-application">
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
@@ -53,10 +53,10 @@
     <display_length compare="ge">500</display_length>
   </recommends>
 
-  <url type="homepage">https://github.com/flxzt/rnote</url>
-  <url type="bugtracker">https://github.com/flxzt/rnote/issues</url>
-  <url type="donation">https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG</url>
-  <developer_name translatable="no">Felix Zwettler</developer_name>
+  <url type="homepage">@APP_WEBSITE@</url>
+  <url type="bugtracker">@APP_ISSUES_URL@</url>
+  <url type="donation">@APP_DONATE_URL@</url>
+  <developer_name translatable="no">@APP_AUTHOR_NAME@</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />
 

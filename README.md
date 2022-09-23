@@ -39,6 +39,9 @@ Written in Rust and GTK4.
 **Disclaimer**  
 The file format is still unstable. It might change and break compatibility between versions.
 
+# Website
+Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
+
 ## Installation
 Rnote is available as a flatpak on Flathub:
 

@@ -11,11 +11,11 @@ use std::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Align, Application, ArrowType, Box, Button,
-    CompositeTemplate, CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags,
-    EventSequenceState, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit,
-    PackType, PolicyType, PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow,
-    Separator, StyleContext, ToggleButton,
+    gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
+    CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
+    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
+    PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext,
+    ToggleButton,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::PenEvent;
@@ -488,13 +488,13 @@ mod imp {
                     }
 
                     if flap.reveals_flap() && !flap.is_folded() {
-                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                         appwindow.flap_menus_box().set_visible(true);
                         appwindow.flap_close_button().set_visible(false);
+                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                     } else {
-                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                         appwindow.flap_menus_box().set_visible(false);
                         appwindow.flap_close_button().set_visible(true);
+                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                     }
 
                     if flap.flap_position() == PackType::Start {

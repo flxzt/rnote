@@ -15,7 +15,9 @@ app_name = 'rnote'
 app_name_capitalized = 'Rnote'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://github.com/flxzt/rnote'
-
+app_issues_url = 'https://github.com/flxzt/rnote/issues'
+app_support_url = 'https://github.com/flxzt/rnote/discussions'
+app_author_name = 'Felix Zwettler'
 app_authors = run_command(
   'cat', meson.project_source_root() / 'AUTHORS',
 ).stdout().strip()
@@ -50,9 +52,9 @@ user_home_dir = fs.expanduser('~')
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')
-dependency('gtk4', version: '>= 4.6')
-dependency('libadwaita-1', version: '>= 1.0')
-dependency('poppler-glib', version: '>= 21.08')
+dependency('gtk4', version: '>= 4.7')
+dependency('libadwaita-1', version: '>= 1.2')
+dependency('poppler-glib', version: '>= 22.09')
 
 cargo = find_program('cargo', required: true)
 cargo_script = find_program('build-aux/cargo.py')

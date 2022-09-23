@@ -1,9 +1,9 @@
 use super::RnoteAppWindow;
+use crate::config;
 use crate::{
     app::RnoteApp,
     {dialogs, RnoteCanvas},
 };
-use crate::{config, globals};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
@@ -160,7 +160,7 @@ impl RnoteAppWindow {
 
         // Donate
         action_donate.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            gtk4::show_uri(None::<&Window>, globals::DONATE_URI, 0);
+            gtk4::show_uri(None::<&Window>, config::APP_DONATE_URL, 0);
         }));
 
         // Keyboard shortcuts

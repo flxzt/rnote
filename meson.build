@@ -14,9 +14,10 @@ fs = import('fs')
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
 base_id = 'com.github.flxzt.' + app_name
-app_website = 'https://github.com/flxzt/rnote'
+app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
 app_support_url = 'https://github.com/flxzt/rnote/discussions'
+app_donate_url = 'https://rnote.flxzt.net/donate/'
 app_author_name = 'Felix Zwettler'
 app_authors = run_command(
   'cat', meson.project_source_root() / 'AUTHORS',

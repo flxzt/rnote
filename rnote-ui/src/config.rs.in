@@ -9,6 +9,7 @@ pub const APP_AUTHORS: &[&str] = &[@APP_AUTHORS@];
 pub const APP_WEBSITE: &str = @APP_WEBSITE@;
 pub const APP_ISSUES_URL: &str = @APP_ISSUES_URL@;
 pub const APP_SUPPORT_URL: &str = @APP_SUPPORT_URL@;
+pub const APP_DONATE_URL: &str = @APP_DONATE_URL@;
 pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
 pub const LOCALEDIR: &str = @LOCALEDIR@;
 

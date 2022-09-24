@@ -7,7 +7,7 @@ members = [
     "rnote-ui",
     "rnote-fileformats",
 ]
-exclude = [ "./piet" ]
+exclude = [ "./piet", "./piet-gpu" ]
 
 
 [profile.dev]

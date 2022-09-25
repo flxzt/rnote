@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-27 09:21+0200\n"
-"PO-Revision-Date: 2022-08-14 21:21+0000\n"
-"Last-Translator: Szobonya Dávid <szobonya.david@gmail.com>\n"
+"PO-Revision-Date: 2022-09-26 04:19+0000\n"
+"Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
 "\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:23
@@ -31,7 +31,7 @@ msgstr "Gnome;GTK;Irodai;Grafika;Jegyzetek;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr "Új Ablak"
+msgstr "Új ablak"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -39,15 +39,15 @@ msgid ""
 "annotate documents and pictures."
 msgstr ""
 "Az Rnote egy vektoros rajzalkalmazás vázlatoláshoz, kézzel írt "
-"jegyzeteléshez, valamint dokumentumok és képek annotálásához."
+"jegyzeteléshez, valamint dokumentumok és képek megjegyzéséhez."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"Figyelem: A fájlformátum továbbra is instabil. Megváltozhat, és megszakadhat "
-"a verziók közötti kompatibilitás."
+"Figyelem: A fájlformátum továbbra is bizonytalan. Megváltozhat, és "
+"megszakadhat a verziók közötti kompatibilitás."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -59,7 +59,7 @@ msgstr "Fő ablak sötét színekben"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A PDF annotation"
-msgstr "PDF-annotáció"
+msgstr "PDF-jegyzet"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:44
 msgid "A selection"
@@ -91,11 +91,11 @@ msgstr "Gyorsbillentyűk"
 
 #: rnote-ui/data/ui/appmenu.ui:54
 msgid "Donate 💝"
-msgstr "Adományozz 💝"
+msgstr "Hozzájárulás 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:58
 msgid "About Rnote"
-msgstr "Az Rnote-ról"
+msgstr "A Rnote névjegye"
 
 #: rnote-ui/data/ui/appmenu.ui:89
 msgid "Sidebar on the left side"
@@ -111,7 +111,7 @@ msgstr "Teljes képernyős mód váltása"
 
 #: rnote-ui/data/ui/appmenu.ui:121
 msgid "Use system colors preference"
-msgstr "Rendszerszínek preferenciájának használata"
+msgstr "Rendszerszínek beállításának használata"
 
 #: rnote-ui/data/ui/appmenu.ui:135
 msgid "Use light colors"
@@ -139,7 +139,7 @@ msgstr "Írógép"
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Eraser"
-msgstr "Törlőgumi"
+msgstr "Radír"
 
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
@@ -284,7 +284,7 @@ msgstr "Nagyítás az oldal szélességéhez"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
 #: rnote-ui/src/dialogs.rs:376
 msgid "Select"
-msgstr "Kiválasztás"
+msgstr "Kijelölés"
 
 #: rnote-ui/data/ui/dialogs.ui:7 rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -955,11 +955,11 @@ msgstr "Kijelölés törlése"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"
-msgstr "Formázó stílus"
+msgstr "Alakító stílus"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
 msgid "Shaper styles"
-msgstr "Formázó stílusok"
+msgstr "Alakító stílusok"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
 msgid "Smooth"

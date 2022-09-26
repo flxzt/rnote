@@ -646,13 +646,8 @@ impl RnoteAppWindow {
 
         // Save doc
         action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            if appwindow.canvas().output_file().is_none() {
-                dialogs::dialog_save_doc_as(&appwindow);
-            }
-
-            // check again if a file was selected from the dialog
-            if let Some(output_file) = appwindow.canvas().output_file() {
-                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+            glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                if let Some(output_file) = appwindow.canvas().output_file() {
                     appwindow.start_pulsing_canvas_progressbar();
 
                     if let Err(e) = appwindow.save_document_to_file(&output_file).await {
@@ -663,9 +658,12 @@ impl RnoteAppWindow {
                     }
 
                     appwindow.finish_canvas_progressbar();
-                }));
-                // No success toast on saving without dialog, success is already indicated in the header title
-            }
+                    // No success toast on saving without dialog, success is already indicated in the header title
+                } else {
+                    // Open a dialog to choose a save location
+                    dialogs::dialog_save_doc_as(&appwindow);
+                }
+            }));
         }));
 
         // Save doc as

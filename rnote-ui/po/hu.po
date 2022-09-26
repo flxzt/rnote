@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-26 04:19+0000\n"
+"PO-Revision-Date: 2022-09-28 09:18+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -309,48 +309,42 @@ msgid "Clear"
 msgstr "Tisztítás"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
-#, fuzzy
-#| msgid "New document"
 msgid "New Document"
 msgstr "Új dokumentum"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
 msgstr ""
-"Egy új dokumentum létrehozása törli a nem mentett módosításokat. Biztos vagy "
-"benne?"
+"Új dokumentum létrehozása elveti a nem mentett módosításokat. Menti a "
+"jelenlegi dokumentumot?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "Elvetés"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "Kilépés az alkalmazásból"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "A nem mentett módosítások elvesznek. Mindenképpen ki akarsz lépni?"
+msgstr "A nem mentett módosítások elvesznek. Menti a jelenlegi dokumentumot?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "Fájl megnyitása"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "A fájl megnyitása felülírja az összes el nem mentett módosítást."
+msgstr ""
+"A fájl megnyitása felülírja az összes el nem mentett módosítást. Menti a "
+"jelenlegi dokumentumot?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -416,10 +410,8 @@ msgid "Apply"
 msgstr "Alkalmazás"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "Munkafelület"
+msgstr "Munkafelület neve"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -507,11 +499,12 @@ msgstr "A formátum keret színének beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "Görgetősávok végleges elrejtése"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgstr ""
+"Beállítás, hogy a vásznon lévő görgetősávok véglegesen el legyenek rejtve."
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"

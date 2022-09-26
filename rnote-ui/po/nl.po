@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-26 15:03+0000\n"
+"PO-Revision-Date: 2022-09-26 17:12+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -312,42 +312,40 @@ msgid "New Document"
 msgstr "Nieuw document"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
 msgstr ""
-"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Weet u het zeker?"
+"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
+"werkblad opslaan?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "Niet opslaan"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "Toepassing afsluiten"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr ""
-"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Weet u het zeker?"
+"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
+"werkblad opslaan?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "Bestand openen"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "Hierdoor gaan alle niet-opgeslagen aanpassingen verloren."
+msgstr ""
+"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
+"werkblad opslaan?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -413,10 +411,8 @@ msgid "Apply"
 msgstr "Toepassen"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "Werkblad"
+msgstr "Werkbladnaam"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -506,11 +502,12 @@ msgstr "Kies een formaatkaderkleur"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "Schuifbalken verbergen"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgstr ""
+"Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn."
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"

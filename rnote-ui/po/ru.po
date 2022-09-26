@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-24 19:52+0000\n"
+"PO-Revision-Date: 2022-09-26 15:00+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -63,7 +63,7 @@ msgstr "Аннотация PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:44
 msgid "A selection"
-msgstr "Выбор"
+msgstr "Выделение"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Developer mode"
@@ -157,7 +157,7 @@ msgstr "Добавить страницу"
 
 #: rnote-ui/data/ui/appwindow.ui:175
 msgid "Resize document to fit the strokes"
-msgstr "Изменить размер в соответствии с содержимым"
+msgstr "Изменить размер документа в соответствии с содержимым"
 
 #: rnote-ui/data/ui/appwindow.ui:191
 msgid "Return to the origin page"
@@ -177,7 +177,7 @@ msgstr "Закрыть боковую панель"
 
 #: rnote-ui/data/ui/appwindow.ui:413
 msgid "Workspace"
-msgstr "Рабочая область"
+msgstr "Коллекция"
 
 #: rnote-ui/data/ui/appwindow.ui:424
 msgid "Settings"
@@ -309,47 +309,44 @@ msgid "Clear"
 msgstr "Очистить"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
-#, fuzzy
-#| msgid "New document"
 msgid "New Document"
-msgstr "Новый документ"
+msgstr "Новый Документ"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
 msgstr ""
-"Создание нового документы удаляет все несохранённые изменения. Вы уверены?"
+"Создание нового документа удалит все несохранённые изменения. Хотите "
+"сохранить текущий документ?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "Не сохранять"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "Выйти из программы"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "Все несохранённые изменения будут потеряны. Вы точно хотите выйти?"
+msgstr ""
+"Все несохранённые изменения будут потеряны. Хотите сохранить текущий "
+"документ?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "Открыть файл"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "Открытие этого файла перезаписывает любые несохранённые изменения."
+msgstr ""
+"Открытие этого файла перезаписывает любые несохранённые изменения. Хотите "
+"сохранить текущий документ?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -415,10 +412,8 @@ msgid "Apply"
 msgstr "Применить"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "Рабочая область"
+msgstr "Имя коллекции"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -506,11 +501,11 @@ msgstr "Выбрать цвет границ страницы"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "Не показывать полосы прокрутки"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
-msgstr ""
+msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно."
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"

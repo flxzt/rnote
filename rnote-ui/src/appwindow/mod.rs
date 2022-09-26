@@ -844,6 +844,11 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup;
 }
 
+pub static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
+    once_cell::sync::Lazy::new(|| gettext("New Document"));
+pub static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
+    once_cell::sync::Lazy::new(|| gettext("Draft"));
+
 impl RnoteAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 120;
 
@@ -1083,19 +1088,16 @@ impl RnoteAppWindow {
         self.load_settings();
 
         // Loading in input file, if Some
-        if let Some(input_file) = self
-            .application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .input_file()
-        {
+        if let Some(input_file) = self.app().input_file() {
             if self.unsaved_changes() {
                 dialogs::dialog_open_overwrite(self);
             } else if let Err(e) = self.load_in_file(&input_file, None) {
                 log::error!("failed to load in input file, {}", e);
             }
         }
+
+        // Initial titles
+        self.update_titles_for_file(None);
     }
 
     pub fn setup_input(&self) {
@@ -1369,6 +1371,25 @@ impl RnoteAppWindow {
             .set_string("engine-config", engine_config.as_str())?;
 
         Ok(())
+    }
+
+    pub fn update_titles_for_file(&self, file: Option<&gio::File>) {
+        let title: String = file
+            .and_then(|f| f.basename())
+            .map(|t| t.with_extension("").display().to_string())
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string());
+
+        let subtitle: String = file
+            .and_then(|f| f.parent())
+            .map(|t| t.to_string())
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string());
+
+        self.set_title(Some(
+            &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
+        ));
+
+        self.mainheader().main_title().set_title(&title);
+        self.mainheader().main_title().set_subtitle(&subtitle);
     }
 
     pub fn start_pulsing_canvas_progressbar(&self) {

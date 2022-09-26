@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-26 15:00+0000\n"
+"PO-Revision-Date: 2022-09-26 15:03+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -468,8 +468,9 @@ msgid "Save document"
 msgstr "Сохранить документ"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
+#, fuzzy
 msgid "perm."
-msgstr "вечно"
+msgstr "perm."
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"

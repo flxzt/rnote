@@ -327,7 +327,6 @@ impl RnoteEngine {
                 }
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 if let Err(e) = self.store.append_rendering_images(key, images) {
@@ -338,7 +337,6 @@ impl RnoteEngine {
                 }
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
             }
             EngineTask::Quit => {
                 widget_flags.quit = true;

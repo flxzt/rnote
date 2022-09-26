@@ -1,7 +1,7 @@
 use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Label,
-    ToggleButton, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Label, ToggleButton,
+    Widget,
 };
 use rnote_engine::pens::penholder::PenStyle;
 
@@ -223,34 +223,5 @@ impl MainHeader {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
             }
         }));
-    }
-
-    pub fn set_title_for_file(&self, file: Option<&gio::File>) {
-        if let Some(file) = file {
-            match file.query_info(
-                "standard::*",
-                gio::FileQueryInfoFlags::NONE,
-                None::<&gio::Cancellable>,
-            ) {
-                Ok(fileinfo) => {
-                    let title = fileinfo.name().with_extension("");
-
-                    self.main_title().set_title(&title.to_string_lossy());
-
-                    if let Some(mut path) = file.path() {
-                        if path.pop() {
-                            self.main_title()
-                                .set_subtitle(&String::from(path.to_string_lossy() + "/"));
-                        }
-                    }
-                }
-                Err(e) => {
-                    log::warn!("failed to query fileinfo for file {:?}, {}", file, e);
-                }
-            }
-        } else {
-            self.main_title().set_title("New Document");
-            self.main_title().set_subtitle("Draft");
-        }
     }
 }

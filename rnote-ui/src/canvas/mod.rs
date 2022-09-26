@@ -472,7 +472,9 @@ impl RnoteCanvas {
         self.connect_notify_local(
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {
-                appwindow.mainheader().set_title_for_file(canvas.output_file().as_ref());
+                let output_file = canvas.output_file();
+
+                appwindow.update_titles_for_file(output_file.as_ref());
             }),
         );
 

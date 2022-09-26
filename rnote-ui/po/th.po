@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-27 09:21+0200\n"
+"POT-Creation-Date: 2022-09-26 15:25+0200\n"
 "PO-Revision-Date: 2022-08-22 08:17+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Generator: Weblate 4.14-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs.rs:23
+#: rnote-ui/src/dialogs.rs:24
 msgid "Sketch and take handwritten notes"
 msgstr "วาดและจดโน๊ตด้วยปากกา"
 
@@ -45,8 +45,7 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร "
-"อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
+"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -76,11 +75,11 @@ msgstr "เมนูสำหรับนักพัฒนา"
 msgid "Visual debugging"
 msgstr "แก้ไขปัญหาการแสดงผล"
 
-#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:877
+#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:966
 msgid "Export engine state"
 msgstr "ส่งออกสภาพของเอนจิน"
 
-#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:931
+#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1020
 msgid "Export engine config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
@@ -210,24 +209,25 @@ msgstr "แสดงขอบเขตของหน้ากระดาษ"
 msgid "Pen sounds"
 msgstr "จำลองเสียงปากกา"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:427
+#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:6
 msgid "Clear document"
 msgstr "ล้างเอกสาร"
 
-#: rnote-ui/data/ui/canvasmenu.ui:65 rnote-ui/data/ui/dialogs.ui:24
+#: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "New"
 msgstr "ใหม่"
 
-#: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/dialogs.ui:88
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs.rs:487
+#: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
+#: rnote-ui/src/dialogs.rs:567
 msgid "Open"
 msgstr "เปิด"
 
-#: rnote-ui/data/ui/canvasmenu.ui:73
+#: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs.ui:24
+#: rnote-ui/data/ui/dialogs.ui:36 rnote-ui/data/ui/dialogs.ui:48
 msgid "Save"
 msgstr "บันทึก"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:527
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:616
 msgid "Save as"
 msgstr "บันทึกที่"
 
@@ -235,7 +235,7 @@ msgstr "บันทึกที่"
 msgid "Print"
 msgstr "พิมพ์"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:584
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:673
 msgid "Import file"
 msgstr "นำเข้าไฟล์"
 
@@ -281,170 +281,171 @@ msgstr "ซูมให้พอดีกับความกว้างขอ
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs.rs:376
+#: rnote-ui/src/dialogs.rs:456
 msgid "Select"
 msgstr "เลือก"
 
-#: rnote-ui/data/ui/dialogs.ui:7 rnote-ui/data/ui/mainheader.ui:18
-msgid "New document"
-msgstr "เอกสารใหม่"
+#: rnote-ui/data/ui/dialogs.ui:7
+msgid "This clears the entire document. Please confirm."
+msgstr "การทำสิ่งนี้ จะล้างเอกสารทั้งฉบับ โปรดยืนยัน"
 
-#: rnote-ui/data/ui/dialogs.ui:8
-msgid "Creating a new document erases any unsaved changes. Are you sure?"
-msgstr ""
-"การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด "
-"คุณแน่ใจหรือไม่?"
-
-#: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:43
-#: rnote-ui/data/ui/dialogs.ui:75 rnote-ui/data/ui/dialogs.ui:107
-#: rnote-ui/data/ui/dialogs.ui:286 rnote-ui/data/ui/dialogs.ui:431
+#: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:22
+#: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
+#: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:377 rnote-ui/src/dialogs.rs:488
-#: rnote-ui/src/dialogs.rs:528 rnote-ui/src/dialogs.rs:588
-#: rnote-ui/src/dialogs.rs:625 rnote-ui/src/dialogs.rs:677
-#: rnote-ui/src/dialogs.rs:729 rnote-ui/src/dialogs.rs:780
-#: rnote-ui/src/dialogs.rs:831 rnote-ui/src/dialogs.rs:881
-#: rnote-ui/src/dialogs.rs:935 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:457 rnote-ui/src/dialogs.rs:568
+#: rnote-ui/src/dialogs.rs:617 rnote-ui/src/dialogs.rs:677
+#: rnote-ui/src/dialogs.rs:714 rnote-ui/src/dialogs.rs:766
+#: rnote-ui/src/dialogs.rs:818 rnote-ui/src/dialogs.rs:869
+#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:970
+#: rnote-ui/src/dialogs.rs:1024 rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#: rnote-ui/data/ui/dialogs.ui:16 rnote-ui/data/ui/dialogs.ui:48
-#: rnote-ui/data/ui/dialogs.ui:80
-msgid "Save current document as"
-msgstr "บันทึกเอกสารนี้ที่"
+#: rnote-ui/data/ui/dialogs.ui:12
+msgid "Clear"
+msgstr "ล้าง"
 
-#: rnote-ui/data/ui/dialogs.ui:39
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
+#, fuzzy
+#| msgid "New document"
+msgid "New Document"
+msgstr "เอกสารใหม่"
+
+#: rnote-ui/data/ui/dialogs.ui:18
+#, fuzzy
+#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
+msgid ""
+"Creating a new document will erase any unsaved changes. Do you want to save "
+"the current document?"
+msgstr "การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณแน่ใจหรือไม่?"
+
+#: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
+#: rnote-ui/data/ui/dialogs.ui:47
+msgid "Discard"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "ออกจากแอปพลิเคชัน"
 
-#: rnote-ui/data/ui/dialogs.ui:40
-msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
-msgstr ""
-"การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป "
-"คุณยังต้องการที่จะออกอยู่หรือไม่?"
+#: rnote-ui/data/ui/dialogs.ui:30
+#, fuzzy
+#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
+msgid ""
+"Any unsaved changes will be lost. Do you want to save the current document?"
+msgstr "การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป คุณยังต้องการที่จะออกอยู่หรือไม่?"
 
-#: rnote-ui/data/ui/dialogs.ui:56
-msgid "Quit"
-msgstr "ออก"
-
-#: rnote-ui/data/ui/dialogs.ui:71
+#: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "เปิดไฟล์"
 
-#: rnote-ui/data/ui/dialogs.ui:72
-msgid "Opening this file overwrites any unsaved changes."
+#: rnote-ui/data/ui/dialogs.ui:42
+#, fuzzy
+#| msgid "Opening this file overwrites any unsaved changes."
+msgid ""
+"Opening this file overwrites any unsaved changes. Do you want to save the "
+"current document?"
 msgstr "การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด"
 
-#: rnote-ui/data/ui/dialogs.ui:104
+#: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
 msgstr "นำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:112 rnote-ui/src/dialogs.rs:587
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:676
 msgid "Import"
 msgstr "นำเข้า"
 
-#: rnote-ui/data/ui/dialogs.ui:176
+#: rnote-ui/data/ui/dialogs.ui:127
 msgid "PDF import preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:210
+#: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
 msgstr "ประเภทของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs.ui:211
+#: rnote-ui/data/ui/dialogs.ui:162
 msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgstr "ตั้งเพื่อกำหนดว่าจะนำเข้าไฟล์ PDF เป็นรูปแบบเวกเตอร์หรือบิตแมพ"
 
-#: rnote-ui/data/ui/dialogs.ui:223
+#: rnote-ui/data/ui/dialogs.ui:174
 msgid "Vector"
 msgstr "เวกเตอร์"
 
-#: rnote-ui/data/ui/dialogs.ui:230
+#: rnote-ui/data/ui/dialogs.ui:181
 msgid "Bitmap"
 msgstr "บิตแมพ"
 
-#: rnote-ui/data/ui/dialogs.ui:239
+#: rnote-ui/data/ui/dialogs.ui:190
 msgid "Page width (%)"
 msgstr "ความกว้างหน้ากระดาษ (%)"
 
-#: rnote-ui/data/ui/dialogs.ui:240
+#: rnote-ui/data/ui/dialogs.ui:191
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr ""
-"ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา "
-"เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
+msgstr "ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs.ui:260
+#: rnote-ui/data/ui/dialogs.ui:211
 msgid "Page spacing"
 msgstr "ระยะห่างหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs.ui:261
+#: rnote-ui/data/ui/dialogs.ui:212
 msgid "How PDF pages are spaced"
 msgstr "การเว้นระยะห่างหน้ากระดาษของไฟล์ PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:265
+#: rnote-ui/data/ui/dialogs.ui:216
 msgid "Continuous"
 msgstr "แบบต่อเนื่อง"
 
-#: rnote-ui/data/ui/dialogs.ui:266
+#: rnote-ui/data/ui/dialogs.ui:217
 msgid "One per document page"
 msgstr "หน้าต่อหน้า"
 
-#: rnote-ui/data/ui/dialogs.ui:283 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
 msgstr "แก้ไขพื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/dialogs.ui:291 rnote-ui/data/ui/settingspanel.ui:210
+#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:221
 #: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "นำไปใช้"
 
-#: rnote-ui/data/ui/dialogs.ui:333
-msgid "Name"
-msgstr "ชื่อ"
+#: rnote-ui/data/ui/dialogs.ui:284
+#, fuzzy
+#| msgid "Workspace"
+msgid "Workspace Name"
+msgstr "พื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/dialogs.ui:334
-msgid "Change the workspace name"
-msgstr "เปลี่ยนชื่อของพื้นที่ทำงานนี้"
-
-#: rnote-ui/data/ui/dialogs.ui:347
+#: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
 msgstr "ไอค่อน"
 
-#: rnote-ui/data/ui/dialogs.ui:348
+#: rnote-ui/data/ui/dialogs.ui:291
 msgid "Change the workspace icon"
 msgstr "เปลี่ยนไอค่อนของพื้นที่ทำงานนี้"
 
-#: rnote-ui/data/ui/dialogs.ui:367 rnote-ui/data/ui/settingspanel.ui:226
+#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:237
 msgid "Color"
 msgstr "สี"
 
-#: rnote-ui/data/ui/dialogs.ui:368
+#: rnote-ui/data/ui/dialogs.ui:311
 msgid "Change the workspace color"
 msgstr "เปลี่ยนสีของพื้นที่ทำงานนี้"
 
-#: rnote-ui/data/ui/dialogs.ui:381
+#: rnote-ui/data/ui/dialogs.ui:324
 msgid "Directory"
 msgstr "ไดเรกทอรี"
 
-#: rnote-ui/data/ui/dialogs.ui:382
+#: rnote-ui/data/ui/dialogs.ui:325
 msgid "Change the workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
 
-#: rnote-ui/data/ui/dialogs.ui:391 rnote-ui/src/dialogs.rs:437
+#: rnote-ui/data/ui/dialogs.ui:334 rnote-ui/src/dialogs.rs:517
 msgid "- no directory selected -"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
 
-#: rnote-ui/data/ui/dialogs.ui:405 rnote-ui/src/dialogs.rs:373
+#: rnote-ui/data/ui/dialogs.ui:348 rnote-ui/src/dialogs.rs:453
 msgid "Change workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
-
-#: rnote-ui/data/ui/dialogs.ui:428
-msgid "This clears the entire document. Please confirm."
-msgstr "การทำสิ่งนี้ จะล้างเอกสารทั้งฉบับ โปรดยืนยัน"
-
-#: rnote-ui/data/ui/dialogs.ui:436
-msgid "Clear"
-msgstr "ล้าง"
 
 #: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
@@ -454,7 +455,11 @@ msgstr "ตั้งชื่อใหม่"
 msgid "Move into trash"
 msgstr "ย้ายลงสู่ถังขยะ"
 
-#: rnote-ui/data/ui/mainheader.ui:19
+#: rnote-ui/data/ui/mainheader.ui:18
+msgid "New document"
+msgstr "เอกสารใหม่"
+
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:850
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -494,175 +499,183 @@ msgstr "สีขอบเขตของหน้ากระดาษ"
 msgid "Set the format border color"
 msgstr "ตั้งค่าสีขอบเขตของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/settingspanel.ui:97
+#: rnote-ui/data/ui/settingspanel.ui:94
+msgid "Permanently hidden scrollbars"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:95
+msgid "Set whether the scrollbars on the canvas are hidden permanently."
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"
 msgstr "ตั้งค่าหน้ากระดาษ"
 
-#: rnote-ui/data/ui/settingspanel.ui:100
+#: rnote-ui/data/ui/settingspanel.ui:111
 msgid "Format"
 msgstr "ขนาด"
 
-#: rnote-ui/data/ui/settingspanel.ui:101
+#: rnote-ui/data/ui/settingspanel.ui:112
 msgid "Choose a format"
 msgstr "เลือกขนาด"
 
-#: rnote-ui/data/ui/settingspanel.ui:105
+#: rnote-ui/data/ui/settingspanel.ui:116
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:106
+#: rnote-ui/data/ui/settingspanel.ui:117
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:107
+#: rnote-ui/data/ui/settingspanel.ui:118
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:108
+#: rnote-ui/data/ui/settingspanel.ui:119
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:109
+#: rnote-ui/data/ui/settingspanel.ui:120
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:110
+#: rnote-ui/data/ui/settingspanel.ui:121
 msgid "US letter"
 msgstr "US letter (8.5 x 11 นิ้ว)"
 
-#: rnote-ui/data/ui/settingspanel.ui:111
+#: rnote-ui/data/ui/settingspanel.ui:122
 msgid "US legal"
 msgstr "US legal (8.5 x 14 นิ้ว)"
 
-#: rnote-ui/data/ui/settingspanel.ui:112
+#: rnote-ui/data/ui/settingspanel.ui:123
 msgid "Custom"
 msgstr "กำหนดเอง"
 
-#: rnote-ui/data/ui/settingspanel.ui:120
+#: rnote-ui/data/ui/settingspanel.ui:131
 msgid "Orientation"
 msgstr "ทิศทางของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/settingspanel.ui:121
+#: rnote-ui/data/ui/settingspanel.ui:132
 msgid "Set the format orientation"
 msgstr "ตั้งทิศทางของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/settingspanel.ui:133
+#: rnote-ui/data/ui/settingspanel.ui:144
 msgid "Portrait"
 msgstr "แนวตั้ง"
 
-#: rnote-ui/data/ui/settingspanel.ui:139
+#: rnote-ui/data/ui/settingspanel.ui:150
 msgid "Landscape"
 msgstr "แนวนอน"
 
-#: rnote-ui/data/ui/settingspanel.ui:149
+#: rnote-ui/data/ui/settingspanel.ui:160
 msgid "Width"
 msgstr "กว้าง"
 
-#: rnote-ui/data/ui/settingspanel.ui:150
+#: rnote-ui/data/ui/settingspanel.ui:161
 msgid "Set the format width"
 msgstr "ตั้งความกว้างของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/settingspanel.ui:163
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "Height"
 msgstr "สูง"
 
-#: rnote-ui/data/ui/settingspanel.ui:164
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "Set the format height"
 msgstr "ตั้งความสูงของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/settingspanel.ui:177
+#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/settingspanel.ui:178
+#: rnote-ui/data/ui/settingspanel.ui:189
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr "ตั้งค่า DPI (จำนวนจุดต่อตารางนิ้ว) ค่าเริ่มต้นคือ 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:201
+#: rnote-ui/data/ui/settingspanel.ui:212
 msgid "Revert"
 msgstr "คืนค่าเริ่มต้น"
 
-#: rnote-ui/data/ui/settingspanel.ui:223
+#: rnote-ui/data/ui/settingspanel.ui:234
 msgid "Document background"
 msgstr "พื้นหลังของเอกสาร"
 
-#: rnote-ui/data/ui/settingspanel.ui:227
+#: rnote-ui/data/ui/settingspanel.ui:238
 msgid "Set the background color"
 msgstr "ตั้งสีพื้นหลัง"
 
-#: rnote-ui/data/ui/settingspanel.ui:244
+#: rnote-ui/data/ui/settingspanel.ui:255
 msgid "Pattern"
 msgstr "ลวดลาย"
 
-#: rnote-ui/data/ui/settingspanel.ui:245
+#: rnote-ui/data/ui/settingspanel.ui:256
 msgid "Choose a background pattern"
 msgstr "เลือกลวดลายของพื้นหลัง"
 
-#: rnote-ui/data/ui/settingspanel.ui:249
+#: rnote-ui/data/ui/settingspanel.ui:260
 msgid "None"
 msgstr "ไม่มี"
 
-#: rnote-ui/data/ui/settingspanel.ui:250
+#: rnote-ui/data/ui/settingspanel.ui:261
 msgid "Lines"
 msgstr "เส้นบรรทัด"
 
-#: rnote-ui/data/ui/settingspanel.ui:251
+#: rnote-ui/data/ui/settingspanel.ui:262
 msgid "Grid"
 msgstr "ตาราง"
 
-#: rnote-ui/data/ui/settingspanel.ui:252
+#: rnote-ui/data/ui/settingspanel.ui:263
 msgid "Dots"
 msgstr "จุด"
 
-#: rnote-ui/data/ui/settingspanel.ui:260
+#: rnote-ui/data/ui/settingspanel.ui:271
 msgid "Pattern Color"
 msgstr "สีของลวดลาย"
 
-#: rnote-ui/data/ui/settingspanel.ui:261
+#: rnote-ui/data/ui/settingspanel.ui:272
 msgid "Set the background pattern color"
 msgstr "ตั้งสีของลวดลายพื้นหลัง"
 
-#: rnote-ui/data/ui/settingspanel.ui:278
+#: rnote-ui/data/ui/settingspanel.ui:289
 msgid "Pattern Width"
 msgstr "ความกว้างของลวดลาย"
 
-#: rnote-ui/data/ui/settingspanel.ui:279
+#: rnote-ui/data/ui/settingspanel.ui:290
 msgid "Set the background pattern width"
 msgstr "ตั้งความกว้างของลวดลายพื้นหลัง"
 
-#: rnote-ui/data/ui/settingspanel.ui:292
+#: rnote-ui/data/ui/settingspanel.ui:303
 msgid "Pattern Height"
 msgstr "ความสูงของลวดลาย"
 
-#: rnote-ui/data/ui/settingspanel.ui:293
+#: rnote-ui/data/ui/settingspanel.ui:304
 msgid "Set the background pattern height"
 msgstr "ตั้งความสูงของลวดลายพื้นหลัง"
 
-#: rnote-ui/data/ui/settingspanel.ui:309
+#: rnote-ui/data/ui/settingspanel.ui:320
 msgid "Button Shortcuts"
 msgstr "คีย์ลัดของปุ่มต่าง ๆ"
 
-#: rnote-ui/data/ui/settingspanel.ui:312
+#: rnote-ui/data/ui/settingspanel.ui:323
 msgid "Stylus primary button action"
 msgstr "ปุ่มหลักของปากกา"
 
-#: rnote-ui/data/ui/settingspanel.ui:313
+#: rnote-ui/data/ui/settingspanel.ui:324
 msgid "Set the action for the primary stylus button"
 msgstr "ตั้งค่าปุ่มหลักของปากกา"
 
-#: rnote-ui/data/ui/settingspanel.ui:324
+#: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Stylus secondary button action"
 msgstr "ปุ่มรองของปากกา"
 
-#: rnote-ui/data/ui/settingspanel.ui:325
+#: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Set the action for the secondary stylus button"
 msgstr "ตั้งค่าปุ่มรองของปากกา"
 
-#: rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:347
 msgid "Mouse secondary button action"
 msgstr "ปุ่มคลิกขวาของเมาส์"
 
-#: rnote-ui/data/ui/settingspanel.ui:337
+#: rnote-ui/data/ui/settingspanel.ui:348
 msgid "Set the action for the secondary mouse button"
 msgstr "ตั้งค่าปุ่มคลิกขวาของเมาส์"
 
@@ -996,8 +1009,7 @@ msgstr "ความโค้งงอ"
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
-msgstr ""
-"ความโค้งงอของเส้นในขณะวาดรูปทรงแบบหยาบ 0.0 คือ เส้นตรง ค่าเริ่มต้นคือ 1.0"
+msgstr "ความโค้งงอของเส้นในขณะวาดรูปทรงแบบหยาบ 0.0 คือ เส้นตรง ค่าเริ่มต้นคือ 1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
 msgid "Curve step count"
@@ -1057,9 +1069,7 @@ msgstr "เปิดใช้งาน"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints when this switch is off/"
 "on"
-msgstr ""
-"กด Ctrl ค้างไว้ เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว "
-"เมื่อสวิตช์นี้ปิด/เปิด"
+msgstr "กด Ctrl ค้างไว้ เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว เมื่อสวิตช์นี้ปิด/เปิด"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
 msgid "1:1"
@@ -1136,203 +1146,217 @@ msgid "Fill"
 msgstr "เต็มบรรทัด"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs.rs:33
+#: rnote-ui/src/dialogs.rs:36
 msgid "translator-credits"
 msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
 
-#: rnote-ui/src/dialogs.rs:171
-msgid "Opening file failed."
-msgstr "การเปิดไฟล์ล้มเหลว"
-
-#: rnote-ui/src/dialogs.rs:242
-msgid "- no file name -"
-msgstr "- ไม่มีชื่อไฟล์ -"
-
-#: rnote-ui/src/dialogs.rs:247
-msgid "- no title -"
-msgstr "- ไม่มีชื่อเรื่อง -"
-
-#: rnote-ui/src/dialogs.rs:250
-msgid "- no author -"
-msgstr "- ไม่มีผู้เขียน -"
-
-#: rnote-ui/src/dialogs.rs:254
-msgid "- no date -"
-msgstr "- ไม่มีวันที่ -"
-
-#: rnote-ui/src/dialogs.rs:261
-msgid "File name:"
-msgstr "ชื่อไฟล์:"
-
-#: rnote-ui/src/dialogs.rs:265
-msgid "Title:"
-msgstr "ชื่อเรื่อง:"
-
-#: rnote-ui/src/dialogs.rs:269
-msgid "Author:"
-msgstr "ผู้เขียน:"
-
-#: rnote-ui/src/dialogs.rs:273
-msgid "Modification date:"
-msgstr "วันที่แก้ไข:"
-
-#: rnote-ui/src/dialogs.rs:277
-msgid "Pages:"
-msgstr "จำนวนหน้า:"
-
-#: rnote-ui/src/dialogs.rs:320 rnote-ui/src/appwindow/mod.rs:1487
-msgid "Opening PDF file failed."
-msgstr "การเปิดไฟล์ PDF ล้มเหลว"
-
-#: rnote-ui/src/dialogs.rs:481
-msgid ".rnote / .xopp File"
-msgstr "ไฟล์ .rnote / .xopp"
-
-#: rnote-ui/src/dialogs.rs:484
-msgid "Open file"
-msgstr "เปิดไฟล์"
-
-#: rnote-ui/src/dialogs.rs:521
-msgid ".rnote file"
-msgstr "ไฟล์ .rnote"
-
-#: rnote-ui/src/dialogs.rs:524
-msgid "Save document as"
-msgstr "บันทึกเอกสารที่"
-
-#: rnote-ui/src/dialogs.rs:551 rnote-ui/src/appwindow/mod.rs:383
-#: rnote-ui/src/appwindow/appwindowactions.rs:662
+#: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
+#: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:640
+#: rnote-ui/src/appwindow/mod.rs:412
+#: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
 msgstr "การบันทึกเอกสารล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:553
+#: rnote-ui/src/dialogs.rs:225 rnote-ui/src/dialogs.rs:585
+msgid "Opening file failed."
+msgstr "การเปิดไฟล์ล้มเหลว"
+
+#: rnote-ui/src/dialogs.rs:321
+msgid "- no file name -"
+msgstr "- ไม่มีชื่อไฟล์ -"
+
+#: rnote-ui/src/dialogs.rs:326
+msgid "- no title -"
+msgstr "- ไม่มีชื่อเรื่อง -"
+
+#: rnote-ui/src/dialogs.rs:329
+msgid "- no author -"
+msgstr "- ไม่มีผู้เขียน -"
+
+#: rnote-ui/src/dialogs.rs:333
+msgid "- no date -"
+msgstr "- ไม่มีวันที่ -"
+
+#: rnote-ui/src/dialogs.rs:340
+msgid "File name:"
+msgstr "ชื่อไฟล์:"
+
+#: rnote-ui/src/dialogs.rs:344
+msgid "Title:"
+msgstr "ชื่อเรื่อง:"
+
+#: rnote-ui/src/dialogs.rs:348
+msgid "Author:"
+msgstr "ผู้เขียน:"
+
+#: rnote-ui/src/dialogs.rs:352
+msgid "Modification date:"
+msgstr "วันที่แก้ไข:"
+
+#: rnote-ui/src/dialogs.rs:356
+msgid "Pages:"
+msgstr "จำนวนหน้า:"
+
+#: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/mod.rs:1570
+msgid "Opening PDF file failed."
+msgstr "การเปิดไฟล์ PDF ล้มเหลว"
+
+#: rnote-ui/src/dialogs.rs:561
+msgid ".rnote / .xopp File"
+msgstr "ไฟล์ .rnote / .xopp"
+
+#: rnote-ui/src/dialogs.rs:564
+msgid "Open file"
+msgstr "เปิดไฟล์"
+
+#: rnote-ui/src/dialogs.rs:610
+msgid ".rnote file"
+msgstr "ไฟล์ .rnote"
+
+#: rnote-ui/src/dialogs.rs:613
+msgid "Save document as"
+msgstr "บันทึกเอกสารที่"
+
+#: rnote-ui/src/dialogs.rs:642
 msgid "Saved document successfully."
 msgstr "บันทึกเอกสารสำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:581
+#: rnote-ui/src/dialogs.rs:670
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "ไฟล์ PNG / SVG / JPG / PDF"
 
-#: rnote-ui/src/dialogs.rs:618 rnote-ui/src/dialogs.rs:722
+#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:811
 msgid "SVG file"
 msgstr "ไฟล์ SVG"
 
-#: rnote-ui/src/dialogs.rs:621 rnote-ui/src/dialogs.rs:673
+#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:762
 msgid "Export Selection"
 msgstr "ส่งออกสิ่งที่เลือก"
 
-#: rnote-ui/src/dialogs.rs:624 rnote-ui/src/dialogs.rs:676
-#: rnote-ui/src/dialogs.rs:728 rnote-ui/src/dialogs.rs:779
-#: rnote-ui/src/dialogs.rs:830 rnote-ui/src/dialogs.rs:880
-#: rnote-ui/src/dialogs.rs:934
+#: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:765
+#: rnote-ui/src/dialogs.rs:817 rnote-ui/src/dialogs.rs:868
+#: rnote-ui/src/dialogs.rs:919 rnote-ui/src/dialogs.rs:969
+#: rnote-ui/src/dialogs.rs:1023
 msgid "Export"
 msgstr "ส่งออก"
 
-#: rnote-ui/src/dialogs.rs:648
+#: rnote-ui/src/dialogs.rs:737
 msgid "Export selection as SVG failed."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:650
+#: rnote-ui/src/dialogs.rs:739
 msgid "Exported selection as SVG successfully."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:670
+#: rnote-ui/src/dialogs.rs:759
 msgid "PNG file"
 msgstr "ไฟล์ PNG"
 
-#: rnote-ui/src/dialogs.rs:700
+#: rnote-ui/src/dialogs.rs:789
 msgid "Export selection as PNG failed."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ PNG ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:702
+#: rnote-ui/src/dialogs.rs:791
 msgid "Exported selection as PNG successfully."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ PNG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:725 rnote-ui/src/dialogs.rs:776
-#: rnote-ui/src/dialogs.rs:827
+#: rnote-ui/src/dialogs.rs:814 rnote-ui/src/dialogs.rs:865
+#: rnote-ui/src/dialogs.rs:916
 msgid "Export document"
 msgstr "ส่งออกเอกสาร"
 
-#: rnote-ui/src/dialogs.rs:749
+#: rnote-ui/src/dialogs.rs:838
 msgid "Export document as SVG failed."
 msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:751
+#: rnote-ui/src/dialogs.rs:840
 msgid "Exported document as SVG successfully."
 msgstr "ส่งออกเอกสารเป็นไฟล์ SVG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:773
+#: rnote-ui/src/dialogs.rs:862
 msgid "PDF file"
 msgstr "ไฟล์ PDF"
 
-#: rnote-ui/src/dialogs.rs:800
+#: rnote-ui/src/dialogs.rs:889
 msgid "Export document as PDF failed."
 msgstr "ส่งออกเอกสารเป็นไฟล์ PDF ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:802
+#: rnote-ui/src/dialogs.rs:891
 msgid "Exported document as PDF successfully."
 msgstr "ส่งออกเอกสารเป็นไฟล์ PDF สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:824
+#: rnote-ui/src/dialogs.rs:913
 msgid ".xopp file"
 msgstr "ไฟล์ .xopp"
 
-#: rnote-ui/src/dialogs.rs:851
+#: rnote-ui/src/dialogs.rs:940
 msgid "Exporting document as .xopp failed."
 msgstr "การส่งออกเอกสารเป็นไฟล์ .xopp ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:853
+#: rnote-ui/src/dialogs.rs:942
 msgid "Exported document as .xopp successfully."
 msgstr "ส่งออกเอกสารเป็นไฟล์ .xopp สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:874 rnote-ui/src/dialogs.rs:928
+#: rnote-ui/src/dialogs.rs:963 rnote-ui/src/dialogs.rs:1017
 msgid "JSON file"
 msgstr "ไฟล์ JSON"
 
-#: rnote-ui/src/dialogs.rs:905
+#: rnote-ui/src/dialogs.rs:994
 msgid "Export engine state failed."
 msgstr "ส่งออกสภาพของเอนจินล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:907
+#: rnote-ui/src/dialogs.rs:996
 msgid "Exported engine state successfully."
 msgstr "ส่งออกสภาพของเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:959
+#: rnote-ui/src/dialogs.rs:1048
 msgid "Export engine config failed."
 msgstr "ส่งออกการตั้งค่าเอนจินล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:961
+#: rnote-ui/src/dialogs.rs:1050
 msgid "Exported engine config successfully."
 msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/appwindow/mod.rs:1411
+#: rnote-ui/src/appwindow/mod.rs:1494
 msgid "Opening .rnote file failed."
 msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:1430
+#: rnote-ui/src/appwindow/mod.rs:1513
 msgid "Opening .xopp file failed."
 msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:1449
+#: rnote-ui/src/appwindow/mod.rs:1532
 msgid "Opening vector image file failed."
 msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:1468
+#: rnote-ui/src/appwindow/mod.rs:1551
 msgid "Opening bitmap image file failed."
 msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:1504
+#: rnote-ui/src/appwindow/mod.rs:1587
 msgid "Error: Tried opening folder as file"
 msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
 
-#: rnote-ui/src/appwindow/mod.rs:1513
+#: rnote-ui/src/appwindow/mod.rs:1596
 msgid "Failed to open file, is a unsupported file type."
 msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:776
+#: rnote-ui/src/appwindow/appwindowactions.rs:774
 msgid "Printed document successfully"
 msgstr "พิมพ์เอกสารสำเร็จแล้ว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:785
+#: rnote-ui/src/appwindow/appwindowactions.rs:783
 msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
+
+#~ msgid "Save current document as"
+#~ msgstr "บันทึกเอกสารนี้ที่"
+
+#~ msgid "Quit"
+#~ msgstr "ออก"
+
+#~ msgid "Name"
+#~ msgstr "ชื่อ"
+
+#~ msgid "Change the workspace name"
+#~ msgstr "เปลี่ยนชื่อของพื้นที่ทำงานนี้"

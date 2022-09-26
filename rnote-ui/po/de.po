@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-07-27 07:25+0000\n"
+"PO-Revision-Date: 2022-09-26 15:00+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -308,51 +308,44 @@ msgid "Clear"
 msgstr "Leeren"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
-#, fuzzy
-#| msgid "New document"
 msgid "New Document"
 msgstr "Neues Dokument"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
 msgstr ""
 "Ein neues Dokument zu erstellen löscht sämtliche ungespeicherte Änderungen. "
-"Bist du sicher?"
+"Möchtest du das aktuelle Dokument speichern?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "Verwerfen"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "Beende die App"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr ""
-"Sämtliche ungespeicherte Änderungen gehen verloren. Möchtest du trotzdem "
-"beenden?"
+"Sämtliche ungespeicherte Änderungen gehen verloren. Möchtest du das aktuelle "
+"Dokument speichern?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "Öffne Datei"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
-"Diese Datei zu öffnen überschreibt sämtliche ungespeicherte Änderungen."
+"Diese Datei zu öffnen überschreibt sämtliche ungespeicherte Änderungen. "
+"Möchtest du das aktuelle Dokument speichern?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -419,10 +412,8 @@ msgid "Apply"
 msgstr "Übernehmen"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "Arbeitsfläche"
+msgstr "Arbeitsflächenname"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -510,11 +501,11 @@ msgstr "Ändere die Farbe der Formatränder"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "Dauerhaft versteckte Scrollbalken"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
-msgstr ""
+msgstr "Ändere ob die Scrollbalken der Leinwand dauerhaft versteckt sind."
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"
@@ -850,7 +841,7 @@ msgstr "Zeichne strukturierte Striche"
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:123
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:140
 msgid "Brush configuration"
-msgstr "Pinsel Konfiguration"
+msgstr "Pinselkonfiguration"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
 msgid "Solid style"
@@ -995,7 +986,7 @@ msgstr "Grob"
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:109
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
 msgid "Shape configuration"
-msgstr "Formen Konfiguration"
+msgstr "Formenkonfiguration"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Rough style"

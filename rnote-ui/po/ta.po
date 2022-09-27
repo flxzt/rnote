@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-08-22 08:17+0000\n"
+"PO-Revision-Date: 2022-09-28 09:18+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -308,48 +308,44 @@ msgid "Clear"
 msgstr "தெளிவு"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
-#, fuzzy
-#| msgid "New document"
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
 msgstr ""
-"ஒரு புதிய ஆவணத்தை உருவாக்குவது, சேமிக்கப்படாத மாற்றங்களை அழிக்கும். நீங்கள் உறுதியாக "
-"இருக்கிறீர்களா?"
+"ஒரு புதிய ஆவணத்தை உருவாக்குவது சேமிக்கப்படாத எந்த மாற்றங்களையும் அழிக்கும். "
+"தற்போதைய ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "நிராகரிக்கவும்"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "விண்ணப்பத்திலிருந்து வெளியேறு"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "சேமிக்கப்படாத மாற்றங்கள் அனைத்தும் இழக்கப்படும். எப்படியும் வெளியேற வேண்டுமா?"
+msgstr ""
+"சேமிக்கப்படாத மாற்றங்கள் அனைத்தும் இழக்கப்படும். தற்போதைய ஆவணத்தை சேமிக்க "
+"விரும்புகிறீர்களா?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "திறந்த கோப்பு"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "இந்தக் கோப்பைத் திறப்பது சேமிக்கப்படாத மாற்றங்களை மேலெழுதும்."
+msgstr ""
+"இந்தக் கோப்பைத் திறப்பது சேமிக்கப்படாத மாற்றங்களை மேலெழுதும். தற்போதைய "
+"ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -414,10 +410,8 @@ msgid "Apply"
 msgstr "விண்ணப்பிக்க"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "பணியிடம்"
+msgstr "பணியிடத்தின் பெயர்"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -505,11 +499,13 @@ msgstr "பார்மட் பார்டர் நிறத்தை அம
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "நிரந்தரமாக மறைக்கப்பட்ட சுருள்ப்பட்டிகள்"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgstr ""
+"கேன்வாஸில் உள்ள சுருள் பட்டைகள் நிரந்தரமாக மறைக்கப்பட்டுள்ளதா என்பதை "
+"அமைக்கவும்."
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"

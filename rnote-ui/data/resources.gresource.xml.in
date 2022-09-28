@@ -42,6 +42,8 @@
         <file compressed="true">icons/scalable/actions/minus-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/trash-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/clipboard-copy-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/clipboard-paste-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>

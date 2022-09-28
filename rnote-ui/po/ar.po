@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-28 12:36+0000\n"
+"PO-Revision-Date: 2022-09-28 12:44+0000\n"
 "Last-Translator: mahmoud ibrahim atiyah <mahmoudaboattia1999@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -557,87 +557,87 @@ msgstr "اضبط اتجاه التنسيق"
 
 #: rnote-ui/data/ui/settingspanel.ui:144
 msgid "Portrait"
-msgstr ""
+msgstr "عرض ك لوحة"
 
 #: rnote-ui/data/ui/settingspanel.ui:150
 msgid "Landscape"
-msgstr ""
+msgstr "عرض ك منظر طبيعي"
 
 #: rnote-ui/data/ui/settingspanel.ui:160
 msgid "Width"
-msgstr ""
+msgstr "عرض"
 
 #: rnote-ui/data/ui/settingspanel.ui:161
 msgid "Set the format width"
-msgstr ""
+msgstr "حدد عرض التنسيق"
 
 #: rnote-ui/data/ui/settingspanel.ui:174
 msgid "Height"
-msgstr ""
+msgstr "إرتفاع"
 
 #: rnote-ui/data/ui/settingspanel.ui:175
 msgid "Set the format height"
-msgstr ""
+msgstr "حدد ارتفاع التنسيق"
 
 #: rnote-ui/data/ui/settingspanel.ui:188
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:189
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr ""
+msgstr "حدد DPI (dots per inch). الافتراضية 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:212
 msgid "Revert"
-msgstr ""
+msgstr "إعادة"
 
 #: rnote-ui/data/ui/settingspanel.ui:234
 msgid "Document background"
-msgstr ""
+msgstr "خلفية الملف"
 
 #: rnote-ui/data/ui/settingspanel.ui:238
 msgid "Set the background color"
-msgstr ""
+msgstr "تحديد لون الخلفية"
 
 #: rnote-ui/data/ui/settingspanel.ui:255
 msgid "Pattern"
-msgstr ""
+msgstr "نمط"
 
 #: rnote-ui/data/ui/settingspanel.ui:256
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "اختر نمط الخلفية"
 
 #: rnote-ui/data/ui/settingspanel.ui:260
 msgid "None"
-msgstr ""
+msgstr "لاشيء"
 
 #: rnote-ui/data/ui/settingspanel.ui:261
 msgid "Lines"
-msgstr ""
+msgstr "خطوط"
 
 #: rnote-ui/data/ui/settingspanel.ui:262
 msgid "Grid"
-msgstr ""
+msgstr "شبكة"
 
 #: rnote-ui/data/ui/settingspanel.ui:263
 msgid "Dots"
-msgstr ""
+msgstr "نقط"
 
 #: rnote-ui/data/ui/settingspanel.ui:271
 msgid "Pattern Color"
-msgstr ""
+msgstr "لون النمط"
 
 #: rnote-ui/data/ui/settingspanel.ui:272
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "حدد لون خلفية النمط"
 
 #: rnote-ui/data/ui/settingspanel.ui:289
 msgid "Pattern Width"
-msgstr ""
+msgstr "عرض النمط"
 
 #: rnote-ui/data/ui/settingspanel.ui:290
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "حدد عرض خلفية النمط"
 
 #: rnote-ui/data/ui/settingspanel.ui:303
 msgid "Pattern Height"

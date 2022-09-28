@@ -66,6 +66,18 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.5" date="2022-09-28">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Port to libadwaita 1.2 with an updated about window, improved dialogs</li>
+          <li>new feature: a "permanently hide scrollbars" toggle in the settings</li>
+          <li>new feature: a "paste from clipboard" button in the selector page</li>
+          <li>improved window title, now shows the current document name</li>
+          <li>tweaked app icon</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.4" date="2022-07-27">
       <description>
         <p>this release changes:</p>

@@ -856,7 +856,7 @@ impl RnoteAppWindow {
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!("failed to paste clipboard as vector image, read_text() failed with Err {}", e);
+                            log::debug!("could not load clipboard contents as vector image, read_text() failed with Err {}", e);
 
                         }
                     }

@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-23 08:15+0000\n"
-"Last-Translator: tygyh <jonis9898@hotmail.com>\n"
+"PO-Revision-Date: 2022-09-28 09:18+0000\n"
+"Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -20,31 +20,25 @@ msgstr ""
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
 msgid "Sketch and take handwritten notes"
-msgstr "Skissa och göra handskrivna anteckningar"
+msgstr "Skissa och gör handskrivna anteckningar"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
+#, fuzzy
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;Anteckningar;Rita;Målningsprogram"
+msgstr "Gnome;GTK;Rita;Målningsprogram;Notiser;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "Nytt Fönster"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
-#, fuzzy
-#| msgid ""
-#| "Rnote is a simple vector based drawing application for handwritten notes "
-#| "and to annotate documents and pictures. Disclaimer: The file format is "
-#| "still unstable. It might change between versions."
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote är ett enkelt vektorbaserat ritningsprogram för handskrivna "
-"anteckningar och för att kommentera dokument och bilder. "
-"Ansvarsfriskrivning: Filformatet är fortfarande instabilt. Det kan ändras "
-"mellan versioner."
+"Rnote är ett enkelt vektorbaserat ritningsprogram för skissa, handskrivna "
+"anteckningar och för att kommentera dokument och bilder"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
@@ -100,7 +94,7 @@ msgstr "Kortkommandon"
 
 #: rnote-ui/data/ui/appmenu.ui:54
 msgid "Donate 💝"
-msgstr ""
+msgstr "Donera 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:58
 msgid "About Rnote"
@@ -108,15 +102,15 @@ msgstr "Om Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:89
 msgid "Sidebar on the left side"
-msgstr ""
+msgstr "Sidomeny på vänster sida"
 
 #: rnote-ui/data/ui/appmenu.ui:98
 msgid "Sidebar on the right side"
-msgstr ""
+msgstr "Sidomeny på höger sida"
 
 #: rnote-ui/data/ui/appmenu.ui:108
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Växla till fullskärm"
 
 #: rnote-ui/data/ui/appmenu.ui:121
 msgid "Use system colors preference"
@@ -143,7 +137,7 @@ msgstr "Form"
 #: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
 msgid "Typewriter"
-msgstr ""
+msgstr "Skrivmaskin"
 
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
@@ -172,15 +166,15 @@ msgstr "Ändra storlek så att det passar bladformat"
 
 #: rnote-ui/data/ui/appwindow.ui:191
 msgid "Return to the origin page"
-msgstr ""
+msgstr "Tillbaka till ursprungssidan"
 
 #: rnote-ui/data/ui/appwindow.ui:204
 msgid "Undo"
-msgstr ""
+msgstr "Ångra"
 
 #: rnote-ui/data/ui/appwindow.ui:217
 msgid "Redo"
-msgstr ""
+msgstr "Göra om"
 
 #: rnote-ui/data/ui/appwindow.ui:396
 msgid "Close the folded flap"
@@ -200,19 +194,19 @@ msgstr "Rita med tryckinmatning"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
 msgid "Document layout"
-msgstr ""
+msgstr "Dokumentlayout"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "Fixed size"
-msgstr ""
+msgstr "Fast storlek"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 msgid "Continuous vertical"
-msgstr ""
+msgstr "Kontinuerlig vertikal"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "Infinite"
-msgstr ""
+msgstr "Oändlig"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show format borders"
@@ -297,7 +291,7 @@ msgstr "Zooma ut"
 
 #: rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Reset the zoom"
-msgstr ""
+msgstr "Återställ zoomen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:150
 #, fuzzy
@@ -360,7 +354,7 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "Kasta bort"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
@@ -405,7 +399,7 @@ msgstr "Bildtyp för PDF-import"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
-msgstr ""
+msgstr "Sidtyp"
 
 #: rnote-ui/data/ui/dialogs.ui:162
 #, fuzzy
@@ -435,15 +429,15 @@ msgstr "Ange bredden på importerade PDF-filer i procent till bladbredden"
 
 #: rnote-ui/data/ui/dialogs.ui:211
 msgid "Page spacing"
-msgstr ""
+msgstr "Sidavstånd"
 
 #: rnote-ui/data/ui/dialogs.ui:212
 msgid "How PDF pages are spaced"
-msgstr ""
+msgstr "Distans mellan sidor i PDF format"
 
 #: rnote-ui/data/ui/dialogs.ui:216
 msgid "Continuous"
-msgstr ""
+msgstr "Kontinuerlig"
 
 #: rnote-ui/data/ui/dialogs.ui:217
 #, fuzzy
@@ -470,7 +464,7 @@ msgstr "Arbetsyta"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
-msgstr ""
+msgstr "Ikon"
 
 #: rnote-ui/data/ui/dialogs.ui:291
 #, fuzzy
@@ -502,7 +496,7 @@ msgstr "Ändra arbetsplats mappen"
 
 #: rnote-ui/data/ui/dialogs.ui:334 rnote-ui/src/dialogs.rs:517
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- ingen mapp vald -"
 
 #: rnote-ui/data/ui/dialogs.ui:348 rnote-ui/src/dialogs.rs:453
 msgid "Change workspace directory"
@@ -510,11 +504,11 @@ msgstr "Ändra arbetsplats mappen"
 
 #: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
-msgstr ""
+msgstr "Ändra namn"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
-msgstr ""
+msgstr "Flytta till papperskorgen"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -532,7 +526,7 @@ msgstr "Nytt document"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
-msgstr ""
+msgstr "perm."
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
@@ -540,19 +534,19 @@ msgstr "Allmänt"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr ""
+msgstr "Automatisk sparning"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr ""
+msgstr "Aktivera eller inaktivera automatisk sparning"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave interval (secs)"
-msgstr ""
+msgstr "Intervall för automatisk sparning (sekunder)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr ""
+msgstr "Sätt intervall för automatisk sparning i sekunder"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 #, fuzzy
@@ -590,35 +584,35 @@ msgstr "Välj ett format"
 
 #: rnote-ui/data/ui/settingspanel.ui:116
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #: rnote-ui/data/ui/settingspanel.ui:117
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #: rnote-ui/data/ui/settingspanel.ui:118
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #: rnote-ui/data/ui/settingspanel.ui:119
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: rnote-ui/data/ui/settingspanel.ui:120
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:121
 msgid "US letter"
-msgstr ""
+msgstr "US letter"
 
 #: rnote-ui/data/ui/settingspanel.ui:122
 msgid "US legal"
-msgstr ""
+msgstr "US legal"
 
 #: rnote-ui/data/ui/settingspanel.ui:123
 msgid "Custom"
-msgstr ""
+msgstr "Anpassat"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
 msgid "Orientation"
@@ -684,7 +678,7 @@ msgstr "Välj bakrundsmönstret"
 
 #: rnote-ui/data/ui/settingspanel.ui:260
 msgid "None"
-msgstr ""
+msgstr "Inget"
 
 #: rnote-ui/data/ui/settingspanel.ui:261
 #, fuzzy
@@ -694,11 +688,11 @@ msgstr "Linje"
 
 #: rnote-ui/data/ui/settingspanel.ui:262
 msgid "Grid"
-msgstr ""
+msgstr "Rutnät"
 
 #: rnote-ui/data/ui/settingspanel.ui:263
 msgid "Dots"
-msgstr ""
+msgstr "Prickar"
 
 #: rnote-ui/data/ui/settingspanel.ui:271
 msgid "Pattern Color"
@@ -726,7 +720,7 @@ msgstr "Ange bakrundsmönsterhöjd"
 
 #: rnote-ui/data/ui/settingspanel.ui:320
 msgid "Button Shortcuts"
-msgstr ""
+msgstr "Knappgenvägar"
 
 #: rnote-ui/data/ui/settingspanel.ui:323
 msgid "Stylus primary button action"
@@ -1296,7 +1290,7 @@ msgstr "Simon Svensson Thunman https://sastofficial.github.io"
 #: rnote-ui/src/appwindow/mod.rs:412
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
-msgstr ""
+msgstr "Spara dokumentet misslyckades."
 
 #: rnote-ui/src/dialogs.rs:225 rnote-ui/src/dialogs.rs:585
 #, fuzzy
@@ -1306,11 +1300,11 @@ msgstr "Öppna fil"
 
 #: rnote-ui/src/dialogs.rs:321
 msgid "- no file name -"
-msgstr ""
+msgstr "- inget filnamn -"
 
 #: rnote-ui/src/dialogs.rs:326
 msgid "- no title -"
-msgstr ""
+msgstr "- ingen titel -"
 
 #: rnote-ui/src/dialogs.rs:329
 msgid "- no author -"
@@ -1318,15 +1312,15 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:333
 msgid "- no date -"
-msgstr ""
+msgstr "- inget datum -"
 
 #: rnote-ui/src/dialogs.rs:340
 msgid "File name:"
-msgstr ""
+msgstr "Filnamn:"
 
 #: rnote-ui/src/dialogs.rs:344
 msgid "Title:"
-msgstr ""
+msgstr "Titel:"
 
 #: rnote-ui/src/dialogs.rs:348
 msgid "Author:"
@@ -1334,15 +1328,15 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:352
 msgid "Modification date:"
-msgstr ""
+msgstr "Ändringsdatum:"
 
 #: rnote-ui/src/dialogs.rs:356
 msgid "Pages:"
-msgstr ""
+msgstr "Sidor:"
 
 #: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/mod.rs:1570
 msgid "Opening PDF file failed."
-msgstr ""
+msgstr "Det gick inte att öppna PDF-filen."
 
 #: rnote-ui/src/dialogs.rs:561
 msgid ".rnote / .xopp File"
@@ -1364,7 +1358,7 @@ msgstr "Nytt document"
 
 #: rnote-ui/src/dialogs.rs:642
 msgid "Saved document successfully."
-msgstr ""
+msgstr "Dokumentet har sparats."
 
 #: rnote-ui/src/dialogs.rs:670
 msgid "PNG / SVG / JPG / PDF file"
@@ -1430,7 +1424,7 @@ msgstr "Exportera blad som SVG"
 
 #: rnote-ui/src/dialogs.rs:840
 msgid "Exported document as SVG successfully."
-msgstr ""
+msgstr "Dokumentet har exporterats till SVG."
 
 #: rnote-ui/src/dialogs.rs:862
 #, fuzzy
@@ -1440,11 +1434,11 @@ msgstr "SVG fil"
 
 #: rnote-ui/src/dialogs.rs:889
 msgid "Export document as PDF failed."
-msgstr ""
+msgstr "Exportera dokumentet som PDF misslyckades."
 
 #: rnote-ui/src/dialogs.rs:891
 msgid "Exported document as PDF successfully."
-msgstr ""
+msgstr "Dokumentet har exporterats som PDF."
 
 #: rnote-ui/src/dialogs.rs:913
 msgid ".xopp file"
@@ -1452,11 +1446,11 @@ msgstr ".xopp fil"
 
 #: rnote-ui/src/dialogs.rs:940
 msgid "Exporting document as .xopp failed."
-msgstr ""
+msgstr "Exportera dokumentet som .xopp misslyckades."
 
 #: rnote-ui/src/dialogs.rs:942
 msgid "Exported document as .xopp successfully."
-msgstr ""
+msgstr "Exporterade dokument som .xopp."
 
 #: rnote-ui/src/dialogs.rs:963 rnote-ui/src/dialogs.rs:1017
 #, fuzzy

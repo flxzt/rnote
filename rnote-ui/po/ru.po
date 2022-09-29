@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-28 09:18+0000\n"
+"PO-Revision-Date: 2022-09-30 21:25+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -968,9 +968,6 @@ msgid "Delete selection"
 msgstr "Удалить выделенное"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste from Clipboard"
 msgstr "Вставить содержимое буфера обмена"
 

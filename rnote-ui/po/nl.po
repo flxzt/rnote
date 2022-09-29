@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-26 17:12+0000\n"
+"PO-Revision-Date: 2022-09-30 21:25+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -970,11 +970,8 @@ msgid "Delete selection"
 msgstr "Selectie wissen"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste from Clipboard"
-msgstr "Klembord plakken"
+msgstr "Plakken vanaf klembord"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"

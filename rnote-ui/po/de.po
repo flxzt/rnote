@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 15:25+0200\n"
+"POT-Creation-Date: 2022-09-29 12:26+0200\n"
 "PO-Revision-Date: 2022-09-29 10:15+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -966,6 +966,13 @@ msgstr "Dupliziere die Auswahl"
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
 msgstr "Lösche die Auswahl"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard"
+msgid "Paste from Clipboard"
+msgstr "Zwischenablage einfügen"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 15:25+0200\n"
+"POT-Creation-Date: 2022-09-29 12:26+0200\n"
 "PO-Revision-Date: 2022-08-28 10:15+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -1062,6 +1062,13 @@ msgstr "Дублікат виділення"
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
 msgstr "Видалити виділення"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard as selection"
+msgid "Paste from Clipboard"
+msgstr "Вставити буфер обміну як виділення"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 #, fuzzy

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-06-12 08:16+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2022-09-30 21:25+0000\n"
+"Last-Translator: fredrikrab <fredrrbo@stud.ntnu.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/rnote/"
 "repo/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -31,59 +31,64 @@ msgstr ""
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "Nytt vindu"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
+#, fuzzy
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"Rnote er en vektorbasert tegne-app for skisser, håndskrevne notater, og "
+"annotering av dokumenter og bilder."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"Advarsel: Dette filformatet er foreløpig ustabilt. Det kan endres og "
+"kompabilitetsproblemer kan oppstå med senere versjoner."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
-msgstr ""
+msgstr "Hovedvindu i lyse farger"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:36
 msgid "Main window in dark colors"
-msgstr ""
+msgstr "Hovedvindu i mørke farger"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A PDF annotation"
-msgstr ""
+msgstr "En PDF-annotering"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:44
 msgid "A selection"
-msgstr ""
+msgstr "En markering"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Developer mode"
-msgstr ""
+msgstr "Utviklermodus"
 
 #: rnote-ui/data/ui/appmenu.ui:29
 msgid "Developer menu"
-msgstr ""
+msgstr "Utviklermeny"
 
 #: rnote-ui/data/ui/appmenu.ui:34
 msgid "Visual debugging"
-msgstr ""
+msgstr "Visuell debugging"
 
 #: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:966
 msgid "Export engine state"
-msgstr ""
+msgstr "Eksportér programvaretilstand"
 
 #: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1020
 msgid "Export engine config"
-msgstr ""
+msgstr "Eksportér programvarekonfigurasjon"
 
 #: rnote-ui/data/ui/appmenu.ui:50
 msgid "Keyboard shortcuts"
-msgstr ""
+msgstr "Tastatursnarveier"
 
 #: rnote-ui/data/ui/appmenu.ui:54
 msgid "Donate 💝"
@@ -109,7 +114,7 @@ msgstr "Veksle fullskjermsvising"
 
 #: rnote-ui/data/ui/appmenu.ui:121
 msgid "Use system colors preference"
-msgstr ""
+msgstr "Bruk operativsystemets fargevalg"
 
 #: rnote-ui/data/ui/appmenu.ui:135
 msgid "Use light colors"
@@ -127,22 +132,22 @@ msgstr "Pensel"
 #: rnote-ui/data/ui/appwindow.ui:74 rnote-ui/data/ui/mainheader.ui:84
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
 msgid "Shaper"
-msgstr ""
+msgstr "Fasongverktøy"
 
 #: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
 msgid "Typewriter"
-msgstr ""
+msgstr "Skrivemaskin"
 
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Eraser"
-msgstr ""
+msgstr "Viskelær"
 
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
 msgid "Selector"
-msgstr ""
+msgstr "Markeringsverktøy"
 
 #: rnote-ui/data/ui/appwindow.ui:106 rnote-ui/data/ui/mainheader.ui:116
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98

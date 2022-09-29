@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-26 15:00+0000\n"
+"PO-Revision-Date: 2022-09-29 10:15+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -226,11 +226,11 @@ msgstr "Öffnen"
 #: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs.ui:36 rnote-ui/data/ui/dialogs.ui:48
 msgid "Save"
-msgstr "Sichern"
+msgstr "Speichern"
 
 #: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:616
 msgid "Save as"
-msgstr "Sichern als"
+msgstr "Speichern unter"
 
 #: rnote-ui/data/ui/canvasmenu.ui:81
 msgid "Print"
@@ -1160,7 +1160,7 @@ msgstr "Felix Zwettler"
 #: rnote-ui/src/appwindow/mod.rs:412
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
-msgstr "Dokument sichern gescheitert."
+msgstr "Dokument speichern gescheitert."
 
 #: rnote-ui/src/dialogs.rs:225 rnote-ui/src/dialogs.rs:585
 msgid "Opening file failed."
@@ -1224,7 +1224,7 @@ msgstr "Dokument speichern als"
 
 #: rnote-ui/src/dialogs.rs:642
 msgid "Saved document successfully."
-msgstr "Dokument erfolgreich gesichert."
+msgstr "Dokument erfolgreich gespeichert."
 
 #: rnote-ui/src/dialogs.rs:670
 msgid "PNG / SVG / JPG / PDF file"

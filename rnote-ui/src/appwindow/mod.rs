@@ -367,11 +367,11 @@ mod imp {
                         .replace(permanently_hide_canvas_scrollbars);
 
                     if permanently_hide_canvas_scrollbars {
-                        self.canvas_scroller
-                            .set_policy(PolicyType::Never, PolicyType::Never);
+                        self.canvas_scroller.hscrollbar().set_visible(false);
+                        self.canvas_scroller.vscrollbar().set_visible(false);
                     } else {
-                        self.canvas_scroller
-                            .set_policy(PolicyType::Automatic, PolicyType::Automatic);
+                        self.canvas_scroller.hscrollbar().set_visible(true);
+                        self.canvas_scroller.vscrollbar().set_visible(true);
                     }
                 }
                 _ => unimplemented!(),

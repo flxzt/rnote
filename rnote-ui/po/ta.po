@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-28 09:18+0000\n"
+"PO-Revision-Date: 2022-09-30 21:25+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -965,11 +965,8 @@ msgid "Delete selection"
 msgstr "தேர்வை நீக்கு"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste from Clipboard"
-msgstr "கிளிப்போர்டை ஒட்டவும்"
+msgstr "கிளிப்போர்டில் இருந்து ஒட்டவும்"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"

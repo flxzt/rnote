@@ -14,10 +14,10 @@ impl FileRow {
                         let path = current_path.into_boxed_path();
 
                         if path.is_dir() {
-                            duplicate_file();
-                        } else {
                             duplicate_dir();
-                        }
+                        } else if path.is_file() {
+                            duplicate_file();
+                        } 
                     }
                 }
             }),

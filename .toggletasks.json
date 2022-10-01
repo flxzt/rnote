@@ -1,0 +1,16 @@
+{
+    "tasks": [
+        {
+            "name": "build",
+            "cmd": "flatpak-builder --user --force-clean flatpak-app build-aux/com.github.flxzt.rnote.Devel.json"
+        },
+        {
+            "name": "run",
+            "cmd": "flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.json rnote"
+        },
+        {
+            "name": "br",
+            "cmd": "flatpak-builder --user --force-clean flatpak-app build-aux/com.github.flxzt.rnote.Devel.json && flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.json rnote"
+        }
+    ]
+}

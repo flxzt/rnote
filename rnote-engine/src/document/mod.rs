@@ -65,13 +65,13 @@ impl Default for Document {
 }
 
 impl Document {
-    pub const SHADOW_WIDTH: f64 = 30.0;
-    pub const SHADOW_OFFSET: na::Vector2<f64> = na::vector![8.0, 8.0];
+    pub const SHADOW_WIDTH: f64 = 12.0;
+    pub const SHADOW_OFFSET: na::Vector2<f64> = na::vector![4.0, 4.0];
     pub const SHADOW_COLOR: Color = Color {
-        r: 0.1,
-        g: 0.1,
-        b: 0.1,
-        a: 0.3,
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 0.35,
     };
 
     pub(crate) fn layout(&self) -> Layout {
@@ -205,10 +205,11 @@ impl Document {
 
     pub fn draw_shadow(&self, snapshot: &Snapshot) {
         let shadow_width = Self::SHADOW_WIDTH;
+        let shadow_offset = Self::SHADOW_OFFSET;
         let bounds = self.bounds();
 
         let corner_radius =
-            graphene::Size::new(shadow_width as f32 / 4.0, shadow_width as f32 / 4.0);
+            graphene::Size::new(shadow_width as f32 * 0.25, shadow_width as f32 * 0.25);
 
         let rounded_rect = gsk::RoundedRect::new(
             graphene::Rect::from_p2d_aabb(bounds),
@@ -221,10 +222,10 @@ impl Document {
         snapshot.append_outset_shadow(
             &rounded_rect,
             &gdk::RGBA::from_compose_color(Self::SHADOW_COLOR),
-            Self::SHADOW_OFFSET[0] as f32,
-            Self::SHADOW_OFFSET[1] as f32,
-            (1.0 * shadow_width / 4.0) as f32,
-            (1.0 * shadow_width * 0.5) as f32,
+            shadow_offset[0] as f32,
+            shadow_offset[1] as f32,
+            0.0,
+            (shadow_width) as f32,
         );
     }
 }

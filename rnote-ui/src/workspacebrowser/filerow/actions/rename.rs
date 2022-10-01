@@ -14,7 +14,7 @@ use gettextrs::gettext;
 use crate::workspacebrowser::FileRow;
 
 impl FileRow {
-    pub fn get_rename_action(&self) -> gio::SimpleAction {
+    pub fn rename_action(&self) -> gio::SimpleAction {
         let rename_action = gio::SimpleAction::new("rename-file", None);
 
         rename_action.connect_activate(clone!(@weak self as filerow => move |_action_rename_file, _| {

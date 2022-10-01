@@ -201,12 +201,9 @@ impl FileRow {
     fn setup_actions(&self, appwindow: &RnoteAppWindow) {
         self.insert_action_group("filerow", Some(&self.imp().action_group));
 
-        let open_action = self.get_open_action(&appwindow);
-        let rename_action = self.get_rename_action();
-        let trash_action = self.get_trash_action();
-
-        self.imp().action_group.add_action(&open_action);
-        self.imp().action_group.add_action(&rename_action);
-        self.imp().action_group.add_action(&trash_action);
+        self.imp().action_group.add_action(&self.open_action(&appwindow));
+        self.imp().action_group.add_action(&self.rename_action());
+        self.imp().action_group.add_action(&self.trash_action());
+        self.imp().action_group.add_action(&self.duplicate_action());
     }
 }

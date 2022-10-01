@@ -4,7 +4,7 @@ use crate::workspacebrowser::FileRow;
 use crate::RnoteAppWindow;
 
 impl FileRow {
-    pub fn get_open_action(&self, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
+    pub fn open_action(&self, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
         let action_open_file = gio::SimpleAction::new("open-file", None);
         action_open_file.connect_activate(
             clone!(@weak self as filerow, @weak appwindow => move |_action_open_file, _| {

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-07-31 13:17+0000\n"
+"POT-Creation-Date: 2022-09-29 12:26+0200\n"
+"PO-Revision-Date: 2022-09-30 21:25+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -308,49 +308,44 @@ msgid "Clear"
 msgstr "Temizle"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
-#, fuzzy
-#| msgid "New document"
 msgid "New Document"
-msgstr "Yeni belge"
+msgstr "Yeni Belge"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
 msgstr ""
-"Yeni belge oluşturmak, kaydedilmemiş tüm değişiklikleri silecek. Emin misin?"
+"Yeni bir belge oluşturmak kaydedilmemiş tüm değişiklikleri silecek. Geçerli "
+"belgeyi kaydetmek istiyor musunuz?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "Gözden çıkar"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "Uygulamadan Çık"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr ""
-"Kaydedilmemiş tüm değişiklikler kaybolacak. Yine de çıkmak istiyor musun?"
+"Kaydedilmemiş tüm değişiklikler kaybolacak. Geçerli belgeyi kaydetmek "
+"istiyor musunuz?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "Dosya Aç"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
-"Bu dosyanın açılması, kaydedilmemiş tüm değişikliklerin üzerine yazacak."
+"Bu dosyanın açılması, kaydedilmemiş tüm değişikliklerin üzerine yazacak. "
+"Geçerli belgeyi kaydetmek istiyor musunuz?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -417,10 +412,8 @@ msgid "Apply"
 msgstr "Uygula"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "Çalışma alanı"
+msgstr "Çalışma Alanı Adı"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -508,11 +501,13 @@ msgstr "Biçim kenarlık rengini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "Kalıcı olarak gizlenmiş kaydırma çubukları"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgstr ""
+"Tuval üzerindeki kaydırma çubuklarının kalıcı olarak gizlenme durumunu "
+"ayarlar."
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"
@@ -973,6 +968,10 @@ msgstr "Seçimi çoğalt"
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
 msgstr "Seçimi sil"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
+msgid "Paste from Clipboard"
+msgstr "Panodan Yapıştır"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"

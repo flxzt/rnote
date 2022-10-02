@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 15:25+0200\n"
-"PO-Revision-Date: 2022-09-28 09:18+0000\n"
+"POT-Creation-Date: 2022-09-29 12:26+0200\n"
+"PO-Revision-Date: 2022-09-30 21:25+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
 "\n"
@@ -965,6 +965,10 @@ msgstr "Kijelölés duplikálása"
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
 msgstr "Kijelölés törlése"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
+msgid "Paste from Clipboard"
+msgstr "Beillesztés a vágólapról"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"

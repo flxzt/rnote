@@ -1,5 +1,4 @@
-use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
@@ -22,7 +21,7 @@ impl FileRow {
                             duplicate_dir(current_path);
                         } else if path.is_file() {
                             duplicate_file(current_path);
-                        } 
+                        }
                     }
                 }
             }),
@@ -32,19 +31,39 @@ impl FileRow {
     }
 }
 
-fn duplicate_file(source: PathBuf) {
-    let mut duplicate_name = {
-        let path = source.clone();
-        path.push(DUPLICATE_SUFFIX);
-        path
-    };
+fn duplicate_file(source_path: PathBuf) {
+    if let Some(destination) = get_destination_path(&source_path) {
+        let source = source_path.into_boxed_path();
+        if let Err(err) = std::fs::copy(source, destination) {
+            log::error!("Couldn't duplicate file: {}", err);
+        }
+    }
+    log::info!("Destination-file for duplication not found.");
 }
 
 fn duplicate_dir(_source: PathBuf) {}
 
-fn get_duplicate_name(parent_dir: PathBuf, name: PathBuf) -> PathBuf {
-    let path = name.into_boxed_path();
+fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
+    if let Some(destination_file_name) = source_path.file_name() {
+        let mut destination_file_name = {
+            let mut file_name = destination_file_name.to_os_string();
+            file_name.push(DUPLICATE_SUFFIX);
+            file_name
+        };
 
-    name.push(DUPLICATE_SUFFIX);
-    name
+        let mut destination_path = {
+            let mut path = source_path.clone().to_path_buf();
+            path.set_file_name(destination_file_name.clone());
+            path
+        };
+
+        while destination_path.exists() {
+            destination_file_name.push(DUPLICATE_SUFFIX);
+            destination_path.set_file_name(destination_file_name.clone());
+        }
+
+        Some(destination_path)
+    } else {
+        None
+    }
 }

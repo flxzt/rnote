@@ -1,4 +1,4 @@
-use gtk4::{gio, glib, glib::clone, Entry, Label, Align};
+use gtk4::{gio, glib, glib::clone, Entry, Label, Align, traits::{WidgetExt, StyleContextExt}};
 use crate::workspacebrowser::FileRow;
 use gettextrs::gettext;
 

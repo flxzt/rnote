@@ -19,9 +19,12 @@ pub type ApplyButton = Button;
 impl FileRow {
 
     /// A template-function to create a simple dialog widget for an action:
-    ///         <Label>
-    ///     <      Entry     >
-    ///     <Cancel> <Apply>
+    ///
+    /// -------------------------
+    /// |         <Label>       |
+    /// | <        Entry      > |
+    /// | <Cancel>      <Apply> |
+    /// -------------------------
     ///
     /// Just create the `apply` button and the label.
     /// Everything else is done in this function.
@@ -46,7 +49,7 @@ impl FileRow {
 
         connect_cancel_button(&cancel_button, &popover);
 
-        (cancel_button, apply_button, popover)
+        (apply_button, popover)
     }
 }
 

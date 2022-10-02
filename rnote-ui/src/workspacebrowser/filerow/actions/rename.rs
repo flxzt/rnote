@@ -5,8 +5,8 @@ use gtk4::{
     glib::clone,
     pango,
     prelude::FileExt,
-    traits::{ButtonExt, EditableExt, GridExt, PopoverExt, StyleContextExt, WidgetExt},
-    Align, Button, Entry, Grid, Label, Popover, PositionType,
+    traits::{ButtonExt, EditableExt, PopoverExt, WidgetExt, StyleContextExt},
+    Align, Button, Entry, Popover, Label,
 };
 
 use gettextrs::gettext;
@@ -23,20 +23,11 @@ impl FileRow {
                     if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
 
                         let entry = get_entry(&current_path);
-                        let cancel_button = get_cancel_button();
-                        let apply_button = get_apply_button();
                         let label = get_label();
 
-                        let grid = get_grid();
-                        grid.attach(&label, 0, 0, 2, 1);
-                        grid.attach(&entry, 0, 1, 2, 1);
-                        grid.attach(&cancel_button, 0, 2, 1, 1);
-                        grid.attach(&apply_button, 1, 2, 1, 1);
-
-                        let popover = get_popover(grid);
+                        let (apply_button, popover) = self.get_entry_box_dialog_action(entry, label);
 
                         connect_entry(&entry, &apply_button, parent_path.clone());
-                        connect_cancel_button(&cancel_button, &popover);
                         connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),
                             current_file.clone());
 
@@ -59,23 +50,6 @@ fn get_entry(current_path: &PathBuf) -> Entry {
     Entry::builder().text(entry_name.as_ref()).build()
 }
 
-fn get_cancel_button() -> Button {
-    Button::builder()
-        .halign(Align::Start)
-        .label(&gettext("Cancel"))
-        .build()
-}
-
-fn get_apply_button() -> Button {
-    let apply_button = Button::builder()
-        .halign(Align::End)
-        .label(&gettext("Apply"))
-        .build();
-
-    apply_button.style_context().add_class("suggested-action");
-    apply_button
-}
-
 fn get_label() -> Label {
     let label = Label::builder()
         .margin_bottom(12)
@@ -89,26 +63,6 @@ fn get_label() -> Label {
     label
 }
 
-fn get_grid() -> Grid {
-    Grid::builder()
-        .margin_top(6)
-        .margin_bottom(6)
-        .column_spacing(18)
-        .row_spacing(6)
-        .build()
-}
-
-fn get_popover(rename_grid: Grid) -> Popover {
-    let popover = Popover::builder()
-        .autohide(true)
-        .has_arrow(true)
-        .position(PositionType::Bottom)
-        .build();
-    popover.set_child(Some(&rename_grid));
-
-    popover
-}
-
 fn connect_entry(entry: &Entry, apply_button: &Button, parent_path: PathBuf) {
     entry.connect_text_notify(clone!(@weak apply_button => move |entry| {
         let new_file_path = parent_path.join(entry.text().to_string());
@@ -116,12 +70,6 @@ fn connect_entry(entry: &Entry, apply_button: &Button, parent_path: PathBuf) {
 
         // Disable apply button to prevent overwrites when file already exists
         apply_button.set_sensitive(!new_file.query_exists(None::<&gio::Cancellable>));
-    }));
-}
-
-fn connect_cancel_button(cancel_button: &Button, popover: &Popover) {
-    cancel_button.connect_clicked(clone!(@weak popover => move |_| {
-        popover.popdown();
     }));
 }
 

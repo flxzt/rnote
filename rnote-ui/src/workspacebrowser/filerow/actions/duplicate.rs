@@ -1,5 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
+use fs_extra::dir::{TransitProcessResult, CopyOptions};
+use fs_extra::{copy_items_with_progress, TransitProcess};
 use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
 
@@ -18,7 +20,7 @@ impl FileRow {
                         let path = current_path.clone().into_boxed_path();
 
                         if path.is_dir() {
-                            duplicate_dir(current_path);
+                            duplicate_dir(current_path, self.copy_dir_progress);
                         } else if path.is_file() {
                             duplicate_file(current_path);
                         }
@@ -28,6 +30,15 @@ impl FileRow {
         );
 
         action
+    }
+
+    fn copy_dir_progress(&self, process_info: TransitProcess) -> TransitProcessResult {
+        let status = {
+            let status = process_info.copied_bytes / process_info.total_bytes;
+            status as f64
+        };
+
+        TransitProcessResult::ContinueOrAbort
     }
 }
 
@@ -41,7 +52,14 @@ fn duplicate_file(source_path: PathBuf) {
     log::info!("Destination-file for duplication not found.");
 }
 
-fn duplicate_dir(_source: PathBuf) {}
+fn duplicate_dir(source_path: PathBuf, copy_progress: &dyn Fn(TransitProcess) -> TransitProcessResult) {
+    if let Some(destination) = get_destination_path(&source_path) {
+        let source = source_path.into_boxed_path();
+        let options = CopyOptions::new();
+
+        copy_items_with_progress(&[source], destination, &options, copy_progress);
+    }
+}
 
 fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
     if let Some(destination_file_name) = source_path.file_name() {
@@ -67,3 +85,4 @@ fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
         None
     }
 }
+

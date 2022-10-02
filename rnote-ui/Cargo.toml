@@ -38,3 +38,4 @@ piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}
 url = "2.2.2"
 unicode-segmentation = "1.9.0"
+fs_extra = "1.2.0"

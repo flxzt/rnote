@@ -3185,6 +3185,7 @@ version = "0.5.5"
 dependencies = [
  "anyhow",
  "cairo-rs",
+ "fs_extra",
  "futures",
  "gettext-rs",
  "gtk4",

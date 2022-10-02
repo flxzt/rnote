@@ -35,7 +35,7 @@ impl FileRow {
 fn duplicate_file(source: PathBuf) {
     let mut duplicate_name = {
         let path = source.clone();
-        pat.push(DUPLICATE_SUFFIX);
+        path.push(DUPLICATE_SUFFIX);
         path
     };
 }

@@ -70,6 +70,10 @@
             <attribute name="label" translatable="yes">Duplicate</attribute>
             <attribute name="action">filerow.duplicate-file</attribute>
           </item>
+          <item>
+            <attribute name="label" translatable="yes">Duplicate</attribute>
+            <attribute name="action">filerow.new-file</attribute>
+          </item>
         </section>
       </menu>
     </object>

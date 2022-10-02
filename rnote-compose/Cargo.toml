@@ -27,5 +27,6 @@ piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}
 image = "0.23.14"
 svg = "0.10.0"
+fs_extra = "1.2.0"
 
 [dev-dependencies]

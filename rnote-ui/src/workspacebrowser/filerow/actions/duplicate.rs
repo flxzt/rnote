@@ -42,7 +42,7 @@ fn duplicate_file(source: PathBuf) {
 
 fn duplicate_dir(_source: PathBuf) {}
 
-fn get_duplicate_name(name: PathBuf) -> PathBuf {
+fn get_duplicate_name(parent_dir: PathBuf, name: PathBuf) -> PathBuf {
     let path = name.into_boxed_path();
 
     name.push(DUPLICATE_SUFFIX);

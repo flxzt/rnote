@@ -205,7 +205,7 @@ impl FileRow {
         self.imp().action_group.add_action(&self.open_action(&appwindow));
         self.imp().action_group.add_action(&self.rename_action());
         self.imp().action_group.add_action(&self.trash_action());
-        self.imp().action_group.add_action(&self.duplicate_action());
-        self.imp().action_group.add_action(&self.add_dir_action());
+        // self.imp().action_group.add_action(&self.duplicate_action());
+        // self.imp().action_group.add_action(&self.add_dir_action());
     }
 }

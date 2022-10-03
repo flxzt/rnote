@@ -32,17 +32,17 @@ impl FileRow {
         action
     }
 
-    fn copy_dir_progress(&self, process_info: TransitProcess) -> TransitProcessResult {
-        let status = {
-            let status = process_info.copied_bytes / process_info.total_bytes;
-            status as f64
-        };
-
-        TransitProcessResult::ContinueOrAbort
-    }
+    // fn copy_dir_progress(&self, process_info: TransitProcess) -> TransitProcessResult {
+    //     let status = {
+    //         let status = process_info.copied_bytes / process_info.total_bytes;
+    //         status as f64
+    //     };
+    //
+    //     TransitProcessResult::ContinueOrAbort
+    // }
 }
 
-fn dummy(process_info: TransitProcess) -> TransitProcessResult {
+fn dummy(_process_info: TransitProcess) -> TransitProcessResult {
     TransitProcessResult::ContinueOrAbort
 }
 
@@ -64,7 +64,9 @@ where
         let source = source_path.into_boxed_path();
         let options = CopyOptions::new();
 
-        copy_items_with_progress(&[source], destination, &options, copy_progress);
+        if let Err(err) = copy_items_with_progress(&[source], destination, &options, copy_progress) {
+            log::error!("Couldn't copy items: {}", err);
+        }
     }
 }
 

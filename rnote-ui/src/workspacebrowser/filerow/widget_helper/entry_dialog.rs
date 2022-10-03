@@ -7,7 +7,6 @@ use gtk4::{
 };
 
 pub type ApplyButton = Button;
-pub type CancelButton = Button;
 
 /// A template-function to create a simple dialog widget for an action:
 ///
@@ -22,7 +21,7 @@ pub type CancelButton = Button;
 ///
 /// Only `ApplyButton` and `Popover` are returned because you likely want to
 /// apply a connection to them.
-pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (Grid, CancelButton, ApplyButton, Popover) {
+pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
     let grid = get_grid();
     let cancel_button = get_cancel_button();
     let apply_button = get_apply_button();
@@ -38,7 +37,7 @@ pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (Grid, CancelButton, Ap
     
     log::debug!("Creating entry dialog");
 
-    (grid, cancel_button, apply_button, popover)
+    (apply_button, popover)
 }
 
 fn get_grid() -> Grid {

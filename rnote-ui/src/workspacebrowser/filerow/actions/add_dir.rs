@@ -4,7 +4,7 @@ use gtk4::{
     gio, glib,
     glib::clone,
     pango,
-    traits::{ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt},
+    traits::{ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt, BoxExt},
     Align, Button, Entry, Label, Popover,
 };
 
@@ -16,8 +16,9 @@ impl FileRow {
             clone!(@weak self as filerow => move |_action_rename_file, _| {
                 let entry = get_entry();
                 let label = get_label();
+                let (apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
 
-                let (grid, cancel_button, apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
+                filerow.menubutton_box().append(&popover);
 
                 connect_entry(&entry, &apply_button);
                 connect_apply_button(&apply_button, &popover, &entry);

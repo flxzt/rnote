@@ -7,6 +7,7 @@ use gtk4::{
 };
 
 pub type ApplyButton = Button;
+pub type CancelButton = Button;
 
 /// A template-function to create a simple dialog widget for an action:
 ///
@@ -21,7 +22,7 @@ pub type ApplyButton = Button;
 ///
 /// Only `ApplyButton` and `Popover` are returned because you likely want to
 /// apply a connection to them.
-pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
+pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (Grid, CancelButton, ApplyButton, Popover) {
     let grid = get_grid();
     let cancel_button = get_cancel_button();
     let apply_button = get_apply_button();
@@ -31,11 +32,13 @@ pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) 
     grid.attach(&cancel_button, 0, 2, 1, 1);
     grid.attach(&apply_button, 1, 2, 1, 1);
 
-    let popover = get_popover(grid);
+    let popover = get_popover(&grid);
 
     connect_cancel_button(&cancel_button, &popover);
+    
+    log::debug!("Creating entry dialog");
 
-    (apply_button, popover)
+    (grid, cancel_button, apply_button, popover)
 }
 
 fn get_grid() -> Grid {
@@ -64,13 +67,13 @@ fn get_apply_button() -> Button {
     apply_button
 }
 
-fn get_popover(rename_grid: Grid) -> Popover {
+fn get_popover(grid: &Grid) -> Popover {
     let popover = Popover::builder()
         .autohide(true)
         .has_arrow(true)
         .position(PositionType::Bottom)
         .build();
-    popover.set_child(Some(&rename_grid));
+    popover.set_child(Some(grid));
 
     popover
 }

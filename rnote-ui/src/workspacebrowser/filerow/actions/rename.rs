@@ -25,13 +25,15 @@ impl FileRow {
                         let entry = get_entry(&current_path);
                         let label = get_label();
 
-                        let (apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
+                        let (grid, cancel_button, apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
 
                         connect_entry(&entry, &apply_button, parent_path.clone());
                         connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),
                             current_file.clone());
 
+                        log::debug!("Start popup");
                         popover.popup();
+                        log::debug!("yeet");
                     }
                 }
             }
@@ -64,13 +66,14 @@ fn get_label() -> Label {
 }
 
 fn connect_entry(entry: &Entry, apply_button: &Button, parent_path: PathBuf) {
-    entry.connect_text_notify(clone!(@weak apply_button => move |entry| {
-        let new_file_path = parent_path.join(entry.text().to_string());
+    entry.connect_text_notify(clone!(@weak apply_button => move |entry2| {
+        let new_file_path = parent_path.join(entry2.text().to_string());
         let new_file = gio::File::for_path(new_file_path);
 
         // Disable apply button to prevent overwrites when file already exists
         apply_button.set_sensitive(!new_file.query_exists(None::<&gio::Cancellable>));
     }));
+    log::debug!("Connected entry");
 }
 
 fn connect_apply_button(
@@ -95,4 +98,6 @@ fn connect_apply_button(
             popover.popdown();
         }
     }));
+
+    log::debug!("Connected apply button");
 }

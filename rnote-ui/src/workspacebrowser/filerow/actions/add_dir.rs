@@ -17,7 +17,7 @@ impl FileRow {
                 let entry = get_entry();
                 let label = get_label();
 
-                let (apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
+                let (grid, cancel_button, apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
 
                 connect_entry(&entry, &apply_button);
                 connect_apply_button(&apply_button, &popover, &entry);

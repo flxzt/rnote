@@ -17,11 +17,11 @@ impl FileRow {
             clone!(@weak self as filerow => move |_action_duplicate_file, _| {
                 if let Some(current_file) = filerow.current_file() {
                     if let Some(current_path) = current_file.path() {
-                        let path = current_path.clone().into_boxed_path();
+                        let source_path = current_path.clone().into_boxed_path();
 
-                        if path.is_dir() {
+                        if source_path.is_dir() {
                             duplicate_dir(current_path, dummy);
-                        } else if path.is_file() {
+                        } else if source_path.is_file() {
                             duplicate_file(current_path);
                         }
                     }
@@ -42,13 +42,17 @@ impl FileRow {
     // }
 }
 
-fn dummy(_process_info: TransitProcess) -> TransitProcessResult {
+fn dummy(process_info: TransitProcess) -> TransitProcessResult {
+    println!("Process: {}B/{}B", process_info.copied_bytes, process_info.total_bytes);
     TransitProcessResult::ContinueOrAbort
 }
 
 fn duplicate_file(source_path: PathBuf) {
     if let Some(destination) = get_destination_path(&source_path) {
         let source = source_path.into_boxed_path();
+
+        log::debug!("Duplicate source: {}", source.display());
+        log::debug!("Duplicate destination: {}", destination.display());
         if let Err(err) = std::fs::copy(source, destination) {
             log::error!("Couldn't duplicate file: {}", err);
         }
@@ -58,12 +62,14 @@ fn duplicate_file(source_path: PathBuf) {
 
 fn duplicate_dir<F>(source_path: PathBuf, copy_progress: F)
 where
-    F: Fn(TransitProcess) -> TransitProcessResult 
+    F: Fn(TransitProcess) -> TransitProcessResult
 {
     if let Some(destination) = get_destination_path(&source_path) {
         let source = source_path.into_boxed_path();
         let options = CopyOptions::new();
 
+        log::debug!("Duplicate source: {}", source.display());
+        log::debug!("Duplicate destination: {}", destination.display());
         if let Err(err) = copy_items_with_progress(&[source], destination, &options, copy_progress) {
             log::error!("Couldn't copy items: {}", err);
         }

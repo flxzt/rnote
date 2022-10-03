@@ -4,12 +4,14 @@ mod widget_helper;
 use crate::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DragSource,
-    GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget,
+    GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget, ProgressBar,
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
 
 mod imp {
+    use gtk4::ProgressBar;
+
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
@@ -29,6 +31,8 @@ mod imp {
         pub menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub popovermenu: TemplateChild<PopoverMenu>,
+        #[template_child]
+        pub canvas_progressbar: TemplateChild<ProgressBar>,
     }
 
     impl Default for FileRow {
@@ -47,6 +51,7 @@ mod imp {
                 menubutton_box: TemplateChild::<gtk4::Box>::default(),
                 menubutton: TemplateChild::<MenuButton>::default(),
                 popovermenu: TemplateChild::<PopoverMenu>::default(),
+                canvas_progressbar: TemplateChild::<ProgressBar>::default(),
             }
         }
     }
@@ -197,6 +202,10 @@ impl FileRow {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_actions(appwindow);
+    }
+
+    pub fn canvas_progressbar(&self) -> ProgressBar {
+        self.imp().canvas_progressbar.get()
     }
 
     fn setup_actions(&self, appwindow: &RnoteAppWindow) {

@@ -20,7 +20,7 @@ impl FileRow {
                         let path = current_path.clone().into_boxed_path();
 
                         if path.is_dir() {
-                            duplicate_dir(current_path, self.copy_dir_progress);
+                            duplicate_dir(current_path, dummy);
                         } else if path.is_file() {
                             duplicate_file(current_path);
                         }
@@ -42,6 +42,10 @@ impl FileRow {
     }
 }
 
+fn dummy(process_info: TransitProcess) -> TransitProcessResult {
+    TransitProcessResult::ContinueOrAbort
+}
+
 fn duplicate_file(source_path: PathBuf) {
     if let Some(destination) = get_destination_path(&source_path) {
         let source = source_path.into_boxed_path();
@@ -52,7 +56,10 @@ fn duplicate_file(source_path: PathBuf) {
     log::info!("Destination-file for duplication not found.");
 }
 
-fn duplicate_dir(source_path: PathBuf, copy_progress: &dyn Fn(TransitProcess) -> TransitProcessResult) {
+fn duplicate_dir<F>(source_path: PathBuf, copy_progress: F)
+where
+    F: Fn(TransitProcess) -> TransitProcessResult 
+{
     if let Some(destination) = get_destination_path(&source_path) {
         let source = source_path.into_boxed_path();
         let options = CopyOptions::new();

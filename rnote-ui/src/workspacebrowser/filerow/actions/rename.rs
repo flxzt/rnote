@@ -11,7 +11,7 @@ use gtk4::{
 
 use gettextrs::gettext;
 
-use crate::workspacebrowser::FileRow;
+use crate::workspacebrowser::{FileRow, filerow::widget_helper};
 
 impl FileRow {
     pub fn rename_action(&self) -> gio::SimpleAction {
@@ -25,7 +25,7 @@ impl FileRow {
                         let entry = get_entry(&current_path);
                         let label = get_label();
 
-                        let (apply_button, popover) = self.get_entry_box_dialog_action(entry, label);
+                        let (apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
 
                         connect_entry(&entry, &apply_button, parent_path.clone());
                         connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),

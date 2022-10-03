@@ -1,4 +1,5 @@
 mod actions;
+mod widget_helper;
 
 use crate::RnoteAppWindow;
 use gtk4::{

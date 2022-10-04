@@ -14,14 +14,11 @@ impl FileRow {
         let action = gio::SimpleAction::new("duplicate-file", None);
 
         let yeet = |process: TransitProcess| -> TransitProcessResult {
-            clone!(@weak self as filerow => @default-return glib::source::Continue(false), move || {
-                let status = {
-                    let status = process.copied_bytes / process.total_bytes;
-                    status as f64
-                };
-                filerow.canvas_progressbar().set_fraction(status);
-                glib::source::Continue(true)
-            });
+            let status = {
+                let status = process.copied_bytes / process.total_bytes;
+                status as f64
+            };
+            // self.canvas_progressbar().set_fraction(status);
             TransitProcessResult::ContinueOrAbort
         };
 
@@ -43,27 +40,6 @@ impl FileRow {
 
         action
     }
-
-    // fn get_progress_fn(&self) -> impl Fn(TransitProcess) -> TransitProcessResult {
-    //     |processs: TransitProcess| {
-    //         TransitProcessResult::ContinueOrAbort
-    //     }
-    //
-    //     // let status = {
-    //     //     let status = process_info.copied_bytes / process_info.total_bytes;
-    //     //     status as f64
-    //     // };
-    //
-    //     // TransitProcessResult::ContinueOrAbort
-    // }
-}
-
-fn dummy(process_info: TransitProcess) -> TransitProcessResult {
-    println!(
-        "Process: {}B/{}B",
-        process_info.copied_bytes, process_info.total_bytes
-    );
-    TransitProcessResult::ContinueOrAbort
 }
 
 fn duplicate_file(source_path: PathBuf) {
@@ -85,7 +61,10 @@ where
 {
     if let Some(destination) = get_destination_path(&source_path) {
         let source = source_path.into_boxed_path();
-        let options = CopyOptions::new();
+        let options = CopyOptions {
+            copy_inside: true,
+            .. CopyOptions::default()
+        };
 
         log::debug!("Duplicate source: {}", source.display());
         log::debug!("Duplicate destination: {}", destination.display());

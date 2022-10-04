@@ -1593,7 +1593,7 @@ impl RnoteAppWindow {
                 adw::prelude::ActionGroupExt::activate_action(
                     self,
                     "error-toast",
-                    Some(&gettext("Failed to open file, is a unsupported file type.").to_variant()),
+                    Some(&gettext("Failed to open file: Unsupported file type.").to_variant()),
                 );
             }
         }

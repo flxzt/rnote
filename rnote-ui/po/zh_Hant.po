@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-08-22 08:17+0000\n"
-"Last-Translator: BobH <dev@mail.bobh.cool>\n"
+"POT-Creation-Date: 2022-10-04 22:17+0200\n"
+"PO-Revision-Date: 2022-10-04 20:28+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hant/>\n"
 "Language: zh_Hant\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -1346,7 +1346,9 @@ msgid "Error: Tried opening folder as file"
 msgstr "錯誤：將資料夾作為檔案開啟"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-msgid "Failed to open file, is a unsupported file type."
+#, fuzzy
+#| msgid "Failed to open file, is a unsupported file type."
+msgid "Failed to open file: Unsupported file type."
 msgstr "開啟檔案失敗：不支援的檔案型別。"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774

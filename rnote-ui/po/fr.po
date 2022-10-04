@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-30 21:25+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"POT-Creation-Date: 2022-10-04 22:17+0200\n"
+"PO-Revision-Date: 2022-10-04 20:28+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1353,7 +1353,9 @@ msgid "Error: Tried opening folder as file"
 msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-msgid "Failed to open file, is a unsupported file type."
+#, fuzzy
+#| msgid "Failed to open file, is a unsupported file type."
+msgid "Failed to open file: Unsupported file type."
 msgstr "Impossible d'ouvrir le fichier : type de fichier non pris en charge."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774

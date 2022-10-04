@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-11 07:17+0000\n"
-"Last-Translator: Seio Inoue <sei0okun@gmail.com>\n"
+"POT-Creation-Date: 2022-10-04 22:17+0200\n"
+"PO-Revision-Date: 2022-10-04 20:29+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
 ">\n"
 "Language: ja\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -1335,7 +1335,7 @@ msgid "Error: Tried opening folder as file"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-msgid "Failed to open file, is a unsupported file type."
+msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774

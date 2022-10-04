@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-30 21:25+0000\n"
+"POT-Creation-Date: 2022-10-04 22:17+0200\n"
+"PO-Revision-Date: 2022-10-04 20:28+0000\n"
 "Last-Translator: fredrikrab <fredrrbo@stud.ntnu.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/rnote/"
 "repo/nb_NO/>\n"
@@ -1348,7 +1348,7 @@ msgid "Error: Tried opening folder as file"
 msgstr "Feil: Prøvde å åpne mappe som fil"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-msgid "Failed to open file, is a unsupported file type."
+msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774

@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 12:26+0200\n"
-"PO-Revision-Date: 2022-09-30 21:25+0000\n"
-"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"POT-Creation-Date: 2022-10-04 22:17+0200\n"
+"PO-Revision-Date: 2022-10-04 20:28+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -1349,7 +1349,9 @@ msgid "Error: Tried opening folder as file"
 msgstr "Een map kan niet als bestand worden geopend"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-msgid "Failed to open file, is a unsupported file type."
+#, fuzzy
+#| msgid "Failed to open file, is a unsupported file type."
+msgid "Failed to open file: Unsupported file type."
 msgstr "Dit bestandstype wordt niet ondersteund."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774

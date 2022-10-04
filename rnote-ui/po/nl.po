@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-29 12:26+0200\n"
 "PO-Revision-Date: 2022-10-04 20:28+0000\n"
-"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -1035,8 +1035,7 @@ msgstr "Meerdere penseelstreken"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr ""
-"Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
+msgstr "Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254

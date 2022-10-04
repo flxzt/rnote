@@ -68,7 +68,7 @@
           </item>
           <item>
             <attribute name="label" translatable="yes">Duplicate</attribute>
-            <attribute name="action">filerow.duplicate-file</attribute>
+            <attribute name="action">filerow.duplicate</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Add Directory</attribute>

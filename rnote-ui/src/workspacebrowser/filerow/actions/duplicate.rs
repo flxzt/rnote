@@ -11,7 +11,7 @@ const DUPLICATE_SUFFIX: &str = ".dup";
 
 impl FileRow {
     pub fn duplicate_action(&self) -> gio::SimpleAction {
-        let action = gio::SimpleAction::new("duplicate-file", None);
+        let action = gio::SimpleAction::new("duplicate", None);
 
         let yeet = |process: TransitProcess| -> TransitProcessResult {
             let status = {

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 12:26+0200\n"
+"POT-Creation-Date: 2022-10-04 22:17+0200\n"
 "PO-Revision-Date: 2022-10-04 20:28+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -37,14 +37,16 @@ msgstr "新建窗口"
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr "Rnote "
-"是一款基于矢量绘图的软件，用于素描、手写笔记、以及为文件和图片添加注释。"
+msgstr ""
+"Rnote 是一款基于矢量绘图的软件，用于素描、手写笔记、以及为文件和图片添加注"
+"释。"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
-msgstr "免责声明：该文件格式尚未完全支持，它可能改变并损坏不同版本之间的兼容性。"
+msgstr ""
+"免责声明：该文件格式尚未完全支持，它可能改变并损坏不同版本之间的兼容性。"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -1344,7 +1346,9 @@ msgid "Error: Tried opening folder as file"
 msgstr "错误：将文件夹作为文件打开"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-msgid "Failed to open file, is a unsupported file type."
+#, fuzzy
+#| msgid "Failed to open file, is a unsupported file type."
+msgid "Failed to open file: Unsupported file type."
 msgstr "打开文件失败：不支持的文件类型。"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774

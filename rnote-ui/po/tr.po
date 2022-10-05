@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 22:17+0200\n"
-"PO-Revision-Date: 2022-10-04 20:28+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-10-06 12:33+0000\n"
+"Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Eskiz yap ve el yazısıyla notlar al"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Grafik;Not;Notlar;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;Ofis;Grafik;Not;Notlar;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -1160,7 +1160,9 @@ msgstr "İki yana hizala"
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs.rs:36
 msgid "translator-credits"
-msgstr "Sabri Ünal <libreajans@gmail.com>"
+msgstr ""
+"Sabri Ünal <libreajans@gmail.com>\n"
+"Oğuz Ersen <oguz@ersen.moe>"
 
 #: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:640
@@ -1350,10 +1352,8 @@ msgid "Error: Tried opening folder as file"
 msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-#, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
 msgid "Failed to open file: Unsupported file type."
-msgstr "Dosya açılamadı, desteklenmeyen dosya türü."
+msgstr "Dosya açılamadı: Desteklenmeyen dosya türü."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774
 msgid "Printed document successfully"

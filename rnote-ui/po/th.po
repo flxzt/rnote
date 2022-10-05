@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 12:25+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
+"หมายเหตุ: ฟอร์แมตไฟล์ยังไม่เสถียร "
+"อาจมีการเปลี่ยนแปลงและไม่สามารถใช้งานข้ามเวอร์ชั่นได้"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -338,7 +339,9 @@ msgstr "ออกจากแอปพลิเคชัน"
 #: rnote-ui/data/ui/dialogs.ui:30
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป คุณต้องการบันทึกเอกสารนี้หรือไม่?"
+msgstr ""
+"การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป "
+"คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
@@ -349,7 +352,8 @@ msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
-"การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
+"การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด "
+"คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -395,7 +399,9 @@ msgstr "ความกว้างหน้ากระดาษ (%)"
 
 #: rnote-ui/data/ui/dialogs.ui:191
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr "ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
+msgstr ""
+"ตั้งความกว้างของไฟล์ PDF ที่นำเข้ามา "
+"เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
 
 #: rnote-ui/data/ui/dialogs.ui:211
 msgid "Page spacing"
@@ -1090,7 +1096,8 @@ msgstr "ความโค้งงอ"
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
-msgstr "ความโค้งงอของเส้นในขณะวาดรูปทรงแบบหยาบ 0.0 คือ เส้นตรง ค่าเริ่มต้นคือ 1.0"
+msgstr ""
+"ความโค้งงอของเส้นในขณะวาดรูปทรงแบบหยาบ 0.0 คือ เส้นตรง ค่าเริ่มต้นคือ 1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
 msgid "Curve step count"

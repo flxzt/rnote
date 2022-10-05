@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 22:17+0200\n"
-"PO-Revision-Date: 2022-10-04 20:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-10-06 12:33+0000\n"
+"Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
@@ -307,46 +307,44 @@ msgid "Clear"
 msgstr "ล้าง"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
-#, fuzzy
-#| msgid "New document"
 msgid "New Document"
 msgstr "เอกสารใหม่"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
-msgstr "การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณแน่ใจหรือไม่?"
+msgstr ""
+"การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด "
+"คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
 msgid "Discard"
-msgstr ""
+msgstr "ทิ้ง"
 
 #: rnote-ui/data/ui/dialogs.ui:29
 msgid "Quit Application"
 msgstr "ออกจากแอปพลิเคชัน"
 
 #: rnote-ui/data/ui/dialogs.ui:30
-#, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป คุณยังต้องการที่จะออกอยู่หรือไม่?"
+msgstr ""
+"การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป "
+"คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs.ui:41
 msgid "Open File"
 msgstr "เปิดไฟล์"
 
 #: rnote-ui/data/ui/dialogs.ui:42
-#, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด"
+msgstr ""
+"การเปิดไฟล์นี้ จะเขียนทับการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด "
+"คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 msgid "Import PDF"
@@ -410,10 +408,8 @@ msgid "Apply"
 msgstr "นำไปใช้"
 
 #: rnote-ui/data/ui/dialogs.ui:284
-#, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
-msgstr "พื้นที่ทำงาน"
+msgstr "ชื่อพื้นที่ทำงาน"
 
 #: rnote-ui/data/ui/dialogs.ui:290
 msgid "Icon"
@@ -501,11 +497,11 @@ msgstr "ตั้งค่าสีขอบเขตของหน้ากร
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
-msgstr ""
+msgstr "ซ่อนแถบเลื่อนเป็นการถาวร"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
-msgstr ""
+msgstr "ตั้งว่าจะให้ซ่อนแถบเลื่อนของเอกสารเป็นการถาวรหรือไม่"
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"
@@ -968,11 +964,8 @@ msgid "Delete selection"
 msgstr "ลบสิ่งที่เลือก"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste from Clipboard"
-msgstr "วางคลิปบอร์ด"
+msgstr "วางจากคลิปบอร์ด"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"
@@ -1345,8 +1338,6 @@ msgid "Error: Tried opening folder as file"
 msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-#, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
 msgid "Failed to open file: Unsupported file type."
 msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
 

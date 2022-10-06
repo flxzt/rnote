@@ -1,5 +1,5 @@
 use geo::line_string;
-use gtk4::{gdk, glib, graphene, gsk, pango};
+use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
 use p2d::bounding_volume::AABB;
 use rnote_compose::{penhelpers::KeyboardKey, Transform};
 
@@ -72,6 +72,27 @@ pub fn now_formatted_string() -> String {
         },
         Err(_) => String::from("1970-01-01_12-00-00"),
     }
+}
+
+pub fn default_filename_for_export(
+    output_file: Option<gio::File>,
+    default_fallback: Option<&str>,
+    suffix: Option<&str>,
+    ext: &str,
+) -> String {
+    let mut filename = output_file
+        .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
+        .unwrap_or_else(|| {
+            default_fallback
+                .map(|f| f.to_owned())
+                .unwrap_or_else(|| now_formatted_string())
+        });
+
+    if let Some(suffix) = suffix {
+        filename += suffix;
+    }
+
+    filename + "." + ext
 }
 
 pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {

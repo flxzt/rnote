@@ -21,17 +21,17 @@ pub type ApplyButton = Button;
 ///
 /// Only `ApplyButton` and `Popover` are returned because you likely want to
 /// apply a connection to them.
-pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
-    let grid = get_grid();
-    let cancel_button = get_cancel_button();
-    let apply_button = get_apply_button();
+pub fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
+    let grid = create_grid();
+    let cancel_button = create_cancel_button();
+    let apply_button = create_apply_button();
 
     grid.attach(label, 0, 0, 2, 1);
     grid.attach(entry, 0, 1, 2, 1);
     grid.attach(&cancel_button, 0, 2, 1, 1);
     grid.attach(&apply_button, 1, 2, 1, 1);
 
-    let popover = get_popover(&grid);
+    let popover = create_popover(&grid);
 
     connect_cancel_button(&cancel_button, &popover);
     
@@ -40,7 +40,7 @@ pub fn get_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) 
     (apply_button, popover)
 }
 
-fn get_grid() -> Grid {
+fn create_grid() -> Grid {
     Grid::builder()
         .margin_top(6)
         .margin_bottom(6)
@@ -49,14 +49,14 @@ fn get_grid() -> Grid {
         .build()
 }
 
-fn get_cancel_button() -> Button {
+fn create_cancel_button() -> Button {
     Button::builder()
         .halign(Align::Start)
         .label(&gettext("Cancel"))
         .build()
 }
 
-fn get_apply_button() -> Button {
+fn create_apply_button() -> Button {
     let apply_button = Button::builder()
         .halign(Align::End)
         .label(&gettext("Apply"))
@@ -66,7 +66,7 @@ fn get_apply_button() -> Button {
     apply_button
 }
 
-fn get_popover(grid: &Grid) -> Popover {
+fn create_popover(grid: &Grid) -> Popover {
     let popover = Popover::builder()
         .autohide(true)
         .has_arrow(true)

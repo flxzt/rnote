@@ -21,9 +21,9 @@ impl FileRow {
             if let Some(current_file) = filerow.current_file() {
                 if let Some(current_path) = current_file.path() {
                     if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
-                        let entry = get_entry(&current_path);
-                        let label = get_label();
-                        let (apply_button, popover) = widget_helper::entry_dialog::get_entry_dialog(&entry, &label);
+                        let entry = create_entry(&current_path);
+                        let label = create_label();
+                        let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
 
                         filerow.menubutton_box().append(&popover);
 
@@ -41,7 +41,7 @@ impl FileRow {
     }
 }
 
-fn get_entry(current_path: &PathBuf) -> Entry {
+fn create_entry(current_path: &PathBuf) -> Entry {
     let entry_name = current_path
         .file_name()
         .map(|current_file_name| current_file_name.to_string_lossy().to_string())
@@ -50,7 +50,7 @@ fn get_entry(current_path: &PathBuf) -> Entry {
     Entry::builder().text(entry_name.as_ref()).build()
 }
 
-fn get_label() -> Label {
+fn create_label() -> Label {
     let label = Label::builder()
         .margin_bottom(12)
         .halign(Align::Center)

@@ -44,8 +44,8 @@ mod imp {
         pub hscroll_policy: Cell<ScrollablePolicy>,
         pub vscroll_policy: Cell<ScrollablePolicy>,
         pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
-        pub cursor: gdk::Cursor,
-        pub motion_cursor: gdk::Cursor,
+        pub regular_cursor: RefCell<gdk::Cursor>,
+        pub motion_cursor: RefCell<gdk::Cursor>,
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
@@ -95,23 +95,24 @@ mod imp {
             mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
             touch_drawing_gesture.group_with(&stylus_drawing_gesture);
 
-            let cursor = gdk::Cursor::from_texture(
+            let regular_cursor = gdk::Cursor::from_texture(
                 &gdk::Texture::from_resource(
-                    (String::from(config::APP_IDPATH) + "icons/scalable/actions/canvas-cursor.svg")
+                    (String::from(config::APP_IDPATH)
+                        + "icons/scalable/actions/cursor-dot-medium.svg")
                         .as_str(),
                 ),
-                8,
-                8,
+                32,
+                32,
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
             let motion_cursor = gdk::Cursor::from_texture(
                 &gdk::Texture::from_resource(
                     (String::from(config::APP_IDPATH)
-                        + "icons/scalable/actions/canvas-motion-cursor.svg")
+                        + "icons/scalable/actions/cursor-dot-small.svg")
                         .as_str(),
                 ),
-                8,
-                8,
+                32,
+                32,
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
@@ -124,8 +125,8 @@ mod imp {
                 vadjustment_signal: RefCell::new(None),
                 hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
-                cursor,
-                motion_cursor,
+                regular_cursor: RefCell::new(regular_cursor),
+                motion_cursor: RefCell::new(motion_cursor),
                 stylus_drawing_gesture,
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
@@ -170,7 +171,8 @@ mod imp {
             obj.set_can_target(true);
             obj.set_focusable(true);
             obj.set_can_focus(true);
-            obj.set_cursor(Some(&self.cursor));
+
+            obj.set_cursor(Some(&*self.regular_cursor.borrow()));
 
             obj.add_controller(&self.stylus_drawing_gesture);
             obj.add_controller(&self.mouse_drawing_gesture);
@@ -218,6 +220,20 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    glib::ParamSpecObject::new(
+                        "regular-cursor",
+                        "regular-cursor",
+                        "regular-cursor",
+                        gdk::Cursor::static_type(),
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpecObject::new(
+                        "motion-cursor",
+                        "motion-cursor",
+                        "motion-cursor",
+                        gdk::Cursor::static_type(),
+                        glib::ParamFlags::READWRITE,
+                    ),
                     // Scrollable properties
                     glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),
                     glib::ParamSpecOverride::for_interface::<Scrollable>("vscroll-policy"),
@@ -238,6 +254,8 @@ mod imp {
                 "hscroll-policy" => self.hscroll_policy.get().to_value(),
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
+                "regular-cursor" => self.regular_cursor.borrow().to_value(),
+                "motion-cursor" => self.motion_cursor.borrow().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -299,6 +317,14 @@ mod imp {
                         self.touch_drawing_gesture
                             .set_propagation_phase(PropagationPhase::None);
                     }
+                }
+                "regular-cursor" => {
+                    let regular_cursor = value.get().unwrap();
+                    self.regular_cursor.replace(regular_cursor);
+                }
+                "motion-cursor" => {
+                    let motion_cursor = value.get().unwrap();
+                    self.motion_cursor.replace(motion_cursor);
                 }
                 _ => unimplemented!(),
             }
@@ -373,12 +399,20 @@ impl RnoteCanvas {
         canvas
     }
 
-    pub fn cursor(&self) -> gdk::Cursor {
-        self.imp().cursor.clone()
+    pub fn regular_cursor(&self) -> gdk::Cursor {
+        self.property::<gdk::Cursor>("regular-cursor")
+    }
+
+    pub fn set_regular_cursor(&self, regular_cursor: gdk::Cursor) {
+        self.set_property("regular-cursor", regular_cursor.to_value());
     }
 
     pub fn motion_cursor(&self) -> gdk::Cursor {
-        self.imp().motion_cursor.clone()
+        self.property::<gdk::Cursor>("motion-cursor")
+    }
+
+    pub fn set_motion_cursor(&self, motion_cursor: gdk::Cursor) {
+        self.set_property("motion-cursor", motion_cursor.to_value());
     }
 
     /// Only change the engine state in actions to avoid nested mutable borrows!
@@ -464,6 +498,47 @@ impl RnoteCanvas {
                 .key_controller
                 .set_im_context(None::<&IMContextSimple>);
         }
+    }
+
+    /// Switches between the regular and the motion cursor
+    pub fn switch_between_cursors(&self, in_motion: bool) {
+        if in_motion {
+            self.set_cursor(Some(&self.motion_cursor()));
+        } else {
+            self.set_cursor(Some(&self.regular_cursor()));
+        }
+    }
+
+    /// Expects the icon to be 64x64
+    pub fn set_regular_cursor_w_icon(&self, cursor_icon_name: &str) {
+        let cursor = gdk::Cursor::from_texture(
+            &gdk::Texture::from_resource(
+                (String::from(config::APP_IDPATH)
+                    + &format!("icons/scalable/actions/{}.svg", cursor_icon_name))
+                    .as_str(),
+            ),
+            32,
+            32,
+            gdk::Cursor::from_name("default", None).as_ref(),
+        );
+
+        self.set_regular_cursor(cursor)
+    }
+
+    /// Expects the icon to be 64x64
+    pub fn set_motion_cursor_w_icon(&self, cursor_icon_name: &str) {
+        let cursor = gdk::Cursor::from_texture(
+            &gdk::Texture::from_resource(
+                (String::from(config::APP_IDPATH)
+                    + &format!("icons/scalable/actions/{}.svg", cursor_icon_name))
+                    .as_str(),
+            ),
+            32,
+            32,
+            gdk::Cursor::from_name("default", None).as_ref(),
+        );
+
+        self.set_regular_cursor(cursor)
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

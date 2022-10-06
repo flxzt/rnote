@@ -199,9 +199,7 @@ pub fn process_pen_down(
 ) {
     let mut widget_flags = WidgetFlags::default();
 
-    appwindow
-        .canvas()
-        .set_cursor(Some(&appwindow.canvas().motion_cursor()));
+    appwindow.canvas().switch_between_cursors(true);
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
@@ -252,9 +250,7 @@ pub fn process_pen_up(
 ) {
     let mut widget_flags = WidgetFlags::default();
 
-    appwindow
-        .canvas()
-        .set_cursor(Some(&appwindow.canvas().cursor()));
+    appwindow.canvas().switch_between_cursors(false);
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events

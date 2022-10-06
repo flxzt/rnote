@@ -724,7 +724,7 @@ pub fn dialog_export_selection_as_svg(appwindow: &RnoteAppWindow) {
         &rnote_engine::utils::default_filename_for_export(
             appwindow.canvas().output_file(),
             Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-            Some(" Selection"),
+            Some(" - Selection"),
             "svg",
         ),
     );
@@ -777,7 +777,7 @@ pub fn dialog_export_selection_as_png(appwindow: &RnoteAppWindow) {
         &rnote_engine::utils::default_filename_for_export(
             appwindow.canvas().output_file(),
             Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-            Some(" Selection"),
+            Some(" - Selection"),
             "png",
         ),
     );
@@ -990,7 +990,7 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
     dialog_export_engine_state.set_current_name(&rnote_engine::utils::default_filename_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-        Some(" engine state"),
+        Some(" - engine state"),
         "xopp",
     ));
 
@@ -1044,7 +1044,7 @@ pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
         &rnote_engine::utils::default_filename_for_export(
             appwindow.canvas().output_file(),
             Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-            Some(" engine config"),
+            Some(" - engine config"),
             "xopp",
         ),
     );

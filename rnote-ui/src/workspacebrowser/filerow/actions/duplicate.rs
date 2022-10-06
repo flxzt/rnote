@@ -99,10 +99,12 @@ fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
         };
 
         while destination_path.exists() {
+            log::debug!("Destination: {} exists.", destination_path.display());
             destination_file_name.push(DUPLICATE_SUFFIX);
             destination_path.set_file_name(destination_file_name.clone());
         }
 
+        log::debug!("Destination path: {}", destination_path.display());
         Some(destination_path)
     } else {
         None

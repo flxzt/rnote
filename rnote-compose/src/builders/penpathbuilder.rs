@@ -72,6 +72,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
             (_, PenEvent::Proximity { .. }) => BuilderProgress::InProgress,
 
             (_, PenEvent::KeyPressed { .. }) => BuilderProgress::InProgress,
+            (_, PenEvent::Text { .. }) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 

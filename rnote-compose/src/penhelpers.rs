@@ -34,6 +34,11 @@ pub enum PenEvent {
         /// pressed shortcut keys during the keyboard key event
         shortcut_keys: Vec<ShortcutKey>,
     },
+    /// Text input
+    Text {
+        /// The committed text
+        text: String
+    },
     /// event when the pen vanishes unexpected. should reset all pending actions and state
     Cancel,
 }

@@ -723,6 +723,10 @@ impl PenBehaviour for Selector {
 
                 PenProgress::Finished
             }
+            (SelectorState::Selecting { .. }, PenEvent::Text { .. }) => PenProgress::InProgress,
+            (SelectorState::ModifySelection { .. }, PenEvent::Text { .. }) => {
+                PenProgress::InProgress
+            }
         };
 
         (pen_progress, widget_flags)

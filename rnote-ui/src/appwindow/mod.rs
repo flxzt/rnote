@@ -1357,6 +1357,9 @@ impl RnoteAppWindow {
         if let Some(hide_redo) = widget_flags.hide_redo {
             self.redo_button().set_sensitive(!hide_redo);
         }
+        if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
+            self.canvas().set_text_preprocessing(enable_text_preprocessing);
+        }
 
         widget_flags.quit
     }

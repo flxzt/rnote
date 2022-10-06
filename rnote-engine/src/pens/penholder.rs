@@ -175,8 +175,7 @@ impl PenHolder {
 
         self.pen_mode_state.set_style_all_modes(style);
 
-        widget_flags.refresh_ui = true;
-        widget_flags.redraw = true;
+        widget_flags.merge_with_other(self.handle_changed_pen_style());
 
         widget_flags
     }
@@ -190,8 +189,7 @@ impl PenHolder {
 
         self.pen_mode_state.set_style_override(style_override);
 
-        widget_flags.refresh_ui = true;
-        widget_flags.redraw = true;
+        widget_flags.merge_with_other(self.handle_changed_pen_style());
 
         widget_flags
     }
@@ -223,8 +221,7 @@ impl PenHolder {
 
             self.pen_mode_state.set_style(new_style);
 
-            widget_flags.refresh_ui = true;
-            widget_flags.redraw = true;
+            widget_flags.merge_with_other(self.handle_changed_pen_style());
         }
 
         widget_flags
@@ -254,8 +251,7 @@ impl PenHolder {
 
             self.pen_mode_state.set_style_override(new_style_override);
 
-            widget_flags.refresh_ui = true;
-            widget_flags.redraw = true;
+            widget_flags.merge_with_other(self.handle_changed_pen_style());
         }
 
         widget_flags
@@ -277,8 +273,7 @@ impl PenHolder {
             ));
             self.pen_mode_state.set_pen_mode(pen_mode);
 
-            widget_flags.redraw = true;
-            widget_flags.refresh_ui = true;
+            widget_flags.merge_with_other(self.handle_changed_pen_style());
         }
 
         widget_flags
@@ -320,6 +315,7 @@ impl PenHolder {
                 }
             }
             PenEvent::KeyPressed { .. } => {}
+            PenEvent::Text { .. } => {}
             PenEvent::Cancel => {}
         }
 
@@ -355,6 +351,24 @@ impl PenHolder {
         }
 
         self.pen_progress = pen_progress;
+
+        widget_flags
+    }
+
+    pub fn handle_changed_pen_style(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        match self.pen_mode_state.current_style_w_override() {
+            PenStyle::Typewriter => {
+                // Enable text preprocessing for typewriter
+                widget_flags.enable_text_preprocessing = Some(true);
+            }
+            _ => {
+                widget_flags.enable_text_preprocessing = Some(true);
+            }
+        }
+        widget_flags.redraw = true;
+        widget_flags.refresh_ui = true;
 
         widget_flags
     }

@@ -7,7 +7,7 @@ use gtk4::{
     ToggleButton,
 };
 use num_traits::ToPrimitive;
-use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
+use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::{self, RnoteAppWindow};
 use crate::workspacebrowser::WorkspaceRow;

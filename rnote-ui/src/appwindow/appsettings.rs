@@ -207,7 +207,7 @@ impl RnoteAppWindow {
         {
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
-            match self
+            let widget_flags = match self
                 .canvas()
                 .engine()
                 .borrow_mut()
@@ -220,13 +220,15 @@ impl RnoteAppWindow {
                     } else {
                         log::error!("failed to load `engine-config` from settings, Err {}", e);
                     }
+                    None
                 }
-                Ok(()) => {}
+                Ok(widget_flags) => Some(widget_flags),
+            };
+            // Avoiding already borrowed
+            if let Some(widget_flags) = widget_flags {
+                self.handle_widget_flags(widget_flags);
             }
         }
-
-        // refresh the UI
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
     }
 
     /// Save all settings at shutdown that are not bound in setup_settings

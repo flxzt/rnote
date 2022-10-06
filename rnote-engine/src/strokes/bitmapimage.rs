@@ -3,7 +3,7 @@ use std::ops::Range;
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::document::Format;
-use crate::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::DrawBehaviour;
 use piet::RenderContext;

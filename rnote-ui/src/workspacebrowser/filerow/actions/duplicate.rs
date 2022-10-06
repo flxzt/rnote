@@ -13,17 +13,18 @@ impl FileRow {
     pub fn duplicate_action(&self) -> gio::SimpleAction {
         let action = gio::SimpleAction::new("duplicate", None);
 
-        let yeet = |process: TransitProcess| -> TransitProcessResult {
-            let status = {
-                let status = process.copied_bytes / process.total_bytes;
-                status as f64
-            };
-            // self.canvas_progressbar().set_fraction(status);
-            TransitProcessResult::ContinueOrAbort
-        };
-
         action.connect_activate(
             clone!(@weak self as filerow => move |_action_duplicate_file, _| {
+
+                let yeet = |process: TransitProcess| -> TransitProcessResult {
+                    let status = {
+                        let status = process.copied_bytes / process.total_bytes;
+                        status as f64
+                    };
+                    filerow.canvas_progress().set_fraction(status);
+                    TransitProcessResult::ContinueOrAbort
+                };
+
                 if let Some(current_file) = filerow.current_file() {
                     if let Some(current_path) = current_file.path() {
                         let source_path = current_path.clone().into_boxed_path();

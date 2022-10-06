@@ -31,8 +31,6 @@ mod imp {
         pub menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub popovermenu: TemplateChild<PopoverMenu>,
-        #[template_child]
-        pub canvas_progress: TemplateChild<ProgressBar>,
     }
 
     impl Default for FileRow {
@@ -51,7 +49,6 @@ mod imp {
                 menubutton_box: TemplateChild::<gtk4::Box>::default(),
                 menubutton: TemplateChild::<MenuButton>::default(),
                 popovermenu: TemplateChild::<PopoverMenu>::default(),
-                canvas_progress: TemplateChild::<ProgressBar>::default(),
             }
         }
     }
@@ -200,10 +197,6 @@ impl FileRow {
         self.imp().menubutton_box.get()
     }
 
-    pub fn canvas_progress(&self) -> ProgressBar {
-        self.imp().canvas_progress.get()
-    }
-
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_actions(appwindow);
     }
@@ -214,7 +207,7 @@ impl FileRow {
         self.imp().action_group.add_action(&self.open_action(&appwindow));
         self.imp().action_group.add_action(&self.rename_action());
         self.imp().action_group.add_action(&self.trash_action());
-        self.imp().action_group.add_action(&self.duplicate_action());
+        self.imp().action_group.add_action(&self.duplicate_action(&appwindow));
         self.imp().action_group.add_action(&self.add_dir_action());
     }
 }

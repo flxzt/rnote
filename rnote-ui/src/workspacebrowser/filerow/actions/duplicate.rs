@@ -6,31 +6,24 @@ use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
 
 use crate::workspacebrowser::FileRow;
+use crate::RnoteAppWindow;
 
 const DUPLICATE_SUFFIX: &str = ".dup";
 
 impl FileRow {
-    pub fn duplicate_action(&self) -> gio::SimpleAction {
+    pub fn duplicate_action(&self, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
         let action = gio::SimpleAction::new("duplicate", None);
 
         action.connect_activate(
-            clone!(@weak self as filerow => move |_action_duplicate_file, _| {
-
-                let yeet = |process: TransitProcess| -> TransitProcessResult {
-                    let status = {
-                        let status = process.copied_bytes / process.total_bytes;
-                        status as f64
-                    };
-                    filerow.canvas_progress().set_fraction(status);
-                    TransitProcessResult::ContinueOrAbort
-                };
+            clone!(@weak self as filerow, @weak appwindow => move |_action_duplicate_file, _| {
+                let process_evaluator = FileRow::create_process_evaluator(appwindow);
 
                 if let Some(current_file) = filerow.current_file() {
                     if let Some(current_path) = current_file.path() {
                         let source_path = current_path.clone().into_boxed_path();
 
                         if source_path.is_dir() {
-                            duplicate_dir(current_path, yeet);
+                            duplicate_dir(current_path, process_evaluator);
                         } else if source_path.is_file() {
                             duplicate_file(current_path);
                         }
@@ -40,6 +33,20 @@ impl FileRow {
         );
 
         action
+    }
+
+    fn create_process_evaluator(
+        appwindow: RnoteAppWindow,
+    ) -> impl Fn(TransitProcess) -> TransitProcessResult {
+        move |process: TransitProcess| -> TransitProcessResult {
+            let status = {
+                let status = process.copied_bytes / process.total_bytes;
+                status as f64
+            };
+
+            appwindow.canvas_progressbar().set_fraction(status);
+            TransitProcessResult::ContinueOrAbort
+        }
     }
 }
 
@@ -56,7 +63,7 @@ fn duplicate_file(source_path: PathBuf) {
     log::info!("Destination-file for duplication not found.");
 }
 
-fn duplicate_dir<F>(source_path: PathBuf, copy_progress: F)
+fn duplicate_dir<F>(source_path: PathBuf, process_evaluator: F)
 where
     F: Fn(TransitProcess) -> TransitProcessResult,
 {
@@ -64,12 +71,13 @@ where
         let source = source_path.into_boxed_path();
         let options = CopyOptions {
             copy_inside: true,
-            .. CopyOptions::default()
+            ..CopyOptions::default()
         };
 
         log::debug!("Duplicate source: {}", source.display());
         log::debug!("Duplicate destination: {}", destination.display());
-        if let Err(err) = copy_items_with_progress(&[source], destination, &options, copy_progress)
+        if let Err(err) =
+            copy_items_with_progress(&[source], destination, &options, process_evaluator)
         {
             log::error!("Couldn't copy items: {}", err);
         }

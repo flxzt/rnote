@@ -115,7 +115,11 @@ impl IconPicker {
 
     /// Binds a list containing the icon names
     pub fn set_list(&self, list: StringList) {
-        let single_selection = SingleSelection::builder().model(&list).build();
+        let single_selection = SingleSelection::builder()
+            .model(&list)
+            // Ensures nothing is selected when initially setting the list
+            .selected(gtk4::INVALID_LIST_POSITION)
+            .build();
 
         if let Some(old_id) = self.imp().selected_handlerid.borrow_mut().take() {
             self.disconnect(old_id);

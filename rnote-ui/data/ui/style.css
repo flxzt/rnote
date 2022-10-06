@@ -1,4 +1,9 @@
-.sidebar_action_button image {
+.sidebar_action_image {
+    margin-left: -4px;
+    margin-right: -4px;
+}
+
+.settings_row_image {
     margin-left: -4px;
     margin-right: -4px;
 }
@@ -150,4 +155,12 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
     transform: scale(2.0);
     margin-top: 24px;
     margin-bottom: 24px;
+}
+
+.iconpicker_gridview {
+    border-radius: 6px;
+}
+
+.iconpicker_gridview child {
+    margin: 3px;
 }

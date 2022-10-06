@@ -32,11 +32,11 @@
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Brush style</property>
             <property name="popover">brushstyle_popover</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
             <child>
               <object class="GtkImage" id="brushstyle_image">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
                 <property name="icon-name">pen-brush-style-solid-symbolic</property>
                 <property name="icon-size">large</property>
               </object>

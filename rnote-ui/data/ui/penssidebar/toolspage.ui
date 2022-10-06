@@ -32,11 +32,11 @@
             <property name="tooltip_text" translatable="yes">Insert vertical space</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
             <child>
               <object class="GtkImage">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
                 <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -49,11 +49,11 @@
             <property name="group">toolstyle_verticalspace_toggle</property>
             <property name="vexpand">true</property>
             <property name="visible">false</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
             <child>
               <object class="GtkImage">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
                 <property name="icon-name">pen-tools-dragproximitytool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -65,11 +65,11 @@
             <property name="tooltip_text" translatable="yes">Offset the camera by dragging</property>
             <property name="group">toolstyle_verticalspace_toggle</property>
             <property name="vexpand">true</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
             <child>
               <object class="GtkImage">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
                 <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>

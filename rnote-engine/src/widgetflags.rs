@@ -20,6 +20,9 @@ pub struct WidgetFlags {
     pub hide_undo: Option<bool>,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed
     pub hide_redo: Option<bool>,
+    /// Changes whether text preprocessing should be enabled. Meaning, instead of key events text events are then emitted
+    /// for regular unicode text. Used when writing text with the typewriter
+    pub enable_text_preprocessing: Option<bool>,
 }
 
 impl Default for WidgetFlags {
@@ -34,6 +37,7 @@ impl Default for WidgetFlags {
             hide_scrollbars: None,
             hide_undo: None,
             hide_redo: None,
+            enable_text_preprocessing: None,
         }
     }
 }
@@ -61,6 +65,11 @@ impl WidgetFlags {
             other.hide_redo
         } else {
             self.hide_redo
+        };
+        self.enable_text_preprocessing = if other.enable_text_preprocessing.is_some() {
+            other.enable_text_preprocessing
+        } else {
+            self.enable_text_preprocessing
         };
 
         self

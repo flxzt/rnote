@@ -199,14 +199,15 @@ impl AudioPlayer {
         }
     }
 
-    pub fn play_typewriter_key_sound(&self, keyboard_key: KeyboardKey) {
+    /// Play a typewriter sound that fits the given key type, or a generic sound when None
+    pub fn play_typewriter_key_sound(&self, keyboard_key: Option<KeyboardKey>) {
         if !self.enabled {
             return;
         }
 
         match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => match keyboard_key {
-                KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
+                Some(KeyboardKey::CarriageReturn) | Some(KeyboardKey::Linefeed) => {
                     sink.append(
                         self.sounds["typewriter_bell"].clone().mix(
                             self.sounds["typewriter_linefeed"]
@@ -217,10 +218,10 @@ impl AudioPlayer {
                     sink.detach();
                 }
                 // control characters are already filtered out of unicode
-                KeyboardKey::Unicode(_)
-                | KeyboardKey::BackSpace
-                | KeyboardKey::Delete
-                | KeyboardKey::HorizontalTab => {
+                Some(KeyboardKey::Unicode(_))
+                | Some(KeyboardKey::BackSpace)
+                | Some(KeyboardKey::Delete)
+                | Some(KeyboardKey::HorizontalTab) => {
                     let mut rng = rand::thread_rng();
                     let typewriter_sound_index = rng.gen_range(0..Self::TYPEWRITER_N_FILES);
 

@@ -344,3 +344,14 @@ pub fn process_keyboard_key_pressed(
 
     appwindow.handle_widget_flags(widget_flags);
 }
+
+/// Process keyboard text
+pub fn process_keyboard_text(text: String, appwindow: &RnoteAppWindow) {
+    let widget_flags = appwindow
+        .canvas()
+        .engine()
+        .borrow_mut()
+        .handle_pen_event(PenEvent::Text { text }, None);
+
+    appwindow.handle_widget_flags(widget_flags);
+}

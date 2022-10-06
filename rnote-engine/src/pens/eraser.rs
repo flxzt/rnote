@@ -208,6 +208,9 @@ impl PenBehaviour for Eraser {
                 PenProgress::Finished
             }
             (EraserState::Proximity(_), PenEvent::KeyPressed { .. }) => PenProgress::Idle,
+            (EraserState::Up, PenEvent::Text { .. }) => PenProgress::Idle,
+            (EraserState::Proximity(_), PenEvent::Text { .. }) => PenProgress::Idle,
+            (EraserState::Down(_), PenEvent::Text { .. }) => PenProgress::InProgress,
         };
 
         (pen_progress, widget_flags)

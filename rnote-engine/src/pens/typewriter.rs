@@ -346,7 +346,13 @@ impl PenBehaviour for Typewriter {
         event: PenEvent,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        //log::debug!("typewriter handle_event: state: {:#?}, event: {:#?}", self.state, event);
+/* 
+        log::debug!(
+            "typewriter handle_event: state: {:#?}, event: {:#?}",
+            self.state,
+            event
+        );
+ */
 
         let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
@@ -409,7 +415,7 @@ impl PenBehaviour for Typewriter {
                 PenProgress::InProgress
             }
             (TypewriterState::Start(pos), PenEvent::KeyPressed { keyboard_key, .. }) => {
-                Self::start_audio(keyboard_key, engine_view.audioplayer);
+                Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
@@ -451,6 +457,39 @@ impl PenBehaviour for Typewriter {
                 }
 
                 widget_flags.redraw = true;
+
+                PenProgress::InProgress
+            }
+            (TypewriterState::Start(pos), PenEvent::Text { text }) => {
+                Self::start_audio(None, engine_view.audioplayer);
+
+                let mut text_style = self.text_style.clone();
+                if self.max_width_enabled {
+                    text_style.max_width = Some(self.text_width);
+                }
+                let text_len = text.len();
+
+                let textstroke = TextStroke::new(text, *pos, text_style);
+
+                let cursor = unicode_segmentation::GraphemeCursor::new(text_len, text_len, true);
+
+                let stroke_key = engine_view
+                    .store
+                    .insert_stroke(Stroke::TextStroke(textstroke), None);
+
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                    stroke_key,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                ) {
+                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err {}", e);
+                }
+
+                self.state = TypewriterState::Modifying {
+                    stroke_key,
+                    cursor,
+                    pen_down: false,
+                };
 
                 PenProgress::InProgress
             }
@@ -552,7 +591,7 @@ impl PenBehaviour for Typewriter {
                 TypewriterState::Modifying {
                     stroke_key,
                     cursor,
-                    pen_down: down,
+                    pen_down,
                 },
                 PenEvent::KeyPressed {
                     keyboard_key,
@@ -563,7 +602,7 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(keyboard_key, engine_view.audioplayer);
+                    Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                     let mut update_stroke = |store: &mut StrokeStore| {
                         widget_flags.merge_with_other(store.record());
@@ -704,13 +743,51 @@ impl PenBehaviour for Typewriter {
                         _ => None,
                     };
 
-                    *down = false;
+                    *pen_down = false;
 
                     widget_flags.redraw = true;
 
                     if let Some(new_state) = new_state {
                         self.state = new_state;
                     }
+                }
+
+                PenProgress::InProgress
+            }
+            (
+                TypewriterState::Modifying {
+                    stroke_key,
+                    cursor,
+                    pen_down,
+                },
+                PenEvent::Text { text },
+            ) => {
+                if let Some(Stroke::TextStroke(ref mut textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    Self::start_audio(None, engine_view.audioplayer);
+
+                    textstroke.insert_text_after_cursor(&text, cursor);
+
+                    widget_flags.merge_with_other(engine_view.store.record());
+
+                    engine_view.store.update_geometry_for_stroke(*stroke_key);
+                    engine_view.store.regenerate_rendering_for_stroke_threaded(
+                        engine_view.tasks_tx.clone(),
+                        *stroke_key,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
+                    );
+
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                    widget_flags.redraw = true;
+                    widget_flags.resize = true;
+                    widget_flags.indicate_changed_store = true;
+
+                    *pen_down = false;
                 }
 
                 PenProgress::InProgress
@@ -808,7 +885,7 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(keyboard_key, engine_view.audioplayer);
+                    Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                     let mut update_stroke = |store: &mut StrokeStore| {
                         widget_flags.merge_with_other(store.record());
@@ -931,10 +1008,52 @@ impl PenBehaviour for Typewriter {
 
                 PenProgress::InProgress
             }
+            (
+                TypewriterState::Selecting {
+                    stroke_key,
+                    cursor,
+                    selection_cursor,
+                    finished,
+                },
+                PenEvent::Text { text },
+            ) => {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    Self::start_audio(None, engine_view.audioplayer);
+
+                    textstroke.replace_text_between_selection_cursors(
+                        cursor,
+                        selection_cursor,
+                        text.as_str(),
+                    );
+
+                    widget_flags.merge_with_other(engine_view.store.record());
+
+                    engine_view.store.update_geometry_for_stroke(*stroke_key);
+                    engine_view.store.regenerate_rendering_for_stroke_threaded(
+                        engine_view.tasks_tx.clone(),
+                        *stroke_key,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
+                    );
+
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                    widget_flags.redraw = true;
+                    widget_flags.resize = true;
+                    widget_flags.indicate_changed_store = true;
+
+                    *finished = true
+                }
+
+                PenProgress::InProgress
+            }
             (TypewriterState::Selecting { .. }, PenEvent::Proximity { .. }) => {
                 PenProgress::InProgress
             }
-
             (TypewriterState::Selecting { .. }, PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
 
@@ -1011,7 +1130,7 @@ impl PenBehaviour for Typewriter {
             }
             (
                 TypewriterState::Translating { .. },
-                PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. },
+                PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. },
             ) => PenProgress::InProgress,
             (TypewriterState::Translating { .. }, PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
@@ -1090,7 +1209,7 @@ impl PenBehaviour for Typewriter {
             }
             (
                 TypewriterState::AdjustTextWidth { .. },
-                PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. },
+                PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. },
             ) => PenProgress::InProgress,
             (TypewriterState::AdjustTextWidth { .. }, PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
@@ -1249,7 +1368,7 @@ impl Typewriter {
     // The size of the translate node, located in the upper left corner
     const ADJUST_TEXT_WIDTH_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
 
-    fn start_audio(keyboard_key: KeyboardKey, audioplayer: &mut Option<AudioPlayer>) {
+    fn start_audio(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
             audioplayer.play_typewriter_key_sound(keyboard_key);
         }

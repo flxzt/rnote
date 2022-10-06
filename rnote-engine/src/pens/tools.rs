@@ -464,6 +464,7 @@ impl PenBehaviour for Tools {
 
                 PenProgress::Finished
             }
+            (ToolsState::Active, PenEvent::Text { .. }) => PenProgress::InProgress,
         };
 
         (pen_progress, widget_flags)

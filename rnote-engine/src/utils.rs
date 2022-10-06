@@ -166,6 +166,8 @@ pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
 }
 
 pub fn keyboard_key_from_gdk(gdk_key: gdk::Key) -> KeyboardKey {
+    //log::debug!("gdk: pressed key: {:?}", gdk_key);
+
     if let Some(keychar) = gdk_key.to_unicode() {
         KeyboardKey::Unicode(keychar).filter_convert_unicode_control_chars()
     } else {

@@ -15,7 +15,7 @@ use rnote_engine::RnoteEngine;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
     Adjustment, DropTarget, EventControllerKey, EventSequenceState, GestureDrag, GestureStylus,
-    Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    IMContextSimple, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
 
 use crate::appwindow::RnoteAppWindow;
@@ -50,6 +50,7 @@ mod imp {
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
         pub key_controller: EventControllerKey,
+        pub key_controller_im_context: IMContextSimple,
 
         pub engine: Rc<RefCell<RnoteEngine>>,
 
@@ -87,6 +88,8 @@ mod imp {
                 .name("key_controller")
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
+
+            let key_controller_im_context = IMContextSimple::new();
 
             // Gesture grouping
             mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
@@ -127,6 +130,7 @@ mod imp {
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
                 key_controller,
+                key_controller_im_context,
                 zoom_timeout_id: RefCell::new(None),
 
                 engine: Rc::new(RefCell::new(engine)),
@@ -450,6 +454,18 @@ impl RnoteCanvas {
         self.imp().vadjustment.replace(adj);
     }
 
+    pub fn set_text_preprocessing(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .key_controller
+                .set_im_context(Some(&self.imp().key_controller_im_context));
+        } else {
+            self.imp()
+                .key_controller
+                .set_im_context(None::<&IMContextSimple>);
+        }
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
@@ -712,6 +728,13 @@ impl RnoteCanvas {
 
             Inhibit(true)
         }));
+
+        // For unicode text the input is commited from the IM context, and won't trigger the key_pressed signal
+        self.imp().key_controller_im_context.connect_commit(
+            clone!(@weak self as canvas, @weak appwindow => move |_cx, text| {
+                input::process_keyboard_text(text.to_string(), &appwindow);
+            }),
+        );
 
         /*
         self.imp().key_controller.connect_key_released(clone!(@weak self as canvas, @weak appwindow => move |_key_controller, _key, _raw, _modifier| {

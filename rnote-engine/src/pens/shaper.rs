@@ -162,7 +162,7 @@ impl PenBehaviour for Shaper {
                     | PenEvent::KeyPressed {
                         ref shortcut_keys, ..
                     } => constraints.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
-                    PenEvent::Cancel => false,
+                    PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
 
                 match builder.handle_event(event, constraints) {

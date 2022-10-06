@@ -71,8 +71,8 @@
             <attribute name="action">filerow.duplicate</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Add Directory</attribute>
-            <attribute name="action">filerow.add-dir</attribute>
+            <attribute name="label" translatable="yes">Create Directory</attribute>
+            <attribute name="action">filerow.create-dir</attribute>
           </item>
         </section>
       </menu>

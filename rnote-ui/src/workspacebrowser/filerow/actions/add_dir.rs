@@ -12,8 +12,8 @@ use gtk4::{
 };
 
 impl FileRow {
-    pub fn add_dir_action(&self) -> gio::SimpleAction {
-        let new_file = gio::SimpleAction::new("add-dir", None);
+    pub fn create_dir_action(&self) -> gio::SimpleAction {
+        let new_file = gio::SimpleAction::new("create-dir", None);
 
         new_file.connect_activate(clone!(@weak self as filerow => move |_action_rename_file, _| {
             if let Some(current_file) = filerow.current_file() {

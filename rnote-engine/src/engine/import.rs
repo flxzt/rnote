@@ -11,6 +11,8 @@ use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
 
+use super::EngineConfig;
+
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
@@ -356,5 +358,17 @@ impl RnoteEngine {
         widget_flags.refresh_ui = true;
 
         widget_flags
+    }
+
+    /// Exports the current engine config as JSON string
+    pub fn save_engine_config(&self) -> anyhow::Result<String> {
+        let engine_config = EngineConfig {
+            document: serde_json::to_value(&self.document)?,
+            penholder: serde_json::to_value(&self.penholder)?,
+            pdf_import_prefs: serde_json::to_value(&self.pdf_import_prefs)?,
+            pen_sounds: serde_json::to_value(&self.pen_sounds)?,
+        };
+
+        Ok(serde_json::to_string(&engine_config)?)
     }
 }

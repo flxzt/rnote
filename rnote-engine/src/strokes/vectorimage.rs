@@ -3,7 +3,7 @@ use std::ops::Range;
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::document::Format;
-use crate::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{render, DrawBehaviour};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;

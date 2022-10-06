@@ -355,7 +355,7 @@ impl PenHolder {
         widget_flags
     }
 
-    fn handle_changed_pen_style(&mut self) -> WidgetFlags {
+    pub fn handle_changed_pen_style(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         match self.pen_mode_state.current_style_w_override() {

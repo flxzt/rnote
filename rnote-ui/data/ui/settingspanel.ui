@@ -92,10 +92,66 @@
                     <child>
                       <object class="AdwActionRow" id="general_permanently_hide_scrollbars_row">
                         <property name="title" translatable="yes">Permanently hidden scrollbars</property>
-                        <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are hidden permanently.</property>
+                        <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are hidden permanently</property>
                         <child type="suffix">
                           <object class="GtkSwitch" id="general_permanently_hide_scrollbars_switch">
                             <property name="valign">center</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_regular_cursor_picker_row">
+                        <property name="title" translatable="yes">Regular cursor</property>
+                        <property name="subtitle" translatable="yes">Set the regular cursor</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkMenuButton" id="general_regular_cursor_picker_menubutton">
+                                <property name="hexpand">false</property>
+                                <property name="hexpand">false</property>
+                                <property name="valign">center</property>
+                                <property name="halign">end</property>
+                                <property name="popover">general_regular_cursor_picker_popover</property>
+                                <child>
+                                  <object class="GtkImage" id="general_regular_cursor_picker_image">
+                                    <style>
+                                      <class name="settings_row_image" />
+                                    </style>
+                                    <property name="icon-name">cursor-dot-medium</property>
+                                    <property name="icon-size">large</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_motion_cursor_picker_row">
+                        <property name="title" translatable="yes">Motion cursor</property>
+                        <property name="subtitle" translatable="yes">Set the motion cursor</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkMenuButton" id="general_motion_cursor_picker_menubutton">
+                                <property name="hexpand">false</property>
+                                <property name="hexpand">false</property>
+                                <property name="valign">center</property>
+                                <property name="halign">end</property>
+                                <property name="popover">general_motion_cursor_picker_popover</property>
+                                <child>
+                                  <object class="GtkImage" id="general_motion_cursor_picker_image">
+                                    <style>
+                                      <class name="settings_row_image" />
+                                    </style>
+                                    <property name="icon-name">cursor-dot-small</property>
+                                    <property name="icon-size">large</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -362,5 +418,19 @@
         </child>
       </object>
     </child>
+    <object class="GtkPopover" id="general_regular_cursor_picker_popover">
+      <child>
+        <object class="IconPicker" id="general_regular_cursor_picker">
+          <property name="valign">center</property>
+        </object>
+      </child>
+    </object>
+    <object class="GtkPopover" id="general_motion_cursor_picker_popover">
+      <child>
+        <object class="IconPicker" id="general_motion_cursor_picker">
+          <property name="valign">center</property>
+        </object>
+      </child>
+    </object>
   </template>
 </interface>

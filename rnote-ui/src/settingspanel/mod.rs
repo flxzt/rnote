@@ -1,6 +1,7 @@
 pub mod penshortcutmodels;
 mod penshortcutrow;
 
+use gtk4::{Image, StringList};
 // Re-exports
 pub use penshortcutrow::PenShortcutRow;
 
@@ -14,7 +15,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::appwindow::RnoteAppWindow;
+use crate::globals;
 use crate::unitentry::UnitEntry;
+use crate::IconPicker;
 use rnote_compose::penhelpers::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
@@ -22,6 +25,7 @@ use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
     use super::*;
+
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub struct SettingsPanel {
@@ -39,6 +43,14 @@ mod imp {
         pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
         pub general_permanently_hide_scrollbars_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub general_regular_cursor_picker: TemplateChild<IconPicker>,
+        #[template_child]
+        pub general_regular_cursor_picker_image: TemplateChild<Image>,
+        #[template_child]
+        pub general_motion_cursor_picker: TemplateChild<IconPicker>,
+        #[template_child]
+        pub general_motion_cursor_picker_image: TemplateChild<Image>,
         #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -437,6 +449,14 @@ impl SettingsPanel {
             .clone()
     }
 
+    pub fn general_regular_cursor_picker_image(&self) -> Image {
+        self.imp().general_regular_cursor_picker_image.clone()
+    }
+
+    pub fn general_motion_cursor_picker_image(&self) -> Image {
+        self.imp().general_motion_cursor_picker_image.clone()
+    }
+
     pub fn format_width_unitentry(&self) -> UnitEntry {
         self.imp().format_width_unitentry.clone()
     }
@@ -611,6 +631,44 @@ impl SettingsPanel {
             .bind_property("state", appwindow, "permanently-hide-canvas-scrollbars")
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
+
+        // Regular cursor picker
+        self.imp()
+            .general_regular_cursor_picker
+            .set_list(StringList::new(globals::CURSORS_LIST));
+
+        self.imp().general_regular_cursor_picker.connect_local(
+            "icon-picked",
+            false,
+            clone!(@weak appwindow => @default-return None, move |args| {
+                let picked = args[1].get::<String>().unwrap();
+
+                appwindow.canvas().set_regular_cursor(picked);
+                // Update the actual widget cursor
+                appwindow.canvas().switch_between_cursors(false);
+
+                None
+            }),
+        );
+
+        // Motion cursor picker
+        self.imp()
+            .general_motion_cursor_picker
+            .set_list(StringList::new(globals::CURSORS_LIST));
+
+        self.imp().general_motion_cursor_picker.connect_local(
+            "icon-picked",
+            false,
+            clone!(@weak appwindow => @default-return None, move |args| {
+                let picked = args[1].get::<String>().unwrap();
+
+                appwindow.canvas().set_motion_cursor(picked);
+                // Update the actual widget cursor
+                appwindow.canvas().switch_between_cursors(false);
+
+                None
+            }),
+        );
 
         // revert format
         self.imp().format_revert_button.get().connect_clicked(

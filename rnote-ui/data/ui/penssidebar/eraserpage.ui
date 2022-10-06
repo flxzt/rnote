@@ -34,11 +34,11 @@
             <property name="tooltip_text" translatable="yes">Trash strokes</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
             <child>
               <object class="GtkImage">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
                 <property name="icon_name">pen-eraser-trash-colliding-strokes-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -50,11 +50,11 @@
             <property name="group">eraserstyle_trash_colliding_strokes_toggle</property>
             <property name="tooltip_text" translatable="yes">Split strokes</property>
             <property name="vexpand">true</property>
-            <style>
-              <class name="sidebar_action_button" />
-            </style>
             <child>
               <object class="GtkImage">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
                 <property name="icon_name">pen-eraser-split-colliding-strokes-symbolic</property>
                 <property name="icon-size">large</property>
               </object>

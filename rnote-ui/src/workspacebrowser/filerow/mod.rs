@@ -4,13 +4,12 @@ mod widget_helper;
 use crate::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DragSource,
-    GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget, ProgressBar,
+    GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
 
 mod imp {
-    use gtk4::ProgressBar;
 
     use super::*;
 

@@ -35,6 +35,8 @@ impl FileRow {
         action
     }
 
+    /// returns the progress handler for
+    /// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html)
     fn create_process_evaluator(
         appwindow: RnoteAppWindow,
     ) -> impl Fn(TransitProcess) -> TransitProcessResult {
@@ -84,6 +86,8 @@ where
     }
 }
 
+/// returns a suitable destination path from the given source path
+/// by adding `.dup` as often as needed to the source-path
 fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
     if let Some(destination_file_name) = source_path.file_name() {
         let mut destination_file_name = {

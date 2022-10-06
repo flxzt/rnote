@@ -221,7 +221,8 @@ impl AudioPlayer {
                 Some(KeyboardKey::Unicode(_))
                 | Some(KeyboardKey::BackSpace)
                 | Some(KeyboardKey::Delete)
-                | Some(KeyboardKey::HorizontalTab) => {
+                | Some(KeyboardKey::HorizontalTab)
+                | None => {
                     let mut rng = rand::thread_rng();
                     let typewriter_sound_index = rng.gen_range(0..Self::TYPEWRITER_N_FILES);
 

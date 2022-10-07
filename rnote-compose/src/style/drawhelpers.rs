@@ -10,9 +10,9 @@ use crate::penhelpers::PenState;
 /// ## Pos indicator
 
 /// the radius
-pub const POS_INDICATOR_RADIUS: f64 = 5.0;
+pub const POS_INDICATOR_RADIUS: f64 = 3.0;
 /// the outline width
-pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 2.0;
+pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 1.5;
 
 /// the pos indicator shape
 pub fn pos_indicator_shape(

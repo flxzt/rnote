@@ -80,12 +80,12 @@ pub fn gen_hline_pattern(
             ),
     );
 
-    let rect = element::Rectangle::new()
-        .set("x", bounds.mins[0])
-        .set("y", bounds.mins[1])
-        .set("width", bounds.extents()[0])
-        .set("height", bounds.extents()[1])
-        .set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+
+    rect.assign("x", format!("{}px", bounds.mins[0]));
+    rect.assign("y", format!("{}px", bounds.mins[1]));
+    rect.assign("width", format!("{}px", bounds.extents()[0]));
+    rect.assign("height", format!("{}px", bounds.extents()[1]));
 
     let group = element::Group::new().add(pattern).add(rect);
     group.into()
@@ -131,12 +131,12 @@ pub fn gen_grid_pattern(
             ),
     );
 
-    let rect = element::Rectangle::new()
-        .set("x", bounds.mins[0])
-        .set("y", bounds.mins[1])
-        .set("width", bounds.extents()[0])
-        .set("height", bounds.extents()[1])
-        .set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+
+    rect.assign("x", format!("{}px", bounds.mins[0]));
+    rect.assign("y", format!("{}px", bounds.mins[1]));
+    rect.assign("width", format!("{}px", bounds.extents()[0]));
+    rect.assign("height", format!("{}px", bounds.extents()[1]));
 
     let group = element::Group::new().add(pattern).add(rect);
     group.into()
@@ -174,7 +174,6 @@ pub fn gen_dots_pattern(
     );
 
     let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
-
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
     rect.assign("width", format!("{}px", bounds.extents()[0]));
@@ -248,12 +247,13 @@ impl Background {
         let mut group = element::Group::new();
 
         // background color
-        let color_rect = element::Rectangle::new()
-            .set("x", bounds.mins[0])
-            .set("y", bounds.mins[1])
-            .set("width", bounds.extents()[0])
-            .set("height", bounds.extents()[1])
-            .set("fill", self.color.to_css_color_attr());
+        let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());
+
+        color_rect.assign("x", format!("{}px", bounds.mins[0]));
+        color_rect.assign("y", format!("{}px", bounds.mins[1]));
+        color_rect.assign("width", format!("{}px", bounds.extents()[0]));
+        color_rect.assign("height", format!("{}px", bounds.extents()[1]));
+
         group = group.add(color_rect);
 
         match self.pattern {

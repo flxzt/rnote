@@ -53,106 +53,38 @@ impl RnoteEngine {
     }
 
     /// generates the doc svg.
-    /// The coordinates are translated so that the svg has origin 0.0, 0.0
     /// without root or xml header.
     pub fn gen_doc_svg(&self, with_background: bool) -> Result<render::Svg, anyhow::Error> {
-        let doc_bounds = self.document.bounds();
+        let content_bounds = self
+            .bounds_w_content_extended()
+            .ok_or_else(|| anyhow::anyhow!("tried to generate document svg without any content"))?;
 
         let strokes = self.store.stroke_keys_as_rendered();
 
         let mut doc_svg = if with_background {
-            let mut background_svg = self.document.background.gen_svg(doc_bounds)?;
-
-            background_svg.wrap_svg_root(
-                Some(AABB::new(
-                    na::point![0.0, 0.0],
-                    na::Point2::from(doc_bounds.extents()),
-                )),
-                Some(doc_bounds),
-                true,
-            );
-
-            background_svg
+            self.document.background.gen_svg(content_bounds)?
         } else {
-            // we can have invalid bounds here, because we know we merge them with the strokes svg
             render::Svg {
                 svg_data: String::new(),
-                bounds: AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
+                bounds: content_bounds,
             }
         };
 
         doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
             |piet_cx| {
-                piet_cx.transform(kurbo::Affine::translate(
-                    doc_bounds.mins.coords.to_kurbo_vec(),
-                ));
-
                 self.store.draw_stroke_keys_to_piet(
                     &strokes,
                     piet_cx,
                     RnoteEngine::EXPORT_IMAGE_SCALE,
                 )
             },
-            AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
-        )?]);
-
-        Ok(doc_svg)
-    }
-
-    /// generates the doc svg for the given viewport.
-    /// The coordinates are translated so that the svg has origin 0.0, 0.0
-    /// without root or xml header.
-    pub fn gen_doc_svg_with_viewport(
-        &self,
-        viewport: AABB,
-        with_background: bool,
-    ) -> Result<render::Svg, anyhow::Error> {
-        // Background bounds are still doc bounds, for correct alignment of the background pattern
-        let mut doc_svg = if with_background {
-            let mut background_svg = self.document.background.gen_svg(viewport)?;
-
-            background_svg.wrap_svg_root(
-                Some(AABB::new(
-                    na::point![0.0, 0.0],
-                    na::Point2::from(viewport.extents()),
-                )),
-                Some(viewport),
-                true,
-            );
-
-            background_svg
-        } else {
-            // we can have invalid bounds here, because we know we merge them with the other svg
-            render::Svg {
-                svg_data: String::new(),
-                bounds: AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
-            }
-        };
-
-        let strokes_in_viewport = self
-            .store
-            .stroke_keys_as_rendered_intersecting_bounds(viewport);
-
-        doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-            |piet_cx| {
-                piet_cx.transform(kurbo::Affine::translate(
-                    -viewport.mins.coords.to_kurbo_vec(),
-                ));
-
-                self.store.draw_stroke_keys_to_piet(
-                    &strokes_in_viewport,
-                    piet_cx,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
-                )
-            },
-            AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
+            content_bounds,
         )?]);
 
         Ok(doc_svg)
     }
 
     /// generates the selection svg.
-    /// The coordinates are translated so that the svg has origin 0.0, 0.0
     /// without root or xml header.
     pub fn gen_selection_svg(
         &self,
@@ -172,44 +104,23 @@ impl RnoteEngine {
             };
 
         let mut selection_svg = if with_background {
-            let mut background_svg = self.document.background.gen_svg(selection_bounds)?;
-
-            background_svg.wrap_svg_root(
-                Some(AABB::new(
-                    na::point![0.0, 0.0],
-                    na::Point2::from(selection_bounds.extents()),
-                )),
-                Some(selection_bounds),
-                true,
-            );
-
-            background_svg
+            self.document.background.gen_svg(selection_bounds)?
         } else {
             render::Svg {
                 svg_data: String::new(),
-                bounds: AABB::new(
-                    na::point![0.0, 0.0],
-                    na::Point2::from(selection_bounds.extents()),
-                ),
+                bounds: selection_bounds,
             }
         };
 
         selection_svg.merge([render::Svg::gen_with_piet_cairo_backend(
             |piet_cx| {
-                piet_cx.transform(kurbo::Affine::translate(
-                    -selection_bounds.mins.coords.to_kurbo_vec(),
-                ));
-
                 self.store.draw_stroke_keys_to_piet(
                     &selection_keys,
                     piet_cx,
                     RnoteEngine::EXPORT_IMAGE_SCALE,
                 )
             },
-            AABB::new(
-                na::point![0.0, 0.0],
-                na::Point2::from(selection_bounds.extents()),
-            ),
+            selection_bounds,
         )?]);
 
         Ok(Some(selection_svg))
@@ -224,7 +135,7 @@ impl RnoteEngine {
                 doc_svg.svg_data.as_str(),
                 Some(doc_svg.bounds),
                 Some(doc_svg.bounds),
-                true,
+                false,
             )
             .as_str(),
         ))
@@ -245,7 +156,7 @@ impl RnoteEngine {
                 selection_svg.svg_data.as_str(),
                 Some(selection_svg.bounds),
                 Some(selection_svg.bounds),
-                true,
+                false,
             )
             .as_str(),
         )))

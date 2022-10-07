@@ -1,6 +1,5 @@
 use crate::config;
 
-use anyhow::Context;
 use gtk4::{gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::AABB;
 use std::path::PathBuf;
@@ -124,7 +123,12 @@ pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Re
             glib::PRIORITY_HIGH_IDLE,
         )
         .await
-        .context("replace_future() failed in replace_file_future()")?;
+        .map_err(|e| {
+            anyhow::anyhow!(
+                "file replace_future() failed in replace_file_future(), Err {}",
+                e
+            )
+        })?;
 
     output_stream
         .write_all_future(bytes, glib::PRIORITY_HIGH_IDLE)
@@ -138,7 +142,12 @@ pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Re
     output_stream
         .close_future(glib::PRIORITY_HIGH_IDLE)
         .await
-        .context("output_stream close_future() failed in replace_file_future()")?;
+        .map_err(|e| {
+            anyhow::anyhow!(
+                "output_stream close_future() failed in replace_file_future(), Err {}",
+                e
+            )
+        })?;
 
     Ok(())
 }

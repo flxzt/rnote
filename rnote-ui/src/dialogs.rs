@@ -991,7 +991,7 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
         Some(" - engine state"),
-        "xopp",
+        "json",
     ));
 
     dialog_export_engine_state.connect_response(
@@ -1045,7 +1045,7 @@ pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
             appwindow.canvas().output_file(),
             Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
             Some(" - engine config"),
-            "xopp",
+            "json",
         ),
     );
 

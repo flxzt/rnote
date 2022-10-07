@@ -873,7 +873,7 @@ impl RnoteCanvas {
                     na::point![x,y]).coords;
 
                 if let Ok(file) = value.get::<gio::File>() {
-                    appwindow.open_file_w_dialogs(&file, Some(pos))
+                    appwindow.open_file_w_dialogs(&file, Some(pos));
                 }
                 true
             }),

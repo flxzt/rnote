@@ -48,9 +48,9 @@ mod imp {
         #[template_child]
         pub general_regular_cursor_picker_image: TemplateChild<Image>,
         #[template_child]
-        pub general_motion_cursor_picker: TemplateChild<IconPicker>,
+        pub general_drawing_cursor_picker: TemplateChild<IconPicker>,
         #[template_child]
-        pub general_motion_cursor_picker_image: TemplateChild<Image>,
+        pub general_drawing_cursor_picker_image: TemplateChild<Image>,
         #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -453,8 +453,8 @@ impl SettingsPanel {
         self.imp().general_regular_cursor_picker_image.clone()
     }
 
-    pub fn general_motion_cursor_picker_image(&self) -> Image {
-        self.imp().general_motion_cursor_picker_image.clone()
+    pub fn general_drawing_cursor_picker_image(&self) -> Image {
+        self.imp().general_drawing_cursor_picker_image.clone()
     }
 
     pub fn format_width_unitentry(&self) -> UnitEntry {
@@ -651,18 +651,18 @@ impl SettingsPanel {
             }),
         );
 
-        // Motion cursor picker
+        // Drawing cursor picker
         self.imp()
-            .general_motion_cursor_picker
+            .general_drawing_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        self.imp().general_motion_cursor_picker.connect_local(
+        self.imp().general_drawing_cursor_picker.connect_local(
             "icon-picked",
             false,
             clone!(@weak appwindow => @default-return None, move |args| {
                 let picked = args[1].get::<String>().unwrap();
 
-                appwindow.canvas().set_motion_cursor(picked);
+                appwindow.canvas().set_drawing_cursor(picked);
                 // Update the actual widget cursor
                 appwindow.canvas().switch_between_cursors(false);
 

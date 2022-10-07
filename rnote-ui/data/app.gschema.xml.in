@@ -61,9 +61,9 @@
       <default>"cursor-dot-medium"</default>
       <summary>The regular cursor</summary>
     </key>
-    <key name="motion-cursor" type="s">
+    <key name="drawing-cursor" type="s">
       <default>"cursor-dot-small"</default>
-      <summary>The motion cursor</summary>
+      <summary>The drawing cursor</summary>
     </key>
     <key name="brushpage-selected-color" type="u">
       <default>0</default>

@@ -70,9 +70,9 @@ impl RnoteAppWindow {
             .bind("regular-cursor", &self.canvas(), "regular-cursor")
             .build();
 
-        // motion cursor
+        // drawing cursor
         self.app_settings()
-            .bind("motion-cursor", &self.canvas(), "motion-cursor")
+            .bind("drawing-cursor", &self.canvas(), "drawing-cursor")
             .build();
 
         // Brush page

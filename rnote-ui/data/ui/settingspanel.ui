@@ -129,20 +129,20 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_motion_cursor_picker_row">
-                        <property name="title" translatable="yes">Motion cursor</property>
-                        <property name="subtitle" translatable="yes">Set the motion cursor</property>
+                      <object class="AdwActionRow" id="general_drawing_cursor_picker_row">
+                        <property name="title" translatable="yes">Drawing cursor</property>
+                        <property name="subtitle" translatable="yes">Set the drawing cursor</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <child>
-                              <object class="GtkMenuButton" id="general_motion_cursor_picker_menubutton">
+                              <object class="GtkMenuButton" id="general_drawing_cursor_picker_menubutton">
                                 <property name="hexpand">false</property>
                                 <property name="hexpand">false</property>
                                 <property name="valign">center</property>
                                 <property name="halign">end</property>
-                                <property name="popover">general_motion_cursor_picker_popover</property>
+                                <property name="popover">general_drawing_cursor_picker_popover</property>
                                 <child>
-                                  <object class="GtkImage" id="general_motion_cursor_picker_image">
+                                  <object class="GtkImage" id="general_drawing_cursor_picker_image">
                                     <style>
                                       <class name="settings_row_image" />
                                     </style>
@@ -425,9 +425,9 @@
         </object>
       </child>
     </object>
-    <object class="GtkPopover" id="general_motion_cursor_picker_popover">
+    <object class="GtkPopover" id="general_drawing_cursor_picker_popover">
       <child>
-        <object class="IconPicker" id="general_motion_cursor_picker">
+        <object class="IconPicker" id="general_drawing_cursor_picker">
           <property name="valign">center</property>
         </object>
       </child>

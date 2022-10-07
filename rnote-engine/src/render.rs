@@ -10,6 +10,7 @@ use piet::RenderContext;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
+use svg::Node;
 
 use crate::utils::{base64, GrapheneRectHelpers};
 use crate::DrawBehaviour;
@@ -710,11 +711,14 @@ impl Svg {
             )
         })?;
 
-        svg_surface.set_document_unit(cairo::SvgUnit::User);
+        svg_surface.set_document_unit(cairo::SvgUnit::Px);
 
         {
             let cairo_cx = cairo::Context::new(&svg_surface)?;
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+            // Cairo only draws elements with positive coordinates, so we need to transform them here
+            piet_cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
 
             // Apply the draw function
             draw_func(&mut piet_cx)?;
@@ -740,7 +744,17 @@ impl Svg {
             .as_str(),
         );
 
-        Ok(Self { svg_data, bounds })
+        let mut group = svg::node::element::Group::new().add(svg::node::Text::new(svg_data));
+
+        group.assign(
+            "transform",
+            format!("translate({} {})", bounds.mins[0], bounds.mins[1]),
+        );
+
+        Ok(Self {
+            svg_data: rnote_compose::utils::svg_node_to_string(&group)?,
+            bounds,
+        })
     }
 
     pub fn draw_svgs_to_cairo_context(svgs: &[Self], cx: &cairo::Context) -> anyhow::Result<()> {

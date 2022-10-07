@@ -1,7 +1,6 @@
 use anyhow::Context;
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
-use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 use svg::Node;
@@ -330,9 +329,9 @@ impl Background {
                 .to_memtexture()
                 .context("image to_memtexture() failed in gen_rendernode() of background.")?;
 
-            for splitted_bounds in
-                viewport.split_extended_origin_aligned(image.rect.bounds().extents())
-            {
+            for splitted_bounds in viewport.split_extended_origin_aligned(self.tile_size()) {
+                //log::debug!("splitted_bounds: {splitted_bounds:?}");
+
                 rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,

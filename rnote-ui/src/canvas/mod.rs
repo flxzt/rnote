@@ -46,8 +46,8 @@ mod imp {
         pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
         pub regular_cursor: RefCell<gdk::Cursor>,
         pub regular_cursor_icon_name: RefCell<String>,
-        pub motion_cursor: RefCell<gdk::Cursor>,
-        pub motion_cursor_icon_name: RefCell<String>,
+        pub drawing_cursor: RefCell<gdk::Cursor>,
+        pub drawing_cursor_icon_name: RefCell<String>,
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
@@ -108,8 +108,8 @@ mod imp {
                 32,
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
-            let motion_cursor_icon_name = String::from("cursor-dot-small");
-            let motion_cursor = gdk::Cursor::from_texture(
+            let drawing_cursor_icon_name = String::from("cursor-dot-small");
+            let drawing_cursor = gdk::Cursor::from_texture(
                 &gdk::Texture::from_resource(
                     (String::from(config::APP_IDPATH)
                         + "icons/scalable/actions/cursor-dot-small.svg")
@@ -131,8 +131,8 @@ mod imp {
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 regular_cursor: RefCell::new(regular_cursor),
                 regular_cursor_icon_name: RefCell::new(regular_cursor_icon_name),
-                motion_cursor: RefCell::new(motion_cursor),
-                motion_cursor_icon_name: RefCell::new(motion_cursor_icon_name),
+                drawing_cursor: RefCell::new(drawing_cursor),
+                drawing_cursor_icon_name: RefCell::new(drawing_cursor_icon_name),
                 stylus_drawing_gesture,
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
@@ -234,9 +234,9 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpecString::new(
-                        "motion-cursor",
-                        "motion-cursor",
-                        "motion-cursor",
+                        "drawing-cursor",
+                        "drawing-cursor",
+                        "drawing-cursor",
                         Some("cursor-dot-small"),
                         glib::ParamFlags::READWRITE,
                     ),
@@ -261,7 +261,7 @@ mod imp {
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "regular-cursor" => self.regular_cursor_icon_name.borrow().to_value(),
-                "motion-cursor" => self.motion_cursor_icon_name.borrow().to_value(),
+                "drawing-cursor" => self.drawing_cursor_icon_name.borrow().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -344,16 +344,16 @@ mod imp {
 
                     self.regular_cursor.replace(cursor);
                 }
-                "motion-cursor" => {
+                "drawing-cursor" => {
                     let icon_name = value.get().unwrap();
-                    self.motion_cursor_icon_name.replace(icon_name);
+                    self.drawing_cursor_icon_name.replace(icon_name);
 
                     let cursor = gdk::Cursor::from_texture(
                         &gdk::Texture::from_resource(
                             (String::from(config::APP_IDPATH)
                                 + &format!(
                                     "icons/scalable/actions/{}.svg",
-                                    self.motion_cursor_icon_name.borrow()
+                                    self.drawing_cursor_icon_name.borrow()
                                 ))
                                 .as_str(),
                         ),
@@ -362,7 +362,7 @@ mod imp {
                         gdk::Cursor::from_name("default", None).as_ref(),
                     );
 
-                    self.motion_cursor.replace(cursor);
+                    self.drawing_cursor.replace(cursor);
                 }
                 _ => unimplemented!(),
             }
@@ -445,12 +445,12 @@ impl RnoteCanvas {
         self.set_property("regular-cursor", regular_cursor.to_value());
     }
 
-    pub fn motion_cursor(&self) -> String {
-        self.property::<String>("motion-cursor")
+    pub fn drawing_cursor(&self) -> String {
+        self.property::<String>("drawing-cursor")
     }
 
-    pub fn set_motion_cursor(&self, motion_cursor: String) {
-        self.set_property("motion-cursor", motion_cursor.to_value());
+    pub fn set_drawing_cursor(&self, drawing_cursor: String) {
+        self.set_property("drawing-cursor", drawing_cursor.to_value());
     }
 
     /// Only change the engine state in actions to avoid nested mutable borrows!
@@ -538,10 +538,10 @@ impl RnoteCanvas {
         }
     }
 
-    /// Switches between the regular and the motion cursor
-    pub fn switch_between_cursors(&self, in_motion: bool) {
-        if in_motion {
-            self.set_cursor(Some(&*self.imp().motion_cursor.borrow()));
+    /// Switches between the regular and the drawing cursor
+    pub fn switch_between_cursors(&self, drawing_cursor: bool) {
+        if drawing_cursor {
+            self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
         } else {
             self.set_cursor(Some(&*self.imp().regular_cursor.borrow()));
         }
@@ -599,10 +599,10 @@ impl RnoteCanvas {
         .build();
 
         self.bind_property(
-            "motion-cursor",
+            "drawing-cursor",
             &appwindow
                 .settings_panel()
-                .general_motion_cursor_picker_image(),
+                .general_drawing_cursor_picker_image(),
             "icon-name",
         )
         .flags(glib::BindingFlags::DEFAULT)

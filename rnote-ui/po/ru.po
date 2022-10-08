@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 22:17+0200\n"
-"PO-Revision-Date: 2022-10-04 20:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-10-10 13:05+0000\n"
+"Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -1347,10 +1347,8 @@ msgid "Error: Tried opening folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
 
 #: rnote-ui/src/appwindow/mod.rs:1596
-#, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
 msgid "Failed to open file: Unsupported file type."
-msgstr "Не удалось открыть файл; формат файла не поддерживается."
+msgstr "Не удалось открыть файл: формат файла не поддерживается."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774
 msgid "Printed document successfully"

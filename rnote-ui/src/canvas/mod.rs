@@ -343,6 +343,8 @@ mod imp {
                     );
 
                     self.regular_cursor.replace(cursor);
+
+                    obj.set_cursor(Some(&*self.regular_cursor.borrow()));
                 }
                 "drawing-cursor" => {
                     let icon_name = value.get().unwrap();

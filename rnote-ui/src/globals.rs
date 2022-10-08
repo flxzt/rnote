@@ -51,4 +51,7 @@ pub const CURSORS_LIST: &[&'static str] = &[
     "cursor-dot-small",
     "cursor-dot-medium",
     "cursor-dot-large",
+    "cursor-teardrop-small",
+    "cursor-teardrop-medium",
+    "cursor-teardrop-large",
 ];

@@ -25,5 +25,6 @@ rnote-ui/data/ui/penssidebar/typewriterpage.ui
 
 rnote-ui/src/dialogs.rs
 rnote-ui/src/appwindow/mod.rs
+rnote-ui/src/appwindow/imexport.rs
 rnote-ui/src/appwindow/appwindowactions.rs
 rnote-ui/src/workspacebrowser/filerow.rs

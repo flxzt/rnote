@@ -505,7 +505,6 @@ msgstr "Barras de desplazamiento permanentemente ocultas"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 #, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgstr ""
 "Establece si las barras de desplazamiento del lienzo se ocultan "
@@ -517,20 +516,16 @@ msgstr "Cursor regular"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy
-#| msgid "Set the format border color"
 msgid "Set the regular cursor"
 msgstr "Establecer el color del borde del formato"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
 msgstr "Dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 #, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
 msgstr "Establecer el color de fondo"
 
@@ -1378,7 +1373,6 @@ msgstr "Error: Intento de abrir la carpeta como archivo"
 
 #: rnote-ui/src/appwindow/imexport.rs:172
 #, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
 msgid "Failed to open file: Unsupported file type."
 msgstr "No se pudo abrir el archivo, es un tipo de archivo no soportado."
 
@@ -1401,3 +1395,8 @@ msgstr "Fallo en la impresión del documento"
 
 #~ msgid "Change the workspace name"
 #~ msgstr "Cambiar el nombre del área de trabajo"
+
+#~ msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#~ msgstr ""
+#~ "Establece si las barras de desplazamiento del lienzo se ocultan "
+#~ "permanentemente."

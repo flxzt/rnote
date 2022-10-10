@@ -313,7 +313,6 @@ msgstr "新建文档"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 #, fuzzy
-#| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will erase any unsaved changes. Do you want to save "
 "the current document?"
@@ -330,7 +329,6 @@ msgstr "退出应用"
 
 #: rnote-ui/data/ui/dialogs.ui:30
 #, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr "所有未保存更改都将丢失。继续退出？"
@@ -341,7 +339,6 @@ msgstr "打开文件"
 
 #: rnote-ui/data/ui/dialogs.ui:42
 #, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
@@ -410,7 +407,6 @@ msgstr "应用"
 
 #: rnote-ui/data/ui/dialogs.ui:284
 #, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
 msgstr "工作区"
 
@@ -512,20 +508,16 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy
-#| msgid "Set the format border color"
 msgid "Set the regular cursor"
 msgstr "设置格式界线颜色"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
 msgstr "绘画"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 #, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
 msgstr "设置背景颜色"
 
@@ -991,8 +983,6 @@ msgstr "删除所选内容"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste from Clipboard"
 msgstr "粘贴剪切板"
 
@@ -1368,7 +1358,6 @@ msgstr "错误：将文件夹作为文件打开"
 
 #: rnote-ui/src/appwindow/imexport.rs:172
 #, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
 msgid "Failed to open file: Unsupported file type."
 msgstr "打开文件失败：不支持的文件类型。"
 

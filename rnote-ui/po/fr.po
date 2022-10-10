@@ -517,20 +517,16 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy
-#| msgid "Set the format border color"
 msgid "Set the regular cursor"
 msgstr "Défini la couleur des bordures du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
 msgstr "Dessein"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 #, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
 msgstr "Défini la couleur de l'arrière-plan"
 
@@ -1377,7 +1373,6 @@ msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
 
 #: rnote-ui/src/appwindow/imexport.rs:172
 #, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
 msgid "Failed to open file: Unsupported file type."
 msgstr "Impossible d'ouvrir le fichier : type de fichier non pris en charge."
 
@@ -1500,3 +1495,8 @@ msgstr "Échec de l'impression du document"
 
 #~ msgid "Export Sheet"
 #~ msgstr "Exporter la page"
+
+#~ msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#~ msgstr ""
+#~ "Indique si les barres de défilement sur le canevas sont masquées de façon "
+#~ "permanente."

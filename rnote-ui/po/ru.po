@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 22:17+0200\n"
+"POT-Creation-Date: 2022-10-10 20:07+0200\n"
 "PO-Revision-Date: 2022-10-10 13:05+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -77,11 +77,11 @@ msgstr "Меню разработчика"
 msgid "Visual debugging"
 msgstr "Визуальная отладка"
 
-#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:966
+#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:980
 msgid "Export engine state"
 msgstr "Экспортировать состояние движка"
 
-#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1020
+#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1033
 msgid "Export engine config"
 msgstr "Экспорт конфигурации движка"
 
@@ -237,7 +237,7 @@ msgstr "Сохранить как"
 msgid "Print"
 msgstr "Печать"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:673
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:676
 msgid "Import file"
 msgstr "Импортировать файл"
 
@@ -296,11 +296,11 @@ msgstr "Это очистит весь документ. Пожалуйста, �
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
 #: rnote-ui/src/dialogs.rs:457 rnote-ui/src/dialogs.rs:568
-#: rnote-ui/src/dialogs.rs:617 rnote-ui/src/dialogs.rs:677
-#: rnote-ui/src/dialogs.rs:714 rnote-ui/src/dialogs.rs:766
-#: rnote-ui/src/dialogs.rs:818 rnote-ui/src/dialogs.rs:869
-#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:970
-#: rnote-ui/src/dialogs.rs:1024 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:617 rnote-ui/src/dialogs.rs:680
+#: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
+#: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
+#: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
+#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -308,7 +308,7 @@ msgstr "Отменить"
 msgid "Clear"
 msgstr "Очистить"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:844
 msgid "New Document"
 msgstr "Новый Документ"
 
@@ -352,7 +352,7 @@ msgstr ""
 msgid "Import PDF"
 msgstr "Импорт PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:676
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:679
 msgid "Import"
 msgstr "Импортировать"
 
@@ -406,7 +406,7 @@ msgstr "По одной на страницу документа"
 msgid "Edit workspace"
 msgstr "Редактировать коллекцию"
 
-#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:221
+#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "Применить"
@@ -423,7 +423,7 @@ msgstr "Значок"
 msgid "Change the workspace icon"
 msgstr "Выбрать иконку коллекции"
 
-#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:237
+#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "Цвет"
 
@@ -459,7 +459,7 @@ msgstr "Переместить в корзину"
 msgid "New document"
 msgstr "Новый документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:850
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:846
 msgid "Draft"
 msgstr "Черновик"
 
@@ -504,178 +504,203 @@ msgid "Permanently hidden scrollbars"
 msgstr "Не показывать полосы прокрутки"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently."
+msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно."
 
-#: rnote-ui/data/ui/settingspanel.ui:108
+#: rnote-ui/data/ui/settingspanel.ui:105
+msgid "Regular cursor"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:106
+#, fuzzy
+#| msgid "Set the format border color"
+msgid "Set the regular cursor"
+msgstr "Выбрать цвет границ страницы"
+
+#: rnote-ui/data/ui/settingspanel.ui:133
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Drawing"
+msgid "Drawing cursor"
+msgstr "Рисование"
+
+#: rnote-ui/data/ui/settingspanel.ui:134
+#, fuzzy
+#| msgid "Set the background color"
+msgid "Set the drawing cursor"
+msgstr "Выбрать цвет фона"
+
+#: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"
 msgstr "Формат страниц"
 
-#: rnote-ui/data/ui/settingspanel.ui:111
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
 msgstr "Формат"
 
-#: rnote-ui/data/ui/settingspanel.ui:112
+#: rnote-ui/data/ui/settingspanel.ui:168
 msgid "Choose a format"
 msgstr "Выбрать формат"
 
-#: rnote-ui/data/ui/settingspanel.ui:116
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:117
+#: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:118
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:119
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:120
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:121
+#: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
 msgstr "США letter"
 
-#: rnote-ui/data/ui/settingspanel.ui:122
+#: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
 msgstr "США legal"
 
-#: rnote-ui/data/ui/settingspanel.ui:123
+#: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
 msgstr "Пользовательский"
 
-#: rnote-ui/data/ui/settingspanel.ui:131
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Orientation"
 msgstr "Ориентация"
 
-#: rnote-ui/data/ui/settingspanel.ui:132
+#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
 msgstr "Выбрать ориентацию страниц"
 
-#: rnote-ui/data/ui/settingspanel.ui:144
+#: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
 msgstr "Портретная"
 
-#: rnote-ui/data/ui/settingspanel.ui:150
+#: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Landscape"
 msgstr "Альбомная"
 
-#: rnote-ui/data/ui/settingspanel.ui:160
+#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
 msgstr "Ширина"
 
-#: rnote-ui/data/ui/settingspanel.ui:161
+#: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
 msgstr "Установить ширину страницы"
 
-#: rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
 msgstr "Высота"
 
-#: rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "Установить высоту формата"
 
-#: rnote-ui/data/ui/settingspanel.ui:188
+#: rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/settingspanel.ui:189
+#: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr "Установить DPI (точек на дюйм). По умолчанию: 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:212
+#: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
 msgstr "По умолчанию"
 
-#: rnote-ui/data/ui/settingspanel.ui:234
+#: rnote-ui/data/ui/settingspanel.ui:290
 msgid "Document background"
 msgstr "Фон документа"
 
-#: rnote-ui/data/ui/settingspanel.ui:238
+#: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
 msgstr "Выбрать цвет фона"
 
-#: rnote-ui/data/ui/settingspanel.ui:255
+#: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Pattern"
 msgstr "Линовка"
 
-#: rnote-ui/data/ui/settingspanel.ui:256
+#: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Choose a background pattern"
 msgstr "Выбрать линовку"
 
-#: rnote-ui/data/ui/settingspanel.ui:260
+#: rnote-ui/data/ui/settingspanel.ui:316
 msgid "None"
 msgstr "Нет"
 
-#: rnote-ui/data/ui/settingspanel.ui:261
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Lines"
 msgstr "В линейку"
 
-#: rnote-ui/data/ui/settingspanel.ui:262
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Grid"
 msgstr "В клетку"
 
-#: rnote-ui/data/ui/settingspanel.ui:263
+#: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Dots"
 msgstr "В точку"
 
-#: rnote-ui/data/ui/settingspanel.ui:271
+#: rnote-ui/data/ui/settingspanel.ui:327
 msgid "Pattern Color"
 msgstr "Цвет линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:272
+#: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Set the background pattern color"
 msgstr "Выбрать цвет линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:289
+#: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Pattern Width"
 msgstr "Ширина линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:290
+#: rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background pattern width"
 msgstr "Установить ширину линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:303
+#: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Pattern Height"
 msgstr "Высота линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:304
+#: rnote-ui/data/ui/settingspanel.ui:360
 msgid "Set the background pattern height"
 msgstr "Установить высоту линовки"
 
-#: rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Button Shortcuts"
 msgstr "Комбинации клавиш"
 
-#: rnote-ui/data/ui/settingspanel.ui:323
+#: rnote-ui/data/ui/settingspanel.ui:379
 msgid "Stylus primary button action"
 msgstr "Действие основной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:324
+#: rnote-ui/data/ui/settingspanel.ui:380
 msgid "Set the action for the primary stylus button"
 msgstr "Выбрать действие основной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:391
 msgid "Stylus secondary button action"
 msgstr "Действие дополнительной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:392
 msgid "Set the action for the secondary stylus button"
 msgstr "Выбрать действие дополнительной кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:347
+#: rnote-ui/data/ui/settingspanel.ui:403
 msgid "Mouse secondary button action"
 msgstr "Действие правой кнопки мыши"
 
-#: rnote-ui/data/ui/settingspanel.ui:348
+#: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
 msgstr "Выбрать действие правой кнопки мыши"
 
@@ -967,7 +992,7 @@ msgstr "Дублировать выделение"
 msgid "Delete selection"
 msgstr "Удалить выделенное"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
 msgid "Paste from Clipboard"
 msgstr "Вставить содержимое буфера обмена"
 
@@ -1160,8 +1185,8 @@ msgid "translator-credits"
 msgstr "Валерий Манжос <Manzhos.VA@gmail.com>"
 
 #: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
-#: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:640
-#: rnote-ui/src/appwindow/mod.rs:412
+#: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
+#: rnote-ui/src/appwindow/mod.rs:408
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
 msgstr "Не удалось сохранить документ."
@@ -1206,7 +1231,7 @@ msgstr "Дата изменения:"
 msgid "Pages:"
 msgstr "Страницы:"
 
-#: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/mod.rs:1570
+#: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/imexport.rs:146
 msgid "Opening PDF file failed."
 msgstr "Не удалось открыть PDF файл."
 
@@ -1226,127 +1251,127 @@ msgstr ".rnote файл"
 msgid "Save document as"
 msgstr "Сохранить документ как"
 
-#: rnote-ui/src/dialogs.rs:642
+#: rnote-ui/src/dialogs.rs:645
 msgid "Saved document successfully."
 msgstr "Документ успешно сохранён."
 
-#: rnote-ui/src/dialogs.rs:670
+#: rnote-ui/src/dialogs.rs:673
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / PDF файл"
 
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:811
+#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:816
 msgid "SVG file"
 msgstr "Файл SVG"
 
-#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:762
+#: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:766
 msgid "Export Selection"
 msgstr "Экспортировать выделение"
 
-#: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:765
-#: rnote-ui/src/dialogs.rs:817 rnote-ui/src/dialogs.rs:868
-#: rnote-ui/src/dialogs.rs:919 rnote-ui/src/dialogs.rs:969
-#: rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/src/dialogs.rs:716 rnote-ui/src/dialogs.rs:769
+#: rnote-ui/src/dialogs.rs:822 rnote-ui/src/dialogs.rs:876
+#: rnote-ui/src/dialogs.rs:930 rnote-ui/src/dialogs.rs:983
+#: rnote-ui/src/dialogs.rs:1036
 msgid "Export"
 msgstr "Экспорт"
 
-#: rnote-ui/src/dialogs.rs:737
+#: rnote-ui/src/dialogs.rs:741
 msgid "Export selection as SVG failed."
 msgstr "Не удалось экспортировать выделение как SVG."
 
-#: rnote-ui/src/dialogs.rs:739
+#: rnote-ui/src/dialogs.rs:743
 msgid "Exported selection as SVG successfully."
 msgstr "Выделение успешно экспортировано в SVG."
 
-#: rnote-ui/src/dialogs.rs:759
+#: rnote-ui/src/dialogs.rs:763
 msgid "PNG file"
 msgstr "PNG файл"
 
-#: rnote-ui/src/dialogs.rs:789
+#: rnote-ui/src/dialogs.rs:794
 msgid "Export selection as PNG failed."
 msgstr "Не удалось экспортировать выделение как PNG."
 
-#: rnote-ui/src/dialogs.rs:791
+#: rnote-ui/src/dialogs.rs:796
 msgid "Exported selection as PNG successfully."
 msgstr "Выделение успешно экспортировано в PNG."
 
-#: rnote-ui/src/dialogs.rs:814 rnote-ui/src/dialogs.rs:865
-#: rnote-ui/src/dialogs.rs:916
+#: rnote-ui/src/dialogs.rs:819 rnote-ui/src/dialogs.rs:873
+#: rnote-ui/src/dialogs.rs:927
 msgid "Export document"
 msgstr "Экспортировать документ"
 
-#: rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:846
 msgid "Export document as SVG failed."
 msgstr "Не удалось экспортировать документ как SVG."
 
-#: rnote-ui/src/dialogs.rs:840
+#: rnote-ui/src/dialogs.rs:848
 msgid "Exported document as SVG successfully."
 msgstr "Документ успешно экспортирован в SVG."
 
-#: rnote-ui/src/dialogs.rs:862
+#: rnote-ui/src/dialogs.rs:870
 msgid "PDF file"
 msgstr "PDF файл"
 
-#: rnote-ui/src/dialogs.rs:889
+#: rnote-ui/src/dialogs.rs:900
 msgid "Export document as PDF failed."
 msgstr "Не удалось экспортировать документ как PDF."
 
-#: rnote-ui/src/dialogs.rs:891
+#: rnote-ui/src/dialogs.rs:902
 msgid "Exported document as PDF successfully."
 msgstr "Документ успешно экспортирован в PDF."
 
-#: rnote-ui/src/dialogs.rs:913
+#: rnote-ui/src/dialogs.rs:924
 msgid ".xopp file"
 msgstr ".xopp файл"
 
-#: rnote-ui/src/dialogs.rs:940
+#: rnote-ui/src/dialogs.rs:954
 msgid "Exporting document as .xopp failed."
 msgstr "Не удалось экспортировать документ как .xopp файл."
 
-#: rnote-ui/src/dialogs.rs:942
+#: rnote-ui/src/dialogs.rs:956
 msgid "Exported document as .xopp successfully."
 msgstr "Документ успешно экспортирован в .xopp файл."
 
-#: rnote-ui/src/dialogs.rs:963 rnote-ui/src/dialogs.rs:1017
+#: rnote-ui/src/dialogs.rs:977 rnote-ui/src/dialogs.rs:1030
 msgid "JSON file"
 msgstr "JSON файл"
 
-#: rnote-ui/src/dialogs.rs:994
+#: rnote-ui/src/dialogs.rs:1007
 msgid "Export engine state failed."
 msgstr "Не удалось экспортировать состояние движка."
 
-#: rnote-ui/src/dialogs.rs:996
+#: rnote-ui/src/dialogs.rs:1009
 msgid "Exported engine state successfully."
 msgstr "Состояние движка успешно экспортировано."
 
-#: rnote-ui/src/dialogs.rs:1048
+#: rnote-ui/src/dialogs.rs:1062
 msgid "Export engine config failed."
 msgstr "Не удалось экспортировать конфиг движка."
 
-#: rnote-ui/src/dialogs.rs:1050
+#: rnote-ui/src/dialogs.rs:1064
 msgid "Exported engine config successfully."
 msgstr "Конфиг движка успешно экспортирован."
 
-#: rnote-ui/src/appwindow/mod.rs:1494
+#: rnote-ui/src/appwindow/imexport.rs:70
 msgid "Opening .rnote file failed."
 msgstr "Не удалось открыть .rnote файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1513
+#: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening .xopp file failed."
 msgstr "Не удалось открыть .xopp файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1532
+#: rnote-ui/src/appwindow/imexport.rs:108
 msgid "Opening vector image file failed."
 msgstr "Не удалось открыть векторное изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:1551
+#: rnote-ui/src/appwindow/imexport.rs:127
 msgid "Opening bitmap image file failed."
 msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:1587
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
 
-#: rnote-ui/src/appwindow/mod.rs:1596
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr "Не удалось открыть файл: формат файла не поддерживается."
 

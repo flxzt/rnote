@@ -301,6 +301,7 @@ msgstr "这将清空整个文档。请确认。"
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
 #: rnote-ui/src/dialogs.rs:1037
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "取消"
 
@@ -309,6 +310,7 @@ msgid "Clear"
 msgstr "清空"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
+#: rnote-ui/src/appwindow/mod.rs:844
 msgid "New Document"
 msgstr "新建文档"
 
@@ -398,11 +400,13 @@ msgid "One per document page"
 msgstr "分页"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
 msgstr "编辑工作区"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "应用"
 
@@ -445,6 +449,7 @@ msgstr "更改工作区目录"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr "重命名"
 
@@ -454,7 +459,6 @@ msgstr "移至回收站"
 
 #: rnote-ui/data/ui/filerow.ui:70
 #, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
 msgstr "复制所选内容"
 
@@ -463,6 +467,7 @@ msgid "New document"
 msgstr "新建文档"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/src/appwindow/mod.rs:846
 msgid "Draft"
 msgstr "草稿"
 
@@ -817,26 +822,27 @@ msgid "Redo"
 msgstr "重做"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr "向上移动目录"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
 msgstr "更改工作区目录"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 msgid "Add workspace"
 msgstr "添加工作区"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 msgid "Remove workspace"
 msgstr "移除工作区"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
 #, fuzzy
-#| msgid "Directory"
 msgid "Create Directory"
 msgstr "目录"
 
@@ -908,82 +914,102 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
 msgid "Solid style"
 msgstr "硬笔样式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 msgid "Pressure curve"
 msgstr "压力曲线"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 msgid "Choose a pressure curve"
 msgstr "选择一种压力曲线"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:199
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Constant"
 msgstr "固定值"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Linear"
 msgstr "线性"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Square root"
 msgstr "平方根"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:161
 msgid "Cubic root"
 msgstr "立方根"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:203
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:162
 msgid "Quadratic Parabola"
 msgstr "二次抛物线"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:204
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Cubic Parabola"
 msgstr "三次抛物线"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Textured style"
 msgstr "纹理样式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:177
 msgid "Density"
 msgstr "密度"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:219
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:178
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "密度指的是10x10区域内点的数量"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Stroke dots radii"
 msgstr "笔画点阵半径"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:235
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "纹理笔画中各个点的半径"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:252
 msgid "Stroke dots position distribution"
 msgstr "笔画点位分布"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:294
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgid "Choose a dots position probability distribution"
 msgstr "选择点的分布概率"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:298
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Uniform"
 msgstr "集中"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:299
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:258
 msgid "Normal"
 msgstr "一般"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:300
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:259
 msgid "Exponential"
 msgstr "指数"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:301
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:260
 msgid "Reverse Exponential"
 msgstr "对数"
 
@@ -1223,6 +1249,7 @@ msgstr "译者注"
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
 #: rnote-ui/src/appwindow/mod.rs:457
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
+#: rnote-ui/src/appwindow/mod.rs:408
 msgid "Saving document failed."
 msgstr "文档保存失败。"
 
@@ -1421,15 +1448,15 @@ msgstr "打印失败"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-#| msgid "Directory"
 msgid "New Directory name"
 msgstr "目录"
 
+#: rnote-ui/data/ui/dialogs.ui:18
 #, fuzzy
-#~ msgid ""
-#~ "Creating a new document will erase any unsaved changes. Do you want to "
-#~ "save the current document?"
-#~ msgstr "创建新文档将会删除所有未保存的修改。确定？"
+msgid ""
+"Creating a new document will erase any unsaved changes. Do you want to save "
+"the current document?"
+msgstr "创建新文档将会删除所有未保存的修改。确定？"
 
 #~ msgid "Save current document as"
 #~ msgstr "将当前文档另存为"

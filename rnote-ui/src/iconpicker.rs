@@ -156,6 +156,7 @@ impl IconPicker {
                     .chain_property::<StringObject>("string");
 
             string_expr.bind(&icon_image, "icon-name", Widget::NONE);
+            string_expr.bind(&icon_image, "tooltip-text", Widget::NONE);
         });
 
         self.imp().gridview.get().set_model(Some(&single_selection));

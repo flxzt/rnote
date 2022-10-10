@@ -644,8 +644,6 @@ impl SettingsPanel {
                 let picked = args[1].get::<String>().unwrap();
 
                 appwindow.canvas().set_regular_cursor(picked);
-                // Update the actual widget cursor
-                appwindow.canvas().switch_between_cursors(false);
 
                 None
             }),
@@ -663,8 +661,6 @@ impl SettingsPanel {
                 let picked = args[1].get::<String>().unwrap();
 
                 appwindow.canvas().set_drawing_cursor(picked);
-                // Update the actual widget cursor
-                appwindow.canvas().switch_between_cursors(false);
 
                 None
             }),

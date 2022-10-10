@@ -52,6 +52,15 @@
         <file compressed="true">icons/scalable/actions/cursor-dot-small.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-medium.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-large.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-n-small.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-n-medium.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-n-large.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-nw-small.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-nw-medium.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-nw-large.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-ne-small.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-ne-medium.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-teardrop-ne-large.svg</file>
         <file compressed="true">icons/scalable/actions/workspacebrowser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/add-page-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/resize-to-fit-strokes-symbolic.svg</file>

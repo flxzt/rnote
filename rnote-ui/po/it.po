@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 20:07+0200\n"
-"PO-Revision-Date: 2022-10-06 12:33+0000\n"
+"PO-Revision-Date: 2022-10-17 00:37+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -504,35 +504,26 @@ msgid "Permanently hidden scrollbars"
 msgstr "Barre di scorrimento nascoste"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgstr ""
 "Imposta se le barre di scorrimento sull'area di disegno sono nascoste in "
-"modo permanente."
+"modo permanente"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
-msgstr ""
+msgstr "Cursore normale"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
-#, fuzzy
-#| msgid "Set the format border color"
 msgid "Set the regular cursor"
-msgstr "Scegli il colore del bordo"
+msgstr "Scegli il cursore"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
-msgstr "Disegno"
+msgstr "Cursore da disegno"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
-msgstr "Imposta il colore di sfondo"
+msgstr "Imposta il cursore da disegno"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"

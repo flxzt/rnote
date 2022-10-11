@@ -69,10 +69,9 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
 
                 BuilderProgress::Finished(self.try_build_segments_end())
             }
-            (_, PenEvent::Proximity { .. }) => BuilderProgress::InProgress,
-
-            (_, PenEvent::KeyPressed { .. }) => BuilderProgress::InProgress,
-            (_, PenEvent::Text { .. }) => BuilderProgress::InProgress,
+            (_, PenEvent::Proximity { .. })
+            | (_, PenEvent::KeyPressed { .. })
+            | (_, PenEvent::Text { .. }) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 
@@ -141,43 +140,48 @@ impl PenPathBuilder {
     }
 
     fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
-        match self.buffer.len() {
-            4.. => {
-                if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
-                    self.buffer[0].pos,
-                    self.buffer[1].pos,
-                    self.buffer[2].pos,
-                    self.buffer[3].pos,
-                ) {
-                    let segment = Shape::Segment(Segment::CubBez {
-                        start: Element {
-                            pos: cubbez.start,
-                            ..self.buffer[1]
-                        },
-                        cp1: cubbez.cp1,
-                        cp2: cubbez.cp2,
-                        end: Element {
-                            pos: cubbez.end,
-                            ..self.buffer[2]
-                        },
-                    });
-
-                    self.buffer.pop_front();
-
-                    Some(vec![segment])
-                } else {
-                    let segment = Shape::Segment(Segment::Line {
-                        start: self.buffer[1],
-                        end: self.buffer[2],
-                    });
-
-                    self.buffer.pop_front();
-
-                    Some(vec![segment])
-                }
-            }
-            _ => None,
+        if self.buffer.len() < 4 {
+            return None;
         }
+
+        let mut segments = vec![];
+
+        while self.buffer.len() >= 4 {
+            if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
+                self.buffer[0].pos,
+                self.buffer[1].pos,
+                self.buffer[2].pos,
+                self.buffer[3].pos,
+            ) {
+                let segment = Shape::Segment(Segment::CubBez {
+                    start: Element {
+                        pos: cubbez.start,
+                        ..self.buffer[1]
+                    },
+                    cp1: cubbez.cp1,
+                    cp2: cubbez.cp2,
+                    end: Element {
+                        pos: cubbez.end,
+                        ..self.buffer[2]
+                    },
+                });
+
+                self.buffer.pop_front();
+
+                segments.push(segment);
+            } else {
+                let segment = Shape::Segment(Segment::Line {
+                    start: self.buffer[1],
+                    end: self.buffer[2],
+                });
+
+                self.buffer.pop_front();
+
+                segments.push(segment);
+            }
+        }
+
+        Some(segments)
     }
 
     fn try_build_segments_end(&mut self) -> Vec<Shape> {

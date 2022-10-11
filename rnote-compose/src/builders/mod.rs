@@ -6,6 +6,8 @@ pub mod ellipsebuilder;
 pub mod fociellipsebuilder;
 /// line builder
 pub mod linebuilder;
+/// simple pen path builder, only produces line segments
+pub mod simplepenpathbuilder;
 /// pen path builder
 pub mod penpathbuilder;
 /// quadratic bezier builder
@@ -23,6 +25,7 @@ pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use linebuilder::LineBuilder;
 pub use penpathbuilder::PenPathBuilder;
+pub use simplepenpathbuilder::SimplePenPathBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;

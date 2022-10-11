@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use serde::{Deserialize, Serialize};
@@ -28,7 +30,7 @@ pub struct PenPathBuilder {
 }
 
 impl ShapeBuilderCreator for PenPathBuilder {
-    fn start(element: Element) -> Self {
+    fn start(element: Element, _now: Instant) -> Self {
         let mut buffer = Vec::new();
         buffer.push(element);
 
@@ -41,7 +43,7 @@ impl ShapeBuilderCreator for PenPathBuilder {
 }
 
 impl ShapeBuilderBehaviour for PenPathBuilder {
-    fn handle_event(&mut self, event: PenEvent, _constraint: Constraints) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, _now: Instant, _constraints: Constraints) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,

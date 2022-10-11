@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::chrono_comp::StrokeLayer;
@@ -189,7 +191,7 @@ impl PenBehaviour for Brush {
                         .store
                         .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
-                    let path_builder = PenPathBuilder::start(element);
+                    let path_builder = PenPathBuilder::start(element, Instant::now());
 
                     if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
@@ -252,7 +254,7 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, Constraints::default()) {
+                match path_builder.handle_event(pen_event, Instant::now(), Constraints::default()) {
                     BuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 

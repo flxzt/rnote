@@ -2,6 +2,7 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
+use std::time::Instant;
 
 use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
@@ -26,7 +27,7 @@ pub struct SimplePenPathBuilder {
 }
 
 impl ShapeBuilderCreator for SimplePenPathBuilder {
-    fn start(element: Element) -> Self {
+    fn start(element: Element,_now: Instant) -> Self {
         let mut buffer = VecDeque::new();
         buffer.push_back(element);
 
@@ -38,7 +39,7 @@ impl ShapeBuilderCreator for SimplePenPathBuilder {
 }
 
 impl ShapeBuilderBehaviour for SimplePenPathBuilder {
-    fn handle_event(&mut self, event: PenEvent, _constraint: Constraints) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent,_now: Instant, _constraints: Constraints) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,

@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 
@@ -20,7 +22,7 @@ pub struct EllipseBuilder {
 }
 
 impl ShapeBuilderCreator for EllipseBuilder {
-    fn start(element: Element) -> Self {
+    fn start(element: Element,_now: Instant) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
@@ -29,7 +31,7 @@ impl ShapeBuilderCreator for EllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for EllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent,_now: Instant, constraints: Constraints) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;

@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
@@ -105,32 +107,32 @@ impl PenBehaviour for Shaper {
                 match self.builder_type {
                     ShapeBuilderType::Line => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(LineBuilder::start(element)),
+                            builder: Box::new(LineBuilder::start(element, Instant::now())),
                         }
                     }
                     ShapeBuilderType::Rectangle => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(RectangleBuilder::start(element)),
+                            builder: Box::new(RectangleBuilder::start(element, Instant::now())),
                         }
                     }
                     ShapeBuilderType::Ellipse => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(EllipseBuilder::start(element)),
+                            builder: Box::new(EllipseBuilder::start(element, Instant::now())),
                         }
                     }
                     ShapeBuilderType::FociEllipse => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(FociEllipseBuilder::start(element)),
+                            builder: Box::new(FociEllipseBuilder::start(element, Instant::now())),
                         }
                     }
                     ShapeBuilderType::QuadBez => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadBezBuilder::start(element)),
+                            builder: Box::new(QuadBezBuilder::start(element, Instant::now())),
                         }
                     }
                     ShapeBuilderType::CubBez => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CubBezBuilder::start(element)),
+                            builder: Box::new(CubBezBuilder::start(element, Instant::now())),
                         }
                     }
                 }
@@ -165,7 +167,7 @@ impl PenBehaviour for Shaper {
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
 
-                match builder.handle_event(event, constraints) {
+                match builder.handle_event(event, Instant::now(), constraints) {
                     BuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 

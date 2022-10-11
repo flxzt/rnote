@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 20:07+0200\n"
-"PO-Revision-Date: 2022-10-10 13:05+0000\n"
+"PO-Revision-Date: 2022-10-17 00:37+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -504,14 +504,12 @@ msgid "Permanently hidden scrollbars"
 msgstr "Не показывать полосы прокрутки"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно."
+msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
-msgstr ""
+msgstr "Обычный курсор"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy

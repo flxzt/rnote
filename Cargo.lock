@@ -70,6 +70,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "aquamarine"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a941c39708478e8eea39243b5983f1c42d2717b3620ee91f4a52115fd02ac43f"
+dependencies = [
+ "itertools 0.9.0",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "arrayvec"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -115,6 +128,114 @@ name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
+
+[[package]]
+name = "autocxx"
+version = "0.22.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad8882b050baa6414db60173c1c58d33805b24c33358bf0b3dd904dfb8078e67"
+dependencies = [
+ "aquamarine",
+ "autocxx-macro",
+ "cxx",
+ "moveit",
+]
+
+[[package]]
+name = "autocxx-bindgen"
+version = "0.60.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b18fefa44908cac43e24eef89938e3ddf9c9409b15fcf43d97638278bcaf879"
+dependencies = [
+ "bitflags",
+ "cexpr",
+ "clang-sys",
+ "clap",
+ "env_logger 0.9.1",
+ "itertools 0.10.5",
+ "lazy_static",
+ "lazycell",
+ "log",
+ "peeking_take_while",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "rustc-hash",
+ "shlex",
+ "which",
+]
+
+[[package]]
+name = "autocxx-build"
+version = "0.22.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d80b09eceb17aa4d8a03564815050fd9901e6d6ae51a06f2a21d287c5295d42"
+dependencies = [
+ "autocxx-engine",
+ "env_logger 0.9.1",
+ "indexmap",
+ "syn",
+]
+
+[[package]]
+name = "autocxx-engine"
+version = "0.22.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b5998673b5ece2f8071b4f690b1e65ba1c3062a9bd38322ca7b9c1362aaa6e8"
+dependencies = [
+ "aquamarine",
+ "autocxx-bindgen",
+ "autocxx-parser",
+ "cc",
+ "cxx-gen",
+ "indexmap",
+ "indoc",
+ "itertools 0.10.5",
+ "log",
+ "miette",
+ "once_cell",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "serde_json",
+ "strum_macros",
+ "syn",
+ "tempfile",
+ "thiserror",
+ "version_check",
+]
+
+[[package]]
+name = "autocxx-macro"
+version = "0.22.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17f7ef0cdedbb84d3ede7c39aacb518d612f37bf617624ee27814bc806283ea7"
+dependencies = [
+ "autocxx-parser",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "autocxx-parser"
+version = "0.22.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "783612cae193cf9dfab8df380c5052dbe708e9ae9b9207a19fd99d38b62eb846"
+dependencies = [
+ "indexmap",
+ "itertools 0.10.5",
+ "log",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "syn",
+ "thiserror",
+]
 
 [[package]]
 name = "bare-metal"
@@ -349,6 +470,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "codespan-reporting"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3538270d33cc669650c4b093848450d380def10c331d38c768e34cac80576e6e"
+dependencies = [
+ "termcolor",
+ "unicode-width",
+]
+
+[[package]]
 name = "color_quant"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -571,6 +702,47 @@ dependencies = [
 ]
 
 [[package]]
+name = "cxx"
+version = "1.0.78"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19f39818dcfc97d45b03953c1292efc4e80954e1583c4aa770bac1383e2310a4"
+dependencies = [
+ "cc",
+ "cxxbridge-flags",
+ "cxxbridge-macro",
+ "link-cplusplus",
+]
+
+[[package]]
+name = "cxx-gen"
+version = "0.7.78"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2a34f618e6a01f13f9179b53ab773bc63d70019517a9d805171029c52f3cc93"
+dependencies = [
+ "codespan-reporting",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "cxxbridge-flags"
+version = "1.0.78"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56a46460b88d1cec95112c8c363f0e2c39afdb237f60583b0b36343bf627ea9c"
+
+[[package]]
+name = "cxxbridge-macro"
+version = "1.0.78"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "747b608fecf06b0d72d440f27acc99288207324b793be2c17991839f3d4995ea"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "darling"
 version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -778,7 +950,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "44533bbbb3bb3c1fa17d9f2e4e38bbbaf8396ba82193c4cb1b6445d711445d36"
 dependencies = [
  "atty",
- "humantime",
+ "humantime 1.3.0",
+ "log",
+ "regex",
+ "termcolor",
+]
+
+[[package]]
+name = "env_logger"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c90bf5f19754d10198ccb95b70664fc925bd1fc090a0fd9a6ebc54acc8cd6272"
+dependencies = [
+ "atty",
+ "humantime 2.1.0",
  "log",
  "regex",
  "termcolor",
@@ -792,6 +977,15 @@ checksum = "658f19728920138342f68408b7cf7644d90d4784353d8ebc32e7e8663dbe45fa"
 dependencies = [
  "cmake",
  "pkg-config",
+]
+
+[[package]]
+name = "fastrand"
+version = "1.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a7a407cfaa3385c4ae6b23e84623d48c2798d06e3e6a1878f7f59f17b3f86499"
+dependencies = [
+ "instant",
 ]
 
 [[package]]
@@ -1491,6 +1685,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "humantime"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
+
+[[package]]
 name = "iana-time-zone"
 version = "0.1.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1560,6 +1760,25 @@ checksum = "10a35a97730320ffe8e2d410b5d3b69279b98d2c14bdb8b70ea89ecf7888d41e"
 dependencies = [
  "autocfg",
  "hashbrown",
+ "serde",
+]
+
+[[package]]
+name = "indoc"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adab1eaa3408fb7f0c777a73e7465fd5656136fc93b670eb6df3c88c2c1344e3"
+
+[[package]]
+name = "ink-stroke-modeler-rs"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "autocxx",
+ "autocxx-build",
+ "cmake",
+ "cxx",
+ "svg",
 ]
 
 [[package]]
@@ -1569,6 +1788,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "itertools"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "284f18f85651fe11e8a991b2adb42cb078325c996ed026d994719efcfca1d54b"
+dependencies = [
+ "either",
 ]
 
 [[package]]
@@ -1740,7 +1968,7 @@ dependencies = [
  "gdk-pixbuf",
  "gio",
  "glib",
- "itertools",
+ "itertools 0.10.5",
  "language-tags",
  "libc",
  "locale_config",
@@ -1760,6 +1988,15 @@ dependencies = [
  "tinyvec",
  "url",
  "xml5ever",
+]
+
+[[package]]
+name = "link-cplusplus"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9272ab7b96c9046fbc5bc56c06c117cb639fe2d509df0c421cad82d2915cf369"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -1872,6 +2109,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "miette"
+version = "4.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c90329e44f9208b55f45711f9558cec15d7ef8295cc65ecd6d4188ae8edc58c"
+dependencies = [
+ "miette-derive",
+ "once_cell",
+ "thiserror",
+ "unicode-width",
+]
+
+[[package]]
+name = "miette-derive"
+version = "4.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6b5bc45b761bcf1b5e6e6c4128cd93b84c218721a8d9b894aa0aff4ed180174c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1903,6 +2163,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96590ba8f175222643a85693f33d26e9c8a015f599c216509b1a6894af675d34"
 dependencies = [
  "adler",
+]
+
+[[package]]
+name = "moveit"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7d756ffe4e38013507d35bf726a93fcdae2cae043ab5ce477f13857a335030d"
+dependencies = [
+ "cxx",
 ]
 
 [[package]]
@@ -2604,8 +2873,18 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "926d36b9553851b8b0005f1275891b392ee4d2d833852c417ed025477350fb9d"
 dependencies = [
- "env_logger",
+ "env_logger 0.7.1",
  "log",
+]
+
+[[package]]
+name = "prettyplease"
+version = "0.1.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83fead41e178796ef8274dc612a7d8ce4c7e10ca35cd2c5b5ad24cac63aeb6c0"
+dependencies = [
+ "proc-macro2",
+ "syn",
 ]
 
 [[package]]
@@ -2856,6 +3135,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
 
 [[package]]
+name = "remove_dir_all"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3acd125665422973a33ac9d3dd2df85edad0f4ae9b00dafb1a05e43a9f5ef8e7"
+dependencies = [
+ "winapi",
+]
+
+[[package]]
 name = "rgb"
 version = "0.8.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2928,6 +3216,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "image 0.23.14",
+ "ink-stroke-modeler-rs",
  "kurbo",
  "log",
  "nalgebra 0.31.1",
@@ -2961,7 +3250,7 @@ dependencies = [
  "geo",
  "gtk4",
  "image 0.23.14",
- "itertools",
+ "itertools 0.10.5",
  "kurbo",
  "lazy_static",
  "librsvg",
@@ -3090,6 +3379,12 @@ checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
 dependencies = [
  "semver 1.0.14",
 ]
+
+[[package]]
+name = "rustversion"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97477e48b4cf8603ad5f7aaf897467cf42ab4218a38ef76fb14c2d6773a6d6a8"
 
 [[package]]
 name = "rustybuzz"
@@ -3406,6 +3701,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
+name = "strum_macros"
+version = "0.24.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e385be0d24f186b4ce2f9982191e7101bb737312ad61c1f2f984f34bcf85d59"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn",
+]
+
+[[package]]
 name = "svg"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3449,6 +3757,20 @@ name = "temp-dir"
 version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af547b166dd1ea4b472165569fc456cfb6818116f854690b0ff205e636523dab"
+
+[[package]]
+name = "tempfile"
+version = "3.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5cdb1ef4eaeeaddc8fbd371e5017057064af0911902ef36b39801f67cc6d79e4"
+dependencies = [
+ "cfg-if",
+ "fastrand",
+ "libc",
+ "redox_syscall",
+ "remove_dir_all",
+ "winapi",
+]
 
 [[package]]
 name = "tendril"
@@ -3675,6 +3997,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1d386ff53b415b7fe27b50bb44679e2cc4660272694b7b6f3326d8480823a94"
 
 [[package]]
+name = "unicode-width"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
+
+[[package]]
 name = "url"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3849,6 +4177,17 @@ name = "weezl"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9193164d4de03a926d909d3bc7c30543cecb35400c02114792c2cae20d5e2dbb"
+
+[[package]]
+name = "which"
+version = "4.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c831fbbee9e129a8cf93e7747a82da9d95ba8e16621cae60ec2cdc849bacb7b"
+dependencies = [
+ "either",
+ "libc",
+ "once_cell",
+]
 
 [[package]]
 name = "wide"

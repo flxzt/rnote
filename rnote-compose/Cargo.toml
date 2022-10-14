@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
+ink-stroke-modeler-rs = { path = "../ink-stroke-modeler-rs", version = "0.1"}
 
 log = "0.4.16"
 pretty_env_logger = "0.4.0"

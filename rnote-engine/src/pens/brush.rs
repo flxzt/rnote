@@ -9,8 +9,8 @@ use crate::strokes::Stroke;
 use crate::AudioPlayer;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::Constraints;
-use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
+use rnote_compose::builders::ShapeBuilderBehaviour;
+use rnote_compose::builders::{Constraints, ModeledPenPathBuilder};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
 use rnote_compose::style::textured::TexturedOptions;
@@ -111,16 +111,16 @@ impl std::ops::DerefMut for SolidOptions {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: PenPathBuilder,
+        path_builder: ModeledPenPathBuilder,
         current_stroke_key: StrokeKey,
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "brush")]
 pub struct Brush {
     #[serde(rename = "style")]
@@ -134,6 +134,18 @@ pub struct Brush {
 
     #[serde(skip)]
     state: BrushState,
+}
+
+impl Clone for Brush {
+    fn clone(&self) -> Self {
+        Self {
+            style: self.style.clone(),
+            marker_options: self.marker_options.clone(),
+            solid_options: self.solid_options.clone(),
+            textured_options: self.textured_options.clone(),
+            state: BrushState::Idle,
+        }
+    }
 }
 
 impl Default for Brush {
@@ -191,7 +203,7 @@ impl PenBehaviour for Brush {
                         .store
                         .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
-                    let path_builder = PenPathBuilder::start(element, Instant::now());
+                    let path_builder = ModeledPenPathBuilder::start(element, Instant::now());
 
                     if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,

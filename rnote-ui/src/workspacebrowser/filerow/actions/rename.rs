@@ -11,7 +11,7 @@ use gtk4::{
 
 use gettextrs::gettext;
 
-use crate::workspacebrowser::{filerow::widget_helper, FileRow};
+use crate::workspacebrowser::{widget_helper, FileRow};
 
 impl FileRow {
     pub fn rename_action(&self) -> gio::SimpleAction {

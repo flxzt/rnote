@@ -1,39 +1,35 @@
 use std::path::PathBuf;
 
-use crate::workspacebrowser::{filerow::widget_helper, FileRow};
 use gettextrs::gettext;
 use gtk4::{
     gio, glib,
     glib::clone,
     pango,
-    prelude::FileExt,
     traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt},
-    Align, Button, Entry, Label, Popover,
+    Align, Button, Entry, Label, Popover, prelude::FileExt,
 };
 
-impl FileRow {
-    pub fn create_dir_action(&self) -> gio::SimpleAction {
-        let new_file = gio::SimpleAction::new("create-dir", None);
+use crate::{WorkspaceBrowser, workspacebrowser::widget_helper};
 
-        new_file.connect_activate(clone!(@weak self as filerow => move |_action_rename_file, _| {
-            if let Some(current_file) = filerow.current_file() {
-                if let Some(current_path) = current_file.path() {
-                    if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
-                        let entry = create_entry();
-                        let label = create_label();
-                        let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
+impl WorkspaceBrowser {
+    pub fn create_dir(&self) -> gio::SimpleAction {
+        let new_dir_action = gio::SimpleAction::new("create-dir", None);
 
-                        filerow.menubutton_box().append(&popover);
+        new_dir_action.connect_activate(clone!(@weak self as workspacebrowser => move |_, _| {
+            if let Some(parent_path) = workspacebrowser.parent_path() {
+                let entry = create_entry();
+                let label = create_label();
+                let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
 
-                        connect_apply_button(&apply_button, &popover, &entry, parent_path.clone());
+                workspacebrowser.workspace_button_box().append(&popover);
 
-                        popover.popup();
-                    }
-                }
+                connect_apply_button(&apply_button, &popover, &entry, parent_path.clone());
+
+                popover.popup();
             }
         }));
 
-        new_file
+        new_dir_action
     }
 }
 

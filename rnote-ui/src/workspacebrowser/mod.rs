@@ -1,7 +1,10 @@
+mod widget_helper;
+
 mod filerow;
 mod workspacelist;
 mod workspacelistentry;
 mod workspacerow;
+mod workspace_action;
 
 // Re-exports
 pub use filerow::FileRow;
@@ -15,7 +18,7 @@ use gtk4::{
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
     FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MultiSorter,
     PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
-    SorterChange, Widget,
+    SorterChange, Widget, MenuButton
 };
 use std::path::PathBuf;
 
@@ -25,6 +28,8 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
+        pub workspace_actions: gio::SimpleActionGroup,
+
         #[template_child]
         pub grid: TemplateChild<Grid>,
         #[template_child]
@@ -44,6 +49,11 @@ mod imp {
         pub files_dirlist: DirectoryList,
 
         #[template_child]
+        pub workspace_button: TemplateChild<MenuButton>,
+        #[template_child]
+        pub workspace_button_box: TemplateChild<gtk4::Box>,
+
+        #[template_child]
         pub workspace_bar: TemplateChild<gtk4::Box>,
         #[template_child]
         pub workspace_scroller: TemplateChild<ScrolledWindow>,
@@ -59,6 +69,7 @@ mod imp {
             primary_dirlist.set_monitored(true);
 
             Self {
+                workspace_actions: gio::SimpleActionGroup::new(),
                 grid: TemplateChild::<Grid>::default(),
                 add_workspace_button: TemplateChild::<Button>::default(),
                 remove_workspace_button: TemplateChild::<Button>::default(),
@@ -67,6 +78,8 @@ mod imp {
                 files_prefix_listbox: TemplateChild::<ListBox>::default(),
                 dir_up_row: TemplateChild::<ListBoxRow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
+                workspace_button: TemplateChild::<MenuButton>::default(),
+                workspace_button_box: TemplateChild::<gtk4::Box>::default(),
                 files_dirlist: primary_dirlist,
                 workspace_bar: TemplateChild::<gtk4::Box>::default(),
                 workspace_scroller: TemplateChild::<ScrolledWindow>::default(),
@@ -146,6 +159,10 @@ impl WorkspaceBrowser {
 
     pub fn workspace_scroller(&self) -> ScrolledWindow {
         self.imp().workspace_scroller.clone()
+    }
+
+    pub fn workspace_button_box(&self) -> gtk4::Box {
+        self.imp().workspace_button_box.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -417,6 +434,8 @@ impl WorkspaceBrowser {
                     workspace_row.upcast::<Widget>()
                 });
         }
+
+        self.setup_dir_actions(appwindow);
     }
 
     pub fn add_workspace(&self, dir: PathBuf) {
@@ -531,5 +550,21 @@ impl WorkspaceBrowser {
 
         // current workspace index
         self.select_workspace_by_index(current_workspace_index);
+    }
+
+    pub fn parent_path(&self) -> Option<PathBuf> {
+        if let Some(parent) = self.imp().files_dirlist.file() {
+            if let Some(parent_path) = parent.path() {
+                return Some(parent_path);
+            }
+        }
+
+        None
+    }
+
+    fn setup_dir_actions(&self, _appwindow: &RnoteAppWindow) {
+        self.insert_action_group("workspace_action", Some(&self.imp().workspace_actions));
+
+        self.imp().workspace_actions.add_action(&self.create_dir());
     }
 }

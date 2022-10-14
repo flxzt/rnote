@@ -41,13 +41,35 @@
                       <object class="GtkListBoxRow" id="dir_up_row">
                         <property name="tooltip_text" translatable="yes">Move directory up</property>
                         <child>
-                          <object class="GtkLabel">
-                            <property name="margin-top">3</property>
-                            <property name="margin-bottom">3</property>
-                            <property name="margin-start">12</property>
-                            <property name="margin-end">12</property>
-                            <property name="halign">start</property>
-                            <property name="label">‥</property>
+                          <object class="GtkBox" id="workspace_button_box">
+                            <property name="orientation">horizontal</property>
+                            <property name="hexpand">true</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="halign">start</property>
+                                <property name="hexpand">true</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="margin-top">3</property>
+                                    <property name="margin-bottom">3</property>
+                                    <property name="margin-start">12</property>
+                                    <property name="margin-end">12</property>
+                                    <property name="halign">start</property>
+                                    <property name="label">‥</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkMenuButton" id="workspace_button">
+                                <property name="name">workspace_button</property>
+                                <property name="direction">down</property>
+                                <property name="icon_name">canvasmenu-symbolic</property>
+                                <property name="halign">end</property>
+                                <property name="hexpand">true</property>
+                                <property name="popover">workspace_button_popover</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
@@ -153,5 +175,17 @@
         </child>
       </object>
     </child>
+    <object class="GtkPopoverMenu" id="workspace_button_popover">
+      <property name="name">workspace_button_popover</property>
+      <property name="menu-model">filerow_menu_model</property>
+      <menu id="filerow_menu_model">
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Create Directory</attribute>
+            <attribute name="action">workspace_action.create-dir</attribute>
+          </item>
+        </section>
+      </menu>
+    </object>
   </template>
 </interface>

@@ -1,10 +1,10 @@
 mod widget_helper;
 
 mod filerow;
+mod workspace_action;
 mod workspacelist;
 mod workspacelistentry;
 mod workspacerow;
-mod workspace_action;
 
 // Re-exports
 pub use filerow::FileRow;
@@ -16,9 +16,9 @@ use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MultiSorter,
+    FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MenuButton, MultiSorter,
     PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
-    SorterChange, Widget, MenuButton
+    SorterChange, Widget,
 };
 use std::path::PathBuf;
 
@@ -395,7 +395,9 @@ impl WorkspaceBrowser {
 
             self.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
                 let model = files_listview.model().expect("model for primary_listview does not exist.");
-                let fileinfo = model.item(position).expect("selected item in primary_listview does not exist.").downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
+                let fileinfo = model.item(position)
+                    .expect("selected item in primary_listview does not exist.")
+                    .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
                 if let Some(file) = fileinfo.attribute_object("standard::file") {
                     let file = file.downcast::<gio::File>().unwrap();

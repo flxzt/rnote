@@ -27,7 +27,7 @@ pub struct PenPathSimpleBuilder {
 }
 
 impl ShapeBuilderCreator for PenPathSimpleBuilder {
-    fn start(element: Element,_now: Instant) -> Self {
+    fn start(element: Element, _now: Instant) -> Self {
         let mut buffer = VecDeque::new();
         buffer.push_back(element);
 
@@ -39,7 +39,12 @@ impl ShapeBuilderCreator for PenPathSimpleBuilder {
 }
 
 impl ShapeBuilderBehaviour for PenPathSimpleBuilder {
-    fn handle_event(&mut self, event: PenEvent,_now: Instant, _constraints: Constraints) -> BuilderProgress {
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        _constraints: Constraints,
+    ) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,

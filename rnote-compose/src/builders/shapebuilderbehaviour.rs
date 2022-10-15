@@ -30,7 +30,12 @@ pub trait ShapeBuilderCreator {
 pub trait ShapeBuilderBehaviour: std::fmt::Debug {
     /// handles a pen event.
     /// Returns the builder progress.
-    fn handle_event(&mut self, event: PenEvent, now: Instant, constraints: Constraints) -> BuilderProgress;
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        now: Instant,
+        constraints: Constraints,
+    ) -> BuilderProgress;
 
     /// the bounds
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB>;

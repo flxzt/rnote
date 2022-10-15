@@ -37,7 +37,7 @@ pub enum PenEvent {
     /// Text input
     Text {
         /// The committed text
-        text: String
+        text: String,
     },
     /// event when the pen vanishes unexpected. should reset all pending actions and state
     Cancel,

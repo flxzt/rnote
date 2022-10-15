@@ -43,7 +43,12 @@ impl ShapeBuilderCreator for PenPathCurvedBuilder {
 }
 
 impl ShapeBuilderBehaviour for PenPathCurvedBuilder {
-    fn handle_event(&mut self, event: PenEvent, _now: Instant, _constraints: Constraints) -> BuilderProgress {
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        _constraints: Constraints,
+    ) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,

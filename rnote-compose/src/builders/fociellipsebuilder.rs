@@ -37,7 +37,7 @@ pub struct FociEllipseBuilder {
 }
 
 impl ShapeBuilderCreator for FociEllipseBuilder {
-    fn start(element: Element,_now: Instant) -> Self {
+    fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: FociEllipseBuilderState::First(element.pos),
         }
@@ -45,7 +45,12 @@ impl ShapeBuilderCreator for FociEllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for FociEllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent,_now: Instant, mut constraints: Constraints) -> BuilderProgress {
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        mut constraints: Constraints,
+    ) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {

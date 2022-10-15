@@ -5,32 +5,31 @@ use gtk4::{
     gio, glib,
     glib::clone,
     pango,
+    prelude::FileExt,
     traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt},
-    Align, Button, Entry, Label, Popover, prelude::FileExt,
+    Align, Button, Entry, Label, Popover,
 };
 
-use crate::{WorkspaceBrowser, workspacebrowser::widget_helper};
+use crate::{workspacebrowser::widget_helper, WorkspaceBrowser};
 
-impl WorkspaceBrowser {
-    pub fn create_dir(&self) -> gio::SimpleAction {
-        let new_dir_action = gio::SimpleAction::new("create-dir", None);
+pub fn create_dir(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
+    let new_dir_action = gio::SimpleAction::new("create-dir", None);
 
-        new_dir_action.connect_activate(clone!(@weak self as workspacebrowser => move |_, _| {
-            if let Some(parent_path) = workspacebrowser.parent_path() {
-                let entry = create_entry();
-                let label = create_label();
-                let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
+    new_dir_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {
+        if let Some(parent_path) = workspacebrowser.parent_path() {
+            let entry = create_entry();
+            let label = create_label();
+            let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
 
-                workspacebrowser.workspace_button_box().append(&popover);
+            workspacebrowser.workspace_button_box().append(&popover);
 
-                connect_apply_button(&apply_button, &popover, &entry, parent_path.clone());
+            connect_apply_button(&apply_button, &popover, &entry, parent_path.clone());
 
-                popover.popup();
-            }
-        }));
+            popover.popup();
+        }
+    }));
 
-        new_dir_action
-    }
+    new_dir_action
 }
 
 fn create_entry() -> Entry {

@@ -567,6 +567,6 @@ impl WorkspaceBrowser {
     fn setup_dir_actions(&self, _appwindow: &RnoteAppWindow) {
         self.insert_action_group("workspace_action", Some(&self.imp().workspace_actions));
 
-        self.imp().workspace_actions.add_action(&self.create_dir());
+        self.imp().workspace_actions.add_action(&workspace_action::create_dir(self));
     }
 }

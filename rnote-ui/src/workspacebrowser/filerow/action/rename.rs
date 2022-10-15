@@ -5,40 +5,38 @@ use gtk4::{
     glib::clone,
     pango,
     prelude::FileExt,
-    traits::{ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt, BoxExt},
-    Align, Button, Entry, Label, Popover
+    traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt},
+    Align, Button, Entry, Label, Popover,
 };
 
 use gettextrs::gettext;
 
 use crate::workspacebrowser::{widget_helper, FileRow};
 
-impl FileRow {
-    pub fn rename_action(&self) -> gio::SimpleAction {
-        let rename_action = gio::SimpleAction::new("rename-file", None);
+pub fn rename(filerow: &FileRow) -> gio::SimpleAction {
+    let rename_action = gio::SimpleAction::new("rename-file", None);
 
-        rename_action.connect_activate(clone!(@weak self as filerow => move |_action_rename_file, _| {
-            if let Some(current_file) = filerow.current_file() {
-                if let Some(current_path) = current_file.path() {
-                    if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
-                        let entry = create_entry(&current_path);
-                        let label = create_label();
-                        let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
+    rename_action.connect_activate(clone!(@weak filerow as filerow => move |_action_rename_file, _| {
+        if let Some(current_file) = filerow.current_file() {
+            if let Some(current_path) = current_file.path() {
+                if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
+                    let entry = create_entry(&current_path);
+                    let label = create_label();
+                    let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
 
-                        filerow.menubutton_box().append(&popover);
+                    filerow.menubutton_box().append(&popover);
 
-                        connect_entry(&entry, &apply_button, parent_path.clone());
-                        connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),
-                            current_file.clone());
+                    connect_entry(&entry, &apply_button, parent_path.clone());
+                    connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),
+                        current_file.clone());
 
-                        popover.popup();
-                    }
+                    popover.popup();
                 }
             }
-        }));
+        }
+    }));
 
-        rename_action
-    }
+    rename_action
 }
 
 fn create_entry(current_path: &PathBuf) -> Entry {

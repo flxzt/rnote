@@ -10,45 +10,43 @@ use crate::RnoteAppWindow;
 
 const DUPLICATE_SUFFIX: &str = ".dup";
 
-impl FileRow {
-    pub fn duplicate_action(&self, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
-        let action = gio::SimpleAction::new("duplicate", None);
+pub fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
+    let action = gio::SimpleAction::new("duplicate", None);
 
-        action.connect_activate(
-            clone!(@weak self as filerow, @weak appwindow => move |_action_duplicate_file, _| {
-                let process_evaluator = FileRow::create_process_evaluator(appwindow);
+    action.connect_activate(
+        clone!(@weak filerow as filerow, @weak appwindow => move |_action_duplicate_file, _| {
+            let process_evaluator = create_process_evaluator(appwindow);
 
-                if let Some(current_file) = filerow.current_file() {
-                    if let Some(current_path) = current_file.path() {
-                        let source_path = current_path.clone().into_boxed_path();
+            if let Some(current_file) = filerow.current_file() {
+                if let Some(current_path) = current_file.path() {
+                    let source_path = current_path.clone().into_boxed_path();
 
-                        if source_path.is_dir() {
-                            duplicate_dir(current_path, process_evaluator);
-                        } else if source_path.is_file() {
-                            duplicate_file(current_path);
-                        }
+                    if source_path.is_dir() {
+                        duplicate_dir(current_path, process_evaluator);
+                    } else if source_path.is_file() {
+                        duplicate_file(current_path);
                     }
                 }
-            }),
-        );
+            }
+        }),
+    );
 
-        action
-    }
+    action
+}
 
-    /// returns the progress handler for
-    /// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html)
-    fn create_process_evaluator(
-        appwindow: RnoteAppWindow,
-    ) -> impl Fn(TransitProcess) -> TransitProcessResult {
-        move |process: TransitProcess| -> TransitProcessResult {
-            let status = {
-                let status = process.copied_bytes / process.total_bytes;
-                status as f64
-            };
+/// returns the progress handler for
+/// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html)
+fn create_process_evaluator(
+    appwindow: RnoteAppWindow,
+) -> impl Fn(TransitProcess) -> TransitProcessResult {
+    move |process: TransitProcess| -> TransitProcessResult {
+        let status = {
+            let status = process.copied_bytes / process.total_bytes;
+            status as f64
+        };
 
-            appwindow.canvas_progressbar().set_fraction(status);
-            TransitProcessResult::ContinueOrAbort
-        }
+        appwindow.canvas_progressbar().set_fraction(status);
+        TransitProcessResult::ContinueOrAbort
     }
 }
 

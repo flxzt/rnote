@@ -7,11 +7,11 @@ pub mod fociellipsebuilder;
 /// line builder
 pub mod linebuilder;
 /// the regular pen path builder, using bezier curves to interpolate between input elements.
-pub mod penpathbuilder;
+pub mod penpathcurvedbuilder;
 /// simple pen path builder, only produces line segments
-pub mod simplepenpathbuilder;
-/// modeled pen path builder, uses ink-stroke-modeler for smooth paths with advanced algorithms and a predictor to reduce input latency
-pub mod modeledpenpathbuilder;
+pub mod penpathsimplebuilder;
+/// modeled pen path builder, uses ink-stroke-modeler for smooth paths with advanced algorithms and its predictor to reduce input latency
+pub mod penpathmodeledbuilder;
 /// quadratic bezier builder
 pub mod quadbezbuilder;
 /// rectangle builder
@@ -26,9 +26,9 @@ pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use linebuilder::LineBuilder;
-pub use penpathbuilder::PenPathBuilder;
-pub use simplepenpathbuilder::SimplePenPathBuilder;
-pub use modeledpenpathbuilder::ModeledPenPathBuilder;
+pub use penpathcurvedbuilder::PenPathCurvedBuilder;
+pub use penpathsimplebuilder::PenPathSimpleBuilder;
+pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;

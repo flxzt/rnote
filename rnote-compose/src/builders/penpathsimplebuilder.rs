@@ -13,32 +13,32 @@ use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) enum SimplePenPathBuilderState {
+pub(crate) enum PenPathSimpleBuilderState {
     Start,
     During,
 }
 
 #[derive(Debug, Clone)]
-/// The pen path builder
-pub struct SimplePenPathBuilder {
-    pub(crate) state: SimplePenPathBuilderState,
+/// The simple pen path builder
+pub struct PenPathSimpleBuilder {
+    pub(crate) state: PenPathSimpleBuilderState,
     /// Buffered elements, which are filled up by new pen events and used to try to build path segments
     pub buffer: VecDeque<Element>,
 }
 
-impl ShapeBuilderCreator for SimplePenPathBuilder {
+impl ShapeBuilderCreator for PenPathSimpleBuilder {
     fn start(element: Element,_now: Instant) -> Self {
         let mut buffer = VecDeque::new();
         buffer.push_back(element);
 
         Self {
-            state: SimplePenPathBuilderState::Start,
+            state: PenPathSimpleBuilderState::Start,
             buffer,
         }
     }
 }
 
-impl ShapeBuilderBehaviour for SimplePenPathBuilder {
+impl ShapeBuilderBehaviour for PenPathSimpleBuilder {
     fn handle_event(&mut self, event: PenEvent,_now: Instant, _constraints: Constraints) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
@@ -48,7 +48,7 @@ impl ShapeBuilderBehaviour for SimplePenPathBuilder {
         ); */
 
         match (&mut self.state, event) {
-            (SimplePenPathBuilderState::Start, PenEvent::Down { element, .. }) => {
+            (PenPathSimpleBuilderState::Start, PenEvent::Down { element, .. }) => {
                 self.buffer.push_back(element);
 
                 match self.try_build_segments() {
@@ -56,7 +56,7 @@ impl ShapeBuilderBehaviour for SimplePenPathBuilder {
                     None => BuilderProgress::InProgress,
                 }
             }
-            (SimplePenPathBuilderState::During, PenEvent::Down { element, .. }) => {
+            (PenPathSimpleBuilderState::During, PenEvent::Down { element, .. }) => {
                 self.buffer.push_back(element);
 
                 match self.try_build_segments() {
@@ -100,7 +100,7 @@ impl ShapeBuilderBehaviour for SimplePenPathBuilder {
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
         cx.save().unwrap();
         let penpath = match &self.state {
-            SimplePenPathBuilderState::Start => self
+            PenPathSimpleBuilderState::Start => self
                 .buffer
                 .iter()
                 .zip(self.buffer.iter().skip(1))
@@ -110,7 +110,7 @@ impl ShapeBuilderBehaviour for SimplePenPathBuilder {
                 })
                 .collect::<PenPath>(),
             // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
-            SimplePenPathBuilderState::During => self
+            PenPathSimpleBuilderState::During => self
                 .buffer
                 .iter()
                 .skip(1)
@@ -127,7 +127,7 @@ impl ShapeBuilderBehaviour for SimplePenPathBuilder {
     }
 }
 
-impl SimplePenPathBuilder {
+impl PenPathSimpleBuilder {
     fn try_build_segments(&mut self) -> Option<Vec<Shape>> {
         if self.buffer.len() < 2 {
             return None;
@@ -135,7 +135,7 @@ impl SimplePenPathBuilder {
         let mut segments = vec![];
 
         while self.buffer.len() > 2 {
-            self.state = SimplePenPathBuilderState::During;
+            self.state = PenPathSimpleBuilderState::During;
 
             segments.push(Shape::Segment(Segment::Line {
                 start: self.buffer[0],
@@ -150,6 +150,6 @@ impl SimplePenPathBuilder {
 
     fn reset(&mut self) {
         self.buffer.clear();
-        self.state = SimplePenPathBuilderState::Start;
+        self.state = PenPathSimpleBuilderState::Start;
     }
 }

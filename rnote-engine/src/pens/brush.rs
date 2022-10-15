@@ -10,7 +10,7 @@ use crate::AudioPlayer;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::ShapeBuilderBehaviour;
-use rnote_compose::builders::{Constraints, ModeledPenPathBuilder};
+use rnote_compose::builders::{Constraints, PenPathModeledBuilder};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
 use rnote_compose::style::textured::TexturedOptions;
@@ -115,7 +115,7 @@ impl std::ops::DerefMut for SolidOptions {
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: ModeledPenPathBuilder,
+        path_builder: PenPathModeledBuilder,
         current_stroke_key: StrokeKey,
     },
 }
@@ -203,7 +203,7 @@ impl PenBehaviour for Brush {
                         .store
                         .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
-                    let path_builder = ModeledPenPathBuilder::start(element, Instant::now());
+                    let path_builder = PenPathModeledBuilder::start(element, Instant::now());
 
                     if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,

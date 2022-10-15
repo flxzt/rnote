@@ -16,14 +16,14 @@ use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub(crate) enum ModeledPenPathBuilderState {
+pub(crate) enum PenPathModeledBuilderState {
     Start,
     During,
 }
 
 /// The pen path builder
-pub struct ModeledPenPathBuilder {
-    pub(crate) state: ModeledPenPathBuilderState,
+pub struct PenPathModeledBuilder {
+    pub(crate) state: PenPathModeledBuilderState,
     /// Buffered elements, which are filled up by new pen events and used to try to build path segments
     pub buffer: VecDeque<Element>,
     start_time: Instant,
@@ -31,7 +31,7 @@ pub struct ModeledPenPathBuilder {
     stroke_modeler: StrokeModeler,
 }
 
-impl std::fmt::Debug for ModeledPenPathBuilder {
+impl std::fmt::Debug for PenPathModeledBuilder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ModeledPenPathBuilder")
             .field("state", &self.state)
@@ -43,7 +43,7 @@ impl std::fmt::Debug for ModeledPenPathBuilder {
     }
 }
 
-impl ShapeBuilderCreator for ModeledPenPathBuilder {
+impl ShapeBuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
         let mut buffer = VecDeque::new();
 
@@ -75,7 +75,7 @@ impl ShapeBuilderCreator for ModeledPenPathBuilder {
         );
 
         Self {
-            state: ModeledPenPathBuilderState::Start,
+            state: PenPathModeledBuilderState::Start,
             buffer,
             start_time: now,
             last_fed_element: element,
@@ -84,7 +84,7 @@ impl ShapeBuilderCreator for ModeledPenPathBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for ModeledPenPathBuilder {
+impl ShapeBuilderBehaviour for PenPathModeledBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,
@@ -99,7 +99,7 @@ impl ShapeBuilderBehaviour for ModeledPenPathBuilder {
         ); */
 
         match (&mut self.state, event) {
-            (ModeledPenPathBuilderState::Start, PenEvent::Down { element, .. }) => {
+            (PenPathModeledBuilderState::Start, PenEvent::Down { element, .. }) => {
                 // kDown is already fed when instanciating the builder
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove);
 
@@ -108,7 +108,7 @@ impl ShapeBuilderBehaviour for ModeledPenPathBuilder {
                     None => BuilderProgress::InProgress,
                 }
             }
-            (ModeledPenPathBuilderState::During, PenEvent::Down { element, .. }) => {
+            (PenPathModeledBuilderState::During, PenEvent::Down { element, .. }) => {
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove);
 
                 match self.try_build_segments() {
@@ -152,7 +152,7 @@ impl ShapeBuilderBehaviour for ModeledPenPathBuilder {
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
         cx.save().unwrap();
         let penpath = match &self.state {
-            ModeledPenPathBuilderState::Start => self
+            PenPathModeledBuilderState::Start => self
                 .buffer
                 .iter()
                 .zip(self.buffer.iter().skip(1))
@@ -161,7 +161,7 @@ impl ShapeBuilderBehaviour for ModeledPenPathBuilder {
                     end: *end,
                 })
                 .collect::<PenPath>(),
-            ModeledPenPathBuilderState::During => {
+            PenPathModeledBuilderState::During => {
                 let prediction = self
                     .stroke_modeler
                     .predict()
@@ -201,7 +201,7 @@ impl ShapeBuilderBehaviour for ModeledPenPathBuilder {
     }
 }
 
-impl ModeledPenPathBuilder {
+impl PenPathModeledBuilder {
     fn try_build_segments(&mut self) -> Option<Vec<Shape>> {
         if self.buffer.len() < 2 {
             return None;
@@ -209,7 +209,7 @@ impl ModeledPenPathBuilder {
         let mut segments = vec![];
 
         while self.buffer.len() > 2 {
-            self.state = ModeledPenPathBuilderState::During;
+            self.state = PenPathModeledBuilderState::During;
 
             segments.push(Shape::Segment(Segment::Line {
                 start: self.buffer[0],
@@ -256,6 +256,6 @@ impl ModeledPenPathBuilder {
 
     fn reset(&mut self) {
         self.buffer.clear();
-        self.state = ModeledPenPathBuilderState::Start;
+        self.state = PenPathModeledBuilderState::Start;
     }
 }

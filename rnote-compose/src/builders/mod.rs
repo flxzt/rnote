@@ -99,7 +99,7 @@ pub enum PenPathBuilderType {
 
 impl Default for PenPathBuilderType {
     fn default() -> Self {
-        Self::Curved
+        Self::Modeled
     }
 }
 

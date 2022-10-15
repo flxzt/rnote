@@ -5,6 +5,7 @@ use gtk4::{
 };
 use num_traits::cast::ToPrimitive;
 
+use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
 use rnote_engine::pens::Brush;
 
@@ -39,6 +40,8 @@ mod imp {
         pub brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub brushconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub general_builder_type_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -153,6 +156,19 @@ impl BrushPage {
         self.imp().texturedstyle_radius_y_spinbutton.clone()
     }
 
+    pub fn builder_type(&self) -> PenPathBuilderType {
+        PenPathBuilderType::try_from(self.imp().general_builder_type_row.get().selected()).unwrap()
+    }
+
+    pub fn set_builder_type(&self, builder_type: PenPathBuilderType) {
+        let position = builder_type.to_u32().unwrap();
+
+        self.imp()
+            .general_builder_type_row
+            .get()
+            .set_selected(position);
+    }
+
     pub fn solidstyle_pressure_curve(&self) -> PressureCurve {
         PressureCurve::try_from(self.imp().solidstyle_pressure_curves_row.get().selected()).unwrap()
     }
@@ -255,6 +271,16 @@ impl BrushPage {
                 }
             }),
         );
+
+        // General options
+        // builder type
+        self.imp().general_builder_type_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_| {
+            appwindow.canvas().engine().borrow_mut().penholder.brush.builder_type = brushpage.builder_type();
+
+            if let Err(e) = appwindow.save_engine_config() {
+                log::error!("saving engine config failed after changing brush builder type, Err `{}`", e);
+            }
+        }));
 
         // Solid style
         // Pressure curve
@@ -362,6 +388,7 @@ impl BrushPage {
     pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
 
+        self.set_builder_type(brush.builder_type);
         self.set_solidstyle_pressure_curve(brush.solid_options.pressure_curve);
         self.texturedstyle_density_spinbutton()
             .set_value(brush.textured_options.density);

@@ -145,6 +145,27 @@
             </object>
           </child>
           <child>
+            <!-- General options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">General</property>
+              <child>
+                <object class="AdwComboRow" id="general_builder_type_row">
+                  <property name="title" translatable="yes">Path Modeling</property>
+                  <property name="subtitle" translatable="yes">Choose a path modeler type</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Simple</item>
+                        <item translatable="yes">Curved</item>
+                        <item translatable="yes">Modeled</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
             <!-- Solid options -->
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Solid style</property>

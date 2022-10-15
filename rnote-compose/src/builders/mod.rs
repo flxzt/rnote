@@ -84,7 +84,7 @@ impl TryFrom<u32> for ShapeBuilderType {
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
 #[serde(rename = "penpathbuilder_type")]
-/// A choice for a shape builder type
+/// A choice for a pen path builder type
 pub enum PenPathBuilderType {
     #[serde(rename = "simple")]
     /// the simple pen path builder

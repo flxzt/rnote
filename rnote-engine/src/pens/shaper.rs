@@ -72,6 +72,19 @@ pub struct Shaper {
     state: ShaperState,
 }
 
+impl Clone for Shaper {
+    fn clone(&self) -> Self {
+        Self {
+            builder_type: self.builder_type.clone(),
+            style: self.style.clone(),
+            smooth_options: self.smooth_options.clone(),
+            rough_options: self.rough_options.clone(),
+            constraints: self.constraints.clone(),
+            state: ShaperState::Idle,
+        }
+    }
+}
+
 impl Default for Shaper {
     fn default() -> Self {
         let mut smooth_options = SmoothOptions::default();

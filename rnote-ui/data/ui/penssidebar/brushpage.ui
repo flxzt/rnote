@@ -146,7 +146,7 @@
           </child>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Path type</property>
+              <property name="label" translatable="yes">Path modelling</property>
               <property name="margin-top">12</property>
               <property name="halign">start</property>
               <style>

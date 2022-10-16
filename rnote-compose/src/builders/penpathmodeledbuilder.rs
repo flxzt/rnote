@@ -8,7 +8,6 @@ use std::time::Instant;
 
 use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
-use crate::shapes::ShapeBehaviour;
 use crate::style::Composer;
 use crate::{PenPath, Shape, Style};
 
@@ -80,7 +79,7 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
                 // kDown is already fed when instanciating the builder
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
-                match self.try_build_segments() {
+                match self.try_build_segments_during() {
                     Some(shapes) => BuilderProgress::EmitContinue(shapes),
                     None => BuilderProgress::InProgress,
                 }
@@ -88,7 +87,7 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
             PenEvent::Up { element, .. } => {
                 self.update_modeler_w_element(element, ModelerInputEventType::kUp, now);
 
-                let segment = self.try_build_segments().unwrap_or_else(|| vec![]);
+                let segment = self.try_build_segments_end();
 
                 BuilderProgress::Finished(segment)
             }
@@ -154,7 +153,7 @@ impl PenPathModeledBuilder {
     const MODELER_MIN_OUTPUT_RATE: f64 = 180.0;
     const MODELER_MAX_OUTPUTS_PER_CALL: i32 = 100;
 
-    fn try_build_segments(&mut self) -> Option<Vec<Shape>> {
+    fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
         if self.buffer.len() < 2 {
             return None;
         }
@@ -170,6 +169,25 @@ impl PenPathModeledBuilder {
         }
 
         Some(segments)
+    }
+
+    fn try_build_segments_end(&mut self) -> Vec<Shape> {
+        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
+
+        let segments = elements_iter
+            .clone()
+            .zip(elements_iter.skip(1))
+            .map(|(start, end)| {
+                Shape::Segment(Segment::Line {
+                    start: *start,
+                    end: *end,
+                })
+            })
+            .collect();
+
+        self.buffer.clear();
+
+        segments
     }
 
     fn update_modeler_w_element(

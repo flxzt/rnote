@@ -4,7 +4,7 @@ use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 /// A pen input element
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename = "element")]
 pub struct Element {
     #[serde(rename = "pos")]

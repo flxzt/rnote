@@ -223,7 +223,7 @@ impl PenPathModeledBuilder {
     }
 
     fn update_modeler_w_element(&mut self, element: Element, event_type: ModelerInputEventType) {
-        if self.last_fed_element.pos == element.pos {
+        if self.last_fed_element == element {
             // Can't feed modeler with duplicate elements, will result in `INVALID_ARGUMENT` errors
             return;
         } else {

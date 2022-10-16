@@ -30,6 +30,7 @@
                   <class name="view"></class>
                 </style>
                 <child>
+                  <!-- <object class="GtkBox" id="workspace_butto"> -->
                   <object class="GtkListBox" id="files_prefix_listbox">
                     <property name="selection-mode">none</property>
                     <property name="activate-on-single-click">false</property>
@@ -177,8 +178,8 @@
     </child>
     <object class="GtkPopoverMenu" id="workspace_button_popover">
       <property name="name">workspace_button_popover</property>
-      <property name="menu-model">filerow_menu_model</property>
-      <menu id="filerow_menu_model">
+      <property name="menu-model">workspace_action_menu_model</property>
+      <menu id="workspace_action_menu_model">
         <section>
           <item>
             <attribute name="label" translatable="yes">Create Directory</attribute>

@@ -179,7 +179,7 @@
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_modeled">
                   <property name="title" translatable="yes">Modeled</property>
-                  <property name="subtitle" translatable="yes">Produces a modeled path with phyics based algorithms.
+                  <property name="subtitle" translatable="yes">Produces a modeled path with physics based algorithms.
 Results in the best looking handwriting, but introduces slight input lag.</property>
                 </object>
               </child>

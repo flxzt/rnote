@@ -38,7 +38,6 @@ impl std::fmt::Debug for PenPathModeledBuilder {
 
 impl ShapeBuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
-        let now = Instant::now();
         let buffer = VecDeque::new();
 
         let stroke_modeler = StrokeModeler::default();
@@ -61,7 +60,7 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _now: Instant,
+        now: Instant,
         _constraints: Constraints,
     ) -> BuilderProgress {
         /*         log::debug!(
@@ -74,7 +73,7 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
         match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed when instanciating the builder
-                self.update_modeler_w_element(element, ModelerInputEventType::kMove);
+                self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
                 match self.try_build_segments() {
                     Some(shapes) => BuilderProgress::EmitContinue(shapes),
@@ -82,7 +81,7 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
                 }
             }
             PenEvent::Up { element, .. } => {
-                self.update_modeler_w_element(element, ModelerInputEventType::kUp);
+                self.update_modeler_w_element(element, ModelerInputEventType::kUp, now);
 
                 let segment = self.try_build_segments().unwrap_or_else(|| vec![]);
 
@@ -170,9 +169,7 @@ impl PenPathModeledBuilder {
         Some(segments)
     }
 
-    fn update_modeler_w_element(&mut self, element: Element, event_type: ModelerInputEventType) {
-        let now = Instant::now();
-
+    fn update_modeler_w_element(&mut self, element: Element, event_type: ModelerInputEventType, now: Instant) {
         if self.last_element == element {
             // Can't feed modeler with duplicate elements, or results in `INVALID_ARGUMENT` errors
             return;

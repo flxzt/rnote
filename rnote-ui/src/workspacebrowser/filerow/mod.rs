@@ -206,5 +206,10 @@ impl FileRow {
         self.imp().action_group.add_action(&self.rename_action());
         self.imp().action_group.add_action(&self.trash_action());
         self.imp().action_group.add_action(&self.duplicate_action(&appwindow));
+
+         self.imp().action_group.add_action(&actions::open_action(self, &appwindow));
+         self.imp().action_group.add_action(&actions::rename_action(self));
+         self.imp().action_group.add_action(&actions::rash_action(self);
+         self.imp().action_group.add_action(&actions::duplicate_action(self, &appwindow));
     }
 }

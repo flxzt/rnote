@@ -16,7 +16,7 @@ pub fn create_dir(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
     let new_dir_action = gio::SimpleAction::new("create-dir", None);
 
     new_dir_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {
-        if let Some(parent_path) = workspacebrowser.parent_path() {
+        if let Some(parent_path) = workspacebrowser.selected_workspace_dir() {
             let entry = create_entry();
             let label = create_label();
             let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);

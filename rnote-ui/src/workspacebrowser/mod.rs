@@ -319,7 +319,6 @@ impl WorkspaceBrowser {
             filefilter.add_pattern("*.rnote");
             filefilter.add_pattern("*.xopp");
             filefilter.add_pattern("*.svg");
-            filefilter.add_pattern("*.dup");
             filefilter.add_mime_type("image/svg+xml");
             filefilter.add_mime_type("image/png");
             filefilter.add_mime_type("image/jpeg");
@@ -552,16 +551,6 @@ impl WorkspaceBrowser {
 
         // current workspace index
         self.select_workspace_by_index(current_workspace_index);
-    }
-
-    pub fn parent_path(&self) -> Option<PathBuf> {
-        if let Some(parent) = self.imp().files_dirlist.file() {
-            if let Some(parent_path) = parent.path() {
-                return Some(parent_path);
-            }
-        }
-
-        None
     }
 
     fn setup_dir_actions(&self, _appwindow: &RnoteAppWindow) {

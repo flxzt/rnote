@@ -2,7 +2,6 @@ use std::time::Instant;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
-use serde::{Deserialize, Serialize};
 
 use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
@@ -13,7 +12,7 @@ use crate::{PenPath, Shape, Style};
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::{Constraints, ShapeBuilderBehaviour};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub(crate) enum PenPathCurvedBuilderState {
     Start,
     During,

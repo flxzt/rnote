@@ -1,0 +1,8 @@
+{
+    "tasks": [
+        {
+            "name": "test",
+            "cmd": "meson test -v -C build"
+        }
+    ]
+}

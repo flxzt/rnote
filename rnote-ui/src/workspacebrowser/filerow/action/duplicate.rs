@@ -1,14 +1,25 @@
+use std::ffi::{OsStr, OsString};
 use std::path::PathBuf;
 
 use fs_extra::dir::{CopyOptions, TransitProcessResult};
 use fs_extra::{copy_items_with_progress, TransitProcess};
 use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
+use regex::Regex;
 
 use crate::workspacebrowser::FileRow;
 use crate::RnoteAppWindow;
 
+///                                 - Look for `.dup` pattern
+///                                 |   - Look for `.dup1`/`.dup123`/`.dup1234`/...
+///                                 |   |        - Look for the text after the `.dup<num>` part
+///                                 |   |       |       - At the end of the word (here: file-path)
+///                                 |  \d*      |       $
+///                                 |           |
+///                               \.dup   (?P<rest>(.*))
+const DUP_REGEX_PATTERN: &str = r"\.dup\d*(?P<rest>(.*))$";
 const DUPLICATE_SUFFIX: &str = ".dup";
+const DOT: &str = ".";
 
 pub fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
@@ -87,28 +98,112 @@ where
 /// returns a suitable destination path from the given source path
 /// by adding `.dup` as often as needed to the source-path
 fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
-    if let Some(destination_file_name) = source_path.file_name() {
-        let mut destination_file_name = {
-            let mut file_name = destination_file_name.to_os_string();
-            file_name.push(DUPLICATE_SUFFIX);
-            file_name
-        };
+    let mut duplicate_index = 0;
+    let mut destination_path = source_path.clone();
 
-        let mut destination_path = {
-            let mut path = source_path.clone().to_path_buf();
-            path.set_file_name(destination_file_name.clone());
-            path
-        };
+    if let Some(source_stem) = source_path.file_stem() {
+        if let Some(source_extension) = source_path.extension() {
+            let adjusted_source_stem = remove_dup_suffix(source_stem);
+            loop {
+                let destination_filename = generate_duplicate_filename(&adjusted_source_stem, source_extension, duplicate_index);
+                destination_path.set_file_name(destination_filename);
 
-        while destination_path.exists() {
-            log::debug!("Destination: {} exists.", destination_path.display());
-            destination_file_name.push(DUPLICATE_SUFFIX);
-            destination_path.set_file_name(destination_file_name.clone());
+                if !destination_path.exists() {
+                    return Some(destination_path);
+                }
+
+                log::debug!("File '{}' already exists.", destination_path.display());
+                duplicate_index += 1;
+            }
+
+        } else {
+            log::debug!("No source extenion for '{}'.", source_path.display());
+        }
+    } else {
+        log::debug!("No source stem for '{}'.", source_path.display());
+    }
+
+    None
+}
+
+/// Creates the duplicate-filename by the given information about the source.
+///
+/// ## Example
+/// "test.txt" => "test.dup.txt" => "test.dup1.txt"
+fn generate_duplicate_filename(source_stem: &OsStr, source_extension: &OsStr, duplicate_index: i32) -> OsString {
+    let mut duplicate_filename = OsString::new();
+
+    duplicate_filename.push(source_stem);
+    duplicate_filename.push(DUPLICATE_SUFFIX);
+
+    if duplicate_index > 0 {
+        duplicate_filename.push(duplicate_index.to_string());
+    }
+
+    duplicate_filename.push(DOT);
+    duplicate_filename.push(source_extension);
+
+    duplicate_filename
+}
+
+fn remove_dup_suffix(source_stem: &OsStr) -> OsString {
+    let source_stem = source_stem
+        .to_string_lossy()
+        .to_string();
+
+    let re = Regex::new(DUP_REGEX_PATTERN).unwrap();
+
+    let removed_dup_suffix = re.replace(&source_stem, "$rest").to_string();
+    OsString::from(removed_dup_suffix)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+
+    use super::*;
+
+    #[test]
+    fn test_remove_dup_suffix() {
+        // test on filename without ".dup" in name
+        let normal = OsString::from("normal_file.txt");
+        let normal_expected = normal.clone();
+        assert_eq!(normal_expected, remove_dup_suffix(&normal));
+
+        // test with ".dup" name
+        let normal_dup = OsString::from("normal_file.dup.txt");
+        let normal_dup_expected = OsString::from("normal_file.txt");
+        assert_eq!(normal_dup_expected, remove_dup_suffix(&normal_dup));
+
+        // test with ".dup1" which means, that a duplicated file has been duplicated
+        let normal_dup1 = OsString::from("normal_file.dup1.txt");
+        let normal_dup1_expected = OsString::from("normal_file.txt");
+        assert_eq!(normal_dup1_expected, remove_dup_suffix(&normal_dup1));
+    }
+
+    /// simulates the user who duplicates the same file twice
+    #[test]
+    fn test_get_destination_path() {
+        let filename = PathBuf::from("test_get_destination_path.txt");
+        File::create(&filename).unwrap();
+
+        let dup0_filename = get_destination_path(&filename).unwrap();
+        if let Err(err) = File::create(&dup0_filename) {
+            // "emergence" cleanup
+            std::fs::remove_file(filename).unwrap();
+            panic!("{}", err);
         }
 
-        log::debug!("Destination path: {}", destination_path.display());
-        Some(destination_path)
-    } else {
-        None
+        let dup1_filename = get_destination_path(&filename).unwrap();
+
+        let expected_dup0 = PathBuf::from("test_get_destination_path.dup.txt");
+        let expected_dup1 = PathBuf::from("test_get_destination_path.dup1.txt");
+
+        assert_eq!(dup0_filename, expected_dup0);
+        assert_eq!(dup1_filename, expected_dup1);
+
+        // cleanup
+        std::fs::remove_file(filename).unwrap();
+        std::fs::remove_file(dup0_filename).unwrap();
     }
 }

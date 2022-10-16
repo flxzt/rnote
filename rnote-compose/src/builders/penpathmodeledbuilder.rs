@@ -8,6 +8,7 @@ use std::time::Instant;
 
 use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
+use crate::shapes::ShapeBehaviour;
 use crate::style::Composer;
 use crate::{PenPath, Shape, Style};
 
@@ -18,6 +19,8 @@ use super::{Constraints, ShapeBuilderBehaviour};
 pub struct PenPathModeledBuilder {
     /// Buffered elements, which are filled up by new pen events and used to try to build path segments
     pub buffer: VecDeque<Element>,
+    /// Holding the current prediction. Is recalculated after the modeler is updated with a new element
+    prediction_buffer: Vec<Element>,
     start_time: Instant,
     last_element: Element,
     last_element_time: Instant,
@@ -28,6 +31,7 @@ impl std::fmt::Debug for PenPathModeledBuilder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ModeledPenPathBuilder")
             .field("buffer", &self.buffer)
+            .field("prediction_buffer", &self.prediction_buffer)
             .field("start_time", &self.start_time)
             .field("last_element", &self.last_element)
             .field("last_element_time", &self.last_element_time)
@@ -44,6 +48,7 @@ impl ShapeBuilderCreator for PenPathModeledBuilder {
 
         let mut builder = Self {
             buffer,
+            prediction_buffer: vec![],
             start_time: now,
             last_element: element,
             last_element_time: now,
@@ -94,37 +99,35 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
         }
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
-        let stroke_width = style.stroke_width();
+    fn bounds(&self, style: &Style, _zoom: f64) -> Option<AABB> {
+        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
 
-        if self.buffer.is_empty() {
+        let penpath = elements_iter
+            .clone()
+            .zip(elements_iter.skip(1))
+            .map(|(start, end)| Segment::Line {
+                start: *start,
+                end: *end,
+            })
+            .collect::<PenPath>();
+
+        if penpath.is_empty() {
             return None;
         }
 
-        Some(self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
-            acc.take_point(na::Point2::from(x.pos));
-            acc.loosened(stroke_width / zoom)
+        Some(penpath.iter().fold(AABB::new_invalid(), |acc, x| {
+            acc.merged(&x.composed_bounds(style))
         }))
     }
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
         cx.save().unwrap();
 
-        let prediction = self
-            .stroke_modeler
-            .predict()
-            .into_iter()
-            .map(|r| {
-                let pos = r.get_pos();
-                let pressure = r.get_pressure();
+        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
 
-                Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
-            })
-            .collect::<Vec<Element>>();
-
-        let penpath = prediction
-            .iter()
-            .zip(prediction.iter().skip(1))
+        let penpath = elements_iter
+            .clone()
+            .zip(elements_iter.skip(1))
             .map(|(start, end)| Segment::Line {
                 start: *start,
                 end: *end,
@@ -132,14 +135,14 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
             .collect::<PenPath>();
 
         /*
-               // Change prediction stroke color for debugging
-               let mut style = style.clone();
-               match style {
-                   Style::Smooth(ref mut smooth_options) => {
-                       smooth_options.stroke_color = Some(crate::Color::RED)
-                   }
-                   _ => {}
-               }
+                // Change prediction stroke color for debugging
+                let mut style = style.clone();
+                match style {
+                    Style::Smooth(ref mut smooth_options) => {
+                        smooth_options.stroke_color = Some(crate::Color::RED)
+                    }
+                    _ => {}
+                }
         */
 
         penpath.draw_composed(cx, style);
@@ -169,7 +172,12 @@ impl PenPathModeledBuilder {
         Some(segments)
     }
 
-    fn update_modeler_w_element(&mut self, element: Element, event_type: ModelerInputEventType, now: Instant) {
+    fn update_modeler_w_element(
+        &mut self,
+        element: Element,
+        event_type: ModelerInputEventType,
+        now: Instant,
+    ) {
         if self.last_element == element {
             // Can't feed modeler with duplicate elements, or results in `INVALID_ARGUMENT` errors
             return;
@@ -211,6 +219,18 @@ impl PenPathModeledBuilder {
                     Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                 }),
         );
+
+        self.prediction_buffer = self
+            .stroke_modeler
+            .predict()
+            .into_iter()
+            .map(|r| {
+                let pos = r.get_pos();
+                let pressure = r.get_pressure();
+
+                Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+            })
+            .collect::<Vec<Element>>();
     }
 
     fn restart(&mut self, element: Element, now: Instant) {

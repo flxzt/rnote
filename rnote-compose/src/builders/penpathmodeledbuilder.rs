@@ -255,7 +255,7 @@ impl PenPathModeledBuilder {
         let params = StrokeModelerParams {
             sampling_min_output_rate: Self::MODELER_MIN_OUTPUT_RATE,
             sampling_max_outputs_per_call: Self::MODELER_MAX_OUTPUTS_PER_CALL,
-            ..Default::default()
+            ..StrokeModelerParams::suggested()
         };
 
         self.buffer.clear();

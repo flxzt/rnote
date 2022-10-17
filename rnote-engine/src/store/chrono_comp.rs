@@ -63,7 +63,6 @@ impl Ord for StrokeLayer {
 pub struct ChronoComponent {
     #[serde(rename = "t")]
     t: u32,
-    /// layers are split into two groups: positive are user layers and modifyable, system layers are negative. By default the layer is 0.
     #[serde(rename = "layer")]
     pub layer: StrokeLayer,
 }

@@ -308,6 +308,7 @@ msgid "Clear"
 msgstr "Limpiar"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:844
+#: rnote-ui/src/appwindow/mod.rs:893
 msgid "New Document"
 msgstr "Documento nuevo"
 
@@ -460,6 +461,7 @@ msgid "New document"
 msgstr "Documento nuevo"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:846
+#: rnote-ui/src/appwindow/mod.rs:895
 msgid "Draft"
 msgstr "Borrador"
 
@@ -866,82 +868,102 @@ msgid "Brush configuration"
 msgstr "Configuración de los pinceles"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
 msgstr "Estilo sólido"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:153
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Pressure curve"
 msgstr "Curva de presión"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:154
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Choose a pressure curve"
 msgstr "Elija una curva de presión"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgid "Constant"
 msgstr "Constante"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgid "Linear"
 msgstr "Lineal"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Square root"
 msgstr "Raíz cuadrada"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:161
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Cubic root"
 msgstr "Raíz cúbica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:162
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:203
 msgid "Quadratic Parabola"
 msgstr "Parábola cuadrática"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:163
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:204
 msgid "Cubic Parabola"
 msgstr "Parábola cúbica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Textured style"
 msgstr "Estilo texturizado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:177
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Density"
 msgstr "Densidad"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:178
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "La densidad es la cantidad de puntos por cada 10x10 de superficie"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:193
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Stroke dots radii"
 msgstr "Radios de los puntos de la traza"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "Los radios de los puntos individuales en el trazo texturizado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:252
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 msgid "Stroke dots position distribution"
 msgstr "Distribución de la posición de los puntos de la traza"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:294
 msgid "Choose a dots position probability distribution"
 msgstr "Elija una distribución de probabilidad de la posición de los puntos"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:257
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:298
 msgid "Uniform"
 msgstr "Uniforme"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:258
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:299
 msgid "Normal"
 msgstr "Normal"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:259
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:300
 msgid "Exponential"
 msgstr "Exponencial"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:260
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:301
 msgid "Reverse Exponential"
 msgstr "Exponencial inverso"
 
@@ -1188,6 +1210,7 @@ msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
 #: rnote-ui/src/appwindow/mod.rs:408
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
+#: rnote-ui/src/appwindow/mod.rs:457
 msgid "Saving document failed."
 msgstr "No se ha podido guardar el documento."
 
@@ -1383,6 +1406,45 @@ msgstr "Documento impreso con éxito"
 #: rnote-ui/src/appwindow/appwindowactions.rs:783
 msgid "Printing document failed"
 msgstr "Fallo en la impresión del documento"
+
+#: rnote-ui/data/ui/dialogs.ui:18
+#, fuzzy
+msgid ""
+"Creating a new document will discard any unsaved changes. Do you want to "
+"save the current document?"
+msgstr ""
+"Al crear un documento nuevo se borrarán los cambios que no se hayan "
+"guardado. ¿Desea guardar el documento actual?"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:149
+msgid "Path modelling"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+msgid "Simple"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:168
+msgid "Produces line segments from the raw input.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid "Curved"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
+msgid "Produces smooth, curved segments.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:181
+msgid "Modeled"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:182
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
+msgstr ""
 
 #~ msgid "Save current document as"
 #~ msgstr "Guardar documento actual como"

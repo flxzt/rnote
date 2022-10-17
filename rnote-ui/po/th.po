@@ -314,7 +314,7 @@ msgid "Clear"
 msgstr "ล้าง"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:844
-#: rnote-ui/src/appwindow/mod.rs:848
+#: rnote-ui/src/appwindow/mod.rs:848 rnote-ui/src/appwindow/mod.rs:893
 msgid "New Document"
 msgstr "เอกสารใหม่"
 
@@ -463,7 +463,7 @@ msgid "New document"
 msgstr "เอกสารใหม่"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:846
-#: rnote-ui/src/appwindow/mod.rs:850
+#: rnote-ui/src/appwindow/mod.rs:850 rnote-ui/src/appwindow/mod.rs:895
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -868,82 +868,102 @@ msgid "Brush configuration"
 msgstr "กำหนดค่าพู่กัน"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
 msgstr "รูปแบบเส้นทึบ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:153
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Pressure curve"
 msgstr "เคิร์ฟวแรงกดของปากกา"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:154
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Choose a pressure curve"
 msgstr "เลือกเคิร์ฟวแรงกดของปากกา"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgid "Constant"
 msgstr "คงที่"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgid "Linear"
 msgstr "เชิงเส้น"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Square root"
 msgstr "สแควรูท"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:161
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Cubic root"
 msgstr "คิวบิกรูท"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:162
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:203
 msgid "Quadratic Parabola"
 msgstr "พาราโบลากำลังสอง"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:163
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:204
 msgid "Cubic Parabola"
 msgstr "คิวบิกพาราโบลา"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Textured style"
 msgstr "รูปแบบเทกเจอร์"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:177
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Density"
 msgstr "ความหนาแน่น"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:178
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "ความหนาแน่น คือ จำนวนจุดต่อพื้นที่ 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:193
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Stroke dots radii"
 msgstr "รัศมีของจุดต่าง ๆ บนเส้น"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "รัศมีของแต่ละจุดที่อยู่ในเส้นเทกเจอร์"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:252
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 msgid "Stroke dots position distribution"
 msgstr "การกระจายตำแหน่งของจุดต่าง ๆ บนเส้น"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:294
 msgid "Choose a dots position probability distribution"
 msgstr "เลือกการกระจายตามความน่าจะเป็นในการจัดวางตำแหน่งของจุดต่าง ๆ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:257
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:298
 msgid "Uniform"
 msgstr "แบบเดียวกันทั้งหมด"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:258
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:299
 msgid "Normal"
 msgstr "แบบปกติ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:259
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:300
 msgid "Exponential"
 msgstr "แบบก้าวหน้า"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:260
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:301
 msgid "Reverse Exponential"
 msgstr "แบบก้าวหน้าย้อนกลับ"
 
@@ -1183,7 +1203,7 @@ msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
 #: rnote-ui/src/appwindow/mod.rs:408
 #: rnote-ui/src/appwindow/appwindowactions.rs:657 rnote-ui/src/dialogs.rs:640
-#: rnote-ui/src/appwindow/mod.rs:412
+#: rnote-ui/src/appwindow/mod.rs:412 rnote-ui/src/appwindow/mod.rs:457
 msgid "Saving document failed."
 msgstr "การบันทึกเอกสารล้มเหลว"
 
@@ -1390,6 +1410,44 @@ msgstr "การพิมพ์เอกสารล้มเหลว"
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgstr "ตั้งว่าจะให้ซ่อนแถบเลื่อนของเอกสารเป็นการถาวรหรือไม่"
+
+#: rnote-ui/data/ui/dialogs.ui:18
+#, fuzzy
+msgid ""
+"Creating a new document will discard any unsaved changes. Do you want to "
+"save the current document?"
+msgstr ""
+"การสร้างเอกสารใหม่จะลบการเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมด คุณต้องการบันทึกเอกสารนี้หรือไม่?"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:149
+msgid "Path modelling"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+msgid "Simple"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:168
+msgid "Produces line segments from the raw input.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid "Curved"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
+msgid "Produces smooth, curved segments.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:181
+msgid "Modeled"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:182
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
+msgstr ""
 
 #~ msgid "Save current document as"
 #~ msgstr "บันทึกเอกสารนี้ที่"

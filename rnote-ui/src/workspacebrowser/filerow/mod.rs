@@ -202,26 +202,9 @@ impl FileRow {
     fn setup_actions(&self, appwindow: &RnoteAppWindow) {
         self.insert_action_group("filerow", Some(&self.imp().action_group));
 
-<<<<<<< HEAD
-        self.imp().action_group.add_action(&self.open_action(&appwindow));
-        self.imp().action_group.add_action(&self.rename_action());
-        self.imp().action_group.add_action(&self.trash_action());
-        self.imp().action_group.add_action(&self.duplicate_action(&appwindow));
-
-         self.imp().action_group.add_action(&actions::open_action(self, &appwindow));
-         self.imp().action_group.add_action(&actions::rename_action(self));
-         self.imp().action_group.add_action(&actions::rash_action(self);
-         self.imp().action_group.add_action(&actions::duplicate_action(self, &appwindow));
-||||||| parent of e271bda (renaming filerow actions)
-        self.imp().action_group.add_action(&self.open_action(&appwindow));
-        self.imp().action_group.add_action(&self.rename_action());
-        self.imp().action_group.add_action(&self.trash_action());
-        self.imp().action_group.add_action(&self.duplicate_action(&appwindow));
-=======
         self.imp().action_group.add_action(&action::open(self, &appwindow));
         self.imp().action_group.add_action(&action::rename(self));
         self.imp().action_group.add_action(&action::trash(self));
         self.imp().action_group.add_action(&action::duplicate(self, &appwindow));
->>>>>>> e271bda (renaming filerow actions)
     }
 }

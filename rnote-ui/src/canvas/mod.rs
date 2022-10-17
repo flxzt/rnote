@@ -634,6 +634,11 @@ impl RnoteCanvas {
             //log::debug!("stylus_drawing_gesture down");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
+            // disable drag and zoom gestures entirely while drawing with stylus
+            appwindow.canvas_touch_drag_gesture_enable(false);
+            appwindow.canvas_zoom_gesture_enable(false);
+            appwindow.canvas_drag_empty_area_gesture_enable(false);
+
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
             canvas.grab_focus();
@@ -669,6 +674,11 @@ impl RnoteCanvas {
         self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture up");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
+
+            // enable drag and zoom gestures again
+            appwindow.canvas_touch_drag_gesture_enable(true);
+            appwindow.canvas_zoom_gesture_enable(true);
+            appwindow.canvas_drag_empty_area_gesture_enable(true);
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
 

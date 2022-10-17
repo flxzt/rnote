@@ -28,11 +28,7 @@ use crate::{
     workspacebrowser::WorkspaceBrowser,
     {dialogs, mainheader::MainHeader},
 };
-use rnote_engine::{
-    engine::EngineTask,
-    pens::penholder::PenStyle,
-    Camera, WidgetFlags,
-};
+use rnote_engine::{engine::EngineTask, pens::penholder::PenStyle, Camera, WidgetFlags};
 
 mod imp {
     use super::*;
@@ -51,6 +47,12 @@ mod imp {
         pub autosave_interval_secs: Cell<u32>,
         pub righthanded: Cell<bool>,
         pub permanently_hide_canvas_scrollbars: Cell<bool>,
+
+        pub canvas_touch_drag_gesture: GestureDrag,
+        pub canvas_drag_empty_area_gesture: GestureDrag,
+        pub canvas_zoom_gesture: GestureZoom,
+        pub canvas_zoom_scroll_controller: EventControllerScroll,
+        pub canvas_mouse_drag_middle_gesture: GestureDrag,
 
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -120,6 +122,35 @@ mod imp {
 
     impl Default for RnoteAppWindow {
         fn default() -> Self {
+            let canvas_touch_drag_gesture = GestureDrag::builder()
+                .name("canvas_touch_drag_gesture")
+                .touch_only(true)
+                .propagation_phase(PropagationPhase::Bubble)
+                .build();
+
+            let canvas_drag_empty_area_gesture = GestureDrag::builder()
+                .name("canvas_mouse_drag_empty_area_gesture")
+                .button(gdk::BUTTON_PRIMARY)
+                .propagation_phase(PropagationPhase::Bubble)
+                .build();
+
+            let canvas_zoom_gesture = GestureZoom::builder()
+                .name("canvas_zoom_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
+            let canvas_zoom_scroll_controller = EventControllerScroll::builder()
+                .name("canvas_zoom_scroll_controller")
+                .propagation_phase(PropagationPhase::Bubble)
+                .flags(EventControllerScrollFlags::VERTICAL)
+                .build();
+
+            let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
+                .name("canvas_mouse_drag_middle_gesture")
+                .button(gdk::BUTTON_MIDDLE)
+                .propagation_phase(PropagationPhase::Bubble)
+                .build();
+
             Self {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
@@ -131,6 +162,12 @@ mod imp {
                 autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
                 permanently_hide_canvas_scrollbars: Cell::new(false),
+
+                canvas_touch_drag_gesture,
+                canvas_drag_empty_area_gesture,
+                canvas_zoom_gesture,
+                canvas_zoom_scroll_controller,
+                canvas_mouse_drag_middle_gesture,
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
@@ -188,6 +225,18 @@ mod imp {
             self.parent_constructed(obj);
 
             let _windowsettings = obj.settings();
+
+            // Add input controllers
+            obj.canvas_scroller()
+                .add_controller(&self.canvas_touch_drag_gesture);
+            obj.canvas_scroller()
+                .add_controller(&self.canvas_drag_empty_area_gesture);
+            obj.canvas_scroller()
+                .add_controller(&self.canvas_zoom_gesture);
+            obj.canvas_scroller()
+                .add_controller(&self.canvas_zoom_scroll_controller);
+            obj.canvas_scroller()
+                .add_controller(&self.canvas_mouse_drag_middle_gesture);
 
             if config::PROFILE == "devel" {
                 obj.add_css_class("devel");
@@ -933,6 +982,26 @@ impl RnoteAppWindow {
         );
     }
 
+    pub fn canvas_touch_drag_gesture(&self) -> GestureDrag {
+        self.imp().canvas_touch_drag_gesture.clone()
+    }
+
+    pub fn canvas_drag_empty_area_gesture(&self) -> GestureDrag {
+        self.imp().canvas_drag_empty_area_gesture.clone()
+    }
+
+    pub fn canvas_zoom_gesture(&self) -> GestureZoom {
+        self.imp().canvas_zoom_gesture.clone()
+    }
+
+    pub fn canvas_zoom_scroll_controller(&self) -> EventControllerScroll {
+        self.imp().canvas_zoom_scroll_controller.clone()
+    }
+
+    pub fn canvas_mouse_drag_middle_gesture(&self) -> GestureDrag {
+        self.imp().canvas_mouse_drag_middle_gesture.clone()
+    }
+
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
         self.imp().toast_overlay.get()
     }
@@ -1096,52 +1165,78 @@ impl RnoteAppWindow {
         self.update_titles_for_file(None);
     }
 
+    pub fn canvas_touch_drag_gesture_enable(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .canvas_touch_drag_gesture
+                .set_propagation_phase(PropagationPhase::Bubble);
+        } else {
+            self.imp()
+                .canvas_touch_drag_gesture
+                .set_propagation_phase(PropagationPhase::None);
+        }
+    }
+
+    pub fn canvas_drag_empty_area_gesture_enable(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .canvas_drag_empty_area_gesture
+                .set_propagation_phase(PropagationPhase::Bubble);
+        } else {
+            self.imp()
+                .canvas_drag_empty_area_gesture
+                .set_propagation_phase(PropagationPhase::None);
+        }
+    }
+
+    pub fn canvas_zoom_gesture_enable(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .canvas_zoom_gesture
+                .set_propagation_phase(PropagationPhase::Capture);
+        } else {
+            self.imp()
+                .canvas_zoom_gesture
+                .set_propagation_phase(PropagationPhase::None);
+        }
+    }
+
+    pub fn canvas_zoom_scroll_controller_enable(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .canvas_zoom_scroll_controller
+                .set_propagation_phase(PropagationPhase::Bubble);
+        } else {
+            self.imp()
+                .canvas_zoom_scroll_controller
+                .set_propagation_phase(PropagationPhase::None);
+        }
+    }
+
+    pub fn canvas_mouse_drag_middle_gesture_enable(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .canvas_mouse_drag_middle_gesture
+                .set_propagation_phase(PropagationPhase::Bubble);
+        } else {
+            self.imp()
+                .canvas_mouse_drag_middle_gesture
+                .set_propagation_phase(PropagationPhase::None);
+        }
+    }
+
     pub fn setup_input(&self) {
-        let canvas_zoom_scroll_controller = EventControllerScroll::builder()
-            .name("canvas_zoom_scroll_controller")
-            .propagation_phase(PropagationPhase::Bubble)
-            .flags(EventControllerScrollFlags::VERTICAL)
-            .build();
-        self.canvas_scroller()
-            .add_controller(&canvas_zoom_scroll_controller);
-
-        let canvas_touch_drag_gesture = GestureDrag::builder()
-            .name("canvas_touch_drag_gesture")
-            .touch_only(true)
-            .propagation_phase(PropagationPhase::Bubble)
-            .build();
-        self.canvas_scroller()
-            .add_controller(&canvas_touch_drag_gesture);
-
-        let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
-            .name("canvas_mouse_drag_middle_gesture")
-            .button(gdk::BUTTON_MIDDLE)
-            .propagation_phase(PropagationPhase::Bubble)
-            .build();
-        self.canvas_scroller()
-            .add_controller(&canvas_mouse_drag_middle_gesture);
-
-        let canvas_mouse_drag_empty_area_gesture = GestureDrag::builder()
-            .name("canvas_mouse_drag_empty_area_gesture")
-            .button(gdk::BUTTON_PRIMARY)
-            .propagation_phase(PropagationPhase::Bubble)
-            .build();
-        self.canvas_scroller()
-            .add_controller(&canvas_mouse_drag_empty_area_gesture);
-
-        let canvas_zoom_gesture = GestureZoom::builder()
-            .name("canvas_zoom_gesture")
-            .propagation_phase(PropagationPhase::Capture)
-            .build();
-        self.canvas_scroller().add_controller(&canvas_zoom_gesture);
-
         // Gesture Grouping
-        canvas_mouse_drag_middle_gesture.group_with(&canvas_touch_drag_gesture);
-        canvas_mouse_drag_empty_area_gesture.group_with(&canvas_touch_drag_gesture);
+        self.imp()
+            .canvas_mouse_drag_middle_gesture
+            .group_with(&self.imp().canvas_touch_drag_gesture);
+        self.imp()
+            .canvas_drag_empty_area_gesture
+            .group_with(&self.imp().canvas_touch_drag_gesture);
 
         // zoom scrolling with <ctrl> + scroll
         {
-            canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
+            self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
                 if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
                     let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
@@ -1161,19 +1256,19 @@ impl RnoteAppWindow {
         {
             let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
+            self.imp().canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
                 touch_drag_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
                 ]);
             }));
-            canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
+            self.imp().canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
                 let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
             }));
 
-            canvas_touch_drag_gesture.connect_drag_end(
+            self.imp().canvas_touch_drag_gesture.connect_drag_end(
                 clone!(@weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
                     appwindow.canvas().update_engine_rendering();
                 }),
@@ -1184,19 +1279,19 @@ impl RnoteAppWindow {
         {
             let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
+            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
                 mouse_drag_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
                 ]);
             }));
-            canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
             }));
 
-            canvas_mouse_drag_middle_gesture.connect_drag_end(
+            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_end(
                 clone!(@weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
                     appwindow.canvas().update_engine_rendering();
                 }),
@@ -1207,21 +1302,23 @@ impl RnoteAppWindow {
         {
             let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
+            self.imp().canvas_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_, _x, _y| {
                 mouse_drag_empty_area_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
                 ]);
             }));
-            canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+            self.imp().canvas_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_, x, y| {
                 let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
             }));
 
-            canvas_mouse_drag_empty_area_gesture.connect_drag_end(clone!(@weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
-                appwindow.canvas().update_engine_rendering();
-            }));
+            self.imp().canvas_drag_empty_area_gesture.connect_drag_end(
+                clone!(@weak self as appwindow => move |_, _x, _y| {
+                    appwindow.canvas().update_engine_rendering();
+                }),
+            );
         }
 
         // Canvas gesture zooming with dragging
@@ -1232,7 +1329,7 @@ impl RnoteAppWindow {
             let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
             let adjs_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            canvas_zoom_gesture.connect_begin(clone!(
+            self.imp().canvas_zoom_gesture.connect_begin(clone!(
                 @strong zoom_begin,
                 @strong new_zoom,
                 @strong prev_scale,
@@ -1256,7 +1353,7 @@ impl RnoteAppWindow {
                     adjs_begin.set(na::vector![appwindow.canvas().hadjustment().unwrap().value(), appwindow.canvas().vadjustment().unwrap().value()]);
             }));
 
-            canvas_zoom_gesture.connect_scale_changed(clone!(
+            self.imp().canvas_zoom_gesture.connect_scale_changed(clone!(
                 @strong zoom_begin,
                 @strong new_zoom,
                 @strong prev_scale,
@@ -1286,7 +1383,7 @@ impl RnoteAppWindow {
                     }
             }));
 
-            canvas_zoom_gesture.connect_cancel(
+            self.imp().canvas_zoom_gesture.connect_cancel(
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     bbcenter_begin.set(None);
 
@@ -1301,7 +1398,7 @@ impl RnoteAppWindow {
                 }),
             );
 
-            canvas_zoom_gesture.connect_end(
+            self.imp().canvas_zoom_gesture.connect_end(
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
 
@@ -1358,7 +1455,8 @@ impl RnoteAppWindow {
             self.redo_button().set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
-            self.canvas().set_text_preprocessing(enable_text_preprocessing);
+            self.canvas()
+                .set_text_preprocessing(enable_text_preprocessing);
         }
 
         widget_flags.quit

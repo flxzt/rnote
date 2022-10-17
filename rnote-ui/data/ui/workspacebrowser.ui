@@ -34,7 +34,7 @@
                     <property name="orientation">horizontal</property>
                     <property name="hexpand">true</property>
                     <property name="margin-top">6</property>
-                    <property name="margin-bottom">6</property>
+                    <property name="margin-bottom">3</property>
                     <child>
                       <object class="GtkListBox" id="files_prefix_listbox">
                         <property name="selection-mode">none</property>
@@ -80,7 +80,6 @@
                             <property name="tooltip_text" translatable="yes">Workspace directory actions</property>
                             <style>
                               <class name="flat" />
-                              <class name="circular" />
                             </style>
                           </object>
                         </child>

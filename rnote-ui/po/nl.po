@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 20:07+0200\n"
-"PO-Revision-Date: 2022-10-17 00:37+0000\n"
+"PO-Revision-Date: 2022-10-17 20:45+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1424,7 +1424,6 @@ msgstr ""
 "Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn."
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -1434,33 +1433,35 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Path modelling"
-msgstr ""
+msgstr "Padmodellering"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "Eenvoudig"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Maakt lijndelen op basis van de invoer.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "Met kromming"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Maakt gladde, gekromde lijnen.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "Gemodelleerd"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Maakt een gemodelleerd pad op basis van natuurkundige algoritmen.\n"
+"Dit lijkt het meeste op handgeschreven tekst."
 
 #~ msgid "Save current document as"
 #~ msgstr "Huidig document opslaan als"

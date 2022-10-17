@@ -165,7 +165,7 @@
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_simple">
                   <property name="title" translatable="yes">Simple</property>
-                  <property name="subtitle" translatable="yes">Produces line segments. Has the lowest input lag.
+                  <property name="subtitle" translatable="yes">Produces line segments from the raw input.
 </property>
                 </object>
               </child>
@@ -180,7 +180,7 @@
                 <object class="AdwActionRow" id="brush_buildertype_modeled">
                   <property name="title" translatable="yes">Modeled</property>
                   <property name="subtitle" translatable="yes">Produces a modeled path with physics based algorithms.
-Results in the best looking handwriting, but introduces slight input lag.</property>
+Results in the best looking handwriting.</property>
                 </object>
               </child>
             </object>

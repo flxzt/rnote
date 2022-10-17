@@ -1,17 +1,17 @@
 use std::path::PathBuf;
-
+use crate::workspacebrowser::filerow::action::duplicate::duplicate_dir;
 use fs_extra::dir::TransitProcessResult;
 
-use crate::workspacebrowser::filerow::action::duplicate::duplicate_dir;
+mod test_dup_directory_twice;
+mod test_dup_dup_directory;
 
-const ROOT_NAME: &str = "test_duplicate_directory_root";
-const FILE1: &str = "test_file1.txt";
-const SUB_DIR1: &str = "test_sub_dir";
-const SUB_DIR1_FILE1: &str = "test_file2.txt";
-
-/// The test directory structure
+/// Represents the following directory structure for testing:
+/// test_duplicate_directory_root/
+///   |- test_file.txt
+///   |- test_sub_dir/
+///       |- test_file2.txt
 #[derive(Debug, Clone)]
-struct TestDirectory {
+pub struct TestDirectory {
     /// '/'
     pub root: PathBuf,
     /// '/<subdir1>'
@@ -23,19 +23,22 @@ struct TestDirectory {
 }
 
 impl TestDirectory {
-    pub fn new() -> Self {
-        let root = PathBuf::from(ROOT_NAME);
-        let file1 = root.clone().join(FILE1);
-        let sub_dir1 = root.clone().join(SUB_DIR1);
-        let sub_dir1_file1 = sub_dir1.clone().join(SUB_DIR1_FILE1);
+    pub fn new(root: &str, file1: &str, sub_dir1: &str, sub_dir1_file1: &str) -> Self {
+        let root = PathBuf::from(root);
+        let file1 = root.clone().join(file1);
+        let sub_dir1 = root.clone().join(sub_dir1);
+        let sub_dir1_file1 = sub_dir1.clone().join(sub_dir1_file1);
 
-        Self {
+        let test_dir = Self {
             root,
             file1,
             sub_dir1,
             sub_dir1_file1,
 
-        }
+        };
+
+        test_dir.create_entries();
+        test_dir
     }
 
     pub fn assert_existence(&self) {
@@ -45,7 +48,7 @@ impl TestDirectory {
         assert!(self.sub_dir1_file1.exists());
     }
 
-    pub fn create_entries(&self) {
+    fn create_entries(&self) {
         self.create_dir(&self.root);
         self.create_dir(&self.sub_dir1);
         self.create_file(&self.file1);
@@ -71,25 +74,8 @@ impl TestDirectory {
     }
 }
 
-/// simulates the user who duplicates a directory twice
-#[test]
-fn test_dup_directory() {
-    let test_dir = TestDirectory::new();
-    test_dir.create_entries();
-
-    let first_duplicate = first_duplicate(&test_dir);
-    let second_duplicate = second_duplicate(&test_dir);
-
-    first_duplicate.assert_existence();
-    second_duplicate.assert_existence();
-
-    // cleanup
-    test_dir.cleanup();
-    first_duplicate.cleanup();
-    second_duplicate.cleanup();
-}
-
-fn first_duplicate(dir: &TestDirectory) -> TestDirectory {
+/// returns the expected test directory after the first duplication
+pub fn first_duplicate(dir: &TestDirectory) -> TestDirectory {
     let dummy_progress = |_| {TransitProcessResult::ContinueOrAbort};
     duplicate_dir(dir.root.clone(), dummy_progress);
 
@@ -99,12 +85,3 @@ fn first_duplicate(dir: &TestDirectory) -> TestDirectory {
     }
 }
 
-fn second_duplicate(dir: &TestDirectory) -> TestDirectory {
-    let dummy_progress = |_| {TransitProcessResult::ContinueOrAbort};
-    duplicate_dir(dir.root.clone(), dummy_progress);
-
-    TestDirectory {
-        root: PathBuf::from(format!("{}.dup1", dir.root.display())),
-        .. dir.clone()
-    }
-}

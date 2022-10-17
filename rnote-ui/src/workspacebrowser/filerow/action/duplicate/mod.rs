@@ -100,13 +100,13 @@ where
 fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
     let mut duplicate_index = 0;
     let mut destination_path = source_path.clone();
+    let adjusted_source_path = remove_dup_word(source_path);
 
-    if let Some(source_stem) = source_path.file_stem() {
-        let adjusted_source_stem = remove_dup_suffix(source_stem);
+    if let Some(source_stem) = adjusted_source_path.file_stem() {
         loop {
             let destination_filename = generate_duplicate_filename(
-                &adjusted_source_stem,
-                source_path.extension(),
+                &source_stem,
+                adjusted_source_path.extension(),
                 duplicate_index,
             );
             destination_path.set_file_name(destination_filename);
@@ -151,13 +151,13 @@ fn generate_duplicate_filename(
     duplicate_filename
 }
 
-fn remove_dup_suffix(source_stem: &OsStr) -> OsString {
+fn remove_dup_word(source_stem: &PathBuf) -> PathBuf {
     let source_stem = source_stem.to_string_lossy().to_string();
 
     let re = Regex::new(DUP_REGEX_PATTERN).unwrap();
 
     let removed_dup_suffix = re.replace(&source_stem, "$rest").to_string();
-    OsString::from(removed_dup_suffix)
+    PathBuf::from(removed_dup_suffix)
 }
 
 #[cfg(test)]

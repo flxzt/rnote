@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use crate::workspacebrowser::filerow::action::duplicate::duplicate_dir;
 use fs_extra::dir::TransitProcessResult;
+use std::path::PathBuf;
 
 mod test_dup_directory_twice;
 mod test_dup_dup_directory;
@@ -34,7 +34,6 @@ impl TestDirectory {
             file1,
             sub_dir1,
             sub_dir1_file1,
-
         };
 
         test_dir.create_entries();
@@ -49,39 +48,38 @@ impl TestDirectory {
     }
 
     fn create_entries(&self) {
-        self.create_dir(&self.root);
-        self.create_dir(&self.sub_dir1);
-        self.create_file(&self.file1);
-        self.create_file(&self.sub_dir1_file1);
+        create_dir(&self.root);
+        create_dir(&self.sub_dir1);
+        create_file(&self.file1);
+        create_file(&self.sub_dir1_file1);
     }
 
     pub fn cleanup(&self) {
         std::fs::remove_dir_all(&self.root).unwrap();
     }
-
-    fn create_dir(&self, path: &PathBuf) {
-        if let Err(err) = std::fs::create_dir(path) {
-            self.cleanup();
-            panic!("{}", err);
-        }
-    }
-
-    fn create_file(&self, path: &PathBuf) {
-        if let Err(err) = std::fs::File::create(path) {
-            self.cleanup();
-            panic!("{}", err);
-        }
-    }
 }
 
 /// returns the expected test directory after the first duplication
 pub fn first_duplicate(dir: &TestDirectory) -> TestDirectory {
-    let dummy_progress = |_| {TransitProcessResult::ContinueOrAbort};
+    let dummy_progress = |_| TransitProcessResult::ContinueOrAbort;
     duplicate_dir(dir.root.clone(), dummy_progress);
 
     TestDirectory {
         root: PathBuf::from(format!("{}.dup", dir.root.display())),
-        .. dir.clone()
+        ..dir.clone()
     }
 }
 
+fn create_dir(path: &PathBuf) {
+    if let Err(err) = std::fs::create_dir(path) {
+        self.cleanup();
+        panic!("{}", err);
+    }
+}
+
+fn create_file(path: &PathBuf) {
+    if let Err(err) = std::fs::File::create(path) {
+        self.cleanup();
+        panic!("{}", err);
+    }
+}

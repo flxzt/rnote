@@ -1421,43 +1421,44 @@ msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgstr "Ändere ob die Scrollbalken der Leinwand dauerhaft versteckt sind."
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
 msgstr ""
-"Ein neues Dokument zu erstellen löscht sämtliche ungespeicherte Änderungen. "
-"Möchtest du das aktuelle Dokument speichern?"
+"Ein neues Dokument zu erstellen verwirft sämtliche ungespeicherte "
+"Änderungen. Möchtest du das aktuelle Dokument speichern?"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Path modelling"
-msgstr ""
+msgstr "Pfadmodellierung"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "Simpel"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Produziert Liniensegmente aus der rohen Eingabe.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "Gebogen"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Produziert gleichmäßige, gebogene Segmente.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "Modelliert"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Produziert einen modellierten Pfad mit auf Physik basierten Algorithmen.\n"
+"Erzeugt die am besten aussehende Handschrift."
 
 #~ msgid "Save current document as"
 #~ msgstr "Speichere aktuelles Dokument als"

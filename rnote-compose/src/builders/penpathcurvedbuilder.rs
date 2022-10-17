@@ -115,18 +115,17 @@ impl ShapeBuilderBehaviour for PenPathCurvedBuilder {
         let penpath = match &self.state {
             PenPathCurvedBuilderState::Start => self.buffer[self.i..]
                 .iter()
-                .zip(self.buffer.iter().skip(1))
+                .zip(self.buffer[self.i..].iter().skip(1))
                 .map(|(start, end)| Segment::Line {
                     start: *start,
                     end: *end,
                 })
                 .collect::<PenPath>(),
             // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
-            PenPathCurvedBuilderState::During => self
-                .buffer
+            PenPathCurvedBuilderState::During => self.buffer[self.i..]
                 .iter()
                 .skip(1)
-                .zip(self.buffer.iter().skip(2))
+                .zip(self.buffer[self.i..].iter().skip(2))
                 .map(|(start, end)| Segment::Line {
                     start: *start,
                     end: *end,

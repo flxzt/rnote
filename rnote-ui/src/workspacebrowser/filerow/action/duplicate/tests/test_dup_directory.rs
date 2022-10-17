@@ -45,7 +45,7 @@ impl TestDirectory {
         assert!(self.sub_dir1_file1.exists());
     }
 
-    pub fn create_entries(&self) {
+    pub fn create_entries(&self) -> bool {
         self.create_dir(&self.root);
         self.create_dir(&self.sub_dir1);
         self.create_file(&self.file1);
@@ -71,6 +71,7 @@ impl TestDirectory {
     }
 }
 
+/// simulates the user who duplicates a directory twice
 #[test]
 fn test_dup_directory() {
     let test_dir = TestDirectory::new();

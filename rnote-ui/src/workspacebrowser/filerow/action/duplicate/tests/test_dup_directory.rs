@@ -83,6 +83,7 @@ fn test_dup_directory() {
     first_duplicate.assert_existence();
     second_duplicate.assert_existence();
 
+    // cleanup
     test_dir.cleanup();
     first_duplicate.cleanup();
     second_duplicate.cleanup();

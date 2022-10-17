@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 
@@ -20,7 +22,7 @@ pub struct LineBuilder {
 }
 
 impl ShapeBuilderCreator for LineBuilder {
-    fn start(element: Element) -> Self {
+    fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
@@ -29,7 +31,12 @@ impl ShapeBuilderCreator for LineBuilder {
 }
 
 impl ShapeBuilderBehaviour for LineBuilder {
-    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        mut constraints: Constraints,
+    ) -> BuilderProgress {
         // we always want to allow horizontal and vertical constraints while building a line
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);

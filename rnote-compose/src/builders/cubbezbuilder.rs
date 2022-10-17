@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::{BoundingVolume, AABB};
 
 use crate::helpers::AABBHelpers;
@@ -52,7 +54,7 @@ pub struct CubBezBuilder {
 }
 
 impl ShapeBuilderCreator for CubBezBuilder {
-    fn start(element: Element) -> Self {
+    fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: CubBezBuilderState::Start(element.pos),
         }
@@ -60,7 +62,12 @@ impl ShapeBuilderCreator for CubBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for CubBezBuilder {
-    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        mut constraints: Constraints,
+    ) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         // we always want to allow horizontal and vertical constraints while building a cubbez

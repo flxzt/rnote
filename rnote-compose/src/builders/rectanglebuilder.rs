@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use p2d::shape::Cuboid;
 use piet::RenderContext;
@@ -21,7 +23,7 @@ pub struct RectangleBuilder {
 }
 
 impl ShapeBuilderCreator for RectangleBuilder {
-    fn start(element: Element) -> Self {
+    fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
@@ -30,7 +32,12 @@ impl ShapeBuilderCreator for RectangleBuilder {
 }
 
 impl ShapeBuilderBehaviour for RectangleBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        _now: Instant,
+        constraints: Constraints,
+    ) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;

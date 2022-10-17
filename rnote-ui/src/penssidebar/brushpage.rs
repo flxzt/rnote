@@ -5,6 +5,7 @@ use gtk4::{
 };
 use num_traits::cast::ToPrimitive;
 
+use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
 use rnote_engine::pens::Brush;
 
@@ -39,6 +40,14 @@ mod imp {
         pub brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub brushconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub brush_buildertype_listbox: TemplateChild<ListBox>,
+        #[template_child]
+        pub brush_buildertype_simple: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub brush_buildertype_curved: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub brush_buildertype_modeled: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -135,6 +144,22 @@ impl BrushPage {
 
     pub fn brushconfig_popover(&self) -> Popover {
         self.imp().brushconfig_popover.get()
+    }
+
+    pub fn brush_buildertype_listbox(&self) -> ListBox {
+        self.imp().brush_buildertype_listbox.get()
+    }
+
+    pub fn brush_buildertype_simple(&self) -> adw::ActionRow {
+        self.imp().brush_buildertype_simple.get()
+    }
+
+    pub fn brush_buildertype_curved(&self) -> adw::ActionRow {
+        self.imp().brush_buildertype_curved.get()
+    }
+
+    pub fn brush_buildertype_modeled(&self) -> adw::ActionRow {
+        self.imp().brush_buildertype_modeled.get()
     }
 
     pub fn texturedstyle_distribution_row(&self) -> adw::ComboRow {
@@ -256,6 +281,21 @@ impl BrushPage {
             }),
         );
 
+        // Builder type
+        self.brush_buildertype_listbox().connect_row_selected(
+            clone!(@weak self as brushpage, @weak appwindow => move |_, selected_row| {
+                if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
+                    {
+                        appwindow.canvas().engine().borrow_mut().penholder.brush.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+                    }
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing brush style, Err `{}`", e);
+                    }
+                }
+            }),
+        );
+
         // Solid style
         // Pressure curve
         self.imp().solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
@@ -370,6 +410,21 @@ impl BrushPage {
         self.texturedstyle_radius_y_spinbutton()
             .set_value(brush.textured_options.radii[1]);
         self.set_texturedstyle_distribution_variant(brush.textured_options.distribution);
+
+        match brush.builder_type {
+            PenPathBuilderType::Simple => {
+                self.brush_buildertype_listbox()
+                    .select_row(Some(&self.brush_buildertype_simple()));
+            }
+            PenPathBuilderType::Curved => {
+                self.brush_buildertype_listbox()
+                    .select_row(Some(&self.brush_buildertype_curved()));
+            }
+            PenPathBuilderType::Modeled => {
+                self.brush_buildertype_listbox()
+                    .select_row(Some(&self.brush_buildertype_modeled()));
+            }
+        }
 
         match brush.style {
             BrushStyle::Marker => {

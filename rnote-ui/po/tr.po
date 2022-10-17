@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 22:17+0200\n"
-"PO-Revision-Date: 2022-10-04 20:28+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"POT-Creation-Date: 2022-10-10 20:07+0200\n"
+"PO-Revision-Date: 2022-10-06 12:33+0000\n"
+"Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Eskiz yap ve el yazısıyla notlar al"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Grafik;Not;Notlar;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;Ofis;Grafik;Not;Notlar;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -76,11 +76,11 @@ msgstr "Geliştirici menüsü"
 msgid "Visual debugging"
 msgstr "Görsel hata ayıklama"
 
-#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:966
+#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:980
 msgid "Export engine state"
 msgstr "Motor durumunu dışa aktar"
 
-#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1020
+#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1033
 msgid "Export engine config"
 msgstr "Motor ayarını dışa aktar"
 
@@ -236,7 +236,7 @@ msgstr "Farklı kaydet"
 msgid "Print"
 msgstr "Yazdır"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:673
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:676
 msgid "Import file"
 msgstr "Dosya içe aktar"
 
@@ -295,11 +295,11 @@ msgstr "Bu, tüm belgeyi temizleyecek. Lütfen doğrulayın."
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
 #: rnote-ui/src/dialogs.rs:457 rnote-ui/src/dialogs.rs:568
-#: rnote-ui/src/dialogs.rs:617 rnote-ui/src/dialogs.rs:677
-#: rnote-ui/src/dialogs.rs:714 rnote-ui/src/dialogs.rs:766
-#: rnote-ui/src/dialogs.rs:818 rnote-ui/src/dialogs.rs:869
-#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:970
-#: rnote-ui/src/dialogs.rs:1024 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:617 rnote-ui/src/dialogs.rs:680
+#: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
+#: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
+#: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
+#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "İptal Et"
 
@@ -307,7 +307,7 @@ msgstr "İptal Et"
 msgid "Clear"
 msgstr "Temizle"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:848
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:844
 msgid "New Document"
 msgstr "Yeni Belge"
 
@@ -351,7 +351,7 @@ msgstr ""
 msgid "Import PDF"
 msgstr "PDF İçe Aktar"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:676
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:679
 msgid "Import"
 msgstr "İçe aktar"
 
@@ -406,7 +406,7 @@ msgstr "Belge sayfası başına bir"
 msgid "Edit workspace"
 msgstr "Çalışma alanını düzenle"
 
-#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:221
+#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "Uygula"
@@ -423,7 +423,7 @@ msgstr "Simge"
 msgid "Change the workspace icon"
 msgstr "Çalışma alanı simgesini değiştir"
 
-#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:237
+#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "Renk"
 
@@ -459,7 +459,7 @@ msgstr "Çöpe taşı"
 msgid "New document"
 msgstr "Yeni belge"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:850
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:846
 msgid "Draft"
 msgstr "Taslak"
 
@@ -504,180 +504,205 @@ msgid "Permanently hidden scrollbars"
 msgstr "Kalıcı olarak gizlenmiş kaydırma çubukları"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently."
+msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgstr ""
 "Tuval üzerindeki kaydırma çubuklarının kalıcı olarak gizlenme durumunu "
 "ayarlar."
 
-#: rnote-ui/data/ui/settingspanel.ui:108
+#: rnote-ui/data/ui/settingspanel.ui:105
+msgid "Regular cursor"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:106
+#, fuzzy
+#| msgid "Set the format border color"
+msgid "Set the regular cursor"
+msgstr "Biçim kenarlık rengini ayarla"
+
+#: rnote-ui/data/ui/settingspanel.ui:133
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Drawing"
+msgid "Drawing cursor"
+msgstr "Çizim"
+
+#: rnote-ui/data/ui/settingspanel.ui:134
+#, fuzzy
+#| msgid "Set the background color"
+msgid "Set the drawing cursor"
+msgstr "Arka plan rengini ayarla"
+
+#: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"
 msgstr "Sayfa biçimi"
 
-#: rnote-ui/data/ui/settingspanel.ui:111
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
 msgstr "Biçim"
 
-#: rnote-ui/data/ui/settingspanel.ui:112
+#: rnote-ui/data/ui/settingspanel.ui:168
 msgid "Choose a format"
 msgstr "Biçim seç"
 
-#: rnote-ui/data/ui/settingspanel.ui:116
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:117
+#: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:118
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:119
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:120
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:121
+#: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
 msgstr "US mektup"
 
-#: rnote-ui/data/ui/settingspanel.ui:122
+#: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
 msgstr "US yasal"
 
-#: rnote-ui/data/ui/settingspanel.ui:123
+#: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
 msgstr "Özel"
 
-#: rnote-ui/data/ui/settingspanel.ui:131
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Orientation"
 msgstr "Yönelim"
 
-#: rnote-ui/data/ui/settingspanel.ui:132
+#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
 msgstr "Biçim yönelimini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:144
+#: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
 msgstr "Dikey"
 
-#: rnote-ui/data/ui/settingspanel.ui:150
+#: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Landscape"
 msgstr "Yatay"
 
-#: rnote-ui/data/ui/settingspanel.ui:160
+#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
 msgstr "Genişlik"
 
-#: rnote-ui/data/ui/settingspanel.ui:161
+#: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
 msgstr "Biçim genişliğini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
 msgstr "Yükseklik"
 
-#: rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "Biçim yüksekliğini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:188
+#: rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/settingspanel.ui:189
+#: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr "DPI (dots per inch) ayarla. Öntanımlı değer 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:212
+#: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
 msgstr "Geri al"
 
-#: rnote-ui/data/ui/settingspanel.ui:234
+#: rnote-ui/data/ui/settingspanel.ui:290
 msgid "Document background"
 msgstr "Belge arka planı"
 
-#: rnote-ui/data/ui/settingspanel.ui:238
+#: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
 msgstr "Arka plan rengini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:255
+#: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Pattern"
 msgstr "Desen"
 
-#: rnote-ui/data/ui/settingspanel.ui:256
+#: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Choose a background pattern"
 msgstr "Arka plan deseni seç"
 
-#: rnote-ui/data/ui/settingspanel.ui:260
+#: rnote-ui/data/ui/settingspanel.ui:316
 msgid "None"
 msgstr "Boş"
 
-#: rnote-ui/data/ui/settingspanel.ui:261
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Lines"
 msgstr "Satırlar"
 
-#: rnote-ui/data/ui/settingspanel.ui:262
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Grid"
 msgstr "Izgara"
 
-#: rnote-ui/data/ui/settingspanel.ui:263
+#: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Dots"
 msgstr "Noktalar"
 
-#: rnote-ui/data/ui/settingspanel.ui:271
+#: rnote-ui/data/ui/settingspanel.ui:327
 msgid "Pattern Color"
 msgstr "Desen Rengi"
 
-#: rnote-ui/data/ui/settingspanel.ui:272
+#: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Set the background pattern color"
 msgstr "Arka plan desen rengini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:289
+#: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Pattern Width"
 msgstr "Desen Genişliği"
 
-#: rnote-ui/data/ui/settingspanel.ui:290
+#: rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background pattern width"
 msgstr "Arka plan desen genişliğini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:303
+#: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Pattern Height"
 msgstr "Desen Yüksekliği"
 
-#: rnote-ui/data/ui/settingspanel.ui:304
+#: rnote-ui/data/ui/settingspanel.ui:360
 msgid "Set the background pattern height"
 msgstr "Arka plan desen yüksekliğini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Button Shortcuts"
 msgstr "Düğme Kısayolları"
 
-#: rnote-ui/data/ui/settingspanel.ui:323
+#: rnote-ui/data/ui/settingspanel.ui:379
 msgid "Stylus primary button action"
 msgstr "Stylus birincil düğme eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:324
+#: rnote-ui/data/ui/settingspanel.ui:380
 msgid "Set the action for the primary stylus button"
 msgstr "Stylus birincil düğme eylemini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:391
 msgid "Stylus secondary button action"
 msgstr "Stylus ikincil düğme eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:392
 msgid "Set the action for the secondary stylus button"
 msgstr "Stylus ikincil düğme eylemini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:347
+#: rnote-ui/data/ui/settingspanel.ui:403
 msgid "Mouse secondary button action"
 msgstr "Fare ikinci düğme eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:348
+#: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
 msgstr "Fare ikinci düğme eylemini ayarla"
 
@@ -969,7 +994,7 @@ msgstr "Seçimi çoğalt"
 msgid "Delete selection"
 msgstr "Seçimi sil"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
 msgid "Paste from Clipboard"
 msgstr "Panodan Yapıştır"
 
@@ -1160,11 +1185,13 @@ msgstr "İki yana hizala"
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs.rs:36
 msgid "translator-credits"
-msgstr "Sabri Ünal <libreajans@gmail.com>"
+msgstr ""
+"Sabri Ünal <libreajans@gmail.com>\n"
+"Oğuz Ersen <oguz@ersen.moe>"
 
 #: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
-#: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:640
-#: rnote-ui/src/appwindow/mod.rs:412
+#: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
+#: rnote-ui/src/appwindow/mod.rs:408
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
 msgstr "Belge kaydedilemedi."
@@ -1209,7 +1236,7 @@ msgstr "Değiştirilme tarihi:"
 msgid "Pages:"
 msgstr "Sayfalar:"
 
-#: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/mod.rs:1570
+#: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/imexport.rs:146
 msgid "Opening PDF file failed."
 msgstr "PDF dosyası açılamadı."
 
@@ -1229,131 +1256,129 @@ msgstr ".rnote dosyası"
 msgid "Save document as"
 msgstr "Belgeyi farklı kaydet"
 
-#: rnote-ui/src/dialogs.rs:642
+#: rnote-ui/src/dialogs.rs:645
 msgid "Saved document successfully."
 msgstr "Belge kaydedildi."
 
-#: rnote-ui/src/dialogs.rs:670
+#: rnote-ui/src/dialogs.rs:673
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / PDF dosyası"
 
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:811
+#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:816
 msgid "SVG file"
 msgstr "SVG dosyası"
 
-#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:762
+#: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:766
 msgid "Export Selection"
 msgstr "Seçimi Dışa Aktar"
 
-#: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:765
-#: rnote-ui/src/dialogs.rs:817 rnote-ui/src/dialogs.rs:868
-#: rnote-ui/src/dialogs.rs:919 rnote-ui/src/dialogs.rs:969
-#: rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/src/dialogs.rs:716 rnote-ui/src/dialogs.rs:769
+#: rnote-ui/src/dialogs.rs:822 rnote-ui/src/dialogs.rs:876
+#: rnote-ui/src/dialogs.rs:930 rnote-ui/src/dialogs.rs:983
+#: rnote-ui/src/dialogs.rs:1036
 msgid "Export"
 msgstr "Dışa aktar"
 
-#: rnote-ui/src/dialogs.rs:737
+#: rnote-ui/src/dialogs.rs:741
 msgid "Export selection as SVG failed."
 msgstr "Seçim, SVG olarak dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:739
+#: rnote-ui/src/dialogs.rs:743
 msgid "Exported selection as SVG successfully."
 msgstr "Seçim, SVG olarak dışa aktarıldı."
 
-#: rnote-ui/src/dialogs.rs:759
+#: rnote-ui/src/dialogs.rs:763
 msgid "PNG file"
 msgstr "PNG dosyası"
 
-#: rnote-ui/src/dialogs.rs:789
+#: rnote-ui/src/dialogs.rs:794
 msgid "Export selection as PNG failed."
 msgstr "Seçim, PNG olarak dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:791
+#: rnote-ui/src/dialogs.rs:796
 msgid "Exported selection as PNG successfully."
 msgstr "Seçim, PNG olarak dışa aktarıldı."
 
-#: rnote-ui/src/dialogs.rs:814 rnote-ui/src/dialogs.rs:865
-#: rnote-ui/src/dialogs.rs:916
+#: rnote-ui/src/dialogs.rs:819 rnote-ui/src/dialogs.rs:873
+#: rnote-ui/src/dialogs.rs:927
 msgid "Export document"
 msgstr "Belgeyi dışa aktar"
 
-#: rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:846
 msgid "Export document as SVG failed."
 msgstr "Belge, SVG olarak dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:840
+#: rnote-ui/src/dialogs.rs:848
 msgid "Exported document as SVG successfully."
 msgstr "Belge, SVG olarak dışa aktarıldı."
 
-#: rnote-ui/src/dialogs.rs:862
+#: rnote-ui/src/dialogs.rs:870
 msgid "PDF file"
 msgstr "PDF dosyası"
 
-#: rnote-ui/src/dialogs.rs:889
+#: rnote-ui/src/dialogs.rs:900
 msgid "Export document as PDF failed."
 msgstr "Belge, PDF olarak dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:891
+#: rnote-ui/src/dialogs.rs:902
 msgid "Exported document as PDF successfully."
 msgstr "Belge, PDF olarak dışa aktarıldı."
 
-#: rnote-ui/src/dialogs.rs:913
+#: rnote-ui/src/dialogs.rs:924
 msgid ".xopp file"
 msgstr ".xopp dosyası"
 
-#: rnote-ui/src/dialogs.rs:940
+#: rnote-ui/src/dialogs.rs:954
 msgid "Exporting document as .xopp failed."
 msgstr "Belge, .xopp olarak dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:942
+#: rnote-ui/src/dialogs.rs:956
 msgid "Exported document as .xopp successfully."
 msgstr "Belge, .xopp olarak dışa aktarıldı."
 
-#: rnote-ui/src/dialogs.rs:963 rnote-ui/src/dialogs.rs:1017
+#: rnote-ui/src/dialogs.rs:977 rnote-ui/src/dialogs.rs:1030
 msgid "JSON file"
 msgstr "JSON dosyası"
 
-#: rnote-ui/src/dialogs.rs:994
+#: rnote-ui/src/dialogs.rs:1007
 msgid "Export engine state failed."
 msgstr "Motor durumu dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:996
+#: rnote-ui/src/dialogs.rs:1009
 msgid "Exported engine state successfully."
 msgstr "Motor durumu dışa aktarıldı."
 
-#: rnote-ui/src/dialogs.rs:1048
+#: rnote-ui/src/dialogs.rs:1062
 msgid "Export engine config failed."
 msgstr "Motor ayarı dışa aktarılamadı."
 
-#: rnote-ui/src/dialogs.rs:1050
+#: rnote-ui/src/dialogs.rs:1064
 msgid "Exported engine config successfully."
 msgstr "Motor ayarı dışa aktarıldı."
 
-#: rnote-ui/src/appwindow/mod.rs:1494
+#: rnote-ui/src/appwindow/imexport.rs:70
 msgid "Opening .rnote file failed."
 msgstr ".rnote dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/mod.rs:1513
+#: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening .xopp file failed."
 msgstr ".xopp dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/mod.rs:1532
+#: rnote-ui/src/appwindow/imexport.rs:108
 msgid "Opening vector image file failed."
 msgstr "Vektör görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/mod.rs:1551
+#: rnote-ui/src/appwindow/imexport.rs:127
 msgid "Opening bitmap image file failed."
 msgstr "Biteşlem görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/mod.rs:1587
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
 
-#: rnote-ui/src/appwindow/mod.rs:1596
-#, fuzzy
-#| msgid "Failed to open file, is a unsupported file type."
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
-msgstr "Dosya açılamadı, desteklenmeyen dosya türü."
+msgstr "Dosya açılamadı: Desteklenmeyen dosya türü."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774
 msgid "Printed document successfully"

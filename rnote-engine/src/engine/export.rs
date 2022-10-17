@@ -267,11 +267,19 @@ impl RnoteEngine {
                     })
                     .collect::<Vec<xoppformat::XoppImage>>();
 
-                let layer = xoppformat::XoppLayer {
+                // In Rnote, images are always rendered below strokes and text. To accurately reflect this behaviour, images are separated into another layer.
+                let image_layer = xoppformat::XoppLayer {
+                    name: None,
+                    strokes: vec![],
+                    texts: vec![],
+                    images: xopp_images,
+                };
+
+                let strokes_layer = xoppformat::XoppLayer {
                     name: None,
                     strokes: xopp_strokes,
                     texts: xopp_texts,
-                    images: xopp_images,
+                    images: vec![],
                 };
 
                 let page_dimensions = crate::utils::convert_coord_dpi(
@@ -284,7 +292,7 @@ impl RnoteEngine {
                     width: page_dimensions[0],
                     height: page_dimensions[1],
                     background: background.clone(),
-                    layers: vec![layer],
+                    layers: vec![image_layer, strokes_layer],
                 }
             })
             .collect::<Vec<xoppformat::XoppPage>>();

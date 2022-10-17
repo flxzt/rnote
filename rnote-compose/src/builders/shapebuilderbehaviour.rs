@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::AABB;
 
 use crate::penhelpers::PenEvent;
@@ -20,7 +22,7 @@ pub enum BuilderProgress {
 /// Creates a shape builder (separate trait because we use the ShapeBuilderBehaviour as trait object, so we can't have a method returning Self there.)
 pub trait ShapeBuilderCreator {
     /// Start the builder
-    fn start(element: Element) -> Self;
+    fn start(element: Element, now: Instant) -> Self;
 }
 
 /// Types that are shape builders.
@@ -28,7 +30,12 @@ pub trait ShapeBuilderCreator {
 pub trait ShapeBuilderBehaviour: std::fmt::Debug {
     /// handles a pen event.
     /// Returns the builder progress.
-    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress;
+    fn handle_event(
+        &mut self,
+        event: PenEvent,
+        now: Instant,
+        constraints: Constraints,
+    ) -> BuilderProgress;
 
     /// the bounds
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB>;

@@ -455,77 +455,52 @@ impl ShaperPage {
     }
 
     pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        // Avoiding borrow errors by cloning. Unfortunately we can't clone the entire shaper struct, because it holds the builder trait object
-        let builder_type = appwindow
+        let shaper = appwindow
             .canvas()
             .engine()
             .borrow()
             .penholder
             .shaper
-            .builder_type
-            .clone();
-        let style = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .penholder
-            .shaper
-            .style
-            .clone();
-        let rough_options = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .penholder
-            .shaper
-            .rough_options
-            .clone();
-        let smooth_options = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .penholder
-            .shaper
-            .smooth_options
-            .clone();
-        let constraints = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .penholder
-            .shaper
-            .constraints
             .clone();
 
         // style config
         self.roughconfig_roughness_spinbutton()
-            .set_value(rough_options.roughness);
+            .set_value(shaper.rough_options.roughness);
         self.roughconfig_bowing_spinbutton()
-            .set_value(rough_options.bowing);
+            .set_value(shaper.rough_options.bowing);
         self.roughconfig_curvestepcount_spinbutton()
-            .set_value(rough_options.curve_stepcount);
+            .set_value(shaper.rough_options.curve_stepcount);
         self.roughconfig_multistroke_switch()
-            .set_active(!rough_options.disable_multistroke);
+            .set_active(!shaper.rough_options.disable_multistroke);
 
         // constraints
         self.imp()
             .constraint_enabled_switch
-            .set_state(constraints.enabled);
-        self.imp()
-            .constraint_one_to_one_switch
-            .set_state(constraints.ratios.get(&ConstraintRatio::OneToOne).is_some());
+            .set_state(shaper.constraints.enabled);
+        self.imp().constraint_one_to_one_switch.set_state(
+            shaper
+                .constraints
+                .ratios
+                .get(&ConstraintRatio::OneToOne)
+                .is_some(),
+        );
         self.imp().constraint_three_to_two_switch.set_state(
-            constraints
+            shaper
+                .constraints
                 .ratios
                 .get(&ConstraintRatio::ThreeToTwo)
                 .is_some(),
         );
-        self.imp()
-            .constraint_golden_switch
-            .set_state(constraints.ratios.get(&ConstraintRatio::Golden).is_some());
+        self.imp().constraint_golden_switch.set_state(
+            shaper
+                .constraints
+                .ratios
+                .get(&ConstraintRatio::Golden)
+                .is_some(),
+        );
 
         // builder type
-        match builder_type {
+        match shaper.builder_type {
             ShapeBuilderType::Line => {
                 self.shapebuildertype_listbox().select_row(Some(
                     &appwindow
@@ -580,16 +555,16 @@ impl ShaperPage {
             }
         }
 
-        match style {
+        match shaper.style {
             ShaperStyle::Smooth => {
                 self.shaperstyle_listbox()
                     .select_row(Some(&self.shaperstyle_smooth_row()));
                 self.width_spinbutton()
-                    .set_value(smooth_options.stroke_width);
+                    .set_value(shaper.smooth_options.stroke_width);
                 self.stroke_colorpicker()
-                    .set_current_color(smooth_options.stroke_color);
+                    .set_current_color(shaper.smooth_options.stroke_color);
                 self.fill_colorpicker()
-                    .set_current_color(smooth_options.fill_color);
+                    .set_current_color(shaper.smooth_options.fill_color);
                 self.shaperstyle_image()
                     .set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
             }
@@ -597,11 +572,11 @@ impl ShaperPage {
                 self.shaperstyle_listbox()
                     .select_row(Some(&self.shaperstyle_rough_row()));
                 self.width_spinbutton()
-                    .set_value(rough_options.stroke_width);
+                    .set_value(shaper.rough_options.stroke_width);
                 self.stroke_colorpicker()
-                    .set_current_color(rough_options.stroke_color);
+                    .set_current_color(shaper.rough_options.stroke_color);
                 self.fill_colorpicker()
-                    .set_current_color(rough_options.fill_color);
+                    .set_current_color(shaper.rough_options.fill_color);
                 self.shaperstyle_image()
                     .set_icon_name(Some("pen-shaper-style-rough-symbolic"));
             }

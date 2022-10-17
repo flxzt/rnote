@@ -6,8 +6,12 @@ pub mod ellipsebuilder;
 pub mod fociellipsebuilder;
 /// line builder
 pub mod linebuilder;
-/// pen path builder
-pub mod penpathbuilder;
+/// the regular pen path builder, using bezier curves to interpolate between input elements.
+pub mod penpathcurvedbuilder;
+/// modeled pen path builder, uses ink-stroke-modeler for smooth paths with advanced algorithms and its predictor to reduce input latency
+pub mod penpathmodeledbuilder;
+/// simple pen path builder, only produces line segments
+pub mod penpathsimplebuilder;
 /// quadratic bezier builder
 pub mod quadbezbuilder;
 /// rectangle builder
@@ -22,7 +26,9 @@ pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use linebuilder::LineBuilder;
-pub use penpathbuilder::PenPathBuilder;
+pub use penpathcurvedbuilder::PenPathCurvedBuilder;
+pub use penpathmodeledbuilder::PenPathModeledBuilder;
+pub use penpathsimplebuilder::PenPathSimpleBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
@@ -32,7 +38,7 @@ use serde::{Deserialize, Serialize};
 #[derive(
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
-#[serde(rename = "shape_type")]
+#[serde(rename = "shapebuilder_type")]
 /// A choice for a shape builder type
 pub enum ShapeBuilderType {
     #[serde(rename = "line")]
@@ -68,6 +74,42 @@ impl TryFrom<u32> for ShapeBuilderType {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
             anyhow::anyhow!(
                 "ShapeBuilderType try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+#[derive(
+    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+#[serde(rename = "penpathbuilder_type")]
+/// A choice for a pen path builder type
+pub enum PenPathBuilderType {
+    #[serde(rename = "simple")]
+    /// the simple pen path builder
+    Simple = 0,
+    #[serde(rename = "curved")]
+    /// the curved pen path builder
+    Curved,
+    #[serde(rename = "modeled")]
+    /// the modeled pen path builder
+    Modeled,
+}
+
+impl Default for PenPathBuilderType {
+    fn default() -> Self {
+        Self::Modeled
+    }
+}
+
+impl TryFrom<u32> for PenPathBuilderType {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "PenPathBuilderType try_from::<u32>() for value {} failed",
                 value
             )
         })

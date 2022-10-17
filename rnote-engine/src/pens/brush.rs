@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::chrono_comp::StrokeLayer;
@@ -7,8 +9,8 @@ use crate::strokes::Stroke;
 use crate::AudioPlayer;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::Constraints;
-use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
+use rnote_compose::builders::{Constraints, PenPathModeledBuilder};
+use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
 use rnote_compose::style::textured::TexturedOptions;
@@ -18,6 +20,7 @@ use rnote_compose::{Shape, Style};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
+use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::smooth::SmoothOptions;
 use serde::{Deserialize, Serialize};
 
@@ -109,18 +112,19 @@ impl std::ops::DerefMut for SolidOptions {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: PenPathBuilder,
+        path_builder: Box<dyn ShapeBuilderBehaviour>,
         current_stroke_key: StrokeKey,
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "brush")]
 pub struct Brush {
+    pub builder_type: PenPathBuilderType,
     #[serde(rename = "style")]
     pub style: BrushStyle,
     #[serde(rename = "marker_options")]
@@ -134,6 +138,19 @@ pub struct Brush {
     state: BrushState,
 }
 
+impl Clone for Brush {
+    fn clone(&self) -> Self {
+        Self {
+            style: self.style.clone(),
+            builder_type: self.builder_type.clone(),
+            marker_options: self.marker_options.clone(),
+            solid_options: self.solid_options.clone(),
+            textured_options: self.textured_options.clone(),
+            state: BrushState::Idle,
+        }
+    }
+}
+
 impl Default for Brush {
     fn default() -> Self {
         let mut marker_options = MarkerOptions::default();
@@ -145,6 +162,7 @@ impl Default for Brush {
 
         Self {
             style: BrushStyle::default(),
+            builder_type: PenPathBuilderType::default(),
             marker_options,
             solid_options,
             textured_options,
@@ -189,7 +207,17 @@ impl PenBehaviour for Brush {
                         .store
                         .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
-                    let path_builder = PenPathBuilder::start(element);
+                    let path_builder: Box<dyn ShapeBuilderBehaviour> = match self.builder_type {
+                        PenPathBuilderType::Simple => {
+                            Box::new(PenPathSimpleBuilder::start(element, Instant::now()))
+                        }
+                        PenPathBuilderType::Curved => {
+                            Box::new(PenPathCurvedBuilder::start(element, Instant::now()))
+                        }
+                        PenPathBuilderType::Modeled => {
+                            Box::new(PenPathModeledBuilder::start(element, Instant::now()))
+                        }
+                    };
 
                     if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
@@ -252,7 +280,7 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, Constraints::default()) {
+                match path_builder.handle_event(pen_event, Instant::now(), Constraints::default()) {
                     BuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 

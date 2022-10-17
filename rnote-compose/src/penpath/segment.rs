@@ -63,8 +63,8 @@ pub enum Segment {
 impl ShapeBehaviour for Segment {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         match self {
-            Self::Dot { element: pos } => {
-                AABB::new_positive(na::Point2::from(pos.pos), na::Point2::from(pos.pos))
+            Self::Dot { element } => {
+                AABB::new_positive(na::Point2::from(element.pos), na::Point2::from(element.pos))
                     .loosened(0.5)
             }
             Self::Line { start, end } => {

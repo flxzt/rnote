@@ -1,5 +1,3 @@
-use std::fs::File;
-
 use super::*;
 
 mod test_dup_directory;

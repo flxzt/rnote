@@ -45,7 +45,7 @@ impl TestDirectory {
         assert!(self.sub_dir1_file1.exists());
     }
 
-    pub fn create_entries(&self) -> bool {
+    pub fn create_entries(&self) {
         self.create_dir(&self.root);
         self.create_dir(&self.sub_dir1);
         self.create_file(&self.file1);

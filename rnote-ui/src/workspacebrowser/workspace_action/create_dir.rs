@@ -21,7 +21,7 @@ pub fn create_dir(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
             let label = create_label();
             let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
 
-            workspacebrowser.workspace_button_box().append(&popover);
+            workspacebrowser.workspace_dir_actions_box().append(&popover);
 
             connect_apply_button(&apply_button, &popover, &entry, parent_path.clone());
 

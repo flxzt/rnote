@@ -16,7 +16,7 @@ use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MenuButton, MultiSorter,
+    FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MultiSorter,
     PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
     SorterChange, Widget,
 };
@@ -49,9 +49,7 @@ mod imp {
         pub files_dirlist: DirectoryList,
 
         #[template_child]
-        pub workspace_button: TemplateChild<MenuButton>,
-        #[template_child]
-        pub workspace_button_box: TemplateChild<gtk4::Box>,
+        pub workspace_dir_actions_box: TemplateChild<gtk4::Box>,
 
         #[template_child]
         pub workspace_bar: TemplateChild<gtk4::Box>,
@@ -78,8 +76,7 @@ mod imp {
                 files_prefix_listbox: TemplateChild::<ListBox>::default(),
                 dir_up_row: TemplateChild::<ListBoxRow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
-                workspace_button: TemplateChild::<MenuButton>::default(),
-                workspace_button_box: TemplateChild::<gtk4::Box>::default(),
+                workspace_dir_actions_box: TemplateChild::<gtk4::Box>::default(),
                 files_dirlist: primary_dirlist,
                 workspace_bar: TemplateChild::<gtk4::Box>::default(),
                 workspace_scroller: TemplateChild::<ScrolledWindow>::default(),
@@ -161,8 +158,8 @@ impl WorkspaceBrowser {
         self.imp().workspace_scroller.clone()
     }
 
-    pub fn workspace_button_box(&self) -> gtk4::Box {
-        self.imp().workspace_button_box.clone()
+    pub fn workspace_dir_actions_box(&self) -> gtk4::Box {
+        self.imp().workspace_dir_actions_box.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

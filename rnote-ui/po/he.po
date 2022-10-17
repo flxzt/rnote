@@ -35,9 +35,6 @@ msgstr "חלון חדש"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 #, fuzzy
-#| msgid ""
-#| "Rnote is a simple vector based drawing application for handwritten notes "
-#| "and to annotate documents and pictures."
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
@@ -47,9 +44,6 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 #, fuzzy
-#| msgid ""
-#| "Disclaimer: The file format is still unstable. It might change between "
-#| "versions and break backward compatibility."
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -79,7 +73,6 @@ msgstr "מצב מפתחים"
 
 #: rnote-ui/data/ui/appmenu.ui:29
 #, fuzzy
-#| msgid "Developer mode"
 msgid "Developer menu"
 msgstr "מצב מפתחים"
 
@@ -89,13 +82,11 @@ msgstr "ניפוי שגיאות חזותי"
 
 #: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:980
 #, fuzzy
-#| msgid "Export Sheet"
 msgid "Export engine state"
 msgstr "ייצוא גיליון"
 
 #: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1033
 #, fuzzy
-#| msgid "Export Selection"
 msgid "Export engine config"
 msgstr "יצוא הבחירה"
 
@@ -171,7 +162,6 @@ msgstr "הוספת עמוד"
 
 #: rnote-ui/data/ui/appwindow.ui:175
 #, fuzzy
-#| msgid "Resize to fit sheet format"
 msgid "Resize document to fit the strokes"
 msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
 
@@ -209,19 +199,16 @@ msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 #, fuzzy
-#| msgid "fixed size"
 msgid "Fixed size"
 msgstr "גודל קבוע"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 #, fuzzy
-#| msgid "endless vertical"
 msgid "Continuous vertical"
 msgstr "פריסה אנכית אינסופית"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 #, fuzzy
-#| msgid "infinite"
 msgid "Infinite"
 msgstr "אינסוף"
 
@@ -235,7 +222,6 @@ msgstr "צלילי עט"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:6
 #, fuzzy
-#| msgid "New document"
 msgid "Clear document"
 msgstr "מסמך חדש"
 
@@ -267,7 +253,6 @@ msgstr "ייבוא קובץ"
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
 #, fuzzy
-#| msgid "Export"
 msgid "Export…"
 msgstr "ייצוא"
 
@@ -277,32 +262,26 @@ msgstr "ייצוא הבחירה ל־SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
 #, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export selection as PNG"
 msgstr "ייצוא הבחירה ל־SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99
 #, fuzzy
-#| msgid "Export sheet as SVG"
 msgid "Export document as SVG"
 msgstr "ייצוא הגיליון ל־SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:103
 #, fuzzy
-#| msgid "Export sheet as PDF"
 msgid "Export document as PDF"
 msgstr "ייצוא הגיליון ל־PDF"
 
 #: rnote-ui/data/ui/canvasmenu.ui:107
 #, fuzzy
-#| msgid "Export sheet as Xournal++ .xopp"
 msgid "Export document as Xournal++ .xopp"
 msgstr "ייצוא הגיליון ל־‎.xopp של Xournal++‎"
 
 #: rnote-ui/data/ui/canvasmenu.ui:134
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom out"
 msgid "Zoom out"
 msgstr "התרחקות"
 
@@ -312,14 +291,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:150
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom in"
 msgid "Zoom in"
 msgstr "התקרבות"
 
 #: rnote-ui/data/ui/canvasmenu.ui:162
 #, fuzzy
-#| msgid "Zoom to fit sheet width"
 msgid "Zoom to fit page width"
 msgstr "הגדרת התקריב כדי להתאים לרוחב הגיליון"
 
@@ -331,7 +307,6 @@ msgstr "בחירה"
 
 #: rnote-ui/data/ui/dialogs.ui:7
 #, fuzzy
-#| msgid "This clears the entire sheet. Please confirm."
 msgid "This clears the entire document. Please confirm."
 msgstr "פעולה זו מוחקת את תוכן הגיליון במלואו. נא לאשר."
 
@@ -346,6 +321,7 @@ msgstr "פעולה זו מוחקת את תוכן הגיליון במלואו. נ
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
 #: rnote-ui/src/dialogs.rs:1037
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "ביטול"
 
@@ -355,13 +331,11 @@ msgstr "ניקוי"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
 #, fuzzy
-#| msgid "New document"
 msgid "New Document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 #, fuzzy
-#| msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -378,7 +352,6 @@ msgstr "יציאה מהיישום"
 
 #: rnote-ui/data/ui/dialogs.ui:30
 #, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr "השינויים שלא נשמרו יאבדו. לצאת בכל זאת?"
@@ -389,7 +362,6 @@ msgstr "פתיחת קובץ"
 
 #: rnote-ui/data/ui/dialogs.ui:42
 #, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
@@ -397,7 +369,6 @@ msgstr "פתיחת הקובץ משכתבת על שינויים שלא נשמרו
 
 #: rnote-ui/data/ui/dialogs.ui:55
 #, fuzzy
-#| msgid "Import"
 msgid "Import PDF"
 msgstr "ייבוא"
 
@@ -407,7 +378,6 @@ msgstr "ייבוא"
 
 #: rnote-ui/data/ui/dialogs.ui:127
 #, fuzzy
-#| msgid "PDF import image type"
 msgid "PDF import preferences"
 msgstr "סוג תמונת ה־PDF לייבוא"
 
@@ -417,7 +387,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:162
 #, fuzzy
-#| msgid "Set wether PDFs should be imported as vector or bitmap images"
 msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgstr "להגדיר האם לייבא PDFים כווקטורים או כתמונות מפות סיביות"
 
@@ -431,14 +400,11 @@ msgstr "מפת סיביות"
 
 #: rnote-ui/data/ui/dialogs.ui:190
 #, fuzzy
-#| msgid "PDF import width (%)"
 msgid "Page width (%)"
 msgstr "רוחב ייבוא PDF (%)"
 
 #: rnote-ui/data/ui/dialogs.ui:191
 #, fuzzy
-#| msgid ""
-#| "Set the width of imported PDF's in percentage to the sheet format width"
 msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "להגדיר את רוחב ה־PDF המיובא באחוזים מתוך רוחב תצורת הגיליון"
 
@@ -456,24 +422,23 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:217
 #, fuzzy
-#| msgid "New document"
 msgid "One per document page"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/workspacebrowser.ui:147
 #, fuzzy
-#| msgid "Open workspace"
 msgid "Edit workspace"
 msgstr "פתיחת סביבת עבודה"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "החלה"
 
 #: rnote-ui/data/ui/dialogs.ui:284
 #, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
 msgstr "סביבת עבודה"
 
@@ -483,7 +448,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:291
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace icon"
 msgstr "החלפת תיקיית סביבת עבודה"
 
@@ -493,19 +457,16 @@ msgstr "צבע"
 
 #: rnote-ui/data/ui/dialogs.ui:311
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace color"
 msgstr "החלפת תיקיית סביבת עבודה"
 
 #: rnote-ui/data/ui/dialogs.ui:324
 #, fuzzy
-#| msgid "Vector"
 msgid "Directory"
 msgstr "וקטור"
 
 #: rnote-ui/data/ui/dialogs.ui:325
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace directory"
 msgstr "החלפת תיקיית סביבת עבודה"
 
@@ -519,6 +480,7 @@ msgstr "החלפת תיקיית סביבת עבודה"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr "שינוי שם"
 
@@ -528,7 +490,6 @@ msgstr "העברה לאשפה"
 
 #: rnote-ui/data/ui/filerow.ui:70
 #, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
 msgstr "שכפול הבחירה"
 
@@ -542,7 +503,6 @@ msgstr "טיוטה"
 
 #: rnote-ui/data/ui/mainheader.ui:37
 #, fuzzy
-#| msgid "New document"
 msgid "Save document"
 msgstr "מסמך חדש"
 
@@ -572,13 +532,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 #, fuzzy
-#| msgid "Show format borders"
 msgid "Format border color"
 msgstr "הצגת גבולות תצורה"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 #, fuzzy
-#| msgid "Set the format orientation"
 msgid "Set the format border color"
 msgstr "הגדרת כיוון התצורה"
 
@@ -596,26 +554,21 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy
-#| msgid "Set the format orientation"
 msgid "Set the regular cursor"
 msgstr "הגדרת כיוון התצורה"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
 msgstr "ציור"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 #, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
 msgstr "הגדרת צבע הרקע"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 #, fuzzy
-#| msgid "Choose a format"
 msgid "Page format"
 msgstr "בחירת תצורה"
 
@@ -705,7 +658,6 @@ msgstr "שחזור"
 
 #: rnote-ui/data/ui/settingspanel.ui:290
 #, fuzzy
-#| msgid "Sheet Background"
 msgid "Document background"
 msgstr "רקע הגיליון"
 
@@ -727,7 +679,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 #, fuzzy
-#| msgid "Line"
 msgid "Lines"
 msgstr "קו"
 
@@ -843,49 +794,42 @@ msgstr "התרחקות"
 
 #: rnote-ui/data/ui/shortcuts.ui:81
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/shortcuts.ui:84
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "New document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/shortcuts.ui:90
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Open document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/shortcuts.ui:96
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Save document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/shortcuts.ui:102
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Save document as"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/shortcuts.ui:108
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Clear document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/shortcuts.ui:114
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Print document"
 msgstr "מסמך חדש"
@@ -902,16 +846,12 @@ msgstr "ציור"
 
 #: rnote-ui/data/ui/shortcuts.ui:129
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy selection into clipboard"
 msgctxt "shortcut window"
 msgid "Copy into clipboard"
 msgstr "העתקת הבחירה ללוח הגזירים"
 
 #: rnote-ui/data/ui/shortcuts.ui:135
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard as selection"
 msgctxt "shortcut window"
 msgid "Paste clipboard"
 msgstr "הדבקת לוח הגזירים כבחירה"
@@ -927,30 +867,29 @@ msgid "Redo"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
 msgstr "החלפת תיקיית סביבת עבודה"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 #, fuzzy
-#| msgid "Open workspace"
 msgid "Add workspace"
 msgstr "פתיחת סביבת עבודה"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 #, fuzzy
-#| msgid "Open workspace"
 msgid "Remove workspace"
 msgstr "פתיחת סביבת עבודה"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
 #, fuzzy
-#| msgid "Vector"
 msgid "Create Directory"
 msgstr "וקטור"
 
@@ -984,7 +923,6 @@ msgstr "עם מרקם"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:100
 #, fuzzy
-#| msgid "Textured"
 msgid "Draw textured strokes"
 msgstr "עם מרקם"
 
@@ -1025,7 +963,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 #, fuzzy
-#| msgid "Solid"
 msgid "Solid style"
 msgstr "אחיד"
 
@@ -1043,7 +980,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 #, fuzzy
-#| msgid "Line"
 msgid "Linear"
 msgstr "קו"
 
@@ -1065,7 +1001,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 #, fuzzy
-#| msgid "Textured"
 msgid "Textured style"
 msgstr "עם מרקם"
 
@@ -1087,7 +1022,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 #, fuzzy
-#| msgid "Choose a dots position probability distribution"
 msgid "Stroke dots position distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
@@ -1101,7 +1035,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:299
 #, fuzzy
-#| msgid "Format"
 msgid "Normal"
 msgstr "תצורה"
 
@@ -1115,13 +1048,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
 #, fuzzy
-#| msgid "Brush styles"
 msgid "Trash strokes"
 msgstr "סגנונות מברשת"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 #, fuzzy
-#| msgid "Select all strokes"
 msgid "Split strokes"
 msgstr "בחירת כל המשיכות"
 
@@ -1135,13 +1066,11 @@ msgstr "בחירה עם ריבוע"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 #, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Selecting apiece"
 msgstr "בחירה עם ריבוע"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 #, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select intersecting path"
 msgstr "בחירה עם ריבוע"
 
@@ -1167,45 +1096,37 @@ msgstr "מחיקת הבחירה"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard as selection"
 msgid "Paste from Clipboard"
 msgstr "הדבקת לוח הגזירים כבחירה"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 #, fuzzy
-#| msgid "Shaper"
 msgid "Shaper style"
 msgstr "מעצב צורות"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
 #, fuzzy
-#| msgid "Brush styles"
 msgid "Shaper styles"
 msgstr "סגנונות מברשת"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
 #, fuzzy
-#| msgid "Smooth shapes"
 msgid "Smooth"
 msgstr "צורות חלקות"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:86
 #, fuzzy
-#| msgid "Roughness"
 msgid "Rough"
 msgstr "חספוס"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:109
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
 #, fuzzy
-#| msgid "Rough shapes configuration"
 msgid "Shape configuration"
 msgstr "הגדרת צורות מחוספסות"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 #, fuzzy
-#| msgid "Brush style"
 msgid "Rough style"
 msgstr "סגנון מברשת"
 
@@ -1235,7 +1156,6 @@ msgstr "מניין צעדי עקומה"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
 #, fuzzy
-#| msgid "How many steps make up a curve. Defaults to 9"
 msgid "How many steps make up a curve. Defaults to 12"
 msgstr "כמה צעדים דרושים ליצירת עקומה. ברירת המחדל היא 9"
 
@@ -1250,7 +1170,6 @@ msgstr "יצירת מספר משיכות למראה משורטט"
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
 #, fuzzy
-#| msgid "Shaper"
 msgid "Shape builders"
 msgstr "מעצב צורות"
 
@@ -1281,7 +1200,6 @@ msgstr ""
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:350
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:367
 #, fuzzy
-#| msgid "Portrait"
 msgid "Constraints"
 msgstr "לאורך"
 
@@ -1376,13 +1294,11 @@ msgstr "ירון שהרבני <sh.yaron@gmail.com>"
 #: rnote-ui/src/appwindow/mod.rs:457
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
 #, fuzzy
-#| msgid "Saving sheet failed"
 msgid "Saving document failed."
 msgstr "שמירת הגיליון נכשלה"
 
 #: rnote-ui/src/dialogs.rs:225 rnote-ui/src/dialogs.rs:585
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Opening file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
@@ -1404,7 +1320,6 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:340
 #, fuzzy
-#| msgid "Rename"
 msgid "File name:"
 msgstr "שינוי שם"
 
@@ -1426,7 +1341,6 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/imexport.rs:146
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Opening PDF file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
@@ -1444,13 +1358,11 @@ msgstr "קובץ ‎.rnote"
 
 #: rnote-ui/src/dialogs.rs:613
 #, fuzzy
-#| msgid "New document"
 msgid "Save document as"
 msgstr "מסמך חדש"
 
 #: rnote-ui/src/dialogs.rs:645
 #, fuzzy
-#| msgid "Saved sheet successfully"
 msgid "Saved document successfully."
 msgstr "הגיליון נשמר בהצלחה"
 
@@ -1475,50 +1387,42 @@ msgstr "ייצוא"
 
 #: rnote-ui/src/dialogs.rs:741
 #, fuzzy
-#| msgid "Export selection as SVG failed"
 msgid "Export selection as SVG failed."
 msgstr "ייצוא הבחירה ל־SVG נכשל"
 
 #: rnote-ui/src/dialogs.rs:743
 #, fuzzy
-#| msgid "Exported selection as SVG successfully"
 msgid "Exported selection as SVG successfully."
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
 #: rnote-ui/src/dialogs.rs:763
 #, fuzzy
-#| msgid "SVG file"
 msgid "PNG file"
 msgstr "קובץ SVG"
 
 #: rnote-ui/src/dialogs.rs:794
 #, fuzzy
-#| msgid "Export selection as SVG failed"
 msgid "Export selection as PNG failed."
 msgstr "ייצוא הבחירה ל־SVG נכשל"
 
 #: rnote-ui/src/dialogs.rs:796
 #, fuzzy
-#| msgid "Exported selection as SVG successfully"
 msgid "Exported selection as PNG successfully."
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
 #: rnote-ui/src/dialogs.rs:819 rnote-ui/src/dialogs.rs:873
 #: rnote-ui/src/dialogs.rs:927
 #, fuzzy
-#| msgid "New document"
 msgid "Export document"
 msgstr "מסמך חדש"
 
 #: rnote-ui/src/dialogs.rs:846
 #, fuzzy
-#| msgid "Export sheet as SVG failed"
 msgid "Export document as SVG failed."
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
 #: rnote-ui/src/dialogs.rs:848
 #, fuzzy
-#| msgid "Exported sheet as SVG successfully"
 msgid "Exported document as SVG successfully."
 msgstr "ייצוא הגיליון ל־SVG הצליח"
 
@@ -1528,13 +1432,11 @@ msgstr "קובץ PDF"
 
 #: rnote-ui/src/dialogs.rs:900
 #, fuzzy
-#| msgid "Export sheet as PDF failed"
 msgid "Export document as PDF failed."
 msgstr "ייצוא הגיליון ל־PDF נכשל"
 
 #: rnote-ui/src/dialogs.rs:902
 #, fuzzy
-#| msgid "Exported sheet as PDF successfully"
 msgid "Exported document as PDF successfully."
 msgstr "הגיליון יוצא ל־PDF בהצלחה"
 
@@ -1544,67 +1446,56 @@ msgstr "קובץ ‎.xopp"
 
 #: rnote-ui/src/dialogs.rs:954
 #, fuzzy
-#| msgid "Export sheet as SVG failed"
 msgid "Exporting document as .xopp failed."
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
 #: rnote-ui/src/dialogs.rs:956
 #, fuzzy
-#| msgid "Exported sheet as SVG successfully"
 msgid "Exported document as .xopp successfully."
 msgstr "ייצוא הגיליון ל־SVG הצליח"
 
 #: rnote-ui/src/dialogs.rs:977 rnote-ui/src/dialogs.rs:1030
 #, fuzzy
-#| msgid "SVG file"
 msgid "JSON file"
 msgstr "קובץ SVG"
 
 #: rnote-ui/src/dialogs.rs:1007
 #, fuzzy
-#| msgid "Export sheet as SVG failed"
 msgid "Export engine state failed."
 msgstr "ייצוא הגיליון ל־SVG נכשל"
 
 #: rnote-ui/src/dialogs.rs:1009
 #, fuzzy
-#| msgid "Exported sheet as SVG successfully"
 msgid "Exported engine state successfully."
 msgstr "ייצוא הגיליון ל־SVG הצליח"
 
 #: rnote-ui/src/dialogs.rs:1062
 #, fuzzy
-#| msgid "Export selection as SVG failed"
 msgid "Export engine config failed."
 msgstr "ייצוא הבחירה ל־SVG נכשל"
 
 #: rnote-ui/src/dialogs.rs:1064
 #, fuzzy
-#| msgid "Exported selection as SVG successfully"
 msgid "Exported engine config successfully."
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
 #: rnote-ui/src/appwindow/imexport.rs:70
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Opening .rnote file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
 #: rnote-ui/src/appwindow/imexport.rs:89
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Opening .xopp file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
 #: rnote-ui/src/appwindow/imexport.rs:108
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Opening vector image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
 #: rnote-ui/src/appwindow/imexport.rs:127
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Opening bitmap image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
@@ -1618,24 +1509,20 @@ msgstr ""
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774
 #, fuzzy
-#| msgid "Saved sheet successfully"
 msgid "Printed document successfully"
 msgstr "הגיליון נשמר בהצלחה"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:783
 #, fuzzy
-#| msgid "Opening sheet failed"
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-#| msgid "Vector"
 msgid "New Directory name"
 msgstr "וקטור"
 
 #, fuzzy
-#~| msgid "Save current sheet as"
 #~ msgid "Save current document as"
 #~ msgstr "שמירת הגיליון הנוכחי בשם"
 
@@ -1643,7 +1530,6 @@ msgstr "וקטור"
 #~ msgstr "יציאה"
 
 #, fuzzy
-#~| msgid "Change workspace directory"
 #~ msgid "Change the workspace name"
 #~ msgstr "החלפת תיקיית סביבת עבודה"
 
@@ -1761,3 +1647,10 @@ msgstr "וקטור"
 
 #~ msgid "Save sheet as"
 #~ msgstr "שמירת הגיליון בשם"
+
+#, fuzzy
+#~| msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
+#~ msgid ""
+#~ "Creating a new document will erase any unsaved changes. Do you want to "
+#~ "save the current document?"
+#~ msgstr "יצירת גיליון חדש תמחק שינויים שלא נשמרו. ליצור?"

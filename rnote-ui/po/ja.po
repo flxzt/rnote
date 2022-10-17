@@ -302,6 +302,7 @@ msgstr ""
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
 #: rnote-ui/src/dialogs.rs:1037
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -315,7 +316,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:18
 #, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -332,7 +332,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:30
 #, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr "保存していない編集内容はすべて削除されます。それでも終了しますか？"
@@ -400,17 +399,18 @@ msgid "One per document page"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:284
 #, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
 msgstr "ワークスペース"
 
@@ -448,6 +448,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr ""
 
@@ -457,7 +458,6 @@ msgstr "ゴミ箱に移動する"
 
 #: rnote-ui/data/ui/filerow.ui:70
 #, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
 msgstr "選択範囲を複製"
 
@@ -817,6 +817,7 @@ msgid "Redo"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr ""
 
@@ -825,10 +826,12 @@ msgid "Workspace directory actions"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 msgid "Add workspace"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 msgid "Remove workspace"
 msgstr ""
 

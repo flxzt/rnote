@@ -68,7 +68,6 @@ msgstr "Utvecklarläge"
 
 #: rnote-ui/data/ui/appmenu.ui:29
 #, fuzzy
-#| msgid "Developer mode"
 msgid "Developer menu"
 msgstr "Utvecklarläge"
 
@@ -78,13 +77,11 @@ msgstr "Visuell felsökning"
 
 #: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:980
 #, fuzzy
-#| msgid "Export Sheet"
 msgid "Export engine state"
 msgstr "Exportera blad"
 
 #: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1033
 #, fuzzy
-#| msgid "Export Selection"
 msgid "Export engine config"
 msgstr "Exportera markering"
 
@@ -160,7 +157,6 @@ msgstr "Lägg till sida"
 
 #: rnote-ui/data/ui/appwindow.ui:175
 #, fuzzy
-#| msgid "Resize to fit sheet format"
 msgid "Resize document to fit the strokes"
 msgstr "Ändra storlek så att det passar bladformat"
 
@@ -218,7 +214,6 @@ msgstr "Pennljud"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:6
 #, fuzzy
-#| msgid "New document"
 msgid "Clear document"
 msgstr "Nytt document"
 
@@ -250,7 +245,6 @@ msgstr "Importera Fil"
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
 #, fuzzy
-#| msgid "Export"
 msgid "Export…"
 msgstr "Exportera"
 
@@ -260,32 +254,26 @@ msgstr "Exportera val som SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
 #, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export selection as PNG"
 msgstr "Exportera val som SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99
 #, fuzzy
-#| msgid "Export sheet as SVG"
 msgid "Export document as SVG"
 msgstr "Exportera blad som SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:103
 #, fuzzy
-#| msgid "Export sheet as SVG"
 msgid "Export document as PDF"
 msgstr "Exportera blad som SVG"
 
 #: rnote-ui/data/ui/canvasmenu.ui:107
 #, fuzzy
-#| msgid "Export sheet as Xournal++ .xopp"
 msgid "Export document as Xournal++ .xopp"
 msgstr "Exportera blad som Xournal++ .xopp"
 
 #: rnote-ui/data/ui/canvasmenu.ui:134
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom out"
 msgid "Zoom out"
 msgstr "Zooma ut"
 
@@ -295,14 +283,11 @@ msgstr "Återställ zoomen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:150
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom in"
 msgid "Zoom in"
 msgstr "Zooma in"
 
 #: rnote-ui/data/ui/canvasmenu.ui:162
 #, fuzzy
-#| msgid "Zoom to fit sheet width"
 msgid "Zoom to fit page width"
 msgstr "Zooma för att passa bladbredden"
 
@@ -314,7 +299,6 @@ msgstr "Välj"
 
 #: rnote-ui/data/ui/dialogs.ui:7
 #, fuzzy
-#| msgid "This clears the entire sheet. Please confirm."
 msgid "This clears the entire document. Please confirm."
 msgstr "Detta rensar hela bladet. Var snäll och bekräfta."
 
@@ -329,6 +313,7 @@ msgstr "Detta rensar hela bladet. Var snäll och bekräfta."
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
 #: rnote-ui/src/dialogs.rs:1037
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "Avbryt"
 
@@ -338,13 +323,11 @@ msgstr "Rensa"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
 #, fuzzy
-#| msgid "New document"
 msgid "New Document"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 #, fuzzy
-#| msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -363,7 +346,6 @@ msgstr "Avsluta program"
 
 #: rnote-ui/data/ui/dialogs.ui:30
 #, fuzzy
-#| msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr ""
@@ -376,7 +358,6 @@ msgstr "Öppna Fil"
 
 #: rnote-ui/data/ui/dialogs.ui:42
 #, fuzzy
-#| msgid "Opening this file overwrites any unsaved changes."
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
@@ -384,7 +365,6 @@ msgstr "Om du öppnar denna fil skrivs osparade ändringar över"
 
 #: rnote-ui/data/ui/dialogs.ui:55
 #, fuzzy
-#| msgid "Import"
 msgid "Import PDF"
 msgstr "Importera"
 
@@ -394,7 +374,6 @@ msgstr "Importera"
 
 #: rnote-ui/data/ui/dialogs.ui:127
 #, fuzzy
-#| msgid "PDF import image type"
 msgid "PDF import preferences"
 msgstr "Bildtyp för PDF-import"
 
@@ -404,7 +383,6 @@ msgstr "Sidtyp"
 
 #: rnote-ui/data/ui/dialogs.ui:162
 #, fuzzy
-#| msgid "Set wether PDFs should be imported as vector or bitmap images"
 msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgstr "Ange wether PDF-filer ska importeras som vektor- eller bitmappsbilder"
 
@@ -418,13 +396,11 @@ msgstr "Bitmap"
 
 #: rnote-ui/data/ui/dialogs.ui:190
 #, fuzzy
-#| msgid "PDF import width (%)"
 msgid "Page width (%)"
 msgstr "PDF-importbredd (%)"
 
 #: rnote-ui/data/ui/dialogs.ui:191
 #, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the sheet width"
 msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "Ange bredden på importerade PDF-filer i procent till bladbredden"
 
@@ -442,24 +418,23 @@ msgstr "Kontinuerlig"
 
 #: rnote-ui/data/ui/dialogs.ui:217
 #, fuzzy
-#| msgid "New document"
 msgid "One per document page"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/workspacebrowser.ui:147
 #, fuzzy
-#| msgid "Open workspace"
 msgid "Edit workspace"
 msgstr "Öppna arbetsyta"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "Använd"
 
 #: rnote-ui/data/ui/dialogs.ui:284
 #, fuzzy
-#| msgid "Workspace"
 msgid "Workspace Name"
 msgstr "Arbetsyta"
 
@@ -469,7 +444,6 @@ msgstr "Ikon"
 
 #: rnote-ui/data/ui/dialogs.ui:291
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace icon"
 msgstr "Ändra arbetsplats mappen"
 
@@ -479,19 +453,16 @@ msgstr "Färg"
 
 #: rnote-ui/data/ui/dialogs.ui:311
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace color"
 msgstr "Ändra arbetsplats mappen"
 
 #: rnote-ui/data/ui/dialogs.ui:324
 #, fuzzy
-#| msgid "Vector"
 msgid "Directory"
 msgstr "Vektor"
 
 #: rnote-ui/data/ui/dialogs.ui:325
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change the workspace directory"
 msgstr "Ändra arbetsplats mappen"
 
@@ -505,6 +476,7 @@ msgstr "Ändra arbetsplats mappen"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr "Ändra namn"
 
@@ -514,7 +486,6 @@ msgstr "Flytta till papperskorgen"
 
 #: rnote-ui/data/ui/filerow.ui:70
 #, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
 msgstr "Duplicera markering"
 
@@ -528,7 +499,6 @@ msgstr "Utkast"
 
 #: rnote-ui/data/ui/mainheader.ui:37
 #, fuzzy
-#| msgid "New document"
 msgid "Save document"
 msgstr "Nytt document"
 
@@ -558,13 +528,11 @@ msgstr "Sätt intervall för automatisk sparning i sekunder"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 #, fuzzy
-#| msgid "Show format borders"
 msgid "Format border color"
 msgstr "Show format borders"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 #, fuzzy
-#| msgid "Set the format orientation"
 msgid "Set the format border color"
 msgstr "Sätt formatets orientering"
 
@@ -582,26 +550,21 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy
-#| msgid "Set the format orientation"
 msgid "Set the regular cursor"
 msgstr "Sätt formatets orientering"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
 msgstr "Teckning"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 #, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
 msgstr "Välj bakrundsfärgen"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 #, fuzzy
-#| msgid "Choose a format"
 msgid "Page format"
 msgstr "Välj ett format"
 
@@ -691,7 +654,6 @@ msgstr "Återgå"
 
 #: rnote-ui/data/ui/settingspanel.ui:290
 #, fuzzy
-#| msgid "Sheet Background"
 msgid "Document background"
 msgstr "Bakgrund till blad"
 
@@ -713,7 +675,6 @@ msgstr "Inget"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 #, fuzzy
-#| msgid "Line"
 msgid "Lines"
 msgstr "Linje"
 
@@ -829,49 +790,42 @@ msgstr "Zooma ut"
 
 #: rnote-ui/data/ui/shortcuts.ui:81
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Document"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/shortcuts.ui:84
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "New document"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/shortcuts.ui:90
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Open document"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/shortcuts.ui:96
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Save document"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/shortcuts.ui:102
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Save document as"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/shortcuts.ui:108
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Clear document"
 msgstr "Nytt document"
 
 #: rnote-ui/data/ui/shortcuts.ui:114
 #, fuzzy
-#| msgid "New document"
 msgctxt "shortcut window"
 msgid "Print document"
 msgstr "Nytt document"
@@ -888,16 +842,12 @@ msgstr "Teckning"
 
 #: rnote-ui/data/ui/shortcuts.ui:129
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy selection into clipboard"
 msgctxt "shortcut window"
 msgid "Copy into clipboard"
 msgstr "Kopiera markerning till urklipp"
 
 #: rnote-ui/data/ui/shortcuts.ui:135
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard as selection"
 msgctxt "shortcut window"
 msgid "Paste clipboard"
 msgstr "Klistra in markering från urklipp"
@@ -913,30 +863,29 @@ msgid "Redo"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
 msgstr "Ändra arbetsplats mappen"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 #, fuzzy
-#| msgid "Open workspace"
 msgid "Add workspace"
 msgstr "Öppna arbetsyta"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 #, fuzzy
-#| msgid "Open workspace"
 msgid "Remove workspace"
 msgstr "Öppna arbetsyta"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
 #, fuzzy
-#| msgid "Vector"
 msgid "Create Directory"
 msgstr "Vektor"
 
@@ -970,7 +919,6 @@ msgstr "Texturerat"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:100
 #, fuzzy
-#| msgid "Textured"
 msgid "Draw textured strokes"
 msgstr "Texturerat"
 
@@ -1011,7 +959,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 #, fuzzy
-#| msgid "Solid"
 msgid "Solid style"
 msgstr "Solid"
 
@@ -1029,7 +976,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 #, fuzzy
-#| msgid "Line"
 msgid "Linear"
 msgstr "Linje"
 
@@ -1051,7 +997,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 #, fuzzy
-#| msgid "Textured"
 msgid "Textured style"
 msgstr "Texturerat"
 
@@ -1073,7 +1018,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 #, fuzzy
-#| msgid "Choose a dots position probability distribution"
 msgid "Stroke dots position distribution"
 msgstr "Välj en dots position sannolikhetsfördelning"
 
@@ -1087,7 +1031,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:299
 #, fuzzy
-#| msgid "Format"
 msgid "Normal"
 msgstr "Format"
 
@@ -1101,13 +1044,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
 #, fuzzy
-#| msgid "Brush styles"
 msgid "Trash strokes"
 msgstr "Penselformat"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 #, fuzzy
-#| msgid "Multistroke"
 msgid "Split strokes"
 msgstr "Multistroke"
 
@@ -1121,13 +1062,11 @@ msgstr "Markera med en rektangel"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 #, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Selecting apiece"
 msgstr "Markera med en rektangel"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 #, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select intersecting path"
 msgstr "Markera med en rektangel"
 
@@ -1137,15 +1076,11 @@ msgstr "Lås bildförhållandet när du växling av markeringen"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:124
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Select all stroks"
 msgid "Select all strokes"
 msgstr "Markera alla linjer"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:139
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Select all stroks"
 msgid "Deselect all strokes"
 msgstr "Markera alla linjer"
 
@@ -1159,45 +1094,37 @@ msgstr "Ta bort markering"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard as selection"
 msgid "Paste from Clipboard"
 msgstr "Klistra in markering från urklipp"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 #, fuzzy
-#| msgid "Shaper"
 msgid "Shaper style"
 msgstr "Form"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
 #, fuzzy
-#| msgid "Brush styles"
 msgid "Shaper styles"
 msgstr "Penselformat"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
 #, fuzzy
-#| msgid "Smooth shapes"
 msgid "Smooth"
 msgstr "Jämna former"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:86
 #, fuzzy
-#| msgid "Roughness"
 msgid "Rough"
 msgstr "Grovhet"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:109
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
 #, fuzzy
-#| msgid "Rough shapes configuration"
 msgid "Shape configuration"
 msgstr "Konfiguration av grova former"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 #, fuzzy
-#| msgid "Brush style"
 msgid "Rough style"
 msgstr "Penselformat"
 
@@ -1229,7 +1156,6 @@ msgstr "Antal steg i kurva"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
 #, fuzzy
-#| msgid "How many steps make up a curve. Defaults to 9"
 msgid "How many steps make up a curve. Defaults to 12"
 msgstr "Hur många steg utgör en kurva. Standardvärdet är 9"
 
@@ -1244,7 +1170,6 @@ msgstr "Flera slaggenerering för ett skissat utseende. Standardvärdet är true
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
 #, fuzzy
-#| msgid "Shaper"
 msgid "Shape builders"
 msgstr "Form"
 
@@ -1275,7 +1200,6 @@ msgstr ""
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:350
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:367
 #, fuzzy
-#| msgid "Portrait"
 msgid "Constraints"
 msgstr "Porträtt"
 
@@ -1374,7 +1298,6 @@ msgstr "Spara dokumentet misslyckades."
 
 #: rnote-ui/src/dialogs.rs:225 rnote-ui/src/dialogs.rs:585
 #, fuzzy
-#| msgid "Open file"
 msgid "Opening file failed."
 msgstr "Öppna fil"
 
@@ -1432,7 +1355,6 @@ msgstr ".rnote fil"
 
 #: rnote-ui/src/dialogs.rs:613
 #, fuzzy
-#| msgid "New document"
 msgid "Save document as"
 msgstr "Nytt document"
 
@@ -1461,44 +1383,37 @@ msgstr "Exportera"
 
 #: rnote-ui/src/dialogs.rs:741
 #, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export selection as SVG failed."
 msgstr "Exportera val som SVG"
 
 #: rnote-ui/src/dialogs.rs:743
 #, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exported selection as SVG successfully."
 msgstr "Exportera val som SVG"
 
 #: rnote-ui/src/dialogs.rs:763
 #, fuzzy
-#| msgid "SVG file"
 msgid "PNG file"
 msgstr "SVG fil"
 
 #: rnote-ui/src/dialogs.rs:794
 #, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export selection as PNG failed."
 msgstr "Exportera val som SVG"
 
 #: rnote-ui/src/dialogs.rs:796
 #, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exported selection as PNG successfully."
 msgstr "Exportera val som SVG"
 
 #: rnote-ui/src/dialogs.rs:819 rnote-ui/src/dialogs.rs:873
 #: rnote-ui/src/dialogs.rs:927
 #, fuzzy
-#| msgid "New document"
 msgid "Export document"
 msgstr "Nytt document"
 
 #: rnote-ui/src/dialogs.rs:846
 #, fuzzy
-#| msgid "Export sheet as SVG"
 msgid "Export document as SVG failed."
 msgstr "Exportera blad som SVG"
 
@@ -1508,7 +1423,6 @@ msgstr "Dokumentet har exporterats till SVG."
 
 #: rnote-ui/src/dialogs.rs:870
 #, fuzzy
-#| msgid "SVG file"
 msgid "PDF file"
 msgstr "SVG fil"
 
@@ -1534,7 +1448,6 @@ msgstr "Exporterade dokument som .xopp."
 
 #: rnote-ui/src/dialogs.rs:977 rnote-ui/src/dialogs.rs:1030
 #, fuzzy
-#| msgid "SVG file"
 msgid "JSON file"
 msgstr "SVG fil"
 
@@ -1588,12 +1501,10 @@ msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-#| msgid "Vector"
 msgid "New Directory name"
 msgstr "Vektor"
 
 #, fuzzy
-#~| msgid "Save current sheet as"
 #~ msgid "Save current document as"
 #~ msgstr "Spara aktuellt blad som"
 
@@ -1601,7 +1512,6 @@ msgstr "Vektor"
 #~ msgstr "Avsluta"
 
 #, fuzzy
-#~| msgid "Change workspace directory"
 #~ msgid "Change the workspace name"
 #~ msgstr "Ändra arbetsplats mappen"
 
@@ -1712,3 +1622,12 @@ msgstr "Vektor"
 
 #~ msgid "Save sheet as"
 #~ msgstr "Spara blad som"
+
+#, fuzzy
+#~| msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
+#~ msgid ""
+#~ "Creating a new document will erase any unsaved changes. Do you want to "
+#~ "save the current document?"
+#~ msgstr ""
+#~ "Om du skapar ett nytt blad raderas alla ändringar som inte har sparats. "
+#~ "Är du säker?"

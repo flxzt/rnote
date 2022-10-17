@@ -302,6 +302,7 @@ msgstr "To wyczyści cały dokument. Proszę potwierdzić."
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
 #: rnote-ui/src/dialogs.rs:1037
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "Anuluj"
 
@@ -315,9 +316,6 @@ msgstr "Nowy dokument"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 #, fuzzy
-#| msgid ""
-#| "Creating a new document will erase any unsaved changes. Do you want to "
-#| "save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -410,11 +408,13 @@ msgid "One per document page"
 msgstr "Jeden na stronę dokumentu"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
 msgstr "Edytuj przestrzeń roboczą"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "Zastosuj"
 
@@ -456,6 +456,7 @@ msgstr "Zmiana katalogu obszaru roboczego"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr "Zmień nazwę"
 
@@ -823,26 +824,27 @@ msgid "Redo"
 msgstr "Przywróć"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr "Przesuń katalog w górę"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
 msgstr "Zmiana katalogu obszaru roboczego"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 msgid "Add workspace"
 msgstr "Dodaj obszar roboczy"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 msgid "Remove workspace"
 msgstr "Usuń obszar roboczy"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
 #, fuzzy
-#| msgid "Directory"
 msgid "Create Directory"
 msgstr "Katalog"
 
@@ -1422,6 +1424,12 @@ msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-#| msgid "Directory"
 msgid "New Directory name"
 msgstr "Katalog"
+
+#~ msgid ""
+#~ "Creating a new document will erase any unsaved changes. Do you want to "
+#~ "save the current document?"
+#~ msgstr ""
+#~ "Utworzenie nowego dokumentu spowoduje usunięcie wszelkich niezapisanych "
+#~ "zmian. Czy chcesz zapisać bieżący dokument?"

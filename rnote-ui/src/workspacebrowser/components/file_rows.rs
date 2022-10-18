@@ -1,15 +1,24 @@
-use cairo::glib::{StaticType, Cast, ToValue};
+use cairo::glib::{Cast, StaticType, ToValue};
 use gtk4::{
-    SignalListItemFactory,
-    glib, glib::{clone, closure}, ConstantExpression, PropertyExpression, ListItem, gio, gdk, prelude::{FileExt, ListModelExt}, Widget, FileFilter, FilterListModel, CustomSorter, MultiSorter, subclass::prelude::ObjectSubclassIsExt, SorterChange, FilterChange, traits::{SorterExt, FilterExt, WidgetExt}, SortListModel, SingleSelection
+    gdk, gio, glib,
+    glib::{clone, closure},
+    prelude::{FileExt, ListModelExt},
+    subclass::prelude::ObjectSubclassIsExt,
+    traits::{FilterExt, SorterExt, WidgetExt},
+    ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
+    MultiSorter, PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel,
+    SorterChange, Widget,
 };
 
-use crate::{WorkspaceBrowser, RnoteAppWindow, workspacebrowser::{FileRow, WorkspaceRow, WorkspaceListEntry}};
+use crate::{
+    workspacebrowser::{FileRow, WorkspaceListEntry, WorkspaceRow},
+    RnoteAppWindow, WorkspaceBrowser,
+};
 
 pub fn setup_file_rows(workspacebrowser: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-            let primary_list_factory = SignalListItemFactory::new();
+    let primary_list_factory = SignalListItemFactory::new();
 
-            primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
+    primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
                 let filerow = FileRow::new();
                 filerow.init(&appwindow);
 
@@ -103,84 +112,87 @@ pub fn setup_file_rows(workspacebrowser: &WorkspaceBrowser, appwindow: &RnoteApp
                 content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
             }));
 
-            let filefilter = FileFilter::new();
-            filefilter.add_pattern("*.rnote");
-            filefilter.add_pattern("*.xopp");
-            filefilter.add_pattern("*.svg");
-            filefilter.add_mime_type("image/svg+xml");
-            filefilter.add_mime_type("image/png");
-            filefilter.add_mime_type("image/jpeg");
-            filefilter.add_mime_type("application/x-xopp");
-            filefilter.add_mime_type("application/pdf");
-            filefilter.add_mime_type("inode/directory");
-            let filefilter_model =
-                FilterListModel::new(Some(&workspacebrowser.imp().files_dirlist), Some(&filefilter));
+    let filefilter = FileFilter::new();
+    filefilter.add_pattern("*.rnote");
+    filefilter.add_pattern("*.xopp");
+    filefilter.add_pattern("*.svg");
+    filefilter.add_mime_type("image/svg+xml");
+    filefilter.add_mime_type("image/png");
+    filefilter.add_mime_type("image/jpeg");
+    filefilter.add_mime_type("application/x-xopp");
+    filefilter.add_mime_type("application/pdf");
+    filefilter.add_mime_type("inode/directory");
+    let filefilter_model = FilterListModel::new(
+        Some(&workspacebrowser.imp().files_dirlist),
+        Some(&filefilter),
+    );
 
-            let folder_sorter = CustomSorter::new(move |obj1, obj2| {
-                let first_fileinfo = obj1
-                    .clone()
-                    .downcast::<gio::FileInfo>()
-                    .expect("failed to downcast obj1");
-                let first_filetype = first_fileinfo.file_type();
+    let folder_sorter = CustomSorter::new(move |obj1, obj2| {
+        let first_fileinfo = obj1
+            .clone()
+            .downcast::<gio::FileInfo>()
+            .expect("failed to downcast obj1");
+        let first_filetype = first_fileinfo.file_type();
 
-                let second_fileinfo = obj2
-                    .clone()
-                    .downcast::<gio::FileInfo>()
-                    .expect("failed to downcast obj2");
-                let second_filetype = second_fileinfo.file_type();
+        let second_fileinfo = obj2
+            .clone()
+            .downcast::<gio::FileInfo>()
+            .expect("failed to downcast obj2");
+        let second_filetype = second_fileinfo.file_type();
 
-                if first_filetype == gio::FileType::Directory
-                    && second_filetype != gio::FileType::Directory
-                {
-                    gtk4::Ordering::Smaller
-                } else if first_filetype != gio::FileType::Directory
-                    && second_filetype == gio::FileType::Directory
-                {
-                    gtk4::Ordering::Larger
-                } else {
-                    gtk4::Ordering::Equal
-                }
-            });
+        if first_filetype == gio::FileType::Directory && second_filetype != gio::FileType::Directory
+        {
+            gtk4::Ordering::Smaller
+        } else if first_filetype != gio::FileType::Directory
+            && second_filetype == gio::FileType::Directory
+        {
+            gtk4::Ordering::Larger
+        } else {
+            gtk4::Ordering::Equal
+        }
+    });
 
-            let alphanumeric_sorter = CustomSorter::new(move |obj1, obj2| {
-                let first_fileinfo = obj1
-                    .clone()
-                    .downcast::<gio::FileInfo>()
-                    .expect("failed to downcast obj1");
-                let first_file = first_fileinfo.attribute_object("standard::file").unwrap();
-                let first_file = first_file.downcast::<gio::File>().unwrap();
-                let first_display_name = first_file.basename().unwrap();
-                let first_display_name = first_display_name.to_str().unwrap();
+    let alphanumeric_sorter = CustomSorter::new(move |obj1, obj2| {
+        let first_fileinfo = obj1
+            .clone()
+            .downcast::<gio::FileInfo>()
+            .expect("failed to downcast obj1");
+        let first_file = first_fileinfo.attribute_object("standard::file").unwrap();
+        let first_file = first_file.downcast::<gio::File>().unwrap();
+        let first_display_name = first_file.basename().unwrap();
+        let first_display_name = first_display_name.to_str().unwrap();
 
-                let second_fileinfo = obj2
-                    .clone()
-                    .downcast::<gio::FileInfo>()
-                    .expect("failed to downcast obj2");
-                let second_file = second_fileinfo.attribute_object("standard::file").unwrap();
-                let second_file = second_file.downcast::<gio::File>().unwrap();
-                let second_display_name = second_file.basename().unwrap();
-                let second_display_name = second_display_name.to_str().unwrap();
+        let second_fileinfo = obj2
+            .clone()
+            .downcast::<gio::FileInfo>()
+            .expect("failed to downcast obj2");
+        let second_file = second_fileinfo.attribute_object("standard::file").unwrap();
+        let second_file = second_file.downcast::<gio::File>().unwrap();
+        let second_display_name = second_file.basename().unwrap();
+        let second_display_name = second_display_name.to_str().unwrap();
 
-                first_display_name.cmp(second_display_name).into()
-            });
+        first_display_name.cmp(second_display_name).into()
+    });
 
-            let multisorter = MultiSorter::new();
-            multisorter.append(&folder_sorter);
-            multisorter.append(&alphanumeric_sorter);
-            let multi_sort_model = SortListModel::new(Some(&filefilter_model), Some(&multisorter));
+    let multisorter = MultiSorter::new();
+    multisorter.append(&folder_sorter);
+    multisorter.append(&alphanumeric_sorter);
+    let multi_sort_model = SortListModel::new(Some(&filefilter_model), Some(&multisorter));
 
-            let primary_selection_model = SingleSelection::new(Some(&multi_sort_model));
+    let primary_selection_model = SingleSelection::new(Some(&multi_sort_model));
 
-            workspacebrowser.imp()
-                .files_listview
-                .get()
-                .set_factory(Some(&primary_list_factory));
-            workspacebrowser.imp()
-                .files_listview
-                .get()
-                .set_model(Some(&primary_selection_model));
+    workspacebrowser
+        .imp()
+        .files_listview
+        .get()
+        .set_factory(Some(&primary_list_factory));
+    workspacebrowser
+        .imp()
+        .files_listview
+        .get()
+        .set_model(Some(&primary_selection_model));
 
-            workspacebrowser.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
+    workspacebrowser.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
                 let model = files_listview.model().expect("model for primary_listview does not exist.");
                 let fileinfo = model.item(position)
                     .expect("selected item in primary_listview does not exist.")
@@ -196,7 +208,7 @@ pub fn setup_file_rows(workspacebrowser: &WorkspaceBrowser, appwindow: &RnoteApp
                 filefilter.changed(FilterChange::Different);
             }));
 
-            workspacebrowser.imp().files_dirlist.connect_file_notify(
+    workspacebrowser.imp().files_dirlist.connect_file_notify(
                 clone!(@weak workspacebrowser, @weak appwindow, @weak filefilter, @weak multisorter => move |files_dirlist| {
                     // Disable the dir up row when no file is set or has no parent
                     workspacebrowser.imp().dir_up_row.set_sensitive(files_dirlist.file().and_then(|f| f.parent()).is_some());
@@ -206,20 +218,21 @@ pub fn setup_file_rows(workspacebrowser: &WorkspaceBrowser, appwindow: &RnoteApp
                 }),
             );
 
-            workspacebrowser.imp().files_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
+    workspacebrowser.imp().files_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }));
 
-            // setup workspace rows
-            let appwindow_c = appwindow.clone();
-            workspacebrowser.imp()
-                .workspace_listbox
-                .bind_model(Some(&workspacebrowser.imp().workspace_list), move |obj| {
-                    let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
-                    let workspace_row = WorkspaceRow::new(entry);
-                    workspace_row.init(&appwindow_c);
+    // setup workspace rows
+    let appwindow_c = appwindow.clone();
+    workspacebrowser.imp().workspace_listbox.bind_model(
+        Some(&workspacebrowser.imp().workspace_list),
+        move |obj| {
+            let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
+            let workspace_row = WorkspaceRow::new(entry);
+            workspace_row.init(&appwindow_c);
 
-                    workspace_row.upcast::<Widget>()
-                });
+            workspace_row.upcast::<Widget>()
+        },
+    );
 }

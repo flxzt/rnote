@@ -1,9 +1,6 @@
-use gtk4::{
-    subclass::prelude::ObjectSubclassIsExt,
-    glib, glib::clone, gio
-};
+use gtk4::{gio, glib, glib::clone, subclass::prelude::ObjectSubclassIsExt};
 
-use crate::{WorkspaceBrowser, RnoteAppWindow};
+use crate::{RnoteAppWindow, WorkspaceBrowser};
 
 pub fn setup_workspace_listbox(workspacebrowser: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     workspacebrowser.imp().workspace_listbox.connect_selected_rows_changed(

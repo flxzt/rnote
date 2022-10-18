@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-18 15:49+0000\n"
+"PO-Revision-Date: 2022-10-18 20:16+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -458,10 +458,8 @@ msgid "Move into trash"
 msgstr "Sposta nel cestino"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
-msgstr "Duplica selezione"
+msgstr "Duplica"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -825,10 +823,8 @@ msgid "Move directory up"
 msgstr "Vai alla cartella superiore"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
-msgstr "Cambia cartella dell'area di lavoro"
+msgstr "Azioni dell'area di lavoro"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
@@ -839,10 +835,8 @@ msgid "Remove workspace"
 msgstr "Rimuovi area di lavoro"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
-#| msgid "Directory"
 msgid "Create Directory"
-msgstr "Cartella"
+msgstr "Crea cartella"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -883,33 +877,35 @@ msgstr "Configurazione pennello"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Path modelling"
-msgstr ""
+msgstr "Modellazione del percorso"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "Semplice"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Produce segmenti di linee dagli input\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "Curvato"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Produce segmenti lisci e curvi\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "Modellato"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Produce un percorso modellato tramite algoritmi basati sulla fisica.\n"
+"Risultando nella scrittura più bella."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
@@ -1430,10 +1426,8 @@ msgid "Printing document failed"
 msgstr "Stampa del documento fallita"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
-#| msgid "Directory"
 msgid "New Directory name"
-msgstr "Cartella"
+msgstr "Nuovo nome della cartella"
 
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "

@@ -3207,7 +3207,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.5.5"
+version = "0.5.6-beta1"
 dependencies = [
  "anyhow",
  "cairo-rs",

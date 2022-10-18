@@ -70,7 +70,7 @@ rnote_ui_sources = files(
     'workspacebrowser/filerow/action/open.rs',
     'workspacebrowser/filerow/action/rename.rs',
     'workspacebrowser/filerow/action/trash.rs',
-    'workspacebrowser/filerow/action/duplicate/mod.rs',
+    'workspacebrowser/filerow/action/duplicate.rs',
     'workspacebrowser/workspacerow.rs',
     'workspacebrowser/workspacelist.rs',
     'workspacebrowser/workspacelistentry.rs',

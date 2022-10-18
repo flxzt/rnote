@@ -67,7 +67,7 @@ impl FileType {
                     return Self::Folder;
                 }
                 _ => {
-                    log::warn!("unkown file type");
+                    log::warn!("unknown file type");
                     return Self::Unsupported;
                 }
             }

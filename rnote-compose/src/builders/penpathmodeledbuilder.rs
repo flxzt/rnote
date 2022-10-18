@@ -76,7 +76,7 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
 
         match event {
             PenEvent::Down { element, .. } => {
-                // kDown is already fed when instanciating the builder
+                // kDown is already fed when instantiating the builder
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
                 match self.try_build_segments_during() {

@@ -22,7 +22,7 @@ impl Default for Element {
 }
 
 impl Element {
-    /// The default fallback pen pressure, when it could not be retreived from the input
+    /// The default fallback pen pressure, when it could not be retrieved from the input
     pub const PRESSURE_DEFAULT: f64 = 0.5;
 
     /// A new element from a position and pressure

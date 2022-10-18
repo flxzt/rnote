@@ -725,7 +725,7 @@ impl TextStroke {
         );
     }
 
-    // Translates the ranged text attributes after the given cursor. Overlapping ranges are extended / shrinked
+    // Translates the ranged text attributes after the given cursor. Overlapping ranges are extended / shrunk
     fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
         for attr in self.text_style.ranged_text_attributes.iter_mut() {
             if attr.range.start > from_pos {

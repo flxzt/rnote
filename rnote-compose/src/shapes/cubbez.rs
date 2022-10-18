@@ -59,7 +59,7 @@ impl ShapeBehaviour for CubicBezier {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        // TODO: should be dependend on the actual curve length
+        // TODO: should be depending on the actual curve length
         let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
 
         self.approx_with_lines(n_splits)
@@ -70,7 +70,7 @@ impl ShapeBehaviour for CubicBezier {
 }
 
 impl CubicBezier {
-    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition betwen them,
+    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them,
     /// and only being affected by their four points (locality), so are easily calculated and easy to work with.
     /// making them a good spline to represent pen paths.
     /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'

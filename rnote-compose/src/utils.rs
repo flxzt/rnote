@@ -91,7 +91,7 @@ where
     Ok(String::from_utf8(document_buffer)?)
 }
 
-/// A new random number generator with the pcg64 algorithm. Used for seedable, reproducable random numbers.
+/// A new random number generator with the pcg64 algorithm. Used for seedable, reproducible random numbers.
 pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     if let Some(seed) = seed {
         rand_pcg::Pcg64::seed_from_u64(seed)

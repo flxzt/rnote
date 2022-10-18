@@ -207,7 +207,7 @@ impl RnoteEngine {
         }
     }
 
-    /// wether pen sounds are enabled
+    /// whether pen sounds are enabled
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
     }

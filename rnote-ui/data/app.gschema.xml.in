@@ -47,11 +47,11 @@
     </key>
     <key name="permanently-hide-canvas-scrollbars" type="b">
       <default>false</default>
-      <summary>Wether the canvas scrollbars are permanently hidden</summary>
+      <summary>Whether the canvas scrollbars are permanently hidden</summary>
     </key>
     <key name="righthanded" type="b">
       <default>true</default>
-      <summary>Wether the user is righthanded (or lefthanded)</summary>
+      <summary>Whether the user is righthanded (or lefthanded)</summary>
     </key>
     <key name="touch-drawing" type="b">
       <default>false</default>

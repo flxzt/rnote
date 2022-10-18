@@ -258,7 +258,7 @@ mod imp {
                     }
                 }
                 "selected" => {
-                    // Clamping to the current amoutn of colorbuttons
+                    // Clamping to the current amount of colorbuttons
                     let index = value
                         .get::<u32>()
                         .unwrap()

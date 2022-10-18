@@ -68,9 +68,9 @@ pub fn debug_drag_gesture(drag_gesture: &GestureDrag) {
     );
 }
 
-/// Retreive elements from a (emulated) pointer
-/// X and Y is already available from closure, and should not retreived from .axis() (because of gtk weirdness)
-pub fn retreive_pointer_elements(
+/// retrieve elements from a (emulated) pointer
+/// X and Y is already available from closure, and should not retrieved from .axis() (because of gtk weirdness)
+pub fn retrieve_pointer_elements(
     _mouse_drawing_gesture: &GestureDrag,
     x: f64,
     y: f64,
@@ -82,7 +82,7 @@ pub fn retreive_pointer_elements(
     data_entries
 }
 
-pub fn retreive_mouse_shortcut_keys(mouse_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
+pub fn retrieve_mouse_shortcut_keys(mouse_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
 
     match mouse_drawing_gesture.current_button() {
@@ -92,25 +92,25 @@ pub fn retreive_mouse_shortcut_keys(mouse_drawing_gesture: &GestureDrag) -> Vec<
         _ => {}
     }
 
-    shortcut_keys.append(&mut retreive_modifier_shortcut_key(
+    shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
         mouse_drawing_gesture.current_event_state(),
     ));
 
     shortcut_keys
 }
 
-pub fn retreive_touch_shortcut_keys(touch_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
+pub fn retrieve_touch_shortcut_keys(touch_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
 
-    shortcut_keys.append(&mut retreive_modifier_shortcut_key(
+    shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
         touch_drawing_gesture.current_event_state(),
     ));
 
     shortcut_keys
 }
 
-/// Retreiving the shortcut keys for the stylus gesture
-pub fn retreive_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> Vec<ShortcutKey> {
+/// Retrieving the shortcut keys for the stylus gesture
+pub fn retrieve_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
 
     // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent.
@@ -125,14 +125,14 @@ pub fn retreive_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> 
         _ => {}
     };
 
-    shortcut_keys.append(&mut retreive_modifier_shortcut_key(
+    shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
         stylus_drawing_gesture.current_event_state(),
     ));
 
     shortcut_keys
 }
 
-pub fn retreive_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Option<PenMode> {
+pub fn retrieve_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Option<PenMode> {
     if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
         match device_tool.tool_type() {
             gdk::DeviceToolType::Pen => {
@@ -148,12 +148,12 @@ pub fn retreive_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Optio
     None
 }
 
-pub fn retreive_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
+pub fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
     rnote_engine::utils::keyboard_key_from_gdk(gdk_key)
 }
 
-/// Retreiving modifier shortcut keys. Note that here Button modifiers are skipped, they have different meanings with different kind of pointers and have to be handled individually
-pub fn retreive_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
+/// Retrieving modifier shortcut keys. Note that here Button modifiers are skipped, they have different meanings with different kind of pointers and have to be handled individually
+pub fn retrieve_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
     if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
         shortcut_keys.push(ShortcutKey::KeyboardShift);
@@ -168,9 +168,9 @@ pub fn retreive_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<Shortc
     shortcut_keys
 }
 
-/// Retreives available input axes, defaults if not available.
-/// X and Y is already available from closure, and should not retreived from .axis() (because of gtk weirdness)
-pub fn retreive_stylus_elements(
+/// retrieves available input axes, defaults if not available.
+/// X and Y is already available from closure, and should not retrieved from .axis() (because of gtk weirdness)
+pub fn retrieve_stylus_elements(
     stylus_drawing_gesture: &GestureStylus,
     x: f64,
     y: f64,

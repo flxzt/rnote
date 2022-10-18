@@ -1649,7 +1649,6 @@ msgstr "וקטור"
 #~ msgstr "שמירת הגיליון בשם"
 
 #, fuzzy
-#~| msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "
 #~ "save the current document?"

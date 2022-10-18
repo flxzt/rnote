@@ -1442,7 +1442,6 @@ msgstr "目錄"
 #~ msgstr "更改工作區名稱"
 
 #, fuzzy
-#~| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "
 #~ "save the current document?"

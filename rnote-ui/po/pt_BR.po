@@ -1497,7 +1497,6 @@ msgstr "Diretório"
 #~ msgstr "Falha ao importar arquivo."
 
 #, fuzzy
-#~| msgid "Creating a new document erases any unsaved changes. Are you sure?"
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "
 #~ "save the current document?"

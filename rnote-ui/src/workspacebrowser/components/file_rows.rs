@@ -19,98 +19,98 @@ pub fn setup_file_rows(workspacebrowser: &WorkspaceBrowser, appwindow: &RnoteApp
     let primary_list_factory = SignalListItemFactory::new();
 
     primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
-                let filerow = FileRow::new();
-                filerow.init(&appwindow);
+        let filerow = FileRow::new();
+        filerow.init(&appwindow);
 
-                list_item.set_child(Some(&filerow));
+        list_item.set_child(Some(&filerow));
 
-                let list_item_expr = ConstantExpression::new(list_item);
-                let fileinfo_expr =
-                    PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
+        let list_item_expr = ConstantExpression::new(list_item);
+        let fileinfo_expr =
+            PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
 
-                let file_expr = fileinfo_expr.chain_closure::<Option<gio::File>>(closure!(
-                    |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+        let file_expr = fileinfo_expr.chain_closure::<Option<gio::File>>(closure!(
+            |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                fileinfo_obj
+                    .map(|fileinfo_obj| {
                         fileinfo_obj
-                            .map(|fileinfo_obj| {
-                                fileinfo_obj
-                                    .downcast::<gio::FileInfo>()
-                                    .unwrap()
-                                    .attribute_object("standard::file")
-                                    .unwrap()
-                                    .downcast::<gio::File>()
-                                    .unwrap()
-                            })
-                            .to_value()
+                            .downcast::<gio::FileInfo>()
+                            .unwrap()
+                            .attribute_object("standard::file")
+                            .unwrap()
+                            .downcast::<gio::File>()
+                            .unwrap()
+                    })
+                    .to_value()
+            }
+        ));
+
+        let content_provider_expr =
+            fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
+                |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                    if let Some(fileinfo_obj) = fileinfo_obj {
+                        if let Some(file) = fileinfo_obj
+                            .downcast::<gio::FileInfo>()
+                            .unwrap()
+                            .attribute_object("standard::file")
+                        {
+                            let file = file
+                                .downcast::<gio::File>()
+                                .expect("failed to downcast::<gio::File>() from file GObject");
+
+                            return gdk::ContentProvider::for_value(&file.to_value());
+                        }
                     }
-                ));
 
-                let content_provider_expr =
-                    fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
-                        |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                            if let Some(fileinfo_obj) = fileinfo_obj {
-                                if let Some(file) = fileinfo_obj
-                                    .downcast::<gio::FileInfo>()
-                                    .unwrap()
-                                    .attribute_object("standard::file")
-                                {
-                                    let file = file
-                                        .downcast::<gio::File>()
-                                        .expect("failed to downcast::<gio::File>() from file GObject");
+                    gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
+                }
+            ));
 
-                                    return gdk::ContentProvider::for_value(&file.to_value());
-                                }
-                            }
+        let icon_name_expr =
+            fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                if let Some(fileinfo_obj) = fileinfo_obj {
+                    if let Some(themed_icon) = fileinfo_obj
+                        .downcast::<gio::FileInfo>()
+                        .unwrap()
+                        .attribute_object("standard::icon")
+                    {
+                        return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
+                    }
+                }
 
-                            gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
-                        }
-                    ));
-
-                let icon_name_expr =
-                    fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                        if let Some(fileinfo_obj) = fileinfo_obj {
-                            if let Some(themed_icon) = fileinfo_obj
-                                .downcast::<gio::FileInfo>()
-                                .unwrap()
-                                .attribute_object("standard::icon")
-                            {
-                                return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
-                            }
-                        }
-
-                        gio::ThemedIcon::from_names(&[
-                            "workspace-folder-symbolic",
-                            "folder-documents-symbolic",
-                        ])
-                    }));
-
-                let basename_expr =
-                    fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
-                        if let Some(fileinfo_obj) = fileinfo_obj {
-                            if let Some(file) = fileinfo_obj
-                                .downcast::<gio::FileInfo>()
-                                .unwrap()
-                                .attribute_object("standard::file")
-                            {
-                                let file = file
-                                    .downcast::<gio::File>()
-                                    .expect("failed to downcast::<gio::File>() from file GObject");
-
-                                return String::from(
-                                    file.basename()
-                                        .expect("failed to get file.basename()")
-                                        .to_string_lossy(),
-                                );
-                            }
-                        }
-
-                        String::from("")
-                    }));
-
-                file_expr.bind(&filerow, "current-file", Widget::NONE);
-                basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
-                icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
-                content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
+                gio::ThemedIcon::from_names(&[
+                    "workspace-folder-symbolic",
+                    "folder-documents-symbolic",
+                ])
             }));
+
+        let basename_expr =
+            fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                if let Some(fileinfo_obj) = fileinfo_obj {
+                    if let Some(file) = fileinfo_obj
+                        .downcast::<gio::FileInfo>()
+                        .unwrap()
+                        .attribute_object("standard::file")
+                    {
+                        let file = file
+                            .downcast::<gio::File>()
+                            .expect("failed to downcast::<gio::File>() from file GObject");
+
+                        return String::from(
+                            file.basename()
+                                .expect("failed to get file.basename()")
+                                .to_string_lossy(),
+                        );
+                    }
+                }
+
+                String::from("")
+            }));
+
+        file_expr.bind(&filerow, "current-file", Widget::NONE);
+        basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
+        icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
+        content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
+    }));
 
     let filefilter = FileFilter::new();
     filefilter.add_pattern("*.rnote");

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 16:29+0200\n"
+"POT-Creation-Date: 2022-10-18 18:07+0200\n"
 "PO-Revision-Date: 2022-10-04 20:29+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -300,7 +300,8 @@ msgstr ""
 #: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
 #: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -398,12 +399,12 @@ msgstr ""
 msgid "One per document page"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr ""
 
@@ -445,13 +446,20 @@ msgstr ""
 msgid "Change workspace directory"
 msgstr ""
 
-#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
 msgstr "ゴミ箱に移動する"
+
+#: rnote-ui/data/ui/filerow.ui:70
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate"
+msgstr "選択範囲を複製"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -808,16 +816,24 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacebrowser.ui:42
+#: rnote-ui/data/ui/workspacebrowser.ui:49
 msgid "Move directory up"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacebrowser.ui:132
+#: rnote-ui/data/ui/workspacebrowser.ui:80
+msgid "Workspace directory actions"
+msgstr ""
+
+#: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacebrowser.ui:138
+#: rnote-ui/data/ui/workspacebrowser.ui:171
 msgid "Remove workspace"
+msgstr ""
+
+#: rnote-ui/data/ui/workspacebrowser.ui:195
+msgid "Create Directory"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
@@ -1392,6 +1408,10 @@ msgstr ""
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:783
 msgid "Printing document failed"
+msgstr ""
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
+msgid "New Directory name"
 msgstr ""
 
 #~ msgid "Quit"

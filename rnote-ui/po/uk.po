@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 16:29+0200\n"
+"POT-Creation-Date: 2022-10-18 18:07+0200\n"
 "PO-Revision-Date: 2022-10-04 20:28+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -314,7 +314,8 @@ msgstr "Це очищає весь аркуш. Будь ласка, підтве
 #: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
 #: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -430,14 +431,14 @@ msgstr ""
 msgid "One per document page"
 msgstr "Новий документ"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
 #, fuzzy
 #| msgid "Workspace"
 msgid "Edit workspace"
 msgstr "Робоча область"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "Застосувати"
 
@@ -487,13 +488,20 @@ msgstr "- каталог не вибрано -"
 msgid "Change workspace directory"
 msgstr "Змінити каталог робочої області"
 
-#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
 msgstr "Перемістити в смітник"
+
+#: rnote-ui/data/ui/filerow.ui:70
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate"
+msgstr "Дублікат виділення"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -889,21 +897,33 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Повторити"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:42
+#: rnote-ui/data/ui/workspacebrowser.ui:49
 msgid "Move directory up"
 msgstr "Перемістити каталог вгору"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:132
+#: rnote-ui/data/ui/workspacebrowser.ui:80
+#, fuzzy
+#| msgid "Change workspace directory"
+msgid "Workspace directory actions"
+msgstr "Змінити каталог робочої області"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:165
 #, fuzzy
 #| msgid "Workspace"
 msgid "Add workspace"
 msgstr "Робоча область"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:138
+#: rnote-ui/data/ui/workspacebrowser.ui:171
 #, fuzzy
 #| msgid "Open Workspace"
 msgid "Remove workspace"
 msgstr "Відкрити робочу область"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:195
+#, fuzzy
+#| msgid "Vector"
+msgid "Create Directory"
+msgstr "Вектор"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1550,6 +1570,12 @@ msgstr ""
 #: rnote-ui/src/appwindow/appwindowactions.rs:783
 msgid "Printing document failed"
 msgstr ""
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
+#, fuzzy
+#| msgid "Vector"
+msgid "New Directory name"
+msgstr "Вектор"
 
 #, fuzzy
 #~| msgid "Save current sheet as"

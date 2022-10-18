@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 20:07+0200\n"
+"POT-Creation-Date: 2022-10-18 18:07+0200\n"
 "PO-Revision-Date: 2022-10-17 00:37+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -77,12 +77,10 @@ msgid "Visual debugging"
 msgstr "காட்சி பிழைத்திருத்தம்"
 
 #: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:980
-#: rnote-ui/src/dialogs.rs:966
 msgid "Export engine state"
 msgstr "ஏற்றுமதி இயந்திர நிலை"
 
 #: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1033
-#: rnote-ui/src/dialogs.rs:1020
 msgid "Export engine config"
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு"
 
@@ -239,7 +237,6 @@ msgid "Print"
 msgstr "அச்சிடுக"
 
 #: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:676
-#: rnote-ui/src/dialogs.rs:673
 msgid "Import file"
 msgstr "கோப்பு இறக்குமதி"
 
@@ -302,11 +299,8 @@ msgstr "இது முழு ஆவணத்தையும் அழிக்
 #: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
 #: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
-#: rnote-ui/src/dialogs.rs:677 rnote-ui/src/dialogs.rs:714
-#: rnote-ui/src/dialogs.rs:766 rnote-ui/src/dialogs.rs:818
-#: rnote-ui/src/dialogs.rs:869 rnote-ui/src/dialogs.rs:920
-#: rnote-ui/src/dialogs.rs:970 rnote-ui/src/dialogs.rs:1024
+#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "ரத்துசெய்"
 
@@ -314,15 +308,15 @@ msgstr "ரத்துசெய்"
 msgid "Clear"
 msgstr "தெளிவு"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:844
-#: rnote-ui/src/appwindow/mod.rs:848 rnote-ui/src/appwindow/mod.rs:893
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
 #: rnote-ui/data/ui/dialogs.ui:18
+#, fuzzy
 msgid ""
-"Creating a new document will erase any unsaved changes. Do you want to save "
-"the current document?"
+"Creating a new document will discard any unsaved changes. Do you want to "
+"save the current document?"
 msgstr ""
 "ஒரு புதிய ஆவணத்தை உருவாக்குவது சேமிக்கப்படாத எந்த மாற்றங்களையும் அழிக்கும். தற்போதைய "
 "ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
@@ -359,7 +353,6 @@ msgid "Import PDF"
 msgstr "PDF ஐ இறக்குமதி செய்"
 
 #: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:679
-#: rnote-ui/src/dialogs.rs:676
 msgid "Import"
 msgstr "இறக்குமதி"
 
@@ -408,13 +401,12 @@ msgstr "தொடர்ச்சியான"
 msgid "One per document page"
 msgstr "ஒரு ஆவணப் பக்கத்திற்கு ஒன்று"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
 msgstr "பணியிடத்தை திருத்து"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
-#: rnote-ui/data/ui/settingspanel.ui:221
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "விண்ணப்பிக்க"
 
@@ -431,7 +423,6 @@ msgid "Change the workspace icon"
 msgstr "பணியிட ஐகானை மாற்று"
 
 #: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:293
-#: rnote-ui/data/ui/settingspanel.ui:237
 msgid "Color"
 msgstr "நிறம்"
 
@@ -455,7 +446,8 @@ msgstr "- எந்த கோப்பகமும் தேர்ந்தெ�
 msgid "Change workspace directory"
 msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
 
-#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "மறுபெயர்"
 
@@ -463,12 +455,17 @@ msgstr "மறுபெயர்"
 msgid "Move into trash"
 msgstr "குப்பைக்கு நகர்த்தவும்"
 
+#: rnote-ui/data/ui/filerow.ui:70
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate"
+msgstr "நகல் தேர்வு"
+
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
 msgstr "புதிய ஆவணம்"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:846
-#: rnote-ui/src/appwindow/mod.rs:850 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
 msgid "Draft"
 msgstr "வரைவு"
 
@@ -532,175 +529,175 @@ msgstr "வரைதல் சுட்டி"
 msgid "Set the drawing cursor"
 msgstr "வரைதல் சுட்டியை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:164 rnote-ui/data/ui/settingspanel.ui:108
+#: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"
 msgstr "பக்க வடிவம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:167 rnote-ui/data/ui/settingspanel.ui:111
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
 msgstr "வடிவம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:168 rnote-ui/data/ui/settingspanel.ui:112
+#: rnote-ui/data/ui/settingspanel.ui:168
 msgid "Choose a format"
 msgstr "ஒரு வடிவமைப்பைத் தேர்வுசெய்க"
 
-#: rnote-ui/data/ui/settingspanel.ui:172 rnote-ui/data/ui/settingspanel.ui:116
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:173 rnote-ui/data/ui/settingspanel.ui:117
+#: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:174 rnote-ui/data/ui/settingspanel.ui:118
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:175 rnote-ui/data/ui/settingspanel.ui:119
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:176 rnote-ui/data/ui/settingspanel.ui:120
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:177 rnote-ui/data/ui/settingspanel.ui:121
+#: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
 msgstr "அமெரிக்க கடிதம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:178 rnote-ui/data/ui/settingspanel.ui:122
+#: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
 msgstr "அமெரிக்க சட்டப்பூர்வமானது"
 
-#: rnote-ui/data/ui/settingspanel.ui:179 rnote-ui/data/ui/settingspanel.ui:123
+#: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
 msgstr "தனிப்பயன்"
 
-#: rnote-ui/data/ui/settingspanel.ui:187 rnote-ui/data/ui/settingspanel.ui:131
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Orientation"
 msgstr "நோக்குநிலை"
 
-#: rnote-ui/data/ui/settingspanel.ui:188 rnote-ui/data/ui/settingspanel.ui:132
+#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
 msgstr "வடிவ நோக்குநிலையை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:200 rnote-ui/data/ui/settingspanel.ui:144
+#: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
 msgstr "உருவப்படம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:206 rnote-ui/data/ui/settingspanel.ui:150
+#: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Landscape"
 msgstr "நிலப்பரப்பு"
 
-#: rnote-ui/data/ui/settingspanel.ui:216 rnote-ui/data/ui/settingspanel.ui:160
+#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
 msgstr "அகலம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:217 rnote-ui/data/ui/settingspanel.ui:161
+#: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
 msgstr "வடிவத்தின் அகலத்தை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:230 rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
 msgstr "உயரம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:231 rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "வடிவத்தின் உயரத்தை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:244 rnote-ui/data/ui/settingspanel.ui:188
+#: rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/settingspanel.ui:245 rnote-ui/data/ui/settingspanel.ui:189
+#: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr "DPI (ஒரு அங்குலத்திற்கு புள்ளிகள்) அமைக்கவும். இயல்புநிலை 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:268 rnote-ui/data/ui/settingspanel.ui:212
+#: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
 msgstr "பின்செல்"
 
-#: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/settingspanel.ui:234
+#: rnote-ui/data/ui/settingspanel.ui:290
 msgid "Document background"
 msgstr "ஆவண பின்னணி"
 
-#: rnote-ui/data/ui/settingspanel.ui:294 rnote-ui/data/ui/settingspanel.ui:238
+#: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
 msgstr "பின்னணி நிறத்தை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:311 rnote-ui/data/ui/settingspanel.ui:255
+#: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Pattern"
 msgstr "பேட்டர்ன்"
 
-#: rnote-ui/data/ui/settingspanel.ui:312 rnote-ui/data/ui/settingspanel.ui:256
+#: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Choose a background pattern"
 msgstr "பின்னணி வடிவத்தைத் தேர்வு செய்யவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:316 rnote-ui/data/ui/settingspanel.ui:260
+#: rnote-ui/data/ui/settingspanel.ui:316
 msgid "None"
 msgstr "எதுவும் இல்லை"
 
-#: rnote-ui/data/ui/settingspanel.ui:317 rnote-ui/data/ui/settingspanel.ui:261
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Lines"
 msgstr "கோடுகள்"
 
-#: rnote-ui/data/ui/settingspanel.ui:318 rnote-ui/data/ui/settingspanel.ui:262
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Grid"
 msgstr "கட்டம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:319 rnote-ui/data/ui/settingspanel.ui:263
+#: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Dots"
 msgstr "புள்ளிகள்"
 
-#: rnote-ui/data/ui/settingspanel.ui:327 rnote-ui/data/ui/settingspanel.ui:271
+#: rnote-ui/data/ui/settingspanel.ui:327
 msgid "Pattern Color"
 msgstr "வடிவ நிறம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:328 rnote-ui/data/ui/settingspanel.ui:272
+#: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Set the background pattern color"
 msgstr "பின்னணி மாதிரி நிறத்தை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:345 rnote-ui/data/ui/settingspanel.ui:289
+#: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Pattern Width"
 msgstr "வடிவ அகலம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:346 rnote-ui/data/ui/settingspanel.ui:290
+#: rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background pattern width"
 msgstr "பின்னணி வடிவ அகலத்தை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:359 rnote-ui/data/ui/settingspanel.ui:303
+#: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Pattern Height"
 msgstr "பேட்டர்ன் உயரம்"
 
-#: rnote-ui/data/ui/settingspanel.ui:360 rnote-ui/data/ui/settingspanel.ui:304
+#: rnote-ui/data/ui/settingspanel.ui:360
 msgid "Set the background pattern height"
 msgstr "பின்னணி வடிவ உயரத்தை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:376 rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Button Shortcuts"
 msgstr "பட்டன் ஷார்ட்கட்கள்"
 
-#: rnote-ui/data/ui/settingspanel.ui:379 rnote-ui/data/ui/settingspanel.ui:323
+#: rnote-ui/data/ui/settingspanel.ui:379
 msgid "Stylus primary button action"
 msgstr "ஸ்டைலஸ் முதன்மை பொத்தான் நடவடிக்கை"
 
-#: rnote-ui/data/ui/settingspanel.ui:380 rnote-ui/data/ui/settingspanel.ui:324
+#: rnote-ui/data/ui/settingspanel.ui:380
 msgid "Set the action for the primary stylus button"
 msgstr "முதன்மை ஸ்டைலஸ் பட்டனுக்கான செயலை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:391 rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:391
 msgid "Stylus secondary button action"
 msgstr "ஸ்டைலஸ் இரண்டாம் நிலை பொத்தான் செயல்"
 
-#: rnote-ui/data/ui/settingspanel.ui:392 rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:392
 msgid "Set the action for the secondary stylus button"
 msgstr "இரண்டாம் நிலை ஸ்டைலஸ் பொத்தானுக்கு செயலை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:403 rnote-ui/data/ui/settingspanel.ui:347
+#: rnote-ui/data/ui/settingspanel.ui:403
 msgid "Mouse secondary button action"
 msgstr "மவுஸ் இரண்டாம் நிலை பொத்தான் செயல்"
 
-#: rnote-ui/data/ui/settingspanel.ui:404 rnote-ui/data/ui/settingspanel.ui:348
+#: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
 msgstr "இரண்டாம் நிலை சுட்டி பொத்தானின் செயலை அமைக்கவும்"
 
@@ -819,17 +816,29 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "மீண்டும் செய்"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:42
+#: rnote-ui/data/ui/workspacebrowser.ui:49
 msgid "Move directory up"
 msgstr "கோப்பகத்தை மேலே நகர்த்தவும்"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:132
+#: rnote-ui/data/ui/workspacebrowser.ui:80
+#, fuzzy
+#| msgid "Change workspace directory"
+msgid "Workspace directory actions"
+msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
 msgstr "பணியிடத்தைச் சேர்க்கவும்"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:138
+#: rnote-ui/data/ui/workspacebrowser.ui:171
 msgid "Remove workspace"
 msgstr "பணியிடத்தை அகற்று"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:195
+#, fuzzy
+#| msgid "Directory"
+msgid "Create Directory"
+msgstr "கோப்பகம்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -868,102 +877,112 @@ msgstr "டெக்ஸ்சர்டு ஸ்ட்ரோக்குகள�
 msgid "Brush configuration"
 msgstr "தூரிகை கட்டமைப்பு"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:149
+msgid "Path modelling"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+msgid "Simple"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:168
+msgid "Produces line segments from the raw input.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid "Curved"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
+msgid "Produces smooth, curved segments.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:181
+msgid "Modeled"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:182
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
+msgstr ""
+
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
 msgstr "உறுதியான பாணி"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Pressure curve"
 msgstr "அழுத்தம் வளைவு"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Choose a pressure curve"
 msgstr "அழுத்த வளைவைத் தேர்ந்தெடுக்கவும்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgid "Constant"
 msgstr "நிலையான"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgid "Linear"
 msgstr "நேரியல்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Square root"
 msgstr "சதுர வேர்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:161
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Cubic root"
 msgstr "கன வேர்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:162
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:203
 msgid "Quadratic Parabola"
 msgstr "இருபடி பரவளை"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:163
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:204
 msgid "Cubic Parabola"
 msgstr "க்யூபிக் பரபோலா"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Textured style"
 msgstr "டெக்ஸ்சர்டு ஸ்டைல்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:177
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Density"
 msgstr "அடர்த்தி"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:178
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "அடர்த்தி என்பது 10x10 பகுதிக்கு உள்ள புள்ளிகளின் அளவு"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Stroke dots radii"
 msgstr "ஸ்ட்ரோக் புள்ளிகள் ஆரங்கள்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "டெக்ஸ்சர்டு பக்கவாதத்தில் தனிப்பட்ட புள்ளிகளின் ஆரங்கள்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:252
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 msgid "Stroke dots position distribution"
 msgstr "ஸ்ட்ரோக் புள்ளிகளின் நிலைப் பரவல்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:253
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:294
 msgid "Choose a dots position probability distribution"
 msgstr "புள்ளிகளின் நிலை நிகழ்தகவுப் பரவலைத் தேர்வு செய்யவும்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:298
 msgid "Uniform"
 msgstr "சீருடை"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:258
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:299
 msgid "Normal"
 msgstr "சாதாரண"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:259
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:300
 msgid "Exponential"
 msgstr "அதிவேக"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:260
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:301
 msgid "Reverse Exponential"
 msgstr "தலைகீழ் அதிவேக"
@@ -1013,7 +1032,6 @@ msgid "Delete selection"
 msgstr "தேர்வை நீக்கு"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
 msgid "Paste from Clipboard"
 msgstr "கிளிப்போர்டில் இருந்து ஒட்டவும்"
 
@@ -1207,9 +1225,8 @@ msgstr "மொழிபெயர்ப்பாளர்-வரவுகள்"
 
 #: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
-#: rnote-ui/src/appwindow/mod.rs:408
-#: rnote-ui/src/appwindow/appwindowactions.rs:657 rnote-ui/src/dialogs.rs:640
-#: rnote-ui/src/appwindow/mod.rs:412 rnote-ui/src/appwindow/mod.rs:457
+#: rnote-ui/src/appwindow/mod.rs:457
+#: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
 
@@ -1254,7 +1271,6 @@ msgid "Pages:"
 msgstr "பக்கங்கள்:"
 
 #: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/imexport.rs:146
-#: rnote-ui/src/appwindow/mod.rs:1570
 msgid "Opening PDF file failed."
 msgstr "PDF கோப்பை திறக்க முடியவில்லை."
 
@@ -1274,134 +1290,127 @@ msgstr ".rnote கோப்பு"
 msgid "Save document as"
 msgstr "ஆவணத்தை இவ்வாறு சேமிக்கவும்"
 
-#: rnote-ui/src/dialogs.rs:645 rnote-ui/src/dialogs.rs:642
+#: rnote-ui/src/dialogs.rs:645
 msgid "Saved document successfully."
 msgstr "ஆவணம் வெற்றிகரமாகச் சேமிக்கப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:673 rnote-ui/src/dialogs.rs:670
+#: rnote-ui/src/dialogs.rs:673
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / PDF கோப்பு"
 
 #: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:816
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:811
 msgid "SVG file"
 msgstr "SVG கோப்பு"
 
 #: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:766
-#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:762
 msgid "Export Selection"
 msgstr "ஏற்றுமதி தேர்வு"
 
 #: rnote-ui/src/dialogs.rs:716 rnote-ui/src/dialogs.rs:769
 #: rnote-ui/src/dialogs.rs:822 rnote-ui/src/dialogs.rs:876
 #: rnote-ui/src/dialogs.rs:930 rnote-ui/src/dialogs.rs:983
-#: rnote-ui/src/dialogs.rs:1036 rnote-ui/src/dialogs.rs:713
-#: rnote-ui/src/dialogs.rs:765 rnote-ui/src/dialogs.rs:817
-#: rnote-ui/src/dialogs.rs:868 rnote-ui/src/dialogs.rs:919
-#: rnote-ui/src/dialogs.rs:969 rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/src/dialogs.rs:1036
 msgid "Export"
 msgstr "ஏற்றுமதி"
 
-#: rnote-ui/src/dialogs.rs:741 rnote-ui/src/dialogs.rs:737
+#: rnote-ui/src/dialogs.rs:741
 msgid "Export selection as SVG failed."
 msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:743 rnote-ui/src/dialogs.rs:739
+#: rnote-ui/src/dialogs.rs:743
 msgid "Exported selection as SVG successfully."
 msgstr "தேர்வு வெற்றிகரமாக SVG ஆக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:763 rnote-ui/src/dialogs.rs:759
+#: rnote-ui/src/dialogs.rs:763
 msgid "PNG file"
 msgstr "PNG கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:794 rnote-ui/src/dialogs.rs:789
+#: rnote-ui/src/dialogs.rs:794
 msgid "Export selection as PNG failed."
 msgstr "தேர்வு PNG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:796 rnote-ui/src/dialogs.rs:791
+#: rnote-ui/src/dialogs.rs:796
 msgid "Exported selection as PNG successfully."
 msgstr "தேர்வு வெற்றிகரமாக PNG ஆக ஏற்றுமதி செய்யப்பட்டது."
 
 #: rnote-ui/src/dialogs.rs:819 rnote-ui/src/dialogs.rs:873
-#: rnote-ui/src/dialogs.rs:927 rnote-ui/src/dialogs.rs:814
-#: rnote-ui/src/dialogs.rs:865 rnote-ui/src/dialogs.rs:916
+#: rnote-ui/src/dialogs.rs:927
 msgid "Export document"
 msgstr "ஏற்றுமதி ஆவணம்"
 
-#: rnote-ui/src/dialogs.rs:846 rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:846
 msgid "Export document as SVG failed."
 msgstr "ஆவணத்தை SVG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:848 rnote-ui/src/dialogs.rs:840
+#: rnote-ui/src/dialogs.rs:848
 msgid "Exported document as SVG successfully."
 msgstr "ஆவணம் SVG ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:870 rnote-ui/src/dialogs.rs:862
+#: rnote-ui/src/dialogs.rs:870
 msgid "PDF file"
 msgstr "PDF கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:900 rnote-ui/src/dialogs.rs:889
+#: rnote-ui/src/dialogs.rs:900
 msgid "Export document as PDF failed."
 msgstr "ஆவணத்தை PDF ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:902 rnote-ui/src/dialogs.rs:891
+#: rnote-ui/src/dialogs.rs:902
 msgid "Exported document as PDF successfully."
 msgstr "ஆவணம் PDF ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:924 rnote-ui/src/dialogs.rs:913
+#: rnote-ui/src/dialogs.rs:924
 msgid ".xopp file"
 msgstr ".xopp கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:954 rnote-ui/src/dialogs.rs:940
+#: rnote-ui/src/dialogs.rs:954
 msgid "Exporting document as .xopp failed."
 msgstr "ஆவணத்தை .xopp ஆக ஏற்றுமதி செய்வது தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:956 rnote-ui/src/dialogs.rs:942
+#: rnote-ui/src/dialogs.rs:956
 msgid "Exported document as .xopp successfully."
 msgstr "ஆவணம் .xopp ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
 #: rnote-ui/src/dialogs.rs:977 rnote-ui/src/dialogs.rs:1030
-#: rnote-ui/src/dialogs.rs:963 rnote-ui/src/dialogs.rs:1017
 msgid "JSON file"
 msgstr "JSON கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:1007 rnote-ui/src/dialogs.rs:994
+#: rnote-ui/src/dialogs.rs:1007
 msgid "Export engine state failed."
 msgstr "ஏற்றுமதி இயந்திர நிலை தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:1009 rnote-ui/src/dialogs.rs:996
+#: rnote-ui/src/dialogs.rs:1009
 msgid "Exported engine state successfully."
 msgstr "எஞ்சின் நிலை வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:1062 rnote-ui/src/dialogs.rs:1048
+#: rnote-ui/src/dialogs.rs:1062
 msgid "Export engine config failed."
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:1064 rnote-ui/src/dialogs.rs:1050
+#: rnote-ui/src/dialogs.rs:1064
 msgid "Exported engine config successfully."
 msgstr "இயந்திர கட்டமைப்பு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/appwindow/imexport.rs:70 rnote-ui/src/appwindow/mod.rs:1494
+#: rnote-ui/src/appwindow/imexport.rs:70
 msgid "Opening .rnote file failed."
 msgstr ".rnote கோப்பை திறக்க முடியவில்லை."
 
-#: rnote-ui/src/appwindow/imexport.rs:89 rnote-ui/src/appwindow/mod.rs:1513
+#: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening .xopp file failed."
 msgstr ".xopp கோப்பை திறக்க முடியவில்லை."
 
-#: rnote-ui/src/appwindow/imexport.rs:108 rnote-ui/src/appwindow/mod.rs:1532
+#: rnote-ui/src/appwindow/imexport.rs:108
 msgid "Opening vector image file failed."
 msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/imexport.rs:127 rnote-ui/src/appwindow/mod.rs:1551
+#: rnote-ui/src/appwindow/imexport.rs:127
 msgid "Opening bitmap image file failed."
 msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/imexport.rs:163 rnote-ui/src/appwindow/mod.rs:1587
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
 
-#: rnote-ui/src/appwindow/imexport.rs:172 rnote-ui/src/appwindow/mod.rs:1596
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
 
@@ -1413,48 +1422,21 @@ msgstr "ஆவணம் வெற்றிகரமாக அச்சிடப�
 msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
-#: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently."
-msgstr "கேன்வாஸில் உள்ள சுருள் பட்டைகள் நிரந்தரமாக மறைக்கப்பட்டுள்ளதா என்பதை அமைக்கவும்."
-
-#: rnote-ui/data/ui/dialogs.ui:18
+#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-msgid ""
-"Creating a new document will discard any unsaved changes. Do you want to "
-"save the current document?"
-msgstr ""
-"ஒரு புதிய ஆவணத்தை உருவாக்குவது சேமிக்கப்படாத எந்த மாற்றங்களையும் அழிக்கும். தற்போதைய "
-"ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
+#| msgid "Directory"
+msgid "New Directory name"
+msgstr "கோப்பகம்"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:149
-msgid "Path modelling"
-msgstr ""
+#~ msgid ""
+#~ "Creating a new document will erase any unsaved changes. Do you want to "
+#~ "save the current document?"
+#~ msgstr ""
+#~ "ஒரு புதிய ஆவணத்தை உருவாக்குவது சேமிக்கப்படாத எந்த மாற்றங்களையும் அழிக்கும். தற்போதைய "
+#~ "ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
-msgid "Simple"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:168
-msgid "Produces line segments from the raw input.\n"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
-msgid "Curved"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
-msgid "Produces smooth, curved segments.\n"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:181
-msgid "Modeled"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:182
-msgid ""
-"Produces a modeled path with physics based algorithms.\n"
-"Results in the best looking handwriting."
-msgstr ""
+#~ msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#~ msgstr "கேன்வாஸில் உள்ள சுருள் பட்டைகள் நிரந்தரமாக மறைக்கப்பட்டுள்ளதா என்பதை அமைக்கவும்."
 
 #~ msgid "Save current document as"
 #~ msgstr "தற்போதைய ஆவணத்தை இவ்வாறு சேமி"

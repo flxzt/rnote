@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 16:29+0200\n"
+"POT-Creation-Date: 2022-10-18 18:07+0200\n"
 "PO-Revision-Date: 2022-10-04 20:29+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -300,7 +300,8 @@ msgstr "هذا يمسح الصفحة بأكملها. هل أنت متأكد ."
 #: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
 #: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "إلغاء"
 
@@ -402,12 +403,12 @@ msgstr "مستمر"
 msgid "One per document page"
 msgstr "واحد لكل صفحة في الملف"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
 msgstr "تعدبل مجلد العمل"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "تطبيق"
 
@@ -447,13 +448,20 @@ msgstr "لم يتم تحديد مجلد"
 msgid "Change workspace directory"
 msgstr "تغيير مجلد العمل"
 
-#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "إعادة التسمية"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
 msgstr "حذف لسلة المهملات"
+
+#: rnote-ui/data/ui/filerow.ui:70
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate"
+msgstr "كرر الاختيار"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -819,17 +827,29 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "تقدم للأمام"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:42
+#: rnote-ui/data/ui/workspacebrowser.ui:49
 msgid "Move directory up"
 msgstr "نقل المجلد للأعلى"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:132
+#: rnote-ui/data/ui/workspacebrowser.ui:80
+#, fuzzy
+#| msgid "Change workspace directory"
+msgid "Workspace directory actions"
+msgstr "تغيير مجلد العمل"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
 msgstr "إضافة مجلد عمل"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:138
+#: rnote-ui/data/ui/workspacebrowser.ui:171
 msgid "Remove workspace"
 msgstr "إزالة مجلد العمل"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:195
+#, fuzzy
+#| msgid "Directory"
+msgid "Create Directory"
+msgstr "مجلد"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1415,3 +1435,9 @@ msgstr "تم طباعة الملف بنجاح"
 #: rnote-ui/src/appwindow/appwindowactions.rs:783
 msgid "Printing document failed"
 msgstr "فشل طباعة الملف"
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
+#, fuzzy
+#| msgid "Directory"
+msgid "New Directory name"
+msgstr "مجلد"

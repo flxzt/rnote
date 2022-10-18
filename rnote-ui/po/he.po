@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 16:29+0200\n"
+"POT-Creation-Date: 2022-10-18 18:07+0200\n"
 "PO-Revision-Date: 2022-10-04 20:28+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -344,7 +344,8 @@ msgstr "פעולה זו מוחקת את תוכן הגיליון במלואו. נ
 #: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
 #: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "ביטול"
 
@@ -459,14 +460,14 @@ msgstr ""
 msgid "One per document page"
 msgstr "מסמך חדש"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
 #, fuzzy
 #| msgid "Open workspace"
 msgid "Edit workspace"
 msgstr "פתיחת סביבת עבודה"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "החלה"
 
@@ -516,13 +517,20 @@ msgstr ""
 msgid "Change workspace directory"
 msgstr "החלפת תיקיית סביבת עבודה"
 
-#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "שינוי שם"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
 msgstr "העברה לאשפה"
+
+#: rnote-ui/data/ui/filerow.ui:70
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate"
+msgstr "שכפול הבחירה"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -918,21 +926,33 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacebrowser.ui:42
+#: rnote-ui/data/ui/workspacebrowser.ui:49
 msgid "Move directory up"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacebrowser.ui:132
+#: rnote-ui/data/ui/workspacebrowser.ui:80
+#, fuzzy
+#| msgid "Change workspace directory"
+msgid "Workspace directory actions"
+msgstr "החלפת תיקיית סביבת עבודה"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:165
 #, fuzzy
 #| msgid "Open workspace"
 msgid "Add workspace"
 msgstr "פתיחת סביבת עבודה"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:138
+#: rnote-ui/data/ui/workspacebrowser.ui:171
 #, fuzzy
 #| msgid "Open workspace"
 msgid "Remove workspace"
 msgstr "פתיחת סביבת עבודה"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:195
+#, fuzzy
+#| msgid "Vector"
+msgid "Create Directory"
+msgstr "וקטור"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1607,6 +1627,12 @@ msgstr "הגיליון נשמר בהצלחה"
 #| msgid "Opening sheet failed"
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
+#, fuzzy
+#| msgid "Vector"
+msgid "New Directory name"
+msgstr "וקטור"
 
 #, fuzzy
 #~| msgid "Save current sheet as"

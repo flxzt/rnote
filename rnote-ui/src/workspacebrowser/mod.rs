@@ -1,4 +1,7 @@
+mod widget_helper;
+
 mod filerow;
+mod workspace_action;
 mod workspacelist;
 mod workspacelistentry;
 mod workspacerow;
@@ -25,6 +28,8 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
+        pub workspace_actions: gio::SimpleActionGroup,
+
         #[template_child]
         pub grid: TemplateChild<Grid>,
         #[template_child]
@@ -44,6 +49,9 @@ mod imp {
         pub files_dirlist: DirectoryList,
 
         #[template_child]
+        pub workspace_dir_actions_box: TemplateChild<gtk4::Box>,
+
+        #[template_child]
         pub workspace_bar: TemplateChild<gtk4::Box>,
         #[template_child]
         pub workspace_scroller: TemplateChild<ScrolledWindow>,
@@ -59,6 +67,7 @@ mod imp {
             primary_dirlist.set_monitored(true);
 
             Self {
+                workspace_actions: gio::SimpleActionGroup::new(),
                 grid: TemplateChild::<Grid>::default(),
                 add_workspace_button: TemplateChild::<Button>::default(),
                 remove_workspace_button: TemplateChild::<Button>::default(),
@@ -67,6 +76,7 @@ mod imp {
                 files_prefix_listbox: TemplateChild::<ListBox>::default(),
                 dir_up_row: TemplateChild::<ListBoxRow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
+                workspace_dir_actions_box: TemplateChild::<gtk4::Box>::default(),
                 files_dirlist: primary_dirlist,
                 workspace_bar: TemplateChild::<gtk4::Box>::default(),
                 workspace_scroller: TemplateChild::<ScrolledWindow>::default(),
@@ -146,6 +156,10 @@ impl WorkspaceBrowser {
 
     pub fn workspace_scroller(&self) -> ScrolledWindow {
         self.imp().workspace_scroller.clone()
+    }
+
+    pub fn workspace_dir_actions_box(&self) -> gtk4::Box {
+        self.imp().workspace_dir_actions_box.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -377,7 +391,9 @@ impl WorkspaceBrowser {
 
             self.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
                 let model = files_listview.model().expect("model for primary_listview does not exist.");
-                let fileinfo = model.item(position).expect("selected item in primary_listview does not exist.").downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
+                let fileinfo = model.item(position)
+                    .expect("selected item in primary_listview does not exist.")
+                    .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
                 if let Some(file) = fileinfo.attribute_object("standard::file") {
                     let file = file.downcast::<gio::File>().unwrap();
@@ -416,6 +432,8 @@ impl WorkspaceBrowser {
                     workspace_row.upcast::<Widget>()
                 });
         }
+
+        self.setup_dir_actions(appwindow);
     }
 
     pub fn add_workspace(&self, dir: PathBuf) {
@@ -530,5 +548,11 @@ impl WorkspaceBrowser {
 
         // current workspace index
         self.select_workspace_by_index(current_workspace_index);
+    }
+
+    fn setup_dir_actions(&self, _appwindow: &RnoteAppWindow) {
+        self.insert_action_group("workspace_action", Some(&self.imp().workspace_actions));
+
+        self.imp().workspace_actions.add_action(&workspace_action::create_dir(self));
     }
 }

@@ -66,6 +66,10 @@
             <attribute name="label" translatable="yes">Move into trash</attribute>
             <attribute name="action">filerow.trash-file</attribute>
           </item>
+          <item>
+            <attribute name="label" translatable="yes">Duplicate</attribute>
+            <attribute name="action">filerow.duplicate</attribute>
+          </item>
         </section>
       </menu>
     </object>

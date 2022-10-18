@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 20:07+0200\n"
-"PO-Revision-Date: 2022-10-17 00:37+0000\n"
+"PO-Revision-Date: 2022-10-18 15:49+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1428,7 +1428,6 @@ msgstr ""
 "modo permanente."
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"

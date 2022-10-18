@@ -21,6 +21,7 @@ const DUP_REGEX_PATTERN: &str = r"\.dup\d*(?P<rest>(.*))$";
 const DUPLICATE_SUFFIX: &str = ".dup";
 const DOT: &str = ".";
 
+/// Creates a new `duplicate` action
 pub fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 

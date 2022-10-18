@@ -2,6 +2,7 @@ use gtk4::{gio, glib, glib::clone, prelude::FileExt};
 
 use crate::workspacebrowser::FileRow;
 
+/// Creates a new `trash` action
 pub fn trash(filerow: &FileRow) -> gio::SimpleAction {
     let action_trash_file = gio::SimpleAction::new("trash-file", None);
     action_trash_file.connect_activate(clone!(@weak filerow as filerow => move |_action_trash_file, _| {

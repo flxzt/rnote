@@ -12,6 +12,7 @@ use gtk4::{
 
 use crate::{workspacebrowser::widget_helper, WorkspaceBrowser};
 
+/// Creates a new `create_dir` action
 pub fn create_dir(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
     let new_dir_action = gio::SimpleAction::new("create-dir", None);
 

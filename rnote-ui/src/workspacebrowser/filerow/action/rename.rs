@@ -13,6 +13,7 @@ use gettextrs::gettext;
 
 use crate::workspacebrowser::{widget_helper, FileRow};
 
+/// Creates a new `rename` action
 pub fn rename(filerow: &FileRow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 

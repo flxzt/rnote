@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use std::ffi::{OsStr, OsString};
 use std::path::PathBuf;
 
@@ -159,6 +162,3 @@ fn remove_dup_word(source_stem: &PathBuf) -> PathBuf {
     let removed_dup_suffix = re.replace(&source_stem, "$rest").to_string();
     PathBuf::from(removed_dup_suffix)
 }
-
-#[cfg(test)]
-mod tests;

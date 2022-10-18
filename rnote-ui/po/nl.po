@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-17 20:45+0000\n"
+"PO-Revision-Date: 2022-10-18 20:16+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -457,10 +457,8 @@ msgid "Move into trash"
 msgstr "Verplaatsen naar prullenbak"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
-msgstr "Selectie klonen"
+msgstr "Klonen"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -825,10 +823,8 @@ msgid "Move directory up"
 msgstr "Bovenliggende map openen"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
-msgstr "Werkbladmap wijzigen"
+msgstr "Werkbladmapacties"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
@@ -839,10 +835,8 @@ msgid "Remove workspace"
 msgstr "Werkblad verwijderen"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
-#| msgid "Directory"
 msgid "Create Directory"
-msgstr "Map"
+msgstr "Map aanmaken"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1429,10 +1423,8 @@ msgid "Printing document failed"
 msgstr "Het afdrukken is mislukt"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
-#| msgid "Directory"
 msgid "New Directory name"
-msgstr "Map"
+msgstr "Naam van nieuwe map"
 
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "

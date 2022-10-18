@@ -1,5 +1,5 @@
 use ink_stroke_modeler_rs::{
-    ModelerInput, ModelerInputEventType, StrokeModeler, StrokeModelerParams,
+    ModelerInput, ModelerInputEventType, PredictionParams, StrokeModeler, StrokeModelerParams,
 };
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
@@ -255,6 +255,7 @@ impl PenPathModeledBuilder {
         let params = StrokeModelerParams {
             sampling_min_output_rate: Self::MODELER_MIN_OUTPUT_RATE,
             sampling_max_outputs_per_call: Self::MODELER_MAX_OUTPUTS_PER_CALL,
+            prediction_params: PredictionParams::StrokeEnd,
             ..StrokeModelerParams::suggested()
         };
 
@@ -262,7 +263,7 @@ impl PenPathModeledBuilder {
         self.start_time = now;
         self.last_element_time = now;
         self.last_element = element;
-        self.stroke_modeler.reset(params);
+        self.stroke_modeler.reset_w_params(params);
 
         self.buffer.extend(
             self.stroke_modeler

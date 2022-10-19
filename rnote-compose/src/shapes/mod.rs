@@ -2,6 +2,7 @@
 pub mod cubbez;
 mod ellipse;
 mod line;
+mod arrow;
 /// Quadratic bezier curves
 pub mod quadbez;
 mod rectangle;
@@ -12,6 +13,7 @@ mod shapebehaviour;
 pub use cubbez::CubicBezier;
 pub use ellipse::Ellipse;
 pub use line::Line;
+pub use arrow::Arrow;
 pub use quadbez::QuadraticBezier;
 pub use rectangle::Rectangle;
 pub use shape::Shape;

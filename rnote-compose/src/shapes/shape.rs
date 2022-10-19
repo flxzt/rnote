@@ -1,6 +1,7 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use super::Arrow;
 use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
 use crate::penpath::Segment;
 use crate::transform::TransformBehaviour;
@@ -10,6 +11,10 @@ use crate::transform::TransformBehaviour;
 #[serde(rename = "shape")]
 /// A Shape type, holding the actual shape inside it
 pub enum Shape {
+    #[serde(rename = "")]
+    /// An arrow shape
+    Arrow(Arrow),
+
     #[serde(rename = "line")]
     /// A line shape
     Line(Line),

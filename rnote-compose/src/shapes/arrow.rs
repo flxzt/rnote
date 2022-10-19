@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{transform::TransformBehaviour, helpers::AABBHelpers};
+use crate::{helpers::AABBHelpers, transform::TransformBehaviour};
 
 use super::ShapeBehaviour;
 
@@ -53,7 +53,20 @@ impl ShapeBehaviour for Arrow {
 
 impl Arrow {
     pub fn split(&self, n_splits: i32) -> Vec<Self> {
-        todo!()
+        (0..n_splits)
+            .map(|i| {
+                let sub_start = self
+                    .start
+                    .lerp(&self.end, f64::from(i) / f64::from(n_splits));
+                let sub_end = self
+                    .start
+                    .lerp(&self.end, f64::from(i + 1) / f64::from(n_splits));
 
+                Arrow {
+                    start: sub_start,
+                    end: sub_end,
+                }
+            })
+            .collect::<Vec<Self>>()
     }
 }

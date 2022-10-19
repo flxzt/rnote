@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 20:07+0200\n"
+"POT-Creation-Date: 2022-10-18 18:07+0200\n"
 "PO-Revision-Date: 2022-10-06 12:33+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -299,7 +299,8 @@ msgstr "Bu, tüm belgeyi temizleyecek. Lütfen doğrulayın."
 #: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
 #: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037 rnote-ui/src/workspacebrowser/filerow.rs:233
+#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "İptal Et"
 
@@ -307,14 +308,15 @@ msgstr "İptal Et"
 msgid "Clear"
 msgstr "Temizle"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:844
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
 msgid "New Document"
 msgstr "Yeni Belge"
 
 #: rnote-ui/data/ui/dialogs.ui:18
+#, fuzzy
 msgid ""
-"Creating a new document will erase any unsaved changes. Do you want to save "
-"the current document?"
+"Creating a new document will discard any unsaved changes. Do you want to "
+"save the current document?"
 msgstr ""
 "Yeni bir belge oluşturmak kaydedilmemiş tüm değişiklikleri silecek. Geçerli "
 "belgeyi kaydetmek istiyor musunuz?"
@@ -402,12 +404,12 @@ msgstr "Sürekli"
 msgid "One per document page"
 msgstr "Belge sayfası başına bir"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:147
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
 msgstr "Çalışma alanını düzenle"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "Uygula"
 
@@ -447,7 +449,8 @@ msgstr "- dizin seçilmedi -"
 msgid "Change workspace directory"
 msgstr "Çalışma alanı dizinini değiştir"
 
-#: rnote-ui/data/ui/filerow.ui:62 rnote-ui/src/workspacebrowser/filerow.rs:238
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "Yeniden adlandır"
 
@@ -455,11 +458,17 @@ msgstr "Yeniden adlandır"
 msgid "Move into trash"
 msgstr "Çöpe taşı"
 
+#: rnote-ui/data/ui/filerow.ui:70
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate"
+msgstr "Seçimi çoğalt"
+
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
 msgstr "Yeni belge"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:846
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
 msgid "Draft"
 msgstr "Taslak"
 
@@ -505,7 +514,6 @@ msgstr "Kalıcı olarak gizlenmiş kaydırma çubukları"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 #, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently."
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgstr ""
 "Tuval üzerindeki kaydırma çubuklarının kalıcı olarak gizlenme durumunu "
@@ -517,20 +525,16 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 #, fuzzy
-#| msgid "Set the format border color"
 msgid "Set the regular cursor"
 msgstr "Biçim kenarlık rengini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 #, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing cursor"
 msgstr "Çizim"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 #, fuzzy
-#| msgid "Set the background color"
 msgid "Set the drawing cursor"
 msgstr "Arka plan rengini ayarla"
 
@@ -821,17 +825,29 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Yinele"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:42
+#: rnote-ui/data/ui/workspacebrowser.ui:49
 msgid "Move directory up"
 msgstr "Dizini yukarı taşı"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:132
+#: rnote-ui/data/ui/workspacebrowser.ui:80
+#, fuzzy
+#| msgid "Change workspace directory"
+msgid "Workspace directory actions"
+msgstr "Çalışma alanı dizinini değiştir"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
 msgstr "Çalışma alanı ekle"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:138
+#: rnote-ui/data/ui/workspacebrowser.ui:171
 msgid "Remove workspace"
 msgstr "Çalışma alanı kaldır"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:195
+#, fuzzy
+#| msgid "Directory"
+msgid "Create Directory"
+msgstr "Dizin"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -870,83 +886,113 @@ msgstr "Dokulu darbeler çiz"
 msgid "Brush configuration"
 msgstr "Fırça yapılandırma"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:149
+msgid "Path modelling"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+msgid "Simple"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:168
+msgid "Produces line segments from the raw input.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid "Curved"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
+msgid "Produces smooth, curved segments.\n"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:181
+msgid "Modeled"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:182
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
 msgstr "Düz biçim"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Pressure curve"
 msgstr "Basınç eğrisi"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Choose a pressure curve"
 msgstr "Basınç eğrisi seç"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgid "Constant"
 msgstr "Sabit"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgid "Linear"
 msgstr "Doğrusal"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Square root"
 msgstr "Karekök"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:161
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Cubic root"
 msgstr "Küpkök"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:162
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:203
 msgid "Quadratic Parabola"
 msgstr "İkinci Dereceden Parabol"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:163
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:204
 msgid "Cubic Parabola"
 msgstr "Kübik Parabol"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Textured style"
 msgstr "Dokulu biçim"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:177
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Density"
 msgstr "Sıklık"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:178
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "Yoğunluk, 10x10 alan başına nokta miktarıdır"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Stroke dots radii"
 msgstr "Darbe nokta yarıçapları"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "Dokulu darbedeki tek tek noktaların yarıçapları"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:252
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 msgid "Stroke dots position distribution"
 msgstr "Darbe noktaları konum dağılımı"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:294
 msgid "Choose a dots position probability distribution"
 msgstr "Nokta konum olasılık dağılımı seç"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:298
 msgid "Uniform"
 msgstr "Birbiçimli"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:258
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:299
 msgid "Normal"
 msgstr "Normal"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:259
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:300
 msgid "Exponential"
 msgstr "Katsayısal"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:260
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:301
 msgid "Reverse Exponential"
 msgstr "Ters Katsayısal"
 
@@ -1191,7 +1237,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
-#: rnote-ui/src/appwindow/mod.rs:408
+#: rnote-ui/src/appwindow/mod.rs:457
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
 msgid "Saving document failed."
 msgstr "Belge kaydedilemedi."
@@ -1387,6 +1433,24 @@ msgstr "Belge yazdırıldı"
 #: rnote-ui/src/appwindow/appwindowactions.rs:783
 msgid "Printing document failed"
 msgstr "Belge yazdırılamadı"
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
+#, fuzzy
+#| msgid "Directory"
+msgid "New Directory name"
+msgstr "Dizin"
+
+#~ msgid ""
+#~ "Creating a new document will erase any unsaved changes. Do you want to "
+#~ "save the current document?"
+#~ msgstr ""
+#~ "Yeni bir belge oluşturmak kaydedilmemiş tüm değişiklikleri silecek. "
+#~ "Geçerli belgeyi kaydetmek istiyor musunuz?"
+
+#~ msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#~ msgstr ""
+#~ "Tuval üzerindeki kaydırma çubuklarının kalıcı olarak gizlenme durumunu "
+#~ "ayarlar."
 
 #~ msgid "Save current document as"
 #~ msgstr "Geçerli belgeyi farklı kaydet"

@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-17 00:37+0000\n"
-"Last-Translator: Eduardo Malaspina <vaio0@swismail.com>\n"
+"PO-Revision-Date: 2022-10-21 04:05+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -315,13 +315,12 @@ msgid "New Document"
 msgstr "Documento nuevo"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
 msgstr ""
-"Al crear un documento nuevo se borrarán los cambios que no se hayan "
-"guardado. ¿Desea guardar el documento actual?"
+"Al crear un documento nuevo se descartan los cambios no guardados. ¿Desea "
+"guardar el documento actual?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
@@ -464,9 +463,8 @@ msgid "Move into trash"
 msgstr "Mover a la papelera"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "Duplicar selección"
+msgstr "Duplicar"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -518,30 +516,26 @@ msgid "Permanently hidden scrollbars"
 msgstr "Barras de desplazamiento permanentemente ocultas"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgstr ""
 "Establece si las barras de desplazamiento del lienzo se ocultan "
-"permanentemente."
+"permanentemente"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
 msgstr "Cursor regular"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
-#, fuzzy
 msgid "Set the regular cursor"
-msgstr "Establecer el color del borde del formato"
+msgstr "Fijar el cursor normal"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
-#, fuzzy
 msgid "Drawing cursor"
-msgstr "Dibujo"
+msgstr "Cursor de dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
-#, fuzzy
 msgid "Set the drawing cursor"
-msgstr "Establecer el color de fondo"
+msgstr "Fijar el cursor de dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"
@@ -836,9 +830,8 @@ msgid "Move directory up"
 msgstr "Mover directorio hacia arriba"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
 msgid "Workspace directory actions"
-msgstr "Cambiar el directorio del área de trabajo"
+msgstr "Acciones del directorio del espacio de trabajo"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 #: rnote-ui/data/ui/workspacebrowser.ui:132
@@ -851,9 +844,8 @@ msgid "Remove workspace"
 msgstr "Quitar área de trabajo"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
 msgid "Create Directory"
-msgstr "Directorio"
+msgstr "Crear directorio"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -894,33 +886,35 @@ msgstr "Configuración de los pinceles"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Path modelling"
-msgstr ""
+msgstr "Modelización de rutas"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Produce segmentos de línea a partir de la entrada bruta.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "Curvado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Produce segmentos suaves y curvos.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "Modelado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Produce una trayectoria modelada con algoritmos basados en la física.\n"
+"Da como resultado una escritura con el mejor aspecto."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
@@ -1450,9 +1444,8 @@ msgid "Error: Tried opening folder as file"
 msgstr "Error: Intento de abrir la carpeta como archivo"
 
 #: rnote-ui/src/appwindow/imexport.rs:172
-#, fuzzy
 msgid "Failed to open file: Unsupported file type."
-msgstr "No se pudo abrir el archivo, es un tipo de archivo no soportado."
+msgstr "No se pudo abrir el archivo: Tipo de archivo no admitido."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:774
 msgid "Printed document successfully"
@@ -1463,9 +1456,8 @@ msgid "Printing document failed"
 msgstr "Fallo en la impresión del documento"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
 msgid "New Directory name"
-msgstr "Directorio"
+msgstr "Nombre del directorio nuevo"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 msgid ""

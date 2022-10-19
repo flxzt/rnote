@@ -48,16 +48,22 @@ pub const WORKSPACELISTENTRY_ICONS_LIST: &[&'static str] = &[
 ];
 
 pub const CURSORS_LIST: &[&'static str] = &[
+    "cursor-crosshair-small",
+    "cursor-crosshair-medium",
+    "cursor-crosshair-large",
     "cursor-dot-small",
     "cursor-dot-medium",
     "cursor-dot-large",
-    "cursor-teardrop-n-small",
-    "cursor-teardrop-n-medium",
-    "cursor-teardrop-n-large",
     "cursor-teardrop-nw-small",
     "cursor-teardrop-nw-medium",
     "cursor-teardrop-nw-large",
     "cursor-teardrop-ne-small",
     "cursor-teardrop-ne-medium",
     "cursor-teardrop-ne-large",
+    "cursor-teardrop-n-small",
+    "cursor-teardrop-n-medium",
+    "cursor-teardrop-n-large",
+    "cursor-beam-small",
+    "cursor-beam-medium",
+    "cursor-beam-large",
 ];

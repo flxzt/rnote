@@ -382,7 +382,8 @@
               <child>
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable constraints when this switch is off/on</property>
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable constraints
+when this switch is off/on</property>
                   <child type="suffix">
                     <object class="GtkSwitch" id="constraint_enabled_switch">
                       <property name="valign">center</property>

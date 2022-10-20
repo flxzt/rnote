@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-18 14:04+0000\n"
+"PO-Revision-Date: 2022-10-21 04:05+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -471,9 +471,8 @@ msgid "Move into trash"
 msgstr "Áthelyezés a kukába"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "Kijelölés duplikálása"
+msgstr "Megkettőzés"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -838,9 +837,8 @@ msgid "Move directory up"
 msgstr "Könyvtár feljebb mozgatása"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
 msgid "Workspace directory actions"
-msgstr "Munkafelület-könyvtár módosítása"
+msgstr "Munkafelületi könyvtárműveletek"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 #: rnote-ui/data/ui/workspacebrowser.ui:132
@@ -853,9 +851,8 @@ msgid "Remove workspace"
 msgstr "Munkafelület eltávolítása"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
 msgid "Create Directory"
-msgstr "Könyvtár"
+msgstr "Könyvtár létrehozása"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1064,7 +1061,7 @@ msgstr "Összes vonal kijelölésének megszüntetése"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:154
 msgid "Duplicate selection"
-msgstr "Kijelölés duplikálása"
+msgstr "Kijelölés megkettőzése"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
@@ -1474,9 +1471,8 @@ msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
 msgid "New Directory name"
-msgstr "Könyvtár"
+msgstr "Új könyvtár neve"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 msgid ""

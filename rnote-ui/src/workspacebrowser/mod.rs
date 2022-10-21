@@ -192,6 +192,7 @@ impl WorkspaceBrowser {
             clone!(@weak self as workspacebrowser, @weak appwindow, @weak remove_workspace_button, @weak edit_workspace_button => move |folders_model, _, _, _| {
                 remove_workspace_button.set_sensitive(folders_model.n_items() > 1);
                 edit_workspace_button.set_sensitive(folders_model.n_items() > 0);
+
                 workspacebrowser.save_to_settings(&appwindow.app_settings());
             }),
         );
@@ -199,6 +200,7 @@ impl WorkspaceBrowser {
         self.imp().workspace_listbox.connect_selected_rows_changed(clone!(@weak appwindow, @weak self as workspacebrowser => move |_| {
             if let Some(dir) = workspacebrowser.current_selected_workspace_row().map(|row| row.entry().dir()) {
                 workspacebrowser.imp().files_dirlist.set_file(Some(&gio::File::for_path(dir)));
+
                 workspacebrowser.save_to_settings(&appwindow.app_settings());
             }
 
@@ -553,6 +555,8 @@ impl WorkspaceBrowser {
     fn setup_dir_actions(&self, _appwindow: &RnoteAppWindow) {
         self.insert_action_group("workspace_action", Some(&self.imp().workspace_actions));
 
-        self.imp().workspace_actions.add_action(&workspace_action::create_dir(self));
+        self.imp()
+            .workspace_actions
+            .add_action(&workspace_action::create_dir(self));
     }
 }

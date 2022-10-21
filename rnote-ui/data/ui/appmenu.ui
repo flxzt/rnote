@@ -20,6 +20,24 @@
           </item>
         </section>
         <section>
+          <submenu>
+            <attribute name="label" translatable="yes">Color scheme</attribute>
+            <item>
+              <attribute name="label" translatable="yes">Use system colors</attribute>
+              <attribute name="action">app.color-scheme</attribute>
+              <attribute name="target">default</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Use light colors</attribute>
+              <attribute name="action">app.color-scheme</attribute>
+              <attribute name="target">force-light</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Use dark colors</attribute>
+              <attribute name="action">app.color-scheme</attribute>
+              <attribute name="target">force-dark</attribute>
+            </item>
+          </submenu>
           <item>
             <attribute name="label" translatable="yes">Developer mode</attribute>
             <attribute name="toggle" />
@@ -107,57 +125,6 @@
                   <property name="icon_name">appwindow-fullscreen-symbolic</property>
                   <property name="tooltip_text" translatable="yes">Toggle fullscreen</property>
                   <property name="action-name">win.fullscreen</property>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkBox">
-              <property name="orientation">horizontal</property>
-              <property name="homogeneous">true</property>
-              <property name="spacing">24</property>
-              <child>
-                <object class="GtkToggleButton" id="default_theme_toggle">
-                  <property name="tooltip_text" translatable="yes">Use system colors preference</property>
-                  <property name="height-request">50</property>
-                  <property name="width-request">50</property>
-                  <property name="halign">center</property>
-                  <property name="valign">start</property>
-                  <style>
-                    <class name="theme_selector" />
-                    <class name="default_theme" />
-                    <class name="circular" />
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="GtkToggleButton" id="light_theme_toggle">
-                  <property name="tooltip_text" translatable="yes">Use light colors</property>
-                  <property name="height-request">50</property>
-                  <property name="width-request">50</property>
-                  <property name="halign">center</property>
-                  <property name="valign">start</property>
-                  <property name="group">default_theme_toggle</property>
-                  <style>
-                    <class name="theme_selector" />
-                    <class name="light_theme" />
-                    <class name="circular" />
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="GtkToggleButton" id="dark_theme_toggle">
-                  <property name="tooltip_text" translatable="yes">Use dark colors</property>
-                  <property name="height-request">50</property>
-                  <property name="width-request">50</property>
-                  <property name="halign">center</property>
-                  <property name="valign">start</property>
-                  <property name="group">default_theme_toggle</property>
-                  <style>
-                    <class name="theme_selector" />
-                    <class name="dark_theme" />
-                    <class name="circular" />
-                  </style>
                 </object>
               </child>
             </object>

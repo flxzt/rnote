@@ -1,9 +1,6 @@
 use super::RnoteAppWindow;
 use crate::config;
-use crate::{
-    app::RnoteApp,
-    {dialogs, RnoteCanvas},
-};
+use crate::{dialogs, RnoteCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
@@ -943,7 +940,7 @@ impl RnoteAppWindow {
     }
 
     pub fn setup_action_accels(&self) {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         app.set_accels_for_action("win.close-active", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);

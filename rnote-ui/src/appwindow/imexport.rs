@@ -5,13 +5,14 @@ use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*};
 use rnote_engine::strokes::{BitmapImage, Stroke, VectorImage};
 
-use crate::{dialogs, RnoteApp};
+use crate::dialogs;
 
 use super::RnoteAppWindow;
 
 impl RnoteAppWindow {
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
+
         match crate::utils::FileType::lookup_file_type(file) {
             crate::utils::FileType::RnoteFile | crate::utils::FileType::XoppFile => {
                 // Set as input file to hand it to the dialog
@@ -55,7 +56,7 @@ impl RnoteAppWindow {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let main_cx = glib::MainContext::default();
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
         let file = file.clone();
 
         match crate::utils::FileType::lookup_file_type(&file) {
@@ -185,7 +186,7 @@ impl RnoteAppWindow {
     where
         P: AsRef<Path>,
     {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let store_snapshot_receiver = self
             .canvas()
@@ -229,11 +230,7 @@ impl RnoteAppWindow {
             .borrow_mut()
             .open_from_xopp_bytes(bytes)?;
 
-        self.application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .set_input_file(None);
+        self.app().set_input_file(None);
         self.canvas().set_output_file(None);
 
         self.canvas().set_unsaved_changes(true);
@@ -255,7 +252,7 @@ impl RnoteAppWindow {
         // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
@@ -291,7 +288,7 @@ impl RnoteAppWindow {
         // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
@@ -326,7 +323,7 @@ impl RnoteAppWindow {
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()

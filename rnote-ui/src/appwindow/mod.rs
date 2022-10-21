@@ -1147,7 +1147,7 @@ impl RnoteAppWindow {
         // actions and settings AFTER widget inits
         self.setup_actions();
         self.setup_action_accels();
-        self.setup_settings();
+        self.setup_settings_binds();
 
         // Load settings
         self.load_settings();

@@ -1,4 +1,3 @@
-use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{gio, glib, CompositeTemplate, MenuButton, PopoverMenu, ToggleButton, Widget};
@@ -15,12 +14,6 @@ mod imp {
         pub popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
         pub menu_model: TemplateChild<gio::MenuModel>,
-        #[template_child]
-        pub default_theme_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub light_theme_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub dark_theme_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub lefthanded_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -95,18 +88,6 @@ impl AppMenu {
         self.imp().menu_model.get()
     }
 
-    pub fn default_theme_toggle(&self) -> ToggleButton {
-        self.imp().default_theme_toggle.get()
-    }
-
-    pub fn light_theme_toggle(&self) -> ToggleButton {
-        self.imp().light_theme_toggle.get()
-    }
-
-    pub fn dark_theme_toggle(&self) -> ToggleButton {
-        self.imp().dark_theme_toggle.get()
-    }
-
     pub fn lefthanded_toggle(&self) -> ToggleButton {
         self.imp().lefthanded_toggle.get()
     }
@@ -116,75 +97,6 @@ impl AppMenu {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let app = appwindow
-            .application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap();
-
-        self.default_theme_toggle()
-            .bind_property("active", &app.style_manager(), "color-scheme")
-            .transform_to(|_, value| {
-                if value.get::<bool>().unwrap() {
-                    Some(adw::ColorScheme::Default.to_value())
-                } else {
-                    None
-                }
-            })
-            .transform_from(|_, value| {
-                let value = value.get::<adw::ColorScheme>().unwrap();
-
-                if value == adw::ColorScheme::Default {
-                    Some(true.to_value())
-                } else {
-                    None
-                }
-            })
-            .flags(glib::BindingFlags::BIDIRECTIONAL)
-            .build();
-
-        self.light_theme_toggle()
-            .bind_property("active", &app.style_manager(), "color-scheme")
-            .transform_to(|_, value| {
-                if value.get::<bool>().unwrap() {
-                    Some(adw::ColorScheme::ForceLight.to_value())
-                } else {
-                    None
-                }
-            })
-            .transform_from(|_, value| {
-                let value = value.get::<adw::ColorScheme>().unwrap();
-
-                if value == adw::ColorScheme::ForceLight {
-                    Some(true.to_value())
-                } else {
-                    None
-                }
-            })
-            .flags(glib::BindingFlags::BIDIRECTIONAL)
-            .build();
-
-        self.dark_theme_toggle()
-            .bind_property("active", &app.style_manager(), "color-scheme")
-            .transform_to(|_, value| {
-                if value.get::<bool>().unwrap() {
-                    Some(adw::ColorScheme::ForceDark.to_value())
-                } else {
-                    None
-                }
-            })
-            .transform_from(|_, value| {
-                let value = value.get::<adw::ColorScheme>().unwrap();
-
-                if value == adw::ColorScheme::ForceDark {
-                    Some(true.to_value())
-                } else {
-                    None
-                }
-            })
-            .flags(glib::BindingFlags::BIDIRECTIONAL)
-            .build();
-
         self.imp()
             .lefthanded_toggle
             .bind_property("active", appwindow, "righthanded")

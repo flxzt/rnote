@@ -49,6 +49,12 @@
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/emojichooser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-beam-small.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-beam-medium.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-beam-large.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-crosshair-small.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-crosshair-medium.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-crosshair-large.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-small.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-medium.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-large.svg</file>

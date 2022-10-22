@@ -10,8 +10,8 @@ use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::{self, RnoteAppWindow};
+use crate::config;
 use crate::workspacebrowser::WorkspaceRow;
-use crate::{app::RnoteApp, config};
 use crate::{globals, IconPicker};
 
 // About Dialog
@@ -109,12 +109,8 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
 
             appwindow.canvas().set_unsaved_changes(false);
             appwindow.canvas().set_empty(true);
-            appwindow
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .set_input_file(None);
+
+            appwindow.app().set_input_file(None);
             appwindow.canvas().set_output_file(None);
         };
 
@@ -307,13 +303,7 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
 
     dialog_import_pdf.set_transient_for(Some(appwindow));
 
-    if let Some(input_file) = appwindow
-        .application()
-        .unwrap()
-        .downcast::<RnoteApp>()
-        .unwrap()
-        .input_file()
-    {
+    if let Some(input_file) = appwindow.app().input_file() {
         if let Ok(poppler_doc) =
             poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
         {
@@ -410,12 +400,12 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
                 ResponseType::Cancel => {
                     dialog_import_pdf.close();
 
-                    appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
+                    appwindow.app().set_input_file(None);
                 }
                 _ => {
                     dialog_import_pdf.close();
 
-                    appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
+                    appwindow.app().set_input_file(None);
                 }
             }
         }),
@@ -576,7 +566,7 @@ pub fn dialog_open_doc(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_open_file.file() {
-                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(Some(file));
+                        appwindow.app().set_input_file(Some(file));
 
                         if !appwindow.unsaved_changes() {
                             if let Some(input_file) = appwindow.app().input_file().as_ref() {

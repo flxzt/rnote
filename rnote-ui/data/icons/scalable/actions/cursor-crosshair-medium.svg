@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64"
+   height="64"
+   id="svg5594"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs5596" />
+  <metadata
+     id="metadata5599">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     id="rect342-5-6-2-9-1-2-7"
+     style="font-variation-settings:'wght' 800;fill:#ffffff;fill-opacity:1;stroke-width:0.903739;stroke-linejoin:bevel"
+     d="M 33.340631,31.240277 37.527201,30.611318 V 33.388683 L 33.340631,32.759725 Z" />
+  <path
+     id="rect342"
+     style="font-variation-settings:'wght' 800;fill:#262626;stroke-width:0.80168;stroke-linejoin:bevel"
+     d="M 33.57703,31.515964 37.290803,30.958036 V 33.041967 L 33.57703,32.48404 Z" />
+  <path
+     id="rect342-5-6-2-9-1"
+     style="font-variation-settings:'wght' 800;fill:#ffffff;fill-opacity:1;stroke-width:0.903739;stroke-linejoin:bevel"
+     d="M 31.240275,30.659373 30.611316,26.472802 H 33.388681 L 32.759723,30.659373 Z" />
+  <path
+     id="rect342-5-6-2-9-1-2"
+     style="font-variation-settings:'wght' 800;fill:#ffffff;fill-opacity:1;stroke-width:0.903739;stroke-linejoin:bevel"
+     d="M 30.659369,32.759727 26.472799,33.388686 V 30.611321 L 30.659369,31.240277 Z" />
+  <path
+     id="rect342-5"
+     style="font-variation-settings:'wght' 800;fill:#262626;stroke-width:0.80168;stroke-linejoin:bevel"
+     d="M 31.515962,30.422972 30.958034,26.7092 H 33.041965 L 32.484038,30.422972 Z" />
+  <path
+     id="rect342-5-6"
+     style="font-variation-settings:'wght' 800;fill:#262626;stroke-width:0.80168;stroke-linejoin:bevel"
+     d="M 30.42297,32.48404 26.709197,33.041968 V 30.958037 L 30.42297,31.515964 Z" />
+  <path
+     id="rect342-5-6-2-9"
+     style="font-variation-settings:'wght' 800;fill:#ffffff;fill-opacity:1;stroke-width:0.903739;stroke-linejoin:bevel"
+     d="M 32.759723,33.340631 33.388682,37.527202 H 30.611318 L 31.240275,33.340631 Z" />
+  <path
+     id="rect342-5-6-2"
+     style="font-variation-settings:'wght' 800;fill:#262626;stroke-width:0.80168;stroke-linejoin:bevel"
+     d="M 32.484038,33.577032 33.041966,37.290804 H 30.958035 L 31.515962,33.577032 Z" />
+</svg>

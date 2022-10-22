@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64"
+   height="64"
+   id="svg5594"
+   version="1.1"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs5596">
+    <linearGradient
+       id="linearGradient933">
+      <stop
+         style="stop-color:#ff2a2a;stop-opacity:1;"
+         offset="0.71272725"
+         id="stop2907" />
+      <stop
+         style="stop-color:#ff0000;stop-opacity:0;"
+         offset="1"
+         id="stop931" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient962">
+      <stop
+         style="stop-color:#a90000;stop-opacity:1;"
+         offset="0.51272738"
+         id="stop958" />
+      <stop
+         style="stop-color:#370000;stop-opacity:1;"
+         offset="1"
+         id="stop1073" />
+    </linearGradient>
+    <radialGradient
+       xlink:href="#linearGradient962"
+       id="radialGradient964"
+       cx="32"
+       cy="32"
+       fx="32"
+       fy="32"
+       r="4.095099"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.92859,0,0,1.92859,-29.714884,-29.714884)" />
+    <radialGradient
+       xlink:href="#linearGradient933"
+       id="radialGradient964-3"
+       cx="32"
+       cy="32"
+       fx="32"
+       fy="32"
+       r="4.095099"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0636313,0,0,2.0636313,-34.036206,-34.036206)" />
+  </defs>
+  <metadata
+     id="metadata5599">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <circle
+     style="font-variation-settings:'wght' 800;fill:url(#radialGradient964-3);fill-opacity:1;stroke-width:6.43196;stroke-linejoin:bevel"
+     id="path290-3-5"
+     cx="32"
+     cy="32"
+     r="8.4507761" />
+  <circle
+     style="font-variation-settings:'wght' 800;fill:#ff6363;fill-opacity:1;stroke-width:3.21159;stroke-linejoin:bevel"
+     id="path290"
+     cx="32"
+     cy="32"
+     r="4.2196307" />
+</svg>

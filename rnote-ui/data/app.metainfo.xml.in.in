@@ -66,6 +66,23 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.6-beta1" date="2022-10-18">
+      <description>
+        <p>this release changes: (WIP)</p>
+        <ul>
+          <li>feature: a new brush option to select between different path modelers. Added a physics-based modelling type (as default) which decreases jitter and improves handwriting smoothness. It also includes a predictor to minimize input lag.</li>
+          <li>feature: switch between different cursors while hovering and drawing, with new "teardrop" cursors in different variations and sizes.</li>
+          <li>feature: a new `duplicate` file action and a new `create directory` workspace action (thanks @TornaxO7 !)</li>
+          <li>improved: better palm rejection while drawing with a stylus</li>
+          <li>improved: better export filenames</li>
+          <li>improved: typewriter input now accepts letter accents, improved unicode support</li>
+          <li>fix: background pattern tile rendering size</li>
+          <li>fix: scrolling with touchpad was not possible when the "permanent hidden scrollbars" option was enabled</li>
+          <li>fix: broken SVG export</li>
+          <li>fix: image layers when exporting to .xopp</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.5" date="2022-09-29">
       <description>
         <p>this release changes:</p>

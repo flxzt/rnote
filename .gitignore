@@ -15,5 +15,6 @@ rnote-ui/src/config.rs
 /temp/*
 *.mo
 *.code-workspace
+.idea/
 
 .toggletasks.json

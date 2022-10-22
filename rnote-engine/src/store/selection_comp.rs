@@ -4,17 +4,11 @@ use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "selection_component")]
 pub struct SelectionComponent {
     #[serde(default, rename = "selected")]
     pub selected: bool,
-}
-
-impl Default for SelectionComponent {
-    fn default() -> Self {
-        Self { selected: false }
-    }
 }
 
 impl SelectionComponent {

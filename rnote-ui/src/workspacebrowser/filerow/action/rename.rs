@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 
 use gtk4::{
     gio, glib,
@@ -40,7 +40,7 @@ pub fn rename(filerow: &FileRow) -> gio::SimpleAction {
     rename_action
 }
 
-fn create_entry(current_path: &PathBuf) -> Entry {
+fn create_entry(current_path: &Path) -> Entry {
     let entry_name = current_path
         .file_name()
         .map(|current_file_name| current_file_name.to_string_lossy().to_string())

@@ -388,10 +388,11 @@ impl PenBehaviour for Selector {
 
                             selection.push(key_to_add);
 
-                            engine_view
-                                .store
-                                .bounds_for_strokes(selection)
-                                .map(|new_bounds| *selection_bounds = new_bounds);
+                            if let Some(new_bounds) =
+                                engine_view.store.bounds_for_strokes(selection)
+                            {
+                                *selection_bounds = new_bounds;
+                            }
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
                         {
@@ -520,10 +521,11 @@ impl PenBehaviour for Selector {
                                 *rotation_center,
                             );
 
-                            engine_view
-                                .store
-                                .bounds_for_strokes(selection)
-                                .map(|new_bounds| *selection_bounds = new_bounds);
+                            if let Some(new_bounds) =
+                                engine_view.store.bounds_for_strokes(selection)
+                            {
+                                *selection_bounds = new_bounds;
+                            }
                             *current_rotation_angle = new_rotation_angle;
                         }
                     }
@@ -606,10 +608,9 @@ impl PenBehaviour for Selector {
                     engine_view.camera.image_scale(),
                 );
 
-                engine_view
-                    .store
-                    .bounds_for_strokes(selection)
-                    .map(|new_bounds| *selection_bounds = new_bounds);
+                if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
+                    *selection_bounds = new_bounds;
+                }
                 *modify_state = ModifyState::Up;
 
                 engine_view

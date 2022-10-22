@@ -9,17 +9,11 @@ use rnote_compose::PenPath;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "trash_component")]
 pub struct TrashComponent {
     #[serde(rename = "trashed")]
     pub trashed: bool,
-}
-
-impl Default for TrashComponent {
-    fn default() -> Self {
-        Self { trashed: false }
-    }
 }
 
 /// Systems that are related trashing

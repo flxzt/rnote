@@ -168,7 +168,7 @@ impl WorkspaceBrowser {
 
         self.imp().add_workspace_button.get().connect_clicked(
             clone!(@weak self as workspacebrowser, @weak appwindow => move |_add_workspace_button| {
-                let dir = workspacebrowser.selected_workspace_dir().unwrap_or(PathBuf::from("./"));
+                let dir = workspacebrowser.selected_workspace_dir().unwrap_or_else(|| PathBuf::from("./"));
                 workspacebrowser.add_workspace(dir);
 
                 // Popup the edit dialog after creation

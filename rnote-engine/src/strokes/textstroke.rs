@@ -455,7 +455,7 @@ impl TextStyle {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "textstroke")]
 pub struct TextStroke {
     #[serde(rename = "text")]
@@ -465,16 +465,6 @@ pub struct TextStroke {
     pub transform: Transform,
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
-}
-
-impl Default for TextStroke {
-    fn default() -> Self {
-        Self {
-            text: String::default(),
-            transform: Transform::default(),
-            text_style: TextStyle::default(),
-        }
-    }
 }
 
 impl TransformBehaviour for TextStroke {

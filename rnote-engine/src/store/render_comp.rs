@@ -26,21 +26,11 @@ impl Default for RenderCompState {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct RenderComponent {
     pub images: Vec<render::Image>,
     pub rendernodes: Vec<gsk::RenderNode>,
     pub(super) state: RenderCompState,
-}
-
-impl Default for RenderComponent {
-    fn default() -> Self {
-        Self {
-            state: RenderCompState::default(),
-            images: vec![],
-            rendernodes: vec![],
-        }
-    }
 }
 
 impl StrokeStore {

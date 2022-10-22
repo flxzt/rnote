@@ -58,22 +58,13 @@ impl Ord for StrokeLayer {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
 #[serde(default, rename = "chrono_component")]
 pub struct ChronoComponent {
     #[serde(rename = "t")]
     t: u32,
     #[serde(rename = "layer")]
     pub layer: StrokeLayer,
-}
-
-impl Default for ChronoComponent {
-    fn default() -> Self {
-        Self {
-            t: 0,
-            layer: StrokeLayer::default(),
-        }
-    }
 }
 
 impl ChronoComponent {

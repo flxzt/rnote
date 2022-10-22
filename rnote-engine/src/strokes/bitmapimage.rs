@@ -20,7 +20,7 @@ use gtk4::{cairo, glib};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
 pub struct BitmapImage {
     /// The bounds field of the image should not be used to determine the stroke bounds. Use rectangle.bounds() instead.
@@ -28,15 +28,6 @@ pub struct BitmapImage {
     pub image: render::Image,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,
-}
-
-impl Default for BitmapImage {
-    fn default() -> Self {
-        Self {
-            image: render::Image::default(),
-            rectangle: Rectangle::default(),
-        }
-    }
 }
 
 impl StrokeBehaviour for BitmapImage {

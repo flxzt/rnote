@@ -387,13 +387,15 @@ impl RnoteAppWindow {
         file: &gio::File,
         with_background: bool,
     ) -> anyhow::Result<()> {
-        if let Some(selection_svg_data) = self
+        let future_replace_file_action = self
             .canvas()
             .engine()
             .borrow()
             .export_selection_as_svg_string(with_background)?
-        {
-            crate::utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
+            .map(|selection_svg_data| crate::utils::replace_file_future(selection_svg_data.into_bytes(), file));
+
+        if let Some(replace_file_action) = future_replace_file_action {
+            replace_file_action.await?;
         }
 
         Ok(())
@@ -422,13 +424,15 @@ impl RnoteAppWindow {
         format: image::ImageOutputFormat,
         with_background: bool,
     ) -> anyhow::Result<()> {
-        if let Some(selection_svg_data) = self
+        let future_replace_action = self
             .canvas()
             .engine()
             .borrow()
             .export_selection_as_bitmapimage_bytes(format, with_background)?
-        {
-            crate::utils::replace_file_future(selection_svg_data, file).await?;
+            .map(|selection_svg_data| crate::utils::replace_file_future(selection_svg_data, file));
+
+        if let Some(replace_action) = future_replace_action {
+            replace_action.await?;
         }
 
         Ok(())

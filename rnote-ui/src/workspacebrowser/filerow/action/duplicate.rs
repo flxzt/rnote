@@ -1,5 +1,5 @@
 use std::ffi::{OsStr, OsString};
-use std::path::PathBuf;
+use std::path::{PathBuf, Path};
 
 use fs_extra::dir::{CopyOptions, TransitProcessResult};
 use fs_extra::{copy_items_with_progress, TransitProcess};
@@ -98,9 +98,9 @@ where
 
 /// returns a suitable destination path from the given source path
 /// by adding `.dup` as often as needed to the source-path
-fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
+fn get_destination_path(source_path: &Path) -> Option<PathBuf> {
     let mut duplicate_index = 0;
-    let mut destination_path = source_path.clone();
+    let mut destination_path = source_path.to_path_buf();
     let adjusted_source_path = remove_dup_word(source_path);
 
     if let Some(source_stem) = adjusted_source_path.file_stem() {
@@ -152,7 +152,7 @@ fn generate_duplicate_filename(
     duplicate_filename
 }
 
-fn remove_dup_word(source_stem: &PathBuf) -> PathBuf {
+fn remove_dup_word(source_stem: &Path) -> PathBuf {
     let source_stem = source_stem.to_string_lossy().to_string();
 
     let re = Regex::new(DUP_REGEX_PATTERN).unwrap();

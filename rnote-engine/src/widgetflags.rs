@@ -1,6 +1,6 @@
 /// Flags returned to the widget holding the engine
 #[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct WidgetFlags {
     /// application should be quit
     pub quit: bool,
@@ -23,23 +23,6 @@ pub struct WidgetFlags {
     /// Changes whether text preprocessing should be enabled. Meaning, instead of key events text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter
     pub enable_text_preprocessing: Option<bool>,
-}
-
-impl Default for WidgetFlags {
-    fn default() -> Self {
-        Self {
-            quit: false,
-            redraw: false,
-            resize: false,
-            refresh_ui: false,
-            indicate_changed_store: false,
-            update_view: false,
-            hide_scrollbars: None,
-            hide_undo: None,
-            hide_redo: None,
-            enable_text_preprocessing: None,
-        }
-    }
 }
 
 impl WidgetFlags {

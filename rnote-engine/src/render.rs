@@ -92,7 +92,7 @@ impl TryFrom<ImageMemoryFormat> for piet::ImageFormat {
 }
 
 /// A pixel image
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "image")]
 pub struct Image {
     /// The image data. is (de) serialized in base64 encoding
@@ -110,18 +110,6 @@ pub struct Image {
     /// the memory format
     #[serde(rename = "memory_format")]
     pub memory_format: ImageMemoryFormat,
-}
-
-impl Default for Image {
-    fn default() -> Self {
-        Self {
-            data: vec![],
-            rect: Rectangle::default(),
-            pixel_width: 0,
-            pixel_height: 0,
-            memory_format: ImageMemoryFormat::default(),
-        }
-    }
 }
 
 impl From<image::DynamicImage> for Image {

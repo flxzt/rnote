@@ -340,16 +340,26 @@ fn setup_workspacelist(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
 }
 
 fn setup_workspace_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-    wb.imp().workspace_listbox.connect_selected_rows_changed(
-        clone!(@weak appwindow, @weak wb => move |_| {
-            if let Some(dir) = wb.current_selected_workspace_row().map(|row| row.entry().dir()) {
-                wb.imp().files_dirlist.set_file(Some(&gio::File::for_path(dir)));
+    let workspace_listbox = wb.imp().workspace_listbox.get();
+    workspace_listbox.connect_selected_rows_changed(clone!(@weak appwindow, @weak wb => move |_| {
+        if let Some(dir) = wb.current_selected_workspace_row().map(|row| row.entry().dir()) {
+            wb.imp().files_dirlist.set_file(Some(&gio::File::for_path(dir)));
 
-                wb.save_to_settings(&appwindow.app_settings());
-            }
+            wb.save_to_settings(&appwindow.app_settings());
+        }
 
-        }),
-    );
+    }));
+
+    {
+        let appwindow_c = appwindow.clone();
+        workspace_listbox.bind_model(Some(&wb.imp().workspace_list), move |obj| {
+            let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
+            let workspace_row = WorkspaceRow::new(entry);
+            workspace_row.init(&appwindow_c);
+
+            workspace_row.upcast::<Widget>()
+        });
+    }
 }
 
 fn setup_prefix_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
@@ -565,16 +575,4 @@ fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }));
-
-    // setup workspace rows
-    let appwindow_c = appwindow.clone();
-    wb.imp()
-        .workspace_listbox
-        .bind_model(Some(&wb.imp().workspace_list), move |obj| {
-            let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
-            let workspace_row = WorkspaceRow::new(entry);
-            workspace_row.init(&appwindow_c);
-
-            workspace_row.upcast::<Widget>()
-        });
 }

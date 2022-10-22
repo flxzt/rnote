@@ -109,7 +109,7 @@ impl TryFrom<u32> for SelectorStyle {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 #[serde(default, rename = "selector")]
 pub struct Selector {
     #[serde(rename = "style")]
@@ -118,16 +118,6 @@ pub struct Selector {
     pub resize_lock_aspectratio: bool,
     #[serde(skip)]
     pub(super) state: SelectorState,
-}
-
-impl Default for Selector {
-    fn default() -> Self {
-        Self {
-            style: SelectorStyle::default(),
-            resize_lock_aspectratio: false,
-            state: SelectorState::default(),
-        }
-    }
 }
 
 impl PenBehaviour for Selector {

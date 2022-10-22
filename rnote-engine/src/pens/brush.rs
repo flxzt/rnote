@@ -88,15 +88,9 @@ impl std::ops::DerefMut for MarkerOptions {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename = "solid_options")]
 pub struct SolidOptions(SmoothOptions);
-
-impl Default for SolidOptions {
-    fn default() -> Self {
-        Self(SmoothOptions::default())
-    }
-}
 
 impl std::ops::Deref for SolidOptions {
     type Target = SmoothOptions;

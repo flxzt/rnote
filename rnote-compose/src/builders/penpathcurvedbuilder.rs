@@ -30,8 +30,7 @@ pub struct PenPathCurvedBuilder {
 
 impl ShapeBuilderCreator for PenPathCurvedBuilder {
     fn start(element: Element, _now: Instant) -> Self {
-        let mut buffer = Vec::new();
-        buffer.push(element);
+        let buffer = vec![element];
 
         Self {
             state: PenPathCurvedBuilderState::Start,

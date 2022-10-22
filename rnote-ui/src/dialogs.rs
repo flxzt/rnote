@@ -466,7 +466,7 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         change_workspace_name_entryrow.set_text(row.entry().name().as_str());
         change_workspace_icon_menubutton.set_icon_name(row.entry().icon().as_str());
         change_workspace_color_button.set_rgba(&row.entry().color());
-        change_workspace_dir_label.set_label(&row.entry().dir().as_str());
+        change_workspace_dir_label.set_label(row.entry().dir().as_str());
     }
 
     change_workspace_name_entryrow.connect_apply(

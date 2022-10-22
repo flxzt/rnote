@@ -24,7 +24,7 @@ pub fn create_dir(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
 
             workspacebrowser.workspace_dir_actions_box().append(&popover);
 
-            connect_apply_button(&apply_button, &popover, &entry, parent_path.clone());
+            connect_apply_button(&apply_button, &popover, &entry, parent_path);
 
             popover.popup();
         }
@@ -57,7 +57,7 @@ fn connect_apply_button(
     parent_path: PathBuf,
 ) {
     apply_button.connect_clicked(clone!(@weak popover, @weak entry => move |_| {
-        let new_file_path = parent_path.join(entry.text().to_string());
+        let new_file_path = parent_path.join(&entry.text());
         let new_file = gio::File::for_path(new_file_path.clone());
 
         if new_file.query_exists(None::<&gio::Cancellable>) {

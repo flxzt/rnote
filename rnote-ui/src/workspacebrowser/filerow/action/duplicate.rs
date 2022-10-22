@@ -106,7 +106,7 @@ fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
     if let Some(source_stem) = adjusted_source_path.file_stem() {
         loop {
             let destination_filename = generate_duplicate_filename(
-                &source_stem,
+                source_stem,
                 adjusted_source_path.extension(),
                 duplicate_index,
             );

@@ -53,7 +53,7 @@ impl ShapeBuilderBehaviour for PenPathSimpleBuilder {
             PenEvent::Up { element, .. } => {
                 self.buffer.push_back(element);
 
-                let segment = self.try_build_segments().unwrap_or_else(|| vec![]);
+                let segment = self.try_build_segments().unwrap_or_default();
 
                 self.reset();
 

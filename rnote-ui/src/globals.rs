@@ -1,7 +1,7 @@
 pub const APP_LICENSE: gtk4::License = gtk4::License::Gpl30;
 
 // Make sure the icons are actually installed
-pub const WORKSPACELISTENTRY_ICONS_LIST: &[&'static str] = &[
+pub const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[
     "workspacelistentryicon-bank-symbolic",
     "workspacelistentryicon-bookmark-symbolic",
     "workspacelistentryicon-book-symbolic",
@@ -47,7 +47,7 @@ pub const WORKSPACELISTENTRY_ICONS_LIST: &[&'static str] = &[
     "workspacelistentryicon-weight-symbolic",
 ];
 
-pub const CURSORS_LIST: &[&'static str] = &[
+pub const CURSORS_LIST: &[&str] = &[
     "cursor-crosshair-small",
     "cursor-crosshair-medium",
     "cursor-crosshair-large",

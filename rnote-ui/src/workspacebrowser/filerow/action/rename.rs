@@ -28,8 +28,8 @@ pub fn rename(filerow: &FileRow) -> gio::SimpleAction {
                     filerow.menubutton_box().append(&popover);
 
                     connect_entry(&entry, &apply_button, parent_path.clone());
-                    connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),
-                        current_file.clone());
+                    connect_apply_button(&apply_button, &popover, &entry, parent_path,
+                        current_file);
 
                     popover.popup();
                 }
@@ -64,7 +64,7 @@ fn create_label() -> Label {
 
 fn connect_entry(entry: &Entry, apply_button: &Button, parent_path: PathBuf) {
     entry.connect_text_notify(clone!(@weak apply_button => move |entry2| {
-        let new_file_path = parent_path.join(entry2.text().to_string());
+        let new_file_path = parent_path.join(&entry2.text());
         let new_file = gio::File::for_path(new_file_path);
 
         // Disable apply button to prevent overwrites when file already exists
@@ -81,7 +81,7 @@ fn connect_apply_button(
     current_file: gio::File,
 ) {
     apply_button.connect_clicked(clone!(@weak popover, @weak entry => move |_| {
-        let new_file_path = parent_path.join(entry.text().to_string());
+        let new_file_path = parent_path.join(&entry.text());
         let new_file = gio::File::for_path(new_file_path);
 
         if new_file.query_exists(None::<&gio::Cancellable>) {

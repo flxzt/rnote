@@ -863,7 +863,7 @@ impl RnoteAppWindow {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             let file_paths = text.lines().filter_map(|line| {
-                                let file_path = if let Ok(path_uri) = url::Url::parse(&line) {
+                                let file_path = if let Ok(path_uri) = url::Url::parse(line) {
                                     path_uri.to_file_path().ok()?
                                 } else {
                                     PathBuf::from(&line)

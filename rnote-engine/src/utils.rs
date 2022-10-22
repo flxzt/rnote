@@ -85,7 +85,7 @@ pub fn default_filename_for_export(
         .unwrap_or_else(|| {
             default_fallback
                 .map(|f| f.to_owned())
-                .unwrap_or_else(|| now_formatted_string())
+                .unwrap_or_else(now_formatted_string)
         });
 
     if let Some(suffix) = suffix {

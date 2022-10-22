@@ -29,7 +29,7 @@ impl StrokeStore {
 
     /// Gets a reference to the strokes
     pub fn get_strokes_ref(&self, keys: &[StrokeKey]) -> Vec<&Stroke> {
-        keys.into_iter()
+        keys.iter()
             .filter_map(|&key| self.stroke_components.get(key).map(|stroke| &**stroke))
             .collect::<Vec<&Stroke>>()
     }
@@ -444,7 +444,7 @@ impl StrokeStore {
                 })
                 .collect::<Vec<geo::Coordinate<f64>>>();
 
-            geo::LineString::new(selector_path_points.into())
+            geo::LineString::new(selector_path_points)
         };
 
         self.keys_sorted_chrono_intersecting_bounds(viewport)

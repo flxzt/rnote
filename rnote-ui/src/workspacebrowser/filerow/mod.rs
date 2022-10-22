@@ -204,11 +204,11 @@ impl FileRow {
 
         self.imp()
             .action_group
-            .add_action(&action::open(self, &appwindow));
+            .add_action(&action::open(self, appwindow));
         self.imp().action_group.add_action(&action::rename(self));
         self.imp().action_group.add_action(&action::trash(self));
         self.imp()
             .action_group
-            .add_action(&action::duplicate(self, &appwindow));
+            .add_action(&action::duplicate(self, appwindow));
     }
 }

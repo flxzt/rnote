@@ -730,17 +730,17 @@ impl TextStroke {
         for attr in self.text_style.ranged_text_attributes.iter_mut() {
             if attr.range.start > from_pos {
                 if offset >= 0 {
-                    attr.range.start = attr.range.start.saturating_add(offset.abs() as usize);
-                    attr.range.end = attr.range.end.saturating_add(offset.abs() as usize);
+                    attr.range.start = attr.range.start.saturating_add(offset.unsigned_abs() as usize);
+                    attr.range.end = attr.range.end.saturating_add(offset.unsigned_abs() as usize);
                 } else {
-                    attr.range.start = attr.range.start.saturating_sub(offset.abs() as usize);
-                    attr.range.end = attr.range.end.saturating_sub(offset.abs() as usize);
+                    attr.range.start = attr.range.start.saturating_sub(offset.unsigned_abs() as usize);
+                    attr.range.end = attr.range.end.saturating_sub(offset.unsigned_abs() as usize);
                 }
             } else if attr.range.end > from_pos {
                 if offset >= 0 {
-                    attr.range.end = attr.range.end.saturating_add(offset.abs() as usize);
+                    attr.range.end = attr.range.end.saturating_add(offset.unsigned_abs() as usize);
                 } else {
-                    attr.range.end = attr.range.end.saturating_sub(offset.abs() as usize);
+                    attr.range.end = attr.range.end.saturating_sub(offset.unsigned_abs() as usize);
                 }
             }
         }

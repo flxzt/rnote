@@ -350,16 +350,16 @@ fn setup_workspace_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
 
     }));
 
-    {
-        let appwindow_c = appwindow.clone();
-        workspace_listbox.bind_model(Some(&wb.imp().workspace_list), move |obj| {
+    workspace_listbox.bind_model(
+        Some(&wb.imp().workspace_list),
+        clone!(@strong appwindow => move |obj| {
             let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
             let workspace_row = WorkspaceRow::new(entry);
-            workspace_row.init(&appwindow_c);
+            workspace_row.init(&appwindow);
 
             workspace_row.upcast::<Widget>()
-        });
-    }
+        }),
+    );
 }
 
 fn setup_prefix_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {

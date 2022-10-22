@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ink-stroke-modeler-rs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ink-stroke-modeler-rs/ink-stroke-modeler" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/piet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/piet-gpu" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/piet/piet/snapshots" vcs="Git" />
+  </component>
+</project>

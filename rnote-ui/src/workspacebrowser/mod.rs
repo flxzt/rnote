@@ -167,18 +167,9 @@ impl WorkspaceBrowser {
         setup_add_workspace_button(self, appwindow);
         setup_edit_workspace_button(self, appwindow);
 
-        {
-            let remove_workspace_button = self.imp().remove_workspace_button.get();
-            let edit_workspace_button = self.imp().edit_workspace_button.get();
-            setup_workspacelist(
-                self,
-                appwindow,
-                remove_workspace_button,
-                edit_workspace_button,
-            );
-        }
-
+        setup_workspacelist(self, appwindow);
         setup_workspace_listbox(self, appwindow);
+
         setup_prefix_listbox(self, appwindow);
         setup_file_rows(self, appwindow);
 
@@ -337,16 +328,11 @@ fn setup_edit_workspace_button(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow
         }));
 }
 
-fn setup_workspacelist(
-    wb: &WorkspaceBrowser,
-    appwindow: &RnoteAppWindow,
-    remove_workspace_button: Button,
-    edit_workspace_button: Button,
-) {
+fn setup_workspacelist(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     wb.imp().workspace_list.connect_items_changed(
-        clone!(@weak wb, @weak appwindow, @weak remove_workspace_button, @weak edit_workspace_button => move |folders_model, _, _, _| {
-            remove_workspace_button.set_sensitive(folders_model.n_items() > 1);
-            edit_workspace_button.set_sensitive(folders_model.n_items() > 0);
+        clone!(@weak wb, @weak appwindow => move |folders_model, _, _, _| {
+            wb.imp().remove_workspace_button.get().set_sensitive(folders_model.n_items() > 1);
+            wb.imp().edit_workspace_button.get().set_sensitive(folders_model.n_items() > 0);
 
             wb.save_to_settings(&appwindow.app_settings());
         }),

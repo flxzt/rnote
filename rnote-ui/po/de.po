@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-17 00:37+0000\n"
+"PO-Revision-Date: 2022-10-24 08:05+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -473,9 +473,8 @@ msgid "Move into trash"
 msgstr "In den Papierkorb verschieben"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "Dupliziere die Auswahl"
+msgstr "Dupliziere"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -839,9 +838,8 @@ msgid "Move directory up"
 msgstr "Gehe ein Verzeichnis nach oben"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
 msgid "Workspace directory actions"
-msgstr "Ändere das Arbeitsflächenverzeichnis"
+msgstr "Aktionen für das Arbeitsflächenverzeichnis"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 #: rnote-ui/data/ui/workspacebrowser.ui:132
@@ -854,9 +852,8 @@ msgid "Remove workspace"
 msgstr "Arbeitsfläche entfernen"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
 msgid "Create Directory"
-msgstr "Verzeichnis"
+msgstr "Erstelle ein Verzeichnis"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1474,9 +1471,8 @@ msgid "Printing document failed"
 msgstr "Dokument drucken gescheitert"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
 msgid "New Directory name"
-msgstr "Verzeichnis"
+msgstr "Neuer Verzeichnisname"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 msgid ""

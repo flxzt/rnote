@@ -8,7 +8,7 @@ git submodule update --init --recursive
 ```
 
 ## Building with Flatpak
-There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
+There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
 Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
 
@@ -33,13 +33,13 @@ flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Ext
 Building the app with flatpak is done with:
 
 ```bash
-flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
+flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 Creating a repo:
 
 ```bash
-flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
+flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 
@@ -47,7 +47,7 @@ flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxz
 Install to the system as user with:
 
 ```bash
-flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
+flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 ### Run
@@ -55,7 +55,7 @@ Then it can be run.
 From the build directory:
 
 ```bash
-flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.json rnote
+flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml rnote
 ```
 
 Or if it is installed:
@@ -72,7 +72,7 @@ If a native build on the host is wanted, meson can be called directly.
 
 Install all needed dependencies and build tools, e.g. for fedora 36:
 ```bash
-sudo dnf install meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install clang meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:

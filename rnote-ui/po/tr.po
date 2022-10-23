@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-23 17:40+0000\n"
+"PO-Revision-Date: 2022-10-23 19:35+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -473,9 +473,8 @@ msgid "Move into trash"
 msgstr "Çöpe taşı"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "Seçimi çoğalt"
+msgstr "İkizle"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -540,14 +539,12 @@ msgid "Set the regular cursor"
 msgstr "Normal imleci ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
-#, fuzzy
 msgid "Drawing cursor"
-msgstr "Çizim"
+msgstr "Çizim imleci"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
-#, fuzzy
 msgid "Set the drawing cursor"
-msgstr "Arka plan rengini ayarla"
+msgstr "Çizim imlecini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:164 rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"
@@ -910,15 +907,15 @@ msgstr "Ham girdiden çizgi segmentleri üretir.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "Kavisli"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Düzgün, kıvrımlı segmentler üretir.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "Modellenmiş"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
@@ -1066,7 +1063,7 @@ msgstr "Tüm darbe seçimlerini kaldır"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:154
 msgid "Duplicate selection"
-msgstr "Seçimi çoğalt"
+msgstr "Seçimi ikizle"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"

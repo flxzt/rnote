@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-17 00:37+0000\n"
+"PO-Revision-Date: 2022-10-23 17:40+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -322,13 +322,12 @@ msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
 msgstr ""
-"ஒரு புதிய ஆவணத்தை உருவாக்குவது சேமிக்கப்படாத எந்த மாற்றங்களையும் அழிக்கும். தற்போதைய "
-"ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
+"புதிய ஆவணத்தை உருவாக்கினால், சேமிக்கப்படாத மாற்றங்கள் நிராகரிக்கப்படும். "
+"தற்போதைய ஆவணத்தை சேமிக்க விரும்புகிறீர்களா?"
 
 #: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
 #: rnote-ui/data/ui/dialogs.ui:47
@@ -471,9 +470,8 @@ msgid "Move into trash"
 msgstr "குப்பைக்கு நகர்த்தவும்"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "நகல் தேர்வு"
+msgstr "நகல்"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -837,9 +835,8 @@ msgid "Move directory up"
 msgstr "கோப்பகத்தை மேலே நகர்த்தவும்"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
 msgid "Workspace directory actions"
-msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
+msgstr "பணியிட அடைவு செயல்கள்"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 #: rnote-ui/data/ui/workspacebrowser.ui:132
@@ -852,9 +849,8 @@ msgid "Remove workspace"
 msgstr "பணியிடத்தை அகற்று"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
 msgid "Create Directory"
-msgstr "கோப்பகம்"
+msgstr "கோப்பகத்தை உருவாக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -895,33 +891,35 @@ msgstr "தூரிகை கட்டமைப்பு"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Path modelling"
-msgstr ""
+msgstr "பாதை மாதிரியாக்கம்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "எளிமையானது"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "மூல உள்ளீட்டிலிருந்து வரிப் பகுதிகளை உருவாக்குகிறது.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "வளைந்த"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "மென்மையான, வளைந்த பிரிவுகளை உருவாக்குகிறது.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "மாதிரியாக"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"இயற்பியல் அடிப்படையிலான அல்காரிதம்களுடன் மாதிரியான பாதையை உருவாக்குகிறது.\n"
+"சிறந்த தோற்றமுடைய கையெழுத்தில் முடிவுகள்."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
@@ -1470,9 +1468,8 @@ msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
 msgid "New Directory name"
-msgstr "கோப்பகம்"
+msgstr "புதிய அடைவு பெயர்"
 
 #: rnote-ui/data/ui/dialogs.ui:18
 msgid ""

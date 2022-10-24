@@ -71,6 +71,12 @@ meson.add_dist_script(
   meson.project_source_root()
 )
 
+if get_option('profile') == 'devel'
+  # Setup pre-commit hook for ensuring coding style is always consistent
+  message('Setting up git pre-commit hook..')
+  run_command('cp', '-f', 'hooks/pre-commit.hook', '.git/hooks/pre-commit', check: false)
+endif
+
 # local crates
 cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.toml',

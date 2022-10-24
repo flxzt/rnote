@@ -75,6 +75,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ansi_term"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d52a9bb7ec0cf484c551830a7ce27bd20d67eac647e1befb56b0be4ee39a55d2"
+dependencies = [
+ "winapi",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -170,7 +179,7 @@ dependencies = [
  "bitflags",
  "cexpr",
  "clang-sys",
- "clap",
+ "clap 3.2.22",
  "env_logger 0.9.1",
  "itertools 0.10.5",
  "lazy_static",
@@ -458,32 +467,32 @@ dependencies = [
 
 [[package]]
 name = "clap"
+version = "2.34.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a0610544180c38b88101fecf2dd634b174a62eef6946f84dfc6a7127512b381c"
+dependencies = [
+ "ansi_term",
+ "atty",
+ "bitflags",
+ "strsim 0.8.0",
+ "textwrap 0.11.0",
+ "unicode-width",
+ "vec_map",
+]
+
+[[package]]
+name = "clap"
 version = "3.2.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86447ad904c7fb335a790c9d7fe3d0d971dc523b8ccd1561a520de9a85302750"
 dependencies = [
  "atty",
  "bitflags",
- "clap_derive",
  "clap_lex",
  "indexmap",
- "once_cell",
- "strsim",
+ "strsim 0.10.0",
  "termcolor",
- "textwrap",
-]
-
-[[package]]
-name = "clap_derive"
-version = "3.2.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea0c8bce528c4be4da13ea6fead8965e95b6073585a2f05204bd8f4119f82a65"
-dependencies = [
- "heck",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn",
+ "textwrap 0.15.1",
 ]
 
 [[package]]
@@ -812,7 +821,7 @@ dependencies = [
  "ident_case",
  "proc-macro2",
  "quote",
- "strsim",
+ "strsim 0.10.0",
  "syn",
 ]
 
@@ -1848,6 +1857,7 @@ checksum = "adab1eaa3408fb7f0c777a73e7465fd5656136fc93b670eb6df3c88c2c1344e3"
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
+source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?branch=main#9870005081828d1e1582365eba154b39be050003"
 dependencies = [
  "anyhow",
  "autocxx",
@@ -1856,7 +1866,6 @@ dependencies = [
  "cxx",
  "miette",
  "path-slash",
- "svg",
 ]
 
 [[package]]
@@ -2037,14 +2046,14 @@ checksum = "292a948cd991e376cf75541fe5b97a1081d713c618b4f1b9500f8844e49eb565"
 
 [[package]]
 name = "librsvg"
-version = "2.55.0"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg#394e7ff970d7fd610786d2150dd964abf2acd100"
+version = "2.55.1"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg?tag=2.55.1#b556c32bd6e57b3310ed0cea1ab77f48014a291b"
 dependencies = [
  "byteorder",
  "cairo-rs",
  "cast",
  "chrono",
- "clap",
+ "clap 2.34.0",
  "cssparser",
  "data-url",
  "encoding",
@@ -2057,7 +2066,7 @@ dependencies = [
  "libc",
  "locale_config",
  "markup5ever",
- "nalgebra 0.30.1",
+ "nalgebra 0.29.0",
  "num-traits",
  "once_cell",
  "pango",
@@ -2207,7 +2216,7 @@ dependencies = [
  "supports-hyperlinks",
  "supports-unicode",
  "terminal_size",
- "textwrap",
+ "textwrap 0.15.1",
  "thiserror",
  "unicode-width",
 ]
@@ -2268,9 +2277,9 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.30.1"
+version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fb2d0de08694bed883320212c18ee3008576bfe8c306f4c3c4a58b4876998be"
+checksum = "d506eb7e08d6329505faa8a3a00a5dcc6de9f76e0c77e4b75763ae3c770831ff"
 dependencies = [
  "approx",
  "matrixmultiply",
@@ -2278,7 +2287,7 @@ dependencies = [
  "num-complex",
  "num-rational 0.4.1",
  "num-traits",
- "simba",
+ "simba 0.6.0",
  "typenum",
 ]
 
@@ -2295,7 +2304,7 @@ dependencies = [
  "num-rational 0.4.1",
  "num-traits",
  "serde",
- "simba",
+ "simba 0.7.2",
  "typenum",
 ]
 
@@ -2722,7 +2731,7 @@ dependencies = [
  "num-traits",
  "rustc-hash",
  "serde",
- "simba",
+ "simba 0.7.2",
  "slab",
  "smallvec",
  "spade",
@@ -2869,6 +2878,7 @@ checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 [[package]]
 name = "piet"
 version = "0.5.0"
+source = "git+https://github.com/flxzt/piet?branch=rnote#de9a2b7270424b9f49ac9fa81f0f1aa7387de4d5"
 dependencies = [
  "kurbo",
  "unic-bidi",
@@ -2877,6 +2887,7 @@ dependencies = [
 [[package]]
 name = "piet-cairo"
 version = "0.5.0"
+source = "git+https://github.com/flxzt/piet?branch=rnote#de9a2b7270424b9f49ac9fa81f0f1aa7387de4d5"
 dependencies = [
  "cairo-rs",
  "pango",
@@ -2889,6 +2900,7 @@ dependencies = [
 [[package]]
 name = "piet-svg"
 version = "0.5.0"
+source = "git+https://github.com/flxzt/piet?branch=rnote#de9a2b7270424b9f49ac9fa81f0f1aa7387de4d5"
 dependencies = [
  "base64",
  "font-kit",
@@ -3711,6 +3723,19 @@ checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
 
 [[package]]
 name = "simba"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0b7840f121a46d63066ee7a99fc81dcabbc6105e437cae43528cea199b5a05f"
+dependencies = [
+ "approx",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "wide",
+]
+
+[[package]]
+name = "simba"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c48e45e5961033db030b56ad67aef22e9c908c493a6e8348c0a0f6b93433cd77"
@@ -3826,6 +3851,12 @@ dependencies = [
  "proc-macro2",
  "quote",
 ]
+
+[[package]]
+name = "strsim"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 
 [[package]]
 name = "strsim"
@@ -3961,6 +3992,15 @@ checksum = "633c1a546cee861a1a6d0dc69ebeca693bf4296661ba7852b9d21d159e0506df"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "textwrap"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d326610f408c7a4eb6f51c37c330e496b08506c9457c9d34287ecc38809fb060"
+dependencies = [
+ "unicode-width",
 ]
 
 [[package]]
@@ -4237,6 +4277,12 @@ name = "vcell"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77439c1b53d2303b20d9459b1ade71a83c716e3f9c34f3228c00e6f185d6c002"
+
+[[package]]
+name = "vec_map"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 
 [[package]]
 name = "version-compare"

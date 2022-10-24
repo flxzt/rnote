@@ -113,4 +113,6 @@ custom_target(
   ]
 )
 
+# meson >= 0.64 will include `update-mime-database` in the gnome module.
+# Then this script can be replaced by `gnome.post_install(..)`
 meson.add_install_script('build-aux/meson_post_install.py', datadir, bindir, app_name)

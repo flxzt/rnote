@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-22 18:06+0000\n"
+"PO-Revision-Date: 2022-10-24 12:05+0000\n"
 "Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -873,15 +873,16 @@ msgstr "টেক্সচারযুক্ত স্ট্রোক আঁক�
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:123
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:140
 msgid "Brush configuration"
-msgstr ""
+msgstr "তুলি কনফিগারেশন"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
+#, fuzzy
 msgid "Path modelling"
-msgstr ""
+msgstr "পাথ মডেলিং"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "সরল"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
@@ -889,21 +890,23 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "বক্র"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "মসৃণ এবং বক্র রেখাংশ তৈরি করে।\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "মডেল করা"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"পদার্থবিদ্যা ভিত্তিক অ্যালগরিদম সহ একটি মডেল করা পথ তৈরি করে।\n"
+"এর ফলে সবচেয়ে ভালো হাতের লেখা পাওয়া যায়।"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
@@ -919,27 +922,27 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgid "Constant"
-msgstr ""
+msgstr "ধ্রুবক"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgid "Linear"
-msgstr ""
+msgstr "রৈখিক"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Square root"
-msgstr ""
+msgstr "বর্গমূল"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Cubic root"
-msgstr ""
+msgstr "ঘনমূল"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:203
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "দ্বিঘাত পরাবৃত্ত"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:204
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "ত্রিঘাত পরাবৃত্ত"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Textured style"
@@ -951,19 +954,19 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "ঘনত্ব হল প্রতি ১০×১০ এলাকায় বিন্দুর পরিমাণ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Stroke dots radii"
-msgstr ""
+msgstr "স্ট্রোক বিন্দুর ব্যাসার্ধ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:235
 msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
+msgstr "টেক্সচারযুক্ত স্ট্রোকের পৃথক বিন্দুগুলির ব্যাসার্ধ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
 msgid "Stroke dots position distribution"
-msgstr ""
+msgstr "স্ট্রোক ডটগুলির অবস্থান বন্টন"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:294
 msgid "Choose a dots position probability distribution"

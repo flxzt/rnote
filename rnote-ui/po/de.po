@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-18 18:07+0200\n"
-"PO-Revision-Date: 2022-10-24 08:05+0000\n"
+"PO-Revision-Date: 2022-10-24 12:10+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -543,7 +543,7 @@ msgstr "Zeichnen Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
 msgid "Set the drawing cursor"
-msgstr "Ändere den Cursor beim zeichnen"
+msgstr "Ändere den Cursor beim Zeichnen"
 
 #: rnote-ui/data/ui/settingspanel.ui:164 rnote-ui/data/ui/settingspanel.ui:108
 msgid "Page format"
@@ -906,11 +906,11 @@ msgstr "Produziert Liniensegmente aus der rohen Eingabe.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr "Gebogen"
+msgstr "Geschwungen"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr "Produziert gleichmäßige, gebogene Segmente.\n"
+msgstr "Produziert gleichmäßige, geschwungene Segmente.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
@@ -1139,7 +1139,7 @@ msgstr ""
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
 msgid "Shape builders"
-msgstr "Formen-Ersteller"
+msgstr "Formenersteller"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:272
 msgid "Line"

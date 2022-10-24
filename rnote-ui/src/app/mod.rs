@@ -79,8 +79,6 @@ mod imp {
             let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
             appwindow.init();
 
-
-
             // Everything else before starting
             app.init_misc(&appwindow);
 

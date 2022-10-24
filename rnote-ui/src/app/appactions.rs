@@ -45,8 +45,12 @@ impl RnoteApp {
             })
             .transform_from(move |_, val| match val.get::<adw::ColorScheme>().unwrap() {
                 adw::ColorScheme::Default => Some(String::from("default").to_variant().to_value()),
-                adw::ColorScheme::ForceLight => Some(String::from("force-light").to_variant().to_value()),
-                adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant().to_value()),
+                adw::ColorScheme::ForceLight => {
+                    Some(String::from("force-light").to_variant().to_value())
+                }
+                adw::ColorScheme::ForceDark => {
+                    Some(String::from("force-dark").to_variant().to_value())
+                }
                 _ => None,
             })
             .flags(glib::BindingFlags::BIDIRECTIONAL | glib::BindingFlags::SYNC_CREATE)

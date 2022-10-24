@@ -72,7 +72,7 @@ If a native build on the host is wanted, meson can be called directly.
 
 Install all needed dependencies and build tools, e.g. for fedora 36:
 ```bash
-sudo dnf install clang meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:
@@ -101,6 +101,11 @@ meson install -C _mesonbuild
 ```
 
 This places the files in the specified prefix and their subpaths. The binary should now be in `/usr/bin` (and therefore in PATH)
+
+If meson was configured with a different install prefix path than `/usr`, then GIO needs to be told where the installed gschema is located. this can be done through the `GSETTINGS_SCHEMA_DIR` env variable.
+
+For example to run the application with a custom gschema path: 
+`GSETTINGS_SCHEMA_DIR=<prefix_path>/share/glib-2.0/schemas rnote`
 
 ### Test
 Meson has some tests to validate the desktop, gresources, ... files.

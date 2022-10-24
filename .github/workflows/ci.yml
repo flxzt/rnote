@@ -13,7 +13,7 @@ jobs:
       - name: Install deps
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+          sudo dnf install -y meson gcc gcc-c++ make automake cmake kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
       - name: toolchain
         uses: actions-rs/toolchain@v1
         with:

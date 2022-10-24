@@ -13,7 +13,8 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      - run: |
+      - name: Install deps
+        run: |
         sudo apt-get update
         sudo apt-get install -y meson libgtk-4-dev libadwaita-1-dev libpoppler-glib-dev poppler-data libasound2-dev 
       - uses: actions-rs/cargo@v1

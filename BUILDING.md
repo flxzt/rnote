@@ -127,16 +127,8 @@ sudo -E ninja uninstall -C _mesonbuild
 
 # Debugging
 For a native meson build:
-
-Change these lines in `build-aux/cargo.sh`:
-```bash
-    echo -e "\n--- DEVEL PROFILE ---\n"
-    cargo build --manifest-path \
-        "$MESON_SOURCE_ROOT"/Cargo.toml && \
-        cp "$CARGO_TARGET_DIR"/debug/"$APP_BIN" "$OUTPUT"
-```
-
-Then configure, compile and install the meson project as outlined above. Be sure to configure meson with -Dprofile=devel.
+Be sure to configure meson with -Dprofile=devel to have a build that includes debugging symbols.
+Then configure, compile and install the meson project as outlined above. 
 
 ## With VSCode
 Create a `launch.json` entry similar to this:
@@ -149,7 +141,7 @@ Create a `launch.json` entry similar to this:
             "request": "launch",
             "name": "launch debug build of 'rnote'",
             "args": [],
-            "program": "${workspaceFolder}/target/debug/rnote"
+            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote"
         },
     ]
 }

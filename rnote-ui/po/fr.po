@@ -302,6 +302,7 @@ msgstr "Ceci efface tout le document. Veuillez confirmer."
 #: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
 #: rnote-ui/src/dialogs.rs:1037
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/filerow.rs:233
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -310,6 +311,7 @@ msgid "Clear"
 msgstr "Effacer"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
+#: rnote-ui/src/appwindow/mod.rs:844
 msgid "New Document"
 msgstr "Nouveau document"
 
@@ -407,11 +409,13 @@ msgid "One per document page"
 msgstr "Un par page de document"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
 msgstr "Modifier l'espace de travail"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Apply"
 msgstr "Appliquer"
 
@@ -453,6 +457,7 @@ msgstr "Changer d'espace de travail"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr "Renommer"
 
@@ -462,7 +467,6 @@ msgstr "Déplacer dans la corbeille"
 
 #: rnote-ui/data/ui/filerow.ui:70
 #, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate"
 msgstr "Dupliquer la sélection"
 
@@ -471,6 +475,7 @@ msgid "New document"
 msgstr "Nouveau document"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/src/appwindow/mod.rs:846
 msgid "Draft"
 msgstr "Brouillon"
 
@@ -827,26 +832,27 @@ msgid "Redo"
 msgstr "Rétablir"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr "Déplacer le répertoire vers le haut"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
 #, fuzzy
-#| msgid "Change workspace directory"
 msgid "Workspace directory actions"
 msgstr "Changer d'espace de travail"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:132
 msgid "Add workspace"
 msgstr "Ajouter un espace de travail"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
+#: rnote-ui/data/ui/workspacebrowser.ui:138
 msgid "Remove workspace"
 msgstr "Supprimer l'espace de travail"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
 #, fuzzy
-#| msgid "Directory"
 msgid "Create Directory"
 msgstr "Répertoire"
 
@@ -918,82 +924,102 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
 msgid "Solid style"
 msgstr "Style de trait solide"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 msgid "Pressure curve"
 msgstr "Courbe de pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 msgid "Choose a pressure curve"
 msgstr "Choisissez une courbe de pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:199
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Constant"
 msgstr "Constante"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Linear"
 msgstr "Linéaire"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Square root"
 msgstr "Racine carrée"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:161
 msgid "Cubic root"
 msgstr "Racine cubique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:203
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:162
 msgid "Quadratic Parabola"
 msgstr "Parabole quadratique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:204
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Cubic Parabola"
 msgstr "Parabole cubique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Textured style"
 msgstr "Style de texture"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:177
 msgid "Density"
 msgstr "Densité"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:219
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:178
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "La densité est la quantité de points par zone 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Stroke dots radii"
 msgstr "Rayons des points du trait"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:235
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "Les rayons de chaque point dans le trait texturé"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:252
 msgid "Stroke dots position distribution"
 msgstr "Distribution de la position des points formant le trait"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:294
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgid "Choose a dots position probability distribution"
 msgstr "Choisir une distribution de probabilité pour la position des points"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:298
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Uniform"
 msgstr "Uniforme"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:299
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:258
 msgid "Normal"
 msgstr "Normale"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:300
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:259
 msgid "Exponential"
 msgstr "Exponentielle"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:301
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:260
 msgid "Reverse Exponential"
 msgstr "Exponentielle inverse"
 
@@ -1239,6 +1265,7 @@ msgstr "mbousq <mathieu.bousquet2@gmail.com>"
 #: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
 #: rnote-ui/src/appwindow/mod.rs:457
 #: rnote-ui/src/appwindow/appwindowactions.rs:657
+#: rnote-ui/src/appwindow/mod.rs:408
 msgid "Saving document failed."
 msgstr "Échec de l'enregistrement du document."
 
@@ -1437,16 +1464,16 @@ msgstr "Échec de l'impression du document"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-#| msgid "Directory"
 msgid "New Directory name"
 msgstr "Répertoire"
 
-#~ msgid ""
-#~ "Creating a new document will erase any unsaved changes. Do you want to "
-#~ "save the current document?"
-#~ msgstr ""
-#~ "La création d’un nouveau document effacera toutes les modifications non "
-#~ "enregistrées. Voulez-vous enregistrer le document actuel ?"
+#: rnote-ui/data/ui/dialogs.ui:18
+msgid ""
+"Creating a new document will erase any unsaved changes. Do you want to save "
+"the current document?"
+msgstr ""
+"La création d’un nouveau document effacera toutes les modifications non "
+"enregistrées. Voulez-vous enregistrer le document actuel ?"
 
 #~ msgid "Save current document as"
 #~ msgstr "Enregistrer ce document sous"

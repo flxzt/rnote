@@ -26,7 +26,7 @@ pub trait ShapeBuilderCreator {
 }
 
 /// Types that are shape builders.
-/// They receive pen events, and return builded shapes. They usually are drawn while building the shape, and are state machines.
+/// They receive pen events, and return built shapes. They usually are drawn while building the shape, and are state machines.
 pub trait ShapeBuilderBehaviour: std::fmt::Debug {
     /// handles a pen event.
     /// Returns the builder progress.

@@ -15,7 +15,7 @@ use std::path::PathBuf;
 impl RnoteAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
-    /// We can then either toggle the state through activating the action, or set the state explicitely through action.change_state(<request>)
+    /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
     pub fn setup_actions(&self) {
         let action_close_active = gio::SimpleAction::new("close-active", None);
         self.add_action(&action_close_active);
@@ -216,7 +216,7 @@ impl RnoteAppWindow {
         );
 
         // Developer settings
-        // Its enabled state toggles the visibility of the developer setttings menu entry. Is only modified inside action_devel_mode
+        // Its enabled state toggles the visibility of the developer settings menu entry. Is only modified inside action_devel_mode
         action_devel_menu.set_enabled(false);
 
         // Visual debugging

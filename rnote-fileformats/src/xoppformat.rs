@@ -378,7 +378,7 @@ impl XmlLoadable for XoppBackground {
                 })?) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("failed to retreive the XoppBackgroundSolidStyle from `style` attribute, {}", e);
+                        log::error!("failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, {}", e);
                         XoppBackgroundSolidStyle::Plain
                     }
                 };

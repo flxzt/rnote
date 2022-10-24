@@ -32,7 +32,7 @@ pub enum TypewriterState {
         stroke_key: StrokeKey,
         cursor: unicode_segmentation::GraphemeCursor,
         selection_cursor: unicode_segmentation::GraphemeCursor,
-        /// If selecting is finished ( if true, will get resetted on the next click )
+        /// If selecting is finished ( if true, will get reset on the next click )
         finished: bool,
     },
     Translating {

@@ -16,7 +16,7 @@ pub enum GeneratedStrokeImages {
     Full(Vec<render::Image>),
 }
 
-/// Specifing that a type is a stroke.
+/// Specifying that a type is a stroke.
 /// Also needs to implement drawbehaviour and shapebehaviour.
 pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
 where

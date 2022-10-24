@@ -329,7 +329,7 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Replaces the entire current rendering with the given new images. Alos updates the renderstate
+    /// Replaces the entire current rendering with the given new images. Also updates the renderstate
     pub fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,

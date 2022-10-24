@@ -10,7 +10,7 @@ use super::textureddotsdistribution::TexturedDotsDistribution;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]
 pub struct TexturedOptions {
-    /// An optional seed to generate reproducable strokes
+    /// An optional seed to generate reproducible strokes
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
     /// The width

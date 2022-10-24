@@ -10,7 +10,7 @@ pub struct WidgetFlags {
     pub resize: bool,
     /// refresh the UI with the engine state
     pub refresh_ui: bool,
-    /// wether the store has changed, i.e. new strokes inserted, modified, etc.
+    /// whether the store has changed, i.e. new strokes inserted, modified, etc.
     pub indicate_changed_store: bool,
     /// update the current view offsets and size
     pub update_view: bool,

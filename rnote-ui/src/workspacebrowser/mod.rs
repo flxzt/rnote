@@ -543,7 +543,7 @@ impl WorkspaceBrowser {
 
     pub fn load_from_settings(&self, settings: &gio::Settings) {
         let workspace_list = settings.get::<WorkspaceList>("workspace-list");
-        // Be sure to get the index before loading the workspaces, else the setting gets overriden
+        // Be sure to get the index before loading the workspaces, else the setting gets overridden
         let current_workspace_index = settings.uint("current-workspace-index");
 
         self.imp().workspace_list.replace_self(workspace_list);

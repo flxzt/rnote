@@ -65,7 +65,7 @@ impl Camera {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX)
     }
 
-    /// The temporary zoom, supposed to be overlayed on the surface when zooming with a timeout
+    /// The temporary zoom, supposed to be overlaid on the surface when zooming with a timeout
     pub fn temporary_zoom(&self) -> f64 {
         self.temporary_zoom
     }

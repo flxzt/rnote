@@ -3,27 +3,27 @@ on: [push, pull_request, workflow_dispatch]
 name: Continuous integration
 
 jobs:
-# For now can't run a check without a container. the app requires gtk >= 4.8, but ubuntu 22.04 is still on 4.6
-#  check:
-#    name: Check
-#    runs-on: ubuntu-22.04
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Install deps
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y meson libgtk-4-1 libgtk-4-dev libadwaita-1-0 libadwaita-1-dev libpoppler-glib8 libpoppler-glib-dev poppler-data libasound2 libasound2-dev 
-#      - name: toolchain
-#        uses: actions-rs/toolchain@v1
-#        with:
-#          profile: minimal
-#          toolchain: stable
-#          override: true
-#      - name: check
-#        uses: actions-rs/cargo@v1
-#        with:
-#          command: check
+  check:
+    name: Check
+    runs-on: ubuntu-22.04
+    container: fedora:37
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install deps
+        run: |
+          sudo dnf upgrade --refresh -y
+          sudo dnf install -y meson gcc gcc-c++ clang make automake cmake kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+      - name: toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
 
   fmt:
     name: Rustfmt

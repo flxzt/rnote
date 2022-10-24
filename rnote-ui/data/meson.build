@@ -1,4 +1,6 @@
 # Resources
+message('Configuring and compiling gresource file')
+
 resource_conf = configuration_data()
 resource_conf.set('APP_IDPATH', app_idpath)
 resource_conf.set('APP_NAME', app_name)
@@ -17,6 +19,8 @@ resources = gnome.compile_resources(
 )
 
 # # D-Bus service file
+# message('Configuring D-Bus service file')
+#
 # dbus_conf = configuration_data()
 # dbus_conf.set('APP_ID', app_id)
 # dbus_conf.set('APP_NAME', app_name)
@@ -29,6 +33,8 @@ resources = gnome.compile_resources(
 # )
 
 # Desktop file
+message('Configuring desktop file')
+
 desktop_conf = configuration_data()
 desktop_conf.set('APP_ID', app_id)
 desktop_conf.set('APP_NAME', app_name)
@@ -60,6 +66,8 @@ if desktop_file_validate.found()
 endif
 
 # Gschema
+message('Configuring and compiling gschema settings file')
+
 gschema_conf = configuration_data()
 gschema_conf.set('APP_ID', app_id)
 gschema_conf.set('APP_IDPATH', app_idpath)
@@ -83,6 +91,8 @@ if glib_compile_schemas.found()
 endif
 
 # Appdata
+message('Configuring appdata file')
+
 appdata_conf = configuration_data()
 appdata_conf.set('APP_ID', app_id)
 appdata_conf.set('APP_NAME', app_name)
@@ -97,7 +107,6 @@ appdata_file_in = configure_file(
   output: '@BASENAME@',
   configuration: appdata_conf,
 )
-
 appdata_file = i18n.merge_file(
   input: appdata_file_in,
   output: app_id + '.metainfo.xml',
@@ -139,8 +148,16 @@ install_data(
 )
 
 # MIME-Type
-install_data(
-  'app.mimetype.xml.in',
-  install_dir: datadir / 'mime' / 'packages',
-  rename: app_id + '.xml',
+message('Configuring MIME-type file')
+
+mimetype_conf = configuration_data()
+mimetype_conf.set('APP_ID', app_id)
+mimetype_conf.set('APP_NAME', app_name)
+mimetype_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
+configure_file(
+  input: 'app.mimetype.xml.in',
+  output: app_id + '.xml',
+  configuration: mimetype_conf,
+  install: true,
+  install_dir: datadir / 'mime' / 'packages'
 )

@@ -1,3 +1,5 @@
+# config.rs
+message('Configuring config.rs file')
 
 global_conf = configuration_data()
 global_conf.set_quoted('APP_ID', app_id)

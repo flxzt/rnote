@@ -58,7 +58,6 @@ dependency('libadwaita-1', version: '>= 1.2')
 dependency('poppler-glib', version: '>= 22.07')
 
 cargo = find_program('cargo', required: true)
-cargo_script = find_program('build-aux/cargo.py')
 glib_compile_resources = find_program('glib-compile-resources', required: true)
 glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
@@ -91,7 +90,23 @@ subdir('rnote-engine')
 subdir('rnote-fileformats')
 subdir('rnote-ui')
 
+# Cargo
 sources = [rnote_compose_sources, rnote_engine_sources, rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
+
+cargo_target_dir = meson.project_build_root() / 'target'
+cargo_options = [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
+cargo_options += [ '--target-dir', cargo_target_dir ]
+
+if get_option('profile') == 'default'
+  cargo_options += [ '--release' ]
+  rust_target = 'release'
+  message('cargo: building in release mode')
+else
+  rust_target = 'debug'
+  message('cargo: building in debug mode')
+endif
+
+cargo_env = [ 'CARGO_HOME=' + meson.project_build_root() / 'cargo-home' ]
 
 # see https://mesonbuild.com/Reference-tables.html#operating-system-names
 if host_machine.system() == 'windows' or host_machine.system()  == 'cygwin'
@@ -108,14 +123,14 @@ custom_target(
   console: true,
   install: true,
   install_dir: bindir,
-  depends: resources,
+  depends: gresources,
   command: [
-    cargo_script,
-    meson.project_build_root(),
-    meson.project_source_root(),
-    '@OUTPUT@',
-    profile,
-    app_name,
+    'env',
+    cargo_env,
+    cargo, 'build',
+    cargo_options,
+    '&&',
+    'cp', cargo_target_dir / rust_target / app_name, meson.project_build_root() / '@OUTPUT@',
   ]
 )
 

@@ -9,7 +9,7 @@ configure_file(
   output: 'resources.gresource.xml',
   configuration: resource_conf,
 )
-resources = gnome.compile_resources(
+gresources = gnome.compile_resources(
   'resources',
   meson.current_build_dir() + '/' + 'resources.gresource.xml',
   gresource_bundle: true,

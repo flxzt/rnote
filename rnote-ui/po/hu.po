@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-25 11:33+0200\n"
-"PO-Revision-Date: 2022-10-21 04:05+0000\n"
+"PO-Revision-Date: 2022-10-26 16:01+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -67,13 +67,11 @@ msgstr "Egy kijelölés"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Color scheme"
-msgstr ""
+msgstr "Színösszeállítás"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
-msgstr "Rendszerszínek beállításának használata"
+msgstr "Rendszerszínek használata"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use light colors"
@@ -1141,10 +1139,6 @@ msgid "Enabled"
 msgstr "Engedélyezve"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints when this switch is "
-#| "off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"

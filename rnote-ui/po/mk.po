@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 12:25+0100\n"
-"PO-Revision-Date: 2022-10-27 13:52+0000\n"
+"PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: AND <andrejdam@protonmail.com>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
 ">\n"
@@ -523,8 +523,7 @@ msgstr "Секогаш скриени странични водилки"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr ""
-"Одбери дали страничните водилки на платното треба секогаш да се скриени"
+msgstr "Одбери дали страничните водилки на платното треба секогаш да се скриени"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"

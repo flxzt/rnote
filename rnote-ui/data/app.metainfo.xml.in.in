@@ -66,12 +66,12 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
-    <release version="0.5.6-beta1" date="2022-10-18">
+    <release version="0.5.6" date="2022-10-25">
       <description>
-        <p>this release changes: (WIP)</p>
+        <p>this release changes:</p>
         <ul>
           <li>feature: a new brush option to select between different path modelers. Added a physics-based modelling type (as default) which decreases jitter and improves handwriting smoothness. It also includes a predictor to minimize input lag.</li>
-          <li>feature: switch between different cursors while hovering and drawing, with new "teardrop" cursors in different variations and sizes.</li>
+          <li>feature: switch between different cursors while hovering and drawing, with new "teardrop", "crosshair" and "beam" cursors in different variations and sizes.</li>
           <li>feature: a new `duplicate` file action and a new `create directory` workspace action (thanks @TornaxO7 !)</li>
           <li>improved: better palm rejection while drawing with a stylus</li>
           <li>improved: better export filenames</li>

@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-18 18:07+0200\n"
+"POT-Creation-Date: 2022-10-25 11:33+0200\n"
 "PO-Revision-Date: 2022-10-21 04:05+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -66,62 +66,66 @@ msgid "A selection"
 msgstr "Egy kijelölés"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-msgid "Developer mode"
-msgstr "Fejlesztői mód"
+msgid "Color scheme"
+msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:29
-msgid "Developer menu"
-msgstr "Fejlesztői menü"
-
-#: rnote-ui/data/ui/appmenu.ui:34
-msgid "Visual debugging"
-msgstr "Vizuális hibakeresés"
-
-#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:980
-#: rnote-ui/src/dialogs.rs:966
-msgid "Export engine state"
-msgstr "Motor állapotának exportálása"
-
-#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:1033
-#: rnote-ui/src/dialogs.rs:1020
-msgid "Export engine config"
-msgstr "Motor beállításainak exportálása"
-
-#: rnote-ui/data/ui/appmenu.ui:50
-msgid "Keyboard shortcuts"
-msgstr "Gyorsbillentyűk"
-
-#: rnote-ui/data/ui/appmenu.ui:54
-msgid "Donate 💝"
-msgstr "Hozzájárulás 💝"
-
-#: rnote-ui/data/ui/appmenu.ui:58
-msgid "About Rnote"
-msgstr "A Rnote névjegye"
-
-#: rnote-ui/data/ui/appmenu.ui:89
-msgid "Sidebar on the left side"
-msgstr "Oldalsáv a bal oldalon"
-
-#: rnote-ui/data/ui/appmenu.ui:98
-msgid "Sidebar on the right side"
-msgstr "Oldalsáv a jobb oldalon"
-
-#: rnote-ui/data/ui/appmenu.ui:108
-msgid "Toggle fullscreen"
-msgstr "Teljes képernyős mód váltása"
-
-#: rnote-ui/data/ui/appmenu.ui:121
-msgid "Use system colors preference"
+#: rnote-ui/data/ui/appmenu.ui:26
+#, fuzzy
+#| msgid "Use system colors preference"
+msgid "Use system colors"
 msgstr "Rendszerszínek beállításának használata"
 
-#: rnote-ui/data/ui/appmenu.ui:135
+#: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use light colors"
 msgstr "Világos színek használata"
 
-#: rnote-ui/data/ui/appmenu.ui:150
+#: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use dark colors"
 msgstr "Sötét színek használata"
+
+#: rnote-ui/data/ui/appmenu.ui:42
+msgid "Developer mode"
+msgstr "Fejlesztői mód"
+
+#: rnote-ui/data/ui/appmenu.ui:47
+msgid "Developer menu"
+msgstr "Fejlesztői menü"
+
+#: rnote-ui/data/ui/appmenu.ui:52
+msgid "Visual debugging"
+msgstr "Vizuális hibakeresés"
+
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:970
+msgid "Export engine state"
+msgstr "Motor állapotának exportálása"
+
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1023
+msgid "Export engine config"
+msgstr "Motor beállításainak exportálása"
+
+#: rnote-ui/data/ui/appmenu.ui:68
+msgid "Keyboard shortcuts"
+msgstr "Gyorsbillentyűk"
+
+#: rnote-ui/data/ui/appmenu.ui:72
+msgid "Donate 💝"
+msgstr "Hozzájárulás 💝"
+
+#: rnote-ui/data/ui/appmenu.ui:76
+msgid "About Rnote"
+msgstr "A Rnote névjegye"
+
+#: rnote-ui/data/ui/appmenu.ui:107
+msgid "Sidebar on the left side"
+msgstr "Oldalsáv a bal oldalon"
+
+#: rnote-ui/data/ui/appmenu.ui:116
+msgid "Sidebar on the right side"
+msgstr "Oldalsáv a jobb oldalon"
+
+#: rnote-ui/data/ui/appmenu.ui:126
+msgid "Toggle fullscreen"
+msgstr "Teljes képernyős mód váltása"
 
 #: rnote-ui/data/ui/appwindow.ui:67 rnote-ui/data/ui/mainheader.ui:77
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
@@ -222,7 +226,7 @@ msgid "New"
 msgstr "Új"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs.rs:567
+#: rnote-ui/src/dialogs.rs:557
 msgid "Open"
 msgstr "Megnyitás"
 
@@ -231,7 +235,7 @@ msgstr "Megnyitás"
 msgid "Save"
 msgstr "Mentés"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:616
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:606
 msgid "Save as"
 msgstr "Mentés másként"
 
@@ -239,8 +243,7 @@ msgstr "Mentés másként"
 msgid "Print"
 msgstr "Nyomtatás"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:676
-#: rnote-ui/src/dialogs.rs:673
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:666
 msgid "Import file"
 msgstr "Fájl importálása"
 
@@ -286,7 +289,7 @@ msgstr "Nagyítás az oldal szélességéhez"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs.rs:456
+#: rnote-ui/src/dialogs.rs:446
 msgid "Select"
 msgstr "Kijelölés"
 
@@ -298,18 +301,13 @@ msgstr "Ezzel a teljes dokumentum törlődik. Kérlek, erősítsd meg."
 #: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:457 rnote-ui/src/dialogs.rs:568
-#: rnote-ui/src/dialogs.rs:617 rnote-ui/src/dialogs.rs:680
-#: rnote-ui/src/dialogs.rs:717 rnote-ui/src/dialogs.rs:770
-#: rnote-ui/src/dialogs.rs:823 rnote-ui/src/dialogs.rs:877
-#: rnote-ui/src/dialogs.rs:931 rnote-ui/src/dialogs.rs:984
-#: rnote-ui/src/dialogs.rs:1037
+#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:558
+#: rnote-ui/src/dialogs.rs:607 rnote-ui/src/dialogs.rs:670
+#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:760
+#: rnote-ui/src/dialogs.rs:813 rnote-ui/src/dialogs.rs:867
+#: rnote-ui/src/dialogs.rs:921 rnote-ui/src/dialogs.rs:974
+#: rnote-ui/src/dialogs.rs:1027
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
-#: rnote-ui/src/workspacebrowser/filerow.rs:233 rnote-ui/src/dialogs.rs:677
-#: rnote-ui/src/dialogs.rs:714 rnote-ui/src/dialogs.rs:766
-#: rnote-ui/src/dialogs.rs:818 rnote-ui/src/dialogs.rs:869
-#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:970
-#: rnote-ui/src/dialogs.rs:1024
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -318,7 +316,6 @@ msgid "Clear"
 msgstr "Tisztítás"
 
 #: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
-#: rnote-ui/src/appwindow/mod.rs:844 rnote-ui/src/appwindow/mod.rs:848
 msgid "New Document"
 msgstr "Új dokumentum"
 
@@ -360,8 +357,7 @@ msgstr ""
 msgid "Import PDF"
 msgstr "PDF importálása"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:679
-#: rnote-ui/src/dialogs.rs:676
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:669
 msgid "Import"
 msgstr "Importálás"
 
@@ -412,14 +408,11 @@ msgid "One per document page"
 msgstr "Dokumentumoldalonként egy"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
-#: rnote-ui/data/ui/workspacebrowser.ui:147
 msgid "Edit workspace"
 msgstr "Munkafelület szerkesztése"
 
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
-#: rnote-ui/src/workspacebrowser/filerow.rs:235
-#: rnote-ui/data/ui/settingspanel.ui:221
 msgid "Apply"
 msgstr "Alkalmazás"
 
@@ -436,7 +429,6 @@ msgid "Change the workspace icon"
 msgstr "A munkafelület ikonjának módosítása"
 
 #: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:293
-#: rnote-ui/data/ui/settingspanel.ui:237
 msgid "Color"
 msgstr "Szín"
 
@@ -452,17 +444,16 @@ msgstr "Könyvtár"
 msgid "Change the workspace directory"
 msgstr "A munkafelület könyvtárának módosítása"
 
-#: rnote-ui/data/ui/dialogs.ui:334 rnote-ui/src/dialogs.rs:517
+#: rnote-ui/data/ui/dialogs.ui:334 rnote-ui/src/dialogs.rs:507
 msgid "- no directory selected -"
 msgstr "- nincs kiválasztott könyvtár -"
 
-#: rnote-ui/data/ui/dialogs.ui:348 rnote-ui/src/dialogs.rs:453
+#: rnote-ui/data/ui/dialogs.ui:348 rnote-ui/src/dialogs.rs:443
 msgid "Change workspace directory"
 msgstr "Munkafelület-könyvtár módosítása"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
-#: rnote-ui/src/workspacebrowser/filerow.rs:238
 msgid "Rename"
 msgstr "Átnevezés"
 
@@ -479,7 +470,6 @@ msgid "New document"
 msgstr "Új dokumentum"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
-#: rnote-ui/src/appwindow/mod.rs:846 rnote-ui/src/appwindow/mod.rs:850
 msgid "Draft"
 msgstr "Piszkozat"
 
@@ -544,175 +534,175 @@ msgstr "Rajz kurzor"
 msgid "Set the drawing cursor"
 msgstr "Rajz kurzor beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:164 rnote-ui/data/ui/settingspanel.ui:108
+#: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"
 msgstr "Oldalformátum"
 
-#: rnote-ui/data/ui/settingspanel.ui:167 rnote-ui/data/ui/settingspanel.ui:111
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
 msgstr "Formátum"
 
-#: rnote-ui/data/ui/settingspanel.ui:168 rnote-ui/data/ui/settingspanel.ui:112
+#: rnote-ui/data/ui/settingspanel.ui:168
 msgid "Choose a format"
 msgstr "Válasszon formátumot"
 
-#: rnote-ui/data/ui/settingspanel.ui:172 rnote-ui/data/ui/settingspanel.ui:116
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:173 rnote-ui/data/ui/settingspanel.ui:117
+#: rnote-ui/data/ui/settingspanel.ui:173
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:174 rnote-ui/data/ui/settingspanel.ui:118
+#: rnote-ui/data/ui/settingspanel.ui:174
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:175 rnote-ui/data/ui/settingspanel.ui:119
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:176 rnote-ui/data/ui/settingspanel.ui:120
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:177 rnote-ui/data/ui/settingspanel.ui:121
+#: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
 msgstr "US letter"
 
-#: rnote-ui/data/ui/settingspanel.ui:178 rnote-ui/data/ui/settingspanel.ui:122
+#: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
 msgstr "US legal"
 
-#: rnote-ui/data/ui/settingspanel.ui:179 rnote-ui/data/ui/settingspanel.ui:123
+#: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
 msgstr "Egyedi"
 
-#: rnote-ui/data/ui/settingspanel.ui:187 rnote-ui/data/ui/settingspanel.ui:131
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Orientation"
 msgstr "Orientáció"
 
-#: rnote-ui/data/ui/settingspanel.ui:188 rnote-ui/data/ui/settingspanel.ui:132
+#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
 msgstr "A formátum orientációjának beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:200 rnote-ui/data/ui/settingspanel.ui:144
+#: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
 msgstr "Portré"
 
-#: rnote-ui/data/ui/settingspanel.ui:206 rnote-ui/data/ui/settingspanel.ui:150
+#: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Landscape"
 msgstr "Tájkép"
 
-#: rnote-ui/data/ui/settingspanel.ui:216 rnote-ui/data/ui/settingspanel.ui:160
+#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
 msgstr "Szélesség"
 
-#: rnote-ui/data/ui/settingspanel.ui:217 rnote-ui/data/ui/settingspanel.ui:161
+#: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
 msgstr "A formátum szélességének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:230 rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
 msgstr "Magasság"
 
-#: rnote-ui/data/ui/settingspanel.ui:231 rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "A formátum magasságának beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:244 rnote-ui/data/ui/settingspanel.ui:188
+#: rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
 msgstr "DPI"
 
-#: rnote-ui/data/ui/settingspanel.ui:245 rnote-ui/data/ui/settingspanel.ui:189
+#: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr "DPI-t (pont per hüvelyk) beállítása. Alapértelmezett érték 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:268 rnote-ui/data/ui/settingspanel.ui:212
+#: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
 msgstr "Visszaállítás"
 
-#: rnote-ui/data/ui/settingspanel.ui:290 rnote-ui/data/ui/settingspanel.ui:234
+#: rnote-ui/data/ui/settingspanel.ui:290
 msgid "Document background"
 msgstr "Dokumentum háttér"
 
-#: rnote-ui/data/ui/settingspanel.ui:294 rnote-ui/data/ui/settingspanel.ui:238
+#: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
 msgstr "A háttérszín beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:311 rnote-ui/data/ui/settingspanel.ui:255
+#: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Pattern"
 msgstr "Mintázat"
 
-#: rnote-ui/data/ui/settingspanel.ui:312 rnote-ui/data/ui/settingspanel.ui:256
+#: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Choose a background pattern"
 msgstr "Háttérminta kiválasztása"
 
-#: rnote-ui/data/ui/settingspanel.ui:316 rnote-ui/data/ui/settingspanel.ui:260
+#: rnote-ui/data/ui/settingspanel.ui:316
 msgid "None"
 msgstr "Nincs"
 
-#: rnote-ui/data/ui/settingspanel.ui:317 rnote-ui/data/ui/settingspanel.ui:261
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Lines"
 msgstr "Vonalak"
 
-#: rnote-ui/data/ui/settingspanel.ui:318 rnote-ui/data/ui/settingspanel.ui:262
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Grid"
 msgstr "Rács"
 
-#: rnote-ui/data/ui/settingspanel.ui:319 rnote-ui/data/ui/settingspanel.ui:263
+#: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Dots"
 msgstr "Pontok"
 
-#: rnote-ui/data/ui/settingspanel.ui:327 rnote-ui/data/ui/settingspanel.ui:271
+#: rnote-ui/data/ui/settingspanel.ui:327
 msgid "Pattern Color"
 msgstr "Mintázat színe"
 
-#: rnote-ui/data/ui/settingspanel.ui:328 rnote-ui/data/ui/settingspanel.ui:272
+#: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Set the background pattern color"
 msgstr "A háttérminta színének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:345 rnote-ui/data/ui/settingspanel.ui:289
+#: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Pattern Width"
 msgstr "Mintázat szélessége"
 
-#: rnote-ui/data/ui/settingspanel.ui:346 rnote-ui/data/ui/settingspanel.ui:290
+#: rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background pattern width"
 msgstr "Állítsa be a háttérmintázat szélességét"
 
-#: rnote-ui/data/ui/settingspanel.ui:359 rnote-ui/data/ui/settingspanel.ui:303
+#: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Pattern Height"
 msgstr "Mintázat magassága"
 
-#: rnote-ui/data/ui/settingspanel.ui:360 rnote-ui/data/ui/settingspanel.ui:304
+#: rnote-ui/data/ui/settingspanel.ui:360
 msgid "Set the background pattern height"
 msgstr "Állítsa be a háttérminta magasságát"
 
-#: rnote-ui/data/ui/settingspanel.ui:376 rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Button Shortcuts"
 msgstr "Gomb gyorsbillentyűk"
 
-#: rnote-ui/data/ui/settingspanel.ui:379 rnote-ui/data/ui/settingspanel.ui:323
+#: rnote-ui/data/ui/settingspanel.ui:379
 msgid "Stylus primary button action"
 msgstr "A ceruza elsődleges gombjának művelete"
 
-#: rnote-ui/data/ui/settingspanel.ui:380 rnote-ui/data/ui/settingspanel.ui:324
+#: rnote-ui/data/ui/settingspanel.ui:380
 msgid "Set the action for the primary stylus button"
 msgstr "A ceruza elsődleges gombjának műveletének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:391 rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:391
 msgid "Stylus secondary button action"
 msgstr "A ceruza másodlagos gombjának művelete"
 
-#: rnote-ui/data/ui/settingspanel.ui:392 rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:392
 msgid "Set the action for the secondary stylus button"
 msgstr "A ceruza elsődleges gombjának műveletének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:403 rnote-ui/data/ui/settingspanel.ui:347
+#: rnote-ui/data/ui/settingspanel.ui:403
 msgid "Mouse secondary button action"
 msgstr "Az egér másodlagos gombjának művelete"
 
-#: rnote-ui/data/ui/settingspanel.ui:404 rnote-ui/data/ui/settingspanel.ui:348
+#: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
 msgstr "A másodlagos egérgomb műveletének beállítása"
 
@@ -832,7 +822,6 @@ msgid "Redo"
 msgstr "Újra"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:49
-#: rnote-ui/data/ui/workspacebrowser.ui:42
 msgid "Move directory up"
 msgstr "Könyvtár feljebb mozgatása"
 
@@ -841,12 +830,10 @@ msgid "Workspace directory actions"
 msgstr "Munkafelületi könyvtárműveletek"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
-#: rnote-ui/data/ui/workspacebrowser.ui:132
 msgid "Add workspace"
 msgstr "Munkafelület hozzáadása"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:171
-#: rnote-ui/data/ui/workspacebrowser.ui:138
 msgid "Remove workspace"
 msgstr "Munkafelület eltávolítása"
 
@@ -924,102 +911,82 @@ msgstr ""
 "A legjobban kinéző kézírás eredménye."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:150
 msgid "Solid style"
 msgstr "Folyamatos stílus"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
 msgid "Pressure curve"
 msgstr "Nyomásgörbe"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
 msgid "Choose a pressure curve"
 msgstr "Nyomásgörbe választása"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:199
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Constant"
 msgstr "Állandó"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Linear"
 msgstr "Lineáris"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Square root"
 msgstr "Négyzetgyök"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:161
 msgid "Cubic root"
 msgstr "Köbgyökös"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:203
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:162
 msgid "Quadratic Parabola"
 msgstr "Másodfokú parabola"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:204
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Cubic Parabola"
 msgstr "Köbös parabola"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:215
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Textured style"
 msgstr "Texturált stílus"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:177
 msgid "Density"
 msgstr "Sűrűség"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:219
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:178
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "A sűrűség a 10x10 területre jutó pontok mennyisége"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Stroke dots radii"
 msgstr "Körvonalpontok sugarai"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:235
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "The radii of the individual dots in the textured stroke"
 msgstr "Az egyes pontok sugarai a textúrázott vonásban"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:293
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:252
 msgid "Stroke dots position distribution"
 msgstr "A körvonalpontok pozícióeloszlása"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:294
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:253
 msgid "Choose a dots position probability distribution"
 msgstr "Pontok pozíció valószínűségi eloszlásának kiválasztása"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:298
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Uniform"
 msgstr "Egységes"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:299
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:258
 msgid "Normal"
 msgstr "Normál"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:300
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:259
 msgid "Exponential"
 msgstr "Exponenciális"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:301
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:260
 msgid "Reverse Exponential"
 msgstr "Fordított exponenciális"
 
@@ -1068,7 +1035,6 @@ msgid "Delete selection"
 msgstr "Kijelölés törlése"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:185
 msgid "Paste from Clipboard"
 msgstr "Beillesztés a vágólapról"
 
@@ -1175,22 +1141,26 @@ msgid "Enabled"
 msgstr "Engedélyezve"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
+#, fuzzy
+#| msgid ""
+#| "Hold Ctrl to temporarily enable/disable constraints when this switch is "
+#| "off/on"
 msgid ""
-"Hold Ctrl to temporarily enable/disable constraints when this switch is off/"
-"on"
+"Hold Ctrl to temporarily enable/disable constraints\n"
+"when this switch is off/on"
 msgstr ""
 "Tartsa lenyomva a Ctrl billentyűt a korlátozások ideiglenes engedélyezéséhez/"
 "letiltásához, amikor ez a kapcsoló ki/be van kapcsolva"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:405
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:415
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:416
 msgid "Golden ratio (1:1.618)"
 msgstr "Aranymetszés (1:1,618)"
 
@@ -1261,212 +1231,202 @@ msgstr "Kitöltés"
 msgid "translator-credits"
 msgstr "Szobonya <szobonya.david@gmail.com>"
 
-#: rnote-ui/src/dialogs.rs:134 rnote-ui/src/dialogs.rs:183
-#: rnote-ui/src/dialogs.rs:243 rnote-ui/src/dialogs.rs:643
+#: rnote-ui/src/dialogs.rs:130 rnote-ui/src/dialogs.rs:179
+#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:633
 #: rnote-ui/src/appwindow/mod.rs:457
-#: rnote-ui/src/appwindow/appwindowactions.rs:657
-#: rnote-ui/src/appwindow/mod.rs:408 rnote-ui/src/dialogs.rs:640
-#: rnote-ui/src/appwindow/mod.rs:412
+#: rnote-ui/src/appwindow/appwindowactions.rs:654
 msgid "Saving document failed."
 msgstr "A dokumentum mentése sikertelen."
 
-#: rnote-ui/src/dialogs.rs:225 rnote-ui/src/dialogs.rs:585
+#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:575
 msgid "Opening file failed."
 msgstr "A fájl megnyitása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:321
+#: rnote-ui/src/dialogs.rs:311
 msgid "- no file name -"
 msgstr "- nincs fájlnév -"
 
-#: rnote-ui/src/dialogs.rs:326
+#: rnote-ui/src/dialogs.rs:316
 msgid "- no title -"
 msgstr "- nincs cím -"
 
-#: rnote-ui/src/dialogs.rs:329
+#: rnote-ui/src/dialogs.rs:319
 msgid "- no author -"
 msgstr "- nincs szerző -"
 
-#: rnote-ui/src/dialogs.rs:333
+#: rnote-ui/src/dialogs.rs:323
 msgid "- no date -"
 msgstr "- nincs dátum -"
 
-#: rnote-ui/src/dialogs.rs:340
+#: rnote-ui/src/dialogs.rs:330
 msgid "File name:"
 msgstr "Fájl név:"
 
-#: rnote-ui/src/dialogs.rs:344
+#: rnote-ui/src/dialogs.rs:334
 msgid "Title:"
 msgstr "Cím:"
 
-#: rnote-ui/src/dialogs.rs:348
+#: rnote-ui/src/dialogs.rs:338
 msgid "Author:"
 msgstr "Szerző:"
 
-#: rnote-ui/src/dialogs.rs:352
+#: rnote-ui/src/dialogs.rs:342
 msgid "Modification date:"
 msgstr "Módosítás dátuma:"
 
-#: rnote-ui/src/dialogs.rs:356
+#: rnote-ui/src/dialogs.rs:346
 msgid "Pages:"
 msgstr "Oldalak:"
 
-#: rnote-ui/src/dialogs.rs:399 rnote-ui/src/appwindow/imexport.rs:146
-#: rnote-ui/src/appwindow/mod.rs:1570
+#: rnote-ui/src/dialogs.rs:389 rnote-ui/src/appwindow/imexport.rs:147
 msgid "Opening PDF file failed."
 msgstr "A PDF fájl megnyitása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:561
+#: rnote-ui/src/dialogs.rs:551
 msgid ".rnote / .xopp File"
 msgstr ".rnote / .xopp fájl"
 
-#: rnote-ui/src/dialogs.rs:564
+#: rnote-ui/src/dialogs.rs:554
 msgid "Open file"
 msgstr "Fájl megnyitása"
 
-#: rnote-ui/src/dialogs.rs:610
+#: rnote-ui/src/dialogs.rs:600
 msgid ".rnote file"
 msgstr ".rnote fájl"
 
-#: rnote-ui/src/dialogs.rs:613
+#: rnote-ui/src/dialogs.rs:603
 msgid "Save document as"
 msgstr "Dokumentum mentése másként"
 
-#: rnote-ui/src/dialogs.rs:645 rnote-ui/src/dialogs.rs:642
+#: rnote-ui/src/dialogs.rs:635
 msgid "Saved document successfully."
 msgstr "A dokumentum sikeresen mentve."
 
-#: rnote-ui/src/dialogs.rs:673 rnote-ui/src/dialogs.rs:670
+#: rnote-ui/src/dialogs.rs:663
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / PDF fájl"
 
-#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:816
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:811
+#: rnote-ui/src/dialogs.rs:700 rnote-ui/src/dialogs.rs:806
 msgid "SVG file"
 msgstr "SVG fájl"
 
-#: rnote-ui/src/dialogs.rs:713 rnote-ui/src/dialogs.rs:766
-#: rnote-ui/src/dialogs.rs:710 rnote-ui/src/dialogs.rs:762
+#: rnote-ui/src/dialogs.rs:703 rnote-ui/src/dialogs.rs:756
 msgid "Export Selection"
 msgstr "Kijelölés exportálása"
 
-#: rnote-ui/src/dialogs.rs:716 rnote-ui/src/dialogs.rs:769
-#: rnote-ui/src/dialogs.rs:822 rnote-ui/src/dialogs.rs:876
-#: rnote-ui/src/dialogs.rs:930 rnote-ui/src/dialogs.rs:983
-#: rnote-ui/src/dialogs.rs:1036 rnote-ui/src/dialogs.rs:713
-#: rnote-ui/src/dialogs.rs:765 rnote-ui/src/dialogs.rs:817
-#: rnote-ui/src/dialogs.rs:868 rnote-ui/src/dialogs.rs:919
-#: rnote-ui/src/dialogs.rs:969 rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/src/dialogs.rs:706 rnote-ui/src/dialogs.rs:759
+#: rnote-ui/src/dialogs.rs:812 rnote-ui/src/dialogs.rs:866
+#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:973
+#: rnote-ui/src/dialogs.rs:1026
 msgid "Export"
 msgstr "Exportálás"
 
-#: rnote-ui/src/dialogs.rs:741 rnote-ui/src/dialogs.rs:737
+#: rnote-ui/src/dialogs.rs:731
 msgid "Export selection as SVG failed."
 msgstr "A kiválasztás SVG-ként történő exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:743 rnote-ui/src/dialogs.rs:739
+#: rnote-ui/src/dialogs.rs:733
 msgid "Exported selection as SVG successfully."
 msgstr "A kiválasztás SVG-ként való exportálása sikeresen megtörtént."
 
-#: rnote-ui/src/dialogs.rs:763 rnote-ui/src/dialogs.rs:759
+#: rnote-ui/src/dialogs.rs:753
 msgid "PNG file"
 msgstr "PNG fájl"
 
-#: rnote-ui/src/dialogs.rs:794 rnote-ui/src/dialogs.rs:789
+#: rnote-ui/src/dialogs.rs:784
 msgid "Export selection as PNG failed."
 msgstr "A kiválasztás PNG-ként történő exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:796 rnote-ui/src/dialogs.rs:791
+#: rnote-ui/src/dialogs.rs:786
 msgid "Exported selection as PNG successfully."
 msgstr "A kiválasztás PNG-ként történő exportálása sikeresen megtörtént."
 
-#: rnote-ui/src/dialogs.rs:819 rnote-ui/src/dialogs.rs:873
-#: rnote-ui/src/dialogs.rs:927 rnote-ui/src/dialogs.rs:814
-#: rnote-ui/src/dialogs.rs:865 rnote-ui/src/dialogs.rs:916
+#: rnote-ui/src/dialogs.rs:809 rnote-ui/src/dialogs.rs:863
+#: rnote-ui/src/dialogs.rs:917
 msgid "Export document"
 msgstr "Dokumentum exportálása"
 
-#: rnote-ui/src/dialogs.rs:846 rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:836
 msgid "Export document as SVG failed."
 msgstr "A dokumentum SVG-ként történő exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:848 rnote-ui/src/dialogs.rs:840
+#: rnote-ui/src/dialogs.rs:838
 msgid "Exported document as SVG successfully."
 msgstr "A dokumentum sikeresen exportálva SVG-ként."
 
-#: rnote-ui/src/dialogs.rs:870 rnote-ui/src/dialogs.rs:862
+#: rnote-ui/src/dialogs.rs:860
 msgid "PDF file"
 msgstr "PDF fájl"
 
-#: rnote-ui/src/dialogs.rs:900 rnote-ui/src/dialogs.rs:889
+#: rnote-ui/src/dialogs.rs:890
 msgid "Export document as PDF failed."
 msgstr "A dokumentum PDF-ként történő exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:902 rnote-ui/src/dialogs.rs:891
+#: rnote-ui/src/dialogs.rs:892
 msgid "Exported document as PDF successfully."
 msgstr "A dokumentum sikeresen exportálva PDF-ként."
 
-#: rnote-ui/src/dialogs.rs:924 rnote-ui/src/dialogs.rs:913
+#: rnote-ui/src/dialogs.rs:914
 msgid ".xopp file"
 msgstr ".xopp fájl"
 
-#: rnote-ui/src/dialogs.rs:954 rnote-ui/src/dialogs.rs:940
+#: rnote-ui/src/dialogs.rs:944
 msgid "Exporting document as .xopp failed."
 msgstr "A dokumentum .xopp-ként történő exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:956 rnote-ui/src/dialogs.rs:942
+#: rnote-ui/src/dialogs.rs:946
 msgid "Exported document as .xopp successfully."
 msgstr "A dokumentum sikeresen exportálva .xopp-ként."
 
-#: rnote-ui/src/dialogs.rs:977 rnote-ui/src/dialogs.rs:1030
-#: rnote-ui/src/dialogs.rs:963 rnote-ui/src/dialogs.rs:1017
+#: rnote-ui/src/dialogs.rs:967 rnote-ui/src/dialogs.rs:1020
 msgid "JSON file"
 msgstr "JSON fájl"
 
-#: rnote-ui/src/dialogs.rs:1007 rnote-ui/src/dialogs.rs:994
+#: rnote-ui/src/dialogs.rs:997
 msgid "Export engine state failed."
 msgstr "A motor állapotának exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:1009 rnote-ui/src/dialogs.rs:996
+#: rnote-ui/src/dialogs.rs:999
 msgid "Exported engine state successfully."
 msgstr "A motor állapota sikeresen exportálva."
 
-#: rnote-ui/src/dialogs.rs:1062 rnote-ui/src/dialogs.rs:1048
+#: rnote-ui/src/dialogs.rs:1052
 msgid "Export engine config failed."
 msgstr "A motor konfiguráció exportálása sikertelen."
 
-#: rnote-ui/src/dialogs.rs:1064 rnote-ui/src/dialogs.rs:1050
+#: rnote-ui/src/dialogs.rs:1054
 msgid "Exported engine config successfully."
 msgstr "A motor konfigurációja sikeresen exportálva."
 
-#: rnote-ui/src/appwindow/imexport.rs:70 rnote-ui/src/appwindow/mod.rs:1494
+#: rnote-ui/src/appwindow/imexport.rs:71
 msgid "Opening .rnote file failed."
 msgstr "A .rnote fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:89 rnote-ui/src/appwindow/mod.rs:1513
+#: rnote-ui/src/appwindow/imexport.rs:90
 msgid "Opening .xopp file failed."
 msgstr "A .xopp fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:108 rnote-ui/src/appwindow/mod.rs:1532
+#: rnote-ui/src/appwindow/imexport.rs:109
 msgid "Opening vector image file failed."
 msgstr "A vektoros képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:127 rnote-ui/src/appwindow/mod.rs:1551
+#: rnote-ui/src/appwindow/imexport.rs:128
 msgid "Opening bitmap image file failed."
 msgstr "A bittérképes képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:163 rnote-ui/src/appwindow/mod.rs:1587
+#: rnote-ui/src/appwindow/imexport.rs:164
 msgid "Error: Tried opening folder as file"
 msgstr "Hiba: Mappa fájlként való megnyitása"
 
-#: rnote-ui/src/appwindow/imexport.rs:172 rnote-ui/src/appwindow/mod.rs:1596
+#: rnote-ui/src/appwindow/imexport.rs:173
 msgid "Failed to open file: Unsupported file type."
 msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:774
+#: rnote-ui/src/appwindow/appwindowactions.rs:771
 msgid "Printed document successfully"
 msgstr "A dokumentum sikeresen ki lett nyomtatva"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:783
+#: rnote-ui/src/appwindow/appwindowactions.rs:780
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
@@ -1474,18 +1434,16 @@ msgstr "A dokumentum nyomtatása nem sikerült"
 msgid "New Directory name"
 msgstr "Új könyvtár neve"
 
-#: rnote-ui/data/ui/dialogs.ui:18
-msgid ""
-"Creating a new document will erase any unsaved changes. Do you want to save "
-"the current document?"
-msgstr ""
-"Új dokumentum létrehozása elveti a nem mentett módosításokat. Menti a "
-"jelenlegi dokumentumot?"
+#~ msgid ""
+#~ "Creating a new document will erase any unsaved changes. Do you want to "
+#~ "save the current document?"
+#~ msgstr ""
+#~ "Új dokumentum létrehozása elveti a nem mentett módosításokat. Menti a "
+#~ "jelenlegi dokumentumot?"
 
-#: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently."
-msgstr ""
-"Beállítás, hogy a vásznon lévő görgetősávok véglegesen el legyenek rejtve."
+#~ msgid "Set whether the scrollbars on the canvas are hidden permanently."
+#~ msgstr ""
+#~ "Beállítás, hogy a vásznon lévő görgetősávok véglegesen el legyenek rejtve."
 
 #~ msgid "Save current document as"
 #~ msgstr "Az aktuális dokumentum mentése másként"

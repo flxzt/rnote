@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-25 11:33+0200\n"
-"PO-Revision-Date: 2022-10-18 20:16+0000\n"
+"PO-Revision-Date: 2022-10-26 16:01+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
@@ -1146,16 +1146,12 @@ msgid "Enabled"
 msgstr "Abilitato"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints when this switch is "
-#| "off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Tenere premuto Ctrl per attivare/disattivare le limitazioni quando l'opzione "
-"è disattivata/attivata"
+"Tenere premuto Ctrl per attivare/disattivare le limitazioni\n"
+"quando l'opzione è disattivata/attivata"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
 msgid "1:1"

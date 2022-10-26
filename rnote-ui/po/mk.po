@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-25 11:33+0200\n"
-"PO-Revision-Date: 2022-10-26 16:01+0000\n"
+"PO-Revision-Date: 2022-10-27 13:52+0000\n"
 "Last-Translator: AND <andrejdam@protonmail.com>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
 ">\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs.rs:24
 msgid "Sketch and take handwritten notes"
-msgstr "Скицирате и пишувајте ракописни белешки"
+msgstr "Скицирајте и пишувајте ракописни белешки"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
@@ -185,7 +185,7 @@ msgstr "Работна површина"
 
 #: rnote-ui/data/ui/appwindow.ui:424
 msgid "Settings"
-msgstr "Нагодувања"
+msgstr "Поставки"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "Draw with touch input"
@@ -885,15 +885,15 @@ msgstr "Едноставно"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr "Создава линијски делчиња од суровиот внес.\n"
+msgstr "Произведува линијски делчиња од суровиот внес.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr "Кривулесто"
+msgstr "Закривено"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr "Создава мазни, кривулести делчиња.\n"
+msgstr "Создава мазни, закривени делчиња.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
@@ -905,7 +905,7 @@ msgid ""
 "Results in the best looking handwriting."
 msgstr ""
 "Создава моделирана патека преку алгоритми базирани на физика.\n"
-"Најдобар резултат при ракопис."
+"Резултира во најдобар ракопис."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
@@ -913,19 +913,19 @@ msgstr "Полна линија"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Pressure curve"
-msgstr "Кривула со притисок"
+msgstr "Крива на притисок"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Choose a pressure curve"
-msgstr "Одбери кривула на притисок"
+msgstr "Одбери крива на притисок"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgid "Constant"
-msgstr "Постојан"
+msgstr "Постојана"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgid "Linear"
-msgstr "Линеарен"
+msgstr "Линеарна"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Square root"
@@ -953,7 +953,7 @@ msgstr "Густина"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:219
 msgid "The density is the amount of dots per 10x10 area"
-msgstr "Густината е бројот на точки при површина од 10х10"
+msgstr "Густината е бројот на точки на површина од 10х10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Stroke dots radii"

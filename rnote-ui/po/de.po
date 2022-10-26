@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-25 11:33+0200\n"
-"PO-Revision-Date: 2022-10-24 12:10+0000\n"
+"PO-Revision-Date: 2022-10-26 16:01+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -66,11 +66,9 @@ msgstr "Eine Auswahl"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Color scheme"
-msgstr ""
+msgstr "Farbschema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
 msgstr "Verwende die Farben des Systems"
 
@@ -1141,16 +1139,12 @@ msgid "Enabled"
 msgstr "Aktiviert"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints when this switch is "
-#| "off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Halte Ctrl um die Beschränkungen temporär zu de- /aktivieren wenn der "
-"Schalter aktiviert / deaktiviert ist"
+"Halte Ctrl um die Beschränkungen temporär zu de- /aktivieren\n"
+"wenn der Schalter aktiviert / deaktiviert ist"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
 msgid "1:1"

@@ -562,6 +562,14 @@ pub fn dialog_open_doc(appwindow: &RnoteAppWindow) {
 
     dialog_open_file.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) =
+            dialog_open_file.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!("set_current_folder() for dialog_open_doc failed with Err `{e}`");
+        }
+    }
+
     dialog_open_file.connect_response(clone!(@weak appwindow => move |dialog_open_file, responsetype| {
             match responsetype {
                 ResponseType::Accept => {
@@ -611,12 +619,27 @@ pub fn dialog_save_doc_as(appwindow: &RnoteAppWindow) {
 
     dialog_save_doc_as.add_filter(&filter);
 
-    dialog_save_doc_as.set_current_name(&rnote_engine::utils::default_filename_for_export(
-        appwindow.canvas().output_file(),
-        Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-        None,
-        "rnote",
-    ));
+    // Set the output file as default, else at least the current workspace directory
+    if let Some(output_file) = appwindow.canvas().output_file() {
+        if let Err(e) = dialog_save_doc_as.set_file(&output_file) {
+            log::error!("set_file() for dialog_save_doc_as failed with Err `{e}`");
+        }
+    } else {
+        if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+            if let Err(e) = dialog_save_doc_as
+                .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+            {
+                log::error!("set_current_folder() for dialog_save_doc_as failed with Err `{e}`");
+            }
+        }
+
+        dialog_save_doc_as.set_current_name(&rnote_engine::utils::default_filename_for_export(
+            appwindow.canvas().output_file(),
+            Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
+            None,
+            "rnote",
+        ));
+    }
 
     dialog_save_doc_as.connect_response(
         clone!(@weak appwindow => move |dialog_export_doc, responsetype| {
@@ -674,6 +697,14 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
 
     dialog_import_file.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) =
+            dialog_import_file.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!("set_current_folder() for dialog_import_file failed with Err `{e}`");
+        }
+    }
+
     dialog_import_file.connect_response(
         clone!(@weak appwindow => move |dialog_import_file, responsetype| {
             match responsetype {
@@ -710,6 +741,15 @@ pub fn dialog_export_selection_as_svg(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_selection_as_svg.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_selection_as_svg
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!(
+                "set_current_folder() for dialog_export_selection_as_svg failed with Err `{e}`"
+            );
+        }
+    }
     dialog_export_selection_as_svg.set_current_name(
         &rnote_engine::utils::default_filename_for_export(
             appwindow.canvas().output_file(),
@@ -763,6 +803,15 @@ pub fn dialog_export_selection_as_png(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_selection_as_png.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_selection_as_png
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!(
+                "set_current_folder() for dialog_export_selection_as_png failed with Err `{e}`"
+            );
+        }
+    }
     dialog_export_selection_as_png.set_current_name(
         &rnote_engine::utils::default_filename_for_export(
             appwindow.canvas().output_file(),
@@ -816,6 +865,13 @@ pub fn dialog_export_doc_as_svg(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_doc_as_svg.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_doc_as_svg
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!("set_current_folder() for dialog_export_as_svg failed with Err `{e}`");
+        }
+    }
     dialog_export_doc_as_svg.set_current_name(&rnote_engine::utils::default_filename_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
@@ -870,6 +926,13 @@ pub fn dialog_export_doc_as_pdf(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_doc_as_pdf.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_doc_as_pdf
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!("set_current_folder() for dialog_export_doc_as_pdf failed with Err `{e}`");
+        }
+    }
     dialog_export_doc_as_pdf.set_current_name(&rnote_engine::utils::default_filename_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
@@ -924,6 +987,13 @@ pub fn dialog_export_doc_as_xopp(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_doc_as_xopp.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_doc_as_xopp
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!("set_current_folder() for dialog_export_doc_as_xopp failed with Err `{e}`");
+        }
+    }
     dialog_export_doc_as_xopp.set_current_name(&rnote_engine::utils::default_filename_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
@@ -977,6 +1047,15 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_engine_state.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_engine_state
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!(
+                "set_current_folder() for dialog_export_engine_state failed with Err `{e}`"
+            );
+        }
+    }
     dialog_export_engine_state.set_current_name(&rnote_engine::utils::default_filename_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
@@ -1030,6 +1109,15 @@ pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_engine_config.add_filter(&filter);
 
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Err(e) = dialog_export_engine_config
+            .set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
+        {
+            log::error!(
+                "set_current_folder() for dialog_export_engine_config failed with Err `{e}`"
+            );
+        }
+    }
     dialog_export_engine_config.set_current_name(
         &rnote_engine::utils::default_filename_for_export(
             appwindow.canvas().output_file(),

@@ -213,8 +213,8 @@ impl RnoteEngine {
         // xopp spec needs at least one page in vec, but its fine because pages_bounds_w_content() always produces at least one
         let pages = self
             .pages_bounds_w_content()
-            .iter()
-            .map(|&page_bounds| {
+            .into_iter()
+            .map(|page_bounds| {
                 let page_keys = self
                     .store
                     .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
@@ -375,6 +375,7 @@ impl RnoteEngine {
                     for (i, (page_bounds, page_strokes)) in pages_strokes.into_iter().enumerate() {
                         // We can't render the background svg with piet, so we have to do it with cairo.
                         cairo_cx.save()?;
+
                         cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
 
                         if let Some(background_svg) = background_svg.clone() {
@@ -385,6 +386,7 @@ impl RnoteEngine {
                         // Draw the strokes with piet
                         let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
                         piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
                         piet_cx.transform(kurbo::Affine::translate(
                             -page_bounds.mins.coords.to_kurbo_vec(),
                         ));

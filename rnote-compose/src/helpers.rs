@@ -366,24 +366,23 @@ impl AABBHelpers for AABB {
     fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self> {
         let mut splitted_aabbs = Vec::new();
 
-        let n_columns = (self.extents()[0] / splitted_size[0]).ceil() as u32;
-        let n_rows = (self.extents()[1] / splitted_size[1]).ceil() as u32;
+        if splitted_size[0] <= 0.0 || splitted_size[1] <= 0.0 {
+            return vec![];
+        }
 
-        let offset = na::vector![
-            (self.mins[0] / splitted_size[0]).floor() * splitted_size[0],
-            (self.mins[1] / splitted_size[1]).floor() * splitted_size[1]
-        ];
+        let mut offset_y = (self.mins[1] / splitted_size[1]).floor() * splitted_size[1];
 
-        for current_row in 0..=n_rows {
-            for current_column in 0..=n_columns {
-                let mins = na::point![
-                    offset[0] + f64::from(current_column) * splitted_size[0],
-                    offset[1] + f64::from(current_row) * splitted_size[1]
-                ];
-                let maxs = na::Point2::from(mins.coords + splitted_size);
+        while offset_y < self.maxs[1] {
+            let mut offset_x = (self.mins[0] / splitted_size[0]).floor() * splitted_size[0];
 
-                splitted_aabbs.push(AABB::new(mins, maxs));
+            while offset_x < self.maxs[0] {
+                let mins = na::point![offset_x, offset_y];
+                splitted_aabbs.push(AABB::new(mins, mins + splitted_size));
+
+                offset_x += splitted_size[0];
             }
+
+            offset_y += splitted_size[1];
         }
 
         splitted_aabbs

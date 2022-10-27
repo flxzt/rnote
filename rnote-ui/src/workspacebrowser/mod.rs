@@ -29,6 +29,8 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
         pub workspace_actions: gio::SimpleActionGroup,
+        pub files_dirlist: DirectoryList,
+        pub workspace_list: WorkspaceList,
 
         #[template_child]
         pub grid: TemplateChild<Grid>,
@@ -46,25 +48,20 @@ mod imp {
         pub dir_up_row: TemplateChild<ListBoxRow>,
         #[template_child]
         pub files_listview: TemplateChild<ListView>,
-        pub files_dirlist: DirectoryList,
-
         #[template_child]
         pub workspace_dir_actions_box: TemplateChild<gtk4::Box>,
-
         #[template_child]
         pub workspace_bar: TemplateChild<gtk4::Box>,
         #[template_child]
         pub workspace_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub workspace_listbox: TemplateChild<ListBox>,
-        pub workspace_list: WorkspaceList,
     }
 
     impl Default for WorkspaceBrowser {
         fn default() -> Self {
-            let primary_dirlist =
-                DirectoryList::new(Some("standard::*"), None as Option<&gio::File>);
-            primary_dirlist.set_monitored(true);
+            let files_dirlist = DirectoryList::new(Some("standard::*"), None as Option<&gio::File>);
+            files_dirlist.set_monitored(true);
 
             Self {
                 workspace_actions: gio::SimpleActionGroup::new(),
@@ -77,7 +74,7 @@ mod imp {
                 dir_up_row: TemplateChild::<ListBoxRow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
                 workspace_dir_actions_box: TemplateChild::<gtk4::Box>::default(),
-                files_dirlist: primary_dirlist,
+                files_dirlist,
                 workspace_bar: TemplateChild::<gtk4::Box>::default(),
                 workspace_scroller: TemplateChild::<ScrolledWindow>::default(),
                 workspace_listbox: TemplateChild::<ListBox>::default(),
@@ -142,10 +139,6 @@ impl WorkspaceBrowser {
         self.imp().files_scroller.clone()
     }
 
-    pub fn files_dirlist(&self) -> DirectoryList {
-        self.imp().files_dirlist.clone()
-    }
-
     pub fn files_listview(&self) -> ListView {
         self.imp().files_listview.clone()
     }
@@ -208,6 +201,14 @@ impl WorkspaceBrowser {
                 .row_at_index(index.min(n_items.saturating_sub(1)) as i32)
                 .as_ref(),
         );
+    }
+
+    pub fn refresh(&self) {
+        if let Some(current_workspace_dir) = self.selected_workspace_dir() {
+            self.imp()
+                .files_dirlist
+                .set_file(Some(&gio::File::for_path(current_workspace_dir)));
+        }
     }
 
     pub fn selected_workspace_index(&self) -> Option<u32> {

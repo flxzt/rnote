@@ -522,6 +522,9 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
                     // update the actual row
                     if let Some(current_row) = appwindow.workspacebrowser().current_selected_workspace_row() {
                         current_row.entry().replace_data(&edit_workspace_preview_row.entry());
+
+                        // refreshing the files list
+                        appwindow.workspacebrowser().refresh();
                     }
                 }
                 _ => {}

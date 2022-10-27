@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-25 11:33+0200\n"
-"PO-Revision-Date: 2022-10-26 16:01+0000\n"
+"PO-Revision-Date: 2022-10-27 21:58+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -66,13 +66,11 @@ msgstr "Una selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Color scheme"
-msgstr ""
+msgstr "Tema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
-msgstr "Usa la preferenza dei colori di sistema"
+msgstr "Segui il tema del sistema"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use light colors"

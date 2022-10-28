@@ -1,6 +1,6 @@
 project(
     'rnote',
-    'rust',
+    ['cpp', 'rust'],
     version: '0.5.6',
     meson_version: '>= 0.56',
 )
@@ -52,6 +52,15 @@ iconsdir = datadir / 'icons'
 gettext_package = app_name
 
 user_home_dir = fs.expanduser('~')
+
+# Dependencies
+
+cpp = meson.get_compiler('cpp')
+#add_project_arguments(['-stdlib=stdlibc++'], language : 'cpp')
+#add_project_link_arguments(['-stdlib=stdlibc++'], language : 'cpp')
+
+# Rust bindings to C++ using autocxx need libclang
+cpp.find_library('clang')
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')

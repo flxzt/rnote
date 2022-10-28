@@ -1828,6 +1828,7 @@ checksum = "adab1eaa3408fb7f0c777a73e7465fd5656136fc93b670eb6df3c88c2c1344e3"
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
+source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?branch=main#b7f96f3c48bb05072c9f5466af6daebbbe115e53"
 dependencies = [
  "anyhow",
  "autocxx",

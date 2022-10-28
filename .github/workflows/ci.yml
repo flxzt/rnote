@@ -1,10 +1,15 @@
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 name: Continuous integration
 
 jobs:
   check:
     name: Check
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
     container: fedora:37
     steps:
@@ -27,6 +32,7 @@ jobs:
 
   fmt:
     name: Rustfmt
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2

@@ -41,6 +41,8 @@ modules:
     - name: poppler
       buildsystem: cmake-ninja
       config-opts:
+          - "-DCMAKE_CXX_STANDARD=17"
+          - "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
           - "-DCMAKE_INSTALL_LIBDIR=/app/lib"
           - "-DCMAKE_INSTALL_INCLUDEDIR=/app/include"
           - "-DENABLE_BOOST=OFF"

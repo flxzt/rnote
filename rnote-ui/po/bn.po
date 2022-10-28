@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-25 11:33+0200\n"
-"PO-Revision-Date: 2022-10-26 16:01+0000\n"
+"PO-Revision-Date: 2022-10-29 23:01+0000\n"
 "Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -26,7 +26,7 @@ msgstr "স্কেচ করুন এবং হাতে লেখা নো�
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;চিত্রলেখ;মন্তব্য;"
+msgstr "নোম;জিটিকে;অফিস;চিত্রলেখ;নোটস;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -45,8 +45,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি সংস্করণগুলির মধ্যে সামঞ্জস্যতা পরিবর্তন এবং "
-"ভাঙ্গতে সক্ষম।"
+"দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি ভার্সনগুলির মধ্যে সামঞ্জস্যতা পরিবর্"
+"তন এবং ভাঙ্গতে সক্ষম।"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"

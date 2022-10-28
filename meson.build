@@ -60,7 +60,8 @@ cpp = meson.get_compiler('cpp')
 #add_project_link_arguments(['-stdlib=stdlibc++'], language : 'cpp')
 
 # Rust bindings to C++ using autocxx need libclang
-cpp.find_library('clang')
+# However when building as flatpak libclang is not found, even though the llvm extension is installed. How to fix this?
+#cpp.find_library('clang')
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')

@@ -11,10 +11,10 @@ edition = "2021"
 
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-piet = { git = "https://github.com/flxzt/piet", branch = "rnote"}
-piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote"}
-piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote"}
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main"}
+piet = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main" }
 
 log = "0.4.16"
 pretty_env_logger = "0.4.0"

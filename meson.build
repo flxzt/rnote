@@ -70,6 +70,8 @@ dependency('libadwaita-1', version: '>= 1.2')
 dependency('poppler-glib', version: '>= 22.07')
 
 cargo = find_program('cargo', required: true)
+# cmake is needed by the "ink-stroke-modeler-rs" bindings crate to build the C++ library
+cmake = find_program('cmake', required: true)
 glib_compile_resources = find_program('glib-compile-resources', required: true)
 glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)

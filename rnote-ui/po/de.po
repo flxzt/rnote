@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 12:25+0100\n"
-"PO-Revision-Date: 2022-10-26 16:01+0000\n"
+"PO-Revision-Date: 2022-10-30 11:32+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -366,13 +366,11 @@ msgstr "PDF Import Präferenzen"
 
 #: rnote-ui/data/ui/dialogs.ui:131
 msgid "Start page"
-msgstr ""
+msgstr "Anfangsseite"
 
 #: rnote-ui/data/ui/dialogs.ui:146
-#, fuzzy
-#| msgid "Add page"
 msgid "End page"
-msgstr "Seite hinzufügen"
+msgstr "Letzte Seite"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"

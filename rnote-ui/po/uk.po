@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-25 11:33+0200\n"
+"POT-Creation-Date: 2022-10-30 12:25+0100\n"
 "PO-Revision-Date: 2022-10-04 20:28+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -91,11 +91,11 @@ msgstr "Меню розробника"
 msgid "Visual debugging"
 msgstr "Візуальне налагодження"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:970
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:1043
 msgid "Export engine state"
 msgstr "Експортувати стан рушія"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1105
 msgid "Export engine config"
 msgstr "Експорт конфігурації рушія"
 
@@ -166,26 +166,36 @@ msgstr "Змінити розмір відповідно до вмісту"
 msgid "Return to the origin page"
 msgstr "Повернутись до початкової сторінки"
 
-#: rnote-ui/data/ui/appwindow.ui:204
+#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:150
+#, fuzzy
+msgid "Zoom in"
+msgstr "Збільшити"
+
+#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:134
+#, fuzzy
+msgid "Zoom out"
+msgstr "Зменшити масштаб"
+
+#: rnote-ui/data/ui/appwindow.ui:228
 #, fuzzy
 msgid "Undo"
 msgstr "Скасувати"
 
-#: rnote-ui/data/ui/appwindow.ui:217
+#: rnote-ui/data/ui/appwindow.ui:241
 #, fuzzy
 msgid "Redo"
 msgstr "Повторити"
 
-#: rnote-ui/data/ui/appwindow.ui:396
+#: rnote-ui/data/ui/appwindow.ui:420
 #, fuzzy
 msgid "Close the folded flap"
 msgstr "Закрити складений клапоть"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:437
 msgid "Workspace"
 msgstr "Робоча область"
 
-#: rnote-ui/data/ui/appwindow.ui:424
+#: rnote-ui/data/ui/appwindow.ui:448
 msgid "Settings"
 msgstr "Налаштування"
 
@@ -230,7 +240,7 @@ msgid "New"
 msgstr "Новий"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs.rs:557
+#: rnote-ui/src/dialogs.rs:560
 msgid "Open"
 msgstr "Відкрити"
 
@@ -239,7 +249,7 @@ msgstr "Відкрити"
 msgid "Save"
 msgstr "Зберегти"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:606
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:617
 msgid "Save as"
 msgstr "Зберегти як"
 
@@ -247,7 +257,7 @@ msgstr "Зберегти як"
 msgid "Print"
 msgstr "Друк"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:666
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:692
 msgid "Import file"
 msgstr "Імпортувати файл"
 
@@ -275,20 +285,10 @@ msgstr "Експортувати документ як PDF"
 msgid "Export document as Xournal++ .xopp"
 msgstr "Експортувати документ як Xournal++ .xopp"
 
-#: rnote-ui/data/ui/canvasmenu.ui:134
-#, fuzzy
-msgid "Zoom out"
-msgstr "Зменшити масштаб"
-
 #: rnote-ui/data/ui/canvasmenu.ui:143
 #, fuzzy
 msgid "Reset the zoom"
 msgstr "Скинути масштаб"
-
-#: rnote-ui/data/ui/canvasmenu.ui:150
-#, fuzzy
-msgid "Zoom in"
-msgstr "Збільшити"
 
 #: rnote-ui/data/ui/canvasmenu.ui:162
 msgid "Zoom to fit page width"
@@ -309,12 +309,12 @@ msgstr "Це очищає весь аркуш. Будь ласка, підтве
 #: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:558
-#: rnote-ui/src/dialogs.rs:607 rnote-ui/src/dialogs.rs:670
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:760
-#: rnote-ui/src/dialogs.rs:813 rnote-ui/src/dialogs.rs:867
-#: rnote-ui/src/dialogs.rs:921 rnote-ui/src/dialogs.rs:974
-#: rnote-ui/src/dialogs.rs:1027
+#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:561
+#: rnote-ui/src/dialogs.rs:618 rnote-ui/src/dialogs.rs:696
+#: rnote-ui/src/dialogs.rs:741 rnote-ui/src/dialogs.rs:803
+#: rnote-ui/src/dialogs.rs:865 rnote-ui/src/dialogs.rs:926
+#: rnote-ui/src/dialogs.rs:987 rnote-ui/src/dialogs.rs:1047
+#: rnote-ui/src/dialogs.rs:1109
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "Скасувати"
@@ -323,7 +323,7 @@ msgstr "Скасувати"
 msgid "Clear"
 msgstr "Очистити"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:892
 #, fuzzy
 msgid "New Document"
 msgstr "Новий документ"
@@ -366,7 +366,7 @@ msgstr "Відкриття цього файлу перезаписує будь
 msgid "Import PDF"
 msgstr "Імпортувати файл"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:669
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:695
 msgid "Import"
 msgstr "Імпортувати"
 
@@ -374,6 +374,16 @@ msgstr "Імпортувати"
 #, fuzzy
 msgid "PDF import preferences"
 msgstr "Тип зображення імпорту PDF"
+
+#: rnote-ui/data/ui/dialogs.ui:131
+msgid "Start page"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:146
+#, fuzzy
+#| msgid "Add page"
+msgid "End page"
+msgstr "Додати сторінку"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
@@ -490,7 +500,7 @@ msgstr "Дублікат виділення"
 msgid "New document"
 msgstr "Новий документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:894
 msgid "Draft"
 msgstr "Чернетка"
 
@@ -1282,13 +1292,13 @@ msgid "translator-credits"
 msgstr "Володимир Лісівка <vlisivka@gmail.com>, https://linux.org.ua"
 
 #: rnote-ui/src/dialogs.rs:130 rnote-ui/src/dialogs.rs:179
-#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:633
-#: rnote-ui/src/appwindow/mod.rs:457
+#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:659
+#: rnote-ui/src/appwindow/mod.rs:456
 #: rnote-ui/src/appwindow/appwindowactions.rs:654
 msgid "Saving document failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:575
+#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:586
 msgid "Opening file failed."
 msgstr ""
 
@@ -1332,133 +1342,133 @@ msgstr ""
 msgid "Opening PDF file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:551
+#: rnote-ui/src/dialogs.rs:554
 #, fuzzy
 msgid ".rnote / .xopp File"
 msgstr "Файл .rnote"
 
-#: rnote-ui/src/dialogs.rs:554
+#: rnote-ui/src/dialogs.rs:557
 #, fuzzy
 msgid "Open file"
 msgstr "Відкрити файл"
 
-#: rnote-ui/src/dialogs.rs:600
+#: rnote-ui/src/dialogs.rs:611
 #, fuzzy
 msgid ".rnote file"
 msgstr "Файл .rnote"
 
-#: rnote-ui/src/dialogs.rs:603
+#: rnote-ui/src/dialogs.rs:614
 #, fuzzy
 msgid "Save document as"
 msgstr "Новий документ"
 
-#: rnote-ui/src/dialogs.rs:635
+#: rnote-ui/src/dialogs.rs:661
 msgid "Saved document successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:663
+#: rnote-ui/src/dialogs.rs:689
 #, fuzzy
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "файл PNG / SVG / JPG / PDF"
 
-#: rnote-ui/src/dialogs.rs:700 rnote-ui/src/dialogs.rs:806
+#: rnote-ui/src/dialogs.rs:734 rnote-ui/src/dialogs.rs:858
 msgid "SVG file"
 msgstr "файл SVG"
 
-#: rnote-ui/src/dialogs.rs:703 rnote-ui/src/dialogs.rs:756
+#: rnote-ui/src/dialogs.rs:737 rnote-ui/src/dialogs.rs:799
 msgid "Export Selection"
 msgstr "Експортувати вибір"
 
-#: rnote-ui/src/dialogs.rs:706 rnote-ui/src/dialogs.rs:759
-#: rnote-ui/src/dialogs.rs:812 rnote-ui/src/dialogs.rs:866
-#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:973
-#: rnote-ui/src/dialogs.rs:1026
+#: rnote-ui/src/dialogs.rs:740 rnote-ui/src/dialogs.rs:802
+#: rnote-ui/src/dialogs.rs:864 rnote-ui/src/dialogs.rs:925
+#: rnote-ui/src/dialogs.rs:986 rnote-ui/src/dialogs.rs:1046
+#: rnote-ui/src/dialogs.rs:1108
 msgid "Export"
 msgstr "Експортувати"
 
-#: rnote-ui/src/dialogs.rs:731
+#: rnote-ui/src/dialogs.rs:774
 #, fuzzy
 msgid "Export selection as SVG failed."
 msgstr "Експортувати вибране як SVG"
 
-#: rnote-ui/src/dialogs.rs:733
+#: rnote-ui/src/dialogs.rs:776
 #, fuzzy
 msgid "Exported selection as SVG successfully."
 msgstr "Експортувати вибране як SVG"
 
-#: rnote-ui/src/dialogs.rs:753
+#: rnote-ui/src/dialogs.rs:796
 #, fuzzy
 msgid "PNG file"
 msgstr "файл SVG"
 
-#: rnote-ui/src/dialogs.rs:784
+#: rnote-ui/src/dialogs.rs:836
 #, fuzzy
 msgid "Export selection as PNG failed."
 msgstr "Експортувати вибране як SVG"
 
-#: rnote-ui/src/dialogs.rs:786
+#: rnote-ui/src/dialogs.rs:838
 #, fuzzy
 msgid "Exported selection as PNG successfully."
 msgstr "Експортувати вибране як SVG"
 
-#: rnote-ui/src/dialogs.rs:809 rnote-ui/src/dialogs.rs:863
-#: rnote-ui/src/dialogs.rs:917
+#: rnote-ui/src/dialogs.rs:861 rnote-ui/src/dialogs.rs:922
+#: rnote-ui/src/dialogs.rs:983
 #, fuzzy
 msgid "Export document"
 msgstr "Новий документ"
 
-#: rnote-ui/src/dialogs.rs:836
+#: rnote-ui/src/dialogs.rs:895
 #, fuzzy
 msgid "Export document as SVG failed."
 msgstr "Експортувати аркуш як SVG"
 
-#: rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:897
 msgid "Exported document as SVG successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:860
+#: rnote-ui/src/dialogs.rs:919
 #, fuzzy
 msgid "PDF file"
 msgstr "файл SVG"
 
-#: rnote-ui/src/dialogs.rs:890
+#: rnote-ui/src/dialogs.rs:956
 msgid "Export document as PDF failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:892
+#: rnote-ui/src/dialogs.rs:958
 msgid "Exported document as PDF successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:914
+#: rnote-ui/src/dialogs.rs:980
 msgid ".xopp file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:944
+#: rnote-ui/src/dialogs.rs:1017
 msgid "Exporting document as .xopp failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:946
+#: rnote-ui/src/dialogs.rs:1019
 msgid "Exported document as .xopp successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:967 rnote-ui/src/dialogs.rs:1020
+#: rnote-ui/src/dialogs.rs:1040 rnote-ui/src/dialogs.rs:1102
 #, fuzzy
 msgid "JSON file"
 msgstr "файл SVG"
 
-#: rnote-ui/src/dialogs.rs:997
+#: rnote-ui/src/dialogs.rs:1079
 msgid "Export engine state failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:999
+#: rnote-ui/src/dialogs.rs:1081
 msgid "Exported engine state successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:1052
+#: rnote-ui/src/dialogs.rs:1143
 msgid "Export engine config failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:1054
+#: rnote-ui/src/dialogs.rs:1145
 msgid "Exported engine config successfully."
 msgstr ""
 

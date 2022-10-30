@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-25 11:33+0200\n"
+"POT-Creation-Date: 2022-10-30 12:25+0100\n"
 "PO-Revision-Date: 2022-10-23 17:40+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -94,11 +94,11 @@ msgstr "டெவலப்பர் மெனு"
 msgid "Visual debugging"
 msgstr "காட்சி பிழைத்திருத்தம்"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:970
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:1043
 msgid "Export engine state"
 msgstr "ஏற்றுமதி இயந்திர நிலை"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1105
 msgid "Export engine config"
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு"
 
@@ -168,23 +168,31 @@ msgstr "ஸ்ட்ரோக்குகளுக்கு ஏற்றவா�
 msgid "Return to the origin page"
 msgstr "தோற்றம் பக்கத்திற்குத் திரும்பு"
 
-#: rnote-ui/data/ui/appwindow.ui:204
+#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:150
+msgid "Zoom in"
+msgstr "பெரிதாக்கு"
+
+#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:134
+msgid "Zoom out"
+msgstr "ஜூம் அவுட்"
+
+#: rnote-ui/data/ui/appwindow.ui:228
 msgid "Undo"
 msgstr "செயல்தவிர்"
 
-#: rnote-ui/data/ui/appwindow.ui:217
+#: rnote-ui/data/ui/appwindow.ui:241
 msgid "Redo"
 msgstr "மீண்டும் செய்"
 
-#: rnote-ui/data/ui/appwindow.ui:396
+#: rnote-ui/data/ui/appwindow.ui:420
 msgid "Close the folded flap"
 msgstr "மடிந்த மடலை மூடு"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:437
 msgid "Workspace"
 msgstr "பணியிடம்"
 
-#: rnote-ui/data/ui/appwindow.ui:424
+#: rnote-ui/data/ui/appwindow.ui:448
 msgid "Settings"
 msgstr "அமைப்புகள்"
 
@@ -225,7 +233,7 @@ msgid "New"
 msgstr "புதிய"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs.rs:557
+#: rnote-ui/src/dialogs.rs:560
 msgid "Open"
 msgstr "திற"
 
@@ -234,7 +242,7 @@ msgstr "திற"
 msgid "Save"
 msgstr "சேமி"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:606
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:617
 msgid "Save as"
 msgstr "என சேமிக்கவும்"
 
@@ -242,7 +250,7 @@ msgstr "என சேமிக்கவும்"
 msgid "Print"
 msgstr "அச்சிடுக"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:666
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:692
 msgid "Import file"
 msgstr "கோப்பு இறக்குமதி"
 
@@ -270,17 +278,9 @@ msgstr "ஆவணத்தை PDF ஆக ஏற்றுமதி செய்�
 msgid "Export document as Xournal++ .xopp"
 msgstr "ஆவணத்தை Xournal++ .xopp ஆக ஏற்றுமதி செய்யவும்"
 
-#: rnote-ui/data/ui/canvasmenu.ui:134
-msgid "Zoom out"
-msgstr "ஜூம் அவுட்"
-
 #: rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Reset the zoom"
 msgstr "ஜூமை மீட்டமை"
-
-#: rnote-ui/data/ui/canvasmenu.ui:150
-msgid "Zoom in"
-msgstr "பெரிதாக்கு"
 
 #: rnote-ui/data/ui/canvasmenu.ui:162
 msgid "Zoom to fit page width"
@@ -300,12 +300,12 @@ msgstr "இது முழு ஆவணத்தையும் அழிக்
 #: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:558
-#: rnote-ui/src/dialogs.rs:607 rnote-ui/src/dialogs.rs:670
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:760
-#: rnote-ui/src/dialogs.rs:813 rnote-ui/src/dialogs.rs:867
-#: rnote-ui/src/dialogs.rs:921 rnote-ui/src/dialogs.rs:974
-#: rnote-ui/src/dialogs.rs:1027
+#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:561
+#: rnote-ui/src/dialogs.rs:618 rnote-ui/src/dialogs.rs:696
+#: rnote-ui/src/dialogs.rs:741 rnote-ui/src/dialogs.rs:803
+#: rnote-ui/src/dialogs.rs:865 rnote-ui/src/dialogs.rs:926
+#: rnote-ui/src/dialogs.rs:987 rnote-ui/src/dialogs.rs:1047
+#: rnote-ui/src/dialogs.rs:1109
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "ரத்துசெய்"
@@ -314,7 +314,7 @@ msgstr "ரத்துசெய்"
 msgid "Clear"
 msgstr "தெளிவு"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:892
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
@@ -357,13 +357,23 @@ msgstr ""
 msgid "Import PDF"
 msgstr "PDF ஐ இறக்குமதி செய்"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:669
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:695
 msgid "Import"
 msgstr "இறக்குமதி"
 
 #: rnote-ui/data/ui/dialogs.ui:127
 msgid "PDF import preferences"
 msgstr "PDF இறக்குமதி விருப்பத்தேர்வுகள்"
+
+#: rnote-ui/data/ui/dialogs.ui:131
+msgid "Start page"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:146
+#, fuzzy
+#| msgid "Add page"
+msgid "End page"
+msgstr "பக்கத்தைச் சேர்"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
@@ -468,7 +478,7 @@ msgstr "நகல்"
 msgid "New document"
 msgstr "புதிய ஆவணம்"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:894
 msgid "Draft"
 msgstr "வரைவு"
 
@@ -1229,13 +1239,13 @@ msgid "translator-credits"
 msgstr "மொழிபெயர்ப்பாளர்-வரவுகள்"
 
 #: rnote-ui/src/dialogs.rs:130 rnote-ui/src/dialogs.rs:179
-#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:633
-#: rnote-ui/src/appwindow/mod.rs:457
+#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:659
+#: rnote-ui/src/appwindow/mod.rs:456
 #: rnote-ui/src/appwindow/appwindowactions.rs:654
 msgid "Saving document failed."
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
 
-#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:575
+#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:586
 msgid "Opening file failed."
 msgstr "கோப்பைத் திறப்பதில் தோல்வி."
 
@@ -1279,119 +1289,119 @@ msgstr "பக்கங்கள்:"
 msgid "Opening PDF file failed."
 msgstr "PDF கோப்பை திறக்க முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:551
+#: rnote-ui/src/dialogs.rs:554
 msgid ".rnote / .xopp File"
 msgstr ".rnote / .xopp கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:554
+#: rnote-ui/src/dialogs.rs:557
 msgid "Open file"
 msgstr "கோப்பைத் திறக்கவும்"
 
-#: rnote-ui/src/dialogs.rs:600
+#: rnote-ui/src/dialogs.rs:611
 msgid ".rnote file"
 msgstr ".rnote கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:603
+#: rnote-ui/src/dialogs.rs:614
 msgid "Save document as"
 msgstr "ஆவணத்தை இவ்வாறு சேமிக்கவும்"
 
-#: rnote-ui/src/dialogs.rs:635
+#: rnote-ui/src/dialogs.rs:661
 msgid "Saved document successfully."
 msgstr "ஆவணம் வெற்றிகரமாகச் சேமிக்கப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:663
+#: rnote-ui/src/dialogs.rs:689
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / PDF கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:700 rnote-ui/src/dialogs.rs:806
+#: rnote-ui/src/dialogs.rs:734 rnote-ui/src/dialogs.rs:858
 msgid "SVG file"
 msgstr "SVG கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:703 rnote-ui/src/dialogs.rs:756
+#: rnote-ui/src/dialogs.rs:737 rnote-ui/src/dialogs.rs:799
 msgid "Export Selection"
 msgstr "ஏற்றுமதி தேர்வு"
 
-#: rnote-ui/src/dialogs.rs:706 rnote-ui/src/dialogs.rs:759
-#: rnote-ui/src/dialogs.rs:812 rnote-ui/src/dialogs.rs:866
-#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:973
-#: rnote-ui/src/dialogs.rs:1026
+#: rnote-ui/src/dialogs.rs:740 rnote-ui/src/dialogs.rs:802
+#: rnote-ui/src/dialogs.rs:864 rnote-ui/src/dialogs.rs:925
+#: rnote-ui/src/dialogs.rs:986 rnote-ui/src/dialogs.rs:1046
+#: rnote-ui/src/dialogs.rs:1108
 msgid "Export"
 msgstr "ஏற்றுமதி"
 
-#: rnote-ui/src/dialogs.rs:731
+#: rnote-ui/src/dialogs.rs:774
 msgid "Export selection as SVG failed."
 msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:733
+#: rnote-ui/src/dialogs.rs:776
 msgid "Exported selection as SVG successfully."
 msgstr "தேர்வு வெற்றிகரமாக SVG ஆக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:753
+#: rnote-ui/src/dialogs.rs:796
 msgid "PNG file"
 msgstr "PNG கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:784
+#: rnote-ui/src/dialogs.rs:836
 msgid "Export selection as PNG failed."
 msgstr "தேர்வு PNG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:786
+#: rnote-ui/src/dialogs.rs:838
 msgid "Exported selection as PNG successfully."
 msgstr "தேர்வு வெற்றிகரமாக PNG ஆக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:809 rnote-ui/src/dialogs.rs:863
-#: rnote-ui/src/dialogs.rs:917
+#: rnote-ui/src/dialogs.rs:861 rnote-ui/src/dialogs.rs:922
+#: rnote-ui/src/dialogs.rs:983
 msgid "Export document"
 msgstr "ஏற்றுமதி ஆவணம்"
 
-#: rnote-ui/src/dialogs.rs:836
+#: rnote-ui/src/dialogs.rs:895
 msgid "Export document as SVG failed."
 msgstr "ஆவணத்தை SVG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:897
 msgid "Exported document as SVG successfully."
 msgstr "ஆவணம் SVG ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:860
+#: rnote-ui/src/dialogs.rs:919
 msgid "PDF file"
 msgstr "PDF கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:890
+#: rnote-ui/src/dialogs.rs:956
 msgid "Export document as PDF failed."
 msgstr "ஆவணத்தை PDF ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs.rs:892
+#: rnote-ui/src/dialogs.rs:958
 msgid "Exported document as PDF successfully."
 msgstr "ஆவணம் PDF ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:914
+#: rnote-ui/src/dialogs.rs:980
 msgid ".xopp file"
 msgstr ".xopp கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:944
+#: rnote-ui/src/dialogs.rs:1017
 msgid "Exporting document as .xopp failed."
 msgstr "ஆவணத்தை .xopp ஆக ஏற்றுமதி செய்வது தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:946
+#: rnote-ui/src/dialogs.rs:1019
 msgid "Exported document as .xopp successfully."
 msgstr "ஆவணம் .xopp ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:967 rnote-ui/src/dialogs.rs:1020
+#: rnote-ui/src/dialogs.rs:1040 rnote-ui/src/dialogs.rs:1102
 msgid "JSON file"
 msgstr "JSON கோப்பு"
 
-#: rnote-ui/src/dialogs.rs:997
+#: rnote-ui/src/dialogs.rs:1079
 msgid "Export engine state failed."
 msgstr "ஏற்றுமதி இயந்திர நிலை தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:999
+#: rnote-ui/src/dialogs.rs:1081
 msgid "Exported engine state successfully."
 msgstr "எஞ்சின் நிலை வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs.rs:1052
+#: rnote-ui/src/dialogs.rs:1143
 msgid "Export engine config failed."
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs.rs:1054
+#: rnote-ui/src/dialogs.rs:1145
 msgid "Exported engine config successfully."
 msgstr "இயந்திர கட்டமைப்பு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 

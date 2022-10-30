@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-25 11:33+0200\n"
+"POT-Creation-Date: 2022-10-30 12:25+0100\n"
 "PO-Revision-Date: 2022-10-06 12:33+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -93,11 +93,11 @@ msgstr "เมนูสำหรับนักพัฒนา"
 msgid "Visual debugging"
 msgstr "แก้ไขปัญหาการแสดงผล"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:970
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:1043
 msgid "Export engine state"
 msgstr "ส่งออกสภาพของเอนจิน"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1023
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1105
 msgid "Export engine config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
@@ -167,23 +167,31 @@ msgstr "ปรับขนาดของเอกสารให้พอดี
 msgid "Return to the origin page"
 msgstr "กลับไปหน้าแรก"
 
-#: rnote-ui/data/ui/appwindow.ui:204
+#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:150
+msgid "Zoom in"
+msgstr "ซูมเข้า"
+
+#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:134
+msgid "Zoom out"
+msgstr "ซูมออก"
+
+#: rnote-ui/data/ui/appwindow.ui:228
 msgid "Undo"
 msgstr "เลิกทำ"
 
-#: rnote-ui/data/ui/appwindow.ui:217
+#: rnote-ui/data/ui/appwindow.ui:241
 msgid "Redo"
 msgstr "ทำซ้ำ"
 
-#: rnote-ui/data/ui/appwindow.ui:396
+#: rnote-ui/data/ui/appwindow.ui:420
 msgid "Close the folded flap"
 msgstr "ปิดแถบหน้าต่างด้านข้าง"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:437
 msgid "Workspace"
 msgstr "พื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/appwindow.ui:424
+#: rnote-ui/data/ui/appwindow.ui:448
 msgid "Settings"
 msgstr "การตั้งค่า"
 
@@ -224,7 +232,7 @@ msgid "New"
 msgstr "ใหม่"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs.rs:557
+#: rnote-ui/src/dialogs.rs:560
 msgid "Open"
 msgstr "เปิด"
 
@@ -233,7 +241,7 @@ msgstr "เปิด"
 msgid "Save"
 msgstr "บันทึก"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:606
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:617
 msgid "Save as"
 msgstr "บันทึกที่"
 
@@ -241,7 +249,7 @@ msgstr "บันทึกที่"
 msgid "Print"
 msgstr "พิมพ์"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:666
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:692
 msgid "Import file"
 msgstr "นำเข้าไฟล์"
 
@@ -269,17 +277,9 @@ msgstr "ส่งออกเอกสารไปเป็นไฟล์ PDF"
 msgid "Export document as Xournal++ .xopp"
 msgstr "ส่งออกเอกสารไปเป็นไฟล์ของ Xournal++ .xopp"
 
-#: rnote-ui/data/ui/canvasmenu.ui:134
-msgid "Zoom out"
-msgstr "ซูมออก"
-
 #: rnote-ui/data/ui/canvasmenu.ui:143
 msgid "Reset the zoom"
 msgstr "รีเซ็ตการซูม"
-
-#: rnote-ui/data/ui/canvasmenu.ui:150
-msgid "Zoom in"
-msgstr "ซูมเข้า"
 
 #: rnote-ui/data/ui/canvasmenu.ui:162
 msgid "Zoom to fit page width"
@@ -299,12 +299,12 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:558
-#: rnote-ui/src/dialogs.rs:607 rnote-ui/src/dialogs.rs:670
-#: rnote-ui/src/dialogs.rs:707 rnote-ui/src/dialogs.rs:760
-#: rnote-ui/src/dialogs.rs:813 rnote-ui/src/dialogs.rs:867
-#: rnote-ui/src/dialogs.rs:921 rnote-ui/src/dialogs.rs:974
-#: rnote-ui/src/dialogs.rs:1027
+#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:561
+#: rnote-ui/src/dialogs.rs:618 rnote-ui/src/dialogs.rs:696
+#: rnote-ui/src/dialogs.rs:741 rnote-ui/src/dialogs.rs:803
+#: rnote-ui/src/dialogs.rs:865 rnote-ui/src/dialogs.rs:926
+#: rnote-ui/src/dialogs.rs:987 rnote-ui/src/dialogs.rs:1047
+#: rnote-ui/src/dialogs.rs:1109
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "ยกเลิก"
@@ -313,7 +313,7 @@ msgstr "ยกเลิก"
 msgid "Clear"
 msgstr "ล้าง"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:893
+#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:892
 msgid "New Document"
 msgstr "เอกสารใหม่"
 
@@ -354,13 +354,23 @@ msgstr ""
 msgid "Import PDF"
 msgstr "นำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:669
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:695
 msgid "Import"
 msgstr "นำเข้า"
 
 #: rnote-ui/data/ui/dialogs.ui:127
 msgid "PDF import preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
+
+#: rnote-ui/data/ui/dialogs.ui:131
+msgid "Start page"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:146
+#, fuzzy
+#| msgid "Add page"
+msgid "End page"
+msgstr "เพิ่มหน้าใหม่"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
@@ -465,7 +475,7 @@ msgstr "สำเนาสิ่งที่เลือก"
 msgid "New document"
 msgstr "เอกสารใหม่"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:894
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -1225,13 +1235,13 @@ msgid "translator-credits"
 msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
 
 #: rnote-ui/src/dialogs.rs:130 rnote-ui/src/dialogs.rs:179
-#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:633
-#: rnote-ui/src/appwindow/mod.rs:457
+#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:659
+#: rnote-ui/src/appwindow/mod.rs:456
 #: rnote-ui/src/appwindow/appwindowactions.rs:654
 msgid "Saving document failed."
 msgstr "การบันทึกเอกสารล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:575
+#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:586
 msgid "Opening file failed."
 msgstr "การเปิดไฟล์ล้มเหลว"
 
@@ -1275,119 +1285,119 @@ msgstr "จำนวนหน้า:"
 msgid "Opening PDF file failed."
 msgstr "การเปิดไฟล์ PDF ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:551
+#: rnote-ui/src/dialogs.rs:554
 msgid ".rnote / .xopp File"
 msgstr "ไฟล์ .rnote / .xopp"
 
-#: rnote-ui/src/dialogs.rs:554
+#: rnote-ui/src/dialogs.rs:557
 msgid "Open file"
 msgstr "เปิดไฟล์"
 
-#: rnote-ui/src/dialogs.rs:600
+#: rnote-ui/src/dialogs.rs:611
 msgid ".rnote file"
 msgstr "ไฟล์ .rnote"
 
-#: rnote-ui/src/dialogs.rs:603
+#: rnote-ui/src/dialogs.rs:614
 msgid "Save document as"
 msgstr "บันทึกเอกสารที่"
 
-#: rnote-ui/src/dialogs.rs:635
+#: rnote-ui/src/dialogs.rs:661
 msgid "Saved document successfully."
 msgstr "บันทึกเอกสารสำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:663
+#: rnote-ui/src/dialogs.rs:689
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "ไฟล์ PNG / SVG / JPG / PDF"
 
-#: rnote-ui/src/dialogs.rs:700 rnote-ui/src/dialogs.rs:806
+#: rnote-ui/src/dialogs.rs:734 rnote-ui/src/dialogs.rs:858
 msgid "SVG file"
 msgstr "ไฟล์ SVG"
 
-#: rnote-ui/src/dialogs.rs:703 rnote-ui/src/dialogs.rs:756
+#: rnote-ui/src/dialogs.rs:737 rnote-ui/src/dialogs.rs:799
 msgid "Export Selection"
 msgstr "ส่งออกสิ่งที่เลือก"
 
-#: rnote-ui/src/dialogs.rs:706 rnote-ui/src/dialogs.rs:759
-#: rnote-ui/src/dialogs.rs:812 rnote-ui/src/dialogs.rs:866
-#: rnote-ui/src/dialogs.rs:920 rnote-ui/src/dialogs.rs:973
-#: rnote-ui/src/dialogs.rs:1026
+#: rnote-ui/src/dialogs.rs:740 rnote-ui/src/dialogs.rs:802
+#: rnote-ui/src/dialogs.rs:864 rnote-ui/src/dialogs.rs:925
+#: rnote-ui/src/dialogs.rs:986 rnote-ui/src/dialogs.rs:1046
+#: rnote-ui/src/dialogs.rs:1108
 msgid "Export"
 msgstr "ส่งออก"
 
-#: rnote-ui/src/dialogs.rs:731
+#: rnote-ui/src/dialogs.rs:774
 msgid "Export selection as SVG failed."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:733
+#: rnote-ui/src/dialogs.rs:776
 msgid "Exported selection as SVG successfully."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:753
+#: rnote-ui/src/dialogs.rs:796
 msgid "PNG file"
 msgstr "ไฟล์ PNG"
 
-#: rnote-ui/src/dialogs.rs:784
+#: rnote-ui/src/dialogs.rs:836
 msgid "Export selection as PNG failed."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ PNG ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:786
+#: rnote-ui/src/dialogs.rs:838
 msgid "Exported selection as PNG successfully."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ PNG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:809 rnote-ui/src/dialogs.rs:863
-#: rnote-ui/src/dialogs.rs:917
+#: rnote-ui/src/dialogs.rs:861 rnote-ui/src/dialogs.rs:922
+#: rnote-ui/src/dialogs.rs:983
 msgid "Export document"
 msgstr "ส่งออกเอกสาร"
 
-#: rnote-ui/src/dialogs.rs:836
+#: rnote-ui/src/dialogs.rs:895
 msgid "Export document as SVG failed."
 msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:838
+#: rnote-ui/src/dialogs.rs:897
 msgid "Exported document as SVG successfully."
 msgstr "ส่งออกเอกสารเป็นไฟล์ SVG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:860
+#: rnote-ui/src/dialogs.rs:919
 msgid "PDF file"
 msgstr "ไฟล์ PDF"
 
-#: rnote-ui/src/dialogs.rs:890
+#: rnote-ui/src/dialogs.rs:956
 msgid "Export document as PDF failed."
 msgstr "ส่งออกเอกสารเป็นไฟล์ PDF ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:892
+#: rnote-ui/src/dialogs.rs:958
 msgid "Exported document as PDF successfully."
 msgstr "ส่งออกเอกสารเป็นไฟล์ PDF สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:914
+#: rnote-ui/src/dialogs.rs:980
 msgid ".xopp file"
 msgstr "ไฟล์ .xopp"
 
-#: rnote-ui/src/dialogs.rs:944
+#: rnote-ui/src/dialogs.rs:1017
 msgid "Exporting document as .xopp failed."
 msgstr "การส่งออกเอกสารเป็นไฟล์ .xopp ล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:946
+#: rnote-ui/src/dialogs.rs:1019
 msgid "Exported document as .xopp successfully."
 msgstr "ส่งออกเอกสารเป็นไฟล์ .xopp สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:967 rnote-ui/src/dialogs.rs:1020
+#: rnote-ui/src/dialogs.rs:1040 rnote-ui/src/dialogs.rs:1102
 msgid "JSON file"
 msgstr "ไฟล์ JSON"
 
-#: rnote-ui/src/dialogs.rs:997
+#: rnote-ui/src/dialogs.rs:1079
 msgid "Export engine state failed."
 msgstr "ส่งออกสภาพของเอนจินล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:999
+#: rnote-ui/src/dialogs.rs:1081
 msgid "Exported engine state successfully."
 msgstr "ส่งออกสภาพของเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs.rs:1052
+#: rnote-ui/src/dialogs.rs:1143
 msgid "Export engine config failed."
 msgstr "ส่งออกการตั้งค่าเอนจินล้มเหลว"
 
-#: rnote-ui/src/dialogs.rs:1054
+#: rnote-ui/src/dialogs.rs:1145
 msgid "Exported engine config successfully."
 msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
 

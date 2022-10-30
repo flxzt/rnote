@@ -66,6 +66,18 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.7" date="2022-10-30">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>improvement: Add zoom buttons to the quick-actions overlay</li>
+          <li>improvement: By default use the workspace directory for import and export dialogs, and document file for save dialogs</li>
+          <li>fix: PDF export and print sometimes produced empty pages</li>
+          <li>fix: workspace files list not refreshing after modifying the workspace path</li>
+          <li>fix: Selector being canceled when attempting to interact with the selection when "touch-drawing" was enabled</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.6" date="2022-10-25">
       <description>
         <p>this release changes:</p>

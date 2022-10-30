@@ -577,6 +577,16 @@ impl RnoteCanvas {
             }),
         );
 
+        self.connect_notify_local(
+            Some("touch-drawing"),
+            clone!(@weak appwindow => move |canvas, _pspec| {
+                let touch_drawing = canvas.touch_drawing();
+
+                // Disable the zoom gesture when touch drawing is enabled
+                appwindow.canvas_zoom_gesture_enable(!touch_drawing);
+            }),
+        );
+
         self.bind_property("unsaved-changes", appwindow, "unsaved-changes")
             .flags(glib::BindingFlags::DEFAULT)
             .build();
@@ -677,8 +687,11 @@ impl RnoteCanvas {
 
             // enable drag and zoom gestures again
             appwindow.canvas_touch_drag_gesture_enable(true);
-            appwindow.canvas_zoom_gesture_enable(true);
             appwindow.canvas_drag_empty_area_gesture_enable(true);
+
+            if !canvas.touch_drawing() {
+                appwindow.canvas_zoom_gesture_enable(true);
+            }
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
 

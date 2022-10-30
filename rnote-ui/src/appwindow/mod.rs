@@ -17,7 +17,6 @@ use gtk4::{
     ToggleButton,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::penhelpers::PenEvent;
 
 use crate::{
     app::RnoteApp,
@@ -1339,12 +1338,6 @@ impl RnoteAppWindow {
                     let current_zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
-                    // Only cancel the current pen when touch drawing is enabled
-                    if appwindow.canvas().touch_drawing() {
-                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
-
                     zoom_begin.set(current_zoom);
                     new_zoom.set(current_zoom);
                     prev_scale.set(1.0);
@@ -1387,11 +1380,6 @@ impl RnoteAppWindow {
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     bbcenter_begin.set(None);
 
-                    if appwindow.canvas().touch_drawing() {
-                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
-
                     appwindow.canvas().update_engine_rendering();
 
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
@@ -1403,11 +1391,6 @@ impl RnoteAppWindow {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
 
                     bbcenter_begin.set(None);
-
-                    if appwindow.canvas().touch_drawing() {
-                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
 
                     appwindow.canvas().update_engine_rendering();
 

@@ -52,6 +52,42 @@
             <property name="title" context="shortcut window" translatable="yes">Navigation</property>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Switch to the Brush pen</property>
+                <property name="accelerator">&lt;ctrl&gt;1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Switch to the Shaper pen</property>
+                <property name="accelerator">&lt;ctrl&gt;2</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Switch to the Typewriter pen</property>
+                <property name="accelerator">&lt;ctrl&gt;3</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Switch to the Eraser pen</property>
+                <property name="accelerator">&lt;ctrl&gt;4</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Switch to the Selector pen</property>
+                <property name="accelerator">&lt;ctrl&gt;5</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Switch to the Tools pen</property>
+                <property name="accelerator">&lt;ctrl&gt;6</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom in</property>
                 <property name="accelerator">&lt;ctrl&gt;ScrollUp</property>
               </object>

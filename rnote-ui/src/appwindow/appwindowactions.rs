@@ -958,6 +958,12 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
+        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
+        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);
+        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3"]);
+        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4"]);
+        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5"]);
+        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6"]);
 
         // shortcuts for devel builds
         if config::PROFILE.to_lowercase().as_str() == "devel" {

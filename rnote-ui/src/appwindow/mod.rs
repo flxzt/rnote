@@ -1460,8 +1460,7 @@ impl RnoteAppWindow {
             .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string());
 
         let subtitle: String = file
-            .and_then(|f| f.parent())
-            .map(|t| t.to_string())
+            .and_then(|f| Some(f.parent()?.path()?.display().to_string()))
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string());
 
         self.set_title(Some(

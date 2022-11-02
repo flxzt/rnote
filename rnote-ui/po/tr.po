@@ -70,7 +70,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
 msgstr "Sistem renk tercihlerini kullan"
 
@@ -372,7 +371,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "Sayfa ekle"
 
@@ -1154,9 +1152,6 @@ msgstr "Etkin"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
 #, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints when this switch is "
-#| "off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"

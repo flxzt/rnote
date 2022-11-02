@@ -72,7 +72,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
 msgstr "Usar preferência de cores do sistema"
 
@@ -375,7 +374,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "Adicionar página"
 
@@ -387,8 +385,8 @@ msgstr "Tipo de páginas"
 #, fuzzy
 msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgstr ""
-"Definir se o PDF deverá ser importado como vetor ou imagens de mapa de bits ("
-"\"bitmap\")"
+"Definir se o PDF deverá ser importado como vetor ou imagens de mapa de bits "
+"(\"bitmap\")"
 
 #: rnote-ui/data/ui/dialogs.ui:174
 msgid "Vector"

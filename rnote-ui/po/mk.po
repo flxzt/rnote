@@ -371,7 +371,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "Додај страница"
 
@@ -523,7 +522,8 @@ msgstr "Секогаш скриени странични водилки"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr "Одбери дали страничните водилки на платното треба секогаш да се скриени"
+msgstr ""
+"Одбери дали страничните водилки на платното треба секогаш да се скриени"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"

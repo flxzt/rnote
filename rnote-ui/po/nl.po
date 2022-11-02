@@ -370,7 +370,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "Pagina toevoegen"
 
@@ -526,7 +525,8 @@ msgstr "Schuifbalken verbergen"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr "Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
+msgstr ""
+"Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
@@ -1110,7 +1110,8 @@ msgstr "Meerdere penseelstreken"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr "Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
+msgstr ""
+"Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254

@@ -37,14 +37,16 @@ msgstr "新建視窗"
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr "Rnote "
-"是一款基於向量繪圖的軟體，用於素描、手寫筆記、以及為檔案和圖片添加註釋。"
+msgstr ""
+"Rnote 是一款基於向量繪圖的軟體，用於素描、手寫筆記、以及為檔案和圖片添加註"
+"釋。"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
-msgstr "免責宣告：該檔案格式尚未完全支援，它可能改變並損壞不同版本之間的相容性。"
+msgstr ""
+"免責宣告：該檔案格式尚未完全支援，它可能改變並損壞不同版本之間的相容性。"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -68,7 +70,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
 msgstr "跟隨系統"
 
@@ -368,7 +369,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:146
 #, fuzzy
-#| msgid "Add page"
 msgid "End page"
 msgstr "新建頁面"
 
@@ -1148,9 +1148,6 @@ msgstr "啟用"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
 #, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints when this switch is "
-#| "off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"

@@ -72,7 +72,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
-#| msgid "Use system colors preference"
 msgid "Use system colors"
 msgstr "Bruk operativsystemets fargevalg"
 

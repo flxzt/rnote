@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 19:41+0100\n"
+"POT-Creation-Date: 2022-11-02 19:45+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
@@ -760,32 +760,32 @@ msgstr "Nawigacja"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
-msgid "Switch to the 'Brush' pen"
+msgid "Switch to the 'Brush'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
-msgid "Switch to the 'Shaper' pen"
+msgid "Switch to the 'Shaper'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
-msgid "Switch to the 'Typewriter' pen"
+msgid "Switch to the 'Typewriter'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
-msgid "Switch to the 'Eraser' pen"
+msgid "Switch to the 'Eraser'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
-msgid "Switch to the 'Selector' pen"
+msgid "Switch to the 'Selector'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
-msgid "Switch to the 'Tools' pen"
+msgid "Switch to the 'Tools'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97

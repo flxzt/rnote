@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-02 19:45+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
+"PO-Revision-Date: 2022-11-02 22:35+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -366,12 +366,11 @@ msgstr "Pdf-importvoorkeuren"
 
 #: rnote-ui/data/ui/dialogs.ui:131
 msgid "Start page"
-msgstr ""
+msgstr "Eerste pagina"
 
 #: rnote-ui/data/ui/dialogs.ui:146
-#, fuzzy
 msgid "End page"
-msgstr "Pagina toevoegen"
+msgstr "Laatste pagina"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"

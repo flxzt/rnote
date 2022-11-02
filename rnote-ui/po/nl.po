@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-30 12:25+0100\n"
-"PO-Revision-Date: 2022-10-26 16:01+0000\n"
+"PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -526,8 +526,7 @@ msgstr "Schuifbalken verbergen"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr ""
-"Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
+msgstr "Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
@@ -1111,8 +1110,7 @@ msgstr "Meerdere penseelstreken"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr ""
-"Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
+msgstr "Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254

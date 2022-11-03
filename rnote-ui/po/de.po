@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-03 21:09+0100\n"
-"PO-Revision-Date: 2022-11-02 18:48+0000\n"
+"PO-Revision-Date: 2022-11-03 20:28+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -258,8 +258,6 @@ msgid "Export…"
 msgstr "Exportieren…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export selection"
 msgstr "Auswahl exportieren"
 
@@ -407,8 +405,6 @@ msgid "One per document page"
 msgstr "Eine per Dokumentenseite"
 
 #: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Document"
 msgstr "Dokument exportieren"
 
@@ -418,67 +414,53 @@ msgid "Export"
 msgstr "Exportieren"
 
 #: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Export preferences"
-msgstr "PDF Import Präferenzen"
+msgstr "Exporteinstellungen"
 
 #: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
-#, fuzzy
-#| msgid "Document background"
 msgid "With background"
-msgstr "Dokument Hintergrund"
+msgstr "mit Hintergrund"
 
 #: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "Ändere die Hintergrundfarbe"
+msgstr "Ändere ob der Hintergrund exportiert werden soll"
 
 #: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
-#, fuzzy
-#| msgid "Export document"
 msgid "Export format"
-msgstr "Dokument exportieren"
+msgstr "Exportformat"
 
 #: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
 msgid "The export image format"
-msgstr ""
+msgstr "Das Exportformat"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
-#, fuzzy
-#| msgid "Import file"
 msgid "Select export file"
-msgstr "Importiere Datei"
+msgstr "Wähle die Exportdatei aus"
 
 #: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "Ändere die Formatbreite"
+msgstr "Wähle die Exportdatei aus"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
 #: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
 #: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
 #: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "- no file selected -"
-msgstr "- kein Verzeichnis ausgewählt -"
+msgstr "- keine Datei ausgewählt -"
 
 #: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
 msgid "Export Selection"
@@ -486,19 +468,19 @@ msgstr "Auswahl exportieren"
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs.ui:416
 msgid "Jpeg quality"
-msgstr ""
+msgstr "Jpeg Qualität"
 
 #: rnote-ui/data/ui/dialogs.ui:417
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Ändere die Qualität des Jpeg-Bilds (1 - 100)"
 
 #: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
@@ -1424,41 +1406,29 @@ msgid "Saved document successfully."
 msgstr "Dokument erfolgreich gespeichert."
 
 #: rnote-ui/src/dialogs/export.rs:179
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "Dokument als SVG exportieren gescheitert."
+msgstr "Dokument exportieren gescheitert."
 
 #: rnote-ui/src/dialogs/export.rs:181
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "Dokument erfolgreich als SVG exportiert."
+msgstr "Dokument erfolgreich exportiert."
 
 #: rnote-ui/src/dialogs/export.rs:187
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "Dokument als SVG exportieren gescheitert."
+msgstr "Dokument exportieren gescheitert, keine Datei ausgewählt."
 
 #: rnote-ui/src/dialogs/export.rs:382
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "Auswahl als SVG exportieren gescheitert."
+msgstr "Auswahl exportieren gescheitert."
 
 #: rnote-ui/src/dialogs/export.rs:384
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "Auswahl erfolgreich als SVG exportiert."
+msgstr "Auswahl erfolgreich exportiert."
 
 #: rnote-ui/src/dialogs/export.rs:390
 #: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "Auswahl als SVG exportieren gescheitert."
+msgstr "Auswahl exportieren gescheitert, keine Datei ausgewählt."
 
 #: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
 msgid "JSON file"

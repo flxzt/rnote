@@ -94,9 +94,6 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
-    let jpeg_quality_spinbutton: SpinButton = builder
-        .object("export_doc_jpeg_quality_spinbutton")
-        .unwrap();
 
     let doc_export_prefs = appwindow
         .canvas()
@@ -111,7 +108,6 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     let filechooser = create_filechooser_export_doc(appwindow);
     with_background_switch.set_active(doc_export_prefs.with_background);
     export_format_row.set_selected(doc_export_prefs.export_format.to_u32().unwrap());
-    jpeg_quality_spinbutton.set_value(doc_export_prefs.jpeg_quality as f64);
 
     if let Some(p) = filechooser.file().and_then(|f| f.path()) {
         let path_string = p.to_string_lossy().to_string();
@@ -290,6 +286,8 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let export_file_button: Button = builder
         .object("export_selection_export_file_button")
         .unwrap();
+    let jpeg_quality_row: adw::ActionRow =
+        builder.object("export_selection_jpeg_quality_row").unwrap();
     let jpeg_quality_spinbutton: SpinButton = builder
         .object("export_selection_jpeg_quality_spinbutton")
         .unwrap();
@@ -351,7 +349,7 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
     }));
 
-    export_format_row.connect_selected_notify(clone!(@weak export_file_label, @weak filechooser, @weak appwindow => move |row| {
+    export_format_row.connect_selected_notify(clone!(@weak jpeg_quality_row, @weak export_file_label, @weak filechooser, @weak appwindow => move |row| {
         let selected = row.selected();
         let export_format = SelectionExportFormat::try_from(selected).unwrap();
         appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.export_format = export_format;
@@ -362,6 +360,13 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));
         button_confirm.set_sensitive(false);
+
+        // Set the jpeg quality pref only sensitive when jpeg is actually selected
+        jpeg_quality_row.set_sensitive(export_format == SelectionExportFormat::Jpeg);
+    }));
+
+    jpeg_quality_spinbutton.connect_value_changed(clone!(@weak appwindow => move |jpeg_quality_spinbutton| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
     dialog.connect_response(

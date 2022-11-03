@@ -300,27 +300,6 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow" id="export_doc_jpeg_quality_row">
-                    <property name="title" translatable="yes">Jpeg quality</property>
-                    <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
-                    <child type="suffix">
-                      <object class="GtkAdjustment" id="export_doc_jpeg_quality_adj">
-                        <property name="step-increment">1</property>
-                        <property name="upper">100</property>
-                        <property name="lower">1</property>
-                        <property name="value">85</property>
-                      </object>
-                      <object class="GtkSpinButton" id="export_doc_jpeg_quality_spinbutton">
-                        <property name="adjustment">export_doc_jpeg_quality_adj</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
-                        <property name="digits">0</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
                   <object class="AdwActionRow">
                     <property name="title" translatable="yes">Select export file</property>
                     <property name="subtitle" translatable="yes">Select the export file</property>

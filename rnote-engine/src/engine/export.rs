@@ -16,7 +16,17 @@ use crate::{render, DrawBehaviour};
 use super::RnoteEngine;
 
 #[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[serde(rename = "doc_export_format")]
 pub enum DocExportFormat {
@@ -64,8 +74,6 @@ pub struct DocExportPrefs {
     pub with_background: bool,
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
-    #[serde(rename = "jpg_quality")]
-    pub jpeg_quality: u8,
 }
 
 impl Default for DocExportPrefs {
@@ -73,13 +81,22 @@ impl Default for DocExportPrefs {
         Self {
             with_background: true,
             export_format: DocExportFormat::default(),
-            jpeg_quality: 85,
         }
     }
 }
 
 #[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[serde(rename = "selection_export_format")]
 pub enum SelectionExportFormat {

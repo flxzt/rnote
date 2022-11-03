@@ -200,7 +200,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
 
 fn create_filechooser_export_doc(appwindow: &RnoteAppWindow) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Document"))
+        .title(&gettext("Export document"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Select"))
@@ -403,7 +403,7 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
 
 fn create_filechooser_export_selection(appwindow: &RnoteAppWindow) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Selection"))
+        .title(&gettext("Export selection"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Select"))

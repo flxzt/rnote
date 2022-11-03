@@ -231,7 +231,7 @@
   <object class="GtkDialog" id="dialog_export_doc_w_prefs">
     <property name="use-header-bar">1</property>
     <property name="modal">true</property>
-    <property name="title" translatable="yes">Export Document</property>
+    <property name="title" translatable="yes">Export document</property>
     <child type="action">
       <object class="GtkButton" id="export_doc_button_cancel">
         <property name="label" translatable="yes">Cancel</property>
@@ -287,7 +287,7 @@
                 <child>
                   <object class="AdwComboRow" id="export_doc_export_format_row">
                     <property name="title" translatable="yes">Export format</property>
-                    <property name="subtitle" translatable="yes">The export image format</property>
+                    <property name="subtitle" translatable="yes">The export format</property>
                     <property name="model">
                       <object class="GtkStringList">
                         <items>
@@ -343,7 +343,7 @@
   <object class="GtkDialog" id="dialog_export_selection_w_prefs">
     <property name="use-header-bar">1</property>
     <property name="modal">true</property>
-    <property name="title" translatable="yes">Export Selection</property>
+    <property name="title" translatable="yes">Export selection</property>
     <child type="action">
       <object class="GtkButton" id="export_selection_button_cancel">
         <property name="label" translatable="yes">Cancel</property>

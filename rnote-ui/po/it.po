@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-30 12:25+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
+"PO-Revision-Date: 2022-11-02 22:35+0000\n"
+"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs.rs:24
+#: rnote-ui/src/dialogs/mod.rs:23
 msgid "Sketch and take handwritten notes"
 msgstr "Disegna e prendi appunti a mano"
 
@@ -92,11 +92,11 @@ msgstr "Modalità sviluppatore"
 msgid "Visual debugging"
 msgstr "Debug visivo"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:1043
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:483
 msgid "Export engine state"
 msgstr "Esporta 'engine state'"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1105
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:547
 msgid "Export engine config"
 msgstr "Esporta 'engine config'"
 
@@ -166,11 +166,11 @@ msgstr "Ridimensiona per adattare il formato del documento"
 msgid "Return to the origin page"
 msgstr "Ritorna alla pagina iniziale"
 
-#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:150
+#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:138
 msgid "Zoom in"
 msgstr "Aumenta Zoom"
 
-#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:134
+#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:122
 msgid "Zoom out"
 msgstr "Diminuisci Zoom"
 
@@ -231,16 +231,17 @@ msgid "New"
 msgstr "Nuovo"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs.rs:560
+#: rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "Apri"
 
 #: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs.ui:36 rnote-ui/data/ui/dialogs.ui:48
+#: rnote-ui/src/dialogs/export.rs:24
 msgid "Save"
 msgstr "Salva"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:617
+#: rnote-ui/data/ui/canvasmenu.ui:77
 msgid "Save as"
 msgstr "Salva come"
 
@@ -248,7 +249,7 @@ msgstr "Salva come"
 msgid "Print"
 msgstr "Stampa"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:692
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:143
 msgid "Import file"
 msgstr "Importa file"
 
@@ -256,37 +257,30 @@ msgstr "Importa file"
 msgid "Export…"
 msgstr "Esporta…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
-msgid "Export selection as SVG"
-msgstr "Esporta selezione come SVG"
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
+#, fuzzy
+#| msgid "Export Selection"
+msgid "Export selection"
+msgstr "Esporta selezione"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Export selection as PNG"
-msgstr "Esporta selezione come PNG"
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
+msgid "Export document"
+msgstr "Esporta documento"
 
-#: rnote-ui/data/ui/canvasmenu.ui:99
-msgid "Export document as SVG"
-msgstr "Esporta documento come SVG"
-
-#: rnote-ui/data/ui/canvasmenu.ui:103
-msgid "Export document as PDF"
-msgstr "Esporta documento come PDF"
-
-#: rnote-ui/data/ui/canvasmenu.ui:107
-msgid "Export document as Xournal++ .xopp"
-msgstr "Esporta documento come Xournal++ .xopp"
-
-#: rnote-ui/data/ui/canvasmenu.ui:143
+#: rnote-ui/data/ui/canvasmenu.ui:131
 msgid "Reset the zoom"
 msgstr "Zoom 100%"
 
-#: rnote-ui/data/ui/canvasmenu.ui:162
+#: rnote-ui/data/ui/canvasmenu.ui:150
 msgid "Zoom to fit page width"
 msgstr "Ingrandisci per adattare alla larghezza della pagina"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs.rs:446
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/export.rs:206
+#: rnote-ui/src/dialogs/export.rs:409
 msgid "Select"
 msgstr "Seleziona"
 
@@ -297,13 +291,12 @@ msgstr "Questo cancella l'intero documento. Si prega di confermare."
 #: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:22
 #: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
+#: rnote-ui/data/ui/dialogs.ui:349 rnote-ui/data/ui/dialogs.ui:481
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:561
-#: rnote-ui/src/dialogs.rs:618 rnote-ui/src/dialogs.rs:696
-#: rnote-ui/src/dialogs.rs:741 rnote-ui/src/dialogs.rs:803
-#: rnote-ui/src/dialogs.rs:865 rnote-ui/src/dialogs.rs:926
-#: rnote-ui/src/dialogs.rs:987 rnote-ui/src/dialogs.rs:1047
-#: rnote-ui/src/dialogs.rs:1109
+#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/import.rs:84
+#: rnote-ui/src/dialogs/import.rs:147 rnote-ui/src/dialogs/export.rs:25
+#: rnote-ui/src/dialogs/export.rs:207 rnote-ui/src/dialogs/export.rs:410
+#: rnote-ui/src/dialogs/export.rs:487 rnote-ui/src/dialogs/export.rs:551
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "Annulla"
@@ -356,7 +349,7 @@ msgstr ""
 msgid "Import PDF"
 msgstr "Importa PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:695
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs/import.rs:146
 msgid "Import"
 msgstr "Importa"
 
@@ -366,12 +359,11 @@ msgstr "Preferenze sull'importazione dei PDF"
 
 #: rnote-ui/data/ui/dialogs.ui:131
 msgid "Start page"
-msgstr ""
+msgstr "Pagina iniziale"
 
 #: rnote-ui/data/ui/dialogs.ui:146
-#, fuzzy
 msgid "End page"
-msgstr "Aggiungi pagina"
+msgstr "Pagina finale"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
@@ -416,48 +408,138 @@ msgstr "Continuo"
 msgid "One per document page"
 msgstr "Uno per ogni pagina del documento"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
+#: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
+msgid "Export"
+msgstr "Esporta"
+
+#: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
+#, fuzzy
+#| msgid "PDF import preferences"
+msgid "Export preferences"
+msgstr "Preferenze sull'importazione dei PDF"
+
+#: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
+#, fuzzy
+#| msgid "Document background"
+msgid "With background"
+msgstr "Sfondo del documento"
+
+#: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
+#, fuzzy
+#| msgid "Set the background color"
+msgid "Set whether the background should be exported"
+msgstr "Imposta il colore di sfondo"
+
+#: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
+#, fuzzy
+#| msgid "Export document"
+msgid "Export format"
+msgstr "Esporta documento"
+
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+#| msgid "Export document"
+msgid "The export format"
+msgstr "Esporta documento"
+
+#: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
+#: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
+msgid "Svg"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
+msgid "Pdf"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
+msgid "Xopp"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
+#, fuzzy
+#| msgid "Import file"
+msgid "Select export file"
+msgstr "Importa file"
+
+#: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
+#, fuzzy
+#| msgid "Set the format width"
+msgid "Select the export file"
+msgstr "Imposta la larghezza del formato"
+
+#. force the user to pick another file
+#: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
+#: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
+#: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
+#: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
+#, fuzzy
+#| msgid "- no directory selected -"
+msgid "- no file selected -"
+msgstr "- nessuna cartella selezionata -"
+
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
+msgid "Png"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
+msgid "Jpeg"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:416
+msgid "Jpeg quality"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:417
+msgid "Set the quality of the Jpeg image (1 - 100)"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
 msgstr "Modifica area di lavoro"
 
-#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
+#: rnote-ui/data/ui/dialogs.ui:486 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "Applica"
 
-#: rnote-ui/data/ui/dialogs.ui:284
+#: rnote-ui/data/ui/dialogs.ui:528
 msgid "Workspace Name"
 msgstr "Nome dell'area di lavoro"
 
-#: rnote-ui/data/ui/dialogs.ui:290
+#: rnote-ui/data/ui/dialogs.ui:534
 msgid "Icon"
 msgstr "Icona"
 
-#: rnote-ui/data/ui/dialogs.ui:291
+#: rnote-ui/data/ui/dialogs.ui:535
 msgid "Change the workspace icon"
 msgstr "Cambia l'icona dell'area di lavoro"
 
-#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:293
+#: rnote-ui/data/ui/dialogs.ui:554 rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "Colore"
 
-#: rnote-ui/data/ui/dialogs.ui:311
+#: rnote-ui/data/ui/dialogs.ui:555
 msgid "Change the workspace color"
 msgstr "Cambia il colore dell'area di lavoro"
 
-#: rnote-ui/data/ui/dialogs.ui:324
+#: rnote-ui/data/ui/dialogs.ui:568
 msgid "Directory"
 msgstr "Cartella"
 
-#: rnote-ui/data/ui/dialogs.ui:325
+#: rnote-ui/data/ui/dialogs.ui:569
 msgid "Change the workspace directory"
 msgstr "Cambia la cartella dell'area di lavoro"
 
-#: rnote-ui/data/ui/dialogs.ui:334 rnote-ui/src/dialogs.rs:507
+#: rnote-ui/data/ui/dialogs.ui:578 rnote-ui/src/dialogs/mod.rs:293
 msgid "- no directory selected -"
 msgstr "- nessuna cartella selezionata -"
 
-#: rnote-ui/data/ui/dialogs.ui:348 rnote-ui/src/dialogs.rs:443
+#: rnote-ui/data/ui/dialogs.ui:592 rnote-ui/src/dialogs/mod.rs:229
 msgid "Change workspace directory"
 msgstr "Cambia cartella dell'area di lavoro"
 
@@ -756,77 +838,107 @@ msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Navigazione"
 
-#: rnote-ui/data/ui/shortcuts.ui:55 rnote-ui/data/ui/shortcuts.ui:61
+#: rnote-ui/data/ui/shortcuts.ui:55
+msgctxt "shortcut window"
+msgid "Switch to the 'Brush'"
+msgstr "Passa al 'Pennello'"
+
+#: rnote-ui/data/ui/shortcuts.ui:61
+msgctxt "shortcut window"
+msgid "Switch to the 'Shaper'"
+msgstr "Passa alla 'Forma'"
+
+#: rnote-ui/data/ui/shortcuts.ui:67
+msgctxt "shortcut window"
+msgid "Switch to the 'Typewriter'"
+msgstr "Passa alla \"Macchina da scrivere\""
+
+#: rnote-ui/data/ui/shortcuts.ui:73
+msgctxt "shortcut window"
+msgid "Switch to the 'Eraser'"
+msgstr "Passa alla 'Gomma'"
+
+#: rnote-ui/data/ui/shortcuts.ui:79
+msgctxt "shortcut window"
+msgid "Switch to the 'Selector'"
+msgstr "Passa al 'Selettore'"
+
+#: rnote-ui/data/ui/shortcuts.ui:85
+msgctxt "shortcut window"
+msgid "Switch to the 'Tools'"
+msgstr "Passa agli \"Strumenti\""
+
+#: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 msgctxt "shortcut window"
 msgid "Zoom in"
 msgstr "Ingrandire"
 
-#: rnote-ui/data/ui/shortcuts.ui:67 rnote-ui/data/ui/shortcuts.ui:73
+#: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgctxt "shortcut window"
 msgid "Zoom out"
 msgstr "Rimpicciolire"
 
-#: rnote-ui/data/ui/shortcuts.ui:81
+#: rnote-ui/data/ui/shortcuts.ui:117
 msgctxt "shortcut window"
 msgid "Document"
 msgstr "Documento"
 
-#: rnote-ui/data/ui/shortcuts.ui:84
+#: rnote-ui/data/ui/shortcuts.ui:120
 msgctxt "shortcut window"
 msgid "New document"
 msgstr "Nuovo documento"
 
-#: rnote-ui/data/ui/shortcuts.ui:90
+#: rnote-ui/data/ui/shortcuts.ui:126
 msgctxt "shortcut window"
 msgid "Open document"
 msgstr "Apri documento"
 
-#: rnote-ui/data/ui/shortcuts.ui:96
+#: rnote-ui/data/ui/shortcuts.ui:132
 msgctxt "shortcut window"
 msgid "Save document"
 msgstr "Salva documento"
 
-#: rnote-ui/data/ui/shortcuts.ui:102
+#: rnote-ui/data/ui/shortcuts.ui:138
 msgctxt "shortcut window"
 msgid "Save document as"
 msgstr "Salva documento come"
 
-#: rnote-ui/data/ui/shortcuts.ui:108
+#: rnote-ui/data/ui/shortcuts.ui:144
 msgctxt "shortcut window"
 msgid "Clear document"
 msgstr "Pulisci documento"
 
-#: rnote-ui/data/ui/shortcuts.ui:114
+#: rnote-ui/data/ui/shortcuts.ui:150
 msgctxt "shortcut window"
 msgid "Print document"
 msgstr "Stampa documento"
 
-#: rnote-ui/data/ui/shortcuts.ui:120
+#: rnote-ui/data/ui/shortcuts.ui:156
 msgctxt "shortcut window"
 msgid "Import file"
 msgstr "Importa file"
 
-#: rnote-ui/data/ui/shortcuts.ui:126
+#: rnote-ui/data/ui/shortcuts.ui:162
 msgctxt "shortcut window"
 msgid "Drawing"
 msgstr "Disegno"
 
-#: rnote-ui/data/ui/shortcuts.ui:129
+#: rnote-ui/data/ui/shortcuts.ui:165
 msgctxt "shortcut window"
 msgid "Copy into clipboard"
 msgstr "Copia negli appunti"
 
-#: rnote-ui/data/ui/shortcuts.ui:135
+#: rnote-ui/data/ui/shortcuts.ui:171
 msgctxt "shortcut window"
 msgid "Paste clipboard"
 msgstr "Incolla gli appunti"
 
-#: rnote-ui/data/ui/shortcuts.ui:141
+#: rnote-ui/data/ui/shortcuts.ui:177
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "Annulla"
 
-#: rnote-ui/data/ui/shortcuts.ui:147
+#: rnote-ui/data/ui/shortcuts.ui:183
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Ripristina"
@@ -1235,212 +1347,230 @@ msgid "Fill"
 msgstr "Giustificato"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs.rs:36
+#: rnote-ui/src/dialogs/mod.rs:35
 msgid "translator-credits"
 msgstr "Albano Battistella <albano_battistella@hotmail.com>"
 
-#: rnote-ui/src/dialogs.rs:130 rnote-ui/src/dialogs.rs:179
-#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:659
+#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:178
+#: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:67
 #: rnote-ui/src/appwindow/mod.rs:456
-#: rnote-ui/src/appwindow/appwindowactions.rs:654
+#: rnote-ui/src/appwindow/appwindowactions.rs:646
 msgid "Saving document failed."
 msgstr "Salvataggio del documento non riuscito."
 
-#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:586
+#: rnote-ui/src/dialogs/import.rs:28 rnote-ui/src/dialogs/import.rs:109
 msgid "Opening file failed."
 msgstr "Apertura file fallita."
 
-#: rnote-ui/src/dialogs.rs:311
-msgid "- no file name -"
-msgstr "- nessun nome file -"
-
-#: rnote-ui/src/dialogs.rs:316
-msgid "- no title -"
-msgstr "- senza titolo -"
-
-#: rnote-ui/src/dialogs.rs:319
-msgid "- no author -"
-msgstr "- nessun autore -"
-
-#: rnote-ui/src/dialogs.rs:323
-msgid "- no date -"
-msgstr "- nessuna data -"
-
-#: rnote-ui/src/dialogs.rs:330
-msgid "File name:"
-msgstr "Nome file:"
-
-#: rnote-ui/src/dialogs.rs:334
-msgid "Title:"
-msgstr "Titolo:"
-
-#: rnote-ui/src/dialogs.rs:338
-msgid "Author:"
-msgstr "Autore:"
-
-#: rnote-ui/src/dialogs.rs:342
-msgid "Modification date:"
-msgstr "Data di modifica:"
-
-#: rnote-ui/src/dialogs.rs:346
-msgid "Pages:"
-msgstr "Pagine:"
-
-#: rnote-ui/src/dialogs.rs:389 rnote-ui/src/appwindow/imexport.rs:147
-msgid "Opening PDF file failed."
-msgstr "Apertura file PDF fallita."
-
-#: rnote-ui/src/dialogs.rs:554
+#: rnote-ui/src/dialogs/import.rs:77
 msgid ".rnote / .xopp File"
 msgstr ".rnote / File .xopp"
 
-#: rnote-ui/src/dialogs.rs:557
+#: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "Apri file"
 
-#: rnote-ui/src/dialogs.rs:611
-msgid ".rnote file"
-msgstr "file .rnote"
-
-#: rnote-ui/src/dialogs.rs:614
-msgid "Save document as"
-msgstr "Salva documento come"
-
-#: rnote-ui/src/dialogs.rs:661
-msgid "Saved document successfully."
-msgstr "Documento salvato con successo."
-
-#: rnote-ui/src/dialogs.rs:689
+#: rnote-ui/src/dialogs/import.rs:140
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / file PDF"
 
-#: rnote-ui/src/dialogs.rs:734 rnote-ui/src/dialogs.rs:858
-msgid "SVG file"
-msgstr "File SVG"
+#: rnote-ui/src/dialogs/import.rs:230
+msgid "- no file name -"
+msgstr "- nessun nome file -"
 
-#: rnote-ui/src/dialogs.rs:737 rnote-ui/src/dialogs.rs:799
-msgid "Export Selection"
-msgstr "Esporta selezione"
+#: rnote-ui/src/dialogs/import.rs:235
+msgid "- no title -"
+msgstr "- senza titolo -"
 
-#: rnote-ui/src/dialogs.rs:740 rnote-ui/src/dialogs.rs:802
-#: rnote-ui/src/dialogs.rs:864 rnote-ui/src/dialogs.rs:925
-#: rnote-ui/src/dialogs.rs:986 rnote-ui/src/dialogs.rs:1046
-#: rnote-ui/src/dialogs.rs:1108
-msgid "Export"
-msgstr "Esporta"
+#: rnote-ui/src/dialogs/import.rs:238
+msgid "- no author -"
+msgstr "- nessun autore -"
 
-#: rnote-ui/src/dialogs.rs:774
-msgid "Export selection as SVG failed."
-msgstr "Esportazione della selezione come SVG fallita."
+#: rnote-ui/src/dialogs/import.rs:242
+msgid "- no date -"
+msgstr "- nessuna data -"
 
-#: rnote-ui/src/dialogs.rs:776
-msgid "Exported selection as SVG successfully."
-msgstr "Avvenuta esportazione della selezione come SVG."
+#: rnote-ui/src/dialogs/import.rs:249
+msgid "File name:"
+msgstr "Nome file:"
 
-#: rnote-ui/src/dialogs.rs:796
-msgid "PNG file"
-msgstr "File PNG"
+#: rnote-ui/src/dialogs/import.rs:253
+msgid "Title:"
+msgstr "Titolo:"
 
-#: rnote-ui/src/dialogs.rs:836
-msgid "Export selection as PNG failed."
-msgstr "Esportazione della selezione come PNG fallita."
+#: rnote-ui/src/dialogs/import.rs:257
+msgid "Author:"
+msgstr "Autore:"
 
-#: rnote-ui/src/dialogs.rs:838
-msgid "Exported selection as PNG successfully."
-msgstr "Avvenuta esportazione della selezione come PNG."
+#: rnote-ui/src/dialogs/import.rs:261
+msgid "Modification date:"
+msgstr "Data di modifica:"
 
-#: rnote-ui/src/dialogs.rs:861 rnote-ui/src/dialogs.rs:922
-#: rnote-ui/src/dialogs.rs:983
-msgid "Export document"
-msgstr "Esporta documento"
+#: rnote-ui/src/dialogs/import.rs:265
+msgid "Pages:"
+msgstr "Pagine:"
 
-#: rnote-ui/src/dialogs.rs:895
-msgid "Export document as SVG failed."
+#: rnote-ui/src/dialogs/import.rs:308 rnote-ui/src/appwindow/imexport.rs:148
+msgid "Opening PDF file failed."
+msgstr "Apertura file PDF fallita."
+
+#: rnote-ui/src/dialogs/export.rs:18
+msgid ".rnote file"
+msgstr "file .rnote"
+
+#: rnote-ui/src/dialogs/export.rs:21
+msgid "Save document as"
+msgstr "Salva documento come"
+
+#: rnote-ui/src/dialogs/export.rs:69
+msgid "Saved document successfully."
+msgstr "Documento salvato con successo."
+
+#: rnote-ui/src/dialogs/export.rs:179
+#, fuzzy
+#| msgid "Export document as SVG failed."
+msgid "Export document failed."
 msgstr "Esportazione del documento come SVG fallita."
 
-#: rnote-ui/src/dialogs.rs:897
-msgid "Exported document as SVG successfully."
+#: rnote-ui/src/dialogs/export.rs:181
+#, fuzzy
+#| msgid "Exported document as SVG successfully."
+msgid "Exported document successfully."
 msgstr "Avvenuta esportazione del documento come SVG."
 
-#: rnote-ui/src/dialogs.rs:919
-msgid "PDF file"
-msgstr "File PDF"
+#: rnote-ui/src/dialogs/export.rs:187
+#, fuzzy
+#| msgid "Export document as SVG failed."
+msgid "Export document failed, no file selected."
+msgstr "Esportazione del documento come SVG fallita."
 
-#: rnote-ui/src/dialogs.rs:956
-msgid "Export document as PDF failed."
-msgstr "Esportazione del documento come PDF fallita."
+#: rnote-ui/src/dialogs/export.rs:382
+#, fuzzy
+#| msgid "Export selection as SVG failed."
+msgid "Export selection failed."
+msgstr "Esportazione della selezione come SVG fallita."
 
-#: rnote-ui/src/dialogs.rs:958
-msgid "Exported document as PDF successfully."
-msgstr "Avvenuta esportazione del documento come PNG."
+#: rnote-ui/src/dialogs/export.rs:384
+#, fuzzy
+#| msgid "Exported selection as SVG successfully."
+msgid "Exported selection successfully."
+msgstr "Avvenuta esportazione della selezione come SVG."
 
-#: rnote-ui/src/dialogs.rs:980
-msgid ".xopp file"
-msgstr "File .xopp"
+#: rnote-ui/src/dialogs/export.rs:390
+#: rnote-ui/src/appwindow/appwindowactions.rs:788
+#, fuzzy
+#| msgid "Export selection as SVG failed."
+msgid "Export selection failed, no file selected."
+msgstr "Esportazione della selezione come SVG fallita."
 
-#: rnote-ui/src/dialogs.rs:1017
-msgid "Exporting document as .xopp failed."
-msgstr "Esportazione del documento come .xopp fallita."
-
-#: rnote-ui/src/dialogs.rs:1019
-msgid "Exported document as .xopp successfully."
-msgstr "Avvenuta esportazione del documento come .xopp."
-
-#: rnote-ui/src/dialogs.rs:1040 rnote-ui/src/dialogs.rs:1102
+#: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
 msgid "JSON file"
 msgstr "File JSON"
 
-#: rnote-ui/src/dialogs.rs:1079
+#: rnote-ui/src/dialogs/export.rs:521
 msgid "Export engine state failed."
 msgstr "Esportazione del ' engine state' fallita."
 
-#: rnote-ui/src/dialogs.rs:1081
+#: rnote-ui/src/dialogs/export.rs:523
 msgid "Exported engine state successfully."
 msgstr "Esportazione del ' engine state' avvenuta con successo."
 
-#: rnote-ui/src/dialogs.rs:1143
+#: rnote-ui/src/dialogs/export.rs:585
 msgid "Export engine config failed."
 msgstr "Esportazione del 'engine config' fallita."
 
-#: rnote-ui/src/dialogs.rs:1145
+#: rnote-ui/src/dialogs/export.rs:587
 msgid "Exported engine config successfully."
 msgstr "Esportazione del 'engine config' avvenuta con successo."
 
-#: rnote-ui/src/appwindow/imexport.rs:71
+#: rnote-ui/src/appwindow/imexport.rs:72
 msgid "Opening .rnote file failed."
 msgstr "Apertura file .rnote fallita."
 
-#: rnote-ui/src/appwindow/imexport.rs:90
+#: rnote-ui/src/appwindow/imexport.rs:91
 msgid "Opening .xopp file failed."
 msgstr "Apertura file .xopp fallita."
 
-#: rnote-ui/src/appwindow/imexport.rs:109
+#: rnote-ui/src/appwindow/imexport.rs:110
 msgid "Opening vector image file failed."
 msgstr "Apertura del file immagine vettoriale non riuscita."
 
-#: rnote-ui/src/appwindow/imexport.rs:128
+#: rnote-ui/src/appwindow/imexport.rs:129
 msgid "Opening bitmap image file failed."
 msgstr "Apertura del file immagine bitmap non riuscita."
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "Errore: si è provato ad aprire la cartella come file"
 
-#: rnote-ui/src/appwindow/imexport.rs:173
+#: rnote-ui/src/appwindow/imexport.rs:174
 msgid "Failed to open file: Unsupported file type."
 msgstr "Apertura del file fallita: il formato del file non è supportato."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:763
 msgid "Printed document successfully"
 msgstr "Stampa avvenuta correttamente"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:780
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Printing document failed"
 msgstr "Stampa del documento fallita"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Nuovo nome della cartella"
+
+#, fuzzy
+#~| msgid "Export document"
+#~ msgid "Export Document"
+#~ msgstr "Esporta documento"
+
+#~ msgid "Export Selection"
+#~ msgstr "Esporta selezione"
+
+#~ msgid "Export selection as SVG"
+#~ msgstr "Esporta selezione come SVG"
+
+#~ msgid "Export selection as PNG"
+#~ msgstr "Esporta selezione come PNG"
+
+#~ msgid "Export document as SVG"
+#~ msgstr "Esporta documento come SVG"
+
+#~ msgid "Export document as PDF"
+#~ msgstr "Esporta documento come PDF"
+
+#~ msgid "Export document as Xournal++ .xopp"
+#~ msgstr "Esporta documento come Xournal++ .xopp"
+
+#~ msgid "SVG file"
+#~ msgstr "File SVG"
+
+#~ msgid "PNG file"
+#~ msgstr "File PNG"
+
+#~ msgid "Export selection as PNG failed."
+#~ msgstr "Esportazione della selezione come PNG fallita."
+
+#~ msgid "Exported selection as PNG successfully."
+#~ msgstr "Avvenuta esportazione della selezione come PNG."
+
+#~ msgid "PDF file"
+#~ msgstr "File PDF"
+
+#~ msgid "Export document as PDF failed."
+#~ msgstr "Esportazione del documento come PDF fallita."
+
+#~ msgid "Exported document as PDF successfully."
+#~ msgstr "Avvenuta esportazione del documento come PNG."
+
+#~ msgid ".xopp file"
+#~ msgstr "File .xopp"
+
+#~ msgid "Exporting document as .xopp failed."
+#~ msgstr "Esportazione del documento come .xopp fallita."
+
+#~ msgid "Exported document as .xopp successfully."
+#~ msgstr "Avvenuta esportazione del documento come .xopp."
 
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-03 21:26+0100\n"
-"PO-Revision-Date: 2022-11-03 20:28+0000\n"
+"PO-Revision-Date: 2022-11-03 20:30+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -428,8 +428,6 @@ msgid "Export format"
 msgstr "Exportformat"
 
 #: rnote-ui/data/ui/dialogs.ui:290
-#, fuzzy
-#| msgid "The export image format"
 msgid "The export format"
 msgstr "Das Exportformat"
 

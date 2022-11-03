@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -273,13 +273,15 @@ msgstr "ייבוא קובץ"
 msgid "Export…"
 msgstr "ייצוא"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
 msgstr "יצוא הבחירה"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 #, fuzzy
 msgid "Export document"
 msgstr "מסמך חדש"
@@ -428,11 +430,6 @@ msgstr ""
 msgid "One per document page"
 msgstr "מסמך חדש"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-msgid "Export Document"
-msgstr "מסמך חדש"
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -459,9 +456,10 @@ msgstr "הגדרת צבע הרקע"
 msgid "Export format"
 msgstr "מסמך חדש"
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+msgid "The export format"
+msgstr "מסמך חדש"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
@@ -496,9 +494,9 @@ msgstr "הגדרת רוחב התצורה"
 msgid "- no file selected -"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
-msgstr "יצוא הבחירה"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
@@ -1583,6 +1581,13 @@ msgstr "פתיחת הגיליון נכשלה"
 #, fuzzy
 msgid "New Directory name"
 msgstr "וקטור"
+
+#, fuzzy
+#~ msgid "Export Document"
+#~ msgstr "מסמך חדש"
+
+#~ msgid "Export Selection"
+#~ msgstr "יצוא הבחירה"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "ייצוא הבחירה ל־SVG"

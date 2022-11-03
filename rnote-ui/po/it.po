@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 22:35+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -257,13 +257,15 @@ msgstr "Importa file"
 msgid "Export…"
 msgstr "Esporta…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
 msgstr "Esporta selezione"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 msgid "Export document"
 msgstr "Esporta documento"
 
@@ -406,12 +408,6 @@ msgstr "Continuo"
 msgid "One per document page"
 msgstr "Uno per ogni pagina del documento"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Export document"
-msgid "Export Document"
-msgstr "Esporta documento"
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -441,9 +437,11 @@ msgstr "Imposta il colore di sfondo"
 msgid "Export format"
 msgstr "Esporta documento"
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+#| msgid "Export document"
+msgid "The export format"
+msgstr "Esporta documento"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
@@ -480,9 +478,9 @@ msgstr "Imposta la larghezza del formato"
 msgid "- no file selected -"
 msgstr "- nessuna cartella selezionata -"
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
-msgstr "Esporta selezione"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
@@ -1520,6 +1518,14 @@ msgstr "Stampa del documento fallita"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Nuovo nome della cartella"
+
+#, fuzzy
+#~| msgid "Export document"
+#~ msgid "Export Document"
+#~ msgstr "Esporta documento"
+
+#~ msgid "Export Selection"
+#~ msgstr "Esporta selezione"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "Esporta selezione come SVG"

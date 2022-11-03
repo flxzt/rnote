@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -259,13 +259,15 @@ msgstr "إستيراد ملف"
 msgid "Export…"
 msgstr "تصدير…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
 msgstr "تصدير المحدد"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 msgid "Export document"
 msgstr "تصدير ملف"
 
@@ -405,12 +407,6 @@ msgstr "مستمر"
 msgid "One per document page"
 msgstr "واحد لكل صفحة في الملف"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Export document"
-msgid "Export Document"
-msgstr "تصدير ملف"
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -440,9 +436,11 @@ msgstr "تحديد لون الخلفية"
 msgid "Export format"
 msgstr "تصدير ملف"
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+#| msgid "Export document"
+msgid "The export format"
+msgstr "تصدير ملف"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
@@ -479,9 +477,9 @@ msgstr "حدد عرض التنسيق"
 msgid "- no file selected -"
 msgstr "لم يتم تحديد مجلد"
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
-msgstr "تصدير المحدد"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
@@ -1521,6 +1519,14 @@ msgstr "فشل طباعة الملف"
 #, fuzzy
 msgid "New Directory name"
 msgstr "مجلد"
+
+#, fuzzy
+#~| msgid "Export document"
+#~ msgid "Export Document"
+#~ msgstr "تصدير ملف"
+
+#~ msgid "Export Selection"
+#~ msgstr "تصدير المحدد"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "تصدير المحدد ك SVG"

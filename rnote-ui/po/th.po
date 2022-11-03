@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -257,13 +257,15 @@ msgstr "นำเข้าไฟล์"
 msgid "Export…"
 msgstr "ส่งออก…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
 msgstr "ส่งออกสิ่งที่เลือก"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 msgid "Export document"
 msgstr "ส่งออกเอกสาร"
 
@@ -401,12 +403,6 @@ msgstr "แบบต่อเนื่อง"
 msgid "One per document page"
 msgstr "หน้าต่อหน้า"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Export document"
-msgid "Export Document"
-msgstr "ส่งออกเอกสาร"
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -436,9 +432,11 @@ msgstr "ตั้งสีพื้นหลัง"
 msgid "Export format"
 msgstr "ส่งออกเอกสาร"
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+#| msgid "Export document"
+msgid "The export format"
+msgstr "ส่งออกเอกสาร"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
@@ -475,9 +473,9 @@ msgstr "ตั้งความกว้างของหน้ากระด
 msgid "- no file selected -"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
-msgstr "ส่งออกสิ่งที่เลือก"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
@@ -1512,6 +1510,14 @@ msgstr "การพิมพ์เอกสารล้มเหลว"
 #, fuzzy
 msgid "New Directory name"
 msgstr "ไดเรกทอรี"
+
+#, fuzzy
+#~| msgid "Export document"
+#~ msgid "Export Document"
+#~ msgstr "ส่งออกเอกสาร"
+
+#~ msgid "Export Selection"
+#~ msgstr "ส่งออกสิ่งที่เลือก"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "ส่งออกส่วนที่เลือกไว้ไปเป็นไฟล์ SVG"

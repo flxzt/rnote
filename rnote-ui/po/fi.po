@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Elias Eskelinen <elias.eskelinen@pm.me>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/rnote/repo/fi/>\n"
@@ -260,11 +260,13 @@ msgstr ""
 msgid "Export…"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 msgid "Export selection"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 msgid "Export document"
 msgstr ""
 
@@ -398,10 +400,6 @@ msgstr ""
 msgid "One per document page"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-msgid "Export Document"
-msgstr ""
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -423,8 +421,8 @@ msgstr ""
 msgid "Export format"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
+#: rnote-ui/data/ui/dialogs.ui:290
+msgid "The export format"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
@@ -456,8 +454,8 @@ msgstr ""
 msgid "- no file selected -"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -265,13 +265,15 @@ msgstr "Імпортувати файл"
 msgid "Export…"
 msgstr "Експортувати…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
 msgstr "Експортувати вибір"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 #, fuzzy
 msgid "Export document"
 msgstr "Новий документ"
@@ -421,11 +423,6 @@ msgstr ""
 msgid "One per document page"
 msgstr "Новий документ"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-msgid "Export Document"
-msgstr "Новий документ"
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -452,9 +449,10 @@ msgstr "Встановити колір фону"
 msgid "Export format"
 msgstr "Новий документ"
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+msgid "The export format"
+msgstr "Новий документ"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
@@ -491,9 +489,9 @@ msgstr "Встановити ширину формату"
 msgid "- no file selected -"
 msgstr "- каталог не вибрано -"
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
-msgstr "Експортувати вибір"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
@@ -1569,6 +1567,13 @@ msgstr ""
 #, fuzzy
 msgid "New Directory name"
 msgstr "Вектор"
+
+#, fuzzy
+#~ msgid "Export Document"
+#~ msgstr "Новий документ"
+
+#~ msgid "Export Selection"
+#~ msgstr "Експортувати вибір"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "Експортувати вибране як SVG"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:09+0100\n"
+"POT-Creation-Date: 2022-11-03 21:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -264,13 +264,15 @@ msgstr "Importera Fil"
 msgid "Export…"
 msgstr "Exportera"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
+#: rnote-ui/src/dialogs/export.rs:406
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
 msgstr "Exportera markering"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
+#: rnote-ui/src/dialogs/export.rs:203
 #, fuzzy
 msgid "Export document"
 msgstr "Nytt document"
@@ -422,11 +424,6 @@ msgstr "Kontinuerlig"
 msgid "One per document page"
 msgstr "Nytt document"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-msgid "Export Document"
-msgstr "Nytt document"
-
 #: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
 #: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
 msgid "Export"
@@ -453,9 +450,10 @@ msgstr "Välj bakrundsfärgen"
 msgid "Export format"
 msgstr "Nytt document"
 
-#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs.ui:290
+#, fuzzy
+msgid "The export format"
+msgstr "Nytt document"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
@@ -492,9 +490,9 @@ msgstr "Ange formatbredd"
 msgid "- no file selected -"
 msgstr "- ingen mapp vald -"
 
-#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
-msgid "Export Selection"
-msgstr "Exportera markering"
+#: rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
@@ -1570,6 +1568,13 @@ msgstr ""
 #, fuzzy
 msgid "New Directory name"
 msgstr "Vektor"
+
+#, fuzzy
+#~ msgid "Export Document"
+#~ msgstr "Nytt document"
+
+#~ msgid "Export Selection"
+#~ msgstr "Exportera markering"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "Exportera val som SVG"

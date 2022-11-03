@@ -228,6 +228,138 @@
     </child>
   </object>
 
+  <object class="GtkDialog" id="dialog_export_selection_w_prefs">
+    <property name="use-header-bar">1</property>
+    <property name="modal">true</property>
+    <property name="title" translatable="yes">Export Selection</property>
+    <child type="action">
+      <object class="GtkButton" id="export_selection_button_cancel">
+        <property name="label" translatable="yes">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="export_selection_button_confirm">
+        <property name="label" translatable="yes">Export</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">export_selection_button_cancel</action-widget>
+      <action-widget response="apply" default="true">export_selection_button_confirm</action-widget>
+    </action-widgets>
+    <child>
+      <object class="AdwClamp">
+        <property name="maximum-size">800</property>
+        <property name="tightening-threshold">600</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">false</property>
+        <property name="valign">fill</property>
+        <property name="halign">fill</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="spacing">24</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">12</property>
+            <style>
+              <class name="background" />
+            </style>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Export preferences</property>
+                <property name="halign">fill</property>
+                <child>
+                  <object class="AdwActionRow" id="export_selection_with_background_row">
+                    <property name="title" translatable="yes">With background</property>
+                    <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
+                    <child type="suffix">
+                      <object class="GtkSwitch" id="export_selection_with_background_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwComboRow" id="export_selection_export_format_row">
+                    <property name="title" translatable="yes">Export format</property>
+                    <property name="subtitle" translatable="yes">The export image format</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">Svg</item>
+                          <item translatable="yes">Png</item>
+                          <item translatable="yes">Jpeg</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="export_selection_jpeg_quality_row">
+                    <property name="title" translatable="yes">Jpeg quality</property>
+                    <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
+                    <child type="suffix">
+                      <object class="GtkAdjustment" id="export_selection_jpeg_quality_adj">
+                        <property name="step-increment">1</property>
+                        <property name="upper">100</property>
+                        <property name="lower">1</property>
+                        <property name="value">85</property>
+                      </object>
+                      <object class="GtkSpinButton" id="export_selection_jpeg_quality_spinbutton">
+                        <property name="adjustment">export_selection_jpeg_quality_adj</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="digits">0</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Select export file</property>
+                    <property name="subtitle" translatable="yes">Select the export file</property>
+                    <child type="suffix">
+                      <object class="GtkBox">
+                        <property name="valign">center</property>
+                        <property name="halign">end</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkLabel" id="export_selection_export_file_label">
+                            <property name="label" translatable="yes">- no file selected -</property>
+                            <property name="ellipsize">start</property>
+                            <style>
+                              <class name="dim-label" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="export_selection_export_file_button">
+                            <layout>
+                              <property name="column">1</property>
+                              <property name="row">1</property>
+                            </layout>
+                            <property name="icon_name">folder-open-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Change export file</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
   <object class="GtkDialog" id="dialog_edit_workspace">
     <property name="use-header-bar">1</property>
     <property name="modal">true</property>

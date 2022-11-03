@@ -117,18 +117,10 @@ impl RnoteAppWindow {
         self.add_action(&action_print_doc);
         let action_import_file = gio::SimpleAction::new("import-file", None);
         self.add_action(&action_import_file);
-        let action_export_selection_as_svg =
-            gio::SimpleAction::new("export-selection-as-svg", None);
-        self.add_action(&action_export_selection_as_svg);
-        let action_export_selection_as_png =
-            gio::SimpleAction::new("export-selection-as-png", None);
-        self.add_action(&action_export_selection_as_png);
-        let action_export_doc_as_svg = gio::SimpleAction::new("export-doc-as-svg", None);
-        self.add_action(&action_export_doc_as_svg);
-        let action_export_doc_as_pdf = gio::SimpleAction::new("export-doc-as-pdf", None);
-        self.add_action(&action_export_doc_as_pdf);
-        let action_export_doc_as_xopp = gio::SimpleAction::new("export-doc-as-xopp", None);
-        self.add_action(&action_export_doc_as_xopp);
+        let action_export_selection = gio::SimpleAction::new("export-selection", None);
+        self.add_action(&action_export_selection);
+        let action_export_document = gio::SimpleAction::new("export-document", None);
+        self.add_action(&action_export_document);
         let action_clipboard_copy = gio::SimpleAction::new("clipboard-copy", None);
         self.add_action(&action_clipboard_copy);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
@@ -234,14 +226,14 @@ impl RnoteAppWindow {
         // Export engine state
         action_debug_export_engine_state.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
-                dialogs::dialog_export_engine_state(&appwindow);
+                dialogs::filechooser_export_engine_state(&appwindow);
             }),
         );
 
         // Export engine config
         action_debug_export_engine_config.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_config, _target| {
-                dialogs::dialog_export_engine_config(&appwindow);
+                dialogs::filechooser_export_engine_config(&appwindow);
             }),
         );
 
@@ -638,7 +630,7 @@ impl RnoteAppWindow {
 
         // Open doc
         action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_open_doc(&appwindow);
+            dialogs::filechooser_open_doc(&appwindow);
         }));
 
         // Save doc
@@ -658,14 +650,14 @@ impl RnoteAppWindow {
                     // No success toast on saving without dialog, success is already indicated in the header title
                 } else {
                     // Open a dialog to choose a save location
-                    dialogs::dialog_save_doc_as(&appwindow);
+                    dialogs::filechooser_save_doc_as(&appwindow);
                 }
             }));
         }));
 
         // Save doc as
         action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_save_doc_as(&appwindow);
+            dialogs::filechooser_save_doc_as(&appwindow);
         }));
 
         // Print doc
@@ -785,36 +777,17 @@ impl RnoteAppWindow {
 
         // Import
         action_import_file.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_import_file(&appwindow);
+            dialogs::filechooser_import_file(&appwindow);
         }));
 
-        // Export selection as SVG
-        action_export_selection_as_svg.connect_activate(
-            clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_selection_as_svg(&appwindow);
-            }),
-        );
-
-        // Export selection as PNG
-        action_export_selection_as_png.connect_activate(
-            clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_selection_as_png(&appwindow);
-            }),
-        );
+        // Export selection
+        action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::dialog_export_selection_w_prefs(&appwindow);
+        }));
 
         // Export document as SVG
-        action_export_doc_as_svg.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_doc_as_svg(&appwindow);
-        }));
-
-        // Export document as PDF
-        action_export_doc_as_pdf.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_doc_as_pdf(&appwindow);
-        }));
-
-        // Export document as Xopp
-        action_export_doc_as_xopp.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_doc_as_xopp(&appwindow);
+        action_export_document.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::filechooser_export_doc(&appwindow);
         }));
 
         // Clipboard copy

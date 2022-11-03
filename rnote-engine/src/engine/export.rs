@@ -15,7 +15,9 @@ use crate::{render, DrawBehaviour};
 
 use super::RnoteEngine;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
 #[serde(rename = "doc_export_format")]
 pub enum DocExportFormat {
     #[serde(rename = "svg")]
@@ -32,11 +34,24 @@ impl Default for DocExportFormat {
     }
 }
 
+impl TryFrom<u32> for DocExportFormat {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "DocExportFormat try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
 impl DocExportFormat {
     pub fn file_ext(self) -> String {
         match self {
             DocExportFormat::Svg => String::from("svg"),
-            DocExportFormat::Pdf => String::from("svg"),
+            DocExportFormat::Pdf => String::from("pdf"),
             DocExportFormat::Xopp => String::from("xopp"),
         }
     }
@@ -49,6 +64,8 @@ pub struct DocExportPrefs {
     pub with_background: bool,
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
+    #[serde(rename = "jpg_quality")]
+    pub jpeg_quality: u8,
 }
 
 impl Default for DocExportPrefs {
@@ -56,6 +73,7 @@ impl Default for DocExportPrefs {
         Self {
             with_background: true,
             export_format: DocExportFormat::default(),
+            jpeg_quality: 85,
         }
     }
 }

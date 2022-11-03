@@ -785,9 +785,9 @@ impl RnoteAppWindow {
             dialogs::export::dialog_export_selection_w_prefs(&appwindow);
         }));
 
-        // Export document as SVG
+        // Export document
         action_export_document.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::filechooser_export_doc(&appwindow);
+            dialogs::export::dialog_export_doc_w_prefs(&appwindow);
         }));
 
         // Clipboard copy

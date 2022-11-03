@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 19:45+0100\n"
+"POT-Creation-Date: 2022-11-03 21:09+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 4.14.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs.rs:24
+#: rnote-ui/src/dialogs/mod.rs:23
 msgid "Sketch and take handwritten notes"
 msgstr "الرسم مع الملاحظات المكتوبة يدوياً"
 
@@ -94,11 +94,11 @@ msgstr "قائمة المطور"
 msgid "Visual debugging"
 msgstr "debugging بواجهة رسومية"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs.rs:1045
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:483
 msgid "Export engine state"
 msgstr "تصدير حالة المحرك"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs.rs:1107
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:547
 msgid "Export engine config"
 msgstr "تصدير إعدادت المحرك"
 
@@ -168,11 +168,11 @@ msgstr "موافقة حجم الصفحة للحدود"
 msgid "Return to the origin page"
 msgstr "استعادة الحدود الأولى"
 
-#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:150
+#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:138
 msgid "Zoom in"
 msgstr "تكبير"
 
-#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:134
+#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:122
 msgid "Zoom out"
 msgstr "تصغير"
 
@@ -233,16 +233,17 @@ msgid "New"
 msgstr "جديد"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs.rs:562
+#: rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "فتح"
 
 #: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs.ui:36 rnote-ui/data/ui/dialogs.ui:48
+#: rnote-ui/src/dialogs/export.rs:24
 msgid "Save"
 msgstr "حفظ"
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:619
+#: rnote-ui/data/ui/canvasmenu.ui:77
 msgid "Save as"
 msgstr "حفظ ك"
 
@@ -250,7 +251,7 @@ msgstr "حفظ ك"
 msgid "Print"
 msgstr "طباعة"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:694
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:143
 msgid "Import file"
 msgstr "إستيراد ملف"
 
@@ -259,36 +260,27 @@ msgid "Export…"
 msgstr "تصدير…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91
-msgid "Export selection as SVG"
-msgstr "تصدير المحدد ك SVG"
+#, fuzzy
+#| msgid "Export Selection"
+msgid "Export selection"
+msgstr "تصدير المحدد"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Export selection as PNG"
-msgstr "تصدير المحدد ك PNG"
+msgid "Export document"
+msgstr "تصدير ملف"
 
-#: rnote-ui/data/ui/canvasmenu.ui:99
-msgid "Export document as SVG"
-msgstr "تصدير الصفحة ك SVG"
-
-#: rnote-ui/data/ui/canvasmenu.ui:103
-msgid "Export document as PDF"
-msgstr "تصدير الصفحة ك PDF"
-
-#: rnote-ui/data/ui/canvasmenu.ui:107
-msgid "Export document as Xournal++ .xopp"
-msgstr "تصدير الصفحة ك Xournal++ .xopp"
-
-#: rnote-ui/data/ui/canvasmenu.ui:143
+#: rnote-ui/data/ui/canvasmenu.ui:131
 msgid "Reset the zoom"
 msgstr "إعادة ضبط التكبير"
 
-#: rnote-ui/data/ui/canvasmenu.ui:162
+#: rnote-ui/data/ui/canvasmenu.ui:150
 msgid "Zoom to fit page width"
 msgstr "تكبير لموافقة عرض الصفحة"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs.rs:446
+#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/export.rs:206
+#: rnote-ui/src/dialogs/export.rs:409
 msgid "Select"
 msgstr "تحديد"
 
@@ -299,13 +291,12 @@ msgstr "هذا يمسح الصفحة بأكملها. هل أنت متأكد ."
 #: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:22
 #: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
 #: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
+#: rnote-ui/data/ui/dialogs.ui:349 rnote-ui/data/ui/dialogs.ui:481
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs.rs:447 rnote-ui/src/dialogs.rs:563
-#: rnote-ui/src/dialogs.rs:620 rnote-ui/src/dialogs.rs:698
-#: rnote-ui/src/dialogs.rs:743 rnote-ui/src/dialogs.rs:805
-#: rnote-ui/src/dialogs.rs:867 rnote-ui/src/dialogs.rs:928
-#: rnote-ui/src/dialogs.rs:989 rnote-ui/src/dialogs.rs:1049
-#: rnote-ui/src/dialogs.rs:1111
+#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/import.rs:84
+#: rnote-ui/src/dialogs/import.rs:147 rnote-ui/src/dialogs/export.rs:25
+#: rnote-ui/src/dialogs/export.rs:207 rnote-ui/src/dialogs/export.rs:410
+#: rnote-ui/src/dialogs/export.rs:487 rnote-ui/src/dialogs/export.rs:551
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "إلغاء"
@@ -357,7 +348,7 @@ msgstr ""
 msgid "Import PDF"
 msgstr "استيراد PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs.rs:697
+#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs/import.rs:146
 msgid "Import"
 msgstr "استيراد"
 
@@ -414,48 +405,142 @@ msgstr "مستمر"
 msgid "One per document page"
 msgstr "واحد لكل صفحة في الملف"
 
-#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/data/ui/workspacebrowser.ui:180
+#: rnote-ui/data/ui/dialogs.ui:234 rnote-ui/src/dialogs/export.rs:203
+#, fuzzy
+#| msgid "Export document"
+msgid "Export Document"
+msgstr "تصدير ملف"
+
+#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
+#: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
+msgid "Export"
+msgstr "تصدير"
+
+#: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
+#, fuzzy
+#| msgid "PDF import preferences"
+msgid "Export preferences"
+msgstr "تفضيلات استيراد ملفات PDF"
+
+#: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
+#, fuzzy
+#| msgid "Document background"
+msgid "With background"
+msgstr "خلفية الملف"
+
+#: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
+#, fuzzy
+#| msgid "Set the background color"
+msgid "Set whether the background should be exported"
+msgstr "تحديد لون الخلفية"
+
+#: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
+#, fuzzy
+#| msgid "Export document"
+msgid "Export format"
+msgstr "تصدير ملف"
+
+#: rnote-ui/data/ui/dialogs.ui:290 rnote-ui/data/ui/dialogs.ui:402
+msgid "The export image format"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
+#: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
+msgid "Svg"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
+msgid "Pdf"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
+msgid "Xopp"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
+#, fuzzy
+#| msgid "Import file"
+msgid "Select export file"
+msgstr "إستيراد ملف"
+
+#: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
+#, fuzzy
+#| msgid "Set the format width"
+msgid "Select the export file"
+msgstr "حدد عرض التنسيق"
+
+#. force the user to pick another file
+#: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
+#: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
+#: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
+#: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
+#, fuzzy
+#| msgid "- no directory selected -"
+msgid "- no file selected -"
+msgstr "لم يتم تحديد مجلد"
+
+#: rnote-ui/data/ui/dialogs.ui:346 rnote-ui/src/dialogs/export.rs:406
+msgid "Export Selection"
+msgstr "تصدير المحدد"
+
+#: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
+msgid "Png"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
+msgid "Jpeg"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:416
+msgid "Jpeg quality"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:417
+msgid "Set the quality of the Jpeg image (1 - 100)"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
 msgstr "تعدبل مجلد العمل"
 
-#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/settingspanel.ui:277
+#: rnote-ui/data/ui/dialogs.ui:486 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
 msgid "Apply"
 msgstr "تطبيق"
 
-#: rnote-ui/data/ui/dialogs.ui:284
+#: rnote-ui/data/ui/dialogs.ui:528
 msgid "Workspace Name"
 msgstr "عنوان مجلد العمل"
 
-#: rnote-ui/data/ui/dialogs.ui:290
+#: rnote-ui/data/ui/dialogs.ui:534
 msgid "Icon"
 msgstr "أيقونة"
 
-#: rnote-ui/data/ui/dialogs.ui:291
+#: rnote-ui/data/ui/dialogs.ui:535
 msgid "Change the workspace icon"
 msgstr "تغيير أيقونة مجلد العمل"
 
-#: rnote-ui/data/ui/dialogs.ui:310 rnote-ui/data/ui/settingspanel.ui:293
+#: rnote-ui/data/ui/dialogs.ui:554 rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "وضع الألوان"
 
-#: rnote-ui/data/ui/dialogs.ui:311
+#: rnote-ui/data/ui/dialogs.ui:555
 msgid "Change the workspace color"
 msgstr "لون مجلد العمل"
 
-#: rnote-ui/data/ui/dialogs.ui:324
+#: rnote-ui/data/ui/dialogs.ui:568
 msgid "Directory"
 msgstr "مجلد"
 
-#: rnote-ui/data/ui/dialogs.ui:325
+#: rnote-ui/data/ui/dialogs.ui:569
 msgid "Change the workspace directory"
 msgstr "تغيير مكان مجلد العمل"
 
-#: rnote-ui/data/ui/dialogs.ui:334 rnote-ui/src/dialogs.rs:507
+#: rnote-ui/data/ui/dialogs.ui:578 rnote-ui/src/dialogs/mod.rs:293
 msgid "- no directory selected -"
 msgstr "لم يتم تحديد مجلد"
 
-#: rnote-ui/data/ui/dialogs.ui:348 rnote-ui/src/dialogs.rs:443
+#: rnote-ui/data/ui/dialogs.ui:592 rnote-ui/src/dialogs/mod.rs:229
 msgid "Change workspace directory"
 msgstr "تغيير مجلد العمل"
 
@@ -1263,207 +1348,172 @@ msgid "Fill"
 msgstr "ملء"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs.rs:36
+#: rnote-ui/src/dialogs/mod.rs:35
 msgid "translator-credits"
 msgstr "المترجمون"
 
-#: rnote-ui/src/dialogs.rs:130 rnote-ui/src/dialogs.rs:179
-#: rnote-ui/src/dialogs.rs:239 rnote-ui/src/dialogs.rs:661
+#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:178
+#: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:67
 #: rnote-ui/src/appwindow/mod.rs:456
-#: rnote-ui/src/appwindow/appwindowactions.rs:654
+#: rnote-ui/src/appwindow/appwindowactions.rs:646
 msgid "Saving document failed."
 msgstr "فشل حفظ الملف."
 
-#: rnote-ui/src/dialogs.rs:221 rnote-ui/src/dialogs.rs:588
+#: rnote-ui/src/dialogs/import.rs:28 rnote-ui/src/dialogs/import.rs:109
 msgid "Opening file failed."
 msgstr "فشل فتح الملف."
 
-#: rnote-ui/src/dialogs.rs:311
-msgid "- no file name -"
-msgstr "- بلا اسم للملف -"
-
-#: rnote-ui/src/dialogs.rs:316
-msgid "- no title -"
-msgstr "- بلا عنوان -"
-
-#: rnote-ui/src/dialogs.rs:319
-msgid "- no author -"
-msgstr "- بلا مالك -"
-
-#: rnote-ui/src/dialogs.rs:323
-msgid "- no date -"
-msgstr "- بلا تاريخ -"
-
-#: rnote-ui/src/dialogs.rs:330
-msgid "File name:"
-msgstr "اسم الملف:"
-
-#: rnote-ui/src/dialogs.rs:334
-msgid "Title:"
-msgstr "عنوان:"
-
-#: rnote-ui/src/dialogs.rs:338
-msgid "Author:"
-msgstr "مالك:"
-
-#: rnote-ui/src/dialogs.rs:342
-msgid "Modification date:"
-msgstr "تاريخ التعديل:"
-
-#: rnote-ui/src/dialogs.rs:346
-msgid "Pages:"
-msgstr "الصفحات:"
-
-#: rnote-ui/src/dialogs.rs:389 rnote-ui/src/appwindow/imexport.rs:147
-msgid "Opening PDF file failed."
-msgstr "فشل فتح ملف PDF."
-
-#: rnote-ui/src/dialogs.rs:556
+#: rnote-ui/src/dialogs/import.rs:77
 msgid ".rnote / .xopp File"
 msgstr "ملف .rnote / .xopp"
 
-#: rnote-ui/src/dialogs.rs:559
+#: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "فتح الملف"
 
-#: rnote-ui/src/dialogs.rs:613
-msgid ".rnote file"
-msgstr "ملف rnote"
-
-#: rnote-ui/src/dialogs.rs:616
-msgid "Save document as"
-msgstr "حفظ الملف باسم"
-
-#: rnote-ui/src/dialogs.rs:663
-msgid "Saved document successfully."
-msgstr "تم حفظ الملف بنجاح."
-
-#: rnote-ui/src/dialogs.rs:691
+#: rnote-ui/src/dialogs/import.rs:140
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "ملف PNG / SVG / JPG / PDF"
 
-#: rnote-ui/src/dialogs.rs:736 rnote-ui/src/dialogs.rs:860
-msgid "SVG file"
-msgstr "ملف SVG"
+#: rnote-ui/src/dialogs/import.rs:230
+msgid "- no file name -"
+msgstr "- بلا اسم للملف -"
 
-#: rnote-ui/src/dialogs.rs:739 rnote-ui/src/dialogs.rs:801
-msgid "Export Selection"
-msgstr "تصدير المحدد"
+#: rnote-ui/src/dialogs/import.rs:235
+msgid "- no title -"
+msgstr "- بلا عنوان -"
 
-#: rnote-ui/src/dialogs.rs:742 rnote-ui/src/dialogs.rs:804
-#: rnote-ui/src/dialogs.rs:866 rnote-ui/src/dialogs.rs:927
-#: rnote-ui/src/dialogs.rs:988 rnote-ui/src/dialogs.rs:1048
-#: rnote-ui/src/dialogs.rs:1110
-msgid "Export"
-msgstr "تصدير"
+#: rnote-ui/src/dialogs/import.rs:238
+msgid "- no author -"
+msgstr "- بلا مالك -"
 
-#: rnote-ui/src/dialogs.rs:776
-msgid "Export selection as SVG failed."
-msgstr "فشل تصدير التحديد كـ SVG."
+#: rnote-ui/src/dialogs/import.rs:242
+msgid "- no date -"
+msgstr "- بلا تاريخ -"
 
-#: rnote-ui/src/dialogs.rs:778
-msgid "Exported selection as SVG successfully."
-msgstr "تم تصدير التحديد كـ SVG بنجاح."
+#: rnote-ui/src/dialogs/import.rs:249
+msgid "File name:"
+msgstr "اسم الملف:"
 
-#: rnote-ui/src/dialogs.rs:798
-msgid "PNG file"
-msgstr "ملف PNG"
+#: rnote-ui/src/dialogs/import.rs:253
+msgid "Title:"
+msgstr "عنوان:"
 
-#: rnote-ui/src/dialogs.rs:838
-msgid "Export selection as PNG failed."
-msgstr "فشل تصدير المحدد بتنسيق PNG."
+#: rnote-ui/src/dialogs/import.rs:257
+msgid "Author:"
+msgstr "مالك:"
 
-#: rnote-ui/src/dialogs.rs:840
-msgid "Exported selection as PNG successfully."
-msgstr "تم تصدير المحدد بتنسيق PNG بنجاح."
+#: rnote-ui/src/dialogs/import.rs:261
+msgid "Modification date:"
+msgstr "تاريخ التعديل:"
 
-#: rnote-ui/src/dialogs.rs:863 rnote-ui/src/dialogs.rs:924
-#: rnote-ui/src/dialogs.rs:985
-msgid "Export document"
-msgstr "تصدير ملف"
+#: rnote-ui/src/dialogs/import.rs:265
+msgid "Pages:"
+msgstr "الصفحات:"
 
-#: rnote-ui/src/dialogs.rs:897
-msgid "Export document as SVG failed."
+#: rnote-ui/src/dialogs/import.rs:308 rnote-ui/src/appwindow/imexport.rs:148
+msgid "Opening PDF file failed."
+msgstr "فشل فتح ملف PDF."
+
+#: rnote-ui/src/dialogs/export.rs:18
+msgid ".rnote file"
+msgstr "ملف rnote"
+
+#: rnote-ui/src/dialogs/export.rs:21
+msgid "Save document as"
+msgstr "حفظ الملف باسم"
+
+#: rnote-ui/src/dialogs/export.rs:69
+msgid "Saved document successfully."
+msgstr "تم حفظ الملف بنجاح."
+
+#: rnote-ui/src/dialogs/export.rs:179
+#, fuzzy
+#| msgid "Export document as SVG failed."
+msgid "Export document failed."
 msgstr "فشل التصدير كملف SVG."
 
-#: rnote-ui/src/dialogs.rs:899
-msgid "Exported document as SVG successfully."
+#: rnote-ui/src/dialogs/export.rs:181
+#, fuzzy
+#| msgid "Exported document as SVG successfully."
+msgid "Exported document successfully."
 msgstr "تم تصدير الملف كـ SVG بنجاح."
 
-#: rnote-ui/src/dialogs.rs:921
-msgid "PDF file"
-msgstr "ملف PDF"
+#: rnote-ui/src/dialogs/export.rs:187
+#, fuzzy
+#| msgid "Export document as SVG failed."
+msgid "Export document failed, no file selected."
+msgstr "فشل التصدير كملف SVG."
 
-#: rnote-ui/src/dialogs.rs:958
-msgid "Export document as PDF failed."
-msgstr "فشل التصدير كملف PDF."
+#: rnote-ui/src/dialogs/export.rs:382
+#, fuzzy
+#| msgid "Export selection as SVG failed."
+msgid "Export selection failed."
+msgstr "فشل تصدير التحديد كـ SVG."
 
-#: rnote-ui/src/dialogs.rs:960
-msgid "Exported document as PDF successfully."
-msgstr "تم تصدير الملف بتنسيق PDF بنجاح."
+#: rnote-ui/src/dialogs/export.rs:384
+#, fuzzy
+#| msgid "Exported selection as SVG successfully."
+msgid "Exported selection successfully."
+msgstr "تم تصدير التحديد كـ SVG بنجاح."
 
-#: rnote-ui/src/dialogs.rs:982
-msgid ".xopp file"
-msgstr "ملف .xopp"
+#: rnote-ui/src/dialogs/export.rs:390
+#: rnote-ui/src/appwindow/appwindowactions.rs:788
+#, fuzzy
+#| msgid "Export selection as SVG failed."
+msgid "Export selection failed, no file selected."
+msgstr "فشل تصدير التحديد كـ SVG."
 
-#: rnote-ui/src/dialogs.rs:1019
-msgid "Exporting document as .xopp failed."
-msgstr "فشل التصدير كملف xopp."
-
-#: rnote-ui/src/dialogs.rs:1021
-msgid "Exported document as .xopp successfully."
-msgstr "تم تصدير الملف بتنسيق xopp. بنجاح."
-
-#: rnote-ui/src/dialogs.rs:1042 rnote-ui/src/dialogs.rs:1104
+#: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
 msgid "JSON file"
 msgstr "ملف JSON"
 
-#: rnote-ui/src/dialogs.rs:1081
+#: rnote-ui/src/dialogs/export.rs:521
 msgid "Export engine state failed."
 msgstr "فشل تصدير حالة المحرك."
 
-#: rnote-ui/src/dialogs.rs:1083
+#: rnote-ui/src/dialogs/export.rs:523
 msgid "Exported engine state successfully."
 msgstr "تم تصدير حالة المحرك بنجاح."
 
-#: rnote-ui/src/dialogs.rs:1145
+#: rnote-ui/src/dialogs/export.rs:585
 msgid "Export engine config failed."
 msgstr "فشل تصدير إعدادات المحرك."
 
-#: rnote-ui/src/dialogs.rs:1147
+#: rnote-ui/src/dialogs/export.rs:587
 msgid "Exported engine config successfully."
 msgstr "تم تصدير إعدادات المحرك بنجاح."
 
-#: rnote-ui/src/appwindow/imexport.rs:71
+#: rnote-ui/src/appwindow/imexport.rs:72
 msgid "Opening .rnote file failed."
 msgstr "فشل فتح ملف .rnote."
 
-#: rnote-ui/src/appwindow/imexport.rs:90
+#: rnote-ui/src/appwindow/imexport.rs:91
 msgid "Opening .xopp file failed."
 msgstr "فشل فتح ملف .xopp."
 
-#: rnote-ui/src/appwindow/imexport.rs:109
+#: rnote-ui/src/appwindow/imexport.rs:110
 msgid "Opening vector image file failed."
 msgstr "فشل فتح ملف صورة Vector."
 
-#: rnote-ui/src/appwindow/imexport.rs:128
+#: rnote-ui/src/appwindow/imexport.rs:129
 msgid "Opening bitmap image file failed."
 msgstr "فشل فتح ملف صورة bitmap."
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "خطأ: محاولة فتح المجلد كملف"
 
-#: rnote-ui/src/appwindow/imexport.rs:173
+#: rnote-ui/src/appwindow/imexport.rs:174
 #, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "فشل في فتح الملف ، نوع ملف غير مدعوم."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:771
+#: rnote-ui/src/appwindow/appwindowactions.rs:763
 msgid "Printed document successfully"
 msgstr "تم طباعة الملف بنجاح"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:780
+#: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Printing document failed"
 msgstr "فشل طباعة الملف"
 
@@ -1471,6 +1521,51 @@ msgstr "فشل طباعة الملف"
 #, fuzzy
 msgid "New Directory name"
 msgstr "مجلد"
+
+#~ msgid "Export selection as SVG"
+#~ msgstr "تصدير المحدد ك SVG"
+
+#~ msgid "Export selection as PNG"
+#~ msgstr "تصدير المحدد ك PNG"
+
+#~ msgid "Export document as SVG"
+#~ msgstr "تصدير الصفحة ك SVG"
+
+#~ msgid "Export document as PDF"
+#~ msgstr "تصدير الصفحة ك PDF"
+
+#~ msgid "Export document as Xournal++ .xopp"
+#~ msgstr "تصدير الصفحة ك Xournal++ .xopp"
+
+#~ msgid "SVG file"
+#~ msgstr "ملف SVG"
+
+#~ msgid "PNG file"
+#~ msgstr "ملف PNG"
+
+#~ msgid "Export selection as PNG failed."
+#~ msgstr "فشل تصدير المحدد بتنسيق PNG."
+
+#~ msgid "Exported selection as PNG successfully."
+#~ msgstr "تم تصدير المحدد بتنسيق PNG بنجاح."
+
+#~ msgid "PDF file"
+#~ msgstr "ملف PDF"
+
+#~ msgid "Export document as PDF failed."
+#~ msgstr "فشل التصدير كملف PDF."
+
+#~ msgid "Exported document as PDF successfully."
+#~ msgstr "تم تصدير الملف بتنسيق PDF بنجاح."
+
+#~ msgid ".xopp file"
+#~ msgstr "ملف .xopp"
+
+#~ msgid "Exporting document as .xopp failed."
+#~ msgstr "فشل التصدير كملف xopp."
+
+#~ msgid "Exported document as .xopp successfully."
+#~ msgstr "تم تصدير الملف بتنسيق xopp. بنجاح."
 
 #~ msgid ""
 #~ "Creating a new document will erase any unsaved changes. Do you want to "

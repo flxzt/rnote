@@ -20,7 +20,7 @@ impl RnoteAppWindow {
                 app.set_input_file(Some(file.clone()));
 
                 if self.unsaved_changes() {
-                    dialogs::dialog_open_overwrite(self);
+                    dialogs::import::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
@@ -37,7 +37,7 @@ impl RnoteAppWindow {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
-                dialogs::dialog_import_pdf_w_prefs(self, target_pos);
+                dialogs::import::dialog_import_pdf_w_prefs(self, target_pos);
             }
             crate::utils::FileType::Folder => {
                 if let Some(dir) = file.path() {

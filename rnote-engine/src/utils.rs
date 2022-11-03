@@ -74,13 +74,12 @@ pub fn now_formatted_string() -> String {
     }
 }
 
-pub fn default_filename_for_export(
+pub fn default_file_title_for_export(
     output_file: Option<gio::File>,
     default_fallback: Option<&str>,
     suffix: Option<&str>,
-    ext: &str,
 ) -> String {
-    let mut filename = output_file
+    let mut title = output_file
         .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
         .unwrap_or_else(|| {
             default_fallback
@@ -89,10 +88,10 @@ pub fn default_filename_for_export(
         });
 
     if let Some(suffix) = suffix {
-        filename += suffix;
+        title += suffix;
     }
 
-    filename + "." + ext
+    title
 }
 
 pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {

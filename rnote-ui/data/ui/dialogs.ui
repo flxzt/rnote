@@ -325,7 +325,6 @@
                               <property name="row">1</property>
                             </layout>
                             <property name="icon_name">folder-open-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Change export file</property>
                           </object>
                         </child>
                       </object>
@@ -459,7 +458,6 @@
                               <property name="row">1</property>
                             </layout>
                             <property name="icon_name">folder-open-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Change export file</property>
                           </object>
                         </child>
                       </object>

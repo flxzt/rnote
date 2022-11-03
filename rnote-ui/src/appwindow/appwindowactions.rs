@@ -782,7 +782,11 @@ impl RnoteAppWindow {
 
         // Export selection
         action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::dialog_export_selection_w_prefs(&appwindow);
+            if appwindow.canvas().engine().borrow().store.selection_keys_unordered().len() > 0 {
+                dialogs::export::dialog_export_selection_w_prefs(&appwindow);
+            } else {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed, no file selected.").to_variant()));
+            }
         }));
 
         // Export document

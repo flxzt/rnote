@@ -1,9 +1,6 @@
 use super::RnoteAppWindow;
 use crate::config;
-use crate::{
-    app::RnoteApp,
-    {dialogs, RnoteCanvas},
-};
+use crate::{dialogs, RnoteCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
@@ -18,7 +15,7 @@ use std::path::PathBuf;
 impl RnoteAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
-    /// We can then either toggle the state through activating the action, or set the state explicitely through action.change_state(<request>)
+    /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
     pub fn setup_actions(&self) {
         let action_close_active = gio::SimpleAction::new("close-active", None);
         self.add_action(&action_close_active);
@@ -120,18 +117,10 @@ impl RnoteAppWindow {
         self.add_action(&action_print_doc);
         let action_import_file = gio::SimpleAction::new("import-file", None);
         self.add_action(&action_import_file);
-        let action_export_selection_as_svg =
-            gio::SimpleAction::new("export-selection-as-svg", None);
-        self.add_action(&action_export_selection_as_svg);
-        let action_export_selection_as_png =
-            gio::SimpleAction::new("export-selection-as-png", None);
-        self.add_action(&action_export_selection_as_png);
-        let action_export_doc_as_svg = gio::SimpleAction::new("export-doc-as-svg", None);
-        self.add_action(&action_export_doc_as_svg);
-        let action_export_doc_as_pdf = gio::SimpleAction::new("export-doc-as-pdf", None);
-        self.add_action(&action_export_doc_as_pdf);
-        let action_export_doc_as_xopp = gio::SimpleAction::new("export-doc-as-xopp", None);
-        self.add_action(&action_export_doc_as_xopp);
+        let action_export_selection = gio::SimpleAction::new("export-selection", None);
+        self.add_action(&action_export_selection);
+        let action_export_document = gio::SimpleAction::new("export-document", None);
+        self.add_action(&action_export_document);
         let action_clipboard_copy = gio::SimpleAction::new("clipboard-copy", None);
         self.add_action(&action_clipboard_copy);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
@@ -219,7 +208,7 @@ impl RnoteAppWindow {
         );
 
         // Developer settings
-        // Its enabled state toggles the visibility of the developer setttings menu entry. Is only modified inside action_devel_mode
+        // Its enabled state toggles the visibility of the developer settings menu entry. Is only modified inside action_devel_mode
         action_devel_menu.set_enabled(false);
 
         // Visual debugging
@@ -237,14 +226,14 @@ impl RnoteAppWindow {
         // Export engine state
         action_debug_export_engine_state.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
-                dialogs::dialog_export_engine_state(&appwindow);
+                dialogs::export::filechooser_export_engine_state(&appwindow);
             }),
         );
 
         // Export engine config
         action_debug_export_engine_config.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_config, _target| {
-                dialogs::dialog_export_engine_config(&appwindow);
+                dialogs::export::filechooser_export_engine_config(&appwindow);
             }),
         );
 
@@ -641,7 +630,7 @@ impl RnoteAppWindow {
 
         // Open doc
         action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_open_doc(&appwindow);
+            dialogs::import::filechooser_open_doc(&appwindow);
         }));
 
         // Save doc
@@ -661,14 +650,14 @@ impl RnoteAppWindow {
                     // No success toast on saving without dialog, success is already indicated in the header title
                 } else {
                     // Open a dialog to choose a save location
-                    dialogs::dialog_save_doc_as(&appwindow);
+                    dialogs::export::filechooser_save_doc_as(&appwindow);
                 }
             }));
         }));
 
         // Save doc as
         action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_save_doc_as(&appwindow);
+            dialogs::export::filechooser_save_doc_as(&appwindow);
         }));
 
         // Print doc
@@ -788,36 +777,21 @@ impl RnoteAppWindow {
 
         // Import
         action_import_file.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_import_file(&appwindow);
+            dialogs::import::filechooser_import_file(&appwindow);
         }));
 
-        // Export selection as SVG
-        action_export_selection_as_svg.connect_activate(
-            clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_selection_as_svg(&appwindow);
-            }),
-        );
-
-        // Export selection as PNG
-        action_export_selection_as_png.connect_activate(
-            clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_selection_as_png(&appwindow);
-            }),
-        );
-
-        // Export document as SVG
-        action_export_doc_as_svg.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_doc_as_svg(&appwindow);
+        // Export selection
+        action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            if appwindow.canvas().engine().borrow().store.selection_keys_unordered().len() > 0 {
+                dialogs::export::dialog_export_selection_w_prefs(&appwindow);
+            } else {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed, nothing selected.").to_variant()));
+            }
         }));
 
-        // Export document as PDF
-        action_export_doc_as_pdf.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_doc_as_pdf(&appwindow);
-        }));
-
-        // Export document as Xopp
-        action_export_doc_as_xopp.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_doc_as_xopp(&appwindow);
+        // Export document
+        action_export_document.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::export::dialog_export_doc_w_prefs(&appwindow);
         }));
 
         // Clipboard copy
@@ -943,7 +917,7 @@ impl RnoteAppWindow {
     }
 
     pub fn setup_action_accels(&self) {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         app.set_accels_for_action("win.close-active", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);
@@ -961,6 +935,12 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
+        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
+        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);
+        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3"]);
+        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4"]);
+        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5"]);
+        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6"]);
 
         // shortcuts for devel builds
         if config::PROFILE.to_lowercase().as_str() == "devel" {

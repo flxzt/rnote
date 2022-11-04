@@ -129,7 +129,7 @@ pub struct Constraints {
 }
 
 impl Constraints {
-    /// constrain the coordinates of a vector by the current stored contraint ratios
+    /// constrain the coordinates of a vector by the current stored constraint ratios
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
         if !self.enabled {
             return pos;

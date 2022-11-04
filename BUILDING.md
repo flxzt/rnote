@@ -8,7 +8,7 @@ git submodule update --init --recursive
 ```
 
 ## Building with Flatpak
-There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
+There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
 Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
 
@@ -33,13 +33,13 @@ flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Ext
 Building the app with flatpak is done with:
 
 ```bash
-flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
+flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 Creating a repo:
 
 ```bash
-flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
+flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 
@@ -47,7 +47,7 @@ flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxz
 Install to the system as user with:
 
 ```bash
-flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
+flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml
 ```
 
 ### Run
@@ -55,7 +55,7 @@ Then it can be run.
 From the build directory:
 
 ```bash
-flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.json rnote
+flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.yaml rnote
 ```
 
 Or if it is installed:
@@ -70,9 +70,9 @@ If a native build on the host is wanted, meson can be called directly.
 
 ### Prerequisites
 
-Install all needed dependencies and build tools, e.g. for fedora 36:
+Install all needed dependencies and build tools, e.g. for fedora 37:
 ```bash
-sudo dnf install meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install gcc gcc-c++ clang clang-devel make automake cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:
@@ -102,6 +102,11 @@ meson install -C _mesonbuild
 
 This places the files in the specified prefix and their subpaths. The binary should now be in `/usr/bin` (and therefore in PATH)
 
+If meson was configured with a different install prefix path than `/usr`, then GIO needs to be told where the installed gschema is located. this can be done through the `GSETTINGS_SCHEMA_DIR` env variable.
+
+For example to run the application with a custom gschema path: 
+`GSETTINGS_SCHEMA_DIR=<prefix_path>/share/glib-2.0/schemas rnote`
+
 ### Test
 Meson has some tests to validate the desktop, gresources, ... files.
 
@@ -127,19 +132,35 @@ sudo -E ninja uninstall -C _mesonbuild
 
 # Debugging
 For a native meson build:
-
-Change these lines in `build-aux/cargo.sh`:
-```bash
-    echo -e "\n--- DEVEL PROFILE ---\n"
-    cargo build --manifest-path \
-        "$MESON_SOURCE_ROOT"/Cargo.toml && \
-        cp "$CARGO_TARGET_DIR"/debug/"$APP_BIN" "$OUTPUT"
-```
-
-Then configure, compile and install the meson project as outlined above. Be sure to configure meson with -Dprofile=devel.
+Be sure to configure meson with `-Dprofile=devel` to have a build that includes debugging symbols.
+Then configure, compile and install the meson project as outlined above. 
 
 ## With VSCode
-Create a `launch.json` entry similar to this:
+
+With the `CodeLLDB` extension can be used to debug, set breakpoints etc. from within the editor.
+
+Create a `tasks.json` file similar to this:
+
+```json
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "meson compile",
+            "type": "shell",
+            "command": "meson compile -C _mesonbuild"
+        },
+        {
+            "label": "meson install",
+            "type": "shell",
+            "command": "meson install -C _mesonbuild"
+        }
+    ]
+}
+```
+
+and a `launch.json` entry:
+
 ```json
 {
     "version": "0.2.0",
@@ -149,10 +170,11 @@ Create a `launch.json` entry similar to this:
             "request": "launch",
             "name": "launch debug build of 'rnote'",
             "args": [],
-            "program": "${workspaceFolder}/target/debug/rnote"
-        },
+            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
+            "preLaunchTask": "meson compile"
+        }
     ]
 }
 ```
 
-In vscode the `CodeLLDB` extension can be used to debug from within the editor.
+This launch configuration can then be launched through `Run -> Start Debugging` or by selecting and running it in the `Run and Debug` panel. 

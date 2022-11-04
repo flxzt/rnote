@@ -6,8 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# even though all submodule dependencies are specified with their url, cargo will search the root repository for the local packages
+# see: https://github.com/rust-lang/cargo/issues/1462
+
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
-ink-stroke-modeler-rs = { path = "../ink-stroke-modeler-rs", version = "0.1"}
+
+piet = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main" }
 
 log = "0.4.16"
 pretty_env_logger = "0.4.0"
@@ -21,10 +28,7 @@ rand_distr = "0.4.3"
 regex = "1.5"
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
-kurbo = {version = "0.8.3" }
-piet = { path = "../piet/piet"}
-piet-svg = { path = "../piet/piet-svg"}
-piet-cairo = { path = "../piet/piet-cairo"}
+kurbo = "0.8.3"
 image = "0.23.14"
 svg = "0.10.0"
 

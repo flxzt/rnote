@@ -290,7 +290,7 @@ impl PenBehaviour for Selector {
                 } {
                     if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection)
                     {
-                        // Change to the modifiy state
+                        // Change to the modify state
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
                             selection,

@@ -68,7 +68,7 @@ pub struct RoughOptions {
     /// If this vector has values, the strokes are dashed.
     #[serde(rename = "stroke_line_dash")]
     pub stroke_line_dash: Vec<f64>,
-    /// The offset of the dashs, when they exist
+    /// The offset of the dashes, when they exist
     #[serde(rename = "stroke_line_dash_offset")]
     pub stroke_line_dash_offset: f64,
     /// like stroke line dash, but for the fill

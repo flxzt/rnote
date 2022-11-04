@@ -72,14 +72,14 @@ mod imp {
                 .expect("Could not load gresource file");
             gio::resources_register(&resource);
 
-            let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
-            appwindow.init();
-
             // setup the app
             app.setup_actions();
             app.setup_action_accels();
 
-            // Everything else before showing
+            let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
+            appwindow.init();
+
+            // Everything else before starting
             app.init_misc(&appwindow);
 
             appwindow.show();

@@ -3,22 +3,24 @@ use std::path::Path;
 
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*};
+use rnote_engine::engine::export::{DocExportPrefs, SelectionExportPrefs};
 use rnote_engine::strokes::{BitmapImage, Stroke, VectorImage};
 
-use crate::{dialogs, RnoteApp};
+use crate::dialogs;
 
 use super::RnoteAppWindow;
 
 impl RnoteAppWindow {
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
+
         match crate::utils::FileType::lookup_file_type(file) {
             crate::utils::FileType::RnoteFile | crate::utils::FileType::XoppFile => {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
                 if self.unsaved_changes() {
-                    dialogs::dialog_open_overwrite(self);
+                    dialogs::import::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
@@ -35,7 +37,7 @@ impl RnoteAppWindow {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
-                dialogs::dialog_import_pdf_w_prefs(self, target_pos);
+                dialogs::import::dialog_import_pdf_w_prefs(self, target_pos);
             }
             crate::utils::FileType::Folder => {
                 if let Some(dir) = file.path() {
@@ -55,7 +57,7 @@ impl RnoteAppWindow {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let main_cx = glib::MainContext::default();
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
         let file = file.clone();
 
         match crate::utils::FileType::lookup_file_type(&file) {
@@ -185,7 +187,7 @@ impl RnoteAppWindow {
     where
         P: AsRef<Path>,
     {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let store_snapshot_receiver = self
             .canvas()
@@ -229,11 +231,7 @@ impl RnoteAppWindow {
             .borrow_mut()
             .open_from_xopp_bytes(bytes)?;
 
-        self.application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .set_input_file(None);
+        self.app().set_input_file(None);
         self.canvas().set_output_file(None);
 
         self.canvas().set_unsaved_changes(true);
@@ -255,7 +253,7 @@ impl RnoteAppWindow {
         // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
@@ -291,7 +289,7 @@ impl RnoteAppWindow {
         // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
@@ -326,7 +324,7 @@ impl RnoteAppWindow {
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
@@ -338,7 +336,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow_mut()
-            .generate_strokes_from_pdf_bytes(bytes, pos, page_range);
+            .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
 
         let widget_flags = self
@@ -369,102 +367,36 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_svg(
+    pub async fn export_doc(
         &self,
         file: &gio::File,
-        with_background: bool,
+        title: String,
+        export_prefs_override: Option<DocExportPrefs>,
     ) -> anyhow::Result<()> {
-        let svg_data = self
+        let export_bytes = self
             .canvas()
             .engine()
             .borrow()
-            .export_doc_as_svg_string(with_background)?;
+            .export_doc(title, export_prefs_override);
 
-        crate::utils::replace_file_future(svg_data.into_bytes(), file).await?;
+        crate::utils::replace_file_future(export_bytes.await??, file).await?;
 
         Ok(())
     }
 
-    pub async fn export_selection_as_svg(
+    pub async fn export_selection(
         &self,
         file: &gio::File,
-        with_background: bool,
+        export_prefs_override: Option<SelectionExportPrefs>,
     ) -> anyhow::Result<()> {
-        if let Some(selection_svg_data) = self
+        let export_bytes = self
             .canvas()
             .engine()
             .borrow()
-            .export_selection_as_svg_string(with_background)?
-        {
-            crate::utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
-        }
+            .export_selection(export_prefs_override);
 
-        Ok(())
-    }
-
-    pub async fn export_doc_as_bitmapimage(
-        &self,
-        file: &gio::File,
-        format: image::ImageOutputFormat,
-        with_background: bool,
-    ) -> anyhow::Result<()> {
-        let svg_data = self
-            .canvas()
-            .engine()
-            .borrow()
-            .export_doc_as_bitmapimage_bytes(format, with_background)?;
-
-        crate::utils::replace_file_future(svg_data, file).await?;
-
-        Ok(())
-    }
-
-    pub async fn export_selection_as_bitmapimage(
-        &self,
-        file: &gio::File,
-        format: image::ImageOutputFormat,
-        with_background: bool,
-    ) -> anyhow::Result<()> {
-        if let Some(selection_svg_data) = self
-            .canvas()
-            .engine()
-            .borrow()
-            .export_selection_as_bitmapimage_bytes(format, with_background)?
-        {
-            crate::utils::replace_file_future(selection_svg_data, file).await?;
-        }
-
-        Ok(())
-    }
-
-    pub async fn export_doc_as_xopp(&self, file: &gio::File) -> anyhow::Result<()> {
-        if let Some(basename) = file.basename() {
-            let bytes = self
-                .canvas()
-                .engine()
-                .borrow()
-                .export_doc_as_xopp_bytes(&basename.to_string_lossy())?;
-
-            crate::utils::replace_file_future(bytes, file).await?;
-        }
-
-        Ok(())
-    }
-
-    pub async fn export_doc_as_pdf(
-        &self,
-        file: &gio::File,
-        with_background: bool,
-    ) -> anyhow::Result<()> {
-        if let Some(basename) = file.basename() {
-            let pdf_data_receiver = self
-                .canvas()
-                .engine()
-                .borrow()
-                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string(), with_background);
-            let bytes = pdf_data_receiver.await??;
-
-            crate::utils::replace_file_future(bytes, file).await?;
+        if let Some(export_bytes) = export_bytes.await?? {
+            crate::utils::replace_file_future(export_bytes, file).await?;
         }
 
         Ok(())

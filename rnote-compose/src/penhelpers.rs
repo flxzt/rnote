@@ -46,7 +46,7 @@ pub enum PenEvent {
 /// A key on the keyboard
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum KeyboardKey {
-    /// a unicode character. Expects that control characters are already converted and filtered out wih the method `filter_convert_unicode_control_chars`
+    /// a unicode character. Expects that control characters are already converted and filtered out with the method `filter_convert_unicode_control_chars`
     Unicode(char),
     /// backspace
     BackSpace,

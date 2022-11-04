@@ -53,13 +53,13 @@ impl FileFormatLoader for XoppFile {
 }
 
 impl FileFormatSaver for XoppFile {
-    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
+    fn save_as_bytes(&self, title: &str) -> anyhow::Result<Vec<u8>> {
         let options = xmlwriter::Options::default();
         let mut xml_writer = xmlwriter::XmlWriter::new(options);
         self.xopp_root.write_to_xml(&mut xml_writer);
         let output = xml_writer.end_document();
 
-        let compressed = compress_to_gzip(output.as_bytes(), file_name)?;
+        let compressed = compress_to_gzip(output.as_bytes(), title)?;
 
         Ok(compressed)
     }
@@ -378,7 +378,7 @@ impl XmlLoadable for XoppBackground {
                 })?) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("failed to retreive the XoppBackgroundSolidStyle from `style` attribute, {}", e);
+                        log::error!("failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, {}", e);
                         XoppBackgroundSolidStyle::Plain
                     }
                 };

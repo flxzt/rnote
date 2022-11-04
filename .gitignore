@@ -7,13 +7,14 @@
 /.flatpak-builder
 /flatpak-repo
 /flatpak-app
+/builddir
 /target
 /vendor
 /.editorconfig
 /.vscode
-rnote-ui/src/config.rs
 /temp/*
 *.mo
 *.code-workspace
+.idea/
 
 .toggletasks.json

@@ -17,7 +17,6 @@ use gtk4::{
     ToggleButton,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::penhelpers::PenEvent;
 
 use crate::{
     app::RnoteApp,
@@ -1147,7 +1146,7 @@ impl RnoteAppWindow {
         // actions and settings AFTER widget inits
         self.setup_actions();
         self.setup_action_accels();
-        self.setup_settings();
+        self.setup_settings_binds();
 
         // Load settings
         self.load_settings();
@@ -1155,7 +1154,7 @@ impl RnoteAppWindow {
         // Loading in input file, if Some
         if let Some(input_file) = self.app().input_file() {
             if self.unsaved_changes() {
-                dialogs::dialog_open_overwrite(self);
+                dialogs::import::dialog_open_overwrite(self);
             } else if let Err(e) = self.load_in_file(&input_file, None) {
                 log::error!("failed to load in input file, {}", e);
             }
@@ -1339,12 +1338,6 @@ impl RnoteAppWindow {
                     let current_zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
-                    // Only cancel the current pen when touch drawing is enabled
-                    if appwindow.canvas().touch_drawing() {
-                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
-
                     zoom_begin.set(current_zoom);
                     new_zoom.set(current_zoom);
                     prev_scale.set(1.0);
@@ -1387,11 +1380,6 @@ impl RnoteAppWindow {
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     bbcenter_begin.set(None);
 
-                    if appwindow.canvas().touch_drawing() {
-                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
-
                     appwindow.canvas().update_engine_rendering();
 
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
@@ -1403,11 +1391,6 @@ impl RnoteAppWindow {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
 
                     bbcenter_begin.set(None);
-
-                    if appwindow.canvas().touch_drawing() {
-                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
 
                     appwindow.canvas().update_engine_rendering();
 
@@ -1477,8 +1460,7 @@ impl RnoteAppWindow {
             .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string());
 
         let subtitle: String = file
-            .and_then(|f| f.parent())
-            .map(|t| t.to_string())
+            .and_then(|f| Some(f.parent()?.path()?.display().to_string()))
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string());
 
         self.set_title(Some(

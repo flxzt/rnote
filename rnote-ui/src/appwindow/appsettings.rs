@@ -1,4 +1,3 @@
-use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
 use rnote_compose::Color;
 
@@ -6,7 +5,7 @@ use adw::prelude::*;
 
 impl RnoteAppWindow {
     /// Settings binds
-    pub fn setup_settings(&self) {
+    pub fn setup_settings_binds(&self) {
         let app = self.app();
 
         // Color scheme
@@ -112,7 +111,7 @@ impl RnoteAppWindow {
 
     /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
     pub fn load_settings(&self) {
-        let _app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let _app = self.app();
 
         // appwindow
         {
@@ -130,26 +129,11 @@ impl RnoteAppWindow {
                 .set_width_request(self.app_settings().int("flap-width"));
         }
 
-        // colorscheme
-        // Set the buttons, as the style manager colorscheme property may not be changed from the binding
-        match self.app_settings().string("color-scheme").as_str() {
-            "default" => self
-                .mainheader()
-                .appmenu()
-                .default_theme_toggle()
-                .set_active(true),
-            "force-light" => self
-                .mainheader()
-                .appmenu()
-                .light_theme_toggle()
-                .set_active(true),
-            "force-dark" => self
-                .mainheader()
-                .appmenu()
-                .dark_theme_toggle()
-                .set_active(true),
-            _ => {}
-        }
+        // color scheme
+        // Set the action menu, as the style manager colorscheme property may not be changed from the binding at startup when opening a second window (FIXME: why?)
+        let color_scheme = self.app_settings().string("color-scheme");
+        self.app()
+            .activate_action("color-scheme", Some(&color_scheme.to_variant()));
 
         {
             // Workspacebrowser

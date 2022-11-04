@@ -87,26 +87,14 @@
           </item>
           <submenu>
             <attribute name="label" translatable="yes">Export…</attribute>
-            <item>
-              <attribute name="label" translatable="yes">Export selection as SVG</attribute>
-              <attribute name="action">win.export-selection-as-svg</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Export selection as PNG</attribute>
-              <attribute name="action">win.export-selection-as-png</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Export document as SVG</attribute>
-              <attribute name="action">win.export-doc-as-svg</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Export document as PDF</attribute>
-              <attribute name="action">win.export-doc-as-pdf</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Export document as Xournal++ .xopp</attribute>
-              <attribute name="action">win.export-doc-as-xopp</attribute>
-            </item>
+          <item>
+            <attribute name="label" translatable="yes">Export selection</attribute>
+            <attribute name="action">win.export-selection</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Export document</attribute>
+            <attribute name="action">win.export-document</attribute>
+          </item>
           </submenu>
         </section>
       </menu>

@@ -2,6 +2,11 @@ pub mod export;
 pub mod import;
 pub mod visual_debug;
 
+// Re-Exports
+pub use self::export::ExportPrefs;
+use self::export::{SelectionExportFormat, SelectionExportPrefs};
+pub use self::import::ImportPrefs;
+
 use std::path::PathBuf;
 
 use crate::document::Layout;
@@ -81,8 +86,10 @@ struct EngineConfig {
     document: serde_json::Value,
     #[serde(rename = "penholder")]
     penholder: serde_json::Value,
-    #[serde(rename = "pdf_import_prefs")]
-    pdf_import_prefs: serde_json::Value,
+    #[serde(rename = "import_prefs")]
+    import_prefs: serde_json::Value,
+    #[serde(rename = "export_prefs")]
+    export_prefs: serde_json::Value,
     #[serde(rename = "pen_sounds")]
     pen_sounds: serde_json::Value,
 }
@@ -95,7 +102,8 @@ impl Default for EngineConfig {
             document: serde_json::to_value(&engine.document).unwrap(),
             penholder: serde_json::to_value(&engine.penholder).unwrap(),
 
-            pdf_import_prefs: serde_json::to_value(&engine.pdf_import_prefs).unwrap(),
+            import_prefs: serde_json::to_value(&engine.import_prefs).unwrap(),
+            export_prefs: serde_json::to_value(&engine.export_prefs).unwrap(),
             pen_sounds: serde_json::to_value(&engine.pen_sounds).unwrap(),
         }
     }
@@ -118,8 +126,10 @@ pub struct RnoteEngine {
     #[serde(rename = "camera")]
     pub camera: Camera,
 
-    #[serde(rename = "pdf_import_prefs")]
-    pub pdf_import_prefs: import::PdfImportPrefs,
+    #[serde(rename = "import_prefs")]
+    pub import_prefs: ImportPrefs,
+    #[serde(rename = "export_prefs")]
+    pub export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
     pub pen_sounds: bool,
 
@@ -171,7 +181,8 @@ impl RnoteEngine {
             store: StrokeStore::default(),
             camera: Camera::default(),
 
-            pdf_import_prefs: import::PdfImportPrefs::default(),
+            import_prefs: ImportPrefs::default(),
+            export_prefs: ExportPrefs::default(),
             pen_sounds,
 
             audioplayer,
@@ -207,7 +218,7 @@ impl RnoteEngine {
         }
     }
 
-    /// wether pen sounds are enabled
+    /// whether pen sounds are enabled
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
     }
@@ -551,12 +562,14 @@ impl RnoteEngine {
     /// Fetches clipboard content from current state.
     /// Returns (the content, mime_type)
     pub fn fetch_clipboard_content(&self) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        let export_bytes = self.export_selection(Some(SelectionExportPrefs {
+            with_background: true,
+            export_format: SelectionExportFormat::Svg,
+            ..Default::default()
+        }));
         // First try exporting the selection as svg
-        if let Some(selection_svg) = self.export_selection_as_svg_string(false)? {
-            return Ok(Some((
-                selection_svg.into_bytes(),
-                String::from("image/svg+xml"),
-            )));
+        if let Some(selection_bytes) = futures::executor::block_on(async { export_bytes.await? })? {
+            return Ok(Some((selection_bytes, String::from("image/svg+xml"))));
         }
 
         // else fetch from pen
@@ -678,7 +691,7 @@ impl RnoteEngine {
 
         self.document = serde_json::from_value(engine_config.document)?;
         self.penholder = serde_json::from_value(engine_config.penholder)?;
-        self.pdf_import_prefs = serde_json::from_value(engine_config.pdf_import_prefs)?;
+        self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
         self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
 
         // Set the pen sounds to update the audioplayer

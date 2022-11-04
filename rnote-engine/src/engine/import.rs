@@ -97,6 +97,13 @@ impl Default for PdfImportPrefs {
     }
 }
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[serde(default, rename = "import_prefs")]
+pub struct ImportPrefs {
+    #[serde(rename = "pdf_import_prefs")]
+    pub pdf_import_prefs: PdfImportPrefs,
+}
+
 impl RnoteEngine {
     /// opens a .rnote file. We need to split this into two methods,
     /// because we can't have it as a async function and await when the engine is wrapped in a refcell without causing panics :/
@@ -274,8 +281,8 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    //// generates strokes for each page for the bytes ( from a PDF file )
-    pub fn generate_strokes_from_pdf_bytes(
+    //// generates image strokes for each page for the bytes ( from a PDF file )
+    pub fn generate_pdf_pages_from_bytes(
         &self,
         bytes: Vec<u8>,
         insert_pos: na::Vector2<f64>,
@@ -283,7 +290,7 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
-        let pdf_import_prefs = self.pdf_import_prefs;
+        let pdf_import_prefs = self.import_prefs.pdf_import_prefs;
 
         let format = self.document.format.clone();
 
@@ -365,7 +372,8 @@ impl RnoteEngine {
         let engine_config = EngineConfig {
             document: serde_json::to_value(&self.document)?,
             penholder: serde_json::to_value(&self.penholder)?,
-            pdf_import_prefs: serde_json::to_value(&self.pdf_import_prefs)?,
+            import_prefs: serde_json::to_value(&self.import_prefs)?,
+            export_prefs: serde_json::to_value(&self.export_prefs)?,
             pen_sounds: serde_json::to_value(&self.pen_sounds)?,
         };
 

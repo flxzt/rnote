@@ -2,7 +2,7 @@ use gettextrs::gettext;
 use gtk4::{
     glib,
     glib::clone,
-    traits::{ButtonExt, GridExt, StyleContextExt, WidgetExt, PopoverExt},
+    traits::{ButtonExt, GridExt, PopoverExt, StyleContextExt, WidgetExt},
     Align, Button, Entry, Grid, Label, Popover, PositionType,
 };
 
@@ -34,7 +34,7 @@ pub fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popove
     let popover = create_popover(&grid);
 
     connect_cancel_button(&cancel_button, &popover);
-    
+
     log::debug!("Creating entry dialog");
 
     (apply_button, popover)

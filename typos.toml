@@ -1,0 +1,15 @@
+[type.po]
+extend-glob = ["*.po"]
+check-file = false
+
+[default.extend-words]
+splitted = "splitted"
+
+[files]
+extend-exclude = [
+    "*.pot",
+    "*LICENSE*",
+    "ink-stroke-modeler-rs/*",
+    "piet/*",
+    "piet-gpu/*",
+]

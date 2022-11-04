@@ -53,7 +53,7 @@ impl ShapeBehaviour for QuadraticBezier {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        // TODO: should be dependend on the actual curve length
+        // TODO: should be depending on the actual curve length
         let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
 
         self.approx_with_lines(n_splits)

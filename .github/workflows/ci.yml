@@ -4,11 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
-name: Continuous integration
+name: CI
 
 jobs:
   check:
-    name: Check
+    name: cargo check
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
     container: fedora:37
@@ -31,7 +31,7 @@ jobs:
           command: check
 
   fmt:
-    name: Rustfmt
+    name: rustfmt
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
     steps:

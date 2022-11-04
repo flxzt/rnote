@@ -359,9 +359,9 @@ checksum = "572f695136211188308f16ad2ca5c851a712c464060ae6974944458eb83880ba"
 
 [[package]]
 name = "bytemuck"
-version = "1.12.1"
+version = "1.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f5715e491b5a1598fc2bef5a606847b5dc1d48ea625bd3c02c00de8285591da"
+checksum = "5aec14f5d4e6e3f927cd0c81f72e5710d95ee9019fbeb4b3021193867491bfd8"
 
 [[package]]
 name = "byteorder"
@@ -1805,7 +1805,7 @@ dependencies = [
  "color_quant",
  "num-rational 0.4.1",
  "num-traits",
- "png 0.17.6",
+ "png 0.17.7",
 ]
 
 [[package]]
@@ -1828,7 +1828,7 @@ checksum = "adab1eaa3408fb7f0c777a73e7465fd5656136fc93b670eb6df3c88c2c1344e3"
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
-source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?branch=main#b6f28ac30a30f0658fe86986aec4e5774748a76f"
+source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?branch=main#3d512ed96b176b97f2b3b1a88b3c591635225f18"
 dependencies = [
  "anyhow",
  "autocxx",
@@ -2238,6 +2238,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "miniz_oxide"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b275950c28b37e794e8c55d88aeb5e139d0ce23fdbbeda68f8d7174abdf9e8fa"
+dependencies = [
+ "adler",
+]
+
+[[package]]
 name = "moveit"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2264,9 +2273,9 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.31.2"
+version = "0.31.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da388c517f7c8540918d00f7aed9864c1ead01a14a0cc21513b171857119de12"
+checksum = "0eef2ccf9aefdae3334ad5911b5414724b9047bfe145b3353d5878732cc7b86b"
 dependencies = [
  "approx",
  "matrixmultiply",
@@ -2681,7 +2690,7 @@ dependencies = [
  "bitflags",
  "downcast-rs",
  "either",
- "nalgebra 0.31.2",
+ "nalgebra 0.31.3",
  "num-derive",
  "num-traits",
  "rustc-hash",
@@ -2897,14 +2906,14 @@ dependencies = [
 
 [[package]]
 name = "png"
-version = "0.17.6"
+version = "0.17.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f0e7f4c94ec26ff209cee506314212639d6c91b80afb82984819fafce9df01c"
+checksum = "5d708eaf860a19b19ce538740d2b4bdeeb8337fa53f7738455e706623ad5c638"
 dependencies = [
  "bitflags",
  "crc32fast",
  "flate2",
- "miniz_oxide 0.5.4",
+ "miniz_oxide 0.6.2",
 ]
 
 [[package]]
@@ -3276,7 +3285,7 @@ dependencies = [
  "kurbo",
  "libadwaita",
  "log",
- "nalgebra 0.31.2",
+ "nalgebra 0.31.3",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -3310,7 +3319,7 @@ dependencies = [
  "ink-stroke-modeler-rs",
  "kurbo",
  "log",
- "nalgebra 0.31.2",
+ "nalgebra 0.31.3",
  "num-derive",
  "num-traits",
  "parry2d-f64",
@@ -3346,7 +3355,7 @@ dependencies = [
  "lazy_static",
  "librsvg",
  "log",
- "nalgebra 0.31.2",
+ "nalgebra 0.31.3",
  "num-derive",
  "num-traits",
  "parry2d-f64",
@@ -3381,7 +3390,7 @@ dependencies = [
  "anyhow",
  "flate2",
  "log",
- "nalgebra 0.31.2",
+ "nalgebra 0.31.3",
  "pretty_env_logger",
  "roxmltree 0.14.1",
  "semver 1.0.14",

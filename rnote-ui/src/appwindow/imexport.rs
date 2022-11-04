@@ -3,6 +3,7 @@ use std::path::Path;
 
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*};
+use rnote_engine::engine::export::{DocExportPrefs, SelectionExportPrefs};
 use rnote_engine::strokes::{BitmapImage, Stroke, VectorImage};
 
 use crate::dialogs;
@@ -19,7 +20,7 @@ impl RnoteAppWindow {
                 app.set_input_file(Some(file.clone()));
 
                 if self.unsaved_changes() {
-                    dialogs::dialog_open_overwrite(self);
+                    dialogs::import::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
@@ -36,7 +37,7 @@ impl RnoteAppWindow {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
-                dialogs::dialog_import_pdf_w_prefs(self, target_pos);
+                dialogs::import::dialog_import_pdf_w_prefs(self, target_pos);
             }
             crate::utils::FileType::Folder => {
                 if let Some(dir) = file.path() {
@@ -335,7 +336,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow_mut()
-            .generate_strokes_from_pdf_bytes(bytes, pos, page_range);
+            .generate_pdf_pages_from_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
 
         let widget_flags = self
@@ -366,102 +367,36 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_svg(
+    pub async fn export_doc(
         &self,
         file: &gio::File,
-        with_background: bool,
+        title: String,
+        export_prefs_override: Option<DocExportPrefs>,
     ) -> anyhow::Result<()> {
-        let svg_data = self
+        let export_bytes = self
             .canvas()
             .engine()
             .borrow()
-            .export_doc_as_svg_string(with_background)?;
+            .export_doc(title, export_prefs_override);
 
-        crate::utils::replace_file_future(svg_data.into_bytes(), file).await?;
+        crate::utils::replace_file_future(export_bytes.await??, file).await?;
 
         Ok(())
     }
 
-    pub async fn export_selection_as_svg(
+    pub async fn export_selection(
         &self,
         file: &gio::File,
-        with_background: bool,
+        export_prefs_override: Option<SelectionExportPrefs>,
     ) -> anyhow::Result<()> {
-        if let Some(selection_svg_data) = self
+        let export_bytes = self
             .canvas()
             .engine()
             .borrow()
-            .export_selection_as_svg_string(with_background)?
-        {
-            crate::utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
-        }
+            .export_selection(export_prefs_override);
 
-        Ok(())
-    }
-
-    pub async fn export_doc_as_bitmapimage(
-        &self,
-        file: &gio::File,
-        format: image::ImageOutputFormat,
-        with_background: bool,
-    ) -> anyhow::Result<()> {
-        let svg_data = self
-            .canvas()
-            .engine()
-            .borrow()
-            .export_doc_as_bitmapimage_bytes(format, with_background)?;
-
-        crate::utils::replace_file_future(svg_data, file).await?;
-
-        Ok(())
-    }
-
-    pub async fn export_selection_as_bitmapimage(
-        &self,
-        file: &gio::File,
-        format: image::ImageOutputFormat,
-        with_background: bool,
-    ) -> anyhow::Result<()> {
-        if let Some(selection_svg_data) = self
-            .canvas()
-            .engine()
-            .borrow()
-            .export_selection_as_bitmapimage_bytes(format, with_background)?
-        {
-            crate::utils::replace_file_future(selection_svg_data, file).await?;
-        }
-
-        Ok(())
-    }
-
-    pub async fn export_doc_as_xopp(&self, file: &gio::File) -> anyhow::Result<()> {
-        if let Some(basename) = file.basename() {
-            let bytes = self
-                .canvas()
-                .engine()
-                .borrow()
-                .export_doc_as_xopp_bytes(&basename.to_string_lossy())?;
-
-            crate::utils::replace_file_future(bytes, file).await?;
-        }
-
-        Ok(())
-    }
-
-    pub async fn export_doc_as_pdf(
-        &self,
-        file: &gio::File,
-        with_background: bool,
-    ) -> anyhow::Result<()> {
-        if let Some(basename) = file.basename() {
-            let pdf_data_receiver = self
-                .canvas()
-                .engine()
-                .borrow()
-                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string(), with_background);
-            let bytes = pdf_data_receiver.await??;
-
-            crate::utils::replace_file_future(bytes, file).await?;
+        if let Some(export_bytes) = export_bytes.await?? {
+            crate::utils::replace_file_future(export_bytes, file).await?;
         }
 
         Ok(())

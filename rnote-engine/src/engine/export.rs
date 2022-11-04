@@ -209,56 +209,68 @@ impl RnoteEngine {
     pub fn export_selection(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
-    ) -> anyhow::Result<Option<Vec<u8>>> {
+    ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
+
         let selection_export_prefs =
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
 
-        match selection_export_prefs.export_format {
-            SelectionExportFormat::Svg => {
-                let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
-                    Some(selection_svg) => selection_svg,
-                    None => return Ok(None),
-                };
+        let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
+            match selection_export_prefs.export_format {
+                SelectionExportFormat::Svg => {
+                    let selection_svg =
+                        match self.gen_selection_svg(selection_export_prefs_override)? {
+                            Some(selection_svg) => selection_svg,
+                            None => return Ok(None),
+                        };
 
-                Ok(Some(
-                    rnote_compose::utils::add_xml_header(
-                        rnote_compose::utils::wrap_svg_root(
-                            selection_svg.svg_data.as_str(),
-                            Some(selection_svg.bounds),
-                            Some(selection_svg.bounds),
-                            false,
+                    Ok(Some(
+                        rnote_compose::utils::add_xml_header(
+                            rnote_compose::utils::wrap_svg_root(
+                                selection_svg.svg_data.as_str(),
+                                Some(selection_svg.bounds),
+                                Some(selection_svg.bounds),
+                                false,
+                            )
+                            .as_str(),
                         )
-                        .as_str(),
-                    )
-                    .into_bytes(),
-                ))
-            }
-            export_format => {
-                let image_scale = 1.0;
-                let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
-                    Some(selection_svg) => selection_svg,
-                    None => return Ok(None),
-                };
-                let selection_svg_bounds = selection_svg.bounds;
+                        .into_bytes(),
+                    ))
+                }
+                export_format => {
+                    let image_scale = 1.0;
+                    let selection_svg =
+                        match self.gen_selection_svg(selection_export_prefs_override)? {
+                            Some(selection_svg) => selection_svg,
+                            None => return Ok(None),
+                        };
+                    let selection_svg_bounds = selection_svg.bounds;
 
-                let bitmapimage_format = match export_format {
-                    SelectionExportFormat::Svg => unreachable!(),
-                    SelectionExportFormat::Png => image::ImageOutputFormat::Png,
-                    SelectionExportFormat::Jpeg => {
-                        image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
-                    }
-                };
+                    let bitmapimage_format = match export_format {
+                        SelectionExportFormat::Svg => unreachable!(),
+                        SelectionExportFormat::Png => image::ImageOutputFormat::Png,
+                        SelectionExportFormat::Jpeg => {
+                            image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
+                        }
+                    };
 
-                Ok(Some(
-                    render::Image::gen_image_from_svg(
-                        selection_svg,
-                        selection_svg_bounds,
-                        image_scale,
-                    )?
-                    .into_encoded_bytes(bitmapimage_format)?,
-                ))
+                    Ok(Some(
+                        render::Image::gen_image_from_svg(
+                            selection_svg,
+                            selection_svg_bounds,
+                            image_scale,
+                        )?
+                        .into_encoded_bytes(bitmapimage_format)?,
+                    ))
+                }
             }
+        };
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_selection() failed. Receiver already dropped.");
         }
+
+        oneshot_receiver
     }
 
     /// Exports the doc with the strokes as a Xournal++ .xopp file. Excluding the current selection.

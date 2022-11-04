@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:26+0100\n"
+"POT-Creation-Date: 2022-11-04 10:04+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: BobH <dev@mail.bobh.cool>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1450,7 +1450,6 @@ msgid "Exported selection successfully."
 msgstr "导出所选为 SVG 成功。"
 
 #: rnote-ui/src/dialogs/export.rs:390
-#: rnote-ui/src/appwindow/appwindowactions.rs:788
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
@@ -1508,6 +1507,12 @@ msgstr "打印成功"
 #: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Printing document failed"
 msgstr "打印失败"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:788
+#, fuzzy
+#| msgid "Export selection as SVG failed."
+msgid "Export selection failed, nothing selected."
+msgstr "导出所选为 SVG 失败。"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy

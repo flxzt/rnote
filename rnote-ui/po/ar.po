@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:26+0100\n"
+"POT-Creation-Date: 2022-11-04 10:04+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -1456,7 +1456,6 @@ msgid "Exported selection successfully."
 msgstr "تم تصدير التحديد كـ SVG بنجاح."
 
 #: rnote-ui/src/dialogs/export.rs:390
-#: rnote-ui/src/appwindow/appwindowactions.rs:788
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
@@ -1514,6 +1513,12 @@ msgstr "تم طباعة الملف بنجاح"
 #: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Printing document failed"
 msgstr "فشل طباعة الملف"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:788
+#, fuzzy
+#| msgid "Export selection as SVG failed."
+msgid "Export selection failed, nothing selected."
+msgstr "فشل تصدير التحديد كـ SVG."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy

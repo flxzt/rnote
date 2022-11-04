@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:26+0100\n"
+"POT-Creation-Date: 2022-11-04 10:04+0100\n"
 "PO-Revision-Date: 2022-11-04 09:05+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1425,7 +1425,6 @@ msgid "Exported selection successfully."
 msgstr "A kijelölés sikeresen exportálva."
 
 #: rnote-ui/src/dialogs/export.rs:390
-#: rnote-ui/src/appwindow/appwindowactions.rs:788
 msgid "Export selection failed, no file selected."
 msgstr "A kijelölés exportálása sikertelen, nincs kijelölve fájl."
 
@@ -1480,6 +1479,12 @@ msgstr "A dokumentum sikeresen ki lett nyomtatva"
 #: rnote-ui/src/appwindow/appwindowactions.rs:772
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:788
+#, fuzzy
+#| msgid "Export selection failed, no file selected."
+msgid "Export selection failed, nothing selected."
+msgstr "A kijelölés exportálása sikertelen, nincs kijelölve fájl."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"

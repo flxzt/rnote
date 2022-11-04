@@ -85,8 +85,9 @@ pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
+    );
     let dialog: Dialog = builder.object("dialog_export_doc_w_prefs").unwrap();
     let button_confirm: Button = builder.object("export_doc_button_confirm").unwrap();
     let with_background_switch: Switch =
@@ -270,8 +271,9 @@ fn update_export_doc_filechooser_with_prefs(
 }
 
 pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
+    );
     let dialog: Dialog = builder.object("dialog_export_selection_w_prefs").unwrap();
     let button_confirm: Button = builder.object("export_selection_button_confirm").unwrap();
     let with_background_switch: Switch = builder

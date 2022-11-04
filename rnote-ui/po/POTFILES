@@ -5,7 +5,9 @@ rnote-ui/data/ui/appmenu.ui
 rnote-ui/data/ui/appwindow.ui
 rnote-ui/data/ui/canvasmenu.ui
 rnote-ui/data/ui/colorpicker.ui
-rnote-ui/data/ui/dialogs.ui
+rnote-ui/data/ui/dialogs/dialogs.ui
+rnote-ui/data/ui/dialogs/import.ui
+rnote-ui/data/ui/dialogs/export.ui
 rnote-ui/data/ui/filerow.ui
 rnote-ui/data/ui/iconpicker.ui
 rnote-ui/data/ui/mainheader.ui

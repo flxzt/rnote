@@ -11,8 +11,9 @@ use crate::{config, RnoteAppWindow};
 
 /// Asks to open the document from the app `input-file` property and overwrites the current document.
 pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
+    );
     let dialog_open_input_file: adw::MessageDialog =
         builder.object("dialog_open_overwrite").unwrap();
 
@@ -177,8 +178,9 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<na::Vector2<f64>>) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
+    );
     let dialog_import_pdf: Dialog = builder.object("dialog_import_pdf_w_prefs").unwrap();
     let pdf_page_start_spinbutton: SpinButton =
         builder.object("pdf_page_start_spinbutton").unwrap();

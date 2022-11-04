@@ -132,11 +132,35 @@ sudo -E ninja uninstall -C _mesonbuild
 
 # Debugging
 For a native meson build:
-Be sure to configure meson with -Dprofile=devel to have a build that includes debugging symbols.
+Be sure to configure meson with `-Dprofile=devel` to have a build that includes debugging symbols.
 Then configure, compile and install the meson project as outlined above. 
 
 ## With VSCode
-Create a `launch.json` entry similar to this:
+
+With the `CodeLLDB` extension can be used to debug, set breakpoints etc. from within the editor.
+
+Create a `tasks.json` file similar to this:
+
+```json
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "meson compile",
+            "type": "shell",
+            "command": "meson compile -C _mesonbuild"
+        },
+        {
+            "label": "meson install",
+            "type": "shell",
+            "command": "meson install -C _mesonbuild"
+        }
+    ]
+}
+```
+
+and a `launch.json` entry:
+
 ```json
 {
     "version": "0.2.0",
@@ -146,10 +170,11 @@ Create a `launch.json` entry similar to this:
             "request": "launch",
             "name": "launch debug build of 'rnote'",
             "args": [],
-            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote"
-        },
+            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
+            "preLaunchTask": "meson compile"
+        }
     ]
 }
 ```
 
-In vscode the `CodeLLDB` extension can be used to debug from within the editor.
+This launch configuration can then be launched through `Run -> Start Debugging` or by selecting and running it in the `Run and Debug` panel. 

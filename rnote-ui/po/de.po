@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-04 10:04+0100\n"
-"PO-Revision-Date: 2022-11-04 09:05+0000\n"
+"PO-Revision-Date: 2022-11-04 10:37+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1480,10 +1480,8 @@ msgid "Printing document failed"
 msgstr "Dokument drucken gescheitert"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection failed, no file selected."
 msgid "Export selection failed, nothing selected."
-msgstr "Auswahl exportieren gescheitert, keine Datei ausgewählt."
+msgstr "Auswahl exportieren gescheitert, nichts ausgewählt."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"

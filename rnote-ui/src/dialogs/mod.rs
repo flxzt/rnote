@@ -44,8 +44,6 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
     aboutdialog.show();
 }
 
-// Message Dialogs
-
 pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
@@ -60,8 +58,9 @@ pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
     let dialog_clear_doc: adw::MessageDialog = builder.object("dialog_clear_doc").unwrap();
 
     dialog_clear_doc.set_transient_for(Some(appwindow));
@@ -91,8 +90,9 @@ pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
     let dialog_new_doc: adw::MessageDialog = builder.object("dialog_new_doc").unwrap();
 
     dialog_new_doc.set_transient_for(Some(appwindow));
@@ -153,8 +153,9 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
     let dialog_quit_save: adw::MessageDialog = builder.object("dialog_quit_save").unwrap();
 
     dialog_quit_save.set_transient_for(Some(appwindow));
@@ -202,8 +203,9 @@ pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
     let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
     let edit_workspace_preview_row: WorkspaceRow =
         builder.object("edit_workspace_preview_row").unwrap();

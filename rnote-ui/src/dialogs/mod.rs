@@ -255,7 +255,7 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         change_workspace_dir_label.set_label(&row.entry().dir().as_str());
     }
 
-    change_workspace_name_entryrow.connect_apply(
+    change_workspace_name_entryrow.connect_changed(
         clone!(@weak edit_workspace_preview_row => move |entry| {
             let text = entry.text().to_string();
             edit_workspace_preview_row.entry().set_name(text);

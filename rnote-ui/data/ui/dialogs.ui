@@ -271,34 +271,6 @@
             </style>
             <child>
               <object class="AdwPreferencesGroup">
-                <property name="title" translatable="yes">Export preferences</property>
-                <property name="halign">fill</property>
-                <child>
-                  <object class="AdwActionRow" id="export_doc_with_background_row">
-                    <property name="title" translatable="yes">With background</property>
-                    <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
-                    <child type="suffix">
-                      <object class="GtkSwitch" id="export_doc_with_background_switch">
-                        <property name="valign">center</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwComboRow" id="export_doc_export_format_row">
-                    <property name="title" translatable="yes">Export format</property>
-                    <property name="subtitle" translatable="yes">The export format</property>
-                    <property name="model">
-                      <object class="GtkStringList">
-                        <items>
-                          <item translatable="yes">Svg</item>
-                          <item translatable="yes">Pdf</item>
-                          <item translatable="yes">Xopp</item>
-                        </items>
-                      </object>
-                    </property>
-                  </object>
-                </child>
                 <child>
                   <object class="AdwActionRow">
                     <property name="title" translatable="yes">Select export file</property>
@@ -329,6 +301,38 @@
                         </child>
                       </object>
                     </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Export preferences</property>
+                <property name="halign">fill</property>
+                <child>
+                  <object class="AdwActionRow" id="export_doc_with_background_row">
+                    <property name="title" translatable="yes">With background</property>
+                    <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
+                    <child type="suffix">
+                      <object class="GtkSwitch" id="export_doc_with_background_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwComboRow" id="export_doc_export_format_row">
+                    <property name="title" translatable="yes">Export format</property>
+                    <property name="subtitle" translatable="yes">The export format</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">Svg</item>
+                          <item translatable="yes">Pdf</item>
+                          <item translatable="yes">Xopp</item>
+                        </items>
+                      </object>
+                    </property>
                   </object>
                 </child>
               </object>
@@ -383,6 +387,42 @@
             </style>
             <child>
               <object class="AdwPreferencesGroup">
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Select export file</property>
+                    <property name="subtitle" translatable="yes">Select the export file</property>
+                    <child type="suffix">
+                      <object class="GtkBox">
+                        <property name="valign">center</property>
+                        <property name="halign">end</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">6</property>
+                        <child>
+                          <object class="GtkLabel" id="export_selection_export_file_label">
+                            <property name="label" translatable="yes">- no file selected -</property>
+                            <property name="ellipsize">start</property>
+                            <style>
+                              <class name="dim-label" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="export_selection_export_file_button">
+                            <layout>
+                              <property name="column">1</property>
+                              <property name="row">1</property>
+                            </layout>
+                            <property name="icon_name">folder-open-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwPreferencesGroup">
                 <property name="title" translatable="yes">Export preferences</property>
                 <property name="halign">fill</property>
                 <child>
@@ -428,38 +468,6 @@
                         <property name="vexpand">false</property>
                         <property name="valign">center</property>
                         <property name="digits">0</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Select export file</property>
-                    <property name="subtitle" translatable="yes">Select the export file</property>
-                    <child type="suffix">
-                      <object class="GtkBox">
-                        <property name="valign">center</property>
-                        <property name="halign">end</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkLabel" id="export_selection_export_file_label">
-                            <property name="label" translatable="yes">- no file selected -</property>
-                            <property name="ellipsize">start</property>
-                            <style>
-                              <class name="dim-label" />
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="export_selection_export_file_button">
-                            <layout>
-                              <property name="column">1</property>
-                              <property name="row">1</property>
-                            </layout>
-                            <property name="icon_name">folder-open-symbolic</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>
@@ -526,7 +534,6 @@
                 <child>
                   <object class="AdwEntryRow" id="change_workspace_name_entryrow">
                     <property name="title" translatable="yes">Workspace Name</property>
-                    <property name="show-apply-button">true</property>
                   </object>
                 </child>
                 <child>

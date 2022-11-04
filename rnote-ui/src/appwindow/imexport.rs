@@ -389,12 +389,13 @@ impl RnoteAppWindow {
         file: &gio::File,
         export_prefs_override: Option<SelectionExportPrefs>,
     ) -> anyhow::Result<()> {
-        if let Some(export_bytes) = self
+        let export_bytes = self
             .canvas()
             .engine()
             .borrow()
-            .export_selection(export_prefs_override)?
-        {
+            .export_selection(export_prefs_override);
+
+        if let Some(export_bytes) = export_bytes.await?? {
             crate::utils::replace_file_future(export_bytes, file).await?;
         }
 

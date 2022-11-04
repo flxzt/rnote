@@ -562,12 +562,13 @@ impl RnoteEngine {
     /// Fetches clipboard content from current state.
     /// Returns (the content, mime_type)
     pub fn fetch_clipboard_content(&self) -> anyhow::Result<Option<(Vec<u8>, String)>> {
-        // First try exporting the selection as svg
-        if let Some(selection_bytes) = self.export_selection(Some(SelectionExportPrefs {
+        let export_bytes = self.export_selection(Some(SelectionExportPrefs {
             with_background: true,
             export_format: SelectionExportFormat::Svg,
             ..Default::default()
-        }))? {
+        }));
+        // First try exporting the selection as svg
+        if let Some(selection_bytes) = futures::executor::block_on(async { export_bytes.await? })? {
             return Ok(Some((selection_bytes, String::from("image/svg+xml"))));
         }
 

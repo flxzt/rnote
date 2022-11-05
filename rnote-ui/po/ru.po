@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-04 10:04+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
+"PO-Revision-Date: 2022-11-06 06:49+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -67,10 +67,9 @@ msgstr "Выделение"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Color scheme"
-msgstr ""
+msgstr "Цветовая схема"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
 msgid "Use system colors"
 msgstr "Использовать цвета системы"
 
@@ -261,8 +260,6 @@ msgstr "Экспортировать…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
 #: rnote-ui/src/dialogs/export.rs:406
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export selection"
 msgstr "Экспортировать выделение"
 
@@ -312,7 +309,6 @@ msgid "New Document"
 msgstr "Новый Документ"
 
 #: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -362,12 +358,11 @@ msgstr "Настройки импорта PDF"
 
 #: rnote-ui/data/ui/dialogs.ui:131
 msgid "Start page"
-msgstr ""
+msgstr "Первая страница"
 
 #: rnote-ui/data/ui/dialogs.ui:146
-#, fuzzy
 msgid "End page"
-msgstr "Добавить страницу"
+msgstr "Последняя страница"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
@@ -417,89 +412,73 @@ msgid "Export"
 msgstr "Экспорт"
 
 #: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Export preferences"
-msgstr "Настройки импорта PDF"
+msgstr "Настройки экспорта"
 
 #: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
-#, fuzzy
-#| msgid "Document background"
 msgid "With background"
-msgstr "Фон документа"
+msgstr "С фоном"
 
 #: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "Выбрать цвет фона"
+msgstr "Укажите, следует ли экспортировать фон?"
 
 #: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
-#, fuzzy
-#| msgid "Export document"
 msgid "Export format"
-msgstr "Экспортировать документ"
+msgstr "Экспортировать страницу"
 
 #: rnote-ui/data/ui/dialogs.ui:290
-#, fuzzy
-#| msgid "Export document"
 msgid "The export format"
-msgstr "Экспортировать документ"
+msgstr "Формат для экспорта"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
-#, fuzzy
-#| msgid "Import file"
 msgid "Select export file"
-msgstr "Импортировать файл"
+msgstr "Выберите файл экспорта"
 
 #: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "Установить ширину страницы"
+msgstr "Выберите файл экспорта"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
 #: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
 #: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
 #: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "- no file selected -"
-msgstr "- каталог не выбран -"
+msgstr "- файл не выбран -"
 
 #: rnote-ui/data/ui/dialogs.ui:402
 msgid "The export image format"
-msgstr ""
+msgstr "Формат экспорта изображения"
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs.ui:416
 msgid "Jpeg quality"
-msgstr ""
+msgstr "Качество Jpeg"
 
 #: rnote-ui/data/ui/dialogs.ui:417
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Укажите качество Jpeg изображения (1 - 100)"
 
 #: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
@@ -556,9 +535,8 @@ msgid "Move into trash"
 msgstr "Переместить в корзину"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "Дублировать выделение"
+msgstr "Дублировать"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
@@ -617,19 +595,16 @@ msgid "Regular cursor"
 msgstr "Обычный курсор"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
-#, fuzzy
 msgid "Set the regular cursor"
-msgstr "Выбрать цвет границ страницы"
+msgstr "Настроить обычный курсор"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
-#, fuzzy
 msgid "Drawing cursor"
-msgstr "Рисование"
+msgstr "Курсор для рисования"
 
 #: rnote-ui/data/ui/settingspanel.ui:134
-#, fuzzy
 msgid "Set the drawing cursor"
-msgstr "Выбрать цвет фона"
+msgstr "Настроить курсор для рисования"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Page format"
@@ -846,32 +821,32 @@ msgstr "Навигация"
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "Переключиться на 'Кисть'"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "Переключиться на 'Фигуры'"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "Переключиться на 'Текст'"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "Переключиться на 'Ластик'"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "Переключиться на 'Выделение'"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "Переключиться на 'Инструменты"
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 msgctxt "shortcut window"
@@ -953,9 +928,8 @@ msgid "Move directory up"
 msgstr "Переместить каталог вверх"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
 msgid "Workspace directory actions"
-msgstr "Выбрать каталог коллекции"
+msgstr "Действия над каталогом коллекции"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:165
 msgid "Add workspace"
@@ -966,9 +940,8 @@ msgid "Remove workspace"
 msgstr "Удалить коллекцию"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
 msgid "Create Directory"
-msgstr "Каталог"
+msgstr "Создать Каталог"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
@@ -1009,33 +982,35 @@ msgstr "Настройки кисти"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Path modelling"
-msgstr ""
+msgstr "Моделирование траектории"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Simple"
-msgstr ""
+msgstr "Простое"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Производит сегменты линии из необработанных входных данных.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Curved"
-msgstr ""
+msgstr "Криволинейное"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Производит гладкие, изогнутые сегменты.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:181
 msgid "Modeled"
-msgstr ""
+msgstr "Моделированное"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Производит моделированные траектории на основе алгоритмов физики.\n"
+"Получается самый красивый почерк."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Solid style"
@@ -1268,12 +1243,12 @@ msgid "Enabled"
 msgstr "Включено"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
-#, fuzzy
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Удерживайте Ctrl чтобы временно активировать/деактивировать ограничения"
+"Удерживайте Ctrl чтобы временно активировать/деактивировать\n"
+"ограничения когда кнопка в положении выкл/вкл"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
 msgid "1:1"
@@ -1430,40 +1405,28 @@ msgid "Saved document successfully."
 msgstr "Документ успешно сохранён."
 
 #: rnote-ui/src/dialogs/export.rs:179
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "Не удалось экспортировать документ как SVG."
+msgstr "Не удалось экспортировать документ."
 
 #: rnote-ui/src/dialogs/export.rs:181
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "Документ успешно экспортирован в SVG."
+msgstr "Документ успешно экспортирован."
 
 #: rnote-ui/src/dialogs/export.rs:187
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "Не удалось экспортировать документ как SVG."
+msgstr "Не удалось экспортировать документ, не указан файл."
 
 #: rnote-ui/src/dialogs/export.rs:382
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "Не удалось экспортировать выделение как SVG."
+msgstr "Не удалось экспортировать выделение."
 
 #: rnote-ui/src/dialogs/export.rs:384
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "Выделение успешно экспортировано в SVG."
+msgstr "Выделение успешно экспортировано."
 
 #: rnote-ui/src/dialogs/export.rs:390
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "Не удалось экспортировать выделение как SVG."
+msgstr "Не удалось экспортировать выделение, не указан файл."
 
 #: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
 msgid "JSON file"
@@ -1518,15 +1481,12 @@ msgid "Printing document failed"
 msgstr "Не удалось распечатать документ"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
-msgstr "Не удалось экспортировать выделение как SVG."
+msgstr "Не удалось экспортировать выделение, ничего не выделено."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-#, fuzzy
 msgid "New Directory name"
-msgstr "Каталог"
+msgstr "Имя нового Каталога"
 
 #, fuzzy
 #~| msgid "Export document"

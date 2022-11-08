@@ -9,8 +9,8 @@ pub use roughoptions::RoughOptions;
 use super::Composer;
 use crate::helpers::{Affine2Helpers, Vector2Helpers};
 use crate::penpath::Segment;
-use crate::shapes::Line;
 use crate::shapes::Rectangle;
+use crate::shapes::{Arrow, Line};
 use crate::shapes::{CubicBezier, ShapeBehaviour};
 use crate::shapes::{Ellipse, QuadraticBezier};
 use crate::PenPath;
@@ -26,6 +26,31 @@ fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo:
 }
 
 // Composer implementations
+impl Composer<RoughOptions> for Arrow {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
+
+        let bez_path = if !options.disable_multistroke {
+            roughgenerator::doubleline(self.start, self.tip, options, &mut rng)
+        } else {
+            roughgenerator::line(self.start, self.tip, true, false, options, &mut rng)
+        };
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+
+            cx.stroke(bez_path, &stroke_brush, options.stroke_width)
+        }
+
+        cx.restore().unwrap();
+    }
+}
 
 impl Composer<RoughOptions> for Line {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
@@ -350,6 +375,7 @@ impl Composer<RoughOptions> for PenPath {
 impl Composer<RoughOptions> for crate::Shape {
     fn composed_bounds(&self, options: &RoughOptions) -> AABB {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.composed_bounds(options),
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
@@ -361,6 +387,7 @@ impl Composer<RoughOptions> for crate::Shape {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
             crate::Shape::Line(line) => line.draw_composed(cx, options),
             crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),

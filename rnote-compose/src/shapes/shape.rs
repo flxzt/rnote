@@ -44,6 +44,9 @@ impl Default for Shape {
 impl TransformBehaviour for Shape {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         match self {
+            Self::Arrow(arrow) => {
+                arrow.translate(offset);
+            }
             Self::Line(line) => {
                 line.translate(offset);
             }
@@ -67,6 +70,9 @@ impl TransformBehaviour for Shape {
 
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
         match self {
+            Self::Arrow(arrow) => {
+                arrow.rotate(angle, center);
+            }
             Self::Line(line) => {
                 line.rotate(angle, center);
             }
@@ -90,6 +96,9 @@ impl TransformBehaviour for Shape {
 
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
         match self {
+            Self::Arrow(arrow) => {
+                arrow.scale(scale);
+            }
             Self::Line(line) => {
                 line.scale(scale);
             }
@@ -115,6 +124,7 @@ impl TransformBehaviour for Shape {
 impl ShapeBehaviour for Shape {
     fn bounds(&self) -> AABB {
         match self {
+            Self::Arrow(arrow) => arrow.bounds(),
             Self::Line(line) => line.bounds(),
             Self::Rectangle(rectangle) => rectangle.bounds(),
             Self::Ellipse(ellipse) => ellipse.bounds(),
@@ -125,6 +135,7 @@ impl ShapeBehaviour for Shape {
     }
     fn hitboxes(&self) -> Vec<AABB> {
         match self {
+            Self::Arrow(arrow) => arrow.hitboxes(),
             Self::Line(line) => line.hitboxes(),
             Self::Rectangle(rectangle) => rectangle.hitboxes(),
             Self::Ellipse(ellipse) => ellipse.hitboxes(),

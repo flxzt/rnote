@@ -6,6 +6,7 @@ pub use smoothoptions::SmoothOptions;
 use super::Composer;
 use crate::helpers::Vector2Helpers;
 use crate::penpath::Segment;
+use crate::shapes::Arrow;
 use crate::shapes::CubicBezier;
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
@@ -178,6 +179,23 @@ fn compose_lines_variable_width(
     );
 
     bez_path
+}
+
+impl Composer<SmoothOptions> for Arrow {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width * 0.5)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let line = self.to_kurbo();
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(line, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
 }
 
 impl Composer<SmoothOptions> for Line {
@@ -409,6 +427,7 @@ impl Composer<SmoothOptions> for PenPath {
 impl Composer<SmoothOptions> for crate::Shape {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.composed_bounds(options),
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
@@ -420,6 +439,7 @@ impl Composer<SmoothOptions> for crate::Shape {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
             crate::Shape::Line(line) => line.draw_composed(cx, options),
             crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),

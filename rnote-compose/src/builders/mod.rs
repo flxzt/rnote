@@ -1,3 +1,5 @@
+/// arrow builder
+pub mod arrowbuilder;
 /// cubic bezier builder
 pub mod cubbezbuilder;
 /// ellipse builder

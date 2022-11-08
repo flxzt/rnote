@@ -268,6 +268,17 @@
                 <class name="large" />
               </style>
               <child>
+                <object class="AdwActionRow" id="shapebuildertype_arrow_row">
+                  <property name="title" translatable="yes">Arrow</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-arrow-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
                 <object class="AdwActionRow" id="shapebuildertype_line_row">
                   <property name="title" translatable="yes">Line</property>
                   <child type="prefix">

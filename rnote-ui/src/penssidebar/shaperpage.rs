@@ -50,6 +50,8 @@ mod imp {
         #[template_child]
         pub shapebuildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
+        pub shapebuildertype_arrow_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
         pub shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
@@ -185,6 +187,10 @@ impl ShaperPage {
 
     pub fn shapebuildertype_listbox(&self) -> ListBox {
         self.imp().shapebuildertype_listbox.get()
+    }
+
+    pub fn shapebuildertype_arrow_row(&self) -> adw::ActionRow {
+        self.imp().shaperbuildertype_arrow_row.get()
     }
 
     pub fn shapebuildertype_line_row(&self) -> adw::ActionRow {

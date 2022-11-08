@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-04 10:04+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-11-08 14:45+0000\n"
+"Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -259,8 +259,6 @@ msgstr "রপ্তানি…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
 #: rnote-ui/src/dialogs/export.rs:406
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export selection"
 msgstr "নির্বাচন রপ্তানি করুন"
 
@@ -358,12 +356,11 @@ msgstr "PDF আমদানি পছন্দসমূহ"
 
 #: rnote-ui/data/ui/dialogs.ui:131
 msgid "Start page"
-msgstr ""
+msgstr "সূচনা পৃষ্ঠা"
 
 #: rnote-ui/data/ui/dialogs.ui:146
-#, fuzzy
 msgid "End page"
-msgstr "পৃষ্ঠা যোগ করুন"
+msgstr "শেষ পৃষ্ঠা"
 
 #: rnote-ui/data/ui/dialogs.ui:161
 msgid "Pages type"
@@ -411,89 +408,73 @@ msgid "Export"
 msgstr "রপ্তানি"
 
 #: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Export preferences"
-msgstr "PDF আমদানি পছন্দসমূহ"
+msgstr "পছন্দসমূহ রপ্তানী করুন"
 
 #: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
-#, fuzzy
-#| msgid "Document background"
 msgid "With background"
-msgstr "নথির পটভূমি"
+msgstr "পটভূমি সহ"
 
 #: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "পটভূমির রঙ সেট করুন"
+msgstr "পটভূমি রপ্তানি করা উচিত কিনা তা সেট করুন"
 
 #: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
-#, fuzzy
-#| msgid "Export document"
 msgid "Export format"
-msgstr "নথি রপ্তানি করুন"
+msgstr "বিন্যাস রপ্তানি করুন"
 
 #: rnote-ui/data/ui/dialogs.ui:290
-#, fuzzy
-#| msgid "Export document"
 msgid "The export format"
-msgstr "নথি রপ্তানি করুন"
+msgstr "রপ্তানি বিন্যাস"
 
 #: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
 #: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
 msgid "Svg"
-msgstr ""
+msgstr "এসভিজি"
 
 #: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
 msgid "Pdf"
-msgstr ""
+msgstr "পিডিএফ"
 
 #: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
-#, fuzzy
-#| msgid "Import file"
 msgid "Select export file"
-msgstr "ফাইল আমদানি করুন"
+msgstr "রপ্তানির যন্য ফাইল নির্বাচন করুন"
 
 #: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "বিন্যাস প্রস্থ ঠিক করুন"
+msgstr "রপ্তানি ফাইল নির্বাচন করুন"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
 #: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
 #: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
 #: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "- no file selected -"
-msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
+msgstr "- কোনও ফাইল নির্বাচিত হয়নি -"
 
 #: rnote-ui/data/ui/dialogs.ui:402
 msgid "The export image format"
-msgstr ""
+msgstr "রপ্তানি চিত্র বিন্যাস"
 
 #: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
 msgid "Png"
-msgstr ""
+msgstr "পিএনজি"
 
 #: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
 msgid "Jpeg"
-msgstr ""
+msgstr "জেপিজি/জেপেগ"
 
 #: rnote-ui/data/ui/dialogs.ui:416
 msgid "Jpeg quality"
-msgstr ""
+msgstr "জেপিজি এর গুণমান"
 
 #: rnote-ui/data/ui/dialogs.ui:417
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "জেপেগ চিত্রের গুণমান সেট করুন (১ - ১০০)"
 
 #: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
 msgid "Edit workspace"
@@ -1417,40 +1398,28 @@ msgid "Saved document successfully."
 msgstr "সফলভাবে নথি সংরক্ষণ করা হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:179
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "SVG হিসাবে নথি রপ্তানি ব্যর্থ হয়েছে।"
+msgstr "নথি রপ্তানি ব্যর্থ হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:181
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "সফলভাবে SVG হিসাবে নথি রপ্তানি করা হয়েছে।"
+msgstr "সফলভাবে নথি রপ্তানি করা হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:187
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "SVG হিসাবে নথি রপ্তানি ব্যর্থ হয়েছে।"
+msgstr "নথি রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
 #: rnote-ui/src/dialogs/export.rs:382
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "SVG হিসাবে নির্বাচন রপ্তানি ব্যর্থ হয়েছে।"
+msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:384
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "SVG হিসেবে নির্বাচন সফলভাবে রপ্তানি করা হয়েছে।"
+msgstr "নির্বাচন সফলভাবে রপ্তানি করা হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:390
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "SVG হিসাবে নির্বাচন রপ্তানি ব্যর্থ হয়েছে।"
+msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
 #: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
 msgid "JSON file"
@@ -1505,10 +1474,8 @@ msgid "Printing document failed"
 msgstr "নথি প্রিন্ট করা ব্যর্থ হয়েছে"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
-msgstr "SVG হিসাবে নির্বাচন রপ্তানি ব্যর্থ হয়েছে।"
+msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কিছুই নির্বাচিত হয়নি।"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"

@@ -290,6 +290,39 @@
                 </object>
               </child>
               <child>
+                <object class="AdwActionRow" id="shapebuildertype_coordinatesystem2d_row">
+                  <property name="title" translatable="yes">2D coordinate system</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-coordinatesystem2d-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_coordinatesystem3d_row">
+                  <property name="title" translatable="yes">3D coordinate system</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-coordinatesystem3d-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_quadrantcoordinatesystem2d_row">
+                  <property name="title" translatable="yes">2D single quadrant coordinate system</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-quadrantcoordinatesystem2d-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
                 <object class="AdwActionRow" id="shapebuildertype_ellipse_row">
                   <property name="title" translatable="yes">Ellipse</property>
                   <child type="prefix">

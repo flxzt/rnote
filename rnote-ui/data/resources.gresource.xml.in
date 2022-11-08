@@ -116,6 +116,9 @@
         <file compressed="true">icons/scalable/actions/text-align-end-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-line-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-rectangle-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-coordinatesystem2d-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-coordinatesystem3d-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-quadrantcoordinatesystem2d-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-fociellipse-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-quadbez-symbolic.svg</file>

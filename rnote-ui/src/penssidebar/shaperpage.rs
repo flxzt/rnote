@@ -54,6 +54,12 @@ mod imp {
         #[template_child]
         pub shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
         #[template_child]
+        pub shapebuildertype_coordinatesystem2d_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapebuildertype_coordinatesystem3d_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapebuildertype_quadrantcoordinatesystem2d_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
         pub shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
@@ -193,6 +199,20 @@ impl ShaperPage {
 
     pub fn shapebuildertype_rectangle_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_rectangle_row.get()
+    }
+
+    pub fn shapebuildertype_coordinatesystem2d_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_coordinatesystem2d_row.get()
+    }
+
+    pub fn shapebuildertype_coordinatesystem3d_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_coordinatesystem3d_row.get()
+    }
+
+    pub fn shapebuildertype_quadrantcoordinatesystem2d_row(&self) -> adw::ActionRow {
+        self.imp()
+            .shapebuildertype_quadrantcoordinatesystem2d_row
+            .get()
     }
 
     pub fn shapebuildertype_ellipse_row(&self) -> adw::ActionRow {
@@ -520,6 +540,25 @@ impl ShaperPage {
                 ));
                 self.shapebuildertype_image()
                     .set_icon_name(Some("shape-rectangle-symbolic"));
+            }
+            ShapeBuilderType::CoordinateSystem2D => {
+                self.shapebuildertype_listbox()
+                    .select_row(Some(&self.shapebuildertype_coordinatesystem2d_row()));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-coordinatesystem2d-symbolic"));
+            }
+            ShapeBuilderType::CoordinateSystem3D => {
+                self.shapebuildertype_listbox()
+                    .select_row(Some(&self.shapebuildertype_coordinatesystem3d_row()));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-coordinatesystem3d-symbolic"));
+            }
+            ShapeBuilderType::QuadrantCoordinateSystem2D => {
+                self.shapebuildertype_listbox().select_row(Some(
+                    &self.shapebuildertype_quadrantcoordinatesystem2d_row(),
+                ));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-quadrantcoordinatesystem2d-symbolic"));
             }
             ShapeBuilderType::Ellipse => {
                 self.shapebuildertype_listbox()

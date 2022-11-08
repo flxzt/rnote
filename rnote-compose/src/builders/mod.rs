@@ -1,3 +1,7 @@
+/// coordinate system builder
+pub mod coordinatesystem2dbuilder;
+/// 3D coordinate system builder
+pub mod coordinatesystem3dbuilder;
 /// cubic bezier builder
 pub mod cubbezbuilder;
 /// ellipse builder
@@ -14,6 +18,8 @@ pub mod penpathmodeledbuilder;
 pub mod penpathsimplebuilder;
 /// quadratic bezier builder
 pub mod quadbezbuilder;
+/// single quadrant coordinate system builder
+pub mod quadrantcoordinatesystem2dbuilder;
 /// rectangle builder
 pub mod rectanglebuilder;
 /// shape builder behaviour
@@ -22,6 +28,8 @@ pub mod shapebuilderbehaviour;
 use std::collections::HashSet;
 
 // Re-exports
+pub use coordinatesystem2dbuilder::CoordinateSystem2DBuilder;
+pub use coordinatesystem3dbuilder::CoordinateSystem3DBuilder;
 pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
@@ -30,6 +38,7 @@ pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
+pub use quadrantcoordinatesystem2dbuilder::QuadrantCoordinateSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
 
@@ -47,6 +56,15 @@ pub enum ShapeBuilderType {
     #[serde(rename = "rectangle")]
     /// A rectangle builder
     Rectangle,
+    #[serde(rename = "coordinate_system_2d")]
+    /// A coordinate system builder
+    CoordinateSystem2D,
+    #[serde(rename = "coordinate_system_3d")]
+    /// A 3D coordinate system builder
+    CoordinateSystem3D,
+    #[serde(rename = "quadrant_coordinate_system_2d")]
+    /// A quadrant coordinate system builder
+    QuadrantCoordinateSystem2D,
     #[serde(rename = "ellipse")]
     /// An ellipse builder
     Ellipse,

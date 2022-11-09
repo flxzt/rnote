@@ -427,7 +427,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
                             let file_basename = export_files_basename_entryrow.text().to_string();
 
-                            if let Err(e) = appwindow.export_doc_pages(&dir, file_basename.clone(), file_basename, None).await {
+                            if let Err(e) = appwindow.export_doc_pages(&dir, file_basename, None).await {
                                 log::error!("exporting document pages failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document pages failed.").to_variant()));
                             } else {

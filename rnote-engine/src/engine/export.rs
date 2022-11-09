@@ -585,7 +585,6 @@ impl RnoteEngine {
     /// Exports the doc pages.
     pub fn export_doc_pages(
         &self,
-        title: String,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
         let doc_pages_export_prefs =
@@ -595,9 +594,8 @@ impl RnoteEngine {
             DocPagesExportFormat::Svg => {
                 self.export_doc_pages_as_svgs_bytes(doc_pages_export_prefs_override)
             }
-            DocPagesExportFormat::Png => todo!(),
-            DocPagesExportFormat::Jpeg => {
-                todo!()
+            DocPagesExportFormat::Png | DocPagesExportFormat::Jpeg => {
+                self.export_doc_pages_as_bitmap_bytes(doc_pages_export_prefs_override)
             }
         }
     }
@@ -637,8 +635,98 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
+    /// Exports the document pages a bitmap bytes. Panics if the format pref is not set to a bitmap variant
+    fn export_doc_pages_as_bitmap_bytes(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
+
+        let doc_pages_export_prefs =
+            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+
+        let image_scale = 1.0;
+
+        let bitmapimage_format = match doc_pages_export_prefs.export_format {
+            DocPagesExportFormat::Svg => unreachable!(),
+            DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
+            DocPagesExportFormat::Jpeg => {
+                image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
+            }
+        };
+
+        let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
+            self.gen_doc_pages_svgs(doc_pages_export_prefs_override)?
+                .into_iter()
+                .map(|page_svg| {
+                    let page_svg_bounds = page_svg.bounds;
+
+                    render::Image::gen_image_from_svg(page_svg, page_svg_bounds, image_scale)?
+                        .into_encoded_bytes(bitmapimage_format.clone())
+                })
+                .collect()
+        };
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_doc_pages_as_bitmap_bytes() failed. Receiver already dropped.");
+        }
+
+        oneshot_receiver
+    }
+
     /// Exports the current selection
     pub fn export_selection(
+        &self,
+        selection_export_prefs_override: Option<SelectionExportPrefs>,
+    ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
+        let selection_export_prefs =
+            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+
+        match selection_export_prefs.export_format {
+            SelectionExportFormat::Svg => {
+                self.export_selection_as_svg_bytes(selection_export_prefs_override)
+            }
+            SelectionExportFormat::Png | SelectionExportFormat::Jpeg => {
+                self.export_selection_as_bitmap_bytes(selection_export_prefs_override)
+            }
+        }
+    }
+
+    /// Exports the selection to SVG bytes.
+    fn export_selection_as_svg_bytes(
+        &self,
+        selection_export_prefs_override: Option<SelectionExportPrefs>,
+    ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
+
+        let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
+            let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
+                Some(selection_svg) => selection_svg,
+                None => return Ok(None),
+            };
+
+            Ok(Some(
+                rnote_compose::utils::add_xml_header(
+                    rnote_compose::utils::wrap_svg_root(
+                        selection_svg.svg_data.as_str(),
+                        Some(selection_svg.bounds),
+                        Some(selection_svg.bounds),
+                        false,
+                    )
+                    .as_str(),
+                )
+                .into_bytes(),
+            ))
+        };
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
+        }
+
+        oneshot_receiver
+    }
+
+    /// Exports the selection a bitmap bytes. Panics if the format pref is not set to a bitmap format
+    fn export_selection_as_bitmap_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
@@ -649,57 +737,32 @@ impl RnoteEngine {
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
 
         let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            match selection_export_prefs.export_format {
-                SelectionExportFormat::Svg => {
-                    let selection_svg =
-                        match self.gen_selection_svg(selection_export_prefs_override)? {
-                            Some(selection_svg) => selection_svg,
-                            None => return Ok(None),
-                        };
+            let image_scale = 1.0;
+            let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
+                Some(selection_svg) => selection_svg,
+                None => return Ok(None),
+            };
+            let selection_svg_bounds = selection_svg.bounds;
 
-                    Ok(Some(
-                        rnote_compose::utils::add_xml_header(
-                            rnote_compose::utils::wrap_svg_root(
-                                selection_svg.svg_data.as_str(),
-                                Some(selection_svg.bounds),
-                                Some(selection_svg.bounds),
-                                false,
-                            )
-                            .as_str(),
-                        )
-                        .into_bytes(),
-                    ))
+            let bitmapimage_format = match selection_export_prefs.export_format {
+                SelectionExportFormat::Svg => unreachable!(),
+                SelectionExportFormat::Png => image::ImageOutputFormat::Png,
+                SelectionExportFormat::Jpeg => {
+                    image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
                 }
-                export_format => {
-                    let image_scale = 1.0;
-                    let selection_svg =
-                        match self.gen_selection_svg(selection_export_prefs_override)? {
-                            Some(selection_svg) => selection_svg,
-                            None => return Ok(None),
-                        };
-                    let selection_svg_bounds = selection_svg.bounds;
+            };
 
-                    let bitmapimage_format = match export_format {
-                        SelectionExportFormat::Svg => unreachable!(),
-                        SelectionExportFormat::Png => image::ImageOutputFormat::Png,
-                        SelectionExportFormat::Jpeg => {
-                            image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
-                        }
-                    };
-
-                    Ok(Some(
-                        render::Image::gen_image_from_svg(
-                            selection_svg,
-                            selection_svg_bounds,
-                            image_scale,
-                        )?
-                        .into_encoded_bytes(bitmapimage_format)?,
-                    ))
-                }
-            }
+            Ok(Some(
+                render::Image::gen_image_from_svg(
+                    selection_svg,
+                    selection_svg_bounds,
+                    image_scale,
+                )?
+                .into_encoded_bytes(bitmapimage_format)?,
+            ))
         };
         if let Err(_data) = oneshot_sender.send(result()) {
-            log::error!("sending result to receiver in export_selection() failed. Receiver already dropped.");
+            log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped.");
         }
 
         oneshot_receiver

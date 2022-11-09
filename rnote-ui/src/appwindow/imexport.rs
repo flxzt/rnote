@@ -391,7 +391,6 @@ impl RnoteAppWindow {
         &self,
         dir: &gio::File,
         file_name_base: String,
-        title: String,
         export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> anyhow::Result<()> {
         let export_prefs = export_prefs_override.unwrap_or(
@@ -407,7 +406,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow()
-            .export_doc_pages(title, export_prefs_override);
+            .export_doc_pages(export_prefs_override);
 
         if dir.query_file_type(gio::FileQueryInfoFlags::NONE, gio::Cancellable::NONE)
             != gio::FileType::Directory

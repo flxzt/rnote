@@ -28,7 +28,7 @@ pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
         .select_multiple(false)
         .build();
 
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     // Set the output file as default, else at least the current workspace directory
     if let Some(output_file) = appwindow.canvas().output_file() {
@@ -258,7 +258,7 @@ fn update_export_doc_filechooser_with_prefs(
         }
     }
 
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     let file_ext = doc_export_prefs.export_format.file_ext();
 
@@ -510,7 +510,7 @@ fn update_export_doc_pages_filechooser_with_prefs(
         }
     }
 
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 }
 
 pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
@@ -715,7 +715,7 @@ fn update_export_selection_filechooser_with_prefs(
         }
     }
 
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     let file_ext = selection_export_prefs.export_format.file_ext();
 
@@ -743,7 +743,7 @@ pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
         if let Err(e) =
@@ -807,7 +807,7 @@ pub fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
         if let Err(e) =

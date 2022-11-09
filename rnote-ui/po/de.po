@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-09 08:37+0100\n"
-"PO-Revision-Date: 2022-11-04 10:37+0000\n"
+"PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -485,7 +485,7 @@ msgstr "Exporteinstellungen"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:203
 msgid "With background"
-msgstr "mit Hintergrund"
+msgstr "Mit Hintergrund"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:204
 msgid "Set whether the background should be exported"

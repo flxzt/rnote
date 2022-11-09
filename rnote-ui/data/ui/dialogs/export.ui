@@ -46,7 +46,7 @@
               <object class="AdwPreferencesGroup">
                 <child>
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Select export file</property>
+                    <property name="title" translatable="yes">Export file</property>
                     <property name="subtitle" translatable="yes">Select the export file</property>
                     <child type="suffix">
                       <object class="GtkBox">
@@ -162,7 +162,7 @@
               <object class="AdwPreferencesGroup">
                 <child>
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Select export file</property>
+                    <property name="title" translatable="yes">Export file</property>
                     <property name="subtitle" translatable="yes">Select the export file</property>
                     <child type="suffix">
                       <object class="GtkBox">
@@ -237,6 +237,27 @@
                       </object>
                       <object class="GtkSpinButton" id="export_selection_jpeg_quality_spinbutton">
                         <property name="adjustment">export_selection_jpeg_quality_adj</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="digits">0</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="export_selection_margin_row">
+                    <property name="title" translatable="yes">Margin</property>
+                    <property name="subtitle" translatable="yes">Set the margin around the selected area</property>
+                    <child type="suffix">
+                      <object class="GtkAdjustment" id="export_selection_margin_adj">
+                        <property name="step-increment">1</property>
+                        <property name="upper">1000</property>
+                        <property name="lower">0</property>
+                        <property name="value">12</property>
+                      </object>
+                      <object class="GtkSpinButton" id="export_selection_margin_spinbutton">
+                        <property name="adjustment">export_selection_margin_adj</property>
                         <property name="orientation">horizontal</property>
                         <property name="vexpand">false</property>
                         <property name="valign">center</property>

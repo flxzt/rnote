@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-09 08:37+0100\n"
-"PO-Revision-Date: 2022-11-04 10:37+0000\n"
+"PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -461,10 +461,8 @@ msgid "Export"
 msgstr "Exporteren"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
-#, fuzzy
-#| msgid "Import file"
 msgid "Export file"
-msgstr "Bestand importeren"
+msgstr "Bestand exporteren"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
 msgid "Select the export file"
@@ -534,13 +532,11 @@ msgstr "Stel de kwaliteit van de jpeg-afbeelding in (1-100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:250
 msgid "Margin"
-msgstr ""
+msgstr "Marge"
 
 #: rnote-ui/data/ui/dialogs/export.ui:251
-#, fuzzy
-#| msgid "Set the margins around the sheet"
 msgid "Set the margin around the selected area"
-msgstr "Stel de marges rondom het werkblad in"
+msgstr "Stel de marges rondom het selectiegebied in"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56

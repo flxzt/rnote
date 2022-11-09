@@ -3,7 +3,7 @@ use std::path::Path;
 
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*};
-use rnote_engine::engine::export::{DocExportPrefs, SelectionExportPrefs};
+use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::strokes::{BitmapImage, Stroke, VectorImage};
 
 use crate::dialogs;
@@ -359,7 +359,7 @@ impl RnoteAppWindow {
                 .borrow()
                 .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
 
-            crate::utils::replace_file_future(rnote_bytes_receiver.await??, file).await?;
+            crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
 
             self.canvas().set_output_file(Some(file.to_owned()));
             self.canvas().set_unsaved_changes(false);
@@ -379,7 +379,56 @@ impl RnoteAppWindow {
             .borrow()
             .export_doc(title, export_prefs_override);
 
-        crate::utils::replace_file_future(export_bytes.await??, file).await?;
+        crate::utils::create_replace_file_future(export_bytes.await??, file).await?;
+
+        Ok(())
+    }
+
+    /// Exports document pages
+    /// file_stem_name: the stem name of the created files. This is extended by an enumeration of the page number and file extension
+    /// overwrites existing files with the same name!
+    pub async fn export_doc_pages(
+        &self,
+        dir: &gio::File,
+        file_stem_name: String,
+        export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> anyhow::Result<()> {
+        let export_prefs = export_prefs_override.unwrap_or(
+            self.canvas()
+                .engine()
+                .borrow()
+                .export_prefs
+                .doc_pages_export_prefs,
+        );
+        let file_ext = export_prefs.export_format.file_ext();
+
+        let export_bytes = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_doc_pages(export_prefs_override);
+
+        if dir.query_file_type(gio::FileQueryInfoFlags::NONE, gio::Cancellable::NONE)
+            != gio::FileType::Directory
+        {
+            return Err(anyhow::anyhow!(
+                "export_doc_pages() failed, target is not a directory."
+            ));
+        }
+
+        let pages_bytes = export_bytes.await??;
+
+        for (i, page_bytes) in pages_bytes.into_iter().enumerate() {
+            crate::utils::create_replace_file_future(
+                page_bytes,
+                &dir.child(
+                    &(rnote_engine::utils::doc_pages_files_names(file_stem_name.clone(), i + 1)
+                        + "."
+                        + &file_ext),
+                ),
+            )
+            .await?;
+        }
 
         Ok(())
     }
@@ -396,7 +445,7 @@ impl RnoteAppWindow {
             .export_selection(export_prefs_override);
 
         if let Some(export_bytes) = export_bytes.await?? {
-            crate::utils::replace_file_future(export_bytes, file).await?;
+            crate::utils::create_replace_file_future(export_bytes, file).await?;
         }
 
         Ok(())
@@ -407,7 +456,7 @@ impl RnoteAppWindow {
     pub async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
         let exported_engine_state = self.canvas().engine().borrow().export_state_as_json()?;
 
-        crate::utils::replace_file_future(exported_engine_state.into_bytes(), file).await?;
+        crate::utils::create_replace_file_future(exported_engine_state.into_bytes(), file).await?;
 
         Ok(())
     }
@@ -417,7 +466,7 @@ impl RnoteAppWindow {
     pub async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
         let exported_engine_config = self.canvas().engine().borrow().save_engine_config()?;
 
-        crate::utils::replace_file_future(exported_engine_config.into_bytes(), file).await?;
+        crate::utils::create_replace_file_future(exported_engine_config.into_bytes(), file).await?;
 
         Ok(())
     }

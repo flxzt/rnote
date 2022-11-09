@@ -98,6 +98,79 @@ impl Default for DocExportPrefs {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[serde(rename = "doc_pages_export_format")]
+pub enum DocPagesExportFormat {
+    #[serde(rename = "svg")]
+    Svg,
+    #[serde(rename = "png")]
+    Png,
+    #[serde(rename = "jpeg")]
+    Jpeg,
+}
+
+impl Default for DocPagesExportFormat {
+    fn default() -> Self {
+        Self::Svg
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default, rename = "doc_pages_export_prefs")]
+pub struct DocPagesExportPrefs {
+    #[serde(rename = "with_background")]
+    pub with_background: bool,
+    #[serde(rename = "export_format")]
+    pub export_format: DocPagesExportFormat,
+    #[serde(rename = "jpg_quality")]
+    pub jpeg_quality: u8,
+}
+
+impl Default for DocPagesExportPrefs {
+    fn default() -> Self {
+        Self {
+            with_background: true,
+            export_format: DocPagesExportFormat::default(),
+            jpeg_quality: 85,
+        }
+    }
+}
+
+impl TryFrom<u32> for DocPagesExportFormat {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "DocPagesExportFormat try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+impl DocPagesExportFormat {
+    pub fn file_ext(self) -> String {
+        match self {
+            Self::Svg => String::from("svg"),
+            Self::Png => String::from("png"),
+            Self::Jpeg => String::from("jpg"),
+        }
+    }
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "selection_export_format")]
 pub enum SelectionExportFormat {
     #[serde(rename = "svg")]
@@ -166,11 +239,16 @@ impl Default for SelectionExportPrefs {
 pub struct ExportPrefs {
     #[serde(rename = "doc_export_prefs")]
     pub doc_export_prefs: DocExportPrefs,
+    #[serde(rename = "doc_pages_export_prefs")]
+    pub doc_pages_export_prefs: DocPagesExportPrefs,
     #[serde(rename = "selection_export_prefs")]
     pub selection_export_prefs: SelectionExportPrefs,
 }
 
 impl RnoteEngine {
+    /// The used image scale factor for any strokes that are converted to bitmap images on export
+    pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.5;
+
     /// Saves the current state as a .rnote file.
     pub fn save_as_rnote_bytes(
         &self,
@@ -338,7 +416,8 @@ impl RnoteEngine {
 
                         for stroke in page_strokes.into_iter() {
                             if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
-                                stroke.draw(&mut piet_cx, RnoteEngine::EXPORT_IMAGE_SCALE)?;
+                                stroke
+                                    .draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                             }
                         }
 
@@ -504,8 +583,151 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
+    /// Exports the doc pages.
+    pub fn export_doc_pages(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
+        let doc_pages_export_prefs =
+            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+
+        match doc_pages_export_prefs.export_format {
+            DocPagesExportFormat::Svg => {
+                self.export_doc_pages_as_svgs_bytes(doc_pages_export_prefs_override)
+            }
+            DocPagesExportFormat::Png | DocPagesExportFormat::Jpeg => {
+                self.export_doc_pages_as_bitmap_bytes(doc_pages_export_prefs_override)
+            }
+        }
+    }
+
+    /// Exports the doc with the strokes as a SVG string.
+    fn export_doc_pages_as_svgs_bytes(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
+
+        let result = || -> anyhow::Result<Vec<Vec<u8>>> {
+            let doc_pages_svgs: Vec<Vec<u8>> = self
+                .gen_doc_pages_svgs(doc_pages_export_prefs_override)?
+                .into_iter()
+                .map(|page_svg| {
+                    rnote_compose::utils::add_xml_header(
+                        rnote_compose::utils::wrap_svg_root(
+                            page_svg.svg_data.as_str(),
+                            Some(page_svg.bounds),
+                            Some(page_svg.bounds),
+                            false,
+                        )
+                        .as_str(),
+                    )
+                    .into_bytes()
+                })
+                .collect();
+
+            Ok(doc_pages_svgs)
+        };
+
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped.");
+        }
+
+        oneshot_receiver
+    }
+
+    /// Exports the document pages a bitmap bytes. Panics if the format pref is not set to a bitmap variant
+    fn export_doc_pages_as_bitmap_bytes(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
+
+        let doc_pages_export_prefs =
+            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+
+        let image_scale = 1.0;
+
+        let bitmapimage_format = match doc_pages_export_prefs.export_format {
+            DocPagesExportFormat::Svg => unreachable!(),
+            DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
+            DocPagesExportFormat::Jpeg => {
+                image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
+            }
+        };
+
+        let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
+            self.gen_doc_pages_svgs(doc_pages_export_prefs_override)?
+                .into_iter()
+                .map(|page_svg| {
+                    let page_svg_bounds = page_svg.bounds;
+
+                    render::Image::gen_image_from_svg(page_svg, page_svg_bounds, image_scale)?
+                        .into_encoded_bytes(bitmapimage_format.clone())
+                })
+                .collect()
+        };
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_doc_pages_as_bitmap_bytes() failed. Receiver already dropped.");
+        }
+
+        oneshot_receiver
+    }
+
     /// Exports the current selection
     pub fn export_selection(
+        &self,
+        selection_export_prefs_override: Option<SelectionExportPrefs>,
+    ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
+        let selection_export_prefs =
+            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+
+        match selection_export_prefs.export_format {
+            SelectionExportFormat::Svg => {
+                self.export_selection_as_svg_bytes(selection_export_prefs_override)
+            }
+            SelectionExportFormat::Png | SelectionExportFormat::Jpeg => {
+                self.export_selection_as_bitmap_bytes(selection_export_prefs_override)
+            }
+        }
+    }
+
+    /// Exports the selection to SVG bytes.
+    fn export_selection_as_svg_bytes(
+        &self,
+        selection_export_prefs_override: Option<SelectionExportPrefs>,
+    ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
+
+        let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
+            let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
+                Some(selection_svg) => selection_svg,
+                None => return Ok(None),
+            };
+
+            Ok(Some(
+                rnote_compose::utils::add_xml_header(
+                    rnote_compose::utils::wrap_svg_root(
+                        selection_svg.svg_data.as_str(),
+                        Some(selection_svg.bounds),
+                        Some(selection_svg.bounds),
+                        false,
+                    )
+                    .as_str(),
+                )
+                .into_bytes(),
+            ))
+        };
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
+        }
+
+        oneshot_receiver
+    }
+
+    /// Exports the selection a bitmap bytes. Panics if the format pref is not set to a bitmap format
+    fn export_selection_as_bitmap_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
@@ -516,57 +738,32 @@ impl RnoteEngine {
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
 
         let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            match selection_export_prefs.export_format {
-                SelectionExportFormat::Svg => {
-                    let selection_svg =
-                        match self.gen_selection_svg(selection_export_prefs_override)? {
-                            Some(selection_svg) => selection_svg,
-                            None => return Ok(None),
-                        };
+            let image_scale = 1.0;
+            let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
+                Some(selection_svg) => selection_svg,
+                None => return Ok(None),
+            };
+            let selection_svg_bounds = selection_svg.bounds;
 
-                    Ok(Some(
-                        rnote_compose::utils::add_xml_header(
-                            rnote_compose::utils::wrap_svg_root(
-                                selection_svg.svg_data.as_str(),
-                                Some(selection_svg.bounds),
-                                Some(selection_svg.bounds),
-                                false,
-                            )
-                            .as_str(),
-                        )
-                        .into_bytes(),
-                    ))
+            let bitmapimage_format = match selection_export_prefs.export_format {
+                SelectionExportFormat::Svg => unreachable!(),
+                SelectionExportFormat::Png => image::ImageOutputFormat::Png,
+                SelectionExportFormat::Jpeg => {
+                    image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
                 }
-                export_format => {
-                    let image_scale = 1.0;
-                    let selection_svg =
-                        match self.gen_selection_svg(selection_export_prefs_override)? {
-                            Some(selection_svg) => selection_svg,
-                            None => return Ok(None),
-                        };
-                    let selection_svg_bounds = selection_svg.bounds;
+            };
 
-                    let bitmapimage_format = match export_format {
-                        SelectionExportFormat::Svg => unreachable!(),
-                        SelectionExportFormat::Png => image::ImageOutputFormat::Png,
-                        SelectionExportFormat::Jpeg => {
-                            image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
-                        }
-                    };
-
-                    Ok(Some(
-                        render::Image::gen_image_from_svg(
-                            selection_svg,
-                            selection_svg_bounds,
-                            image_scale,
-                        )?
-                        .into_encoded_bytes(bitmapimage_format)?,
-                    ))
-                }
-            }
+            Ok(Some(
+                render::Image::gen_image_from_svg(
+                    selection_svg,
+                    selection_svg_bounds,
+                    image_scale,
+                )?
+                .into_encoded_bytes(bitmapimage_format)?,
+            ))
         };
         if let Err(_data) = oneshot_sender.send(result()) {
-            log::error!("sending result to receiver in export_selection() failed. Receiver already dropped.");
+            log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped.");
         }
 
         oneshot_receiver
@@ -601,13 +798,55 @@ impl RnoteEngine {
                 self.store.draw_stroke_keys_to_piet(
                     &strokes,
                     piet_cx,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 )
             },
             content_bounds,
         )?]);
 
         Ok(doc_svg)
+    }
+
+    /// generates the doc pages svgs.
+    /// without root or xml header.
+    fn gen_doc_pages_svgs(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let doc_pages_export_prefs =
+            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+
+        let mut pages_svgs = vec![];
+
+        for page_bounds in self.pages_bounds_w_content() {
+            let strokes = self
+                .store
+                .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+
+            let mut page_svg = if doc_pages_export_prefs.with_background {
+                self.document.background.gen_svg(page_bounds)?
+            } else {
+                render::Svg {
+                    svg_data: String::new(),
+                    bounds: page_bounds,
+                }
+            };
+
+            page_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+                |piet_cx| {
+                    self.store.draw_stroke_keys_to_piet(
+                        &strokes,
+                        piet_cx,
+                        RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
+                    )
+                },
+                page_bounds,
+            )?]);
+
+            pages_svgs.push(page_svg);
+        }
+
+        Ok(pages_svgs)
     }
 
     /// generates the selection svg.
@@ -645,7 +884,7 @@ impl RnoteEngine {
                 self.store.draw_stroke_keys_to_piet(
                     &selection_keys,
                     piet_cx,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 )
             },
             selection_bounds,

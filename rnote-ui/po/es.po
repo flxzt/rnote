@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-08 15:44+0100\n"
-"PO-Revision-Date: 2022-11-02 18:06+0000\n"
-"Last-Translator: Eduardo Malaspina <vaio0@swismail.com>\n"
+"PO-Revision-Date: 2022-11-09 07:38+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -259,8 +259,6 @@ msgstr "Exportar…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:123
 #: rnote-ui/src/dialogs/export.rs:408
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export selection"
 msgstr "Exportar selección"
 
@@ -408,12 +406,11 @@ msgstr "Preferencias de importación de PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start page"
-msgstr ""
+msgstr "Página inicial"
 
 #: rnote-ui/data/ui/dialogs/import.ui:98
-#, fuzzy
 msgid "End page"
-msgstr "Añadir página"
+msgstr "Página final"
 
 #: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Pages type"
@@ -465,90 +462,74 @@ msgid "Export"
 msgstr "Exportar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
-#, fuzzy
-#| msgid "Import file"
 msgid "Select export file"
-msgstr "Importar archivo"
+msgstr "Seleccionar archivo de exportación"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "Establecer el ancho del formato"
+msgstr "Seleccionar el archivo de exportación"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:175
 #: rnote-ui/src/dialogs/export.rs:118 rnote-ui/src/dialogs/export.rs:139
 #: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:317
 #: rnote-ui/src/dialogs/export.rs:338 rnote-ui/src/dialogs/export.rs:363
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "- no file selected -"
-msgstr "- ningún directorio seleccionado -"
+msgstr "- ningún archivo seleccionado -"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:199
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Export preferences"
-msgstr "Preferencias de importación de PDF"
+msgstr "Exportar preferencias"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:203
-#, fuzzy
-#| msgid "Document background"
 msgid "With background"
-msgstr "Fondo del documento"
+msgstr "Con fondo"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:204
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "Establecer el color de fondo"
+msgstr "Establecer si el fondo debe ser exportado"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Export document"
 msgid "Export format"
-msgstr "Exportar documento"
+msgstr "Exportar formato"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99
-#, fuzzy
-#| msgid "Export document"
 msgid "The export format"
-msgstr "Exportar documento"
+msgstr "El formato de exportación"
 
 #: rnote-ui/data/ui/dialogs/export.ui:103
 #: rnote-ui/data/ui/dialogs/export.ui:219 rnote-ui/src/dialogs/export.rs:246
 #: rnote-ui/src/dialogs/export.rs:450
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:104 rnote-ui/src/dialogs/export.rs:251
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: rnote-ui/data/ui/dialogs/export.ui:105 rnote-ui/src/dialogs/export.rs:256
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:215
 msgid "The export image format"
-msgstr ""
+msgstr "El formato de la imagen exportada"
 
 #: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:455
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:461
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:229
 msgid "Jpeg quality"
-msgstr ""
+msgstr "Calidad Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:230
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Ajustar la calidad de la imagen Jpeg (1 - 100)"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
@@ -848,32 +829,32 @@ msgstr "Navegación"
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "Cambiar a la \"Brocha\""
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "Cambiar al \"Moldeador\""
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "Cambiar a la \"Máquina de escribir\""
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "Cambiar al \"Borrador\""
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "Cambiar al \"Selector\""
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "Cambiar a las \"Herramientas\""
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 msgctxt "shortcut window"
@@ -1277,7 +1258,8 @@ msgid ""
 "when this switch is off/on"
 msgstr ""
 "Mantenga pulsada la tecla Ctrl para activar/desactivar temporalmente las "
-"restricciones cuando este conmutador esté apagado/encendido"
+"restricciones\n"
+"cuando este conmutador esté apagado/encendido"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
 msgid "1:1"
@@ -1434,40 +1416,31 @@ msgid "Saved document successfully."
 msgstr "Documento guardado con éxito."
 
 #: rnote-ui/src/dialogs/export.rs:180
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "Falló la exportación del documento como SVG."
+msgstr "Error al exportar el documento."
 
 #: rnote-ui/src/dialogs/export.rs:182
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "Exportado con éxito el documento como SVG."
+msgstr "Documento exportado con éxito."
 
 #: rnote-ui/src/dialogs/export.rs:188
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "Falló la exportación del documento como SVG."
+msgstr ""
+"Error en la exportación del documento, no se ha seleccionado ningún archivo."
 
 #: rnote-ui/src/dialogs/export.rs:384
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "Error al exportar la selección como SVG."
+msgstr "Error en la selección de la exportación."
 
 #: rnote-ui/src/dialogs/export.rs:386
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "Exportada con éxito la selección como SVG."
+msgstr "Selección exportada con éxito."
 
 #: rnote-ui/src/dialogs/export.rs:392
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "Error al exportar la selección como SVG."
+msgstr ""
+"La selección de la exportación ha fallado, no se ha seleccionado ningún "
+"archivo."
 
 #: rnote-ui/src/dialogs/export.rs:482 rnote-ui/src/dialogs/export.rs:546
 msgid "JSON file"
@@ -1522,10 +1495,8 @@ msgid "Printing document failed"
 msgstr "Fallo en la impresión del documento"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
-msgstr "Error al exportar la selección como SVG."
+msgstr "La selección de la exportación ha fallado, no se ha seleccionado nada."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-09 08:37+0100\n"
-"PO-Revision-Date: 2022-11-09 07:38+0000\n"
+"PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -459,10 +459,8 @@ msgid "Export"
 msgstr "ஏற்றுமதி"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
-#, fuzzy
-#| msgid "Import file"
 msgid "Export file"
-msgstr "கோப்பு இறக்குமதி"
+msgstr "ஏற்றுமதி கோப்பை"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
 msgid "Select the export file"
@@ -532,11 +530,11 @@ msgstr "Jpeg படத்தின் தரத்தை அமைக்கவ�
 
 #: rnote-ui/data/ui/dialogs/export.ui:250
 msgid "Margin"
-msgstr ""
+msgstr "விளிம்பு"
 
 #: rnote-ui/data/ui/dialogs/export.ui:251
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட பகுதியைச் சுற்றி விளிம்பை அமைக்கவும்"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
@@ -1425,28 +1423,20 @@ msgid "Exported document successfully."
 msgstr "ஆவணம் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
 #: rnote-ui/src/dialogs/export.rs:188
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "ஆவணத்தை SVG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
+msgstr "ஏற்றுமதி ஆவணம் தோல்வியடைந்தது, கோப்பு தேர்ந்தெடுக்கப்படவில்லை."
 
 #: rnote-ui/src/dialogs/export.rs:394
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
+msgstr "ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
 
 #: rnote-ui/src/dialogs/export.rs:396
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "தேர்வு வெற்றிகரமாக SVG ஆக ஏற்றுமதி செய்யப்பட்டது."
+msgstr "தேர்வு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
 #: rnote-ui/src/dialogs/export.rs:402
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
+msgstr "ஏற்றுமதி தேர்வு தோல்வியடைந்தது, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
 
 #: rnote-ui/src/dialogs/export.rs:492 rnote-ui/src/dialogs/export.rs:556
 msgid "JSON file"
@@ -1501,10 +1491,8 @@ msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
-msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
+msgstr "ஏற்றுமதி தேர்வு தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"

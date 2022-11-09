@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-08 15:44+0100\n"
+"POT-Creation-Date: 2022-11-09 08:37+0100\n"
 "PO-Revision-Date: 2022-11-08 14:45+0000\n"
 "Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -92,11 +92,11 @@ msgstr "বিকাশকারী মেনু"
 msgid "Visual debugging"
 msgstr "ভিজ্যুয়াল ডিবাগিং"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:485
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:495
 msgid "Export engine state"
 msgstr "ইঞ্জিনের অবস্থা রপ্তানী করুন"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:549
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:559
 msgid "Export engine config"
 msgstr "ইঞ্জিন কনফিগ রপ্তানী করুন"
 
@@ -258,7 +258,7 @@ msgid "Export…"
 msgstr "রপ্তানি…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:123
-#: rnote-ui/src/dialogs/export.rs:408
+#: rnote-ui/src/dialogs/export.rs:418
 msgid "Export selection"
 msgstr "নির্বাচন রপ্তানি করুন"
 
@@ -278,7 +278,7 @@ msgstr "পৃষ্ঠার প্রস্থ মাপসই করতে �
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
 #: rnote-ui/src/dialogs/mod.rs:234 rnote-ui/src/dialogs/export.rs:207
-#: rnote-ui/src/dialogs/export.rs:411
+#: rnote-ui/src/dialogs/export.rs:421
 msgid "Select"
 msgstr "নির্বাচন করুন"
 
@@ -295,8 +295,8 @@ msgstr "এটি সম্পূর্ণ নথি পরিষ্কার �
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
 #: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/import.rs:85
 #: rnote-ui/src/dialogs/import.rs:148 rnote-ui/src/dialogs/export.rs:25
-#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:412
-#: rnote-ui/src/dialogs/export.rs:489 rnote-ui/src/dialogs/export.rs:553
+#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:422
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:563
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "বাতিল করুন"
@@ -453,13 +453,15 @@ msgid "One per document page"
 msgstr "নথি পৃষ্ঠা প্রতি একটি"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:131
-#: rnote-ui/src/dialogs/export.rs:488 rnote-ui/src/dialogs/export.rs:552
+#: rnote-ui/src/dialogs/export.rs:498 rnote-ui/src/dialogs/export.rs:562
 msgid "Export"
 msgstr "রপ্তানি"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
-msgid "Select export file"
-msgstr "রপ্তানির যন্য ফাইল নির্বাচন করুন"
+#, fuzzy
+#| msgid "Import file"
+msgid "Export file"
+msgstr "ফাইল আমদানি করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
 msgid "Select the export file"
@@ -468,8 +470,8 @@ msgstr "রপ্তানি ফাইল নির্বাচন করুন
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:175
 #: rnote-ui/src/dialogs/export.rs:118 rnote-ui/src/dialogs/export.rs:139
-#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:317
-#: rnote-ui/src/dialogs/export.rs:338 rnote-ui/src/dialogs/export.rs:363
+#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:323
+#: rnote-ui/src/dialogs/export.rs:344 rnote-ui/src/dialogs/export.rs:369
 msgid "- no file selected -"
 msgstr "- কোনও ফাইল নির্বাচিত হয়নি -"
 
@@ -495,7 +497,7 @@ msgstr "রপ্তানি বিন্যাস"
 
 #: rnote-ui/data/ui/dialogs/export.ui:103
 #: rnote-ui/data/ui/dialogs/export.ui:219 rnote-ui/src/dialogs/export.rs:246
-#: rnote-ui/src/dialogs/export.rs:450
+#: rnote-ui/src/dialogs/export.rs:460
 msgid "Svg"
 msgstr "এসভিজি"
 
@@ -511,11 +513,11 @@ msgstr "Xopp"
 msgid "The export image format"
 msgstr "রপ্তানি চিত্র বিন্যাস"
 
-#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:455
+#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:465
 msgid "Png"
 msgstr "পিএনজি"
 
-#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:461
+#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:471
 msgid "Jpeg"
 msgstr "জেপিজি/জেপেগ"
 
@@ -526,6 +528,14 @@ msgstr "জেপিজি এর গুণমান"
 #: rnote-ui/data/ui/dialogs/export.ui:230
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "জেপেগ চিত্রের গুণমান সেট করুন (১ - ১০০)"
+
+#: rnote-ui/data/ui/dialogs/export.ui:250
+msgid "Margin"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:251
+msgid "Set the margin around the selected area"
+msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
@@ -1415,35 +1425,35 @@ msgstr "সফলভাবে নথি রপ্তানি করা হয�
 msgid "Export document failed, no file selected."
 msgstr "নথি রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
-#: rnote-ui/src/dialogs/export.rs:384
+#: rnote-ui/src/dialogs/export.rs:394
 msgid "Export selection failed."
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/dialogs/export.rs:386
+#: rnote-ui/src/dialogs/export.rs:396
 msgid "Exported selection successfully."
 msgstr "নির্বাচন সফলভাবে রপ্তানি করা হয়েছে।"
 
-#: rnote-ui/src/dialogs/export.rs:392
+#: rnote-ui/src/dialogs/export.rs:402
 msgid "Export selection failed, no file selected."
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
-#: rnote-ui/src/dialogs/export.rs:482 rnote-ui/src/dialogs/export.rs:546
+#: rnote-ui/src/dialogs/export.rs:492 rnote-ui/src/dialogs/export.rs:556
 msgid "JSON file"
 msgstr "JSON ফাইল"
 
-#: rnote-ui/src/dialogs/export.rs:523
+#: rnote-ui/src/dialogs/export.rs:533
 msgid "Export engine state failed."
 msgstr "ইঞ্জিনের অবস্থা রপ্তানি ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/dialogs/export.rs:525
+#: rnote-ui/src/dialogs/export.rs:535
 msgid "Exported engine state successfully."
 msgstr "ইঞ্জিনের অবস্থা সফলভাবে রপ্তানি করা হয়েছে।"
 
-#: rnote-ui/src/dialogs/export.rs:587
+#: rnote-ui/src/dialogs/export.rs:597
 msgid "Export engine config failed."
 msgstr "ইঞ্জিন কনফিগ রপ্তানী ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/dialogs/export.rs:589
+#: rnote-ui/src/dialogs/export.rs:599
 msgid "Exported engine config successfully."
 msgstr "ইঞ্জিন কনফিগ সফলভাবে রপ্তানি করা হয়েছে।"
 
@@ -1486,6 +1496,9 @@ msgstr "নির্বাচন রপ্তানি ব্যর্থ হয
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "নতুন ডিরেক্টরির নাম"
+
+#~ msgid "Select export file"
+#~ msgstr "রপ্তানির যন্য ফাইল নির্বাচন করুন"
 
 #, fuzzy
 #~| msgid "Export document"

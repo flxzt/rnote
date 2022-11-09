@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-08 15:44+0100\n"
+"POT-Creation-Date: 2022-11-09 08:37+0100\n"
 "PO-Revision-Date: 2022-11-09 07:38+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -92,11 +92,11 @@ msgstr "டெவலப்பர் மெனு"
 msgid "Visual debugging"
 msgstr "காட்சி பிழைத்திருத்தம்"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:485
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:495
 msgid "Export engine state"
 msgstr "ஏற்றுமதி இயந்திர நிலை"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:549
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:559
 msgid "Export engine config"
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு"
 
@@ -258,7 +258,7 @@ msgid "Export…"
 msgstr "ஏற்றுமதி…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:123
-#: rnote-ui/src/dialogs/export.rs:408
+#: rnote-ui/src/dialogs/export.rs:418
 msgid "Export selection"
 msgstr "ஏற்றுமதி தேர்வு"
 
@@ -278,7 +278,7 @@ msgstr "பக்க அகலத்திற்கு ஏற்றவாறு 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
 #: rnote-ui/src/dialogs/mod.rs:234 rnote-ui/src/dialogs/export.rs:207
-#: rnote-ui/src/dialogs/export.rs:411
+#: rnote-ui/src/dialogs/export.rs:421
 msgid "Select"
 msgstr "தேர்ந்தெடுக்கவும்"
 
@@ -295,8 +295,8 @@ msgstr "இது முழு ஆவணத்தையும் அழிக்
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
 #: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/import.rs:85
 #: rnote-ui/src/dialogs/import.rs:148 rnote-ui/src/dialogs/export.rs:25
-#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:412
-#: rnote-ui/src/dialogs/export.rs:489 rnote-ui/src/dialogs/export.rs:553
+#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:422
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:563
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "ரத்துசெய்"
@@ -454,13 +454,15 @@ msgid "One per document page"
 msgstr "ஒரு ஆவணப் பக்கத்திற்கு ஒன்று"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:131
-#: rnote-ui/src/dialogs/export.rs:488 rnote-ui/src/dialogs/export.rs:552
+#: rnote-ui/src/dialogs/export.rs:498 rnote-ui/src/dialogs/export.rs:562
 msgid "Export"
 msgstr "ஏற்றுமதி"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
-msgid "Select export file"
-msgstr "ஏற்றுமதி கோப்பைத் தேர்ந்தெடுக்கவும்"
+#, fuzzy
+#| msgid "Import file"
+msgid "Export file"
+msgstr "கோப்பு இறக்குமதி"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
 msgid "Select the export file"
@@ -469,8 +471,8 @@ msgstr "ஏற்றுமதி கோப்பைத் தேர்ந்த�
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:175
 #: rnote-ui/src/dialogs/export.rs:118 rnote-ui/src/dialogs/export.rs:139
-#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:317
-#: rnote-ui/src/dialogs/export.rs:338 rnote-ui/src/dialogs/export.rs:363
+#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:323
+#: rnote-ui/src/dialogs/export.rs:344 rnote-ui/src/dialogs/export.rs:369
 msgid "- no file selected -"
 msgstr "- எந்த கோப்பும் தேர்ந்தெடுக்கப்படவில்லை -"
 
@@ -496,7 +498,7 @@ msgstr "ஏற்றுமதி வடிவம்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:103
 #: rnote-ui/data/ui/dialogs/export.ui:219 rnote-ui/src/dialogs/export.rs:246
-#: rnote-ui/src/dialogs/export.rs:450
+#: rnote-ui/src/dialogs/export.rs:460
 msgid "Svg"
 msgstr "Svg"
 
@@ -512,11 +514,11 @@ msgstr "Xopp"
 msgid "The export image format"
 msgstr "ஏற்றுமதி படத்தின் வடிவம்"
 
-#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:455
+#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:465
 msgid "Png"
 msgstr "Png"
 
-#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:461
+#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:471
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -527,6 +529,14 @@ msgstr "Jpeg தரம்"
 #: rnote-ui/data/ui/dialogs/export.ui:230
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Jpeg படத்தின் தரத்தை அமைக்கவும் (1 - 100)"
+
+#: rnote-ui/data/ui/dialogs/export.ui:250
+msgid "Margin"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:251
+msgid "Set the margin around the selected area"
+msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
@@ -1420,41 +1430,41 @@ msgstr "ஆவணம் வெற்றிகரமாக ஏற்றுமத�
 msgid "Export document failed, no file selected."
 msgstr "ஆவணத்தை SVG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
 
-#: rnote-ui/src/dialogs/export.rs:384
+#: rnote-ui/src/dialogs/export.rs:394
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
 msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs/export.rs:386
+#: rnote-ui/src/dialogs/export.rs:396
 #, fuzzy
 #| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
 msgstr "தேர்வு வெற்றிகரமாக SVG ஆக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs/export.rs:392
+#: rnote-ui/src/dialogs/export.rs:402
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
 msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs/export.rs:482 rnote-ui/src/dialogs/export.rs:546
+#: rnote-ui/src/dialogs/export.rs:492 rnote-ui/src/dialogs/export.rs:556
 msgid "JSON file"
 msgstr "JSON கோப்பு"
 
-#: rnote-ui/src/dialogs/export.rs:523
+#: rnote-ui/src/dialogs/export.rs:533
 msgid "Export engine state failed."
 msgstr "ஏற்றுமதி இயந்திர நிலை தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs/export.rs:525
+#: rnote-ui/src/dialogs/export.rs:535
 msgid "Exported engine state successfully."
 msgstr "எஞ்சின் நிலை வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
-#: rnote-ui/src/dialogs/export.rs:587
+#: rnote-ui/src/dialogs/export.rs:597
 msgid "Export engine config failed."
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு தோல்வியடைந்தது."
 
-#: rnote-ui/src/dialogs/export.rs:589
+#: rnote-ui/src/dialogs/export.rs:599
 msgid "Exported engine config successfully."
 msgstr "இயந்திர கட்டமைப்பு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
@@ -1499,6 +1509,9 @@ msgstr "SVG ஆக ஏற்றுமதி தேர்வு தோல்வ�
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "புதிய அடைவு பெயர்"
+
+#~ msgid "Select export file"
+#~ msgstr "ஏற்றுமதி கோப்பைத் தேர்ந்தெடுக்கவும்"
 
 #, fuzzy
 #~| msgid "Export document"

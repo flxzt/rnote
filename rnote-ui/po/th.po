@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-08 15:44+0100\n"
+"POT-Creation-Date: 2022-11-09 08:37+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -92,11 +92,11 @@ msgstr "เมนูสำหรับนักพัฒนา"
 msgid "Visual debugging"
 msgstr "แก้ไขปัญหาการแสดงผล"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:485
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:495
 msgid "Export engine state"
 msgstr "ส่งออกสภาพของเอนจิน"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:549
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:559
 msgid "Export engine config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
@@ -258,7 +258,7 @@ msgid "Export…"
 msgstr "ส่งออก…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:123
-#: rnote-ui/src/dialogs/export.rs:408
+#: rnote-ui/src/dialogs/export.rs:418
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export selection"
@@ -280,7 +280,7 @@ msgstr "ซูมให้พอดีกับความกว้างขอ
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
 #: rnote-ui/src/dialogs/mod.rs:234 rnote-ui/src/dialogs/export.rs:207
-#: rnote-ui/src/dialogs/export.rs:411
+#: rnote-ui/src/dialogs/export.rs:421
 msgid "Select"
 msgstr "เลือก"
 
@@ -297,8 +297,8 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
 #: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/import.rs:85
 #: rnote-ui/src/dialogs/import.rs:148 rnote-ui/src/dialogs/export.rs:25
-#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:412
-#: rnote-ui/src/dialogs/export.rs:489 rnote-ui/src/dialogs/export.rs:553
+#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:422
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:563
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "ยกเลิก"
@@ -454,14 +454,14 @@ msgid "One per document page"
 msgstr "หน้าต่อหน้า"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:131
-#: rnote-ui/src/dialogs/export.rs:488 rnote-ui/src/dialogs/export.rs:552
+#: rnote-ui/src/dialogs/export.rs:498 rnote-ui/src/dialogs/export.rs:562
 msgid "Export"
 msgstr "ส่งออก"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
 #, fuzzy
 #| msgid "Import file"
-msgid "Select export file"
+msgid "Export file"
 msgstr "นำเข้าไฟล์"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
@@ -473,8 +473,8 @@ msgstr "ตั้งความกว้างของหน้ากระด
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:175
 #: rnote-ui/src/dialogs/export.rs:118 rnote-ui/src/dialogs/export.rs:139
-#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:317
-#: rnote-ui/src/dialogs/export.rs:338 rnote-ui/src/dialogs/export.rs:363
+#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:323
+#: rnote-ui/src/dialogs/export.rs:344 rnote-ui/src/dialogs/export.rs:369
 #, fuzzy
 #| msgid "- no directory selected -"
 msgid "- no file selected -"
@@ -512,7 +512,7 @@ msgstr "ส่งออกเอกสาร"
 
 #: rnote-ui/data/ui/dialogs/export.ui:103
 #: rnote-ui/data/ui/dialogs/export.ui:219 rnote-ui/src/dialogs/export.rs:246
-#: rnote-ui/src/dialogs/export.rs:450
+#: rnote-ui/src/dialogs/export.rs:460
 msgid "Svg"
 msgstr ""
 
@@ -528,11 +528,11 @@ msgstr ""
 msgid "The export image format"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:455
+#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:465
 msgid "Png"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:461
+#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:471
 msgid "Jpeg"
 msgstr ""
 
@@ -542,6 +542,14 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:230
 msgid "Set the quality of the Jpeg image (1 - 100)"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:250
+msgid "Margin"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:251
+msgid "Set the margin around the selected area"
 msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:62
@@ -1441,41 +1449,41 @@ msgstr "ส่งออกเอกสารเป็นไฟล์ SVG สำ�
 msgid "Export document failed, no file selected."
 msgstr "ส่งออกเอกสารเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs/export.rs:384
+#: rnote-ui/src/dialogs/export.rs:394
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs/export.rs:386
+#: rnote-ui/src/dialogs/export.rs:396
 #, fuzzy
 #| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG สำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs/export.rs:392
+#: rnote-ui/src/dialogs/export.rs:402
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/dialogs/export.rs:482 rnote-ui/src/dialogs/export.rs:546
+#: rnote-ui/src/dialogs/export.rs:492 rnote-ui/src/dialogs/export.rs:556
 msgid "JSON file"
 msgstr "ไฟล์ JSON"
 
-#: rnote-ui/src/dialogs/export.rs:523
+#: rnote-ui/src/dialogs/export.rs:533
 msgid "Export engine state failed."
 msgstr "ส่งออกสภาพของเอนจินล้มเหลว"
 
-#: rnote-ui/src/dialogs/export.rs:525
+#: rnote-ui/src/dialogs/export.rs:535
 msgid "Exported engine state successfully."
 msgstr "ส่งออกสภาพของเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/dialogs/export.rs:587
+#: rnote-ui/src/dialogs/export.rs:597
 msgid "Export engine config failed."
 msgstr "ส่งออกการตั้งค่าเอนจินล้มเหลว"
 
-#: rnote-ui/src/dialogs/export.rs:589
+#: rnote-ui/src/dialogs/export.rs:599
 msgid "Exported engine config successfully."
 msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
 
@@ -1521,6 +1529,11 @@ msgstr "ส่งออกสิ่งที่เลือกเป็นไฟ
 #, fuzzy
 msgid "New Directory name"
 msgstr "ไดเรกทอรี"
+
+#, fuzzy
+#~| msgid "Import file"
+#~ msgid "Select export file"
+#~ msgstr "นำเข้าไฟล์"
 
 #, fuzzy
 #~| msgid "Export document"

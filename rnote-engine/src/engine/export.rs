@@ -171,6 +171,9 @@ pub struct ExportPrefs {
 }
 
 impl RnoteEngine {
+    /// The used image scale factor on export
+    pub const EXPORT_IMAGE_SCALE: f64 = 1.5;
+
     /// Saves the current state as a .rnote file.
     pub fn save_as_rnote_bytes(
         &self,

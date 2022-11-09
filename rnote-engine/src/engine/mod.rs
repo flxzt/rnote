@@ -151,9 +151,6 @@ impl Default for RnoteEngine {
 }
 
 impl RnoteEngine {
-    /// The used image scale factor on export
-    pub const EXPORT_IMAGE_SCALE: f64 = 1.5;
-
     #[allow(clippy::new_without_default)]
     pub fn new(data_dir: Option<PathBuf>) -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-08 15:44+0100\n"
-"PO-Revision-Date: 2022-11-08 14:45+0000\n"
+"PO-Revision-Date: 2022-11-09 07:38+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -526,7 +526,7 @@ msgstr "Jpeg தரம்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:230
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Jpeg படத்தின் தரத்தை அமைக்கவும் (1 - 100)"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
@@ -824,32 +824,32 @@ msgstr "வழிசெலுத்தல்"
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "'பிரஷ்'க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "'ஷேப்பருக்கு' மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "'டைப்ரைட்டருக்கு' மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "'அழிப்பி'க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "'செலக்டருக்கு' மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "'கருவிகள்' க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 msgctxt "shortcut window"
@@ -1245,13 +1245,12 @@ msgid "Enabled"
 msgstr "இயக்கப்பட்டது"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
-#, fuzzy
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"இந்த சுவிட்ச் ஆஃப்/ஆன் செய்யும்போது தடைகளை தற்காலிகமாக இயக்க/முடக்க Ctrl ஐ அழுத்திப் "
-"பிடிக்கவும்"
+"தடைகளை தற்காலிகமாக இயக்க/முடக்க Ctrl ஐ அழுத்திப் பிடிக்கவும் \n"
+"இந்த சுவிட்ச் ஆஃப்/ஆன் ஆகும் போது"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
 msgid "1:1"
@@ -1408,16 +1407,12 @@ msgid "Saved document successfully."
 msgstr "ஆவணம் வெற்றிகரமாகச் சேமிக்கப்பட்டது."
 
 #: rnote-ui/src/dialogs/export.rs:180
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "ஆவணத்தை SVG ஆக ஏற்றுமதி செய்ய முடியவில்லை."
+msgstr "ஆவணத்தை ஏற்றுமதி செய்ய முடியவில்லை."
 
 #: rnote-ui/src/dialogs/export.rs:182
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "ஆவணம் SVG ஆக வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
+msgstr "ஆவணம் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
 
 #: rnote-ui/src/dialogs/export.rs:188
 #, fuzzy

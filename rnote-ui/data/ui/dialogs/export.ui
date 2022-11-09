@@ -119,7 +119,7 @@
   <object class="GtkDialog" id="dialog_export_doc_pages_w_prefs">
     <property name="use-header-bar">1</property>
     <property name="modal">true</property>
-    <property name="title" translatable="yes">Export documentpages_</property>
+    <property name="title" translatable="yes">Export document pages</property>
     <child type="action">
       <object class="GtkButton" id="export_doc_pages_button_cancel">
         <property name="label" translatable="yes">Cancel</property>

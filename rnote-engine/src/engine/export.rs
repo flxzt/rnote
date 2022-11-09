@@ -98,6 +98,79 @@ impl Default for DocExportPrefs {
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
+#[serde(rename = "doc_pages_export_format")]
+pub enum DocPagesExportFormat {
+    #[serde(rename = "svg")]
+    Svg,
+    #[serde(rename = "png")]
+    Png,
+    #[serde(rename = "jpeg")]
+    Jpeg,
+}
+
+impl Default for DocPagesExportFormat {
+    fn default() -> Self {
+        Self::Svg
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default, rename = "doc_pages_export_prefs")]
+pub struct DocPagesExportPrefs {
+    #[serde(rename = "with_background")]
+    pub with_background: bool,
+    #[serde(rename = "export_format")]
+    pub export_format: DocPagesExportFormat,
+    #[serde(rename = "jpg_quality")]
+    pub jpeg_quality: u8,
+}
+
+impl Default for DocPagesExportPrefs {
+    fn default() -> Self {
+        Self {
+            with_background: true,
+            export_format: DocPagesExportFormat::default(),
+            jpeg_quality: 85,
+        }
+    }
+}
+
+impl TryFrom<u32> for DocPagesExportFormat {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "DocPagesExportFormat try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+impl DocPagesExportFormat {
+    pub fn file_ext(self) -> String {
+        match self {
+            Self::Svg => String::from("svg"),
+            Self::Png => String::from("png"),
+            Self::Jpeg => String::from("jpg"),
+        }
+    }
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "selection_export_format")]
 pub enum SelectionExportFormat {
     #[serde(rename = "svg")]
@@ -166,6 +239,8 @@ impl Default for SelectionExportPrefs {
 pub struct ExportPrefs {
     #[serde(rename = "doc_export_prefs")]
     pub doc_export_prefs: DocExportPrefs,
+    #[serde(rename = "doc_pages_export_prefs")]
+    pub doc_pages_export_prefs: DocPagesExportPrefs,
     #[serde(rename = "selection_export_prefs")]
     pub selection_export_prefs: SelectionExportPrefs,
 }
@@ -507,6 +582,61 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
+    /// Exports the doc pages.
+    pub fn export_doc_pages(
+        &self,
+        title: String,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
+        let doc_pages_export_prefs =
+            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+
+        match doc_pages_export_prefs.export_format {
+            DocPagesExportFormat::Svg => {
+                self.export_doc_pages_as_svgs_bytes(doc_pages_export_prefs_override)
+            }
+            DocPagesExportFormat::Png => todo!(),
+            DocPagesExportFormat::Jpeg => {
+                todo!()
+            }
+        }
+    }
+
+    /// Exports the doc with the strokes as a SVG string.
+    fn export_doc_pages_as_svgs_bytes(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Vec<u8>>>>();
+
+        let result = || -> anyhow::Result<Vec<Vec<u8>>> {
+            let doc_pages_svgs: Vec<Vec<u8>> = self
+                .gen_doc_pages_svgs(doc_pages_export_prefs_override)?
+                .into_iter()
+                .map(|page_svg| {
+                    rnote_compose::utils::add_xml_header(
+                        rnote_compose::utils::wrap_svg_root(
+                            page_svg.svg_data.as_str(),
+                            Some(page_svg.bounds),
+                            Some(page_svg.bounds),
+                            false,
+                        )
+                        .as_str(),
+                    )
+                    .into_bytes()
+                })
+                .collect();
+
+            Ok(doc_pages_svgs)
+        };
+
+        if let Err(_data) = oneshot_sender.send(result()) {
+            log::error!("sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped.");
+        }
+
+        oneshot_receiver
+    }
+
     /// Exports the current selection
     pub fn export_selection(
         &self,
@@ -611,6 +741,48 @@ impl RnoteEngine {
         )?]);
 
         Ok(doc_svg)
+    }
+
+    /// generates the doc pages svgs.
+    /// without root or xml header.
+    fn gen_doc_pages_svgs(
+        &self,
+        doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
+    ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let doc_pages_export_prefs =
+            doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
+
+        let mut pages_svgs = vec![];
+
+        for page_bounds in self.pages_bounds_w_content() {
+            let strokes = self
+                .store
+                .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+
+            let mut page_svg = if doc_pages_export_prefs.with_background {
+                self.document.background.gen_svg(page_bounds)?
+            } else {
+                render::Svg {
+                    svg_data: String::new(),
+                    bounds: page_bounds,
+                }
+            };
+
+            page_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+                |piet_cx| {
+                    self.store.draw_stroke_keys_to_piet(
+                        &strokes,
+                        piet_cx,
+                        RnoteEngine::EXPORT_IMAGE_SCALE,
+                    )
+                },
+                page_bounds,
+            )?]);
+
+            pages_svgs.push(page_svg);
+        }
+
+        Ok(pages_svgs)
     }
 
     /// generates the selection svg.

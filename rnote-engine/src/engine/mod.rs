@@ -692,6 +692,7 @@ impl RnoteEngine {
         self.document = serde_json::from_value(engine_config.document)?;
         self.penholder = serde_json::from_value(engine_config.penholder)?;
         self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
+        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
         self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
 
         // Set the pen sounds to update the audioplayer

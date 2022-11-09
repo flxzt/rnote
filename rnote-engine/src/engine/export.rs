@@ -1,6 +1,6 @@
 use anyhow::Context;
 use futures::channel::oneshot;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -146,6 +146,8 @@ pub struct SelectionExportPrefs {
     pub export_format: SelectionExportFormat,
     #[serde(rename = "jpg_quality")]
     pub jpeg_quality: u8,
+    #[serde(rename = "margin")]
+    pub margin: f64,
 }
 
 impl Default for SelectionExportPrefs {
@@ -154,6 +156,7 @@ impl Default for SelectionExportPrefs {
             with_background: false,
             export_format: SelectionExportFormat::Svg,
             jpeg_quality: 85,
+            margin: 12.0,
         }
     }
 }
@@ -622,12 +625,11 @@ impl RnoteEngine {
             return Ok(None);
         }
 
-        let selection_bounds =
-            if let Some(selection_bounds) = self.store.bounds_for_strokes(&selection_keys) {
-                selection_bounds
-            } else {
-                return Ok(None);
-            };
+        let selection_bounds = if let Some(b) = self.store.bounds_for_strokes(&selection_keys) {
+            b.loosened(selection_export_prefs.margin)
+        } else {
+            return Ok(None);
+        };
 
         let mut selection_svg = if selection_export_prefs.with_background {
             self.document.background.gen_svg(selection_bounds)?

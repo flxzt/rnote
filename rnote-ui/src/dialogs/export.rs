@@ -293,6 +293,9 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let jpeg_quality_spinbutton: SpinButton = builder
         .object("export_selection_jpeg_quality_spinbutton")
         .unwrap();
+    let margin_spinbutton: SpinButton = builder
+        .object("export_selection_margin_spinbutton")
+        .unwrap();
 
     let selection_export_prefs = appwindow
         .canvas()
@@ -308,6 +311,9 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     with_background_switch.set_active(selection_export_prefs.with_background);
     export_format_row.set_selected(selection_export_prefs.export_format.to_u32().unwrap());
     jpeg_quality_spinbutton.set_value(selection_export_prefs.jpeg_quality as f64);
+    jpeg_quality_row
+        .set_sensitive(selection_export_prefs.export_format == SelectionExportFormat::Jpeg);
+    margin_spinbutton.set_value(selection_export_prefs.margin);
 
     if let Some(p) = filechooser.file().and_then(|f| f.path()) {
         let path_string = p.to_string_lossy().to_string();
@@ -369,6 +375,10 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak appwindow => move |jpeg_quality_spinbutton| {
         appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+    }));
+
+    margin_spinbutton.connect_value_changed(clone!(@weak appwindow => move |margin_spinbutton| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
     }));
 
     dialog.connect_response(

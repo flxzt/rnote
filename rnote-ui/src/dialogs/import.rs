@@ -87,7 +87,7 @@ pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
         .select_multiple(false)
         .build();
 
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
         if let Err(e) =
@@ -150,7 +150,7 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
         .select_multiple(false)
         .build();
 
-    filechooser.add_filter(&filter);
+    filechooser.set_filter(&filter);
 
     if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
         if let Err(e) =

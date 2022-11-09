@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-09 08:37+0100\n"
-"PO-Revision-Date: 2022-11-09 11:12+0000\n"
+"PO-Revision-Date: 2022-11-09 11:19+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
 "\n"
@@ -531,11 +531,11 @@ msgstr "A JPEG-kép minőségének beállítása (1-100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:250
 msgid "Margin"
-msgstr ""
+msgstr "Margó"
 
 #: rnote-ui/data/ui/dialogs/export.ui:251
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "Margó beállítása a kijelölt terület körül"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56

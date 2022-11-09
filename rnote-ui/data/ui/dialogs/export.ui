@@ -266,6 +266,28 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwActionRow" id="export_doc_pages_bitmap_scalefactor_row">
+                    <property name="title" translatable="yes">Bitmap scalefactor</property>
+                    <property name="subtitle" translatable="yes">Set the scalefactor of the bitmap image in relation
+to the actual size on the document</property>
+                    <child type="suffix">
+                      <object class="GtkAdjustment" id="export_doc_pages_bitmap_scalefactor_adj">
+                        <property name="step-increment">0.1</property>
+                        <property name="upper">10.0</property>
+                        <property name="lower">0.1</property>
+                        <property name="value">1.0</property>
+                      </object>
+                      <object class="GtkSpinButton" id="export_doc_pages_bitmap_scalefactor_spinbutton">
+                        <property name="adjustment">export_doc_pages_bitmap_scalefactor_adj</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="digits">1</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwActionRow" id="export_doc_pages_jpeg_quality_row">
                     <property name="title" translatable="yes">Jpeg quality</property>
                     <property name="subtitle" translatable="yes">Set the quality of the Jpeg image (1 - 100)</property>
@@ -399,6 +421,28 @@
                         </items>
                       </object>
                     </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="export_selection_bitmap_scalefactor_row">
+                    <property name="title" translatable="yes">Bitmap scalefactor</property>
+                    <property name="subtitle" translatable="yes">Set the scalefactor of the bitmap image in relation
+to the actual size on the document</property>
+                    <child type="suffix">
+                      <object class="GtkAdjustment" id="export_selection_bitmap_scalefactor_adj">
+                        <property name="step-increment">0.1</property>
+                        <property name="upper">10.0</property>
+                        <property name="lower">0.1</property>
+                        <property name="value">1.0</property>
+                      </object>
+                      <object class="GtkSpinButton" id="export_selection_bitmap_scalefactor_spinbutton">
+                        <property name="adjustment">export_selection_bitmap_scalefactor_adj</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="digits">1</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>

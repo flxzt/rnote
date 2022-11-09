@@ -121,6 +121,8 @@ pub struct DocPagesExportPrefs {
     pub with_background: bool,
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
+    #[serde(rename = "bitmap_scalefactor")]
+    pub bitmap_scalefactor: f64,
     #[serde(rename = "jpg_quality")]
     pub jpeg_quality: u8,
 }
@@ -130,6 +132,7 @@ impl Default for DocPagesExportPrefs {
         Self {
             with_background: true,
             export_format: DocPagesExportFormat::default(),
+            bitmap_scalefactor: 1.0,
             jpeg_quality: 85,
         }
     }
@@ -217,6 +220,8 @@ pub struct SelectionExportPrefs {
     pub with_background: bool,
     #[serde(rename = "export_format")]
     pub export_format: SelectionExportFormat,
+    #[serde(rename = "bitmap_scalefactor")]
+    pub bitmap_scalefactor: f64,
     #[serde(rename = "jpg_quality")]
     pub jpeg_quality: u8,
     #[serde(rename = "margin")]
@@ -228,6 +233,7 @@ impl Default for SelectionExportPrefs {
         Self {
             with_background: false,
             export_format: SelectionExportFormat::Svg,
+            bitmap_scalefactor: 1.0,
             jpeg_quality: 85,
             margin: 12.0,
         }
@@ -646,8 +652,6 @@ impl RnoteEngine {
         let doc_pages_export_prefs =
             doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
 
-        let image_scale = 1.0;
-
         let bitmapimage_format = match doc_pages_export_prefs.export_format {
             DocPagesExportFormat::Svg => unreachable!(),
             DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
@@ -662,8 +666,12 @@ impl RnoteEngine {
                 .map(|page_svg| {
                     let page_svg_bounds = page_svg.bounds;
 
-                    render::Image::gen_image_from_svg(page_svg, page_svg_bounds, image_scale)?
-                        .into_encoded_bytes(bitmapimage_format.clone())
+                    render::Image::gen_image_from_svg(
+                        page_svg,
+                        page_svg_bounds,
+                        doc_pages_export_prefs.bitmap_scalefactor,
+                    )?
+                    .into_encoded_bytes(bitmapimage_format.clone())
                 })
                 .collect()
         };
@@ -738,7 +746,6 @@ impl RnoteEngine {
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
 
         let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            let image_scale = 1.0;
             let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
                 Some(selection_svg) => selection_svg,
                 None => return Ok(None),
@@ -757,7 +764,7 @@ impl RnoteEngine {
                 render::Image::gen_image_from_svg(
                     selection_svg,
                     selection_svg_bounds,
-                    image_scale,
+                    selection_export_prefs.bitmap_scalefactor,
                 )?
                 .into_encoded_bytes(bitmapimage_format)?,
             ))

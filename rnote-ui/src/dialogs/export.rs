@@ -283,6 +283,12 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     let export_format_row: adw::ComboRow = builder
         .object("export_doc_pages_export_format_row")
         .unwrap();
+    let bitmap_scalefactor_row: adw::ActionRow = builder
+        .object("export_doc_pages_bitmap_scalefactor_row")
+        .unwrap();
+    let bitmap_scalefactor_spinbutton: SpinButton = builder
+        .object("export_doc_pages_bitmap_scalefactor_spinbutton")
+        .unwrap();
     let jpeg_quality_row: adw::ActionRow =
         builder.object("export_doc_pages_jpeg_quality_row").unwrap();
     let jpeg_quality_spinbutton: SpinButton = builder
@@ -312,6 +318,11 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     let filechooser = create_filechooser_export_doc_pages(appwindow);
     with_background_switch.set_active(doc_pages_export_prefs.with_background);
     export_format_row.set_selected(doc_pages_export_prefs.export_format.to_u32().unwrap());
+    bitmap_scalefactor_row.set_sensitive(
+        doc_pages_export_prefs.export_format == DocPagesExportFormat::Png
+            || doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg,
+    );
+    bitmap_scalefactor_spinbutton.set_value(doc_pages_export_prefs.bitmap_scalefactor);
     jpeg_quality_row
         .set_sensitive(doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg);
     jpeg_quality_spinbutton.set_value(doc_pages_export_prefs.jpeg_quality as f64);
@@ -367,6 +378,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     export_format_row.connect_selected_notify(clone!(
         @weak page_files_naming_info_label,
         @weak export_files_stemname_entryrow,
+        @weak bitmap_scalefactor_row,
         @weak jpeg_quality_row,
         @weak export_dir_label,
         @weak filechooser,
@@ -383,6 +395,9 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
             export_dir_label.set_label(&gettext("- no directory selected -"));
             button_confirm.set_sensitive(false);
 
+            // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
+            bitmap_scalefactor_row.set_sensitive(export_format == DocPagesExportFormat::Png || export_format == DocPagesExportFormat::Jpeg);
+
             // Set the jpeg quality pref only sensitive when jpeg is actually selected
             jpeg_quality_row.set_sensitive(export_format == DocPagesExportFormat::Jpeg);
 
@@ -392,6 +407,10 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
                     + "."
                     + &appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
             ));
+    }));
+
+    bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak appwindow => move |bitmap_scalefactor_spinbutton| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
     }));
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak appwindow => move |jpeg_quality_spinbutton| {
@@ -525,6 +544,12 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let export_file_button: Button = builder
         .object("export_selection_export_file_button")
         .unwrap();
+    let bitmap_scalefactor_row: adw::ActionRow = builder
+        .object("export_selection_bitmap_scalefactor_row")
+        .unwrap();
+    let bitmap_scalefactor_spinbutton: SpinButton = builder
+        .object("export_selection_bitmap_scalefactor_spinbutton")
+        .unwrap();
     let jpeg_quality_row: adw::ActionRow =
         builder.object("export_selection_jpeg_quality_row").unwrap();
     let jpeg_quality_spinbutton: SpinButton = builder
@@ -547,6 +572,11 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let filechooser = create_filechooser_export_selection(appwindow);
     with_background_switch.set_active(selection_export_prefs.with_background);
     export_format_row.set_selected(selection_export_prefs.export_format.to_u32().unwrap());
+    bitmap_scalefactor_row.set_sensitive(
+        selection_export_prefs.export_format == SelectionExportFormat::Png
+            || selection_export_prefs.export_format == SelectionExportFormat::Jpeg,
+    );
+    bitmap_scalefactor_spinbutton.set_value(selection_export_prefs.bitmap_scalefactor);
     jpeg_quality_row
         .set_sensitive(selection_export_prefs.export_format == SelectionExportFormat::Jpeg);
     jpeg_quality_spinbutton.set_value(selection_export_prefs.jpeg_quality as f64);
@@ -594,20 +624,32 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
     }));
 
-    export_format_row.connect_selected_notify(clone!(@weak jpeg_quality_row, @weak export_file_label, @weak filechooser, @weak appwindow => move |row| {
-        let selected = row.selected();
-        let export_format = SelectionExportFormat::try_from(selected).unwrap();
-        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.export_format = export_format;
+    export_format_row.connect_selected_notify(clone!(
+        @weak bitmap_scalefactor_row,
+        @weak jpeg_quality_row,
+        @weak export_file_label,
+        @weak filechooser,
+        @weak appwindow => move |row| {
+            let selected = row.selected();
+            let export_format = SelectionExportFormat::try_from(selected).unwrap();
+            appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.export_format = export_format;
 
-        // update the filechooser dependent on the selected export format
-        update_export_selection_filechooser_with_prefs(&filechooser, appwindow.canvas().output_file(),&appwindow.canvas().engine().borrow().export_prefs.selection_export_prefs);
+            // update the filechooser dependent on the selected export format
+            update_export_selection_filechooser_with_prefs(&filechooser, appwindow.canvas().output_file(),&appwindow.canvas().engine().borrow().export_prefs.selection_export_prefs);
 
-        // force the user to pick another file
-        export_file_label.set_label(&gettext("- no file selected -"));
-        button_confirm.set_sensitive(false);
+            // force the user to pick another file
+            export_file_label.set_label(&gettext("- no file selected -"));
+            button_confirm.set_sensitive(false);
 
-        // Set the jpeg quality pref only sensitive when jpeg is actually selected
-        jpeg_quality_row.set_sensitive(export_format == SelectionExportFormat::Jpeg);
+            // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
+            bitmap_scalefactor_row.set_sensitive(export_format == SelectionExportFormat::Png || export_format == SelectionExportFormat::Jpeg);
+
+            // Set the jpeg quality pref only sensitive when jpeg is actually selected
+            jpeg_quality_row.set_sensitive(export_format == SelectionExportFormat::Jpeg);
+    }));
+
+    bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak appwindow => move |bitmap_scalefactor_spinbutton| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
     }));
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak appwindow => move |jpeg_quality_spinbutton| {

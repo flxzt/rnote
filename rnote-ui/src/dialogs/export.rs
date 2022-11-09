@@ -316,14 +316,8 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         .set_sensitive(doc_pages_export_prefs.export_format == DocPagesExportFormat::Jpeg);
     jpeg_quality_spinbutton.set_value(doc_pages_export_prefs.jpeg_quality as f64);
 
-    if let Some(p) = filechooser.file().and_then(|f| f.path()) {
-        let path_string = p.to_string_lossy().to_string();
-        export_dir_label.set_label(&path_string);
-        button_confirm.set_sensitive(true);
-    } else {
-        export_dir_label.set_label(&gettext("- no directory selected -"));
-        button_confirm.set_sensitive(false);
-    }
+    export_dir_label.set_label(&gettext("- no directory selected -"));
+    button_confirm.set_sensitive(false);
     let default_stemname = rnote_engine::utils::default_file_title_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),

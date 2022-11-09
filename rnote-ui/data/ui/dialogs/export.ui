@@ -229,8 +229,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwEntryRow" id="export_doc_pages_export_files_basename_entryrow">
-                    <property name="title" translatable="yes">Export files basename</property>
+                  <object class="AdwEntryRow" id="export_doc_pages_export_files_stemname_entryrow">
+                    <property name="title" translatable="yes">Export files stem name</property>
                   </object>
                 </child>
               </object>

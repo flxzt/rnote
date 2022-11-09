@@ -246,8 +246,8 @@ pub struct ExportPrefs {
 }
 
 impl RnoteEngine {
-    /// The used image scale factor on export
-    pub const EXPORT_IMAGE_SCALE: f64 = 1.5;
+    /// The used image scale factor for any strokes that are converted to bitmap images on export
+    pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.5;
 
     /// Saves the current state as a .rnote file.
     pub fn save_as_rnote_bytes(
@@ -416,7 +416,8 @@ impl RnoteEngine {
 
                         for stroke in page_strokes.into_iter() {
                             if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
-                                stroke.draw(&mut piet_cx, RnoteEngine::EXPORT_IMAGE_SCALE)?;
+                                stroke
+                                    .draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                             }
                         }
 
@@ -797,7 +798,7 @@ impl RnoteEngine {
                 self.store.draw_stroke_keys_to_piet(
                     &strokes,
                     piet_cx,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 )
             },
             content_bounds,
@@ -836,7 +837,7 @@ impl RnoteEngine {
                     self.store.draw_stroke_keys_to_piet(
                         &strokes,
                         piet_cx,
-                        RnoteEngine::EXPORT_IMAGE_SCALE,
+                        RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                     )
                 },
                 page_bounds,
@@ -883,7 +884,7 @@ impl RnoteEngine {
                 self.store.draw_stroke_keys_to_piet(
                     &selection_keys,
                     piet_cx,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 )
             },
             selection_bounds,

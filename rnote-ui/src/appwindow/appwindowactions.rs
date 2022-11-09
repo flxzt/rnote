@@ -748,7 +748,7 @@ impl RnoteAppWindow {
 
                     for stroke in page_strokes.into_iter() {
                         if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
-                            stroke.draw(&mut piet_cx, RnoteEngine::EXPORT_IMAGE_SCALE)?;
+                            stroke.draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                         }
                     }
 

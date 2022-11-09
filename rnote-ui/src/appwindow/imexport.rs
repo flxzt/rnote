@@ -385,12 +385,12 @@ impl RnoteAppWindow {
     }
 
     /// Exports document pages
-    /// file_name_base: the base of the created files. This is extended by the an enumeration of the page number and file extension
+    /// file_stem_name: the stem name of the created files. This is extended by an enumeration of the page number and file extension
     /// overwrites existing files with the same name!
     pub async fn export_doc_pages(
         &self,
         dir: &gio::File,
-        file_name_base: String,
+        file_stem_name: String,
         export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> anyhow::Result<()> {
         let export_prefs = export_prefs_override.unwrap_or(
@@ -422,7 +422,7 @@ impl RnoteAppWindow {
             crate::utils::create_replace_file_future(
                 page_bytes,
                 &dir.child(
-                    &(rnote_engine::utils::doc_pages_files_names(file_name_base.clone(), i + 1)
+                    &(rnote_engine::utils::doc_pages_files_names(file_stem_name.clone(), i + 1)
                         + "."
                         + &file_ext),
                 ),

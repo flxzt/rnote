@@ -292,8 +292,8 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     let export_dir_button: Button = builder
         .object("export_doc_pages_export_dir_button")
         .unwrap();
-    let export_files_basename_entryrow: adw::EntryRow = builder
-        .object("export_doc_pages_export_files_basename_entryrow")
+    let export_files_stemname_entryrow: adw::EntryRow = builder
+        .object("export_doc_pages_export_files_stemname_entryrow")
         .unwrap();
     let page_files_naming_info_label: Label = builder
         .object("export_doc_pages_page_files_naming_info_label")
@@ -324,15 +324,15 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         export_dir_label.set_label(&gettext("- no directory selected -"));
         button_confirm.set_sensitive(false);
     }
-    let default_basename = rnote_engine::utils::default_file_title_for_export(
+    let default_stemname = rnote_engine::utils::default_file_title_for_export(
         appwindow.canvas().output_file(),
         Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
         None,
     );
-    export_files_basename_entryrow.set_text(&default_basename);
+    export_files_stemname_entryrow.set_text(&default_stemname);
 
     page_files_naming_info_label.set_text(
-        &(rnote_engine::utils::doc_pages_files_names(default_basename, 1)
+        &(rnote_engine::utils::doc_pages_files_names(default_stemname, 1)
             + "."
             + &doc_pages_export_prefs.export_format.file_ext()),
     );
@@ -372,7 +372,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
     export_format_row.connect_selected_notify(clone!(
         @weak page_files_naming_info_label,
-        @weak export_files_basename_entryrow,
+        @weak export_files_stemname_entryrow,
         @weak jpeg_quality_row,
         @weak export_dir_label,
         @weak filechooser,
@@ -394,7 +394,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
             // update file naming preview
             page_files_naming_info_label.set_text(&(
-                rnote_engine::utils::doc_pages_files_names(export_files_basename_entryrow.text().to_string(), 1)
+                rnote_engine::utils::doc_pages_files_names(export_files_stemname_entryrow.text().to_string(), 1)
                     + "."
                     + &appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
             ));
@@ -404,7 +404,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
-    export_files_basename_entryrow.connect_changed(
+    export_files_stemname_entryrow.connect_changed(
         clone!(@weak page_files_naming_info_label, @weak button_confirm, @weak dialog, @weak appwindow => move |entryrow| {
             button_confirm.set_sensitive(!entryrow.text().is_empty());
 
@@ -418,16 +418,16 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     );
 
     dialog.connect_response(
-        clone!(@weak with_background_switch, @weak export_files_basename_entryrow, @strong filechooser, @weak appwindow => move |dialog, responsetype| {
+        clone!(@weak with_background_switch, @weak export_files_stemname_entryrow, @strong filechooser, @weak appwindow => move |dialog, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
                     if let Some(dir) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.start_pulsing_canvas_progressbar();
 
-                            let file_basename = export_files_basename_entryrow.text().to_string();
+                            let file_stem_name = export_files_stemname_entryrow.text().to_string();
 
-                            if let Err(e) = appwindow.export_doc_pages(&dir, file_basename, None).await {
+                            if let Err(e) = appwindow.export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document pages failed.").to_variant()));
                             } else {

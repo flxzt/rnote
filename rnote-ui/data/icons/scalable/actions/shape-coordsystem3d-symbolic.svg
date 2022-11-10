@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="16px" viewBox="0 0 16 16" width="16px" xmlns="http://www.w3.org/2000/svg">
+    <filter id="a" height="100%" width="100%" x="0%" y="0%">
+        <feColorMatrix in="SourceGraphic" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+    </filter>
+    <path style="color:#000;fill:#2e3436;stroke-dashoffset:.1;-inkscape-stroke:none" d="m3.285 12.715 9.43-9.43M11.461 3.832l-7.629 7.629.707.707 7.629-7.629z" transform="translate(-.3 .3)"/>
+    <path style="color:#000;display:inline;fill:#2e3436;fill-opacity:1;stroke-width:3.77959" d="M7.734 1.304a.997.997 0 0 0-.997.997c0 .55.447 1.004.997 1.004A1.01 1.01 0 0 0 8.738 2.3c0-.55-.454-.997-1.004-.997zm0 .391c.337 0 .605.269.605.606a.602.602 0 0 1-.605.605.602.602 0 0 1-.605-.605c0-.337.268-.606.605-.606zm6.096 5.522a1.01 1.01 0 0 0-1.004 1.004c0 .55.454.996 1.004.996s.997-.447.997-.996c0-.55-.447-1.004-.997-1.004zm0 .398c.337 0 .606.269.606.606a.602.602 0 0 1-.606.605.602.602 0 0 1-.605-.605c0-.337.268-.606.605-.606z"/>
+    <path style="color:#000;fill:#2e3436;stroke-width:1.00001;stroke-dashoffset:.1" d="M7.241 2.87v4.89H1.173v1H7.24v5.935h1.002V8.762h4.948a.803.803 0 0 1-.048-1h-4.9V2.909a.803.803 0 0 1-.471.17.803.803 0 0 1-.53-.21Z"/>
+</svg>

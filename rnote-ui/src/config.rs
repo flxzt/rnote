@@ -7,7 +7,8 @@ pub const APP_VERSION_SUFFIX: &str = "-devel";
 pub const APP_AUTHOR_NAME: &str = "Felix Zwettler";
 pub const APP_AUTHORS: &[&str] = &["Felix Zwettler
 Óscar Fernández Díaz
-Seio Inoue"];
+Seio Inoue
+Moritz Mechelk"];
 pub const APP_WEBSITE: &str = "https://rnote.flxzt.net";
 pub const APP_ISSUES_URL: &str = "https://github.com/flxzt/rnote/issues";
 pub const APP_SUPPORT_URL: &str = "https://github.com/flxzt/rnote/discussions";

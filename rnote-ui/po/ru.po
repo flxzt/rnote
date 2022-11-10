@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-09 08:37+0100\n"
-"PO-Revision-Date: 2022-11-09 11:12+0000\n"
+"PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -533,7 +533,7 @@ msgstr "Укажите качество Jpeg изображения (1 - 100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:250
 msgid "Margin"
-msgstr ""
+msgstr "Поля"
 
 #: rnote-ui/data/ui/dialogs/export.ui:251
 msgid "Set the margin around the selected area"

@@ -12,7 +12,8 @@ use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
-    EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
+    CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
+    QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::style::rough::RoughOptions;
@@ -126,6 +127,24 @@ impl PenBehaviour for Shaper {
                     ShapeBuilderType::Rectangle => {
                         self.state = ShaperState::BuildShape {
                             builder: Box::new(RectangleBuilder::start(element, Instant::now())),
+                        }
+                    }
+                    ShapeBuilderType::CoordSystem2D => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(CoordSystem2DBuilder::start(element, Instant::now())),
+                        }
+                    }
+                    ShapeBuilderType::CoordSystem3D => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(CoordSystem3DBuilder::start(element, Instant::now())),
+                        }
+                    }
+                    ShapeBuilderType::QuadrantCoordSystem2D => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(QuadrantCoordSystem2DBuilder::start(
+                                element,
+                                Instant::now(),
+                            )),
                         }
                     }
                     ShapeBuilderType::Ellipse => {

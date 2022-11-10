@@ -12,8 +12,8 @@ use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
-    CoordinateSystem2DBuilder, CoordinateSystem3DBuilder, EllipseBuilder, FociEllipseBuilder,
-    LineBuilder, QuadrantCoordinateSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
+    CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
+    QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::style::rough::RoughOptions;
@@ -129,25 +129,19 @@ impl PenBehaviour for Shaper {
                             builder: Box::new(RectangleBuilder::start(element, Instant::now())),
                         }
                     }
-                    ShapeBuilderType::CoordinateSystem2D => {
+                    ShapeBuilderType::CoordSystem2D => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CoordinateSystem2DBuilder::start(
-                                element,
-                                Instant::now(),
-                            )),
+                            builder: Box::new(CoordSystem2DBuilder::start(element, Instant::now())),
                         }
                     }
-                    ShapeBuilderType::CoordinateSystem3D => {
+                    ShapeBuilderType::CoordSystem3D => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CoordinateSystem3DBuilder::start(
-                                element,
-                                Instant::now(),
-                            )),
+                            builder: Box::new(CoordSystem3DBuilder::start(element, Instant::now())),
                         }
                     }
-                    ShapeBuilderType::QuadrantCoordinateSystem2D => {
+                    ShapeBuilderType::QuadrantCoordSystem2D => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadrantCoordinateSystem2DBuilder::start(
+                            builder: Box::new(QuadrantCoordSystem2DBuilder::start(
                                 element,
                                 Instant::now(),
                             )),

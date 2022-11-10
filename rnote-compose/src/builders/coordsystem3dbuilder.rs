@@ -12,25 +12,25 @@ use crate::{Shape, Style};
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::{Constraints, ShapeBuilderBehaviour};
 
-/// 2D single quadrant coordinate system builder
+/// 3D coordinate system builder
 #[derive(Debug, Clone)]
-pub struct QuadrantCoordinateSystem2DBuilder {
+pub struct CoordSystem3DBuilder {
+    /// the tip of the z axis
+    pub tip_z: na::Vector2<f64>,
     /// the tip of the y axis
     pub tip_y: na::Vector2<f64>,
-    /// the tip of the x axis
-    pub tip_x: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for QuadrantCoordinateSystem2DBuilder {
+impl ShapeBuilderCreator for CoordSystem3DBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
+            tip_z: element.pos,
             tip_y: element.pos,
-            tip_x: element.pos,
         }
     }
 }
 
-impl ShapeBuilderBehaviour for QuadrantCoordinateSystem2DBuilder {
+impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,
@@ -39,7 +39,7 @@ impl ShapeBuilderBehaviour for QuadrantCoordinateSystem2DBuilder {
     ) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
-                self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
+                self.tip_y = constraints.constrain(element.pos - self.tip_z) + self.tip_z;
             }
             PenEvent::Up { .. } => {
                 return BuilderProgress::Finished(
@@ -72,27 +72,56 @@ impl ShapeBuilderBehaviour for QuadrantCoordinateSystem2DBuilder {
             line.draw_composed(cx, style);
         }
 
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.tip_y, zoom);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.tip_x, zoom);
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.tip_z, zoom);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.tip_y, zoom);
         cx.restore().unwrap();
     }
 }
 
-impl QuadrantCoordinateSystem2DBuilder {
-    /// The current state represented by two lines
+impl CoordSystem3DBuilder {
+    /// The current state represented by six lines
     pub fn state_as_lines(&self) -> Vec<Line> {
-        let center = na::vector!(self.tip_y.x, self.tip_x.y);
+        let center = na::vector!(self.tip_z.x, self.tip_y.y);
+        let tip_x_offset =
+            ((center - self.tip_z).magnitude() + (center - self.tip_y).magnitude()) / 4.0;
 
         let up_axis = Line {
             start: center,
-            end: self.tip_y,
+            end: self.tip_z,
+        };
+
+        let down_axis = Line {
+            start: center,
+            end: na::vector![center.x, 2.0 * self.tip_y.y - self.tip_z.y],
         };
 
         let right_axis = Line {
             start: center,
-            end: self.tip_x,
+            end: self.tip_y,
         };
 
-        vec![up_axis, right_axis]
+        let left_axis = Line {
+            start: center,
+            end: na::vector![2.0 * self.tip_z.x - self.tip_y.x, center.y],
+        };
+
+        let forward_axis = Line {
+            start: center,
+            end: center + na::vector![-tip_x_offset, tip_x_offset],
+        };
+
+        let backward_axis = Line {
+            start: center,
+            end: center + na::vector![tip_x_offset, -tip_x_offset],
+        };
+
+        vec![
+            up_axis,
+            down_axis,
+            right_axis,
+            left_axis,
+            forward_axis,
+            backward_axis,
+        ]
     }
 }

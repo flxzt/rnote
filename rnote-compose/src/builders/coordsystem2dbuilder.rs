@@ -14,14 +14,14 @@ use super::{Constraints, ShapeBuilderBehaviour};
 
 /// 2D coordinate system builder
 #[derive(Debug, Clone)]
-pub struct CoordinateSystem2DBuilder {
+pub struct CoordSystem2DBuilder {
     /// the tip of the y axis
     pub tip_y: na::Vector2<f64>,
     /// the tip of the x axis
     pub tip_x: na::Vector2<f64>,
 }
 
-impl ShapeBuilderCreator for CoordinateSystem2DBuilder {
+impl ShapeBuilderCreator for CoordSystem2DBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             tip_y: element.pos,
@@ -30,7 +30,7 @@ impl ShapeBuilderCreator for CoordinateSystem2DBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for CoordinateSystem2DBuilder {
+impl ShapeBuilderBehaviour for CoordSystem2DBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,
@@ -78,7 +78,7 @@ impl ShapeBuilderBehaviour for CoordinateSystem2DBuilder {
     }
 }
 
-impl CoordinateSystem2DBuilder {
+impl CoordSystem2DBuilder {
     /// The current state represented by four lines
     pub fn state_as_lines(&self) -> Vec<Line> {
         let center = na::vector!(self.tip_y.x, self.tip_x.y);

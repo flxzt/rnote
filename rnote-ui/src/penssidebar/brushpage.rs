@@ -339,7 +339,7 @@ impl BrushPage {
         self.imp()
             .texturedstyle_radius_x_spinbutton
             .get()
-            .set_range(0.0, f64::MAX);
+            .set_range(0.1, f64::MAX);
         self.imp()
             .texturedstyle_radius_x_spinbutton
             .get()
@@ -368,7 +368,7 @@ impl BrushPage {
         self.imp()
             .texturedstyle_radius_y_spinbutton
             .get()
-            .set_range(0.0, f64::MAX);
+            .set_range(0.1, f64::MAX);
         self.imp()
             .texturedstyle_radius_y_spinbutton
             .get()

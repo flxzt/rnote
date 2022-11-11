@@ -151,9 +151,6 @@ impl Default for RnoteEngine {
 }
 
 impl RnoteEngine {
-    /// The used image scale factor on export
-    pub const EXPORT_IMAGE_SCALE: f64 = 1.5;
-
     #[allow(clippy::new_without_default)]
     pub fn new(data_dir: Option<PathBuf>) -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
@@ -692,6 +689,7 @@ impl RnoteEngine {
         self.document = serde_json::from_value(engine_config.document)?;
         self.penholder = serde_json::from_value(engine_config.penholder)?;
         self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
+        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
         self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
 
         // Set the pen sounds to update the audioplayer

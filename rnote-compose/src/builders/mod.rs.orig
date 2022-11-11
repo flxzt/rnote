@@ -1,7 +1,13 @@
+<<<<<<< HEAD
+/// arrow builder
+pub mod arrowbuilder;
+||||||| f143529
+=======
 /// 2D coordinate system builder
 pub mod coordsystem2dbuilder;
 /// 3D coordinate system builder
 pub mod coordsystem3dbuilder;
+>>>>>>> 5a79207d256b6493413eb4f02d272eb946e9b7f4
 /// cubic bezier builder
 pub mod cubbezbuilder;
 /// ellipse builder

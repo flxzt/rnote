@@ -94,6 +94,10 @@ pub fn default_file_title_for_export(
     title
 }
 
+pub fn doc_pages_files_names(file_stem_name: String, i: usize) -> String {
+    file_stem_name + &format!(" - Page {:02}", i)
+}
+
 pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {
     (value / current_dpi) * target_dpi
 }

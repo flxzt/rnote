@@ -117,10 +117,12 @@ impl RnoteAppWindow {
         self.add_action(&action_print_doc);
         let action_import_file = gio::SimpleAction::new("import-file", None);
         self.add_action(&action_import_file);
+        let action_export_doc = gio::SimpleAction::new("export-doc", None);
+        self.add_action(&action_export_doc);
+        let action_export_doc_pages = gio::SimpleAction::new("export-doc-pages", None);
+        self.add_action(&action_export_doc_pages);
         let action_export_selection = gio::SimpleAction::new("export-selection", None);
         self.add_action(&action_export_selection);
-        let action_export_document = gio::SimpleAction::new("export-document", None);
-        self.add_action(&action_export_document);
         let action_clipboard_copy = gio::SimpleAction::new("clipboard-copy", None);
         self.add_action(&action_clipboard_copy);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
@@ -746,7 +748,7 @@ impl RnoteAppWindow {
 
                     for stroke in page_strokes.into_iter() {
                         if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
-                            stroke.draw(&mut piet_cx, RnoteEngine::EXPORT_IMAGE_SCALE)?;
+                            stroke.draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                         }
                     }
 
@@ -780,6 +782,16 @@ impl RnoteAppWindow {
             dialogs::import::filechooser_import_file(&appwindow);
         }));
 
+        // Export document
+        action_export_doc.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::export::dialog_export_doc_w_prefs(&appwindow);
+        }));
+
+        // Export document pages
+        action_export_doc_pages.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow);
+        }));
+
         // Export selection
         action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             if appwindow.canvas().engine().borrow().store.selection_keys_unordered().len() > 0 {
@@ -787,11 +799,6 @@ impl RnoteAppWindow {
             } else {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed, nothing selected.").to_variant()));
             }
-        }));
-
-        // Export document
-        action_export_document.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::dialog_export_doc_w_prefs(&appwindow);
         }));
 
         // Clipboard copy

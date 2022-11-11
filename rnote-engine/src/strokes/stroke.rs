@@ -326,7 +326,7 @@ impl Stroke {
             Stroke::ShapeStroke(shapestroke) => {
                 let png_data = match shapestroke.export_as_bitmapimage_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -391,7 +391,7 @@ impl Stroke {
                 */
                 let png_data = match textstroke.export_as_bitmapimage_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -430,7 +430,7 @@ impl Stroke {
             Stroke::VectorImage(vectorimage) => {
                 let png_data = match vectorimage.export_as_bitmapimage_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -469,7 +469,7 @@ impl Stroke {
             Stroke::BitmapImage(bitmapimage) => {
                 let png_data = match bitmapimage.export_as_bitmapimage_bytes(
                     image::ImageOutputFormat::Png,
-                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {

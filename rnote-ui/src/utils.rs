@@ -1,25 +1,5 @@
-use crate::config;
-
 use gtk4::{gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::AABB;
-use std::path::PathBuf;
-
-/// Returns the path to the app config dir
-pub fn app_config_dir() -> Option<PathBuf> {
-    let mut app_config_dirpath = glib::user_config_dir();
-    app_config_dirpath.push(config::APP_NAME);
-    let app_config_dir = gio::File::for_path(app_config_dirpath.clone());
-    match app_config_dir.make_directory_with_parents(None::<&gio::Cancellable>) {
-        Ok(()) => Some(app_config_dirpath),
-        Err(e) => match e.kind::<gio::IOErrorEnum>() {
-            Some(gio::IOErrorEnum::Exists) => Some(app_config_dirpath),
-            _ => {
-                log::error!("failed to create app_config_dir, {}", e);
-                None
-            }
-        },
-    }
-}
 
 #[derive(Debug)]
 pub enum FileType {
@@ -113,8 +93,8 @@ pub fn translate_aabb_to_widget(
     Some(AABB::new(mins, maxs))
 }
 
-/// Replace a file asynchronously
-pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
+/// Create a new file or replace if it already exists, asynchronously
+pub async fn create_replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
     let output_stream = file
         .replace_future(
             None,
@@ -125,7 +105,7 @@ pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Re
         .await
         .map_err(|e| {
             anyhow::anyhow!(
-                "file replace_future() failed in replace_file_future(), Err {}",
+                "file replace_future() failed in create_replace_file_future(), Err {}",
                 e
             )
         })?;
@@ -135,7 +115,7 @@ pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Re
         .await
         .map_err(|(_, e)| {
             anyhow::anyhow!(
-                "output_stream write_all_future() failed in replace_file_future(), Err {}",
+                "output_stream write_all_future() failed in create_replace_file_future(), Err {}",
                 e
             )
         })?;
@@ -144,7 +124,7 @@ pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Re
         .await
         .map_err(|e| {
             anyhow::anyhow!(
-                "output_stream close_future() failed in replace_file_future(), Err {}",
+                "output_stream close_future() failed in create_replace_file_future(), Err {}",
                 e
             )
         })?;

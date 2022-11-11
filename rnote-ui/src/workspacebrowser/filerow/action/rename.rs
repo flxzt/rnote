@@ -11,13 +11,16 @@ use gtk4::{
 
 use gettextrs::gettext;
 
-use crate::workspacebrowser::{widget_helper, FileRow};
+use crate::{
+    workspacebrowser::{widget_helper, FileRow},
+    RnoteAppWindow,
+};
 
 /// Creates a new `rename` action
-pub fn rename(filerow: &FileRow) -> gio::SimpleAction {
+pub fn rename(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 
-    rename_action.connect_activate(clone!(@weak filerow as filerow => move |_action_rename_file, _| {
+    rename_action.connect_activate(clone!(@weak filerow as filerow, @weak appwindow => move |_action_rename_file, _| {
         if let Some(current_file) = filerow.current_file() {
             if let Some(current_path) = current_file.path() {
                 if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
@@ -28,8 +31,8 @@ pub fn rename(filerow: &FileRow) -> gio::SimpleAction {
                     filerow.menubutton_box().append(&popover);
 
                     connect_entry(&entry, &apply_button, parent_path.clone());
-                    connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(),
-                        current_file.clone());
+                    connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(), current_path.clone(),
+                        current_file.clone(), &appwindow);
 
                     popover.popup();
                 }
@@ -78,18 +81,38 @@ fn connect_apply_button(
     popover: &Popover,
     entry: &Entry,
     parent_path: PathBuf,
+    current_path: PathBuf,
     current_file: gio::File,
+    appwindow: &RnoteAppWindow,
 ) {
-    apply_button.connect_clicked(clone!(@weak popover, @weak entry => move |_| {
-        let new_file_path = parent_path.join(entry.text().to_string());
-        let new_file = gio::File::for_path(new_file_path);
+    apply_button.connect_clicked(clone!(@weak popover, @weak entry, @weak appwindow => move |_| {
+        let new_path = parent_path.join(entry.text().to_string());
+        let new_file = gio::File::for_path(&new_path);
 
         if new_file.query_exists(None::<&gio::Cancellable>) {
             // Should have been caught earlier, but making sure
             log::error!("file already exists");
         } else {
+            // directory check must happen before moving the file or directory
+            let is_directory = current_path.is_dir();
+
             if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
                 log::error!("rename file failed with Err {}", e);
+            } else if let Some(current_output_file) = appwindow.canvas().output_file() {
+                if is_directory {
+                    // if the output file shares a sub-tree with the renamed directory, rename the directory in the output file's path too
+                    if let Some(current_output_path) = current_output_file.path() {
+                        if current_output_path.starts_with(&current_path) {
+                            let directory_index = parent_path.components().count();
+                            let new_output_path = new_path.join(current_output_path.components().skip(directory_index + 1).collect::<PathBuf>());
+
+                            appwindow.canvas().set_output_file(Some(gio::File::for_path(new_output_path)));
+                        }
+                    }
+                } else if current_output_file.equal(&current_file) {
+                    // if the output file is the current file, change the output file to the renamed file
+                    appwindow.canvas().set_output_file(Some(new_file));
+                }
             }
 
             popover.popdown();

@@ -190,7 +190,7 @@ impl ShaperPage {
     }
 
     pub fn shapebuildertype_arrow_row(&self) -> adw::ActionRow {
-        self.imp().shaperbuildertype_arrow_row.get()
+        self.imp().shapebuildertype_arrow_row.get()
     }
 
     pub fn shapebuildertype_line_row(&self) -> adw::ActionRow {

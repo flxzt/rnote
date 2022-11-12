@@ -62,15 +62,15 @@ pub type StoreSnapshot = HistoryEntry;
 impl StoreSnapshot {
     /// Processes the snapshot before it is used to save to a file
     pub fn process_before_saving(&mut self) {
+        // clear the selection components. These will get rebuild on import, no need to save them.
+        Arc::make_mut(&mut self.selection_components).clear();
+
         // Remove all trashed strokes
         let trashed_keys = self
             .trash_components
             .iter()
             .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
             .collect::<Vec<StrokeKey>>();
-
-        // clear the selection components. These will get rebuild on import, no need to save them.
-        Arc::make_mut(&mut self.selection_components).clear();
 
         for key in trashed_keys {
             Arc::make_mut(&mut self.stroke_components).remove(key);

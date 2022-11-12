@@ -15,7 +15,7 @@ impl RnoteAppWindow {
         let app = self.app();
 
         match crate::utils::FileType::lookup_file_type(file) {
-            crate::utils::FileType::RnoteFile | crate::utils::FileType::XoppFile => {
+            crate::utils::FileType::RnoteFile => {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
@@ -32,6 +32,11 @@ impl RnoteAppWindow {
                 if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
                 }
+            }
+            crate::utils::FileType::XoppFile => {
+                app.set_input_file(Some(file.clone()));
+
+                dialogs::import::dialog_import_xopp_w_prefs(self);
             }
             crate::utils::FileType::PdfFile => {
                 // Set as input file to hand it to the dialog
@@ -57,7 +62,6 @@ impl RnoteAppWindow {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let main_cx = glib::MainContext::default();
-        let app = self.app();
         let file = file.clone();
 
         match crate::utils::FileType::lookup_file_type(&file) {
@@ -72,25 +76,6 @@ impl RnoteAppWindow {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
-                                e
-                            );
-                        }
-                    }
-
-                    appwindow.finish_canvas_progressbar();
-                }));
-            }
-            crate::utils::FileType::XoppFile => {
-                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.start_pulsing_canvas_progressbar();
-
-                    let result = file.load_bytes_future().await;
-
-                    if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec(), file.path()) {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
-                            log::error!(
-                                "load_in_xopp_bytes() failed in load_in_file() with Err {}",
                                 e
                             );
                         }
@@ -137,6 +122,25 @@ impl RnoteAppWindow {
                     appwindow.finish_canvas_progressbar();
                 }));
             }
+            crate::utils::FileType::XoppFile => {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+                    appwindow.start_pulsing_canvas_progressbar();
+
+                    let result = file.load_bytes_future().await;
+
+                    if let Ok((file_bytes, _)) = result {
+                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
+                            log::error!(
+                                "load_in_xopp_bytes() failed in load_in_file() with Err {}",
+                                e
+                            );
+                        }
+                    }
+
+                    appwindow.finish_canvas_progressbar();
+                }));
+            }
             crate::utils::FileType::PdfFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
                     appwindow.start_pulsing_canvas_progressbar();
@@ -157,7 +161,7 @@ impl RnoteAppWindow {
                 }));
             }
             crate::utils::FileType::Folder => {
-                app.set_input_file(None);
+                self.app().set_input_file(None);
                 log::error!("tried to open a folder as a file.");
                 adw::prelude::ActionGroupExt::activate_action(
                     self,
@@ -166,7 +170,7 @@ impl RnoteAppWindow {
                 );
             }
             crate::utils::FileType::Unsupported => {
-                app.set_input_file(None);
+                self.app().set_input_file(None);
                 log::error!("tried to open a unsupported file type.");
                 adw::prelude::ActionGroupExt::activate_action(
                     self,
@@ -210,31 +214,6 @@ impl RnoteAppWindow {
         }
 
         self.canvas().set_unsaved_changes(false);
-        self.canvas().set_empty(false);
-        self.canvas().return_to_origin_page();
-
-        self.canvas().regenerate_background_pattern();
-        self.canvas().engine().borrow_mut().resize_autoexpand();
-        self.canvas().update_engine_rendering();
-
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
-
-        Ok(())
-    }
-
-    pub fn load_in_xopp_bytes<P>(&self, bytes: Vec<u8>, _path: Option<P>) -> anyhow::Result<()>
-    where
-        P: AsRef<Path>,
-    {
-        self.canvas()
-            .engine()
-            .borrow_mut()
-            .open_from_xopp_bytes(bytes)?;
-
-        self.app().set_input_file(None);
-        self.canvas().set_output_file(None);
-
-        self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
         self.canvas().return_to_origin_page();
 
@@ -312,6 +291,26 @@ impl RnoteAppWindow {
         self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
+
+        Ok(())
+    }
+
+    pub fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
+        self.canvas()
+            .engine()
+            .borrow_mut()
+            .open_from_xopp_bytes(bytes)?;
+
+        self.app().set_input_file(None);
+        self.canvas().set_output_file(None);
+        self.canvas().set_unsaved_changes(true);
+        self.canvas().set_empty(false);
+        self.canvas().return_to_origin_page();
+        self.canvas().regenerate_background_pattern();
+        self.canvas().engine().borrow_mut().resize_autoexpand();
+        self.canvas().update_engine_rendering();
+
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 
         Ok(())
     }

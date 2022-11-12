@@ -97,11 +97,27 @@ impl Default for PdfImportPrefs {
     }
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename = "xopp_import_prefs")]
+pub struct XoppImportPrefs {
+    /// The import DPI
+    #[serde(rename = "pages_type")]
+    pub dpi: f64,
+}
+
+impl Default for XoppImportPrefs {
+    fn default() -> Self {
+        Self { dpi: 96.0 }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "import_prefs")]
 pub struct ImportPrefs {
     #[serde(rename = "pdf_import_prefs")]
     pub pdf_import_prefs: PdfImportPrefs,
+    #[serde(rename = "xopp_import_prefs")]
+    pub xopp_import_prefs: XoppImportPrefs,
 }
 
 impl RnoteEngine {
@@ -145,6 +161,8 @@ impl RnoteEngine {
 
     /// Opens a  Xournal++ .xopp file, and replaces the current state with it.
     pub fn open_from_xopp_bytes(&mut self, bytes: Vec<u8>) -> anyhow::Result<()> {
+        let xopp_import_prefs = self.import_prefs.xopp_import_prefs;
+
         let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
 
         // Extract the largest width of all pages, add together all heights
@@ -163,16 +181,33 @@ impl RnoteEngine {
         let mut format = Format::default();
         let mut background = Background::default();
         let mut store = StrokeStore::default();
-        // We set the doc dpi to the hardcoded xournal++ dpi, so no need to convert values or coordinates anywhere
-        doc.format.dpi = xoppformat::XoppFile::DPI;
+
+        // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
+        format.dpi = xopp_import_prefs.dpi;
 
         doc.x = 0.0;
         doc.y = 0.0;
-        doc.width = doc_width;
-        doc.height = doc_height;
+        doc.width = crate::utils::convert_value_dpi(
+            doc_width,
+            xoppformat::XoppFile::DPI,
+            xopp_import_prefs.dpi,
+        );
+        doc.height = crate::utils::convert_value_dpi(
+            doc_height,
+            xoppformat::XoppFile::DPI,
+            xopp_import_prefs.dpi,
+        );
 
-        format.width = doc_width;
-        format.height = doc_height / f64::from(no_pages);
+        format.width = crate::utils::convert_value_dpi(
+            doc_width,
+            xoppformat::XoppFile::DPI,
+            xopp_import_prefs.dpi,
+        );
+        format.height = crate::utils::convert_value_dpi(
+            doc_height / (no_pages as f64),
+            xoppformat::XoppFile::DPI,
+            xopp_import_prefs.dpi,
+        );
 
         if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
             if let xoppformat::XoppBackgroundType::Solid {
@@ -180,7 +215,7 @@ impl RnoteEngine {
                 style: _style,
             } = &first_page.background.bg_type
             {
-                // Background styles would not align with Rnotes background patterns, so everything is plain
+                // Xopp background styles are not compatible with Rnotes, so everything is plain for now
                 background.pattern = background::PatternStyle::None;
             }
         }
@@ -192,7 +227,7 @@ impl RnoteEngine {
             for layers in page.layers.into_iter() {
                 // import strokes
                 for new_xoppstroke in layers.strokes.into_iter() {
-                    match Stroke::from_xoppstroke(new_xoppstroke, offset) {
+                    match Stroke::from_xoppstroke(new_xoppstroke, offset, xopp_import_prefs.dpi) {
                         Ok((new_stroke, layer)) => {
                             store.insert_stroke(new_stroke, Some(layer));
                         }
@@ -207,7 +242,7 @@ impl RnoteEngine {
 
                 // import images
                 for new_xoppimage in layers.images.into_iter() {
-                    match Stroke::from_xoppimage(new_xoppimage, offset) {
+                    match Stroke::from_xoppimage(new_xoppimage, offset, xopp_import_prefs.dpi) {
                         Ok(new_image) => {
                             store.insert_stroke(new_image, None);
                         }
@@ -222,7 +257,11 @@ impl RnoteEngine {
             }
 
             // Only add to y offset, results in vertical pages
-            offset[1] += page.height;
+            offset[1] += crate::utils::convert_value_dpi(
+                page.height,
+                xoppformat::XoppFile::DPI,
+                xopp_import_prefs.dpi,
+            );
         }
 
         doc.background = background;

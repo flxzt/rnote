@@ -212,8 +212,8 @@ mod imp {
             self.format_dpi_adj.connect_value_changed(
                 clone!(@weak obj as settings_panel => move |format_dpi_adj| {
                     settings_panel.imp().update_temporary_format_from_rows();
-                    settings_panel.format_width_unitentry().set_dpi(format_dpi_adj.value());
-                    settings_panel.format_height_unitentry().set_dpi(format_dpi_adj.value());
+                    settings_panel.imp().format_width_unitentry.set_dpi(format_dpi_adj.value());
+                    settings_panel.imp().format_height_unitentry.set_dpi(format_dpi_adj.value());
                 }),
             );
         }
@@ -439,16 +439,6 @@ impl SettingsPanel {
         self.imp().settings_scroller.clone()
     }
 
-    pub fn general_format_border_color_choosebutton(&self) -> ColorButton {
-        self.imp().general_format_border_color_choosebutton.clone()
-    }
-
-    pub fn general_permanently_hide_scrollbars_switch(&self) -> Switch {
-        self.imp()
-            .general_permanently_hide_scrollbars_switch
-            .clone()
-    }
-
     pub fn general_regular_cursor_picker_image(&self) -> Image {
         self.imp().general_regular_cursor_picker_image.clone()
     }
@@ -457,46 +447,17 @@ impl SettingsPanel {
         self.imp().general_drawing_cursor_picker_image.clone()
     }
 
-    pub fn format_width_unitentry(&self) -> UnitEntry {
-        self.imp().format_width_unitentry.clone()
-    }
-
-    pub fn format_height_unitentry(&self) -> UnitEntry {
-        self.imp().format_height_unitentry.clone()
-    }
-
-    pub fn format_dpi_adj(&self) -> Adjustment {
-        self.imp().format_dpi_adj.clone()
-    }
-
-    pub fn background_color_choosebutton(&self) -> ColorButton {
-        self.imp().background_color_choosebutton.clone()
-    }
-
-    pub fn background_patterns_row(&self) -> adw::ComboRow {
-        self.imp().background_patterns_row.clone()
-    }
-
-    pub fn background_pattern_color_choosebutton(&self) -> ColorButton {
-        self.imp().background_pattern_color_choosebutton.clone()
-    }
-
-    pub fn background_pattern_width_unitentry(&self) -> UnitEntry {
-        self.imp().background_pattern_width_unitentry.clone()
-    }
-
-    pub fn background_pattern_height_unitentry(&self) -> UnitEntry {
-        self.imp().background_pattern_height_unitentry.clone()
-    }
-
     pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        self.load_general(appwindow);
-        self.load_format(appwindow);
-        self.load_background(appwindow);
-        self.load_shortcuts(appwindow);
+        *self.imp().temporary_format.borrow_mut() =
+            appwindow.canvas().engine().borrow().document.format.clone();
+
+        self.refresh_general(appwindow);
+        self.fresh_format(appwindow);
+        self.refresh_background(appwindow);
+        self.refresh_shortcuts(appwindow);
     }
 
-    pub fn load_general(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_general(&self, appwindow: &RnoteAppWindow) {
         let format_border_color = appwindow
             .canvas()
             .engine()
@@ -505,27 +466,30 @@ impl SettingsPanel {
             .format
             .border_color;
 
-        self.general_format_border_color_choosebutton()
+        self.imp()
+            .general_format_border_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
-    pub fn load_format(&self, appwindow: &RnoteAppWindow) {
+    fn fresh_format(&self, appwindow: &RnoteAppWindow) {
         let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
-        self.format_dpi_adj().set_value(format.dpi);
+        self.imp().format_dpi_adj.set_value(format.dpi);
 
-        self.format_width_unitentry()
+        self.imp()
+            .format_width_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.format_width_unitentry().set_value(format.width);
+        self.imp().format_width_unitentry.set_value(format.width);
 
-        self.format_height_unitentry()
+        self.imp()
+            .format_height_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.format_height_unitentry().set_value(format.height);
+        self.imp().format_height_unitentry.set_value(format.height);
     }
 
-    pub fn load_background(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_background(&self, appwindow: &RnoteAppWindow) {
         let background = appwindow
             .canvas()
             .engine()
@@ -535,30 +499,38 @@ impl SettingsPanel {
             .clone();
         let format = appwindow.canvas().engine().borrow().document.format.clone();
 
-        self.background_color_choosebutton()
+        self.imp()
+            .background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
 
         self.set_background_pattern(background.pattern);
-        self.background_pattern_color_choosebutton()
+        self.imp()
+            .background_pattern_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
 
         // Background pattern Unit Entries
-        self.background_pattern_width_unitentry()
+        self.imp()
+            .background_pattern_width_unitentry
             .set_dpi(format.dpi);
-        self.background_pattern_width_unitentry()
+        self.imp()
+            .background_pattern_width_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.background_pattern_width_unitentry()
+        self.imp()
+            .background_pattern_width_unitentry
             .set_value(background.pattern_size[0]);
 
-        self.background_pattern_height_unitentry()
+        self.imp()
+            .background_pattern_height_unitentry
             .set_dpi(format.dpi);
-        self.background_pattern_height_unitentry()
+        self.imp()
+            .background_pattern_height_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.background_pattern_height_unitentry()
+        self.imp()
+            .background_pattern_height_unitentry
             .set_value(background.pattern_size[1]);
     }
 
-    pub fn load_shortcuts(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_shortcuts(&self, appwindow: &RnoteAppWindow) {
         let current_shortcuts = appwindow
             .canvas()
             .engine()
@@ -669,23 +641,9 @@ impl SettingsPanel {
         // revert format
         self.imp().format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
-                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().engine().borrow().document.format.clone();
-                let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
-
-                settings_panel.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
-
-                settings_panel.imp().format_dpi_adj.set_value(revert_format.dpi);
-
-                // Setting the unit dropdowns to Px
-                settings_panel.format_width_unitentry().set_unit(format::MeasureUnit::Px);
-                settings_panel.format_height_unitentry().set_unit(format::MeasureUnit::Px);
-
-                // Setting the entries, which have callbacks to update the temporary format
-                settings_panel.format_width_unitentry()
-                    .set_value(revert_format.width);
-                settings_panel.format_height_unitentry()
-                    .set_value(revert_format.height);
-            }));
+                settings_panel.revert_format(&appwindow);
+            }),
+        );
 
         // Apply format
         self.imp().format_apply_button.get().connect_clicked(
@@ -713,20 +671,20 @@ impl SettingsPanel {
 
             match pattern {
                 PatternStyle::None => {
-                    settings_panel.background_pattern_width_unitentry().set_sensitive(false);
-                    settings_panel.background_pattern_height_unitentry().set_sensitive(false);
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(false);
                 },
                 PatternStyle::Lines => {
-                    settings_panel.background_pattern_width_unitentry().set_sensitive(false);
-                    settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
                 },
                 PatternStyle::Grid => {
-                    settings_panel.background_pattern_width_unitentry().set_sensitive(true);
-                    settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(true);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
                 },
                 PatternStyle::Dots => {
-                    settings_panel.background_pattern_width_unitentry().set_sensitive(true);
-                    settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(true);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
                 },
             }
 
@@ -756,7 +714,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = settings_panel.background_pattern_width_unitentry().value_in_px();
+                    pattern_size[0] = settings_panel.imp().background_pattern_width_unitentry.value_in_px();
 
                     appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
@@ -771,7 +729,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = settings_panel.background_pattern_height_unitentry().value_in_px();
+                    pattern_size[1] = settings_panel.imp().background_pattern_height_unitentry.value_in_px();
 
                     appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
@@ -808,5 +766,31 @@ impl SettingsPanel {
             appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
+    }
+
+    fn revert_format(&self, appwindow: &RnoteAppWindow) {
+        *self.imp().temporary_format.borrow_mut() =
+            appwindow.canvas().engine().borrow().document.format.clone();
+        let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
+
+        self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
+
+        self.imp().format_dpi_adj.set_value(revert_format.dpi);
+
+        // Setting the unit dropdowns to Px
+        self.imp()
+            .format_width_unitentry
+            .set_unit(format::MeasureUnit::Px);
+        self.imp()
+            .format_height_unitentry
+            .set_unit(format::MeasureUnit::Px);
+
+        // Setting the entries, which have callbacks to update the temporary format
+        self.imp()
+            .format_width_unitentry
+            .set_value(revert_format.width);
+        self.imp()
+            .format_height_unitentry
+            .set_value(revert_format.height);
     }
 }

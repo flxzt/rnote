@@ -5,9 +5,9 @@ use p2d::bounding_volume::AABB;
 pub enum FileType {
     Folder,
     RnoteFile,
-    XoppFile,
     VectorImageFile,
     BitmapImageFile,
+    XoppFile,
     PdfFile,
     Unsupported,
 }
@@ -26,15 +26,14 @@ impl FileType {
                             "application/rnote" => {
                                 return Self::RnoteFile;
                             }
-                            "application/x-xopp" => {
-                                log::debug!(" is a xopp file ");
-                                return Self::XoppFile;
-                            }
                             "image/svg+xml" => {
                                 return Self::VectorImageFile;
                             }
                             "image/png" | "image/jpeg" => {
                                 return Self::BitmapImageFile;
+                            }
+                            "application/x-xopp" => {
+                                return Self::XoppFile;
                             }
                             "application/pdf" => {
                                 return Self::PdfFile;

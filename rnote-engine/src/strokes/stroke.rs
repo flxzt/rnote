@@ -174,8 +174,24 @@ impl Stroke {
     pub fn from_xoppstroke(
         stroke: xoppformat::XoppStroke,
         offset: na::Vector2<f64>,
+        target_dpi: f64,
     ) -> Result<(Self, StrokeLayer), anyhow::Error> {
-        let mut widths = stroke.width;
+        let mut widths: Vec<f64> = stroke
+            .width
+            .into_iter()
+            .map(|w| crate::utils::convert_value_dpi(w, xoppformat::XoppFile::DPI, target_dpi))
+            .collect();
+
+        let coords: Vec<na::Vector2<f64>> = stroke
+            .coords
+            .into_iter()
+            .map(|c| {
+                na::vector![
+                    crate::utils::convert_value_dpi(c[0], xoppformat::XoppFile::DPI, target_dpi),
+                    crate::utils::convert_value_dpi(c[1], xoppformat::XoppFile::DPI, target_dpi)
+                ]
+            })
+            .collect();
 
         if widths.is_empty() {
             return Err(anyhow::anyhow!(
@@ -220,16 +236,15 @@ impl Stroke {
                 .for_each(|coord_width| *coord_width /= max_width);
         } else {
             // If there are no coordinate widths, we fill the widths vector with pressure 1.0 for a constant width stroke.
-            widths = (0..stroke.coords.len()).map(|_| 1.0).collect();
+            widths = (0..coords.len()).map(|_| 1.0).collect();
         };
 
         smooth_options.stroke_width = stroke_width;
 
-        let penpath = stroke
-            .coords
+        let penpath = coords
             .iter()
             .zip(widths.iter())
-            .zip(stroke.coords.iter().skip(1).zip(widths.iter().skip(1)))
+            .zip(coords.iter().skip(1).zip(widths.iter().skip(1)))
             .map(
                 |((start_pos, start_pressure), (end_pos, end_pressure))| Segment::Line {
                     start: Element::new(start_pos + offset, *start_pressure),
@@ -249,10 +264,33 @@ impl Stroke {
     pub fn from_xoppimage(
         xopp_image: xoppformat::XoppImage,
         offset: na::Vector2<f64>,
+        target_dpi: f64,
     ) -> Result<Self, anyhow::Error> {
         let bounds = AABB::new(
-            na::point![xopp_image.left, xopp_image.top],
-            na::point![xopp_image.right, xopp_image.bottom],
+            na::point![
+                crate::utils::convert_value_dpi(
+                    xopp_image.left,
+                    xoppformat::XoppFile::DPI,
+                    target_dpi
+                ),
+                crate::utils::convert_value_dpi(
+                    xopp_image.top,
+                    xoppformat::XoppFile::DPI,
+                    target_dpi
+                )
+            ],
+            na::point![
+                crate::utils::convert_value_dpi(
+                    xopp_image.right,
+                    xoppformat::XoppFile::DPI,
+                    target_dpi
+                ),
+                crate::utils::convert_value_dpi(
+                    xopp_image.bottom,
+                    xoppformat::XoppFile::DPI,
+                    target_dpi
+                )
+            ],
         )
         .translate(offset);
 

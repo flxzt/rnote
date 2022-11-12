@@ -5,7 +5,7 @@ use gtk4::{
     Label, ResponseType, SpinButton, ToggleButton,
 };
 use num_traits::ToPrimitive;
-use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
+use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 
 use crate::{config, RnoteAppWindow};
 
@@ -73,9 +73,8 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
 pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
-    filter.add_mime_type("application/x-xopp");
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(&gettext(".rnote / .xopp File")));
+    filter.set_name(Some(&gettext(".rnote File")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Open file"))
@@ -134,11 +133,12 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     filter.add_mime_type("image/png");
     filter.add_mime_type("image/jpeg");
     filter.add_mime_type("application/pdf");
+    filter.add_mime_type("application/x-xopp");
     filter.add_pattern("*.svg");
     filter.add_pattern("*.png");
     filter.add_pattern("*.jpg");
     filter.add_pattern("*.pdf");
-    filter.set_name(Some(&gettext("PNG / SVG / JPG / PDF file")));
+    filter.set_name(Some(&gettext("Xopp / PNG / SVG / JPG / PDF file")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Import file"))
@@ -195,6 +195,8 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
     let pdf_import_page_spacing_row: adw::ComboRow =
         builder.object("pdf_import_page_spacing_row").unwrap();
 
+    dialog_import_pdf.set_transient_for(Some(appwindow));
+
     let pdf_import_prefs = appwindow
         .canvas()
         .engine()
@@ -222,7 +224,26 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
         .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
         .build();
 
-    dialog_import_pdf.set_transient_for(Some(appwindow));
+    // Update preferences
+    pdf_import_as_bitmap_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
+        let pages_type = if toggle.is_active() {
+            PdfImportPagesType::Bitmap
+        } else {
+            PdfImportPagesType::Vector
+        };
+
+        appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = pages_type;
+    }));
+
+    pdf_import_page_spacing_row.connect_selected_notify(clone!(@weak appwindow => move |row| {
+        let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
+
+        appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
+    }));
+
+    pdf_import_width_perc_spinbutton.connect_value_changed(clone!(@weak appwindow => move |spinbutton| {
+        appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
+    }));
 
     if let Some(input_file) = appwindow.app().input_file() {
         if let Ok(poppler_doc) =
@@ -286,20 +307,6 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
 
                     let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
 
-                    // Save the preferences into the engine before loading the file
-                    let pages_type = if pdf_import_as_bitmap_toggle.is_active() {
-                        PdfImportPagesType::Bitmap
-                    } else {
-                        PdfImportPagesType::Vector
-                    };
-                    let page_spacing = PdfImportPageSpacing::try_from(pdf_import_page_spacing_row.selected()).unwrap();
-
-                    appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs = PdfImportPrefs {
-                        page_width_perc: pdf_import_width_perc_spinbutton.value(),
-                        pages_type,
-                        page_spacing,
-                    };
-
                     glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
                         appwindow.start_pulsing_canvas_progressbar();
 
@@ -333,5 +340,72 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
     );
 
         dialog_import_pdf.show();
+    }
+}
+
+pub fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
+    );
+    let dialog: Dialog = builder.object("dialog_import_xopp_w_prefs").unwrap();
+    let dpi_spinbutton: SpinButton = builder.object("xopp_import_dpi_spinbutton").unwrap();
+
+    dialog.set_transient_for(Some(appwindow));
+
+    let xopp_import_prefs = appwindow
+        .canvas()
+        .engine()
+        .borrow()
+        .import_prefs
+        .xopp_import_prefs;
+
+    // Set initial widget state for preference
+    dpi_spinbutton.set_value(xopp_import_prefs.dpi);
+
+    // Update preferences
+    dpi_spinbutton.connect_changed(clone!(@weak appwindow => move |spinbutton| {
+        appwindow.canvas().engine().borrow_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
+    }));
+
+    if let Some(input_file) = appwindow.app().input_file() {
+        dialog.connect_response(
+        clone!(@weak appwindow => move |dialog, responsetype| {
+            match responsetype {
+                ResponseType::Apply => {
+                    dialog.close();
+
+                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
+                        appwindow.start_pulsing_canvas_progressbar();
+
+                        let result = input_file.load_bytes_future().await;
+
+                        if let Ok((file_bytes, _)) = result {
+                            if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Xopp file failed.").to_variant()));
+                                log::error!(
+                                    "load_in_xopp_bytes() failed in dialog import xopp with Err {}",
+                                    e
+                                );
+                            }
+                        }
+
+                        appwindow.finish_canvas_progressbar();
+                    }));
+                }
+                ResponseType::Cancel => {
+                    dialog.close();
+
+                    appwindow.app().set_input_file(None);
+                }
+                _ => {
+                    dialog.close();
+
+                    appwindow.app().set_input_file(None);
+                }
+            }
+        }),
+    );
+
+        dialog.show();
     }
 }

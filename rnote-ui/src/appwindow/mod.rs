@@ -1153,11 +1153,7 @@ impl RnoteAppWindow {
 
         // Loading in input file, if Some
         if let Some(input_file) = self.app().input_file() {
-            if self.unsaved_changes() {
-                dialogs::import::dialog_open_overwrite(self);
-            } else if let Err(e) = self.load_in_file(&input_file, None) {
-                log::error!("failed to load in input file, {}", e);
-            }
+            self.open_file_w_dialogs(&input_file, None);
         }
 
         // Initial titles

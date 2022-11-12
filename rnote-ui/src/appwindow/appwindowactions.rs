@@ -386,7 +386,7 @@ impl RnoteAppWindow {
             @strong action_doc_layout,
             @strong action_format_borders,
             => move |_action_refresh_ui_for_engine, _| {
-            // Avoids borrow errors
+            // Avoids already borrowed
             let format = appwindow.canvas().engine().borrow().document.format.clone();
             let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
             let pen_sounds = appwindow.canvas().engine().borrow().pen_sounds();
@@ -404,7 +404,6 @@ impl RnoteAppWindow {
                 action_pen_sounds.change_state(&pen_sounds.to_variant());
                 action_format_borders.change_state(&format.show_borders.to_variant());
             }
-
 
             // Current pen
             match pen_style {
@@ -440,25 +439,12 @@ impl RnoteAppWindow {
                 }
             }
 
-            // Brush page
             appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
-
-            // Shaper page
             appwindow.penssidebar().shaper_page().refresh_ui(&appwindow);
-
-            // Typewriter page
             appwindow.penssidebar().typewriter_page().refresh_ui(&appwindow);
-
-            // Eraser page
             appwindow.penssidebar().eraser_page().refresh_ui(&appwindow);
-
-            // Selector
             appwindow.penssidebar().selector_page().refresh_ui(&appwindow);
-
-            // Tools page
             appwindow.penssidebar().tools_page().refresh_ui(&appwindow);
-
-            // Settings panel
             appwindow.settings_panel().refresh_ui(&appwindow);
         }));
 

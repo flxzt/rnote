@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-12 14:51+0100\n"
-"PO-Revision-Date: 2022-11-10 11:14+0000\n"
+"PO-Revision-Date: 2022-11-12 20:14+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -264,10 +264,8 @@ msgstr "Esporta documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:133
 #: rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "Esporta documento come SVG"
+msgstr "Esporta pagine del documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:344
 #: rnote-ui/src/dialogs/export.rs:735
@@ -505,17 +503,13 @@ msgstr "Impostare se lo sfondo dovrebbe essere esportato"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:266
 #: rnote-ui/data/ui/dialogs/export.ui:435
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
-msgstr "Modello"
+msgstr "Con modello"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
-msgstr "Impostare se lo sfondo dovrebbe essere esportato"
+msgstr "Impostare se il modello di sfondo dovrebbe essere esportato"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:277
@@ -544,16 +538,12 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:212
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "Crea cartella"
+msgstr "Esporta cartella"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "Selezionare il file da esportare"
+msgstr "Selezionare la cartella di esportazione"
 
 #: rnote-ui/data/ui/dialogs/export.ui:244
 #, fuzzy
@@ -576,7 +566,7 @@ msgstr "Jpeg"
 #: rnote-ui/data/ui/dialogs/export.ui:292
 #: rnote-ui/data/ui/dialogs/export.ui:461
 msgid "Bitmap scalefactor"
-msgstr ""
+msgstr "Fattore di scala bitmap"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
@@ -584,6 +574,8 @@ msgid ""
 "Set the scalefactor of the bitmap image in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Impostare il fattore di scala dell'immagine bitmap in relazione\n"
+"alle dimensioni effettive del documento"
 
 #: rnote-ui/data/ui/dialogs/export.ui:314
 #: rnote-ui/data/ui/dialogs/export.ui:483
@@ -1305,15 +1297,15 @@ msgstr "Rettangolo"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "2D coordinate system"
-msgstr ""
+msgstr "Sistema di coordinate 2D"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
 msgid "3D coordinate system"
-msgstr ""
+msgstr "Sistema di coordinate 3D"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "Sistema di coordinate 2D a singolo quadrante"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "Ellipse"
@@ -1515,22 +1507,18 @@ msgid "Export document failed, no file selected."
 msgstr "Esportazione del documento fallita, nessun file è stato selezionato."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Export document pages failed."
-msgstr "Esportazione del documento fallita."
+msgstr "Esportazione delle pagine del documento fallita."
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
-msgstr "Avvenuta esportazione del documento."
+msgstr "Avvenuta esportazione delle pagine del documento."
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
-msgstr "Esportazione del documento fallita, nessun file è stato selezionato."
+msgstr ""
+"Esportazione delle pagine del documento fallita, nessuna cartella è stata "
+"selezionata."
 
 #: rnote-ui/src/dialogs/export.rs:711
 msgid "Export selection failed."

@@ -310,9 +310,9 @@ checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
 name = "bindgen"
-version = "0.59.2"
+version = "0.61.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2bd2a9a458e8f4304c52c43ebb0cfbd520289f8379a52e329a38afda99bf8eb8"
+checksum = "8a022e58a142a46fea340d68012b9201c094e93ec3d033a944a24f8fd4a4f09a"
 dependencies = [
  "bitflags",
  "cexpr",
@@ -325,6 +325,7 @@ dependencies = [
  "regex",
  "rustc-hash",
  "shlex",
+ "syn",
 ]
 
 [[package]]
@@ -616,9 +617,9 @@ dependencies = [
 
 [[package]]
 name = "coreaudio-sys"
-version = "0.2.10"
+version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3dff444d80630d7073077d38d40b4501fd518bd2b922c2a55edcc8b0f7be57e6"
+checksum = "1a9444b94b8024feecc29e01a9706c69c1e26bfee480221c90764200cfd778fb"
 dependencies = [
  "bindgen",
 ]
@@ -2842,7 +2843,7 @@ checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 [[package]]
 name = "piet"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#de9a2b7270424b9f49ac9fa81f0f1aa7387de4d5"
+source = "git+https://github.com/flxzt/piet?branch=rnote#d8d894769a47fb7da399c1bfcbd750f9a9d0fe09"
 dependencies = [
  "kurbo",
  "unic-bidi",
@@ -2851,7 +2852,7 @@ dependencies = [
 [[package]]
 name = "piet-cairo"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#de9a2b7270424b9f49ac9fa81f0f1aa7387de4d5"
+source = "git+https://github.com/flxzt/piet?branch=rnote#d8d894769a47fb7da399c1bfcbd750f9a9d0fe09"
 dependencies = [
  "cairo-rs",
  "pango",
@@ -2864,7 +2865,7 @@ dependencies = [
 [[package]]
 name = "piet-svg"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#de9a2b7270424b9f49ac9fa81f0f1aa7387de4d5"
+source = "git+https://github.com/flxzt/piet?branch=rnote#d8d894769a47fb7da399c1bfcbd750f9a9d0fe09"
 dependencies = [
  "base64",
  "font-kit",

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:26+0100\n"
-"PO-Revision-Date: 2022-11-03 20:11+0000\n"
+"POT-Creation-Date: 2022-11-09 08:37+0100\n"
+"PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -92,11 +92,11 @@ msgstr "Ontwikkelaarsmenu"
 msgid "Visual debugging"
 msgstr "Visuele foutopsporing"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:483
+#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:495
 msgid "Export engine state"
 msgstr "Aandrijvingsstatus exporteren"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:547
+#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:559
 msgid "Export engine config"
 msgstr "Aandrijvingsconfiguratie exporteren"
 
@@ -222,7 +222,7 @@ msgstr "Formaatkaders tonen"
 msgid "Pen sounds"
 msgstr "Pengeluiden"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:6
+#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear document"
 msgstr "Document wissen"
 
@@ -231,13 +231,13 @@ msgid "New"
 msgstr "Nieuw"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/src/dialogs/import.rs:84
 msgid "Open"
 msgstr "Openen"
 
-#: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs.ui:24
-#: rnote-ui/data/ui/dialogs.ui:36 rnote-ui/data/ui/dialogs.ui:48
-#: rnote-ui/src/dialogs/export.rs:24
+#: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs/dialogs.ui:23
+#: rnote-ui/data/ui/dialogs/dialogs.ui:35
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47 rnote-ui/src/dialogs/export.rs:24
 msgid "Save"
 msgstr "Opslaan"
 
@@ -249,7 +249,7 @@ msgstr "Opslaan als"
 msgid "Print"
 msgstr "Afdrukken"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:144
 msgid "Import file"
 msgstr "Bestand importeren"
 
@@ -257,15 +257,13 @@ msgstr "Bestand importeren"
 msgid "Export…"
 msgstr "Exporteren…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
-#: rnote-ui/src/dialogs/export.rs:406
-#, fuzzy
-#| msgid "Export Selection"
+#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:123
+#: rnote-ui/src/dialogs/export.rs:418
 msgid "Export selection"
 msgstr "Selectie exporteren"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
-#: rnote-ui/src/dialogs/export.rs:203
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:7
+#: rnote-ui/src/dialogs/export.rs:204
 msgid "Export document"
 msgstr "Document exporteren"
 
@@ -279,37 +277,39 @@ msgstr "Aanpassen aan paginabreedte"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/export.rs:206
-#: rnote-ui/src/dialogs/export.rs:409
+#: rnote-ui/src/dialogs/mod.rs:234 rnote-ui/src/dialogs/export.rs:207
+#: rnote-ui/src/dialogs/export.rs:421
 msgid "Select"
 msgstr "Selecteren"
 
-#: rnote-ui/data/ui/dialogs.ui:7
+#: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
 msgstr "Hierdoor wordt het gehele werkblad leeggemaakt. Weet u het zeker?"
 
-#: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:22
-#: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
-#: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
-#: rnote-ui/data/ui/dialogs.ui:349 rnote-ui/data/ui/dialogs.ui:481
+#: rnote-ui/data/ui/dialogs/dialogs.ui:10
+#: rnote-ui/data/ui/dialogs/dialogs.ui:21
+#: rnote-ui/data/ui/dialogs/dialogs.ui:33
+#: rnote-ui/data/ui/dialogs/dialogs.ui:45
+#: rnote-ui/data/ui/dialogs/dialogs.ui:57 rnote-ui/data/ui/dialogs/import.ui:10
+#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:126
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/import.rs:84
-#: rnote-ui/src/dialogs/import.rs:147 rnote-ui/src/dialogs/export.rs:25
-#: rnote-ui/src/dialogs/export.rs:207 rnote-ui/src/dialogs/export.rs:410
-#: rnote-ui/src/dialogs/export.rs:487 rnote-ui/src/dialogs/export.rs:551
+#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/import.rs:85
+#: rnote-ui/src/dialogs/import.rs:148 rnote-ui/src/dialogs/export.rs:25
+#: rnote-ui/src/dialogs/export.rs:208 rnote-ui/src/dialogs/export.rs:422
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:563
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: rnote-ui/data/ui/dialogs.ui:12
+#: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
 msgstr "Leegmaken"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:892
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:892
 msgid "New Document"
 msgstr "Nieuw document"
 
-#: rnote-ui/data/ui/dialogs.ui:18
+#: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
@@ -317,27 +317,28 @@ msgstr ""
 "Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
 "werkblad opslaan?"
 
-#: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
-#: rnote-ui/data/ui/dialogs.ui:47
+#: rnote-ui/data/ui/dialogs/dialogs.ui:22
+#: rnote-ui/data/ui/dialogs/dialogs.ui:34
+#: rnote-ui/data/ui/dialogs/dialogs.ui:46
 msgid "Discard"
 msgstr "Niet opslaan"
 
-#: rnote-ui/data/ui/dialogs.ui:29
+#: rnote-ui/data/ui/dialogs/dialogs.ui:28
 msgid "Quit Application"
 msgstr "Toepassing afsluiten"
 
-#: rnote-ui/data/ui/dialogs.ui:30
+#: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
 msgstr ""
 "Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
 "werkblad opslaan?"
 
-#: rnote-ui/data/ui/dialogs.ui:41
+#: rnote-ui/data/ui/dialogs/dialogs.ui:40
 msgid "Open File"
 msgstr "Bestand openen"
 
-#: rnote-ui/data/ui/dialogs.ui:42
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
@@ -345,202 +346,197 @@ msgstr ""
 "Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
 "werkblad opslaan?"
 
-#: rnote-ui/data/ui/dialogs.ui:55
+#: rnote-ui/data/ui/dialogs/dialogs.ui:54
+#: rnote-ui/data/ui/workspacebrowser.ui:180
+msgid "Edit workspace"
+msgstr "Werkblad bewerken"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:62 rnote-ui/data/ui/settingspanel.ui:277
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+msgid "Apply"
+msgstr "Toepassen"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:104
+msgid "Workspace Name"
+msgstr "Werkbladnaam"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:109
+msgid "Icon"
+msgstr "Pictogram"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:110
+msgid "Change the workspace icon"
+msgstr "Wijzig het werkbladpictogram"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:129
+#: rnote-ui/data/ui/settingspanel.ui:293
+msgid "Color"
+msgstr "Kleur"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:130
+msgid "Change the workspace color"
+msgstr "Wijzig de werkbladkleur"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:143
+msgid "Directory"
+msgstr "Map"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:144
+msgid "Change the workspace directory"
+msgstr "Wijzig de werkbladmap"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:153 rnote-ui/src/dialogs/mod.rs:295
+msgid "- no directory selected -"
+msgstr "- Geen map gekozen -"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:167 rnote-ui/src/dialogs/mod.rs:231
+msgid "Change workspace directory"
+msgstr "Werkbladmap wijzigen"
+
+#: rnote-ui/data/ui/dialogs/import.ui:7
 msgid "Import PDF"
 msgstr "Pdf-bestand importeren"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/data/ui/dialogs/import.ui:15 rnote-ui/src/dialogs/import.rs:147
 msgid "Import"
 msgstr "Importeren"
 
-#: rnote-ui/data/ui/dialogs.ui:127
+#: rnote-ui/data/ui/dialogs/import.ui:79
 msgid "PDF import preferences"
 msgstr "Pdf-importvoorkeuren"
 
-#: rnote-ui/data/ui/dialogs.ui:131
+#: rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Start page"
 msgstr "Eerste pagina"
 
-#: rnote-ui/data/ui/dialogs.ui:146
+#: rnote-ui/data/ui/dialogs/import.ui:98
 msgid "End page"
 msgstr "Laatste pagina"
 
-#: rnote-ui/data/ui/dialogs.ui:161
+#: rnote-ui/data/ui/dialogs/import.ui:113
 msgid "Pages type"
 msgstr "Soort pagina's"
 
-#: rnote-ui/data/ui/dialogs.ui:162
+#: rnote-ui/data/ui/dialogs/import.ui:114
 msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgstr ""
 "Geef aan of pdf-bestanden dienen te worden geïmporteerd als vector- of "
 "bitmapafbeeldingen"
 
-#: rnote-ui/data/ui/dialogs.ui:174
+#: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Vector"
 msgstr "Vector"
 
-#: rnote-ui/data/ui/dialogs.ui:181
+#: rnote-ui/data/ui/dialogs/import.ui:133
 msgid "Bitmap"
 msgstr "Bitmap"
 
-#: rnote-ui/data/ui/dialogs.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:142
 msgid "Page width (%)"
 msgstr "Paginabreedte (in %)"
 
-#: rnote-ui/data/ui/dialogs.ui:191
+#: rnote-ui/data/ui/dialogs/import.ui:143
 msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "Stel de breedte van geïmporteerde pdf-bestanden in (in procenten)"
 
-#: rnote-ui/data/ui/dialogs.ui:211
+#: rnote-ui/data/ui/dialogs/import.ui:163
 msgid "Page spacing"
 msgstr "Pagina-opvulling"
 
-#: rnote-ui/data/ui/dialogs.ui:212
+#: rnote-ui/data/ui/dialogs/import.ui:164
 msgid "How PDF pages are spaced"
 msgstr "Hoe pdf-pagina's van elkaar dienen te worden gescheiden"
 
-#: rnote-ui/data/ui/dialogs.ui:216
+#: rnote-ui/data/ui/dialogs/import.ui:168
 msgid "Continuous"
 msgstr "Oneindig"
 
-#: rnote-ui/data/ui/dialogs.ui:217
+#: rnote-ui/data/ui/dialogs/import.ui:169
 msgid "One per document page"
 msgstr "Eén per documentpagina"
 
-#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
-#: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
+#: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:131
+#: rnote-ui/src/dialogs/export.rs:498 rnote-ui/src/dialogs/export.rs:562
 msgid "Export"
 msgstr "Exporteren"
 
-#: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
-#, fuzzy
-#| msgid "PDF import preferences"
-msgid "Export preferences"
-msgstr "Pdf-importvoorkeuren"
+#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:165
+msgid "Export file"
+msgstr "Bestand exporteren"
 
-#: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
-#, fuzzy
-#| msgid "Document background"
-msgid "With background"
-msgstr "Documentachtergrond"
-
-#: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
-#, fuzzy
-#| msgid "Set the background color"
-msgid "Set whether the background should be exported"
-msgstr "Stel de achtergrondkleur in"
-
-#: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
-#, fuzzy
-#| msgid "Export document"
-msgid "Export format"
-msgstr "Document exporteren"
-
-#: rnote-ui/data/ui/dialogs.ui:290
-#, fuzzy
-#| msgid "Export document"
-msgid "The export format"
-msgstr "Document exporteren"
-
-#: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
-#: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
-msgid "Svg"
-msgstr ""
-
-#: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
-msgid "Pdf"
-msgstr ""
-
-#: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
-msgid "Xopp"
-msgstr ""
-
-#: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
-#, fuzzy
-#| msgid "Import file"
-msgid "Select export file"
-msgstr "Bestand importeren"
-
-#: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
-#, fuzzy
-#| msgid "Set the format width"
+#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:166
 msgid "Select the export file"
-msgstr "Stel de formaatbreedte in"
+msgstr "Kies het exportbestand"
 
 #. force the user to pick another file
-#: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
-#: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
-#: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
-#: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
-#, fuzzy
-#| msgid "- no directory selected -"
+#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:175
+#: rnote-ui/src/dialogs/export.rs:118 rnote-ui/src/dialogs/export.rs:139
+#: rnote-ui/src/dialogs/export.rs:164 rnote-ui/src/dialogs/export.rs:323
+#: rnote-ui/src/dialogs/export.rs:344 rnote-ui/src/dialogs/export.rs:369
 msgid "- no file selected -"
-msgstr "- Geen map gekozen -"
+msgstr "- Geen bestand gekozen -"
 
-#: rnote-ui/data/ui/dialogs.ui:402
+#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:199
+msgid "Export preferences"
+msgstr "Exportvoorkeuren"
+
+#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:203
+msgid "With background"
+msgstr "Met achtergrond"
+
+#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:204
+msgid "Set whether the background should be exported"
+msgstr "Geef aan of de achtergrond ook dient te worden geëxporteerd"
+
+#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:214
+msgid "Export format"
+msgstr "Export-bestandsformaat"
+
+#: rnote-ui/data/ui/dialogs/export.ui:99
+msgid "The export format"
+msgstr "Het exportformaat"
+
+#: rnote-ui/data/ui/dialogs/export.ui:103
+#: rnote-ui/data/ui/dialogs/export.ui:219 rnote-ui/src/dialogs/export.rs:246
+#: rnote-ui/src/dialogs/export.rs:460
+msgid "Svg"
+msgstr "Svg"
+
+#: rnote-ui/data/ui/dialogs/export.ui:104 rnote-ui/src/dialogs/export.rs:251
+msgid "Pdf"
+msgstr "Pdf"
+
+#: rnote-ui/data/ui/dialogs/export.ui:105 rnote-ui/src/dialogs/export.rs:256
+msgid "Xopp"
+msgstr "Xopp"
+
+#: rnote-ui/data/ui/dialogs/export.ui:215
 msgid "The export image format"
-msgstr ""
+msgstr "Het export-afbeeldingsbestand"
 
-#: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
+#: rnote-ui/data/ui/dialogs/export.ui:220 rnote-ui/src/dialogs/export.rs:465
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
-#: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
+#: rnote-ui/data/ui/dialogs/export.ui:221 rnote-ui/src/dialogs/export.rs:471
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
-#: rnote-ui/data/ui/dialogs.ui:416
+#: rnote-ui/data/ui/dialogs/export.ui:229
 msgid "Jpeg quality"
-msgstr ""
+msgstr "Jpeg-kwaliteit"
 
-#: rnote-ui/data/ui/dialogs.ui:417
+#: rnote-ui/data/ui/dialogs/export.ui:230
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Stel de kwaliteit van de jpeg-afbeelding in (1-100)"
 
-#: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
-msgid "Edit workspace"
-msgstr "Werkblad bewerken"
+#: rnote-ui/data/ui/dialogs/export.ui:250
+msgid "Margin"
+msgstr "Marge"
 
-#: rnote-ui/data/ui/dialogs.ui:486 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
-msgid "Apply"
-msgstr "Toepassen"
-
-#: rnote-ui/data/ui/dialogs.ui:528
-msgid "Workspace Name"
-msgstr "Werkbladnaam"
-
-#: rnote-ui/data/ui/dialogs.ui:534
-msgid "Icon"
-msgstr "Pictogram"
-
-#: rnote-ui/data/ui/dialogs.ui:535
-msgid "Change the workspace icon"
-msgstr "Wijzig het werkbladpictogram"
-
-#: rnote-ui/data/ui/dialogs.ui:554 rnote-ui/data/ui/settingspanel.ui:293
-msgid "Color"
-msgstr "Kleur"
-
-#: rnote-ui/data/ui/dialogs.ui:555
-msgid "Change the workspace color"
-msgstr "Wijzig de werkbladkleur"
-
-#: rnote-ui/data/ui/dialogs.ui:568
-msgid "Directory"
-msgstr "Map"
-
-#: rnote-ui/data/ui/dialogs.ui:569
-msgid "Change the workspace directory"
-msgstr "Wijzig de werkbladmap"
-
-#: rnote-ui/data/ui/dialogs.ui:578 rnote-ui/src/dialogs/mod.rs:293
-msgid "- no directory selected -"
-msgstr "- Geen map gekozen -"
-
-#: rnote-ui/data/ui/dialogs.ui:592 rnote-ui/src/dialogs/mod.rs:229
-msgid "Change workspace directory"
-msgstr "Werkbladmap wijzigen"
+#: rnote-ui/data/ui/dialogs/export.ui:251
+msgid "Set the margin around the selected area"
+msgstr "Stel de marges rondom het selectiegebied in"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
@@ -1350,66 +1346,66 @@ msgstr "Vullen"
 msgid "translator-credits"
 msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:178
-#: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:67
+#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:179
+#: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:67
 #: rnote-ui/src/appwindow/mod.rs:456
 #: rnote-ui/src/appwindow/appwindowactions.rs:646
 msgid "Saving document failed."
 msgstr "Het document kan niet worden opgeslagen."
 
-#: rnote-ui/src/dialogs/import.rs:28 rnote-ui/src/dialogs/import.rs:109
+#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:110
 msgid "Opening file failed."
 msgstr "Het document kan niet worden geopend."
 
-#: rnote-ui/src/dialogs/import.rs:77
+#: rnote-ui/src/dialogs/import.rs:78
 msgid ".rnote / .xopp File"
 msgstr ".rnote-/.xopp-bestand"
 
-#: rnote-ui/src/dialogs/import.rs:80
+#: rnote-ui/src/dialogs/import.rs:81
 msgid "Open file"
 msgstr "Bestand openen"
 
-#: rnote-ui/src/dialogs/import.rs:140
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "Png-/Svg-/Jpg-/Pdf-bestand"
 
-#: rnote-ui/src/dialogs/import.rs:230
+#: rnote-ui/src/dialogs/import.rs:232
 msgid "- no file name -"
 msgstr "- geen bestandsnaam -"
 
-#: rnote-ui/src/dialogs/import.rs:235
+#: rnote-ui/src/dialogs/import.rs:237
 msgid "- no title -"
 msgstr "- naamloos -"
 
-#: rnote-ui/src/dialogs/import.rs:238
+#: rnote-ui/src/dialogs/import.rs:240
 msgid "- no author -"
 msgstr "- geen auteur -"
 
-#: rnote-ui/src/dialogs/import.rs:242
+#: rnote-ui/src/dialogs/import.rs:244
 msgid "- no date -"
 msgstr "- geen datum -"
 
-#: rnote-ui/src/dialogs/import.rs:249
+#: rnote-ui/src/dialogs/import.rs:251
 msgid "File name:"
 msgstr "Bestandsnaam:"
 
-#: rnote-ui/src/dialogs/import.rs:253
+#: rnote-ui/src/dialogs/import.rs:255
 msgid "Title:"
 msgstr "Titel:"
 
-#: rnote-ui/src/dialogs/import.rs:257
+#: rnote-ui/src/dialogs/import.rs:259
 msgid "Author:"
 msgstr "Auteur:"
 
-#: rnote-ui/src/dialogs/import.rs:261
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "Modification date:"
 msgstr "Bewerkt op"
 
-#: rnote-ui/src/dialogs/import.rs:265
+#: rnote-ui/src/dialogs/import.rs:267
 msgid "Pages:"
 msgstr "Aantal pagina's:"
 
-#: rnote-ui/src/dialogs/import.rs:308 rnote-ui/src/appwindow/imexport.rs:148
+#: rnote-ui/src/dialogs/import.rs:310 rnote-ui/src/appwindow/imexport.rs:148
 msgid "Opening PDF file failed."
 msgstr "Het document kan niet worden geopend."
 
@@ -1425,60 +1421,47 @@ msgstr "Document opslaan als"
 msgid "Saved document successfully."
 msgstr "Het document is opgeslagen."
 
-#: rnote-ui/src/dialogs/export.rs:179
-#, fuzzy
-#| msgid "Export document as SVG failed."
+#: rnote-ui/src/dialogs/export.rs:180
 msgid "Export document failed."
 msgstr "Het exporteren is mislukt."
 
-#: rnote-ui/src/dialogs/export.rs:181
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
+#: rnote-ui/src/dialogs/export.rs:182
 msgid "Exported document successfully."
 msgstr "Het exporteren is voltooid."
 
-#: rnote-ui/src/dialogs/export.rs:187
-#, fuzzy
-#| msgid "Export document as SVG failed."
+#: rnote-ui/src/dialogs/export.rs:188
 msgid "Export document failed, no file selected."
-msgstr "Het exporteren is mislukt."
+msgstr "Het exporteren is mislukt omdat er geen bestand gekozen is."
 
-#: rnote-ui/src/dialogs/export.rs:382
-#, fuzzy
-#| msgid "Export selection as SVG failed."
+#: rnote-ui/src/dialogs/export.rs:394
 msgid "Export selection failed."
 msgstr "Het exporteren is mislukt."
 
-#: rnote-ui/src/dialogs/export.rs:384
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
+#: rnote-ui/src/dialogs/export.rs:396
 msgid "Exported selection successfully."
 msgstr "De selectie is geëxporteerd."
 
-#: rnote-ui/src/dialogs/export.rs:390
-#: rnote-ui/src/appwindow/appwindowactions.rs:788
-#, fuzzy
-#| msgid "Export selection as SVG failed."
+#: rnote-ui/src/dialogs/export.rs:402
 msgid "Export selection failed, no file selected."
-msgstr "Het exporteren is mislukt."
+msgstr "Het exporteren is mislukt omdat er geen bestand gekozen is."
 
-#: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
+#: rnote-ui/src/dialogs/export.rs:492 rnote-ui/src/dialogs/export.rs:556
 msgid "JSON file"
 msgstr "Json-bestand"
 
-#: rnote-ui/src/dialogs/export.rs:521
+#: rnote-ui/src/dialogs/export.rs:533
 msgid "Export engine state failed."
 msgstr "Het exporteren is mislukt."
 
-#: rnote-ui/src/dialogs/export.rs:523
+#: rnote-ui/src/dialogs/export.rs:535
 msgid "Exported engine state successfully."
 msgstr "Het exporteren is voltooid."
 
-#: rnote-ui/src/dialogs/export.rs:585
+#: rnote-ui/src/dialogs/export.rs:597
 msgid "Export engine config failed."
 msgstr "De configuratie kan niet worden geëxporteerd."
 
-#: rnote-ui/src/dialogs/export.rs:587
+#: rnote-ui/src/dialogs/export.rs:599
 msgid "Exported engine config successfully."
 msgstr "De configuratie is geëxporteerd."
 
@@ -1514,9 +1497,16 @@ msgstr "Het werkblad is afgedrukt."
 msgid "Printing document failed"
 msgstr "Het afdrukken is mislukt"
 
+#: rnote-ui/src/appwindow/appwindowactions.rs:788
+msgid "Export selection failed, nothing selected."
+msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
+
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Naam van nieuwe map"
+
+#~ msgid "Select export file"
+#~ msgstr "Kies een exportbestand"
 
 #, fuzzy
 #~| msgid "Export document"
@@ -1719,9 +1709,6 @@ msgstr "Naam van nieuwe map"
 
 #~ msgid "Sheet margin"
 #~ msgstr "Werkbladmarge"
-
-#~ msgid "Set the margins around the sheet"
-#~ msgstr "Stel de marges rondom het werkblad in"
 
 #~ msgid "An easy and simple vector-based note taking app"
 #~ msgstr "Een eenvoudig te gebruiken toepassing om aantekeningen mee te maken"

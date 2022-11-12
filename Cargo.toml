@@ -10,7 +10,6 @@ members = [
 
 exclude = [
     "./piet",
-    "./piet-gpu",
     "ink-stroke-modeler-rs"
 ]
 

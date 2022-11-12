@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-12 14:51+0100\n"
-"PO-Revision-Date: 2022-11-10 11:14+0000\n"
+"PO-Revision-Date: 2022-11-12 20:14+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -264,10 +264,8 @@ msgstr "Document exporteren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:133
 #: rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "Document exporteren naar svg"
+msgstr "Pagina's exporteren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:344
 #: rnote-ui/src/dialogs/export.rs:735
@@ -504,17 +502,13 @@ msgstr "Geef aan of de achtergrond ook dient te worden geëxporteerd"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:266
 #: rnote-ui/data/ui/dialogs/export.ui:435
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
-msgstr "Patroon"
+msgstr "Met patroon"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
-msgstr "Geef aan of de achtergrond ook dient te worden geëxporteerd"
+msgstr "Geef aan of het achtergrondpatroon ook dient te worden geëxporteerd"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:277
@@ -543,22 +537,16 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:212
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "Map aanmaken"
+msgstr "Exportmap"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "Kies het exportbestand"
+msgstr "Kies de exportmap"
 
 #: rnote-ui/data/ui/dialogs/export.ui:244
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
-msgstr "Aandrijvingsstatus exporteren"
+msgstr "Bestandsnaam exporteren"
 
 #: rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:539
@@ -575,7 +563,7 @@ msgstr "Jpeg"
 #: rnote-ui/data/ui/dialogs/export.ui:292
 #: rnote-ui/data/ui/dialogs/export.ui:461
 msgid "Bitmap scalefactor"
-msgstr ""
+msgstr "Bitmapfactor"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
@@ -583,6 +571,8 @@ msgid ""
 "Set the scalefactor of the bitmap image in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Stel de factor van de bitmapafbeelding in verhouding\n"
+"tot de ware grootte van het document in"
 
 #: rnote-ui/data/ui/dialogs/export.ui:314
 #: rnote-ui/data/ui/dialogs/export.ui:483
@@ -1304,15 +1294,15 @@ msgstr "Rechthoek"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "2D coordinate system"
-msgstr ""
+msgstr "2D-coördinaten"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
 msgid "3D coordinate system"
-msgstr ""
+msgstr "3D-coördinaten"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "2D-coördinaten met losse kwadranten"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "Ellipse"
@@ -1514,22 +1504,16 @@ msgid "Export document failed, no file selected."
 msgstr "Het exporteren is mislukt omdat er geen bestand gekozen is."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Export document pages failed."
 msgstr "Het exporteren is mislukt."
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
 msgstr "Het exporteren is voltooid."
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
-msgstr "Het exporteren is mislukt omdat er geen bestand gekozen is."
+msgstr "Het exporteren is mislukt omdat er geen map gekozen is."
 
 #: rnote-ui/src/dialogs/export.rs:711
 msgid "Export selection failed."

@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-12 14:51+0100\n"
-"PO-Revision-Date: 2022-11-09 11:19+0000\n"
+"PO-Revision-Date: 2022-11-12 20:14+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -265,10 +265,8 @@ msgstr "Dokumentum exportálása"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:133
 #: rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "Dokumentum exportálása SVG formátumban"
+msgstr "Dokumentumoldalak exportálása"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:344
 #: rnote-ui/src/dialogs/export.rs:735
@@ -428,7 +426,7 @@ msgstr "Oldalak típusa"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgstr "A PDF-ek vektoros vagy bittérképes importálása"
+msgstr "A PDF-ek vektoros vagy pontképes importálása"
 
 #: rnote-ui/data/ui/dialogs/import.ui:138
 msgid "Vector"
@@ -436,7 +434,7 @@ msgstr "Vektor"
 
 #: rnote-ui/data/ui/dialogs/import.ui:145
 msgid "Bitmap"
-msgstr "Bitmap"
+msgstr "Pontkép"
 
 #: rnote-ui/data/ui/dialogs/import.ui:154
 msgid "Page width (%)"
@@ -503,17 +501,13 @@ msgstr "Állítsa be, hogy a háttér exportálásra kerüljön-e"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:266
 #: rnote-ui/data/ui/dialogs/export.ui:435
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
-msgstr "Mintázat"
+msgstr "Mintával"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
-msgstr "Állítsa be, hogy a háttér exportálásra kerüljön-e"
+msgstr "Állítsa be, hogy exportálja-e a háttérmintát"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:277
@@ -542,22 +536,16 @@ msgid "Xopp"
 msgstr "XOPP-fájl"
 
 #: rnote-ui/data/ui/dialogs/export.ui:212
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "Könyvtár létrehozása"
+msgstr "Exportálási könyvtár"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "Exportfájl kijelölése"
+msgstr "Exportálási könyvtár kijelölése"
 
 #: rnote-ui/data/ui/dialogs/export.ui:244
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
-msgstr "Motor állapotának exportálása"
+msgstr "Fájlok exportálása szárnév"
 
 #: rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:539
@@ -574,7 +562,7 @@ msgstr "JPEG-fájl"
 #: rnote-ui/data/ui/dialogs/export.ui:292
 #: rnote-ui/data/ui/dialogs/export.ui:461
 msgid "Bitmap scalefactor"
-msgstr ""
+msgstr "Pontkép-méretezési tényező"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
@@ -582,6 +570,8 @@ msgid ""
 "Set the scalefactor of the bitmap image in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Állítsa be a pontkép-méretezési tényezőt a dokumentum\n"
+"tényleges méretéhez viszonyítva"
 
 #: rnote-ui/data/ui/dialogs/export.ui:314
 #: rnote-ui/data/ui/dialogs/export.ui:483
@@ -1300,15 +1290,15 @@ msgstr "Téglalap"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "2D coordinate system"
-msgstr ""
+msgstr "Kétdimenziós koordinátarendszer"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
 msgid "3D coordinate system"
-msgstr ""
+msgstr "Háromdimenziós koordinátarendszer"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "Kétdimenziós egynegyedes koordinátarendszer"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "Ellipse"
@@ -1511,22 +1501,16 @@ msgid "Export document failed, no file selected."
 msgstr "A dokumentum exportálása sikertelen, nincs kijelölve fájl."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Export document pages failed."
-msgstr "A dokumentum exportálása sikertelen."
+msgstr "A dokumentumoldalak exportálása sikertelen."
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
-msgstr "A dokumentum sikeresen exportálva."
+msgstr "A dokumentumoldalak exportálása sikerült."
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
-msgstr "A dokumentum exportálása sikertelen, nincs kijelölve fájl."
+msgstr "A dokumentumoldalak exportálása sikertelen, nincs kijelölve könyvtár."
 
 #: rnote-ui/src/dialogs/export.rs:711
 msgid "Export selection failed."
@@ -1574,7 +1558,7 @@ msgstr "A vektoros képfájl megnyitása sikertelen."
 
 #: rnote-ui/src/appwindow/imexport.rs:129
 msgid "Opening bitmap image file failed."
-msgstr "A bittérképes képfájl megnyitása sikertelen."
+msgstr "A pontképes képfájl megnyitása sikertelen."
 
 #: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"

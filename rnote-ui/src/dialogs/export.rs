@@ -93,6 +93,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     let button_confirm: Button = builder.object("export_doc_button_confirm").unwrap();
     let with_background_switch: Switch =
         builder.object("export_doc_with_background_switch").unwrap();
+    let with_pattern_switch: Switch = builder.object("export_doc_with_pattern_switch").unwrap();
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
@@ -109,6 +110,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     // initial widget state with the preferences
     let filechooser = create_filechooser_export_doc(appwindow);
     with_background_switch.set_active(doc_export_prefs.with_background);
+    with_pattern_switch.set_active(doc_export_prefs.with_pattern);
     export_format_row.set_selected(doc_export_prefs.export_format.to_u32().unwrap());
 
     if let Some(p) = filechooser.file().and_then(|f| f.path()) {
@@ -121,6 +123,11 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     }
 
     // Update prefs
+    with_background_switch
+        .bind_property("active", &with_pattern_switch, "sensitive")
+        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .build();
+
     export_file_button.connect_clicked(
         clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
             dialog.hide();
@@ -151,6 +158,10 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
 
     with_background_switch.connect_active_notify(clone!(@weak appwindow => move |with_background_switch| {
         appwindow.canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
+    }));
+
+    with_pattern_switch.connect_active_notify(clone!(@weak appwindow => move |with_pattern_switch| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(@weak export_file_label, @weak button_confirm, @weak filechooser, @weak appwindow => move |row| {
@@ -280,6 +291,9 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     let with_background_switch: Switch = builder
         .object("export_doc_pages_with_background_switch")
         .unwrap();
+    let with_pattern_switch: Switch = builder
+        .object("export_doc_pages_with_pattern_switch")
+        .unwrap();
     let export_format_row: adw::ComboRow = builder
         .object("export_doc_pages_export_format_row")
         .unwrap();
@@ -317,6 +331,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     // initial widget state with the preferences
     let filechooser = create_filechooser_export_doc_pages(appwindow);
     with_background_switch.set_active(doc_pages_export_prefs.with_background);
+    with_pattern_switch.set_active(doc_pages_export_prefs.with_pattern);
     export_format_row.set_selected(doc_pages_export_prefs.export_format.to_u32().unwrap());
     bitmap_scalefactor_row.set_sensitive(
         doc_pages_export_prefs.export_format == DocPagesExportFormat::Png
@@ -343,6 +358,11 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     );
 
     // Update prefs
+    with_background_switch
+        .bind_property("active", &with_pattern_switch, "sensitive")
+        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .build();
+
     export_dir_button.connect_clicked(
         clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
             dialog.hide();
@@ -375,6 +395,10 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_background = with_background_switch.is_active();
     }));
 
+    with_pattern_switch.connect_active_notify(clone!(@weak appwindow => move |with_pattern_switch| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_pattern = with_pattern_switch.is_active();
+    }));
+
     export_format_row.connect_selected_notify(clone!(
         @weak page_files_naming_info_label,
         @weak export_files_stemname_entryrow,
@@ -390,10 +414,6 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
             // update the filechooser dependent on the selected export format
             update_export_doc_pages_filechooser_with_prefs(&filechooser, appwindow.canvas().output_file(), &appwindow.canvas().engine().borrow().export_prefs.doc_pages_export_prefs);
-
-            // force the user to pick another dir
-            export_dir_label.set_label(&gettext("- no directory selected -"));
-            button_confirm.set_sensitive(false);
 
             // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
             bitmap_scalefactor_row.set_sensitive(export_format == DocPagesExportFormat::Png || export_format == DocPagesExportFormat::Jpeg);
@@ -535,6 +555,9 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let with_background_switch: Switch = builder
         .object("export_selection_with_background_switch")
         .unwrap();
+    let with_pattern_switch: Switch = builder
+        .object("export_selection_with_pattern_switch")
+        .unwrap();
     let export_format_row: adw::ComboRow = builder
         .object("export_selection_export_format_row")
         .unwrap();
@@ -571,6 +594,7 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     // initial widget state with the preferences
     let filechooser = create_filechooser_export_selection(appwindow);
     with_background_switch.set_active(selection_export_prefs.with_background);
+    with_pattern_switch.set_active(selection_export_prefs.with_pattern);
     export_format_row.set_selected(selection_export_prefs.export_format.to_u32().unwrap());
     bitmap_scalefactor_row.set_sensitive(
         selection_export_prefs.export_format == SelectionExportFormat::Png
@@ -592,6 +616,11 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     }
 
     // Update prefs
+    with_background_switch
+        .bind_property("active", &with_pattern_switch, "sensitive")
+        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .build();
+
     export_file_button.connect_clicked(
         clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
             dialog.hide();
@@ -622,6 +651,10 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
 
     with_background_switch.connect_active_notify(clone!(@weak appwindow => move |with_background_switch| {
         appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
+    }));
+
+    with_pattern_switch.connect_active_notify(clone!(@weak appwindow => move |with_pattern_switch| {
+        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(

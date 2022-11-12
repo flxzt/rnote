@@ -94,6 +94,17 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwActionRow" id="export_doc_with_pattern_row">
+                    <property name="title" translatable="yes">With pattern</property>
+                    <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
+                    <child type="suffix">
+                      <object class="GtkSwitch" id="export_doc_with_pattern_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwComboRow" id="export_doc_export_format_row">
                     <property name="title" translatable="yes">Export format</property>
                     <property name="subtitle" translatable="yes">The export format</property>
@@ -245,6 +256,17 @@
                     <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
                     <child type="suffix">
                       <object class="GtkSwitch" id="export_doc_pages_with_background_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="export_doc_pages_with_pattern_row">
+                    <property name="title" translatable="yes">With pattern</property>
+                    <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
+                    <child type="suffix">
+                      <object class="GtkSwitch" id="export_doc_pages_with_pattern_switch">
                         <property name="valign">center</property>
                       </object>
                     </child>
@@ -403,6 +425,17 @@ to the actual size on the document</property>
                     <property name="subtitle" translatable="yes">Set whether the background should be exported</property>
                     <child type="suffix">
                       <object class="GtkSwitch" id="export_selection_with_background_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="export_selection_with_pattern_row">
+                    <property name="title" translatable="yes">With pattern</property>
+                    <property name="subtitle" translatable="yes">Set whether the background pattern should be exported</property>
+                    <child type="suffix">
+                      <object class="GtkSwitch" id="export_selection_with_pattern_switch">
                         <property name="valign">center</property>
                       </object>
                     </child>

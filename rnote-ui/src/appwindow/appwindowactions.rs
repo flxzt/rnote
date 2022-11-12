@@ -678,7 +678,7 @@ impl RnoteAppWindow {
             let background_svg = if with_background {
                 appwindow.canvas().engine().borrow().document
                     .background
-                    .gen_svg(doc_bounds)
+                    .gen_svg(doc_bounds, true)
                     .map_err(|e| {
                         log::error!(
                             "background.gen_svg() failed in in the print document action, with Err {}",

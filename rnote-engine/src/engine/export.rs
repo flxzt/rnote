@@ -72,6 +72,8 @@ impl DocExportFormat {
 pub struct DocExportPrefs {
     #[serde(rename = "with_background")]
     pub with_background: bool,
+    #[serde(rename = "with_pattern")]
+    pub with_pattern: bool,
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
 }
@@ -80,6 +82,7 @@ impl Default for DocExportPrefs {
     fn default() -> Self {
         Self {
             with_background: true,
+            with_pattern: true,
             export_format: DocExportFormat::default(),
         }
     }
@@ -119,6 +122,8 @@ impl Default for DocPagesExportFormat {
 pub struct DocPagesExportPrefs {
     #[serde(rename = "with_background")]
     pub with_background: bool,
+    #[serde(rename = "with_pattern")]
+    pub with_pattern: bool,
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
     #[serde(rename = "bitmap_scalefactor")]
@@ -131,6 +136,7 @@ impl Default for DocPagesExportPrefs {
     fn default() -> Self {
         Self {
             with_background: true,
+            with_pattern: true,
             export_format: DocPagesExportFormat::default(),
             bitmap_scalefactor: 1.0,
             jpeg_quality: 85,
@@ -218,6 +224,8 @@ impl TryFrom<u32> for SelectionExportFormat {
 pub struct SelectionExportPrefs {
     #[serde(rename = "with_background")]
     pub with_background: bool,
+    #[serde(rename = "with_pattern")]
+    pub with_pattern: bool,
     #[serde(rename = "export_format")]
     pub export_format: SelectionExportFormat,
     #[serde(rename = "bitmap_scalefactor")]
@@ -231,7 +239,8 @@ pub struct SelectionExportPrefs {
 impl Default for SelectionExportPrefs {
     fn default() -> Self {
         Self {
-            with_background: false,
+            with_background: true,
+            with_pattern: false,
             export_format: SelectionExportFormat::Svg,
             bitmap_scalefactor: 1.0,
             jpeg_quality: 85,
@@ -355,7 +364,7 @@ impl RnoteEngine {
         let background_svg = if doc_export_prefs.with_background {
             self.document
                 .background
-                .gen_svg(doc_bounds)
+                .gen_svg(doc_bounds, doc_export_prefs.with_pattern)
                 .map_err(|e| {
                     log::error!(
                         "background.gen_svg() failed in export_doc_as_pdf_bytes() with Err {}",
@@ -792,7 +801,9 @@ impl RnoteEngine {
         let strokes = self.store.stroke_keys_as_rendered();
 
         let mut doc_svg = if doc_export_prefs.with_background {
-            self.document.background.gen_svg(content_bounds)?
+            self.document
+                .background
+                .gen_svg(content_bounds, doc_export_prefs.with_pattern)?
         } else {
             render::Svg {
                 svg_data: String::new(),
@@ -831,7 +842,9 @@ impl RnoteEngine {
                 .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
 
             let mut page_svg = if doc_pages_export_prefs.with_background {
-                self.document.background.gen_svg(page_bounds)?
+                self.document
+                    .background
+                    .gen_svg(page_bounds, doc_pages_export_prefs.with_pattern)?
             } else {
                 render::Svg {
                     svg_data: String::new(),
@@ -878,7 +891,9 @@ impl RnoteEngine {
         };
 
         let mut selection_svg = if selection_export_prefs.with_background {
-            self.document.background.gen_svg(selection_bounds)?
+            self.document
+                .background
+                .gen_svg(selection_bounds, selection_export_prefs.with_pattern)?
         } else {
             render::Svg {
                 svg_data: String::new(),

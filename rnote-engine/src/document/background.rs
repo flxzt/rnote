@@ -242,8 +242,9 @@ impl Background {
         na::vector![tile_width, tile_height]
     }
 
-    fn gen_svg_element(&self, bounds: AABB) -> svg::node::element::Element {
-        let mut group = element::Group::new();
+    /// Generates the background svg, without xml header or svg root
+    pub fn gen_svg(&self, bounds: AABB, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
+        let mut svg_group = element::Group::new();
 
         // background color
         let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());
@@ -253,55 +254,41 @@ impl Background {
         color_rect.assign("width", format!("{}px", bounds.extents()[0]));
         color_rect.assign("height", format!("{}px", bounds.extents()[1]));
 
-        group = group.add(color_rect);
+        svg_group = svg_group.add(color_rect);
 
-        match self.pattern {
-            PatternStyle::None => {}
-            PatternStyle::Lines => {
-                group = group.add(gen_hline_pattern(
-                    bounds,
-                    self.pattern_size[1],
-                    self.pattern_color,
-                    0.5,
-                ));
-            }
-            PatternStyle::Grid => {
-                group = group.add(gen_grid_pattern(
-                    bounds,
-                    self.pattern_size[1],
-                    self.pattern_size[0],
-                    self.pattern_color,
-                    0.5,
-                ));
-            }
-            PatternStyle::Dots => {
-                group = group.add(gen_dots_pattern(
-                    bounds,
-                    self.pattern_size[1],
-                    self.pattern_size[0],
-                    self.pattern_color,
-                    1.5,
-                ));
+        if with_pattern {
+            match self.pattern {
+                PatternStyle::None => {}
+                PatternStyle::Lines => {
+                    svg_group = svg_group.add(gen_hline_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_color,
+                        0.5,
+                    ));
+                }
+                PatternStyle::Grid => {
+                    svg_group = svg_group.add(gen_grid_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_size[0],
+                        self.pattern_color,
+                        0.5,
+                    ));
+                }
+                PatternStyle::Dots => {
+                    svg_group = svg_group.add(gen_dots_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_size[0],
+                        self.pattern_color,
+                        1.5,
+                    ));
+                }
             }
         }
 
-        group.into()
-    }
-
-    pub fn draw_to_piet_svg(
-        &self,
-        piet_svg_cx: &mut piet_svg::RenderContext,
-        bounds: AABB,
-    ) -> anyhow::Result<()> {
-        piet_svg_cx.append_svg_node(self.gen_svg_element(bounds));
-        Ok(())
-    }
-
-    /// Generates the background svg, without xml header or svg root
-    pub fn gen_svg(&self, bounds: AABB) -> Result<render::Svg, anyhow::Error> {
-        let svg_element = self.gen_svg_element(bounds);
-
-        let svg_data = rnote_compose::utils::svg_node_to_string(&svg_element)
+        let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
             .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })
@@ -312,7 +299,7 @@ impl Background {
         bounds: AABB,
         image_scale: f64,
     ) -> Result<Option<render::Image>, anyhow::Error> {
-        let svg = self.gen_svg(bounds)?;
+        let svg = self.gen_svg(bounds, true)?;
         Ok(Some(render::Image::gen_image_from_svg(
             svg,
             bounds,

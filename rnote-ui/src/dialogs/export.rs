@@ -93,6 +93,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     let button_confirm: Button = builder.object("export_doc_button_confirm").unwrap();
     let with_background_switch: Switch =
         builder.object("export_doc_with_background_switch").unwrap();
+    let with_pattern_row: adw::ActionRow = builder.object("export_doc_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder.object("export_doc_with_pattern_switch").unwrap();
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
@@ -124,7 +125,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
 
     // Update prefs
     with_background_switch
-        .bind_property("active", &with_pattern_switch, "sensitive")
+        .bind_property("active", &with_pattern_row, "sensitive")
         .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
         .build();
 
@@ -291,6 +292,8 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     let with_background_switch: Switch = builder
         .object("export_doc_pages_with_background_switch")
         .unwrap();
+    let with_pattern_row: adw::ActionRow =
+        builder.object("export_doc_pages_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder
         .object("export_doc_pages_with_pattern_switch")
         .unwrap();
@@ -359,7 +362,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
     // Update prefs
     with_background_switch
-        .bind_property("active", &with_pattern_switch, "sensitive")
+        .bind_property("active", &with_pattern_row, "sensitive")
         .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
         .build();
 
@@ -555,6 +558,8 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let with_background_switch: Switch = builder
         .object("export_selection_with_background_switch")
         .unwrap();
+    let with_pattern_row: adw::ActionRow =
+        builder.object("export_selection_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder
         .object("export_selection_with_pattern_switch")
         .unwrap();
@@ -617,7 +622,7 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
 
     // Update prefs
     with_background_switch
-        .bind_property("active", &with_pattern_switch, "sensitive")
+        .bind_property("active", &with_pattern_row, "sensitive")
         .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
         .build();
 

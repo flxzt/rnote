@@ -501,6 +501,7 @@ impl RnoteCanvas {
         if let Some(ref hadjustment) = adj {
             let signal_id = hadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_hadjustment| {
+                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
                     canvas.queue_resize();
                 }),
             );
@@ -519,6 +520,7 @@ impl RnoteCanvas {
         if let Some(ref vadjustment) = adj {
             let signal_id = vadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_vadjustment| {
+                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
                     canvas.queue_resize();
                 }),
             );
@@ -924,7 +926,6 @@ impl RnoteCanvas {
     }
 
     /// returns the center of the current view on the doc
-    // update_engine_rendering() then needs to be called.
     pub fn current_center_on_doc(&self) -> na::Vector2<f64> {
         (self.engine().borrow().camera.transform().inverse()
             * na::point![

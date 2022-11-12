@@ -69,10 +69,12 @@ impl StoreSnapshot {
             .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
             .collect::<Vec<StrokeKey>>();
 
+        // clear the selection components. These will get rebuild on import, no need to save them.
+        Arc::make_mut(&mut self.selection_components).clear();
+
         for key in trashed_keys {
             Arc::make_mut(&mut self.stroke_components).remove(key);
             Arc::make_mut(&mut self.trash_components).remove(key);
-            Arc::make_mut(&mut self.selection_components).remove(key);
             Arc::make_mut(&mut self.chrono_components).remove(key);
         }
     }
@@ -162,8 +164,9 @@ impl StrokeStore {
 
         self.update_geometry_for_strokes(&self.keys_unordered());
 
+        self.rebuild_selection_components_slotmap();
+        self.rebuild_render_components_slotmap();
         self.reload_tree();
-        self.reload_render_components_slotmap();
     }
 
     /// Reloads the rtree with the current bounds of the strokes.

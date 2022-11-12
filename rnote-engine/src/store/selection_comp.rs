@@ -26,6 +26,15 @@ impl SelectionComponent {
 }
 
 impl StrokeStore {
+    /// Reloads the slotmap with empty selection components from the keys returned from the primary map, stroke_components.
+    pub fn rebuild_selection_components_slotmap(&mut self) {
+        self.selection_components = Arc::new(slotmap::SecondaryMap::new());
+        self.stroke_components.keys().for_each(|key| {
+            Arc::make_mut(&mut self.selection_components)
+                .insert(key, Arc::new(SelectionComponent::default()));
+        });
+    }
+
     /// Returns false if selecting is unsupported
     pub fn can_select(&self, key: StrokeKey) -> bool {
         self.selection_components.get(key).is_some()

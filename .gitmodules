@@ -1,9 +1,6 @@
 [submodule "piet"]
 	path = piet
 	url = https://github.com/flxzt/piet
-[submodule "piet-gpu"]
-	path = piet-gpu
-	url = https://github.com/flxzt/piet-gpu
 [submodule "ink-stroke-modeler-rs"]
 	path = ink-stroke-modeler-rs
 	url = https://github.com/flxzt/ink-stroke-modeler-rs

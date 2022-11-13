@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-13 20:02+0100\n"
-"PO-Revision-Date: 2022-11-13 19:03+0000\n"
+"PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -412,7 +412,7 @@ msgstr "Importiere"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
-msgstr "PDF Import Präferenzen"
+msgstr "PDF Importeinstellungen"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"
@@ -470,10 +470,8 @@ msgid "Import Xournal++ file"
 msgstr "Importiere Xournal++ Datei"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ file import preferences"
-msgstr "PDF Import Präferenzen"
+msgstr "Xournal++ Importeinstellungen"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
@@ -481,7 +479,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Ändere die bevorzugten DPI für die Xournal++ Datei"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
@@ -522,17 +520,13 @@ msgstr "Ändere ob der Hintergrund exportiert werden soll"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
-msgstr "Muster"
+msgstr "Mit Muster"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
-msgstr "Ändere ob der Hintergrund exportiert werden soll"
+msgstr "Ändere ob das Hintergrundmuster exportiert werden soll"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
@@ -561,22 +555,16 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "Erstelle ein Verzeichnis"
+msgstr "Exportverzeichnis"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "Wähle die Exportdatei aus"
+msgstr "Wähle das Exportverzeichnis aus"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
-msgstr "Exportiere 'engine state'"
+msgstr "Exportdateien Stamm"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539
@@ -593,7 +581,7 @@ msgstr "Jpeg"
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap scalefactor"
-msgstr ""
+msgstr "Bitmap Skalierungsfaktor"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
@@ -601,6 +589,8 @@ msgid ""
 "Set the scalefactor of the bitmap image in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Ändere den Skalierungsfaktor von Bitmapbildern im Verhältnis\n"
+"zur tatsächlichen Größe auf dem Dokument"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
@@ -1313,15 +1303,15 @@ msgstr "Rechteck"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:294
 msgid "2D coordinate system"
-msgstr ""
+msgstr "2D Koordinatensystem"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
 msgid "3D coordinate system"
-msgstr ""
+msgstr "3D Koordinatensystem"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "2D einzelner Quadrant Koordinatensystem"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
 msgid "Ellipse"
@@ -1447,8 +1437,6 @@ msgid "Opening file failed."
 msgstr "Datei öffnen gescheitert."
 
 #: rnote-ui/src/dialogs/import.rs:77
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote File"
 msgstr ".rnote Datei"
 
@@ -1457,10 +1445,8 @@ msgid "Open file"
 msgstr "Öffne Datei"
 
 #: rnote-ui/src/dialogs/import.rs:141
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
 msgid "Xopp / PNG / SVG / JPG / PDF file"
-msgstr "PNG / SVG / JPG / PDF Datei"
+msgstr "Xopp / PNG / SVG / JPG / PDF Datei"
 
 #: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
@@ -1503,10 +1489,8 @@ msgid "Opening PDF file failed."
 msgstr "PDF Datei öffnen gescheitert."
 
 #: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
-#, fuzzy
-#| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
-msgstr ".xopp Datei öffnen gescheitert."
+msgstr "Xournal++ Datei öffnen gescheitert."
 
 #: rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote file"
@@ -1533,22 +1517,16 @@ msgid "Export document failed, no file selected."
 msgstr "Dokument exportieren gescheitert, keine Datei ausgewählt."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Export document pages failed."
-msgstr "Dokument exportieren gescheitert."
+msgstr "Dokumentseiten exportieren gescheitert."
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
-msgstr "Dokument erfolgreich exportiert."
+msgstr "Dokumentseiten erfolgreich exportiert."
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
-msgstr "Dokument exportieren gescheitert, keine Datei ausgewählt."
+msgstr "Dokumentseiten exportieren gescheitert, keine Datei ausgewählt."
 
 #: rnote-ui/src/dialogs/export.rs:711
 msgid "Export selection failed."

@@ -4,6 +4,7 @@ mod input;
 // Re-exports
 pub use canvaslayout::CanvasLayout;
 use rnote_engine::pens::PenMode;
+use rnote_engine::strokes::Stroke;
 
 // Imports
 use std::cell::{Cell, RefCell};
@@ -891,7 +892,7 @@ impl RnoteCanvas {
             .propagation_phase(PropagationPhase::Capture)
             .actions(gdk::DragAction::COPY)
             .build();
-        drop_target.set_types(&[gio::File::static_type()]);
+        drop_target.set_types(&[glib::types::Type::STRING, gio::File::static_type()]);
         self.add_controller(&drop_target);
 
         drop_target.connect_drop(
@@ -899,10 +900,26 @@ impl RnoteCanvas {
                 let pos = (appwindow.canvas().engine().borrow().camera.transform().inverse() *
                     na::point![x,y]).coords;
 
-                if let Ok(file) = value.get::<gio::File>() {
-                    appwindow.open_file_w_dialogs(&file, Some(pos));
+                if value.is::<String>() {
+                    let textstroke = appwindow.canvas().engine().borrow_mut().generate_textstroke_from_string(pos, value.get::<String>().unwrap());
+
+                    match textstroke {
+                        Ok(textstroke) => {
+                            let widget_flags = appwindow.canvas().engine().borrow_mut().import_generated_strokes(vec![(Stroke::TextStroke(textstroke), None)]);
+                            appwindow.handle_widget_flags(widget_flags);
+                        }
+                        Err(e) => log::error!("failed to generated textstroke for dropped text. Err `{e}`"),
+                    }
+                } else if value.is::<gio::File>() {
+
+                    if let Ok(file) = value.get::<gio::File>() {
+                        appwindow.open_file_w_dialogs(&file, Some(pos));
+
+                        return true;
+                    }
                 }
-                true
+
+                false
             }),
         );
     }

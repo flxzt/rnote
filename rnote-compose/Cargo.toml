@@ -13,9 +13,13 @@ rust-version = "1.65"
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
 piet = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+#piet = { path = "../piet/piet" }
 piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+#piet-svg = { path = "../piet/piet-svg" }
 piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
+#piet-cairo = { path = "../piet/piet-cairo" }
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main" }
+#ink-stroke-modeler-rs = { path = "../ink-stroke-modeler-rs" }
 
 log = "0.4.16"
 pretty_env_logger = "0.4.0"

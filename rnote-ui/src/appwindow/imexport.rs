@@ -130,7 +130,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Xournal++ file failed.").to_variant()));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err {}",
                                 e

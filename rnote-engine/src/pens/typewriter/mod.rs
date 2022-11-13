@@ -464,6 +464,7 @@ impl PenBehaviour for Typewriter {
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
                     self.text_style = textstroke.text_style.clone();
+                    self.text_style.ranged_text_attributes.clear();
 
                     if let Some(max_width) = textstroke.text_style.max_width {
                         self.text_width = max_width;
@@ -485,6 +486,7 @@ impl PenBehaviour for Typewriter {
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
                     self.text_style = textstroke.text_style.clone();
+                    self.text_style.ranged_text_attributes.clear();
 
                     if let Some(max_width) = textstroke.text_style.max_width {
                         self.text_width = max_width;
@@ -620,11 +622,15 @@ impl Typewriter {
                 widget_flags.merge_with_other(engine_view.store.record());
 
                 let mut text_style = self.text_style.clone();
+                text_style.ranged_text_attributes.clear();
+
                 if self.max_width_enabled {
                     text_style.max_width = Some(self.text_width);
                 }
 
                 let textstroke = TextStroke::new(text, *pos, text_style);
+
+                log::debug!("{textstroke:?}");
 
                 let cursor = unicode_segmentation::GraphemeCursor::new(
                     text_len,

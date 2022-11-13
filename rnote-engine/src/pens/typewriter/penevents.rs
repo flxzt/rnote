@@ -404,6 +404,8 @@ impl Typewriter {
                         widget_flags.merge_with_other(engine_view.store.record());
 
                         let mut text_style = self.text_style.clone();
+                        text_style.ranged_text_attributes.clear();
+
                         if self.max_width_enabled {
                             text_style.max_width = Some(self.text_width);
                         }
@@ -758,6 +760,8 @@ impl Typewriter {
                 Self::start_audio(None, engine_view.audioplayer);
 
                 let mut text_style = self.text_style.clone();
+                text_style.ranged_text_attributes.clear();
+
                 if self.max_width_enabled {
                     text_style.max_width = Some(self.text_width);
                 }

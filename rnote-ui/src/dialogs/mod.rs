@@ -139,14 +139,14 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
 
                         appwindow.finish_canvas_progressbar();
                         // No success toast on saving without dialog, success is already indicated in the header title
+
+                        // only create new document if saving was successful
+                        if !appwindow.unsaved_changes() {
+                            new_doc(&appwindow)
+                        }
                     } else {
                         // Open a dialog to choose a save location
                         export::filechooser_save_doc_as(&appwindow);
-                    }
-
-                    // only create new document if saving was successful
-                    if !appwindow.unsaved_changes() {
-                        new_doc(&appwindow)
                     }
                 }));
             },

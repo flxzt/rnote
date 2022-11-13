@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-13 19:46+0100\n"
-"PO-Revision-Date: 2022-11-12 20:14+0000\n"
+"PO-Revision-Date: 2022-11-13 19:03+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -465,16 +465,12 @@ msgid "One per document page"
 msgstr "Eén per documentpagina"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ file"
-msgstr "Bestand importeren"
+msgstr "Xournal++-bestand importeren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xopp import preferences"
-msgstr "Pdf-importvoorkeuren"
+msgstr "Xopp-importvoorkeuren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
@@ -482,7 +478,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
 msgid "Set the preferred DPI for the Xopp file"
-msgstr ""
+msgstr "Stel de gewenste dpi-waarde van het Xopp-bestand in"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
@@ -1445,8 +1441,6 @@ msgid "Opening file failed."
 msgstr "Het document kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/import.rs:77
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote File"
 msgstr ".rnote-bestand"
 
@@ -1455,10 +1449,8 @@ msgid "Open file"
 msgstr "Bestand openen"
 
 #: rnote-ui/src/dialogs/import.rs:141
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
 msgid "Xopp / PNG / SVG / JPG / PDF file"
-msgstr "Png-/Svg-/Jpg-/Pdf-bestand"
+msgstr "Xopp-/png-/svg-/jpg-/pdf-bestand"
 
 #: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
@@ -1501,10 +1493,8 @@ msgid "Opening PDF file failed."
 msgstr "Het document kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/import.rs:384
-#, fuzzy
-#| msgid "Opening .xopp file failed."
 msgid "Opening Xopp file failed."
-msgstr "Het bestand kan niet worden geopend."
+msgstr "Het Xopp-bestand kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote file"

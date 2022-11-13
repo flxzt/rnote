@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-12 14:51+0100\n"
+"POT-Creation-Date: 2022-11-13 19:46+0100\n"
 "PO-Revision-Date: 2022-11-12 20:14+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -232,7 +232,7 @@ msgid "New"
 msgstr "Új"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs/import.rs:84
+#: rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "Megnyitás"
 
@@ -268,7 +268,7 @@ msgstr "Dokumentum exportálása"
 msgid "Export document pages"
 msgstr "Dokumentumoldalak exportálása"
 
-#: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:344
+#: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/src/dialogs/export.rs:735
 msgid "Export selection"
 msgstr "Kijelölés exportálása"
@@ -283,7 +283,7 @@ msgstr "Nagyítás az oldal szélességéhez"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs/mod.rs:234 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
 msgstr "Kijelölés"
@@ -296,11 +296,11 @@ msgstr "Ezzel a teljes dokumentum törlődik. Kérlek, erősítsd meg."
 #: rnote-ui/data/ui/dialogs/dialogs.ui:21
 #: rnote-ui/data/ui/dialogs/dialogs.ui:33
 #: rnote-ui/data/ui/dialogs/dialogs.ui:45 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/export.ui:10
-#: rnote-ui/data/ui/dialogs/export.ui:136
-#: rnote-ui/data/ui/dialogs/export.ui:347
+#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:201
+#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
+#: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/import.rs:85
+#: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
 #: rnote-ui/src/dialogs/import.rs:148 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
@@ -379,12 +379,12 @@ msgid "Change the workspace directory"
 msgstr "A munkafelület könyvtárának módosítása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:222 rnote-ui/src/dialogs/mod.rs:295
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- nincs kiválasztott könyvtár -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:231
+#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
 msgid "Change workspace directory"
 msgstr "Munkafelület-könyvtár módosítása"
 
@@ -404,7 +404,8 @@ msgstr ""
 msgid "Import PDF"
 msgstr "PDF importálása"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/src/dialogs/import.rs:147
+#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
+#: rnote-ui/src/dialogs/import.rs:147
 msgid "Import"
 msgstr "Importálás"
 
@@ -462,67 +463,87 @@ msgstr "Folyamatos"
 msgid "One per document page"
 msgstr "Dokumentumoldalonként egy"
 
+#: rnote-ui/data/ui/dialogs/import.ui:198
+#, fuzzy
+#| msgid "Import file"
+msgid "Import Xournal++ file"
+msgstr "Fájl importálása"
+
+#: rnote-ui/data/ui/dialogs/import.ui:237
+#, fuzzy
+#| msgid "PDF import preferences"
+msgid "Xopp import preferences"
+msgstr "PDF importálási beállítások"
+
+#: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
+msgid "DPI"
+msgstr "DPI"
+
+#: rnote-ui/data/ui/dialogs/import.ui:242
+msgid "Set the preferred DPI for the Xopp file"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:352 rnote-ui/src/dialogs/export.rs:815
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
 #: rnote-ui/src/dialogs/export.rs:879
 msgid "Export"
 msgstr "Exportálás"
 
-#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:386
+#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Export file"
 msgstr "Fájl exportálása"
 
-#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:387
+#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Select the export file"
 msgstr "Exportfájl kijelölése"
 
 #. force the user to pick another file
-#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:396
+#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
 #: rnote-ui/src/dialogs/export.rs:122 rnote-ui/src/dialogs/export.rs:148
 #: rnote-ui/src/dialogs/export.rs:177 rnote-ui/src/dialogs/export.rs:619
 #: rnote-ui/src/dialogs/export.rs:645 rnote-ui/src/dialogs/export.rs:679
 msgid "- no file selected -"
 msgstr "- nincs kijelölt fájl -"
 
-#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:251
-#: rnote-ui/data/ui/dialogs/export.ui:420
+#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
+#: rnote-ui/data/ui/dialogs/export.ui:421
 msgid "Export preferences"
 msgstr "Beállítások exportálása"
 
-#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:255
-#: rnote-ui/data/ui/dialogs/export.ui:424
+#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
+#: rnote-ui/data/ui/dialogs/export.ui:425
 msgid "With background"
 msgstr "Háttérrel"
 
-#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:256
-#: rnote-ui/data/ui/dialogs/export.ui:425
+#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
+#: rnote-ui/data/ui/dialogs/export.ui:426
 msgid "Set whether the background should be exported"
 msgstr "Állítsa be, hogy a háttér exportálásra kerüljön-e"
 
-#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:266
-#: rnote-ui/data/ui/dialogs/export.ui:435
+#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
+#: rnote-ui/data/ui/dialogs/export.ui:436
 msgid "With pattern"
 msgstr "Mintával"
 
-#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:267
-#: rnote-ui/data/ui/dialogs/export.ui:436
+#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
+#: rnote-ui/data/ui/dialogs/export.ui:437
 msgid "Set whether the background pattern should be exported"
 msgstr "Állítsa be, hogy exportálja-e a háttérmintát"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
-#: rnote-ui/data/ui/dialogs/export.ui:277
-#: rnote-ui/data/ui/dialogs/export.ui:446
+#: rnote-ui/data/ui/dialogs/export.ui:278
+#: rnote-ui/data/ui/dialogs/export.ui:447
 msgid "Export format"
 msgstr "Exportálás formátuma"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
-#: rnote-ui/data/ui/dialogs/export.ui:278
+#: rnote-ui/data/ui/dialogs/export.ui:279
 msgid "The export format"
 msgstr "Exportálás formátuma"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
-#: rnote-ui/data/ui/dialogs/export.ui:282
-#: rnote-ui/data/ui/dialogs/export.ui:451 rnote-ui/src/dialogs/export.rs:259
+#: rnote-ui/data/ui/dialogs/export.ui:283
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:259
 #: rnote-ui/src/dialogs/export.rs:534 rnote-ui/src/dialogs/export.rs:777
 msgid "Svg"
 msgstr "SVG-fájl"
@@ -535,37 +556,37 @@ msgstr "PDF-fájl"
 msgid "Xopp"
 msgstr "XOPP-fájl"
 
-#: rnote-ui/data/ui/dialogs/export.ui:212
+#: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
 msgstr "Exportálási könyvtár"
 
-#: rnote-ui/data/ui/dialogs/export.ui:213
+#: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"
 msgstr "Exportálási könyvtár kijelölése"
 
-#: rnote-ui/data/ui/dialogs/export.ui:244
+#: rnote-ui/data/ui/dialogs/export.ui:245
 msgid "Export files stem name"
 msgstr "Fájlok exportálása szárnév"
 
-#: rnote-ui/data/ui/dialogs/export.ui:283
-#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:539
+#: rnote-ui/data/ui/dialogs/export.ui:284
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539
 #: rnote-ui/src/dialogs/export.rs:782
 msgid "Png"
 msgstr "PNG-fájl"
 
-#: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:545
+#: rnote-ui/data/ui/dialogs/export.ui:285
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:545
 #: rnote-ui/src/dialogs/export.rs:788
 msgid "Jpeg"
 msgstr "JPEG-fájl"
 
-#: rnote-ui/data/ui/dialogs/export.ui:292
-#: rnote-ui/data/ui/dialogs/export.ui:461
+#: rnote-ui/data/ui/dialogs/export.ui:293
+#: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap scalefactor"
 msgstr "Pontkép-méretezési tényező"
 
-#: rnote-ui/data/ui/dialogs/export.ui:293
-#: rnote-ui/data/ui/dialogs/export.ui:462
+#: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
 "Set the scalefactor of the bitmap image in relation\n"
 "to the actual size on the document"
@@ -573,25 +594,25 @@ msgstr ""
 "Állítsa be a pontkép-méretezési tényezőt a dokumentum\n"
 "tényleges méretéhez viszonyítva"
 
-#: rnote-ui/data/ui/dialogs/export.ui:314
-#: rnote-ui/data/ui/dialogs/export.ui:483
+#: rnote-ui/data/ui/dialogs/export.ui:315
+#: rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg quality"
 msgstr "JPEG-minőség"
 
-#: rnote-ui/data/ui/dialogs/export.ui:315
-#: rnote-ui/data/ui/dialogs/export.ui:484
+#: rnote-ui/data/ui/dialogs/export.ui:316
+#: rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "A JPEG-kép minőségének beállítása (1-100)"
 
-#: rnote-ui/data/ui/dialogs/export.ui:447
+#: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "Az export képformátum"
 
-#: rnote-ui/data/ui/dialogs/export.ui:504
+#: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
 msgstr "Margó"
 
-#: rnote-ui/data/ui/dialogs/export.ui:505
+#: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
 msgstr "Margó beállítása a kijelölt terület körül"
 
@@ -752,10 +773,6 @@ msgstr "Magasság"
 #: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "A formátum magasságának beállítása"
-
-#: rnote-ui/data/ui/settingspanel.ui:244
-msgid "DPI"
-msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
@@ -1413,68 +1430,78 @@ msgstr "Kitöltés"
 msgid "translator-credits"
 msgstr "Szobonya <szobonya.david@gmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:179
+#: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:456
-#: rnote-ui/src/appwindow/appwindowactions.rs:648
+#: rnote-ui/src/appwindow/appwindowactions.rs:634
 msgid "Saving document failed."
 msgstr "A dokumentum mentése sikertelen."
 
-#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:110
+#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:109
 msgid "Opening file failed."
 msgstr "A fájl megnyitása sikertelen."
 
-#: rnote-ui/src/dialogs/import.rs:78
-msgid ".rnote / .xopp File"
-msgstr ".rnote / .xopp fájl"
+#: rnote-ui/src/dialogs/import.rs:77
+#, fuzzy
+#| msgid ".rnote file"
+msgid ".rnote File"
+msgstr ".rnote fájl"
 
-#: rnote-ui/src/dialogs/import.rs:81
+#: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "Fájl megnyitása"
 
 #: rnote-ui/src/dialogs/import.rs:141
-msgid "PNG / SVG / JPG / PDF file"
+#, fuzzy
+#| msgid "PNG / SVG / JPG / PDF file"
+msgid "Xopp / PNG / SVG / JPG / PDF file"
 msgstr "PNG / SVG / JPG / PDF fájl"
 
-#: rnote-ui/src/dialogs/import.rs:232
+#: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
 msgstr "- nincs fájlnév -"
 
-#: rnote-ui/src/dialogs/import.rs:237
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no title -"
 msgstr "- nincs cím -"
 
-#: rnote-ui/src/dialogs/import.rs:240
+#: rnote-ui/src/dialogs/import.rs:261
 msgid "- no author -"
 msgstr "- nincs szerző -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:265
 msgid "- no date -"
 msgstr "- nincs dátum -"
 
-#: rnote-ui/src/dialogs/import.rs:251
+#: rnote-ui/src/dialogs/import.rs:272
 msgid "File name:"
 msgstr "Fájl név:"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:276
 msgid "Title:"
 msgstr "Cím:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:280
 msgid "Author:"
 msgstr "Szerző:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:284
 msgid "Modification date:"
 msgstr "Módosítás dátuma:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:288
 msgid "Pages:"
 msgstr "Oldalak:"
 
-#: rnote-ui/src/dialogs/import.rs:310 rnote-ui/src/appwindow/imexport.rs:148
+#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:152
 msgid "Opening PDF file failed."
 msgstr "A PDF fájl megnyitása sikertelen."
+
+#: rnote-ui/src/dialogs/import.rs:384
+#, fuzzy
+#| msgid "Opening .xopp file failed."
+msgid "Opening Xopp file failed."
+msgstr "A .xopp fájl megnyitása sikertelen."
 
 #: rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote file"
@@ -1544,45 +1571,48 @@ msgstr "A motor konfiguráció exportálása sikertelen."
 msgid "Exported engine config successfully."
 msgstr "A motor konfigurációja sikeresen exportálva."
 
-#: rnote-ui/src/appwindow/imexport.rs:72
+#: rnote-ui/src/appwindow/imexport.rs:76
 msgid "Opening .rnote file failed."
 msgstr "A .rnote fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:91
-msgid "Opening .xopp file failed."
-msgstr "A .xopp fájl megnyitása sikertelen."
-
-#: rnote-ui/src/appwindow/imexport.rs:110
+#: rnote-ui/src/appwindow/imexport.rs:95
 msgid "Opening vector image file failed."
 msgstr "A vektoros képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:129
+#: rnote-ui/src/appwindow/imexport.rs:114
 msgid "Opening bitmap image file failed."
 msgstr "A pontképes képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:165
+#: rnote-ui/src/appwindow/imexport.rs:133
+msgid "Opening .xopp file failed."
+msgstr "A .xopp fájl megnyitása sikertelen."
+
+#: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "Hiba: Mappa fájlként való megnyitása"
 
-#: rnote-ui/src/appwindow/imexport.rs:174
+#: rnote-ui/src/appwindow/imexport.rs:178
 msgid "Failed to open file: Unsupported file type."
 msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:765
+#: rnote-ui/src/appwindow/appwindowactions.rs:751
 msgid "Printed document successfully"
 msgstr "A dokumentum sikeresen ki lett nyomtatva"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:774
+#: rnote-ui/src/appwindow/appwindowactions.rs:760
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:800
+#: rnote-ui/src/appwindow/appwindowactions.rs:786
 msgid "Export selection failed, nothing selected."
 msgstr "A kijelölés exportálása sikertelen, nincs kijelölve semmi."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Új könyvtár neve"
+
+#~ msgid ".rnote / .xopp File"
+#~ msgstr ".rnote / .xopp fájl"
 
 #~ msgid "Select export file"
 #~ msgstr "Exportfájl kijelölése"

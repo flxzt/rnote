@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-12 14:51+0100\n"
+"POT-Creation-Date: 2022-11-13 19:46+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -231,7 +231,7 @@ msgid "New"
 msgstr "ใหม่"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs/import.rs:84
+#: rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "เปิด"
 
@@ -269,7 +269,7 @@ msgstr "ส่งออกเอกสาร"
 msgid "Export document pages"
 msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
 
-#: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:344
+#: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/src/dialogs/export.rs:735
 #, fuzzy
 #| msgid "Export Selection"
@@ -286,7 +286,7 @@ msgstr "ซูมให้พอดีกับความกว้างขอ
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs/mod.rs:234 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
 msgstr "เลือก"
@@ -299,11 +299,11 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: rnote-ui/data/ui/dialogs/dialogs.ui:21
 #: rnote-ui/data/ui/dialogs/dialogs.ui:33
 #: rnote-ui/data/ui/dialogs/dialogs.ui:45 rnote-ui/data/ui/dialogs/import.ui:10
-#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/export.ui:10
-#: rnote-ui/data/ui/dialogs/export.ui:136
-#: rnote-ui/data/ui/dialogs/export.ui:347
+#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:201
+#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
+#: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs/mod.rs:235 rnote-ui/src/dialogs/import.rs:85
+#: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
 #: rnote-ui/src/dialogs/import.rs:148 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
@@ -382,12 +382,12 @@ msgid "Change the workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:222 rnote-ui/src/dialogs/mod.rs:295
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:231
+#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
 msgid "Change workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
@@ -406,7 +406,8 @@ msgstr ""
 msgid "Import PDF"
 msgstr "นำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/src/dialogs/import.rs:147
+#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
+#: rnote-ui/src/dialogs/import.rs:147
 msgid "Import"
 msgstr "นำเข้า"
 
@@ -463,26 +464,46 @@ msgstr "แบบต่อเนื่อง"
 msgid "One per document page"
 msgstr "หน้าต่อหน้า"
 
+#: rnote-ui/data/ui/dialogs/import.ui:198
+#, fuzzy
+#| msgid "Import file"
+msgid "Import Xournal++ file"
+msgstr "นำเข้าไฟล์"
+
+#: rnote-ui/data/ui/dialogs/import.ui:237
+#, fuzzy
+#| msgid "PDF import preferences"
+msgid "Xopp import preferences"
+msgstr "ตั้งค่าการนำเข้า PDF"
+
+#: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
+msgid "DPI"
+msgstr "DPI"
+
+#: rnote-ui/data/ui/dialogs/import.ui:242
+msgid "Set the preferred DPI for the Xopp file"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:352 rnote-ui/src/dialogs/export.rs:815
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
 #: rnote-ui/src/dialogs/export.rs:879
 msgid "Export"
 msgstr "ส่งออก"
 
-#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:386
+#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
 #, fuzzy
 #| msgid "Import file"
 msgid "Export file"
 msgstr "นำเข้าไฟล์"
 
-#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:387
+#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 #, fuzzy
 #| msgid "Set the format width"
 msgid "Select the export file"
 msgstr "ตั้งความกว้างของหน้ากระดาษ"
 
 #. force the user to pick another file
-#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:396
+#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
 #: rnote-ui/src/dialogs/export.rs:122 rnote-ui/src/dialogs/export.rs:148
 #: rnote-ui/src/dialogs/export.rs:177 rnote-ui/src/dialogs/export.rs:619
 #: rnote-ui/src/dialogs/export.rs:645 rnote-ui/src/dialogs/export.rs:679
@@ -491,59 +512,59 @@ msgstr "ตั้งความกว้างของหน้ากระด
 msgid "- no file selected -"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
 
-#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:251
-#: rnote-ui/data/ui/dialogs/export.ui:420
+#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
+#: rnote-ui/data/ui/dialogs/export.ui:421
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Export preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
 
-#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:255
-#: rnote-ui/data/ui/dialogs/export.ui:424
+#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
+#: rnote-ui/data/ui/dialogs/export.ui:425
 #, fuzzy
 #| msgid "Document background"
 msgid "With background"
 msgstr "พื้นหลังของเอกสาร"
 
-#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:256
-#: rnote-ui/data/ui/dialogs/export.ui:425
+#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
+#: rnote-ui/data/ui/dialogs/export.ui:426
 #, fuzzy
 #| msgid "Set the background color"
 msgid "Set whether the background should be exported"
 msgstr "ตั้งสีพื้นหลัง"
 
-#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:266
-#: rnote-ui/data/ui/dialogs/export.ui:435
+#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
+#: rnote-ui/data/ui/dialogs/export.ui:436
 #, fuzzy
 #| msgid "Pattern"
 msgid "With pattern"
 msgstr "ลวดลาย"
 
-#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:267
-#: rnote-ui/data/ui/dialogs/export.ui:436
+#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
+#: rnote-ui/data/ui/dialogs/export.ui:437
 #, fuzzy
 #| msgid "Set the background color"
 msgid "Set whether the background pattern should be exported"
 msgstr "ตั้งสีพื้นหลัง"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
-#: rnote-ui/data/ui/dialogs/export.ui:277
-#: rnote-ui/data/ui/dialogs/export.ui:446
+#: rnote-ui/data/ui/dialogs/export.ui:278
+#: rnote-ui/data/ui/dialogs/export.ui:447
 #, fuzzy
 #| msgid "Export document"
 msgid "Export format"
 msgstr "ส่งออกเอกสาร"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
-#: rnote-ui/data/ui/dialogs/export.ui:278
+#: rnote-ui/data/ui/dialogs/export.ui:279
 #, fuzzy
 #| msgid "Export document"
 msgid "The export format"
 msgstr "ส่งออกเอกสาร"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
-#: rnote-ui/data/ui/dialogs/export.ui:282
-#: rnote-ui/data/ui/dialogs/export.ui:451 rnote-ui/src/dialogs/export.rs:259
+#: rnote-ui/data/ui/dialogs/export.ui:283
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:259
 #: rnote-ui/src/dialogs/export.rs:534 rnote-ui/src/dialogs/export.rs:777
 msgid "Svg"
 msgstr ""
@@ -556,66 +577,66 @@ msgstr ""
 msgid "Xopp"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:212
+#: rnote-ui/data/ui/dialogs/export.ui:213
 #, fuzzy
 msgid "Export directory"
 msgstr "ไดเรกทอรี"
 
-#: rnote-ui/data/ui/dialogs/export.ui:213
+#: rnote-ui/data/ui/dialogs/export.ui:214
 #, fuzzy
 #| msgid "Set the format width"
 msgid "Select the export directory"
 msgstr "ตั้งความกว้างของหน้ากระดาษ"
 
-#: rnote-ui/data/ui/dialogs/export.ui:244
+#: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy
 #| msgid "Export engine state"
 msgid "Export files stem name"
 msgstr "ส่งออกสภาพของเอนจิน"
 
-#: rnote-ui/data/ui/dialogs/export.ui:283
-#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:539
+#: rnote-ui/data/ui/dialogs/export.ui:284
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539
 #: rnote-ui/src/dialogs/export.rs:782
 msgid "Png"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:545
+#: rnote-ui/data/ui/dialogs/export.ui:285
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:545
 #: rnote-ui/src/dialogs/export.rs:788
 msgid "Jpeg"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:292
-#: rnote-ui/data/ui/dialogs/export.ui:461
+#: rnote-ui/data/ui/dialogs/export.ui:293
+#: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap scalefactor"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:293
-#: rnote-ui/data/ui/dialogs/export.ui:462
+#: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
 "Set the scalefactor of the bitmap image in relation\n"
 "to the actual size on the document"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:314
-#: rnote-ui/data/ui/dialogs/export.ui:483
+#: rnote-ui/data/ui/dialogs/export.ui:315
+#: rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg quality"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:315
-#: rnote-ui/data/ui/dialogs/export.ui:484
+#: rnote-ui/data/ui/dialogs/export.ui:316
+#: rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:447
+#: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:504
+#: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/export.ui:505
+#: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
 msgstr ""
 
@@ -780,10 +801,6 @@ msgstr "สูง"
 #: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
 msgstr "ตั้งความสูงของหน้ากระดาษ"
-
-#: rnote-ui/data/ui/settingspanel.ui:244
-msgid "DPI"
-msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
@@ -1435,68 +1452,78 @@ msgstr "เต็มบรรทัด"
 msgid "translator-credits"
 msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
 
-#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:179
+#: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:456
-#: rnote-ui/src/appwindow/appwindowactions.rs:648
+#: rnote-ui/src/appwindow/appwindowactions.rs:634
 msgid "Saving document failed."
 msgstr "การบันทึกเอกสารล้มเหลว"
 
-#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:110
+#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:109
 msgid "Opening file failed."
 msgstr "การเปิดไฟล์ล้มเหลว"
 
-#: rnote-ui/src/dialogs/import.rs:78
-msgid ".rnote / .xopp File"
-msgstr "ไฟล์ .rnote / .xopp"
+#: rnote-ui/src/dialogs/import.rs:77
+#, fuzzy
+#| msgid ".rnote file"
+msgid ".rnote File"
+msgstr "ไฟล์ .rnote"
 
-#: rnote-ui/src/dialogs/import.rs:81
+#: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "เปิดไฟล์"
 
 #: rnote-ui/src/dialogs/import.rs:141
-msgid "PNG / SVG / JPG / PDF file"
+#, fuzzy
+#| msgid "PNG / SVG / JPG / PDF file"
+msgid "Xopp / PNG / SVG / JPG / PDF file"
 msgstr "ไฟล์ PNG / SVG / JPG / PDF"
 
-#: rnote-ui/src/dialogs/import.rs:232
+#: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
 
-#: rnote-ui/src/dialogs/import.rs:237
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no title -"
 msgstr "- ไม่มีชื่อเรื่อง -"
 
-#: rnote-ui/src/dialogs/import.rs:240
+#: rnote-ui/src/dialogs/import.rs:261
 msgid "- no author -"
 msgstr "- ไม่มีผู้เขียน -"
 
-#: rnote-ui/src/dialogs/import.rs:244
+#: rnote-ui/src/dialogs/import.rs:265
 msgid "- no date -"
 msgstr "- ไม่มีวันที่ -"
 
-#: rnote-ui/src/dialogs/import.rs:251
+#: rnote-ui/src/dialogs/import.rs:272
 msgid "File name:"
 msgstr "ชื่อไฟล์:"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:276
 msgid "Title:"
 msgstr "ชื่อเรื่อง:"
 
-#: rnote-ui/src/dialogs/import.rs:259
+#: rnote-ui/src/dialogs/import.rs:280
 msgid "Author:"
 msgstr "ผู้เขียน:"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:284
 msgid "Modification date:"
 msgstr "วันที่แก้ไข:"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:288
 msgid "Pages:"
 msgstr "จำนวนหน้า:"
 
-#: rnote-ui/src/dialogs/import.rs:310 rnote-ui/src/appwindow/imexport.rs:148
+#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:152
 msgid "Opening PDF file failed."
 msgstr "การเปิดไฟล์ PDF ล้มเหลว"
+
+#: rnote-ui/src/dialogs/import.rs:384
+#, fuzzy
+#| msgid "Opening .xopp file failed."
+msgid "Opening Xopp file failed."
+msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
 
 #: rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote file"
@@ -1584,39 +1611,39 @@ msgstr "ส่งออกการตั้งค่าเอนจินล้
 msgid "Exported engine config successfully."
 msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/appwindow/imexport.rs:72
+#: rnote-ui/src/appwindow/imexport.rs:76
 msgid "Opening .rnote file failed."
 msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:91
-msgid "Opening .xopp file failed."
-msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
-
-#: rnote-ui/src/appwindow/imexport.rs:110
+#: rnote-ui/src/appwindow/imexport.rs:95
 msgid "Opening vector image file failed."
 msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:129
+#: rnote-ui/src/appwindow/imexport.rs:114
 msgid "Opening bitmap image file failed."
 msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:165
+#: rnote-ui/src/appwindow/imexport.rs:133
+msgid "Opening .xopp file failed."
+msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
+
+#: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
 
-#: rnote-ui/src/appwindow/imexport.rs:174
+#: rnote-ui/src/appwindow/imexport.rs:178
 msgid "Failed to open file: Unsupported file type."
 msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:765
+#: rnote-ui/src/appwindow/appwindowactions.rs:751
 msgid "Printed document successfully"
 msgstr "พิมพ์เอกสารสำเร็จแล้ว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:774
+#: rnote-ui/src/appwindow/appwindowactions.rs:760
 msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:800
+#: rnote-ui/src/appwindow/appwindowactions.rs:786
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
@@ -1626,6 +1653,9 @@ msgstr "ส่งออกสิ่งที่เลือกเป็นไฟ
 #, fuzzy
 msgid "New Directory name"
 msgstr "ไดเรกทอรี"
+
+#~ msgid ".rnote / .xopp File"
+#~ msgstr "ไฟล์ .rnote / .xopp"
 
 #, fuzzy
 #~| msgid "Import file"

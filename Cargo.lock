@@ -2843,7 +2843,7 @@ checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 [[package]]
 name = "piet"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#d8d894769a47fb7da399c1bfcbd750f9a9d0fe09"
+source = "git+https://github.com/flxzt/piet?branch=rnote#2b241d4be4853889cecb6ebf709cd24e4e1c088b"
 dependencies = [
  "kurbo",
  "unic-bidi",
@@ -2852,7 +2852,7 @@ dependencies = [
 [[package]]
 name = "piet-cairo"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#d8d894769a47fb7da399c1bfcbd750f9a9d0fe09"
+source = "git+https://github.com/flxzt/piet?branch=rnote#2b241d4be4853889cecb6ebf709cd24e4e1c088b"
 dependencies = [
  "cairo-rs",
  "pango",
@@ -2865,7 +2865,7 @@ dependencies = [
 [[package]]
 name = "piet-svg"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#d8d894769a47fb7da399c1bfcbd750f9a9d0fe09"
+source = "git+https://github.com/flxzt/piet?branch=rnote#2b241d4be4853889cecb6ebf709cd24e4e1c088b"
 dependencies = [
  "base64",
  "font-kit",

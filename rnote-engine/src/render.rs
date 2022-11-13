@@ -635,10 +635,10 @@ impl Svg {
         bounds.ensure_positive();
         bounds.assert_valid()?;
 
-        let mut piet_cx = piet_svg::RenderContext::new(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
+        let mut piet_cx = piet_svg::RenderContext::new(
+            kurbo::Size::new(bounds.extents()[0], bounds.extents()[1]),
+            2,
+        );
 
         // Apply the draw function
         draw_func(&mut piet_cx)?;
@@ -666,10 +666,10 @@ impl Svg {
         bounds.ensure_positive();
         bounds.assert_valid()?;
 
-        let mut piet_cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
+        let mut piet_cx = piet_svg::RenderContext::new_no_text(
+            kurbo::Size::new(bounds.extents()[0], bounds.extents()[1]),
+            2,
+        );
 
         // Apply the draw function
         draw_func(&mut piet_cx)?;
@@ -793,6 +793,23 @@ impl Svg {
                 ))
                 })?;
         }
+        Ok(())
+    }
+
+    /// Simplifies the svg by passing it through usvg. Should reduce the size
+    pub fn simplify(&mut self) -> anyhow::Result<()> {
+        let xml_options = usvg::XmlOptions {
+            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+            writer_opts: xmlwriter::Options {
+                use_single_quote: false,
+                indent: xmlwriter::Indent::None,
+                attributes_indent: xmlwriter::Indent::None,
+            },
+        };
+
+        let rtree = usvg::Tree::from_str(&self.svg_data, &USVG_OPTIONS.to_ref())?;
+        self.svg_data = rtree.to_string(&xml_options);
+
         Ok(())
     }
 

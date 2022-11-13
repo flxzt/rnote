@@ -8,7 +8,7 @@ use crate::document::{background, Background, Format};
 use crate::pens::penholder::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::{StoreSnapshot, StrokeKey};
-use crate::strokes::{BitmapImage, Stroke, VectorImage};
+use crate::strokes::{BitmapImage, Stroke, TextStroke, VectorImage};
 use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
 
 use super::EngineConfig;
@@ -318,6 +318,18 @@ impl RnoteEngine {
         });
 
         oneshot_receiver
+    }
+
+    //// generates a textstroke for the string
+    pub fn generate_textstroke_from_string(
+        &self,
+        pos: na::Vector2<f64>,
+        text: String,
+    ) -> anyhow::Result<TextStroke> {
+        let mut text_style = self.penholder.typewriter.text_style.clone();
+        text_style.ranged_text_attributes.clear();
+
+        Ok(TextStroke::new(text, pos, text_style))
     }
 
     //// generates image strokes for each page for the bytes ( from a PDF file )

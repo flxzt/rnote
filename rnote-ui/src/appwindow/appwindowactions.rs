@@ -818,12 +818,12 @@ impl RnoteAppWindow {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                                 if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
-                                    log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err, {}", e);
+                                    log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err `{}`", e);
                                 };
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::debug!("could not load clipboard contents as vector image, read_text() failed with Err {}", e);
+                            log::debug!("could not load clipboard contents as svg, read_text() failed with Err `{}`", e);
 
                         }
                     }

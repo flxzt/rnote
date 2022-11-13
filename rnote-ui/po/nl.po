@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-13 19:03+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -469,7 +469,9 @@ msgid "Import Xournal++ file"
 msgstr "Xournal++-bestand importeren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-msgid "Xopp import preferences"
+#, fuzzy
+#| msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "Xopp-importvoorkeuren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -477,7 +479,9 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+#, fuzzy
+#| msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Stel de gewenste dpi-waarde van het Xopp-bestand in"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1492,8 +1496,10 @@ msgstr "Aantal pagina's:"
 msgid "Opening PDF file failed."
 msgstr "Het document kan niet worden geopend."
 
-#: rnote-ui/src/dialogs/import.rs:384
-msgid "Opening Xopp file failed."
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
+#, fuzzy
+#| msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr "Het Xopp-bestand kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1576,10 +1582,6 @@ msgstr "Het bestand kan niet worden geopend."
 msgid "Opening bitmap image file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr "Het bestand kan niet worden geopend."
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "Een map kan niet als bestand worden geopend"
@@ -1603,6 +1605,9 @@ msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Naam van nieuwe map"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr "Het bestand kan niet worden geopend."
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr ".rnote-/.xopp-bestand"

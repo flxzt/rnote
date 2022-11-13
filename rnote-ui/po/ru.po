@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -476,7 +476,7 @@ msgstr "Импортировать файл"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "Настройки импорта PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -484,7 +484,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1507,10 +1507,10 @@ msgstr "Страницы:"
 msgid "Opening PDF file failed."
 msgstr "Не удалось открыть PDF файл."
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr "Не удалось открыть .xopp файл."
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1599,10 +1599,6 @@ msgstr "Не удалось открыть векторное изображен
 msgid "Opening bitmap image file failed."
 msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr "Не удалось открыть .xopp файл."
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
@@ -1626,6 +1622,9 @@ msgstr "Не удалось экспортировать выделение, н�
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Имя нового Каталога"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr "Не удалось открыть .xopp файл."
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr ".rnote / .xopp Файл"

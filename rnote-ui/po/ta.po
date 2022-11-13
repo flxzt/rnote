@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -473,7 +473,7 @@ msgstr "கோப்பு இறக்குமதி"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "PDF இறக்குமதி விருப்பத்தேர்வுகள்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -481,7 +481,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1503,10 +1503,10 @@ msgstr "பக்கங்கள்:"
 msgid "Opening PDF file failed."
 msgstr "PDF கோப்பை திறக்க முடியவில்லை."
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr ".xopp கோப்பை திறக்க முடியவில்லை."
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1595,10 +1595,6 @@ msgstr "திசையன் படக் கோப்பைத் திறப
 msgid "Opening bitmap image file failed."
 msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr ".xopp கோப்பை திறக்க முடியவில்லை."
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
@@ -1622,6 +1618,9 @@ msgstr "ஏற்றுமதி தேர்வு தோல்வி, எத�
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "புதிய அடைவு பெயர்"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr ".xopp கோப்பை திறக்க முடியவில்லை."
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr ".rnote / .xopp கோப்பு"

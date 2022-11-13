@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-06 06:49+0000\n"
 "Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -478,7 +478,7 @@ msgstr "Importer un fichier"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "Paramètres d’importation de PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -486,7 +486,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1514,10 +1514,10 @@ msgstr "Pages :"
 msgid "Opening PDF file failed."
 msgstr "L'ouverture du fichier PDF a échoué."
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr "L'ouverture du fichier .xopp a échoué."
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1606,10 +1606,6 @@ msgstr "L'ouverture du fichier image vectorielle a échoué."
 msgid "Opening bitmap image file failed."
 msgstr "L'ouverture du fichier image matricielle a échoué."
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr "L'ouverture du fichier .xopp a échoué."
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
@@ -1633,6 +1629,9 @@ msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Nom du nouveau répertoire"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr "L'ouverture du fichier .xopp a échoué."
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr "fichier .rnote / .xopp"

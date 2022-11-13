@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -498,7 +498,7 @@ msgstr "Importera Fil"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "Bildtyp för PDF-import"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -506,7 +506,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1579,9 +1579,9 @@ msgstr "Sidor:"
 msgid "Opening PDF file failed."
 msgstr "Det gick inte att öppna PDF-filen."
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr "Öppna fil"
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1675,10 +1675,6 @@ msgstr ""
 
 #: rnote-ui/src/appwindow/imexport.rs:114
 msgid "Opening bitmap image file failed."
-msgstr ""
-
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
 msgstr ""
 
 #: rnote-ui/src/appwindow/imexport.rs:169

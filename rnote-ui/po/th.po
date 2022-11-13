@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -473,7 +473,7 @@ msgstr "นำเข้าไฟล์"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -481,7 +481,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1519,10 +1519,10 @@ msgstr "จำนวนหน้า:"
 msgid "Opening PDF file failed."
 msgstr "การเปิดไฟล์ PDF ล้มเหลว"
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1623,10 +1623,6 @@ msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้
 msgid "Opening bitmap image file failed."
 msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
@@ -1653,6 +1649,9 @@ msgstr "ส่งออกสิ่งที่เลือกเป็นไฟ
 #, fuzzy
 msgid "New Directory name"
 msgstr "ไดเรกทอรี"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr "ไฟล์ .rnote / .xopp"

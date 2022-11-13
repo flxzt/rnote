@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-12 20:14+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -474,7 +474,7 @@ msgstr "Importa file"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "Preferenze sull'importazione dei PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -482,7 +482,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1503,10 +1503,10 @@ msgstr "Pagine:"
 msgid "Opening PDF file failed."
 msgstr "Apertura file PDF fallita."
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr "Apertura file .xopp fallita."
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1591,10 +1591,6 @@ msgstr "Apertura del file immagine vettoriale non riuscita."
 msgid "Opening bitmap image file failed."
 msgstr "Apertura del file immagine bitmap non riuscita."
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr "Apertura file .xopp fallita."
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "Errore: si è provato ad aprire la cartella come file"
@@ -1618,6 +1614,9 @@ msgstr "Esportazione della selezione fallita, non si è selezionato nulla."
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Nuovo nome della cartella"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr "Apertura file .xopp fallita."
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr ".rnote / File .xopp"

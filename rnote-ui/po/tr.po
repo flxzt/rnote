@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Oğuz Ersen <oguz@ersen.moe>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -480,7 +480,7 @@ msgstr "Dosya içe aktar"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "PDF içe aktarma tercihleri"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -488,7 +488,7 @@ msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1531,10 +1531,10 @@ msgstr "Sayfalar:"
 msgid "Opening PDF file failed."
 msgstr "PDF dosyası açılamadı."
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr ".xopp dosyası açılamadı."
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1635,10 +1635,6 @@ msgstr "Vektör görüntü dosyası açılamadı."
 msgid "Opening bitmap image file failed."
 msgstr "Biteşlem görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr ".xopp dosyası açılamadı."
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
@@ -1664,6 +1660,9 @@ msgstr "Seçim, SVG olarak dışa aktarılamadı."
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Yeni Dizin adı"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr ".xopp dosyası açılamadı."
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr ".rnote / .xopp Dosyası"

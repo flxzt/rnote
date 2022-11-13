@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 19:46+0100\n"
+"POT-Creation-Date: 2022-11-13 20:02+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: matriz <wboy111@outlook.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -476,7 +476,7 @@ msgstr "匯入檔案"
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xopp import preferences"
+msgid "Xournal++ file import preferences"
 msgstr "PDF 匯入偏好"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
@@ -484,7 +484,7 @@ msgid "DPI"
 msgstr "畫素密度(DPI)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-msgid "Set the preferred DPI for the Xopp file"
+msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -1522,10 +1522,10 @@ msgstr "頁碼："
 msgid "Opening PDF file failed."
 msgstr "PDF開啟失敗。"
 
-#: rnote-ui/src/dialogs/import.rs:384
+#: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xopp file failed."
+msgid "Opening Xournal++ file failed."
 msgstr ".xopp 檔案開啟失敗。"
 
 #: rnote-ui/src/dialogs/export.rs:19
@@ -1626,10 +1626,6 @@ msgstr "向量圖檔案開啟失敗。"
 msgid "Opening bitmap image file failed."
 msgstr "點陣圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/imexport.rs:133
-msgid "Opening .xopp file failed."
-msgstr ".xopp 檔案開啟失敗。"
-
 #: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Error: Tried opening folder as file"
 msgstr "錯誤：將資料夾作為檔案開啟"
@@ -1657,6 +1653,9 @@ msgstr "匯出所選為 SVG 失敗。"
 #, fuzzy
 msgid "New Directory name"
 msgstr "目錄"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr ".xopp 檔案開啟失敗。"
 
 #~ msgid ".rnote / .xopp File"
 #~ msgstr ".rnote/.xopp檔案"

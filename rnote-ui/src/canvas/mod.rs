@@ -907,16 +907,15 @@ impl RnoteCanvas {
                         Ok(textstroke) => {
                             let widget_flags = appwindow.canvas().engine().borrow_mut().import_generated_strokes(vec![(Stroke::TextStroke(textstroke), None)]);
                             appwindow.handle_widget_flags(widget_flags);
+
+                            return true;
                         }
                         Err(e) => log::error!("failed to generated textstroke for dropped text. Err `{e}`"),
                     }
                 } else if value.is::<gio::File>() {
+                    appwindow.open_file_w_dialogs(&value.get::<gio::File>().unwrap(), Some(pos));
 
-                    if let Ok(file) = value.get::<gio::File>() {
-                        appwindow.open_file_w_dialogs(&file, Some(pos));
-
-                        return true;
-                    }
+                    return true;
                 }
 
                 false

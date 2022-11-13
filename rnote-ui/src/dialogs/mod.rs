@@ -70,14 +70,18 @@ pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |_dialog_clear_doc, response| {
             match response {
                 "clear" => {
+                    let prev_empty = appwindow.canvas().empty();
+
                     appwindow.canvas().engine().borrow_mut().clear();
 
                     appwindow.canvas().return_to_origin_page();
                     appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-                    appwindow.canvas().update_engine_rendering();
 
-                    appwindow.canvas().set_unsaved_changes(false);
+                    if !prev_empty {
+                        appwindow.canvas().set_unsaved_changes(true);
+                    }
                     appwindow.canvas().set_empty(true);
+                    appwindow.canvas().update_engine_rendering();
                 },
                 _ => {
                 // Cancel

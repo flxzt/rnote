@@ -195,6 +195,7 @@
                     <child>
                       <object class="GtkLabel" id="export_doc_pages_page_files_naming_info_label">
                         <property name="sensitive">false</property>
+                        <property name="hexpand">true</property>
                         <property name="halign">end</property>
                         <property name="margin-start">12</property>
                         <property name="use-markup">true</property>

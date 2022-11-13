@@ -22,11 +22,13 @@ pub fn trash(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction
                             // if the output file shares a sub-tree with the deleted directory, the output file has been deleted too and gets unset
                             if let Some(current_output_path) = current_output_file.path() {
                                 if current_output_path.starts_with(&current_path) {
+                                    appwindow.canvas().set_unsaved_changes(true);
                                     appwindow.canvas().set_output_file(None);
                                 }
                             }
                         } else if current_output_file.equal(&current_file) {
                             // if the output file is the current file, unset the output file
+                            appwindow.canvas().set_unsaved_changes(true);
                             appwindow.canvas().set_output_file(None);
                         }
                     }

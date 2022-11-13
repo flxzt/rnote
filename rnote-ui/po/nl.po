@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-13 20:02+0100\n"
-"PO-Revision-Date: 2022-11-13 19:03+0000\n"
+"PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -469,20 +469,16 @@ msgid "Import Xournal++ file"
 msgstr "Xournal++-bestand importeren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "Xopp import preferences"
 msgid "Xournal++ file import preferences"
-msgstr "Xopp-importvoorkeuren"
+msgstr "Xournal++-importvoorkeuren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-#, fuzzy
-#| msgid "Set the preferred DPI for the Xopp file"
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "Stel de gewenste dpi-waarde van het Xopp-bestand in"
+msgstr "Stel de gewenste dpi-waarde van het Xournal++-bestand in"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
@@ -1497,10 +1493,8 @@ msgid "Opening PDF file failed."
 msgstr "Het document kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
-#, fuzzy
-#| msgid "Opening Xopp file failed."
 msgid "Opening Xournal++ file failed."
-msgstr "Het Xopp-bestand kan niet worden geopend."
+msgstr "Het Xournal++-bestand kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote file"

@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-13 20:02+0100\n"
-"PO-Revision-Date: 2022-11-12 20:14+0000\n"
+"PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -464,16 +464,12 @@ msgid "One per document page"
 msgstr "Dokumentumoldalonként egy"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ file"
-msgstr "Fájl importálása"
+msgstr "Xournal++ fájl importálása"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ file import preferences"
-msgstr "PDF importálási beállítások"
+msgstr "Xournal++ fájl importálási beállítások"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
@@ -481,7 +477,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Xournal++ fájl preferált DPI-jének beállítása"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
@@ -1442,20 +1438,16 @@ msgid "Opening file failed."
 msgstr "A fájl megnyitása sikertelen."
 
 #: rnote-ui/src/dialogs/import.rs:77
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote File"
-msgstr ".rnote fájl"
+msgstr ".rnote-fájl"
 
 #: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "Fájl megnyitása"
 
 #: rnote-ui/src/dialogs/import.rs:141
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
 msgid "Xopp / PNG / SVG / JPG / PDF file"
-msgstr "PNG / SVG / JPG / PDF fájl"
+msgstr "JPG-, PDF-, PNG-, SVG-, Xopp-fájl"
 
 #: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
@@ -1498,10 +1490,8 @@ msgid "Opening PDF file failed."
 msgstr "A PDF fájl megnyitása sikertelen."
 
 #: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
-#, fuzzy
-#| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
-msgstr "A .xopp fájl megnyitása sikertelen."
+msgstr "A Xournal++ fájl megnyitása sikertelen."
 
 #: rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote file"

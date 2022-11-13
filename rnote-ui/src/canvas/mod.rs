@@ -892,15 +892,21 @@ impl RnoteCanvas {
             .propagation_phase(PropagationPhase::Capture)
             .actions(gdk::DragAction::COPY)
             .build();
-        drop_target.set_types(&[glib::types::Type::STRING, gio::File::static_type()]);
         self.add_controller(&drop_target);
+
+        // The order here is important: first files, then text
+        drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
 
         drop_target.connect_drop(
             clone!(@weak appwindow => @default-return false, move |_drop_target, value, x, y| {
                 let pos = (appwindow.canvas().engine().borrow().camera.transform().inverse() *
                     na::point![x,y]).coords;
 
-                if value.is::<String>() {
+                if value.is::<gio::File>() {
+                    appwindow.open_file_w_dialogs(&value.get::<gio::File>().unwrap(), Some(pos));
+
+                    return true;
+                } else if value.is::<String>() {
                     let textstroke = appwindow.canvas().engine().borrow_mut().generate_textstroke_from_string(pos, value.get::<String>().unwrap());
 
                     match textstroke {
@@ -912,10 +918,6 @@ impl RnoteCanvas {
                         }
                         Err(e) => log::error!("failed to generated textstroke for dropped text. Err `{e}`"),
                     }
-                } else if value.is::<gio::File>() {
-                    appwindow.open_file_w_dialogs(&value.get::<gio::File>().unwrap(), Some(pos));
-
-                    return true;
                 }
 
                 false

@@ -234,12 +234,12 @@
             </style>
             <child>
               <object class="AdwPreferencesGroup">
-                <property name="title" translatable="yes">Xopp import preferences</property>
+                <property name="title" translatable="yes">Xournal++ file import preferences</property>
                 <property name="halign">fill</property>
                 <child>
                   <object class="AdwActionRow" id="xopp_import_dpi_row">
                     <property name="title" translatable="yes">DPI</property>
-                    <property name="subtitle" translatable="yes">Set the preferred DPI for the Xopp file</property>
+                    <property name="subtitle" translatable="yes">Set the preferred DPI for the Xournal++ file</property>
                     <child type="suffix">
                       <object class="GtkAdjustment" id="xopp_import_dpi_adj">
                         <property name="step-increment">1</property>

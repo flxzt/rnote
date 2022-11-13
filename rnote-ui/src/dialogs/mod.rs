@@ -94,6 +94,24 @@ pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
 }
 
 pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
+    let new_doc = |appwindow: &RnoteAppWindow| {
+        appwindow.canvas().engine().borrow_mut().clear();
+
+        appwindow.canvas().return_to_origin_page();
+        appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+        appwindow.canvas().update_engine_rendering();
+
+        appwindow.canvas().set_unsaved_changes(false);
+        appwindow.canvas().set_empty(true);
+
+        appwindow.app().set_input_file(None);
+        appwindow.canvas().set_output_file(None);
+    };
+
+    if !appwindow.unsaved_changes() {
+        return new_doc(&appwindow);
+    }
+
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -103,21 +121,7 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
     dialog_new_doc.connect_response(
         None,
         clone!(@weak appwindow => move |_dialog_new_doc, response| {
-        let new_doc = |appwindow: &RnoteAppWindow| {
-            appwindow.canvas().engine().borrow_mut().clear();
-
-            appwindow.canvas().return_to_origin_page();
-            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_engine_rendering();
-
-            appwindow.canvas().set_unsaved_changes(false);
-            appwindow.canvas().set_empty(true);
-
-            appwindow.app().set_input_file(None);
-            appwindow.canvas().set_output_file(None);
-        };
-
-        match response{
+        match response {
             "discard" => {
                 new_doc(&appwindow)
             },

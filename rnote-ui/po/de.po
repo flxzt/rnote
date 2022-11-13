@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-13 19:46+0100\n"
-"PO-Revision-Date: 2022-11-12 11:14+0000\n"
+"PO-Revision-Date: 2022-11-13 19:03+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -264,10 +264,8 @@ msgstr "Dokument exportieren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:133
 #: rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "Exportiere Dokument als SVG"
+msgstr "Exportiere Dokumentseiten"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:345
 #: rnote-ui/src/dialogs/export.rs:735
@@ -468,10 +466,8 @@ msgid "One per document page"
 msgstr "Eine per Dokumentenseite"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ file"
-msgstr "Importiere Datei"
+msgstr "Importiere Xournal++ Datei"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
 #, fuzzy

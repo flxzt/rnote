@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 07:30+0100\n"
+"POT-Creation-Date: 2022-11-14 07:38+0100\n"
 "PO-Revision-Date: 2022-11-13 18:09+0000\n"
 "Last-Translator: MarioC-12 <mariocm2002@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -598,6 +598,7 @@ msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
@@ -616,12 +617,6 @@ msgstr "Ajustar la calidad de la imagen Jpeg (1 - 100)"
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "El formato de la imagen exportada"
-
-#: rnote-ui/data/ui/dialogs/export.ui:463
-msgid ""
-"Set the scale factor of the bitmap image in relation\n"
-"to the actual size on the document"
-msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"

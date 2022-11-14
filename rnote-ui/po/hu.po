@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 07:30+0100\n"
+"POT-Creation-Date: 2022-11-14 07:38+0100\n"
 "PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -584,6 +584,7 @@ msgid "Bitmap scale factor"
 msgstr "Pontkép-méretezési tényező"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
 #, fuzzy
 #| msgid ""
 #| "Set the scalefactor of the bitmap image in relation\n"
@@ -608,18 +609,6 @@ msgstr "A JPEG-kép minőségének beállítása (1-100)"
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "Az export képformátum"
-
-#: rnote-ui/data/ui/dialogs/export.ui:463
-#, fuzzy
-#| msgid ""
-#| "Set the scalefactor of the bitmap image in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the scale factor of the bitmap image in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Állítsa be a pontkép-méretezési tényezőt a dokumentum\n"
-"tényleges méretéhez viszonyítva"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -1615,6 +1604,17 @@ msgstr "A kijelölés exportálása sikertelen, nincs kijelölve semmi."
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Új könyvtár neve"
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the scalefactor of the bitmap image in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the scale factor of the bitmap image in relation\n"
+#~ "to the actual size on the document"
+#~ msgstr ""
+#~ "Állítsa be a pontkép-méretezési tényezőt a dokumentum\n"
+#~ "tényleges méretéhez viszonyítva"
 
 #~ msgid ".rnote file"
 #~ msgstr ".rnote fájl"

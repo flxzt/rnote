@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 07:30+0100\n"
+"POT-Creation-Date: 2022-11-14 07:38+0100\n"
 "PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -585,6 +585,7 @@ msgid "Bitmap scale factor"
 msgstr "Bitmapfactor"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
 #, fuzzy
 #| msgid ""
 #| "Set the scalefactor of the bitmap image in relation\n"
@@ -609,18 +610,6 @@ msgstr "Stel de kwaliteit van de jpeg-afbeelding in (1-100)"
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "Het export-afbeeldingsbestand"
-
-#: rnote-ui/data/ui/dialogs/export.ui:463
-#, fuzzy
-#| msgid ""
-#| "Set the scalefactor of the bitmap image in relation\n"
-#| "to the actual size on the document"
-msgid ""
-"Set the scale factor of the bitmap image in relation\n"
-"to the actual size on the document"
-msgstr ""
-"Stel de factor van de bitmapafbeelding in verhouding\n"
-"tot de ware grootte van het document in"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -1618,6 +1607,17 @@ msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Naam van nieuwe map"
+
+#, fuzzy
+#~| msgid ""
+#~| "Set the scalefactor of the bitmap image in relation\n"
+#~| "to the actual size on the document"
+#~ msgid ""
+#~ "Set the scale factor of the bitmap image in relation\n"
+#~ "to the actual size on the document"
+#~ msgstr ""
+#~ "Stel de factor van de bitmapafbeelding in verhouding\n"
+#~ "tot de ware grootte van het document in"
 
 #~ msgid ".rnote file"
 #~ msgstr ".rnote-bestand"

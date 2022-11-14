@@ -923,6 +923,8 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.save-doc-as", &["<Ctrl><Shift>s"]);
         app.set_accels_for_action("win.clear-doc", &["<Ctrl>l"]);
         app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);
+        app.set_accels_for_action("win.zoom-in", &["plus"]);
+        app.set_accels_for_action("win.zoom-out", &["minus"]);
         app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);

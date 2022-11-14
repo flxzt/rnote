@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 07:38+0100\n"
+"POT-Creation-Date: 2022-11-14 08:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,51 +60,51 @@ msgid "A selection"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:24
-msgid "Color scheme"
+msgid "_Color scheme"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
-msgid "Use system colors"
+msgid "Use _system colors"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:31
-msgid "Use light colors"
+msgid "Use _light colors"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:36
-msgid "Use dark colors"
+msgid "Use _dark colors"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:42
-msgid "Developer mode"
+msgid "_Developer mode"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:47
-msgid "Developer menu"
+msgid "Developer _menu"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:52
-msgid "Visual debugging"
+msgid "_Visual debugging"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:812
-msgid "Export engine state"
+#: rnote-ui/data/ui/appmenu.ui:56
+msgid "Export engine _state"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:876
-msgid "Export engine config"
+#: rnote-ui/data/ui/appmenu.ui:60
+msgid "Export engine _config"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:68
-msgid "Keyboard shortcuts"
+msgid "_Keyboard shortcuts"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:72
-msgid "Donate 💝"
+msgid "_Donate 💝"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:76
-msgid "About Rnote"
+msgid "_About Rnote"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:107
@@ -190,81 +190,75 @@ msgid "Settings"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-msgid "Draw with touch input"
+msgid "Draw with _touch input"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
-msgid "Document layout"
+msgid "Document _layout"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-msgid "Fixed size"
+msgid "_Fixed size"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-msgid "Continuous vertical"
+msgid "_Continuous vertical"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
-msgid "Infinite"
+msgid "_Infinite"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show format borders"
+msgid "Show _format borders"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Pen sounds"
+msgid "P_en sounds"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs/dialogs.ui:5
-msgid "Clear document"
+#: rnote-ui/data/ui/canvasmenu.ui:59
+msgid "_Clear document"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-msgid "New"
+msgid "_New"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs/import.rs:83
-msgid "Open"
+#: rnote-ui/data/ui/canvasmenu.ui:69
+msgid "_Open"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:25
-msgid "Save"
+#: rnote-ui/data/ui/canvasmenu.ui:73
+msgid "_Save"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:77
-msgid "Save as"
+msgid "Save _as"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:81
-msgid "Print"
+msgid "_Print"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:144
-msgid "Import file"
+#: rnote-ui/data/ui/canvasmenu.ui:85
+msgid "_Import file"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
-msgid "Export…"
+msgid "_Export…"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:7
-#: rnote-ui/src/dialogs/export.rs:217
-msgid "Export document"
+#: rnote-ui/data/ui/canvasmenu.ui:91
+msgid "Export _document"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:133
-#: rnote-ui/src/dialogs/export.rs:492
-msgid "Export document pages"
+#: rnote-ui/data/ui/canvasmenu.ui:95
+msgid "Export document _pages"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:345
-#: rnote-ui/src/dialogs/export.rs:735
-msgid "Export selection"
+#: rnote-ui/data/ui/canvasmenu.ui:99
+msgid "Export _selection"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:135
@@ -280,6 +274,10 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5
+msgid "Clear document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
@@ -320,6 +318,12 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
 #: rnote-ui/data/ui/dialogs/dialogs.ui:34 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:23
+#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:12
+#: rnote-ui/src/dialogs/export.rs:25
+msgid "Save"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:28
@@ -467,6 +471,10 @@ msgstr ""
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
+msgid "Export document"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
 #: rnote-ui/src/dialogs/export.rs:879
@@ -540,6 +548,10 @@ msgstr ""
 msgid "Xopp"
 msgstr ""
 
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:492
+msgid "Export document pages"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
 msgstr ""
@@ -586,6 +598,10 @@ msgstr ""
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:735
+msgid "Export selection"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr ""
@@ -596,6 +612,10 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
+msgstr ""
+
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+msgid "Open"
 msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:62
@@ -1422,6 +1442,10 @@ msgstr ""
 msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr ""
 
+#: rnote-ui/src/dialogs/import.rs:144
+msgid "Import file"
+msgstr ""
+
 #: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
 msgstr ""
@@ -1514,12 +1538,20 @@ msgstr ""
 msgid "JSON"
 msgstr ""
 
+#: rnote-ui/src/dialogs/export.rs:812
+msgid "Export engine state"
+msgstr ""
+
 #: rnote-ui/src/dialogs/export.rs:850
 msgid "Export engine state failed."
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:852
 msgid "Exported engine state successfully."
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:876
+msgid "Export engine config"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:914

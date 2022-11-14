@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-14 07:38+0100\n"
-"PO-Revision-Date: 2022-11-14 06:38+0000\n"
+"PO-Revision-Date: 2022-11-14 06:39+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1437,20 +1437,16 @@ msgid "Opening file failed."
 msgstr "Datei öffnen gescheitert."
 
 #: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote File"
 msgid ".rnote"
-msgstr ".rnote Datei"
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "Öffne Datei"
 
 #: rnote-ui/src/dialogs/import.rs:141
-#, fuzzy
-#| msgid "Xopp / PNG / SVG / JPG / PDF file"
 msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "Xopp / PNG / SVG / JPG / PDF Datei"
+msgstr "Xopp, PNG, SVG, JPG, PDF"
 
 #: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
@@ -1541,10 +1537,8 @@ msgid "Export selection failed, no file selected."
 msgstr "Auswahl exportieren gescheitert, keine Datei ausgewählt."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "JSON Datei"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:850
 msgid "Export engine state failed."

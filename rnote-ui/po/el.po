@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -565,13 +565,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
@@ -587,6 +586,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
@@ -1409,8 +1414,8 @@ msgstr ""
 msgid "Opening file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:77
-msgid ".rnote File"
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
+msgid ".rnote"
 msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1418,7 +1423,7 @@ msgid "Open file"
 msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:141
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1463,10 +1468,6 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 msgid "Opening Xournal++ file failed."
-msgstr ""
-
-#: rnote-ui/src/dialogs/export.rs:19
-msgid ".rnote file"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:22
@@ -1514,7 +1515,7 @@ msgid "Export selection failed, no file selected."
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-msgid "JSON file"
+msgid "JSON"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:850

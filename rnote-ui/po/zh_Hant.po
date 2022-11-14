@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: matriz <wboy111@outlook.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -611,13 +611,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
@@ -633,6 +632,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
@@ -1466,10 +1471,10 @@ msgstr "文件儲存失敗。"
 msgid "Opening file failed."
 msgstr "檔案開啟失敗。"
 
-#: rnote-ui/src/dialogs/import.rs:77
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
 #, fuzzy
 #| msgid ".rnote file"
-msgid ".rnote File"
+msgid ".rnote"
 msgstr ".rnote檔案"
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1479,7 +1484,7 @@ msgstr "開啟檔案"
 #: rnote-ui/src/dialogs/import.rs:141
 #, fuzzy
 #| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "PNG/SVG/JPG/PDF檔案"
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1527,10 +1532,6 @@ msgstr "PDF開啟失敗。"
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr ".xopp 檔案開啟失敗。"
-
-#: rnote-ui/src/dialogs/export.rs:19
-msgid ".rnote file"
-msgstr ".rnote檔案"
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1595,7 +1596,9 @@ msgid "Export selection failed, no file selected."
 msgstr "匯出所選為 SVG 失敗。"
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-msgid "JSON file"
+#, fuzzy
+#| msgid "JSON file"
+msgid "JSON"
 msgstr "JSON 檔案"
 
 #: rnote-ui/src/dialogs/export.rs:850
@@ -1653,6 +1656,9 @@ msgstr "匯出所選為 SVG 失敗。"
 #, fuzzy
 msgid "New Directory name"
 msgstr "目錄"
+
+#~ msgid ".rnote file"
+#~ msgstr ".rnote檔案"
 
 #~ msgid "Opening .xopp file failed."
 #~ msgstr ".xopp 檔案開啟失敗。"

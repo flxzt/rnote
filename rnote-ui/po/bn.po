@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: 2022-11-08 14:45+0000\n"
 "Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -594,13 +594,12 @@ msgstr "জেপিজি/জেপেগ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
@@ -617,6 +616,12 @@ msgstr "জেপেগ চিত্রের গুণমান সেট ক�
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "রপ্তানি চিত্র বিন্যাস"
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -1446,10 +1451,10 @@ msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে।
 msgid "Opening file failed."
 msgstr "ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/dialogs/import.rs:77
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
 #, fuzzy
 #| msgid ".rnote file"
-msgid ".rnote File"
+msgid ".rnote"
 msgstr ".rnote ফাইল"
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1459,7 +1464,7 @@ msgstr "ফাইল খুলুন"
 #: rnote-ui/src/dialogs/import.rs:141
 #, fuzzy
 #| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "PNG / SVG / JPG / PDF ফাইল"
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1507,10 +1512,6 @@ msgstr "PDF ফাইল খোলা ব্যর্থ হয়েছে।"
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr ".xopp ফাইল খোলা ব্যর্থ হয়েছে।"
-
-#: rnote-ui/src/dialogs/export.rs:19
-msgid ".rnote file"
-msgstr ".rnote ফাইল"
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1563,7 +1564,9 @@ msgid "Export selection failed, no file selected."
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-msgid "JSON file"
+#, fuzzy
+#| msgid "JSON file"
+msgid "JSON"
 msgstr "JSON ফাইল"
 
 #: rnote-ui/src/dialogs/export.rs:850
@@ -1617,6 +1620,9 @@ msgstr "নির্বাচন রপ্তানি ব্যর্থ হয
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "নতুন ডিরেক্টরির নাম"
+
+#~ msgid ".rnote file"
+#~ msgstr ".rnote ফাইল"
 
 #~ msgid "Opening .xopp file failed."
 #~ msgstr ".xopp ফাইল খোলা ব্যর্থ হয়েছে।"

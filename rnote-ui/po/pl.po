@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
@@ -618,13 +618,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
@@ -640,6 +639,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
@@ -1464,10 +1469,10 @@ msgstr ""
 msgid "Opening file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:77
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
 #, fuzzy
 #| msgid ".rnote file"
-msgid ".rnote File"
+msgid ".rnote"
 msgstr "plik .rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1477,7 +1482,7 @@ msgstr "Otwórz plik"
 #: rnote-ui/src/dialogs/import.rs:141
 #, fuzzy
 #| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "plik PNG / SVG / JPG / PDF"
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1525,10 +1530,6 @@ msgstr ""
 #| msgid "Import file"
 msgid "Opening Xournal++ file failed."
 msgstr "Importuj plik"
-
-#: rnote-ui/src/dialogs/export.rs:19
-msgid ".rnote file"
-msgstr "plik .rnote"
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1589,7 +1590,7 @@ msgid "Export selection failed, no file selected."
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-msgid "JSON file"
+msgid "JSON"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:850
@@ -1646,6 +1647,9 @@ msgstr "Eksportuj zaznaczenie jako SVG"
 #, fuzzy
 msgid "New Directory name"
 msgstr "Katalog"
+
+#~ msgid ".rnote file"
+#~ msgstr "plik .rnote"
 
 #, fuzzy
 #~| msgid "Import file"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -582,13 +582,18 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+#, fuzzy
+#| msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr "Fattore di scala bitmap"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
+#, fuzzy
+#| msgid ""
+#| "Set the scalefactor of the bitmap image in relation\n"
+#| "to the actual size on the document"
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 "Impostare il fattore di scala dell'immagine bitmap in relazione\n"
@@ -607,6 +612,18 @@ msgstr "Impostare la qualità dell'immagine Jpeg (1 - 100)"
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "Il formato immagine da esportare"
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+#, fuzzy
+#| msgid ""
+#| "Set the scalefactor of the bitmap image in relation\n"
+#| "to the actual size on the document"
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
+msgstr ""
+"Impostare il fattore di scala dell'immagine bitmap in relazione\n"
+"alle dimensioni effettive del documento"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -1443,8 +1460,10 @@ msgstr "Salvataggio del documento non riuscito."
 msgid "Opening file failed."
 msgstr "Apertura file fallita."
 
-#: rnote-ui/src/dialogs/import.rs:77
-msgid ".rnote File"
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
+#, fuzzy
+#| msgid ".rnote File"
+msgid ".rnote"
 msgstr "File .rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1452,7 +1471,9 @@ msgid "Open file"
 msgstr "Apri file"
 
 #: rnote-ui/src/dialogs/import.rs:141
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+#, fuzzy
+#| msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "Xopp / PNG / SVG / JPG / file PDF"
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1498,10 +1519,6 @@ msgstr "Apertura file PDF fallita."
 #: rnote-ui/src/dialogs/import.rs:384 rnote-ui/src/appwindow/imexport.rs:133
 msgid "Opening Xournal++ file failed."
 msgstr "Apertura file Xournal++ fallita."
-
-#: rnote-ui/src/dialogs/export.rs:19
-msgid ".rnote file"
-msgstr "file .rnote"
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1550,7 +1567,9 @@ msgid "Export selection failed, no file selected."
 msgstr "Esportazione della selezione fallita, nessun file è stato selezionato."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-msgid "JSON file"
+#, fuzzy
+#| msgid "JSON file"
+msgid "JSON"
 msgstr "File JSON"
 
 #: rnote-ui/src/dialogs/export.rs:850
@@ -1604,6 +1623,9 @@ msgstr "Esportazione della selezione fallita, non si è selezionato nulla."
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Nuovo nome della cartella"
+
+#~ msgid ".rnote file"
+#~ msgstr "file .rnote"
 
 #~ msgid "Opening .xopp file failed."
 #~ msgstr "Apertura file .xopp fallita."

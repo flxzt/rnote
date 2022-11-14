@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -629,13 +629,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
@@ -651,6 +650,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
@@ -1521,9 +1526,9 @@ msgstr ""
 msgid "Opening file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:77
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
 #, fuzzy
-msgid ".rnote File"
+msgid ".rnote"
 msgstr "Файл .rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1533,7 +1538,7 @@ msgstr "Відкрити файл"
 
 #: rnote-ui/src/dialogs/import.rs:141
 #, fuzzy
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "файл PNG / SVG / JPG / PDF"
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1581,11 +1586,6 @@ msgstr ""
 #| msgid "Import file"
 msgid "Opening Xournal++ file failed."
 msgstr "Імпортувати файл"
-
-#: rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-msgid ".rnote file"
-msgstr "Файл .rnote"
 
 #: rnote-ui/src/dialogs/export.rs:22
 #, fuzzy
@@ -1643,7 +1643,7 @@ msgstr "Експортувати вибране як SVG"
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
 #, fuzzy
-msgid "JSON file"
+msgid "JSON"
 msgstr "файл SVG"
 
 #: rnote-ui/src/dialogs/export.rs:850
@@ -1699,6 +1699,10 @@ msgstr "Експортувати вибране як SVG"
 #, fuzzy
 msgid "New Directory name"
 msgstr "Вектор"
+
+#, fuzzy
+#~ msgid ".rnote file"
+#~ msgstr "Файл .rnote"
 
 #, fuzzy
 #~ msgid ".rnote / .xopp File"

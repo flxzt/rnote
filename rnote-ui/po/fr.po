@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-13 20:02+0100\n"
+"POT-Creation-Date: 2022-11-14 07:30+0100\n"
 "PO-Revision-Date: 2022-11-06 06:49+0000\n"
 "Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -600,13 +600,12 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scalefactor"
+msgid "Bitmap scale factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#: rnote-ui/data/ui/dialogs/export.ui:463
 msgid ""
-"Set the scalefactor of the bitmap image in relation\n"
+"Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
@@ -623,6 +622,12 @@ msgstr "Définir la qualité de l'image Jpeg (1 - 100)"
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr "Le format d'exportation"
+
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the scale factor of the bitmap image in relation\n"
+"to the actual size on the document"
+msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -1458,10 +1463,10 @@ msgstr "Échec de l'enregistrement du document."
 msgid "Opening file failed."
 msgstr "L'ouverture du fichier a échoué."
 
-#: rnote-ui/src/dialogs/import.rs:77
+#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
 #, fuzzy
 #| msgid ".rnote file"
-msgid ".rnote File"
+msgid ".rnote"
 msgstr "fichier .rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
@@ -1471,7 +1476,7 @@ msgstr "Ouvrir fichier"
 #: rnote-ui/src/dialogs/import.rs:141
 #, fuzzy
 #| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp / PNG / SVG / JPG / PDF file"
+msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "PNG / SVG / JPG / PDF file"
 
 #: rnote-ui/src/dialogs/import.rs:253
@@ -1519,10 +1524,6 @@ msgstr "L'ouverture du fichier PDF a échoué."
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr "L'ouverture du fichier .xopp a échoué."
-
-#: rnote-ui/src/dialogs/export.rs:19
-msgid ".rnote file"
-msgstr "fichier .rnote"
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1575,7 +1576,9 @@ msgid "Export selection failed, no file selected."
 msgstr "Échec de l’exportation de la sélection, aucun fichier sélectionné."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-msgid "JSON file"
+#, fuzzy
+#| msgid "JSON file"
+msgid "JSON"
 msgstr "fichier JSON"
 
 #: rnote-ui/src/dialogs/export.rs:850
@@ -1629,6 +1632,9 @@ msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné
 #: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 msgid "New Directory name"
 msgstr "Nom du nouveau répertoire"
+
+#~ msgid ".rnote file"
+#~ msgstr "fichier .rnote"
 
 #~ msgid "Opening .xopp file failed."
 #~ msgstr "L'ouverture du fichier .xopp a échoué."

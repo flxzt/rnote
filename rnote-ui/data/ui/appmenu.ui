@@ -21,43 +21,43 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">Color scheme</attribute>
+            <attribute name="label" translatable="yes">_Color scheme</attribute>
             <item>
-              <attribute name="label" translatable="yes">Use system colors</attribute>
+              <attribute name="label" translatable="yes">Use _system colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
               <attribute name="target">default</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Use light colors</attribute>
+              <attribute name="label" translatable="yes">Use _light colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
               <attribute name="target">force-light</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Use dark colors</attribute>
+              <attribute name="label" translatable="yes">Use _dark colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
               <attribute name="target">force-dark</attribute>
             </item>
           </submenu>
           <item>
-            <attribute name="label" translatable="yes">Developer mode</attribute>
+            <attribute name="label" translatable="yes">_Developer mode</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.devel-mode</attribute>
           </item>
           <submenu>
-            <attribute name="label" translatable="yes">Developer menu</attribute>
+            <attribute name="label" translatable="yes">Developer _menu</attribute>
             <attribute name="action">win.devel-menu</attribute>
             <attribute name="hidden-when">action-disabled</attribute>
             <section>
               <item>
-                <attribute name="label" translatable="yes">Visual debugging</attribute>
+                <attribute name="label" translatable="yes">_Visual debugging</attribute>
                 <attribute name="action">win.visual-debug</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export engine state</attribute>
+                <attribute name="label" translatable="yes">Export engine _state</attribute>
                 <attribute name="action">win.debug-export-engine-state</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export engine config</attribute>
+                <attribute name="label" translatable="yes">Export engine _config</attribute>
                 <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
             </section>
@@ -65,15 +65,15 @@
         </section>
         <section>
           <item>
-            <attribute name="label" translatable="yes">Keyboard shortcuts</attribute>
+            <attribute name="label" translatable="yes">_Keyboard shortcuts</attribute>
             <attribute name="action">win.keyboard-shortcuts</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Donate 💝</attribute>
+            <attribute name="label" translatable="yes">_Donate 💝</attribute>
             <attribute name="action">win.donate</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">About Rnote</attribute>
+            <attribute name="label" translatable="yes">_About Rnote</attribute>
             <attribute name="action">win.about</attribute>
           </item>
         </section>

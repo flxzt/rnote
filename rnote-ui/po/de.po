@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-14 08:02+0100\n"
-"PO-Revision-Date: 2022-11-14 06:39+0000\n"
+"PO-Revision-Date: 2022-11-14 07:32+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -65,76 +65,52 @@ msgid "A selection"
 msgstr "Eine Auswahl"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "Color scheme"
 msgid "_Color scheme"
-msgstr "Farbschema"
+msgstr "_Farbschema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors"
 msgid "Use _system colors"
-msgstr "Verwende die Farben des Systems"
+msgstr "Verwende die Farben des _Systems"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _light colors"
-msgstr "Verwende helle Farben"
+msgstr "Verwende _helle Farben"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _dark colors"
-msgstr "Verwende dunkle Farben"
+msgstr "Verwende _dunkle Farben"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "_Developer mode"
-msgstr "Entwicklermodus"
+msgstr "_Entwicklermodus"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
-msgstr "Entwicklermenü"
+msgstr "Entwickler_menü"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "_Visual debugging"
-msgstr "Visuelles Debugging"
+msgstr "_Visuelles Debugging"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export engine _state"
-msgstr "Exportiere 'engine state'"
+msgstr "Exportiere Engine-_Zustand"
 
 #: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export engine _config"
-msgstr "Exportiere 'engine config'"
+msgstr "Exportiere Engine-_Konfiguration"
 
 #: rnote-ui/data/ui/appmenu.ui:68
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard shortcuts"
-msgstr "Tastaturkürzel"
+msgstr "_Tastaturkürzel"
 
 #: rnote-ui/data/ui/appmenu.ui:72
-#, fuzzy
-#| msgid "Donate 💝"
 msgid "_Donate 💝"
-msgstr "Spende 💝"
+msgstr "_Spende 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "About Rnote"
 msgid "_About Rnote"
-msgstr "Über Rnote"
+msgstr "_Über Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:107
 msgid "Sidebar on the left side"
@@ -219,110 +195,76 @@ msgid "Settings"
 msgstr "Einstellungen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Draw with touch input"
 msgid "Draw with _touch input"
-msgstr "Zeichne mit Touch-Eingabe"
+msgstr "Zeichne mit _Touch-Eingabe"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
-#, fuzzy
-#| msgid "Document layout"
 msgid "Document _layout"
-msgstr "Dokument-Layout"
+msgstr "Dokument-_Layout"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-#, fuzzy
-#| msgid "Fixed size"
 msgid "_Fixed size"
-msgstr "Feste Größe"
+msgstr "_Feste Größe"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "Continuous vertical"
 msgid "_Continuous vertical"
-msgstr "Kontinuierlich vertikal"
+msgstr "_Kontinuierlich vertikal"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
-#, fuzzy
-#| msgid "Infinite"
 msgid "_Infinite"
-msgstr "Unendlich"
+msgstr "_Unendlich"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Show format borders"
 msgid "Show _format borders"
-msgstr "Zeige Formatränder"
+msgstr "Zeige _Formatränder"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "P_en sounds"
-msgstr "Stiftklänge"
+msgstr "_Stiftklänge"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-#, fuzzy
-#| msgid "Clear document"
 msgid "_Clear document"
-msgstr "Dokument leeren"
+msgstr "Dokument _leeren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_New"
-msgstr ""
+msgstr "_Neu"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69
-#, fuzzy
-#| msgid "Open"
 msgid "_Open"
-msgstr "Öffnen"
+msgstr "_Öffnen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:73
-#, fuzzy
-#| msgid "Save"
 msgid "_Save"
-msgstr "Speichern"
+msgstr "_Speichern"
 
 #: rnote-ui/data/ui/canvasmenu.ui:77
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _as"
-msgstr "Speichern unter"
+msgstr "Speichern _unter"
 
 #: rnote-ui/data/ui/canvasmenu.ui:81
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "Drucken"
+msgstr "_Drucken"
 
 #: rnote-ui/data/ui/canvasmenu.ui:85
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import file"
-msgstr "Importiere Datei"
+msgstr "_Importiere Datei"
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
-#, fuzzy
-#| msgid "Export…"
 msgid "_Export…"
-msgstr "Exportieren…"
+msgstr "_Exportieren…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91
-#, fuzzy
-#| msgid "Export document"
 msgid "Export _document"
-msgstr "Dokument exportieren"
+msgstr "_Dokument exportieren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export document _pages"
-msgstr "Exportiere Dokumentseiten"
+msgstr "Dokument_seiten exportieren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99
-#, fuzzy
-#| msgid "Export selection"
 msgid "Export _selection"
-msgstr "Auswahl exportieren"
+msgstr "_Auswahl exportieren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:135
 msgid "Reset the zoom"

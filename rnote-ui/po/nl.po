@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-14 08:02+0100\n"
-"PO-Revision-Date: 2022-11-14 06:22+0000\n"
+"PO-Revision-Date: 2022-11-16 10:25+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -65,76 +65,52 @@ msgid "A selection"
 msgstr "Een selectie"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "Color scheme"
 msgid "_Color scheme"
-msgstr "Thema"
+msgstr "_Thema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors"
 msgid "Use _system colors"
-msgstr "Systeemthema"
+msgstr "_Systeemthema gebruiken"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _light colors"
-msgstr "Licht thema"
+msgstr "_Licht thema gebruiken"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _dark colors"
-msgstr "Donker thema"
+msgstr "_Donker thema gebruiken"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "_Developer mode"
-msgstr "Ontwikkelaarsmodus"
+msgstr "Ontwikkelaarsmo_dus"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
-msgstr "Ontwikkelaarsmenu"
+msgstr "Ontwikkelaars_menu"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "_Visual debugging"
-msgstr "Visuele foutopsporing"
+msgstr "_Visuele foutopsporing"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export engine _state"
-msgstr "Aandrijvingsstatus exporteren"
+msgstr "Aandrijvings_status exporteren"
 
 #: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export engine _config"
-msgstr "Aandrijvingsconfiguratie exporteren"
+msgstr "Aandrijvings_configuratie exporteren"
 
 #: rnote-ui/data/ui/appmenu.ui:68
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard shortcuts"
-msgstr "Sneltoetsen"
+msgstr "Sne_ltoetsen"
 
 #: rnote-ui/data/ui/appmenu.ui:72
-#, fuzzy
-#| msgid "Donate 💝"
 msgid "_Donate 💝"
-msgstr "Doneren 💝"
+msgstr "_Doneren 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "About Rnote"
 msgid "_About Rnote"
-msgstr "Over Rnote"
+msgstr "_Over Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:107
 msgid "Sidebar on the left side"
@@ -219,110 +195,76 @@ msgid "Settings"
 msgstr "Voorkeuren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Draw with touch input"
 msgid "Draw with _touch input"
-msgstr "Tekenen met touchscreen/pen"
+msgstr "Tekenen met _touchscreen/pen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
-#, fuzzy
-#| msgid "Document layout"
 msgid "Document _layout"
-msgstr "Documentindeling"
+msgstr "Documentinde_ling"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-#, fuzzy
-#| msgid "Fixed size"
 msgid "_Fixed size"
-msgstr "Vaste grootte"
+msgstr "_Vaste grootte"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "Continuous vertical"
 msgid "_Continuous vertical"
-msgstr "Oneindig (verticaal)"
+msgstr "Oneindig (verti_caal)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
-#, fuzzy
-#| msgid "Infinite"
 msgid "_Infinite"
-msgstr "Oneindig"
+msgstr "One_indig"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Show format borders"
 msgid "Show _format borders"
-msgstr "Formaatkaders tonen"
+msgstr "_Formaatkaders tonen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "P_en sounds"
-msgstr "Pengeluiden"
+msgstr "P_engeluiden"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-#, fuzzy
-#| msgid "Clear document"
 msgid "_Clear document"
-msgstr "Document wissen"
+msgstr "Do_cument wissen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_New"
-msgstr ""
+msgstr "_Nieuw"
 
 #: rnote-ui/data/ui/canvasmenu.ui:69
-#, fuzzy
-#| msgid "Open"
 msgid "_Open"
-msgstr "Openen"
+msgstr "_Openen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:73
-#, fuzzy
-#| msgid "Save"
 msgid "_Save"
-msgstr "Opslaan"
+msgstr "Op_slaan"
 
 #: rnote-ui/data/ui/canvasmenu.ui:77
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _as"
-msgstr "Opslaan als"
+msgstr "Opslaan _als"
 
 #: rnote-ui/data/ui/canvasmenu.ui:81
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "Afdrukken"
+msgstr "Afdru_kken"
 
 #: rnote-ui/data/ui/canvasmenu.ui:85
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import file"
-msgstr "Bestand importeren"
+msgstr "Bestand _importeren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
-#, fuzzy
-#| msgid "Export…"
 msgid "_Export…"
-msgstr "Exporteren…"
+msgstr "_Exporteren…"
 
 #: rnote-ui/data/ui/canvasmenu.ui:91
-#, fuzzy
-#| msgid "Export document"
 msgid "Export _document"
-msgstr "Document exporteren"
+msgstr "_Document exporteren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export document _pages"
-msgstr "Pagina's exporteren"
+msgstr "_Pagina's exporteren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:99
-#, fuzzy
-#| msgid "Export selection"
 msgid "Export _selection"
-msgstr "Selectie exporteren"
+msgstr "_Selectie exporteren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:135
 msgid "Reset the zoom"
@@ -649,22 +591,16 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scalefactor"
 msgid "Bitmap scale factor"
 msgstr "Bitmapfactor"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
-#, fuzzy
-#| msgid ""
-#| "Set the scalefactor of the bitmap image in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Stel de factor van de bitmapafbeelding in verhouding\n"
+"Stel de bitmapfactor in verhouding\n"
 "tot de ware grootte van het document in"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
@@ -1525,20 +1461,16 @@ msgid "Opening file failed."
 msgstr "Het document kan niet worden geopend."
 
 #: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote File"
 msgid ".rnote"
-msgstr ".rnote-bestand"
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "Bestand openen"
 
 #: rnote-ui/src/dialogs/import.rs:141
-#, fuzzy
-#| msgid "Xopp / PNG / SVG / JPG / PDF file"
 msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "Xopp-/png-/svg-/jpg-/pdf-bestand"
+msgstr "Xopp, png, svg, jpg, pdf"
 
 #: rnote-ui/src/dialogs/import.rs:144
 msgid "Import file"
@@ -1633,10 +1565,8 @@ msgid "Export selection failed, no file selected."
 msgstr "Het exporteren is mislukt omdat er geen bestand gekozen is."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "Json-bestand"
+msgstr "Json"
 
 #: rnote-ui/src/dialogs/export.rs:812
 msgid "Export engine state"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 07:38+0100\n"
+"POT-Creation-Date: 2022-11-14 08:02+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -64,52 +64,72 @@ msgid "A selection"
 msgstr "การเลือก"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-msgid "Color scheme"
+msgid "_Color scheme"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
-msgid "Use system colors"
+msgid "Use _system colors"
 msgstr "ใช้การตั้งค่าธีมตามระบบ"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-msgid "Use light colors"
+#, fuzzy
+#| msgid "Use light colors"
+msgid "Use _light colors"
 msgstr "ใช้ธีมสว่าง"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-msgid "Use dark colors"
+#, fuzzy
+#| msgid "Use dark colors"
+msgid "Use _dark colors"
 msgstr "ใช้ธีมมืด"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-msgid "Developer mode"
+#, fuzzy
+#| msgid "Developer mode"
+msgid "_Developer mode"
 msgstr "โหมดนักพัฒนา"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-msgid "Developer menu"
+#, fuzzy
+#| msgid "Developer menu"
+msgid "Developer _menu"
 msgstr "เมนูสำหรับนักพัฒนา"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-msgid "Visual debugging"
+#, fuzzy
+#| msgid "Visual debugging"
+msgid "_Visual debugging"
 msgstr "แก้ไขปัญหาการแสดงผล"
 
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:812
-msgid "Export engine state"
+#: rnote-ui/data/ui/appmenu.ui:56
+#, fuzzy
+#| msgid "Export engine state"
+msgid "Export engine _state"
 msgstr "ส่งออกสภาพของเอนจิน"
 
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:876
-msgid "Export engine config"
+#: rnote-ui/data/ui/appmenu.ui:60
+#, fuzzy
+#| msgid "Export engine config"
+msgid "Export engine _config"
 msgstr "ส่งออกการตั้งค่าเอนจิน"
 
 #: rnote-ui/data/ui/appmenu.ui:68
-msgid "Keyboard shortcuts"
+#, fuzzy
+#| msgid "Keyboard shortcuts"
+msgid "_Keyboard shortcuts"
 msgstr "คีย์ลัด"
 
 #: rnote-ui/data/ui/appmenu.ui:72
-msgid "Donate 💝"
+#, fuzzy
+#| msgid "Donate 💝"
+msgid "_Donate 💝"
 msgstr "บริจาค 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:76
-msgid "About Rnote"
+#, fuzzy
+#| msgid "About Rnote"
+msgid "_About Rnote"
 msgstr "เกี่ยวกับอาร์โน๊ต"
 
 #: rnote-ui/data/ui/appmenu.ui:107
@@ -195,85 +215,109 @@ msgid "Settings"
 msgstr "การตั้งค่า"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-msgid "Draw with touch input"
+#, fuzzy
+#| msgid "Draw with touch input"
+msgid "Draw with _touch input"
 msgstr "วาดด้วยการทัช"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
-msgid "Document layout"
+#, fuzzy
+#| msgid "Document layout"
+msgid "Document _layout"
 msgstr "รูปแบบเอกสาร"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-msgid "Fixed size"
+#, fuzzy
+#| msgid "Fixed size"
+msgid "_Fixed size"
 msgstr "ตามขนาดที่กำหนด"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-msgid "Continuous vertical"
+#, fuzzy
+#| msgid "Continuous vertical"
+msgid "_Continuous vertical"
 msgstr "แบบต่อเนื่องไปเรื่อย ๆ ในแนวตั้ง"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
-msgid "Infinite"
+#, fuzzy
+#| msgid "Infinite"
+msgid "_Infinite"
 msgstr "ไม่จำกัดขนาด"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show format borders"
+#, fuzzy
+#| msgid "Show format borders"
+msgid "Show _format borders"
 msgstr "แสดงขอบเขตของหน้ากระดาษ"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Pen sounds"
+#, fuzzy
+#| msgid "Pen sounds"
+msgid "P_en sounds"
 msgstr "จำลองเสียงปากกา"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs/dialogs.ui:5
-msgid "Clear document"
+#: rnote-ui/data/ui/canvasmenu.ui:59
+#, fuzzy
+#| msgid "Clear document"
+msgid "_Clear document"
 msgstr "ล้างเอกสาร"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-msgid "New"
-msgstr "ใหม่"
+msgid "_New"
+msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs/import.rs:83
-msgid "Open"
+#: rnote-ui/data/ui/canvasmenu.ui:69
+#, fuzzy
+#| msgid "Open"
+msgid "_Open"
 msgstr "เปิด"
 
-#: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:25
-msgid "Save"
+#: rnote-ui/data/ui/canvasmenu.ui:73
+#, fuzzy
+#| msgid "Save"
+msgid "_Save"
 msgstr "บันทึก"
 
 #: rnote-ui/data/ui/canvasmenu.ui:77
-msgid "Save as"
+#, fuzzy
+#| msgid "Save as"
+msgid "Save _as"
 msgstr "บันทึกที่"
 
 #: rnote-ui/data/ui/canvasmenu.ui:81
-msgid "Print"
+#, fuzzy
+#| msgid "Print"
+msgid "_Print"
 msgstr "พิมพ์"
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:144
-msgid "Import file"
+#: rnote-ui/data/ui/canvasmenu.ui:85
+#, fuzzy
+#| msgid "Import file"
+msgid "_Import file"
 msgstr "นำเข้าไฟล์"
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
-msgid "Export…"
+#, fuzzy
+#| msgid "Export…"
+msgid "_Export…"
 msgstr "ส่งออก…"
 
-#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs/export.ui:7
-#: rnote-ui/src/dialogs/export.rs:217
-msgid "Export document"
+#: rnote-ui/data/ui/canvasmenu.ui:91
+#, fuzzy
+#| msgid "Export document"
+msgid "Export _document"
 msgstr "ส่งออกเอกสาร"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs/export.ui:133
-#: rnote-ui/src/dialogs/export.rs:492
+#: rnote-ui/data/ui/canvasmenu.ui:95
 #, fuzzy
 #| msgid "Export document as SVG"
-msgid "Export document pages"
+msgid "Export document _pages"
 msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
 
-#: rnote-ui/data/ui/canvasmenu.ui:99 rnote-ui/data/ui/dialogs/export.ui:345
-#: rnote-ui/src/dialogs/export.rs:735
+#: rnote-ui/data/ui/canvasmenu.ui:99
 #, fuzzy
 #| msgid "Export Selection"
-msgid "Export selection"
+msgid "Export _selection"
 msgstr "ส่งออกสิ่งที่เลือก"
 
 #: rnote-ui/data/ui/canvasmenu.ui:135
@@ -290,6 +334,10 @@ msgstr "ซูมให้พอดีกับความกว้างขอ
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
 msgstr "เลือก"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5
+msgid "Clear document"
+msgstr "ล้างเอกสาร"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -332,6 +380,12 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/dialogs.ui:34 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
 msgstr "ทิ้ง"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:23
+#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:12
+#: rnote-ui/src/dialogs/export.rs:25
+msgid "Save"
+msgstr "บันทึก"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:28
 msgid "Quit Application"
@@ -484,6 +538,10 @@ msgstr "DPI"
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
+msgid "Export document"
+msgstr "ส่งออกเอกสาร"
+
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
 #: rnote-ui/src/dialogs/export.rs:879
@@ -577,6 +635,12 @@ msgstr ""
 msgid "Xopp"
 msgstr ""
 
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:492
+#, fuzzy
+#| msgid "Export document as SVG"
+msgid "Export document pages"
+msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
+
 #: rnote-ui/data/ui/dialogs/export.ui:213
 #, fuzzy
 msgid "Export directory"
@@ -628,6 +692,12 @@ msgstr ""
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:735
+#, fuzzy
+#| msgid "Export Selection"
+msgid "Export selection"
+msgstr "ส่งออกสิ่งที่เลือก"
+
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
 msgstr ""
@@ -639,6 +709,10 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
 msgstr ""
+
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+msgid "Open"
+msgstr "เปิด"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:59
@@ -1479,6 +1553,10 @@ msgstr "เปิดไฟล์"
 msgid "Xopp, PNG, SVG, JPG, PDF"
 msgstr "ไฟล์ PNG / SVG / JPG / PDF"
 
+#: rnote-ui/src/dialogs/import.rs:144
+msgid "Import file"
+msgstr "นำเข้าไฟล์"
+
 #: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
@@ -1593,6 +1671,10 @@ msgstr "ส่งออกสิ่งที่เลือกเป็นไฟ
 msgid "JSON"
 msgstr "ไฟล์ JSON"
 
+#: rnote-ui/src/dialogs/export.rs:812
+msgid "Export engine state"
+msgstr "ส่งออกสภาพของเอนจิน"
+
 #: rnote-ui/src/dialogs/export.rs:850
 msgid "Export engine state failed."
 msgstr "ส่งออกสภาพของเอนจินล้มเหลว"
@@ -1600,6 +1682,10 @@ msgstr "ส่งออกสภาพของเอนจินล้มเห
 #: rnote-ui/src/dialogs/export.rs:852
 msgid "Exported engine state successfully."
 msgstr "ส่งออกสภาพของเอนจินสำเร็จแล้ว"
+
+#: rnote-ui/src/dialogs/export.rs:876
+msgid "Export engine config"
+msgstr "ส่งออกการตั้งค่าเอนจิน"
 
 #: rnote-ui/src/dialogs/export.rs:914
 msgid "Export engine config failed."
@@ -1647,6 +1733,9 @@ msgstr "ส่งออกสิ่งที่เลือกเป็นไฟ
 #, fuzzy
 msgid "New Directory name"
 msgstr "ไดเรกทอรี"
+
+#~ msgid "New"
+#~ msgstr "ใหม่"
 
 #~ msgid ".rnote file"
 #~ msgstr "ไฟล์ .rnote"

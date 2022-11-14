@@ -95,6 +95,12 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom in</property>
+                <property name="accelerator">plus</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Zoom in</property>
                 <property name="shortcut-type">gesture-stretch</property>
               </object>
             </child>
@@ -102,6 +108,12 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom out</property>
                 <property name="accelerator">&lt;ctrl&gt;ScrollDown</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Zoom out</property>
+                <property name="accelerator">minus</property>
               </object>
             </child>
             <child>

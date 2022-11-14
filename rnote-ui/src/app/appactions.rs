@@ -13,19 +13,6 @@ impl RnoteApp {
             &String::from("system").to_variant(),
         );
         self.add_action(&action_color_scheme);
-        /*
-        action_color_scheme.connect_activate(clone!(@weak self as app => move |action_color_scheme, target| {
-                let color_scheme = target.unwrap().str().unwrap();
-
-                match color_scheme {
-                    "system" => app.style_manager().set_color_scheme(adw::ColorScheme::Default),
-                    "light" => app.style_manager().set_color_scheme(adw::ColorScheme::ForceLight),
-                    "dark" => app.style_manager().set_color_scheme(adw::ColorScheme::ForceDark),
-                    _ => {}
-                }
-
-                action_color_scheme.set_state(&color_scheme.to_variant());
-        })); */
 
         action_color_scheme
             .bind_property("state", &self.style_manager(), "color-scheme")

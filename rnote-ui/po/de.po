@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-14 07:30+0100\n"
-"PO-Revision-Date: 2022-11-14 06:22+0000\n"
+"PO-Revision-Date: 2022-11-14 06:38+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -580,21 +580,15 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scalefactor"
 msgid "Bitmap scale factor"
 msgstr "Bitmap Skalierungsfaktor"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
-#, fuzzy
-#| msgid ""
-#| "Set the scalefactor of the bitmap image in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Ändere den Skalierungsfaktor von Bitmapbildern im Verhältnis\n"
+"Ändere den Bitmap Skalierungsfaktor im Verhältnis\n"
 "zur tatsächlichen Größe auf dem Dokument"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315

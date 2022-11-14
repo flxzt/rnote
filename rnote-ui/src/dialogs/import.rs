@@ -74,7 +74,7 @@ pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(&gettext(".rnote File")));
+    filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Open file"))
@@ -138,7 +138,7 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     filter.add_pattern("*.png");
     filter.add_pattern("*.jpg");
     filter.add_pattern("*.pdf");
-    filter.set_name(Some(&gettext("Xopp / PNG / SVG / JPG / PDF file")));
+    filter.set_name(Some(&gettext("Xopp, PNG, SVG, JPG, PDF")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Import file"))

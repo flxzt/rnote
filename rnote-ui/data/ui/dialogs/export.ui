@@ -290,8 +290,8 @@
                 </child>
                 <child>
                   <object class="AdwActionRow" id="export_doc_pages_bitmap_scalefactor_row">
-                    <property name="title" translatable="yes">Bitmap scalefactor</property>
-                    <property name="subtitle" translatable="yes">Set the scalefactor of the bitmap image in relation
+                    <property name="title" translatable="yes">Bitmap scale factor</property>
+                    <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
 to the actual size on the document</property>
                     <child type="suffix">
                       <object class="GtkAdjustment" id="export_doc_pages_bitmap_scalefactor_adj">
@@ -459,8 +459,8 @@ to the actual size on the document</property>
                 </child>
                 <child>
                   <object class="AdwActionRow" id="export_selection_bitmap_scalefactor_row">
-                    <property name="title" translatable="yes">Bitmap scalefactor</property>
-                    <property name="subtitle" translatable="yes">Set the scalefactor of the bitmap image in relation
+                    <property name="title" translatable="yes">Bitmap scale factor</property>
+                    <property name="subtitle" translatable="yes">Set the scale factor of the bitmap image in relation
 to the actual size on the document</property>
                     <child type="suffix">
                       <object class="GtkAdjustment" id="export_selection_bitmap_scalefactor_adj">

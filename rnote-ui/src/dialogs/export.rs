@@ -16,7 +16,7 @@ pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(&gettext(".rnote file")));
+    filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Save document as"))
@@ -806,7 +806,7 @@ pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_pattern("*.json");
-    filter.set_name(Some(&gettext("JSON file")));
+    filter.set_name(Some(&gettext("JSON")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Export engine state"))
@@ -870,7 +870,7 @@ pub fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_pattern("*.json");
-    filter.set_name(Some(&gettext("JSON file")));
+    filter.set_name(Some(&gettext("JSON")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Export engine config"))

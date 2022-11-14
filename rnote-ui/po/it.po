@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-14 08:02+0100\n"
-"PO-Revision-Date: 2022-11-14 06:22+0000\n"
+"PO-Revision-Date: 2022-11-16 10:25+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -71,40 +71,28 @@ msgid "_Color scheme"
 msgstr "Tema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors"
 msgid "Use _system colors"
-msgstr "Segui il tema del sistema"
+msgstr "Segui il tema del_sistema"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _light colors"
-msgstr "Usa colori chiari"
+msgstr "Usa_colori chiari"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _dark colors"
-msgstr "Usa colori scuri"
+msgstr "Usa_colori scuri"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "_Developer mode"
-msgstr "Modalità sviluppatore"
+msgstr "_Modalità sviluppatore"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
-msgstr "Modalità sviluppatore"
+msgstr "Menu_sviluppatore"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "_Visual debugging"
-msgstr "Debug visivo"
+msgstr "_Debug visivo"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 #, fuzzy

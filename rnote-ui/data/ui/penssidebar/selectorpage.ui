@@ -195,6 +195,7 @@
             <style>
               <class name="flat" />
               <class name="destructive-action" />
+              <class name="selection_delete_button" />
             </style>
             <child>
               <object class="GtkImage">

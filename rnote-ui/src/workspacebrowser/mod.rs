@@ -472,15 +472,21 @@ fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
             }));
 
     let filefilter = FileFilter::new();
-    filefilter.add_pattern("*.rnote");
-    filefilter.add_pattern("*.xopp");
-    filefilter.add_pattern("*.svg");
+    filefilter.add_mime_type("application/rnote");
+    filefilter.add_mime_type("application/pdf");
+    filefilter.add_mime_type("application/x-xopp");
     filefilter.add_mime_type("image/svg+xml");
     filefilter.add_mime_type("image/png");
     filefilter.add_mime_type("image/jpeg");
     filefilter.add_mime_type("application/x-xopp");
-    filefilter.add_mime_type("application/pdf");
     filefilter.add_mime_type("inode/directory");
+    filefilter.add_suffix("rnote");
+    filefilter.add_suffix("pdf");
+    filefilter.add_suffix("xopp");
+    filefilter.add_suffix("svg");
+    filefilter.add_suffix("png");
+    filefilter.add_suffix("jpg");
+    filefilter.add_suffix("jpeg");
     let filefilter_model = FilterListModel::new(Some(&wb.imp().files_dirlist), Some(&filefilter));
 
     let folder_sorter = CustomSorter::new(move |obj1, obj2| {

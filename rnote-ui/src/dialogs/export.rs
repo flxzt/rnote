@@ -15,7 +15,7 @@ use crate::{appwindow, config, RnoteAppWindow};
 pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
-    filter.add_pattern("*.rnote");
+    filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
@@ -255,17 +255,17 @@ fn update_export_doc_filechooser_with_prefs(
     match doc_export_prefs.export_format {
         DocExportFormat::Svg => {
             filter.add_mime_type("image/svg+xml");
-            filter.add_pattern("*.svg");
+            filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         DocExportFormat::Pdf => {
             filter.add_mime_type("application/pdf");
-            filter.add_pattern("*.pdf");
+            filter.add_suffix("pdf");
             filter.set_name(Some(&gettext("Pdf")));
         }
         DocExportFormat::Xopp => {
             filter.add_mime_type("application/x-xopp");
-            filter.add_pattern("*.xopp");
+            filter.add_suffix("xopp");
             filter.set_name(Some(&gettext("Xopp")));
         }
     }
@@ -530,18 +530,18 @@ fn update_export_doc_pages_filechooser_with_prefs(
     match doc_pages_export_prefs.export_format {
         DocPagesExportFormat::Svg => {
             filter.add_mime_type("image/svg+xml");
-            filter.add_pattern("*.svg");
+            filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         DocPagesExportFormat::Png => {
             filter.add_mime_type("image/png");
-            filter.add_pattern("*.png");
+            filter.add_suffix("png");
             filter.set_name(Some(&gettext("Png")));
         }
         DocPagesExportFormat::Jpeg => {
             filter.add_mime_type("image/jpeg");
-            filter.add_pattern("*.jpg");
-            filter.add_pattern("*.jpeg");
+            filter.add_suffix("jpg");
+            filter.add_suffix("jpeg");
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
@@ -773,18 +773,18 @@ fn update_export_selection_filechooser_with_prefs(
     match selection_export_prefs.export_format {
         SelectionExportFormat::Svg => {
             filter.add_mime_type("image/svg+xml");
-            filter.add_pattern("*.svg");
+            filter.add_suffix("svg");
             filter.set_name(Some(&gettext("Svg")));
         }
         SelectionExportFormat::Png => {
             filter.add_mime_type("image/png");
-            filter.add_pattern("*.png");
+            filter.add_suffix("png");
             filter.set_name(Some(&gettext("Png")));
         }
         SelectionExportFormat::Jpeg => {
             filter.add_mime_type("image/jpeg");
-            filter.add_pattern("*.jpg");
-            filter.add_pattern("*.jpeg");
+            filter.add_suffix("jpg");
+            filter.add_suffix("jpeg");
             filter.set_name(Some(&gettext("Jpeg")));
         }
     }
@@ -805,7 +805,7 @@ fn update_export_selection_filechooser_with_prefs(
 pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
-    filter.add_pattern("*.json");
+    filter.add_suffix("json");
     filter.set_name(Some(&gettext("JSON")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
@@ -869,7 +869,7 @@ pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
 pub fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
-    filter.add_pattern("*.json");
+    filter.add_suffix("json");
     filter.set_name(Some(&gettext("JSON")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()

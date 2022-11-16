@@ -73,7 +73,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
 pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
-    filter.add_pattern("*.rnote");
+    filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
@@ -129,15 +129,17 @@ pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
 
 pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
+    filter.add_mime_type("application/x-xopp");
+    filter.add_mime_type("application/pdf");
     filter.add_mime_type("image/svg+xml");
     filter.add_mime_type("image/png");
     filter.add_mime_type("image/jpeg");
-    filter.add_mime_type("application/pdf");
-    filter.add_mime_type("application/x-xopp");
-    filter.add_pattern("*.svg");
-    filter.add_pattern("*.png");
-    filter.add_pattern("*.jpg");
-    filter.add_pattern("*.pdf");
+    filter.add_suffix("xopp");
+    filter.add_suffix("pdf");
+    filter.add_suffix("svg");
+    filter.add_suffix("png");
+    filter.add_suffix("jpg");
+    filter.add_suffix("jpeg");
     filter.set_name(Some(&gettext("Xopp, PNG, SVG, JPG, PDF")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()

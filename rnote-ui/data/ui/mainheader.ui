@@ -66,10 +66,10 @@
                 <property name="halign">fill</property>
                 <property name="child">
                   <object class="GtkBox" id="pens_toggles_box">
-                    <property name="width-request">350</property>
+                    <property name="width-request">370</property>
                     <property name="homogeneous">true</property>
                     <style>
-                      <class name="linked" />
+                      <class name="toolbar" />
                     </style>
                     <child>
                       <object class="GtkToggleButton" id="brush_toggle">

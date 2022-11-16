@@ -351,6 +351,7 @@
                     <property name="margin_bottom">6</property>
                     <property name="margin_start">6</property>
                     <property name="margin_end">6</property>
+                    <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
                   </object>
                 </child>
               </object>

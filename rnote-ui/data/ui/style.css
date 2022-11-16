@@ -35,7 +35,7 @@
     box-shadow: 0 0 6px darker(@theme_selected_bg_color);
 }
 
-.selection_delete_button {
+.flat-destructive-action {
     color: @destructive_color;
 }
 

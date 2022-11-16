@@ -163,6 +163,9 @@
                   <object class="GtkButton" id="add_workspace_button">
                     <property name="icon_name">plus-symbolic</property>
                     <property name="tooltip_text" translatable="yes">Add workspace</property>
+                    <style>
+                      <class name="flat" />
+                    </style>
                   </object>
                 </child>
                 <child>
@@ -170,7 +173,8 @@
                     <property name="icon_name">trash-symbolic</property>
                     <property name="tooltip_text" translatable="yes">Remove workspace</property>
                     <style>
-                      <class name="destructive-action" />
+                      <class name="flat" />
+                      <class name="flat-destructive-action" />
                     </style>
                   </object>
                 </child>
@@ -178,6 +182,9 @@
                   <object class="GtkButton" id="edit_workspace_button">
                     <property name="icon-name">edit-symbolic</property>
                     <property name="tooltip_text" translatable="yes">Edit workspace</property>
+                    <style>
+                      <class name="flat" />
+                    </style>
                   </object>
                 </child>
               </object>

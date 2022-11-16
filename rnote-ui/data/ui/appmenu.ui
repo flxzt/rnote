@@ -65,6 +65,10 @@
         </section>
         <section>
           <item>
+            <attribute name="label" translatable="yes">_Settings</attribute>
+            <attribute name="action">win.open-settings</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">_Keyboard shortcuts</attribute>
             <attribute name="action">win.keyboard-shortcuts</attribute>
           </item>

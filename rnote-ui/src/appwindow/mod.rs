@@ -94,6 +94,8 @@ mod imp {
         #[template_child]
         pub flap_close_button: TemplateChild<Button>,
         #[template_child]
+        pub flap_stack: TemplateChild<adw::ViewStack>,
+        #[template_child]
         pub workspacebrowser: TemplateChild<WorkspaceBrowser>,
         #[template_child]
         pub flapreveal_toggle: TemplateChild<ToggleButton>,
@@ -188,6 +190,7 @@ mod imp {
                 flap_resizer: TemplateChild::<gtk4::Box>::default(),
                 flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
                 flap_close_button: TemplateChild::<Button>::default(),
+                flap_stack: TemplateChild::<adw::ViewStack>::default(),
                 workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
@@ -1083,6 +1086,10 @@ impl RnoteAppWindow {
 
     pub fn flap_close_button(&self) -> Button {
         self.imp().flap_close_button.get()
+    }
+
+    pub fn flap_stack(&self) -> adw::ViewStack {
+        self.imp().flap_stack.get()
     }
 
     pub fn mainheader(&self) -> MainHeader {

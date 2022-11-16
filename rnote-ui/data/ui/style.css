@@ -48,11 +48,9 @@
         linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188);
     background-size: 20px 20px;
     background-position: 0px 0px, 8px 8px;
-    border-color: mix(@borders, @theme_fg_color, 0.25);
     border-style: solid;
     border-width: 1px;
     filter: brightness(100%);
-    transition: border-radius 0.15s ease-out, filter 0.15s ease-out;
 }
 
 .setter_button:hover {

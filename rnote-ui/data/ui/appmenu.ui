@@ -20,10 +20,6 @@
           </item>
         </section>
         <section>
-          <item>
-            <attribute name="label" translatable="yes">_Settings</attribute>
-            <attribute name="action">win.open-settings</attribute>
-          </item>
           <submenu>
             <attribute name="label" translatable="yes">_Color scheme</attribute>
             <item>
@@ -68,6 +64,10 @@
           </submenu>
         </section>
         <section>
+          <item>
+            <attribute name="label" translatable="yes">_Settings</attribute>
+            <attribute name="action">win.open-settings</attribute>
+          </item>
           <item>
             <attribute name="label" translatable="yes">_Keyboard shortcuts</attribute>
             <attribute name="action">win.keyboard-shortcuts</attribute>

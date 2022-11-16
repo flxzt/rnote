@@ -35,6 +35,10 @@
     box-shadow: 0 0 6px darker(@theme_selected_bg_color);
 }
 
+.selection_delete_button {
+    color: @destructive_color;
+}
+
 .narrow_pens_toggles_box {
     background: linear-gradient(to right, #0000000a 0%, #00000000 6%, #00000000 94%, #0000000a 100%);
 }

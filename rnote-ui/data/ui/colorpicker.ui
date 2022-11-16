@@ -28,8 +28,11 @@
       <object class="GtkMenuButton" id="colorpicker_button">
         <property name="direction">left</property>
         <property name="icon-name">preferences-color-symbolic</property>
-        <property name="margin-top">6</property>
+        <property name="margin-top">3</property>
         <property name="popover">colorpicker_popover</property>
+        <style>
+          <class name="flat" />
+        </style>
       </object>
     </child>
     <object class="GtkPopover" id="colorpicker_popover">

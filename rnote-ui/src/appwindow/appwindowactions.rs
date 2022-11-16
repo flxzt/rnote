@@ -21,6 +21,8 @@ impl RnoteAppWindow {
         self.add_action(&action_close_active);
         let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
         self.add_action(&action_fullscreen);
+        let action_open_settings = gio::SimpleAction::new("open-settings", None);
+        self.add_action(&action_open_settings);
         let action_about = gio::SimpleAction::new("about", None);
         self.add_action(&action_about);
         let action_donate = gio::SimpleAction::new("donate", None);
@@ -142,6 +144,12 @@ impl RnoteAppWindow {
         // Close active window
         action_close_active.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             appwindow.close();
+        }));
+
+        // Open settings
+        action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            appwindow.flap_stack().set_visible_child_name("settings_page");
+            appwindow.flap().set_reveal_flap(true);
         }));
 
         // About Dialog

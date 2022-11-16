@@ -20,6 +20,10 @@
           </item>
         </section>
         <section>
+          <item>
+            <attribute name="label" translatable="yes">_Settings</attribute>
+            <attribute name="action">win.open-settings</attribute>
+          </item>
           <submenu>
             <attribute name="label" translatable="yes">_Color scheme</attribute>
             <item>

@@ -26,7 +26,7 @@
         <property name="orientation">vertical</property>
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
-        <property name="spacing">9</property>
+        <property name="spacing">6</property>
         <child>
           <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
             <property name="tooltip_text" translatable="yes">Insert vertical space</property>

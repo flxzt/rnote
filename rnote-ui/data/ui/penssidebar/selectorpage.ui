@@ -115,7 +115,7 @@
     <child>
       <object class="GtkBox" id="selection_actionbox">
         <property name="orientation">vertical</property>
-        <property name="spacing">9</property>
+        <property name="spacing">6</property>
 
         <child>
           <object class="GtkToggleButton" id="resize_lock_aspectratio_togglebutton">

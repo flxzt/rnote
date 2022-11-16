@@ -224,7 +224,7 @@ mod imp {
                             self.setterbox.set_orientation(Orientation::Vertical);
                             self.colorpicker_button.set_margin_start(0);
                             self.colorpicker_button.set_margin_end(0);
-                            self.colorpicker_button.set_margin_top(6);
+                            self.colorpicker_button.set_margin_top(3);
                             self.colorpicker_button.set_margin_bottom(0);
                         }
                         PositionType::Right => {
@@ -233,14 +233,14 @@ mod imp {
                             self.setterbox.set_orientation(Orientation::Vertical);
                             self.colorpicker_button.set_margin_start(0);
                             self.colorpicker_button.set_margin_end(0);
-                            self.colorpicker_button.set_margin_top(6);
+                            self.colorpicker_button.set_margin_top(3);
                             self.colorpicker_button.set_margin_bottom(0);
                         }
                         PositionType::Top => {
                             self.colorpicker_popover.set_position(PositionType::Bottom);
                             layout_manager.set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
-                            self.colorpicker_button.set_margin_start(6);
+                            self.colorpicker_button.set_margin_start(3);
                             self.colorpicker_button.set_margin_end(0);
                             self.colorpicker_button.set_margin_top(0);
                             self.colorpicker_button.set_margin_bottom(0);
@@ -249,7 +249,7 @@ mod imp {
                             self.colorpicker_popover.set_position(PositionType::Top);
                             layout_manager.set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
-                            self.colorpicker_button.set_margin_start(6);
+                            self.colorpicker_button.set_margin_start(3);
                             self.colorpicker_button.set_margin_end(0);
                             self.colorpicker_button.set_margin_top(0);
                             self.colorpicker_button.set_margin_bottom(0);

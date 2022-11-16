@@ -32,6 +32,9 @@
             <property name="tooltip_text" translatable="yes">Insert vertical space</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
+            <style>
+              <class name="flat" />
+            </style>
             <child>
               <object class="GtkImage">
                 <style>
@@ -49,6 +52,9 @@
             <property name="group">toolstyle_verticalspace_toggle</property>
             <property name="vexpand">true</property>
             <property name="visible">false</property>
+            <style>
+              <class name="flat" />
+            </style>
             <child>
               <object class="GtkImage">
                 <style>
@@ -65,6 +71,9 @@
             <property name="tooltip_text" translatable="yes">Offset the camera by dragging</property>
             <property name="group">toolstyle_verticalspace_toggle</property>
             <property name="vexpand">true</property>
+            <style>
+              <class name="flat" />
+            </style>
             <child>
               <object class="GtkImage">
                 <style>

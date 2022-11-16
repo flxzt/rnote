@@ -24,7 +24,6 @@
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
-        <property name="vexpand">false</property>
         <child>
           <object class="GtkMenuButton" id="shaperstyle_menubutton">
             <property name="hexpand">true</property>
@@ -32,6 +31,9 @@
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Shaper style</property>
             <property name="popover">shaperstyle_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
             <child>
               <object class="GtkImage" id="shaperstyle_image">
                 <style>
@@ -43,8 +45,116 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkMenuButton" id="shapeconfig_menubutton">
+            <property name="icon-name">settings-symbolic</property>
+            <property name="hexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Shape configuration</property>
+            <property name="popover">shapeconfig_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
       </object>
     </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="width_spinbutton">
+        <property name="orientation">vertical</property>
+        <property name="numeric">true</property>
+        <property name="digits">1</property>
+        <property name="climb-rate">0.5</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="vexpand">false</property>
+        <child>
+          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
+            <property name="hexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Shape builders</property>
+            <property name="popover">shapebuildertype_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
+            <child>
+              <object class="GtkImage" id="shapebuildertype_image">
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
+                <property name="icon-name">shape-line-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="constraint_menubutton">
+            <property name="icon-name">settings-symbolic</property>
+            <property name="hexpand">true</property>
+            <property name="sensitive">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Constraints</property>
+            <property name="popover">constraint_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage">
+        <property name="icon_name">stroke-color-symbolic</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="stroke_colorpicker">
+        <property name="amount-colorbuttons">2</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage">
+        <property name="icon_name">fill-color-symbolic</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="fill_colorpicker">
+        <property name="amount-colorbuttons">2</property>
+      </object>
+    </child>
+
+    <!-- Shaper style -->
     <object class="GtkPopover" id="shaperstyle_popover">
       <child>
         <object class="GtkBox">
@@ -97,21 +207,8 @@
         </object>
       </child>
     </object>
+
     <!-- Shape config -->
-    <child>
-      <object class="GtkBox">
-        <child>
-          <object class="GtkMenuButton" id="shapeconfig_menubutton">
-            <property name="icon-name">settings-symbolic</property>
-            <property name="hexpand">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape configuration</property>
-            <property name="popover">shapeconfig_popover</property>
-          </object>
-        </child>
-      </object>
-    </child>
     <object class="GtkPopover" id="shapeconfig_popover">
       <child>
         <object class="GtkBox">
@@ -200,48 +297,8 @@
         </object>
       </child>
     </object>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSpinButton" id="width_spinbutton">
-        <property name="orientation">vertical</property>
-        <property name="numeric">true</property>
-        <property name="digits">1</property>
-        <property name="climb-rate">0.5</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <property name="vexpand">false</property>
-        <child>
-          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
-            <property name="hexpand">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape builders</property>
-            <property name="popover">shapebuildertype_popover</property>
-            <child>
-              <object class="GtkImage" id="shapebuildertype_image">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="icon-name">shape-line-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
+
+    <!-- Shape builder type -->
     <object class="GtkPopover" id="shapebuildertype_popover">
       <child>
         <object class="GtkBox">
@@ -371,21 +428,8 @@
         </object>
       </child>
     </object>
-    <child>
-      <object class="GtkBox">
-        <child>
-          <object class="GtkMenuButton" id="constraint_menubutton">
-            <property name="icon-name">settings-symbolic</property>
-            <property name="hexpand">true</property>
-            <property name="sensitive">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Constraints</property>
-            <property name="popover">constraint_popover</property>
-          </object>
-        </child>
-      </object>
-    </child>
+
+    <!-- constraints -->
     <object class="GtkPopover" id="constraint_popover">
       <child>
         <object class="GtkBox">
@@ -459,39 +503,5 @@ when this switch is off/on</property>
         </object>
       </child>
     </object>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">stroke-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="stroke_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">fill-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="fill_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
   </template>
 </interface>

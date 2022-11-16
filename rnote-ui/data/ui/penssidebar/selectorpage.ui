@@ -194,8 +194,7 @@
             <property name="action-name">win.selection-trash</property>
             <style>
               <class name="flat" />
-              <class name="destructive-action" />
-              <class name="selection_delete_button" />
+              <class name="flat-destructive-action" />
             </style>
             <child>
               <object class="GtkImage">

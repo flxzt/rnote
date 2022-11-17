@@ -134,7 +134,7 @@ impl QuadraticBezier {
 }
 
 /// Coefficient a of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-pub fn quadbez_coeff_a(
+fn quadbez_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -143,19 +143,19 @@ pub fn quadbez_coeff_a(
 }
 
 /// Coefficient b of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-pub fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
+fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
 /// Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 #[allow(dead_code)]
-pub fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
+fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0
 }
 
 /// calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
 #[allow(dead_code)]
-pub fn quadbez_calc(
+fn quadbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -165,7 +165,7 @@ pub fn quadbez_calc(
 }
 
 /// Coefficient a of quadratic bezier derivation in polynomial form: C' = a * t + b
-pub fn quad_bezier_derive_coeff_a(
+fn quad_bezier_derive_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -174,13 +174,13 @@ pub fn quad_bezier_derive_coeff_a(
 }
 
 /// Coefficient b of quadratic bezier derivation in polynomial form: C' = a * t + b
-pub fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
+fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
 #[allow(dead_code)]
 /// calculating the derivative of the bezier curve for t: between 0.0 and 1.0
-pub fn quadbez_derive_calc(
+fn quadbez_derive_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-14 08:02+0100\n"
-"PO-Revision-Date: 2022-11-14 07:32+0000\n"
+"PO-Revision-Date: 2022-11-17 14:03+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -576,7 +576,7 @@ msgstr "Wähle das Exportverzeichnis aus"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 msgid "Export files stem name"
-msgstr "Exportdateien Stamm"
+msgstr "Exportdateien Stammname"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539

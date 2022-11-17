@@ -39,7 +39,7 @@
           <object class="GtkMenuButton" id="menubutton">
             <property name="name">menubutton</property>
             <property name="direction">down</property>
-            <property name="icon_name">canvasmenu-symbolic</property>
+            <property name="icon_name">misc-menu-symbolic</property>
             <property name="popover">popovermenu</property>
             <style>
               <class name="flat" />

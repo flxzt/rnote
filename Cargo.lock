@@ -1374,9 +1374,9 @@ dependencies = [
 
 [[package]]
 name = "geo-types"
-version = "0.7.7"
+version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8d77ceb80f375dc4cda113a3ae1b06a36ef623f8f035c03752ca6698f4ddfee"
+checksum = "e26879b63ac36ca5492918dc16f8c1e604b0f70f884fffbd3533f89953ab1991"
 dependencies = [
  "approx",
  "num-traits",
@@ -2274,9 +2274,9 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.31.3"
+version = "0.31.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0eef2ccf9aefdae3334ad5911b5414724b9047bfe145b3353d5878732cc7b86b"
+checksum = "20bd243ab3dbb395b39ee730402d2e5405e448c75133ec49cc977762c4cba3d1"
 dependencies = [
  "approx",
  "matrixmultiply",
@@ -2691,7 +2691,7 @@ dependencies = [
  "bitflags",
  "downcast-rs",
  "either",
- "nalgebra 0.31.3",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "rustc-hash",
@@ -2843,7 +2843,7 @@ checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 [[package]]
 name = "piet"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#2b241d4be4853889cecb6ebf709cd24e4e1c088b"
+source = "git+https://github.com/flxzt/piet?branch=rnote#1643d000c2cc067eb0ed869d397624dda8ed9b2a"
 dependencies = [
  "kurbo",
  "unic-bidi",
@@ -2852,7 +2852,7 @@ dependencies = [
 [[package]]
 name = "piet-cairo"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#2b241d4be4853889cecb6ebf709cd24e4e1c088b"
+source = "git+https://github.com/flxzt/piet?branch=rnote#1643d000c2cc067eb0ed869d397624dda8ed9b2a"
 dependencies = [
  "cairo-rs",
  "pango",
@@ -2865,7 +2865,7 @@ dependencies = [
 [[package]]
 name = "piet-svg"
 version = "0.5.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#2b241d4be4853889cecb6ebf709cd24e4e1c088b"
+source = "git+https://github.com/flxzt/piet?branch=rnote#1643d000c2cc067eb0ed869d397624dda8ed9b2a"
 dependencies = [
  "base64",
  "font-kit",
@@ -3286,7 +3286,7 @@ dependencies = [
  "kurbo",
  "libadwaita",
  "log",
- "nalgebra 0.31.3",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -3320,7 +3320,7 @@ dependencies = [
  "ink-stroke-modeler-rs",
  "kurbo",
  "log",
- "nalgebra 0.31.3",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "parry2d-f64",
@@ -3356,7 +3356,7 @@ dependencies = [
  "lazy_static",
  "librsvg",
  "log",
- "nalgebra 0.31.3",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "parry2d-f64",
@@ -3391,7 +3391,7 @@ dependencies = [
  "anyhow",
  "flate2",
  "log",
- "nalgebra 0.31.3",
+ "nalgebra 0.31.4",
  "pretty_env_logger",
  "roxmltree 0.14.1",
  "semver 1.0.14",

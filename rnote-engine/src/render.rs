@@ -635,10 +635,8 @@ impl Svg {
         bounds.ensure_positive();
         bounds.assert_valid()?;
 
-        let mut piet_cx = piet_svg::RenderContext::new(
-            kurbo::Size::new(bounds.extents()[0], bounds.extents()[1]),
-            2,
-        );
+        let mut piet_cx =
+            piet_svg::RenderContext::new(bounds.to_kurbo_rect(), bounds.to_kurbo_rect(), 2);
 
         // Apply the draw function
         draw_func(&mut piet_cx)?;
@@ -666,10 +664,8 @@ impl Svg {
         bounds.ensure_positive();
         bounds.assert_valid()?;
 
-        let mut piet_cx = piet_svg::RenderContext::new_no_text(
-            kurbo::Size::new(bounds.extents()[0], bounds.extents()[1]),
-            2,
-        );
+        let mut piet_cx =
+            piet_svg::RenderContext::new_no_text(bounds.to_kurbo_rect(), bounds.to_kurbo_rect(), 2);
 
         // Apply the draw function
         draw_func(&mut piet_cx)?;

@@ -129,6 +129,7 @@
                 <child>
                   <object class="GtkOverlay" id="canvas_actions_overlay">
                     <property name="focusable">true</property>
+                    <property name="overflow">hidden</property>
                     <child type="overlay">
                       <object class="GtkProgressBar" id="canvas_progressbar">
                         <property name="halign">fill</property>

@@ -102,67 +102,6 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default, rename = "dragproximity_tool")]
-pub struct DragProximityTool {
-    #[serde(skip)]
-    pub pos: na::Vector2<f64>,
-    #[serde(skip)]
-    pub offset: na::Vector2<f64>,
-    #[serde(rename = "radius")]
-    pub radius: f64,
-}
-
-impl Default for DragProximityTool {
-    fn default() -> Self {
-        Self {
-            pos: na::Vector2::zeros(),
-            offset: na::Vector2::zeros(),
-            radius: Self::RADIUS_DEFAULT,
-        }
-    }
-}
-
-impl DragProximityTool {
-    const OFFSET_MAGNITUDE_THRESHOLD: f64 = 4.0;
-    const OUTLINE_COLOR: piet::Color = color::GNOME_GREENS[4];
-    const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(0x60);
-
-    pub const OUTLINE_WIDTH: f64 = 1.0;
-    pub const RADIUS_DEFAULT: f64 = 60.0;
-}
-
-impl DrawOnDocBehaviour for DragProximityTool {
-    fn bounds_on_doc(&self, _engine_view: &EngineView) -> Option<AABB> {
-        Some(AABB::from_half_extents(
-            na::Point2::from(self.pos),
-            na::Vector2::repeat(self.radius),
-        ))
-    }
-
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        _engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-        let mut radius = self.radius;
-
-        let n_circles = 7;
-        for i in (0..n_circles).rev() {
-            radius *= f64::from(i) / f64::from(n_circles);
-
-            let circle = kurbo::Circle::new(self.pos.to_kurbo_point(), radius);
-
-            cx.fill(circle, &Self::FILL_COLOR);
-            cx.stroke(circle, &Self::OUTLINE_COLOR, Self::OUTLINE_WIDTH);
-        }
-
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
-        Ok(())
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "offsetcamera_tool")]
 pub struct OffsetCameraTool {
     #[serde(skip)]
@@ -235,8 +174,6 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
 pub enum ToolsStyle {
     #[serde(rename = "verticalspace")]
     VerticalSpace,
-    #[serde(rename = "dragproximity")]
-    DragProximity,
     #[serde(rename = "offsetcamera")]
     OffsetCamera,
 }
@@ -276,8 +213,6 @@ pub struct Tools {
     pub style: ToolsStyle,
     #[serde(rename = "verticalspace_tool")]
     pub verticalspace_tool: VerticalSpaceTool,
-    #[serde(rename = "dragproximity_tool")]
-    pub dragproximity_tool: DragProximityTool,
     #[serde(rename = "offsetcamera_tool")]
     pub offsetcamera_tool: OffsetCameraTool,
 
@@ -311,10 +246,6 @@ impl PenBehaviour for Tools {
                         self.verticalspace_tool.strokes_below = engine_view
                             .store
                             .keys_below_y_pos(self.verticalspace_tool.current_pos_y);
-                    }
-                    ToolsStyle::DragProximity => {
-                        self.dragproximity_tool.pos = element.pos;
-                        self.dragproximity_tool.offset = na::Vector2::zeros();
                     }
                     ToolsStyle::OffsetCamera => {
                         self.offsetcamera_tool.start = element.pos;
@@ -361,29 +292,6 @@ impl PenBehaviour for Tools {
 
                         PenProgress::InProgress
                     }
-                    ToolsStyle::DragProximity => {
-                        let offset = element.pos - self.dragproximity_tool.pos;
-                        self.dragproximity_tool.offset = offset;
-
-                        if self.dragproximity_tool.offset.magnitude()
-                            > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
-                        {
-                            engine_view
-                                .store
-                                .drag_strokes_proximity(&self.dragproximity_tool);
-                            engine_view.store.regenerate_rendering_in_viewport_threaded(
-                                engine_view.tasks_tx.clone(),
-                                false,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-
-                            self.dragproximity_tool.pos = element.pos;
-                            self.dragproximity_tool.offset = na::Vector2::zeros();
-                        }
-
-                        PenProgress::InProgress
-                    }
                     ToolsStyle::OffsetCamera => {
                         let offset = engine_view
                             .camera
@@ -423,7 +331,6 @@ impl PenBehaviour for Tools {
                             .store
                             .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
                     }
-                    ToolsStyle::DragProximity => {}
                     ToolsStyle::OffsetCamera => {}
                 }
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
@@ -476,7 +383,6 @@ impl DrawOnDocBehaviour for Tools {
         match self.state {
             ToolsState::Active => match self.style {
                 ToolsStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
-                ToolsStyle::DragProximity => self.dragproximity_tool.bounds_on_doc(engine_view),
                 ToolsStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
             },
             ToolsState::Idle => None,
@@ -493,9 +399,6 @@ impl DrawOnDocBehaviour for Tools {
         match &self.style {
             ToolsStyle::VerticalSpace => {
                 self.verticalspace_tool.draw_on_doc(cx, engine_view)?;
-            }
-            ToolsStyle::DragProximity => {
-                self.dragproximity_tool.draw_on_doc(cx, engine_view)?;
             }
             ToolsStyle::OffsetCamera => {
                 self.offsetcamera_tool.draw_on_doc(cx, engine_view)?;
@@ -515,10 +418,6 @@ impl Tools {
             ToolsStyle::VerticalSpace => {
                 self.verticalspace_tool.start_pos_y = 0.0;
                 self.verticalspace_tool.current_pos_y = 0.0;
-            }
-            ToolsStyle::DragProximity => {
-                self.dragproximity_tool.pos = na::Vector2::zeros();
-                self.dragproximity_tool.offset = na::Vector2::zeros();
             }
             ToolsStyle::OffsetCamera => {
                 self.offsetcamera_tool.start = na::Vector2::zeros();

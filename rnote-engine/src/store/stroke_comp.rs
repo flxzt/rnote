@@ -1,6 +1,5 @@
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
-use crate::pens::tools::DragProximityTool;
 use crate::strokes::Stroke;
 use crate::{render, StrokeStore};
 use geo::intersects::Intersects;
@@ -10,7 +9,7 @@ use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 
-use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
@@ -541,26 +540,5 @@ impl StrokeStore {
                 }
             })
             .collect::<Vec<StrokeKey>>()
-    }
-
-    /// Unimplemented!
-    /// strokes then need to update their rendering
-    pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
-        let _sphere = BoundingSphere {
-            center: na::Point2::from(drag_proximity_tool.pos),
-            radius: drag_proximity_tool.radius,
-        };
-
-        #[allow(dead_code)]
-        fn calc_distance_ratio(
-            pos: na::Vector2<f64>,
-            tool_pos: na::Vector2<f64>,
-            radius: f64,
-        ) -> f64 {
-            // Zero when right at drag_proximity_tool position, One when right at the radius
-            (1.0 - (pos - tool_pos).magnitude() / radius).clamp(0.0, 1.0)
-        }
-
-        todo!()
     }
 }

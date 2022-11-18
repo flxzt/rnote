@@ -47,26 +47,6 @@
           </object>
         </child>
         <child>
-          <object class="GtkToggleButton" id="toolstyle_dragproximity_toggle">
-            <property name="tooltip_text" translatable="yes">Drag stroke elements based on proximity</property>
-            <property name="group">toolstyle_verticalspace_toggle</property>
-            <property name="vexpand">true</property>
-            <property name="visible">false</property>
-            <style>
-              <class name="flat" />
-            </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="icon-name">pen-tools-dragproximitytool-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
           <object class="GtkToggleButton" id="toolstyle_offsetcamera_toggle">
             <property name="tooltip_text" translatable="yes">Offset the camera by dragging</property>
             <property name="group">toolstyle_verticalspace_toggle</property>

@@ -11,8 +11,6 @@ mod imp {
         #[template_child]
         pub toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub toolstyle_dragproximity_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
         pub toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
     }
 
@@ -66,10 +64,6 @@ impl ToolsPage {
         self.imp().toolstyle_verticalspace_toggle.get()
     }
 
-    pub fn toolstyle_dragproximity_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_dragproximity_toggle.get()
-    }
-
     pub fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
         self.imp().toolstyle_offsetcamera_toggle.get()
     }
@@ -78,16 +72,6 @@ impl ToolsPage {
         self.toolstyle_verticalspace_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::VerticalSpace;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
-                }
-            }
-        }));
-
-        self.toolstyle_dragproximity_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
-            if toolstyle_dragproximity_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::DragProximity;
 
                 if let Err(e) = appwindow.save_engine_config() {
                     log::error!("saving engine config failed after changing tool style, Err `{}`", e);
@@ -111,7 +95,6 @@ impl ToolsPage {
 
         match tools.style {
             ToolsStyle::VerticalSpace => self.toolstyle_verticalspace_toggle().set_active(true),
-            ToolsStyle::DragProximity => self.toolstyle_dragproximity_toggle().set_active(true),
             ToolsStyle::OffsetCamera => self.toolstyle_offsetcamera_toggle().set_active(true),
         }
     }

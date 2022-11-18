@@ -87,6 +87,10 @@
             <attribute name="action">win.print-doc</attribute>
           </item>
           <item>
+            <attribute name="label" translatable="yes">_Paste clipboard</attribute>
+            <attribute name="action">win.clipboard-paste</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">_Import file</attribute>
             <attribute name="action">win.import-file</attribute>
           </item>

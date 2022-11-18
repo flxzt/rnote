@@ -630,8 +630,6 @@ impl Typewriter {
 
                 let textstroke = TextStroke::new(text, *pos, text_style);
 
-                log::debug!("{textstroke:?}");
-
                 let cursor = unicode_segmentation::GraphemeCursor::new(
                     text_len,
                     textstroke.text.len(),

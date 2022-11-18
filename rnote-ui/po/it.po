@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-18 11:56+0100\n"
 "PO-Revision-Date: 2022-11-19 15:23+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -141,32 +141,24 @@ msgid "Export document _pages"
 msgstr "Esporta pagine_del documento"
 
 #: rnote-ui/data/ui/appmenu.ui:108
-#, fuzzy
-#| msgid "Export selection"
 msgid "Export _selection"
-msgstr "Esporta selezione"
+msgstr "Esporta _selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Se_ttings"
 msgstr "_Impostazioni"
 
 #: rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard shortcuts"
-msgstr "Scorciatoie da tastiera"
+msgstr "_Scorciatoie da tastiera"
 
 #: rnote-ui/data/ui/appmenu.ui:123
-#, fuzzy
-#| msgid "Donate 💝"
 msgid "_Donate 💝"
-msgstr "Dona 💝"
+msgstr "_Donazione 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "About Rnote"
 msgid "_About Rnote"
-msgstr "Informazioni su Rnote"
+msgstr "_Informazioni su Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
@@ -255,50 +247,36 @@ msgid "Settings"
 msgstr "Impostazioni"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document layout"
 msgid "Document _layout"
-msgstr "Layout del documento"
+msgstr "Layout _documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
-#, fuzzy
-#| msgid "Fixed size"
 msgid "_Fixed size"
-msgstr "Dimensione fissa"
+msgstr "_Dimensione fissa"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-#, fuzzy
-#| msgid "Continuous vertical"
 msgid "_Continuous vertical"
-msgstr "Verticale continua"
+msgstr "_Verticale continua"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "Infinite"
 msgid "_Infinite"
-msgstr "Infinito"
+msgstr "_Infinito"
 
 #: rnote-ui/data/ui/canvasmenu.ui:44
-#, fuzzy
-#| msgid "Show format borders"
 msgid "Show _format borders"
-msgstr "Mostra i bordi del formato"
+msgstr "Mostra_formato bordi"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Draw with touch input"
 msgid "Draw with _touch input"
-msgstr "Disegna con l'imput touch"
+msgstr "Disegna con _l'imput touch"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "P_en sounds"
 msgstr "Suoni della_penna"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-#, fuzzy
-#| msgid "Clear document"
 msgid "_Clear document"
-msgstr "Pulisci documento"
+msgstr "_Pulisci documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:94
 msgid "Reset the zoom"
@@ -1494,20 +1472,16 @@ msgid "Opening file failed."
 msgstr "Apertura file fallita."
 
 #: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote File"
 msgid ".rnote"
-msgstr "File .rnote"
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
 msgstr "Apri file"
 
 #: rnote-ui/src/dialogs/import.rs:143
-#, fuzzy
-#| msgid "Xopp / PNG / SVG / JPG / PDF file"
 msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "Xopp / PNG / SVG / JPG / file PDF"
+msgstr "Xopp ,PNG,SVG,JPG ,PDF"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1604,10 +1578,8 @@ msgid "Export selection failed, no file selected."
 msgstr "Esportazione della selezione fallita, nessun file è stato selezionato."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "File JSON"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:812
 msgid "Export engine state"

@@ -108,7 +108,7 @@
         </section>
         <section>
           <item>
-            <attribute name="label" translatable="yes">_Settings</attribute>
+            <attribute name="label" translatable="yes">Se_ttings</attribute>
             <attribute name="action">win.open-settings</attribute>
           </item>
           <item>

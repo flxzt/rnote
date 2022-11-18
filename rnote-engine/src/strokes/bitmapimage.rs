@@ -1,7 +1,7 @@
 use std::ops::Range;
 
 use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
+use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
@@ -135,9 +135,6 @@ impl TransformBehaviour for BitmapImage {
 }
 
 impl BitmapImage {
-    /// The default offset in surface coords when importing a bitmap image
-    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
-
     pub fn import_from_image_bytes(
         bytes: &[u8],
         pos: na::Vector2<f64>,
@@ -190,7 +187,7 @@ impl BitmapImage {
                         PdfImportPageSpacing::Continuous => {
                             insert_pos[1]
                                 + f64::from(i as u32)
-                                    * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5)
+                                    * (f64::from(height) + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
                         }
                         PdfImportPageSpacing::OnePerDocumentPage => {
                             insert_pos[1] + f64::from(i as u32) * format.height

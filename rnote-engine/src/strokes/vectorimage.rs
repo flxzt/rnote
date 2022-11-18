@@ -1,7 +1,7 @@
 use std::ops::Range;
 
 use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
+use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{render, DrawBehaviour};
@@ -133,9 +133,6 @@ impl TransformBehaviour for VectorImage {
 }
 
 impl VectorImage {
-    /// The default offset in surface coords when importing a vector image
-    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
-
     pub fn import_from_svg_data(
         svg_data: &str,
         pos: na::Vector2<f64>,
@@ -209,7 +206,7 @@ impl VectorImage {
                 PdfImportPageSpacing::Continuous => {
                     insert_pos[1]
                         + f64::from(i as u32)
-                            * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5)
+                            * (f64::from(height) + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
                 }
                 PdfImportPageSpacing::OnePerDocumentPage => {
                     insert_pos[1]

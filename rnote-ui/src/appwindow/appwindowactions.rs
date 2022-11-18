@@ -898,11 +898,9 @@ impl RnoteAppWindow {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
-                            let widget_flags = appwindow.canvas().engine().borrow_mut().paste_clipboard_content(
-                                text.as_bytes(),
-                                content_formats.mime_types().into_iter().map(String::from).collect::<Vec<String>>()
-                            );
-                            appwindow.handle_widget_flags(widget_flags);
+                            if let Err(e) = appwindow.load_in_text(text.to_string(), None) {
+                                log::error!("failed to paste clipboard text, Err `{e}`");
+                            }
                         }
                         Ok(None) => {}
                         Err(e) => {

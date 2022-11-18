@@ -13,7 +13,7 @@ use rnote_fileformats::{xoppformat, FileFormatSaver};
 use crate::store::StrokeKey;
 use crate::{render, DrawBehaviour};
 
-use super::RnoteEngine;
+use super::{EngineConfig, RnoteEngine};
 
 #[derive(
     Debug,
@@ -293,6 +293,19 @@ impl RnoteEngine {
         });
 
         Ok(oneshot_receiver)
+    }
+
+    /// Exports the current engine config as JSON string
+    pub fn save_engine_config(&self) -> anyhow::Result<String> {
+        let engine_config = EngineConfig {
+            document: serde_json::to_value(&self.document)?,
+            penholder: serde_json::to_value(&self.penholder)?,
+            import_prefs: serde_json::to_value(&self.import_prefs)?,
+            export_prefs: serde_json::to_value(&self.export_prefs)?,
+            pen_sounds: serde_json::to_value(&self.pen_sounds)?,
+        };
+
+        Ok(serde_json::to_string(&engine_config)?)
     }
 
     /// Exports the entire engine state as JSON string

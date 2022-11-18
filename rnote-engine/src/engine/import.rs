@@ -11,7 +11,7 @@ use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::{BitmapImage, Stroke, TextStroke, VectorImage};
 use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
 
-use super::EngineConfig;
+use super::EngineViewMut;
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -276,7 +276,7 @@ impl RnoteEngine {
         Ok(())
     }
 
-    //// generates a vectorimage for the bytes ( from a SVG file )
+    /// generates a vectorimage for the bytes ( from a SVG file )
     pub fn generate_vectorimage_from_bytes(
         &self,
         pos: na::Vector2<f64>,
@@ -299,7 +299,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    //// generates a bitmapimage for the bytes ( from a bitmap image file (PNG, JPG) )
+    /// generates a bitmapimage for the bytes ( from a bitmap image file (PNG, JPG) )
     pub fn generate_bitmapimage_from_bytes(
         &self,
         pos: na::Vector2<f64>,
@@ -320,19 +320,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    //// generates a textstroke for the string
-    pub fn generate_textstroke_from_string(
-        &self,
-        pos: na::Vector2<f64>,
-        text: String,
-    ) -> anyhow::Result<TextStroke> {
-        let mut text_style = self.penholder.typewriter.text_style.clone();
-        text_style.ranged_text_attributes.clear();
-
-        Ok(TextStroke::new(text, pos, text_style))
-    }
-
-    //// generates image strokes for each page for the bytes ( from a PDF file )
+    /// generates image strokes for each page for the bytes ( from a PDF file )
     pub fn generate_pdf_pages_from_bytes(
         &self,
         bytes: Vec<u8>,
@@ -418,16 +406,33 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// Exports the current engine config as JSON string
-    pub fn save_engine_config(&self) -> anyhow::Result<String> {
-        let engine_config = EngineConfig {
-            document: serde_json::to_value(&self.document)?,
-            penholder: serde_json::to_value(&self.penholder)?,
-            import_prefs: serde_json::to_value(&self.import_prefs)?,
-            export_prefs: serde_json::to_value(&self.export_prefs)?,
-            pen_sounds: serde_json::to_value(&self.pen_sounds)?,
+    /// inserts text
+    pub fn insert_text(
+        &mut self,
+        text: String,
+        pos: na::Vector2<f64>,
+    ) -> anyhow::Result<WidgetFlags> {
+        let widget_flags = if self.penholder.current_style_w_override() == PenStyle::Typewriter {
+            // If the current pen is the typewriter, insert the text into it instead of creating a new textstroke
+            self.penholder.typewriter.insert_text_at_current_cursors(
+                text,
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx(),
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                },
+            )
+        } else {
+            let mut text_style = self.penholder.typewriter.text_style.clone();
+            text_style.ranged_text_attributes.clear();
+
+            let textstroke = TextStroke::new(text, pos, text_style);
+
+            self.import_generated_strokes(vec![(Stroke::TextStroke(textstroke), None)])
         };
 
-        Ok(serde_json::to_string(&engine_config)?)
+        Ok(widget_flags)
     }
 }

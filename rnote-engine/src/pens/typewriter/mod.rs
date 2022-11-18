@@ -380,32 +380,6 @@ impl PenBehaviour for Typewriter {
         (pen_progress, widget_flags)
     }
 
-    fn paste_clipboard_content(
-        &mut self,
-        clipboard_content: &[u8],
-        mime_types: Vec<String>,
-        engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, WidgetFlags) {
-        let mut widget_flags = WidgetFlags::default();
-
-        if mime_types
-            .iter()
-            .any(|mime_type| mime_type.contains("text/plain"))
-        {
-            match String::from_utf8(clipboard_content.to_vec()) {
-                Ok(text) => {
-                    widget_flags.merge_with_other(self.insert_text_at_current_cursors(
-                        text,
-                        engine_view,
-                    ));
-                },
-                Err(e) => log::error!("failed to paste clipboard content into typewriter. from_utf8() failed with Err {}", e)
-            }
-        }
-
-        (PenProgress::InProgress, widget_flags)
-    }
-
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
@@ -615,7 +589,50 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
 
         match &mut self.state {
-            TypewriterState::Idle => {}
+            TypewriterState::Idle => {
+                let text_len = text.len();
+
+                widget_flags.merge_with_other(engine_view.store.record());
+
+                let mut text_style = self.text_style.clone();
+                text_style.ranged_text_attributes.clear();
+
+                if self.max_width_enabled {
+                    text_style.max_width = Some(self.text_width);
+                }
+
+                let textstroke = TextStroke::new(
+                    text,
+                    engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT,
+                    text_style,
+                );
+
+                let cursor = unicode_segmentation::GraphemeCursor::new(
+                    text_len,
+                    textstroke.text.len(),
+                    true,
+                );
+
+                let stroke_key = engine_view
+                    .store
+                    .insert_stroke(Stroke::TextStroke(textstroke), None);
+
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                    stroke_key,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                ) {
+                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err {}", e);
+                }
+
+                self.state = TypewriterState::Modifying {
+                    stroke_key,
+                    cursor,
+                    pen_down: false,
+                };
+
+                widget_flags.redraw = true;
+            }
             TypewriterState::Start(pos) => {
                 let text_len = text.len();
 

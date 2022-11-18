@@ -163,6 +163,9 @@ impl TransformBehaviour for Stroke {
 }
 
 impl Stroke {
+    /// The default offset in surface coords when importing a stroke
+    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
+
     pub fn extract_default_layer(&self) -> StrokeLayer {
         match self {
             Stroke::BrushStroke(_) => StrokeLayer::UserLayer(0),

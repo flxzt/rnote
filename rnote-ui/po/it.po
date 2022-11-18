@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-18 11:56+0100\n"
-"PO-Revision-Date: 2022-11-16 10:25+0000\n"
+"PO-Revision-Date: 2022-11-19 15:23+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -65,10 +65,8 @@ msgid "A selection"
 msgstr "Una selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "Color scheme"
 msgid "_Color scheme"
-msgstr "Tema"
+msgstr "_Tema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
@@ -95,75 +93,52 @@ msgid "_Visual debugging"
 msgstr "_Debug visivo"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export engine _state"
-msgstr "Esporta 'engine state'"
+msgstr "Esporta 'engine_state'"
 
 #: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export engine _config"
-msgstr "Esporta 'engine config'"
+msgstr "Esporta 'engine_config'"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "_Nuovo"
 
 #: rnote-ui/data/ui/appmenu.ui:72
-#, fuzzy
-#| msgid "Open"
 msgid "_Open"
-msgstr "Apri"
+msgstr "_Apri"
 
 #: rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "Save"
 msgid "_Save"
-msgstr "Salva"
+msgstr "_Salva"
 
 #: rnote-ui/data/ui/appmenu.ui:80
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _as"
-msgstr "Salva come"
+msgstr "Salva_come"
 
 #: rnote-ui/data/ui/appmenu.ui:86
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "Stampa"
+msgstr "_Stampa"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
-msgstr "Incolla gli appunti"
+msgstr "_Incolla gli appunti"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import file"
-msgstr "Importa file"
+msgstr "_Importa file"
 
 #: rnote-ui/data/ui/appmenu.ui:98
-#, fuzzy
-#| msgid "Export…"
 msgid "_Export…"
-msgstr "Esporta…"
+msgstr "_Esporta…"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgid "Export document"
 msgid "Export _document"
-msgstr "Esporta documento"
+msgstr "Esporta_documento"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export document _pages"
-msgstr "Esporta pagine del documento"
+msgstr "Esporta pagine_del documento"
 
 #: rnote-ui/data/ui/appmenu.ui:108
 #, fuzzy
@@ -172,10 +147,8 @@ msgid "Export _selection"
 msgstr "Esporta selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Impostazioni"
+msgstr "_Impostazioni"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 #, fuzzy
@@ -267,7 +240,7 @@ msgstr "Ripristina"
 
 #: rnote-ui/data/ui/appwindow.ui:354
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "Rivelare/nascondere le impostazioni della pagina"
 
 #: rnote-ui/data/ui/appwindow.ui:424
 msgid "Close the folded flap"
@@ -318,10 +291,8 @@ msgid "Draw with _touch input"
 msgstr "Disegna con l'imput touch"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "P_en sounds"
-msgstr "Suoni penna"
+msgstr "Suoni della_penna"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 #, fuzzy
@@ -638,10 +609,8 @@ msgid "Select the export directory"
 msgstr "Selezionare la cartella di esportazione"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
-msgstr "Esporta 'engine state'"
+msgstr "Esporta il nome principale del file"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539
@@ -657,22 +626,16 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scalefactor"
 msgid "Bitmap scale factor"
 msgstr "Fattore di scala bitmap"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
-#, fuzzy
-#| msgid ""
-#| "Set the scalefactor of the bitmap image in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Impostare il fattore di scala dell'immagine bitmap in relazione\n"
+"Impostare il fattore di scala bitmap in relazione\n"
 "alle dimensioni effettive del documento"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315

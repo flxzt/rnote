@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-18 11:56+0100\n"
-"PO-Revision-Date: 2022-11-16 10:25+0000\n"
+"PO-Revision-Date: 2022-11-18 10:59+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -121,11 +121,8 @@ msgid "_Print"
 msgstr "Afdru_kken"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
-msgstr "Klembord plakken"
+msgstr "Klembord _plakken"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -148,10 +145,8 @@ msgid "Export _selection"
 msgstr "_Selectie exporteren"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Voorkeuren"
+msgstr "Voor_keuren"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"

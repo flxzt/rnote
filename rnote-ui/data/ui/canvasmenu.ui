@@ -63,55 +63,60 @@
       </menu>
 
       <child type="canvas_quickcontrols_attr">
-        <object class="GtkGrid">
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
           <property name="hexpand">false</property>
           <property name="vexpand">false</property>
-          <property name="margin-top">6</property>
-          <property name="margin-bottom">6</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
-          <property name="row-spacing">6</property>
-          <property name="column-spacing">6</property>
+          <property name="margin-top">3</property>
+          <property name="margin-start">3</property>
+          <property name="margin-end">3</property>
+          <property name="spacing">6</property>
           <child>
             <object class="GtkBox">
-              <style>
-                <class name="linked" />
-              </style>
               <property name="orientation">horizontal</property>
-              <property name="hexpand">true</property>
+              <property name="spacing">6</property>
               <child>
-                <object class="GtkButton" id="zoom_out_button">
-                  <property name="icon_name">zoom-out-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Zoom out</property>
-                  <property name="width_request">50</property>
-                  <property name="hexpand">false</property>
-                  <property name="action-name">win.zoom-out</property>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="zoom_reset_button">
-                  <property name="action-name">win.zoom-reset</property>
-                  <property name="tooltip_text" translatable="yes">Reset the zoom</property>
+                <object class="GtkBox">
+                  <style>
+                    <class name="linked" />
+                  </style>
+                  <property name="orientation">horizontal</property>
                   <property name="hexpand">true</property>
+                  <child>
+                    <object class="GtkButton" id="zoom_out_button">
+                      <property name="icon_name">zoom-out-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Zoom out</property>
+                      <property name="width_request">50</property>
+                      <property name="hexpand">false</property>
+                      <property name="action-name">win.zoom-out</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkButton" id="zoom_reset_button">
+                      <property name="action-name">win.zoom-reset</property>
+                      <property name="tooltip_text" translatable="yes">Reset the zoom</property>
+                      <property name="hexpand">true</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkButton" id="zoom_in_button">
+                      <property name="icon_name">zoom-in-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Zoom in</property>
+                      <property name="width_request">50</property>
+                      <property name="hexpand">false</property>
+                      <property name="action-name">win.zoom-in</property>
+                    </object>
+                  </child>
                 </object>
               </child>
               <child>
-                <object class="GtkButton" id="zoom_in_button">
-                  <property name="icon_name">zoom-in-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Zoom in</property>
-                  <property name="width_request">50</property>
+                <object class="GtkButton" id="zoom_fit_width_button">
                   <property name="hexpand">false</property>
-                  <property name="action-name">win.zoom-in</property>
+                  <property name="icon_name">zoom-fit-width-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Zoom to fit page width</property>
+                  <property name="action-name">win.zoom-fit-width</property>
                 </object>
               </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkButton" id="zoom_fit_width_button">
-              <property name="hexpand">false</property>
-              <property name="icon_name">zoom-fit-width-symbolic</property>
-              <property name="tooltip_text" translatable="yes">Zoom to fit page width</property>
-              <property name="action-name">win.zoom-fit-width</property>
             </object>
           </child>
         </object>

@@ -49,9 +49,9 @@ impl Default for TexturedOptions {
 
 impl TexturedOptions {
     /// The default width
-    pub const WIDTH_DEFAULT: f64 = 1.0;
+    pub const WIDTH_DEFAULT: f64 = 2.0;
     /// Density default
     pub const DENSITY_DEFAULT: f64 = 5.0;
     /// Radii default
-    pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![2.0, 0.3];
+    pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![2.4, 0.6];
 }

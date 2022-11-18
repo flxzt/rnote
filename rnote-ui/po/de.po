@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-18 11:56+0100\n"
-"PO-Revision-Date: 2022-11-17 14:03+0000\n"
+"PO-Revision-Date: 2022-11-18 10:59+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -121,11 +121,8 @@ msgid "_Print"
 msgstr "_Drucken"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
-msgstr "Zwischenablage einfügen"
+msgstr "_Zwischenablage einfügen"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -148,10 +145,8 @@ msgid "Export _selection"
 msgstr "_Auswahl exportieren"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Einstellungen"
+msgstr "Eins_tellungen"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
@@ -237,7 +232,7 @@ msgstr "Wiederholen"
 
 #: rnote-ui/data/ui/appwindow.ui:354
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "Zeige / verberge das Seitenmenü"
 
 #: rnote-ui/data/ui/appwindow.ui:424
 msgid "Close the folded flap"

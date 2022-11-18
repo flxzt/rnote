@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-18 11:56+0100\n"
-"PO-Revision-Date: 2022-11-16 10:26+0000\n"
+"PO-Revision-Date: 2022-11-19 15:23+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,11 +122,8 @@ msgid "_Print"
 msgstr "_Nyomtatás"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
-msgstr "Vágólap beillesztése"
+msgstr "Vágólap _beillesztése"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -149,10 +146,8 @@ msgid "Export _selection"
 msgstr "_Kijelölés exportálása"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Beállítások"
+msgstr "_Beállítások"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
@@ -238,7 +233,7 @@ msgstr "Újra"
 
 #: rnote-ui/data/ui/appwindow.ui:354
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "Fedél megjelenítése/elrejtése"
 
 #: rnote-ui/data/ui/appwindow.ui:424
 msgid "Close the folded flap"

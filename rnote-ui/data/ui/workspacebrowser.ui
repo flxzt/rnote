@@ -136,7 +136,6 @@
             <child>
               <object class="GtkSeparator">
                 <property name="orientation">vertical</property>
-                <property name="margin-top">6</property>
                 <property name="margin-bottom">6</property>
               </object>
             </child>

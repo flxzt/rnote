@@ -34,9 +34,6 @@
             <property name="tooltip_text" translatable="yes">Trash strokes</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
-            <style>
-              <class name="flat" />
-            </style>
             <child>
               <object class="GtkImage">
                 <style>
@@ -53,9 +50,6 @@
             <property name="group">eraserstyle_trash_colliding_strokes_toggle</property>
             <property name="tooltip_text" translatable="yes">Split strokes</property>
             <property name="vexpand">true</property>
-            <style>
-              <class name="flat" />
-            </style>
             <child>
               <object class="GtkImage">
                 <style>

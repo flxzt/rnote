@@ -166,9 +166,6 @@ or press Enter to select a new font)</property>
             <property name="icon-name">text-align-start-symbolic</property>
             <property name="tooltip_text" translatable="yes">Align left</property>
             <property name="active">true</property>
-            <style>
-              <class name="flat" />
-            </style>
           </object>
         </child>
         <child>
@@ -176,9 +173,6 @@ or press Enter to select a new font)</property>
             <property name="icon-name">text-align-center-symbolic</property>
             <property name="tooltip_text" translatable="yes">Align center</property>
             <property name="group">text_align_start_togglebutton</property>
-            <style>
-              <class name="flat" />
-            </style>
           </object>
         </child>
         <child>
@@ -186,9 +180,6 @@ or press Enter to select a new font)</property>
             <property name="icon-name">text-align-end-symbolic</property>
             <property name="tooltip_text" translatable="yes">Align right</property>
             <property name="group">text_align_start_togglebutton</property>
-            <style>
-              <class name="flat" />
-            </style>
           </object>
         </child>
         <child>
@@ -196,9 +187,6 @@ or press Enter to select a new font)</property>
             <property name="icon-name">text-align-fill-symbolic</property>
             <property name="tooltip_text" translatable="yes">Fill</property>
             <property name="group">text_align_start_togglebutton</property>
-            <style>
-              <class name="flat" />
-            </style>
           </object>
         </child>
       </object>

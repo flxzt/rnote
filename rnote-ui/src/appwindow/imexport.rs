@@ -4,7 +4,7 @@ use std::path::Path;
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*};
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
-use rnote_engine::strokes::{BitmapImage, Stroke, VectorImage};
+use rnote_engine::strokes::Stroke;
 
 use crate::dialogs;
 
@@ -236,7 +236,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -272,7 +272,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
+                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -319,7 +319,6 @@ impl RnoteAppWindow {
     pub async fn load_in_pdf_bytes(
         &self,
         bytes: Vec<u8>,
-        // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
@@ -327,7 +326,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -343,6 +342,28 @@ impl RnoteAppWindow {
             .engine()
             .borrow_mut()
             .import_generated_strokes(strokes);
+        self.handle_widget_flags(widget_flags);
+
+        app.set_input_file(None);
+
+        Ok(())
+    }
+
+    /// Target position is in the coordinate space of the doc
+    pub fn load_in_text(
+        &self,
+        text: String,
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> anyhow::Result<()> {
+        let app = self.app();
+
+        let pos = target_pos.unwrap_or_else(|| {
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+            .coords
+        });
+
+        let widget_flags = self.canvas().engine().borrow_mut().insert_text(text, pos)?;
         self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);

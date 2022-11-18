@@ -579,25 +579,6 @@ impl RnoteEngine {
         })
     }
 
-    // pastes clipboard content
-    pub fn paste_clipboard_content(
-        &mut self,
-        clipboard_content: &[u8],
-        mime_types: Vec<String>,
-    ) -> WidgetFlags {
-        self.penholder.paste_clipboard_content(
-            clipboard_content,
-            mime_types,
-            &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
-                doc: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        )
-    }
-
     /// Draws the entire engine (doc, pens, strokes, selection, ..) on a GTK snapshot.
     pub fn draw_on_snapshot(
         &self,

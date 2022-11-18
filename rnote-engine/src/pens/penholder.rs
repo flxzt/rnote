@@ -416,45 +416,6 @@ impl PenHolder {
         }
     }
 
-    /// Pastes the clipboard content into the current pen
-    pub fn paste_clipboard_content(
-        &mut self,
-        clipboard_content: &[u8],
-        mime_types: Vec<String>,
-        engine_view: &mut EngineViewMut,
-    ) -> WidgetFlags {
-        let (pen_progress, mut widget_flags) = match self.current_style_w_override() {
-            PenStyle::Brush => {
-                self.brush
-                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
-            }
-            PenStyle::Shaper => {
-                self.shaper
-                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
-            }
-            PenStyle::Typewriter => {
-                self.typewriter
-                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
-            }
-            PenStyle::Eraser => {
-                self.eraser
-                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
-            }
-            PenStyle::Selector => {
-                self.selector
-                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
-            }
-            PenStyle::Tools => {
-                self.tools
-                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
-            }
-        };
-
-        widget_flags.merge_with_other(self.handle_pen_progress(pen_progress));
-
-        widget_flags
-    }
-
     // Updates the penholder and pens internal state
     pub fn update_internal_state(&mut self, engine_view: &EngineView) {
         self.brush.update_internal_state(engine_view);

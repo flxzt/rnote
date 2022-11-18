@@ -4,7 +4,6 @@ mod input;
 // Re-exports
 pub use canvaslayout::CanvasLayout;
 use rnote_engine::pens::PenMode;
-use rnote_engine::strokes::Stroke;
 
 // Imports
 use std::cell::{Cell, RefCell};
@@ -907,16 +906,8 @@ impl RnoteCanvas {
 
                     return true;
                 } else if value.is::<String>() {
-                    let textstroke = appwindow.canvas().engine().borrow_mut().generate_textstroke_from_string(pos, value.get::<String>().unwrap());
-
-                    match textstroke {
-                        Ok(textstroke) => {
-                            let widget_flags = appwindow.canvas().engine().borrow_mut().import_generated_strokes(vec![(Stroke::TextStroke(textstroke), None)]);
-                            appwindow.handle_widget_flags(widget_flags);
-
-                            return true;
-                        }
-                        Err(e) => log::error!("failed to generated textstroke for dropped text. Err `{e}`"),
+                    if let Err(e) = appwindow.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
+                        log::error!("failed to insert dropped in text, Err `{e}`");
                     }
                 }
 

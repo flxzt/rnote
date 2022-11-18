@@ -30,53 +30,43 @@
                   <class name="view"></class>
                 </style>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="dir_controls_box">
                     <property name="orientation">horizontal</property>
                     <property name="hexpand">true</property>
                     <property name="margin-top">6</property>
                     <property name="margin-bottom">3</property>
+                    <property name="margin-start">6</property>
+                    <property name="margin-end">6</property>
+                    <property name="spacing">6</property>
                     <child>
-                      <object class="GtkListBox" id="files_prefix_listbox">
-                        <property name="selection-mode">none</property>
-                        <property name="activate-on-single-click">false</property>
-                        <property name="hexpand">true</property>
+                      <object class="GtkButton" id="dir_controls_dir_up_button">
+                        <property name="tooltip_text" translatable="yes">Move directory up</property>
                         <property name="halign">fill</property>
-                        <style>
-                          <class name="files-prefix-listbox"></class>
-                        </style>
+                        <property name="hexpand">true</property>
                         <child>
-                          <object class="GtkListBoxRow" id="dir_up_row">
-                            <property name="tooltip_text" translatable="yes">Move directory up</property>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="halign">start</property>
-                                <property name="hexpand">true</property>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="margin-top">3</property>
-                                    <property name="margin-bottom">3</property>
-                                    <property name="margin-start">12</property>
-                                    <property name="margin-end">12</property>
-                                    <property name="halign">start</property>
-                                    <property name="label">‥</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
+                          <object class="GtkLabel">
+                            <property name="label">‥</property>
+                            <property name="halign">start</property>
+                            <property name="hexpand">false</property>
+                            <style>
+                              <class name="caption" />
+                            </style>
                           </object>
                         </child>
+                        <style>
+                          <class name="flat" />
+                        </style>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkBox" id="workspace_dir_actions_box">
+                      <object class="GtkBox" id="dir_controls_actions_box">
                         <property name="orientation">horizontal</property>
-                        <property name="margin-end">14</property>
+                        <property name="margin-end">7</property>
                         <child>
-                          <object class="GtkMenuButton" id="workspace_dir_actions_button">
-                            <property name="name">workspace_dir_actions_button</property>
+                          <object class="GtkMenuButton" id="dir_controls_actions_menubutton">
                             <property name="direction">down</property>
                             <property name="icon_name">misc-menu-symbolic</property>
-                            <property name="popover">workspace_dir_actions_popover</property>
+                            <property name="popover">dir_controls_actions_popover</property>
                             <property name="tooltip_text" translatable="yes">Workspace directory actions</property>
                             <style>
                               <class name="flat" />
@@ -193,8 +183,7 @@
         </child>
       </object>
     </child>
-    <object class="GtkPopoverMenu" id="workspace_dir_actions_popover">
-      <property name="name">workspace_dir_actions_popover</property>
+    <object class="GtkPopoverMenu" id="dir_controls_actions_popover">
       <property name="menu-model">workspace_dir_actions_menu_model</property>
       <menu id="workspace_dir_actions_menu_model">
         <section>

@@ -8,6 +8,7 @@ mod workspacerow;
 
 // Re-exports
 pub use filerow::FileRow;
+use gtk4::{GestureClick, PropagationPhase};
 pub use workspacelist::WorkspaceList;
 pub use workspacelistentry::WorkspaceListEntry;
 pub use workspacerow::WorkspaceRow;
@@ -16,9 +17,8 @@ use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MultiSorter,
-    PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
-    SorterChange, Widget,
+    FilterListModel, Grid, ListBox, ListItem, ListView, MultiSorter, PropertyExpression,
+    ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
 };
 use std::path::PathBuf;
 
@@ -43,13 +43,11 @@ mod imp {
         #[template_child]
         pub files_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub files_prefix_listbox: TemplateChild<ListBox>,
-        #[template_child]
-        pub dir_up_row: TemplateChild<ListBoxRow>,
+        pub dir_controls_dir_up_button: TemplateChild<Button>,
         #[template_child]
         pub files_listview: TemplateChild<ListView>,
         #[template_child]
-        pub workspace_dir_actions_box: TemplateChild<gtk4::Box>,
+        pub dir_controls_actions_box: TemplateChild<gtk4::Box>,
         #[template_child]
         pub workspace_bar: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -70,10 +68,9 @@ mod imp {
                 remove_workspace_button: TemplateChild::<Button>::default(),
                 edit_workspace_button: TemplateChild::<Button>::default(),
                 files_scroller: TemplateChild::<ScrolledWindow>::default(),
-                files_prefix_listbox: TemplateChild::<ListBox>::default(),
-                dir_up_row: TemplateChild::<ListBoxRow>::default(),
+                dir_controls_dir_up_button: TemplateChild::<Button>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
-                workspace_dir_actions_box: TemplateChild::<gtk4::Box>::default(),
+                dir_controls_actions_box: TemplateChild::<gtk4::Box>::default(),
                 files_dirlist,
                 workspace_bar: TemplateChild::<gtk4::Box>::default(),
                 workspace_scroller: TemplateChild::<ScrolledWindow>::default(),
@@ -151,19 +148,14 @@ impl WorkspaceBrowser {
         self.imp().workspace_scroller.clone()
     }
 
-    pub fn workspace_dir_actions_box(&self) -> gtk4::Box {
-        self.imp().workspace_dir_actions_box.clone()
+    pub fn dir_controls_actions_box(&self) -> gtk4::Box {
+        self.imp().dir_controls_actions_box.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        setup_remove_workspace_button(self, appwindow);
-        setup_add_workspace_button(self, appwindow);
-        setup_edit_workspace_button(self, appwindow);
+        setup_workspaces_sidebar(self, appwindow);
 
-        setup_workspacelist(self, appwindow);
-        setup_workspace_listbox(self, appwindow);
-
-        setup_prefix_listbox(self, appwindow);
+        setup_dir_controls(self, appwindow);
         setup_file_rows(self, appwindow);
 
         self.setup_dir_actions(appwindow);
@@ -300,36 +292,7 @@ impl WorkspaceBrowser {
     }
 }
 
-fn setup_remove_workspace_button(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-    wb.imp().remove_workspace_button.get().connect_clicked(
-        clone!(@weak wb, @weak appwindow => move |_| {
-            wb.remove_current_workspace();
-        }),
-    );
-}
-
-fn setup_add_workspace_button(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-    wb.imp().add_workspace_button.get().connect_clicked(
-        clone!(@weak wb, @weak appwindow => move |_add_workspace_button| {
-            let dir = wb.selected_workspace_dir().unwrap_or(PathBuf::from("./"));
-            wb.add_workspace(dir);
-
-            // Popup the edit dialog after creation
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
-        }),
-    );
-}
-
-fn setup_edit_workspace_button(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-    wb.imp()
-        .edit_workspace_button
-        .get()
-        .connect_clicked(clone!(@weak appwindow => move |_| {
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
-        }));
-}
-
-fn setup_workspacelist(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
+fn setup_workspaces_sidebar(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     wb.imp().workspace_list.connect_items_changed(
         clone!(@weak wb, @weak appwindow => move |folders_model, _, _, _| {
             wb.imp().remove_workspace_button.get().set_sensitive(folders_model.n_items() > 1);
@@ -338,9 +301,7 @@ fn setup_workspacelist(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
             wb.save_to_settings(&appwindow.app_settings());
         }),
     );
-}
 
-fn setup_workspace_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     let workspace_listbox = wb.imp().workspace_listbox.get();
     workspace_listbox.connect_selected_rows_changed(clone!(@weak appwindow, @weak wb => move |_| {
         if let Some(dir) = wb.current_selected_workspace_row().map(|row| row.entry().dir()) {
@@ -361,17 +322,49 @@ fn setup_workspace_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
             workspace_row.upcast::<Widget>()
         }),
     );
+
+    wb.imp().add_workspace_button.get().connect_clicked(
+        clone!(@weak wb, @weak appwindow => move |_add_workspace_button| {
+            let dir = wb.selected_workspace_dir().unwrap_or(PathBuf::from("./"));
+            wb.add_workspace(dir);
+
+            // Popup the edit dialog after creation
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
+        }),
+    );
+
+    wb.imp().remove_workspace_button.get().connect_clicked(
+        clone!(@weak wb, @weak appwindow => move |_| {
+            wb.remove_current_workspace();
+        }),
+    );
+
+    wb.imp()
+        .edit_workspace_button
+        .get()
+        .connect_clicked(clone!(@weak appwindow => move |_| {
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
+        }));
 }
 
-fn setup_prefix_listbox(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-    wb.imp().files_prefix_listbox.connect_row_activated(
-        clone!(@weak wb, @weak appwindow => move |_, row| {
-            if row == &wb.imp().dir_up_row.get() {
-                if let Some(parent_dir) = wb.selected_workspace_dir().and_then(|p| p.parent().map(|p| p.to_path_buf())) {
-                    wb.set_current_workspace_dir(parent_dir.to_path_buf());
-                }
+fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
+    let dir_up_click_gesture = GestureClick::builder()
+        .propagation_phase(PropagationPhase::Capture)
+        .button(gdk::BUTTON_PRIMARY)
+        .build();
+    wb.imp()
+        .dir_controls_dir_up_button
+        .get()
+        .add_controller(&dir_up_click_gesture);
+
+    dir_up_click_gesture.connect_released(clone!(@weak wb, @weak appwindow => move |_, n_press, _, _| {
+        // Only activate on multi click
+        if n_press > 1 {
+            if let Some(parent_dir) = wb.selected_workspace_dir().and_then(|p| p.parent().map(|p| p.to_path_buf())) {
+                wb.set_current_workspace_dir(parent_dir.to_path_buf());
             }
-        }));
+        }
+    }));
 }
 
 fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
@@ -571,7 +564,7 @@ fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     wb.imp().files_dirlist.connect_file_notify(
                 clone!(@weak wb as workspacebrowser, @weak appwindow, @weak filefilter, @weak multisorter => move |files_dirlist| {
                     // Disable the dir up row when no file is set or has no parent
-                    workspacebrowser.imp().dir_up_row.set_sensitive(files_dirlist.file().and_then(|f| f.parent()).is_some());
+                    workspacebrowser.imp().dir_controls_dir_up_button.set_sensitive(files_dirlist.file().and_then(|f| f.parent()).is_some());
 
                     multisorter.changed(SorterChange::Different);
                     filefilter.changed(FilterChange::Different);

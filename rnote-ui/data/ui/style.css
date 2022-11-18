@@ -73,7 +73,7 @@
     transition: color 0.15s;
 }
 
-.files-listview row, .files-prefix-listbox row {
+.files-listview row {
     border-radius: 6px;
     margin-top: 3px;
     margin-bottom: 3px;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-18 11:56+0100\n"
-"PO-Revision-Date: 2022-11-16 10:25+0000\n"
+"PO-Revision-Date: 2022-11-20 18:53+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -121,11 +121,8 @@ msgid "_Print"
 msgstr "_Yazdır"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
-msgstr "Panodan yapıştır"
+msgstr "_Panodan yapıştır"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -148,10 +145,8 @@ msgid "Export _selection"
 msgstr "_Seçimi dışa aktar"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Ayarlar"
+msgstr "_Ayarlar"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
@@ -237,7 +232,7 @@ msgstr "Yinele"
 
 #: rnote-ui/data/ui/appwindow.ui:354
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "Kapağı göster / gizle"
 
 #: rnote-ui/data/ui/appwindow.ui:424
 msgid "Close the folded flap"

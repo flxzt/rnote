@@ -60,9 +60,6 @@ fn compose_lines_variable_width(
     let start_offset_dist = first_line.1 * 0.5;
     let end_offset_dist = last_line.2 * 0.5;
 
-    let first_line = lines.first().unwrap();
-    let last_line = lines.last().unwrap();
-
     let start_arc_rotation = na::Vector2::y().angle_ahead(&(first_line.0.end - first_line.0.start));
     let end_arc_rotation = na::Vector2::y().angle_ahead(&(last_line.0.end - last_line.0.start));
 
@@ -360,10 +357,18 @@ impl Composer<SmoothOptions> for PenPath {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
 
+        // drawing dots separately
+        for s in self.iter() {
+            if let s @ Segment::Dot { .. } = s {
+                s.draw_composed(cx, options);
+            }
+        }
+
         let lines = self
             .iter()
             .flat_map(|s| match s {
                 Segment::Dot { .. } => {
+                    // Skip dots, we already drew them
                     vec![]
                 }
                 Segment::Line { start, end } => {

@@ -3,6 +3,8 @@ use std::collections::VecDeque;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use crate::transform::TransformBehaviour;
+
 /// A pen input element
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename = "element")]
@@ -18,6 +20,23 @@ pub struct Element {
 impl Default for Element {
     fn default() -> Self {
         Self::new(na::vector![0.0, 0.0], Self::PRESSURE_DEFAULT)
+    }
+}
+
+impl TransformBehaviour for Element {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        self.pos += offset;
+    }
+
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+        let mut isometry = na::Isometry2::identity();
+        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
+
+        self.pos = (isometry * na::Point2::from(self.pos)).coords;
+    }
+
+    fn scale(&mut self, scale: na::Vector2<f64>) {
+        self.pos = self.pos.component_mul(&scale);
     }
 }
 

@@ -1,0 +1,19 @@
+[package]
+name = "rnote-cli"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.65"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rnote-engine = {path = "../rnote-engine", version="0.1"}
+rnote-compose = {path = "../rnote-compose", version="0.1"}
+rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
+
+log = "0.4.16"
+pretty_env_logger = "0.4.0"
+anyhow = "1.0"
+smol = "1.2"
+clap = {version = "4.0", features = ["derive"] }
+indicatif = "0.17.2"

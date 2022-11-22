@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 11:28+0100\n"
-"PO-Revision-Date: 2022-11-22 10:29+0000\n"
+"PO-Revision-Date: 2022-11-22 11:05+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1476,7 +1476,7 @@ msgstr "Bestand openen"
 
 #: rnote-ui/src/dialogs/import.rs:143
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1636,7 +1636,7 @@ msgstr "Bestandsnaam"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "Nieuwe map"
 
 #~ msgid "Xopp, PNG, SVG, JPG, PDF"
 #~ msgstr "Xopp, png, svg, jpg, pdf"

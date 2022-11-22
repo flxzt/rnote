@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-18 11:56+0100\n"
-"PO-Revision-Date: 2022-11-18 10:59+0000\n"
+"POT-Creation-Date: 2022-11-22 13:50+0100\n"
+"PO-Revision-Date: 2022-11-22 13:17+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -202,47 +202,43 @@ msgstr "Auswahl"
 msgid "Tools"
 msgstr "Werkzeuge"
 
-#: rnote-ui/data/ui/appwindow.ui:163
+#: rnote-ui/data/ui/appwindow.ui:164
 msgid "Add page"
 msgstr "Seite hinzufügen"
 
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:176
 msgid "Resize document to fit the strokes"
 msgstr "Größe des Dokuments an den Inhalt anpassen"
 
-#: rnote-ui/data/ui/appwindow.ui:191
-msgid "Return to the origin page"
-msgstr "Zurück zur Ursprungsseite"
-
-#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:101
+#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 msgid "Zoom in"
 msgstr "Zoome heran"
 
-#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:85
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Zoom out"
 msgstr "Zoome heraus"
 
-#: rnote-ui/data/ui/appwindow.ui:228
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
 msgstr "Rückgängig"
 
-#: rnote-ui/data/ui/appwindow.ui:241
+#: rnote-ui/data/ui/appwindow.ui:230
 msgid "Redo"
 msgstr "Wiederholen"
 
-#: rnote-ui/data/ui/appwindow.ui:354
+#: rnote-ui/data/ui/appwindow.ui:343
 msgid "Reveal / hide flap"
 msgstr "Zeige / verberge das Seitenmenü"
 
-#: rnote-ui/data/ui/appwindow.ui:424
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
 msgstr "Schließe das überlappende Seitenmenü"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:430
 msgid "Workspace"
 msgstr "Arbeitsfläche"
 
-#: rnote-ui/data/ui/appwindow.ui:452
+#: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -274,20 +270,24 @@ msgstr "Zeichne mit _Touch-Eingabe"
 msgid "P_en sounds"
 msgstr "_Stiftklänge"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59
+#: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"
 msgstr "Dokument _leeren"
 
-#: rnote-ui/data/ui/canvasmenu.ui:94
+#: rnote-ui/data/ui/canvasmenu.ui:65
+msgid "_Return to origin page"
+msgstr "_Zurück zur Ursprungsseite"
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Zoom zurücksetzen"
 
-#: rnote-ui/data/ui/canvasmenu.ui:113
+#: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Zoom auf die Seitenbreite"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:232
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
 #: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
@@ -308,13 +308,13 @@ msgstr "Das komplette Dokument wird geleert. Bitte bestätigen."
 #: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:201
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
 #: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
 #: rnote-ui/src/dialogs/import.rs:150 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
 #: rnote-ui/src/dialogs/export.rs:880
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -357,12 +357,12 @@ msgstr ""
 "Dokument speichern?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:184
+#: rnote-ui/data/ui/workspacebrowser.ui:173
 msgid "Edit workspace"
 msgstr "Bearbeite Arbeitsfläche"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
 msgid "Apply"
 msgstr "Übernehmen"
 
@@ -1042,25 +1042,25 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Wiederholen"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:43
 msgid "Move directory up"
 msgstr "Gehe ein Verzeichnis nach oben"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:80
+#: rnote-ui/data/ui/workspacebrowser.ui:70
 msgid "Workspace directory actions"
 msgstr "Aktionen für das Arbeitsflächenverzeichnis"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:154
 msgid "Add workspace"
 msgstr "Arbeitsfläche hinzufügen"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:174
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Remove workspace"
 msgstr "Arbeitsfläche entfernen"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:202
-msgid "Create Directory"
-msgstr "Erstelle ein Verzeichnis"
+#: rnote-ui/data/ui/workspacebrowser.ui:190
+msgid "Create new folder"
+msgstr "Erstelle neuen Ordner"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1215,43 +1215,43 @@ msgstr "Umgekehrt Exponential"
 msgid "Trash strokes"
 msgstr "Striche löschen"
 
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:54
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 msgid "Split strokes"
 msgstr "Striche aufteilen"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
+msgid "Select with a polygon"
 msgstr "Auswählen mit einem Polygon"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:54
-msgid "Selecting with a rectangle"
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
+msgid "Select with a rectangle"
 msgstr "Auswählen mit einem Rechteck"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-msgid "Selecting apiece"
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
+msgid "Select one by one"
 msgstr "Einzeln auswählen"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:92
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
 msgstr "Auswählen überschneidend mit einem Pfad"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:122
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
 msgstr "Sperre das Seitenverhältnis beim Ändern der Größe"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:139
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 msgid "Select all strokes"
 msgstr "Wähle alle Striche aus"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:157
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:145
 msgid "Deselect all strokes"
 msgstr "Wähle alle Striche ab"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:175
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:163
 msgid "Duplicate selection"
 msgstr "Dupliziere die Auswahl"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:193
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:181
 msgid "Delete selection"
 msgstr "Lösche die Auswahl"
 
@@ -1393,10 +1393,6 @@ msgid "Insert vertical space"
 msgstr "Vertikaler Raum einfügen"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:51
-msgid "Drag stroke elements based on proximity"
-msgstr "Ziehe Strichelemente in der Nähe"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:71
 msgid "Offset the camera by dragging"
 msgstr "Bewege die Kamera mit ziehen"
 
@@ -1438,15 +1434,15 @@ msgstr "Durchstreichen"
 msgid "Align left"
 msgstr "Links ausrichten"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:177
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:174
 msgid "Align center"
 msgstr "Mittig ausrichten"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:187
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:181
 msgid "Align right"
 msgstr "Rechts ausrichten"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:197
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:188
 msgid "Fill"
 msgstr "Füllen"
 
@@ -1475,8 +1471,8 @@ msgid "Open file"
 msgstr "Öffne Datei"
 
 #: rnote-ui/src/dialogs/import.rs:143
-msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "Xopp, PNG, SVG, JPG, PDF"
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1630,9 +1626,25 @@ msgstr "Dokument drucken gescheitert"
 msgid "Export selection failed, nothing selected."
 msgstr "Auswahl exportieren gescheitert, nichts ausgewählt."
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-msgid "New Directory name"
-msgstr "Neuer Verzeichnisname"
+#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
+msgid "Folder name"
+msgstr "Ordnername"
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
+msgid "New folder"
+msgstr "Neuer Ordner"
+
+#~ msgid "Selecting apiece"
+#~ msgstr "Einzeln auswählen"
+
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "Xopp, PNG, SVG, JPG, PDF"
+
+#~ msgid "Drag stroke elements based on proximity"
+#~ msgstr "Ziehe Strichelemente in der Nähe"
+
+#~ msgid "New Directory name"
+#~ msgstr "Neuer Verzeichnisname"
 
 #~ msgid "Paste from Clipboard"
 #~ msgstr "Zwischenablage einfügen"

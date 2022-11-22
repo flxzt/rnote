@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 12:04+0100\n"
+"POT-Creation-Date: 2022-11-22 13:50+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -1319,16 +1319,20 @@ msgid "Split strokes"
 msgstr "Подели црти"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
+#, fuzzy
+#| msgid "Selecting with a polygon"
+msgid "Select with a polygon"
 msgstr "Одбирање преку полигон"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-msgid "Selecting with a rectangle"
+#, fuzzy
+#| msgid "Selecting with a rectangle"
+msgid "Select with a rectangle"
 msgstr "Одбирање преку правоаголник"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-msgid "Selecting apiece"
-msgstr "Одбирање по едно парче"
+msgid "Select one by one"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1762,6 +1766,9 @@ msgstr "Име на датотека:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#~ msgid "Selecting apiece"
+#~ msgstr "Одбирање по едно парче"
 
 #, fuzzy
 #~| msgid "PNG / SVG / JPG / PDF file"

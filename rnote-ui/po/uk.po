@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 12:04+0100\n"
+"POT-Creation-Date: 2022-11-22 13:50+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -1349,17 +1349,20 @@ msgid "Split strokes"
 msgstr "Багатоштрих"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
+#, fuzzy
+#| msgid "Selecting with a polygon"
+msgid "Select with a polygon"
 msgstr "Вибір за допомогою багатокутника"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-msgid "Selecting with a rectangle"
+#, fuzzy
+#| msgid "Selecting with a rectangle"
+msgid "Select with a rectangle"
 msgstr "Вибір за допомогою прямокутника"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-#, fuzzy
-msgid "Selecting apiece"
-msgstr "Вибір за допомогою прямокутника"
+msgid "Select one by one"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 #, fuzzy
@@ -1784,6 +1787,10 @@ msgstr ""
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Selecting apiece"
+#~ msgstr "Вибір за допомогою прямокутника"
 
 #, fuzzy
 #~ msgid "Xopp, PNG, SVG, JPG, PDF"

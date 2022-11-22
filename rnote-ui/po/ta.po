@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 12:04+0100\n"
+"POT-Creation-Date: 2022-11-22 13:50+0100\n"
 "PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1290,16 +1290,20 @@ msgid "Split strokes"
 msgstr "பிளவு பக்கவாதம்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
+#, fuzzy
+#| msgid "Selecting with a polygon"
+msgid "Select with a polygon"
 msgstr "ஒரு பலகோணத்துடன் தேர்ந்தெடுப்பது"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-msgid "Selecting with a rectangle"
+#, fuzzy
+#| msgid "Selecting with a rectangle"
+msgid "Select with a rectangle"
 msgstr "ஒரு செவ்வகத்துடன் தேர்ந்தெடுப்பது"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-msgid "Selecting apiece"
-msgstr "ஒவ்வொன்றாகத் தேர்ந்தெடுக்கிறது"
+msgid "Select one by one"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1710,6 +1714,9 @@ msgstr "கோப்பு பெயர்:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#~ msgid "Selecting apiece"
+#~ msgstr "ஒவ்வொன்றாகத் தேர்ந்தெடுக்கிறது"
 
 #, fuzzy
 #~| msgid "Xopp / PNG / SVG / JPG / PDF file"

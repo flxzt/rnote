@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 12:04+0100\n"
+"POT-Creation-Date: 2022-11-22 13:50+0100\n"
 "PO-Revision-Date: 2022-11-16 10:25+0000\n"
 "Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -1239,16 +1239,20 @@ msgid "Split strokes"
 msgstr "Diviser les traits"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
+#, fuzzy
+#| msgid "Selecting with a polygon"
+msgid "Select with a polygon"
 msgstr "Sélectionner avec un polygone"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-msgid "Selecting with a rectangle"
+#, fuzzy
+#| msgid "Selecting with a rectangle"
+msgid "Select with a rectangle"
 msgstr "Sélectionner avec un rectangle"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-msgid "Selecting apiece"
-msgstr "Sélectionner un élément"
+msgid "Select one by one"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1668,6 +1672,9 @@ msgstr "Nom du fichier :"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#~ msgid "Selecting apiece"
+#~ msgstr "Sélectionner un élément"
 
 #, fuzzy
 #~| msgid "PNG / SVG / JPG / PDF file"

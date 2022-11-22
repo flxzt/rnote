@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 12:04+0100\n"
+"POT-Creation-Date: 2022-11-22 13:50+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
@@ -1317,15 +1317,19 @@ msgid "Split strokes"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
-msgstr ""
+#, fuzzy
+#| msgid "Set the format width"
+msgid "Select with a polygon"
+msgstr "Ustawienie szerokości formatu"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-msgid "Selecting with a rectangle"
-msgstr ""
+#, fuzzy
+#| msgid "Set the format width"
+msgid "Select with a rectangle"
+msgstr "Ustawienie szerokości formatu"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-msgid "Selecting apiece"
+msgid "Select one by one"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83

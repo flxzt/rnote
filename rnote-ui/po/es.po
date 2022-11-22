@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:28+0100\n"
+"POT-Creation-Date: 2022-11-22 12:04+0100\n"
 "PO-Revision-Date: 2022-11-13 18:09+0000\n"
 "Last-Translator: MarioC-12 <mariocm2002@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -257,39 +257,35 @@ msgstr "Añadir página"
 msgid "Resize document to fit the strokes"
 msgstr "Redimensionar el documento para adaptarlo a los trazos"
 
-#: rnote-ui/data/ui/appwindow.ui:192
-msgid "Return to the origin page"
-msgstr "Volver a la página de origen"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
+#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 msgid "Zoom in"
 msgstr "Ampliar"
 
-#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Zoom out"
 msgstr "Alejar"
 
-#: rnote-ui/data/ui/appwindow.ui:229
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
 msgstr "Deshacer"
 
-#: rnote-ui/data/ui/appwindow.ui:242
+#: rnote-ui/data/ui/appwindow.ui:230
 msgid "Redo"
 msgstr "Rehacer"
 
-#: rnote-ui/data/ui/appwindow.ui:355
+#: rnote-ui/data/ui/appwindow.ui:343
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:425
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
 msgstr "Cerrar la solapa plegada"
 
-#: rnote-ui/data/ui/appwindow.ui:442
+#: rnote-ui/data/ui/appwindow.ui:430
 msgid "Workspace"
 msgstr "Área de trabajo"
 
-#: rnote-ui/data/ui/appwindow.ui:453
+#: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
 msgstr "Configuración"
 
@@ -335,17 +331,23 @@ msgstr "Dibujar con entrada táctil"
 msgid "P_en sounds"
 msgstr "Sonidos de bolígrafo"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59
+#: rnote-ui/data/ui/canvasmenu.ui:61
 #, fuzzy
 #| msgid "Clear document"
 msgid "_Clear document"
 msgstr "Limpiar documento"
 
-#: rnote-ui/data/ui/canvasmenu.ui:98
+#: rnote-ui/data/ui/canvasmenu.ui:65
+#, fuzzy
+#| msgid "Return to the origin page"
+msgid "_Return to origin page"
+msgstr "Volver a la página de origen"
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Restablecer zoom"
 
-#: rnote-ui/data/ui/canvasmenu.ui:117
+#: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Zoom para ajustar el ancho de la página"
 

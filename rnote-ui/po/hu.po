@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:28+0100\n"
+"POT-Creation-Date: 2022-11-22 12:04+0100\n"
 "PO-Revision-Date: 2022-11-19 15:23+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -211,39 +211,35 @@ msgstr "Oldal hozzáadása"
 msgid "Resize document to fit the strokes"
 msgstr "Dokumentum átméretezése, hogy illeszkedjen a körvonalakhoz"
 
-#: rnote-ui/data/ui/appwindow.ui:192
-msgid "Return to the origin page"
-msgstr "Vissza az eredeti oldalra"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
+#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 msgid "Zoom in"
 msgstr "Nagyítás"
 
-#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Zoom out"
 msgstr "Kicsinyítés"
 
-#: rnote-ui/data/ui/appwindow.ui:229
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
 msgstr "Visszavonás"
 
-#: rnote-ui/data/ui/appwindow.ui:242
+#: rnote-ui/data/ui/appwindow.ui:230
 msgid "Redo"
 msgstr "Újra"
 
-#: rnote-ui/data/ui/appwindow.ui:355
+#: rnote-ui/data/ui/appwindow.ui:343
 msgid "Reveal / hide flap"
 msgstr "Fedél megjelenítése/elrejtése"
 
-#: rnote-ui/data/ui/appwindow.ui:425
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
 msgstr "Összehajtott fedél becsukása"
 
-#: rnote-ui/data/ui/appwindow.ui:442
+#: rnote-ui/data/ui/appwindow.ui:430
 msgid "Workspace"
 msgstr "Munkafelület"
 
-#: rnote-ui/data/ui/appwindow.ui:453
+#: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
 msgstr "Beállítások"
 
@@ -275,15 +271,21 @@ msgstr "Rajzolás _érintéses bemenettel"
 msgid "P_en sounds"
 msgstr "_Ceruza hangok"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59
+#: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"
 msgstr "Dokumentum _törlése"
 
-#: rnote-ui/data/ui/canvasmenu.ui:98
+#: rnote-ui/data/ui/canvasmenu.ui:65
+#, fuzzy
+#| msgid "Return to the origin page"
+msgid "_Return to origin page"
+msgstr "Vissza az eredeti oldalra"
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "A nagyítás visszaállítása"
 
-#: rnote-ui/data/ui/canvasmenu.ui:117
+#: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Nagyítás az oldal szélességéhez"
 

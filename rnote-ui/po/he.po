@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:28+0100\n"
+"POT-Creation-Date: 2022-11-22 12:04+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -249,41 +249,37 @@ msgstr "הוספת עמוד"
 msgid "Resize document to fit the strokes"
 msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
 
-#: rnote-ui/data/ui/appwindow.ui:192
-msgid "Return to the origin page"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
+#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 #, fuzzy
 msgid "Zoom in"
 msgstr "התקרבות"
 
-#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 #, fuzzy
 msgid "Zoom out"
 msgstr "התרחקות"
 
-#: rnote-ui/data/ui/appwindow.ui:229
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:242
+#: rnote-ui/data/ui/appwindow.ui:230
 msgid "Redo"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:355
+#: rnote-ui/data/ui/appwindow.ui:343
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:425
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
 msgstr "סגירת הדש המקופל"
 
-#: rnote-ui/data/ui/appwindow.ui:442
+#: rnote-ui/data/ui/appwindow.ui:430
 msgid "Workspace"
 msgstr "סביבת עבודה"
 
-#: rnote-ui/data/ui/appwindow.ui:453
+#: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
 msgstr "הגדרות"
 
@@ -325,16 +321,20 @@ msgstr "ציור עם קלט מגע"
 msgid "P_en sounds"
 msgstr "צלילי עט"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59
+#: rnote-ui/data/ui/canvasmenu.ui:61
 #, fuzzy
 msgid "_Clear document"
 msgstr "מסמך חדש"
 
-#: rnote-ui/data/ui/canvasmenu.ui:98
+#: rnote-ui/data/ui/canvasmenu.ui:65
+msgid "_Return to origin page"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:117
+#: rnote-ui/data/ui/canvasmenu.ui:123
 #, fuzzy
 msgid "Zoom to fit page width"
 msgstr "הגדרת התקריב כדי להתאים לרוחב הגיליון"

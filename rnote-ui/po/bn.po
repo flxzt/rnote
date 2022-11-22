@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:28+0100\n"
+"POT-Creation-Date: 2022-11-22 12:04+0100\n"
 "PO-Revision-Date: 2022-11-20 18:53+0000\n"
 "Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -230,40 +230,36 @@ msgstr "পৃষ্ঠা যোগ করুন"
 msgid "Resize document to fit the strokes"
 msgstr "স্ট্রোকের সাথে সমতুল্যভাবে নথির আকার পরিবর্তন করুন"
 
-#: rnote-ui/data/ui/appwindow.ui:192
-msgid "Return to the origin page"
-msgstr "আসল পৃষ্ঠায় ফিরে জান"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
+#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 msgid "Zoom in"
 msgstr "প্রসারিত করো"
 
-#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Zoom out"
 msgstr "ছোট করুন"
 
-#: rnote-ui/data/ui/appwindow.ui:229
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
 msgstr "পূর্বাবস্থায় ফিরুন"
 
-#: rnote-ui/data/ui/appwindow.ui:242
+#: rnote-ui/data/ui/appwindow.ui:230
 msgid "Redo"
 msgstr "পুনঃকরণ"
 
-#: rnote-ui/data/ui/appwindow.ui:355
+#: rnote-ui/data/ui/appwindow.ui:343
 #, fuzzy
 msgid "Reveal / hide flap"
 msgstr "ফ্ল্যাপ প্রকাশ / লুকান"
 
-#: rnote-ui/data/ui/appwindow.ui:425
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
 msgstr "ভাঁজ করা ফ্ল্যাপটি বন্ধ করুন"
 
-#: rnote-ui/data/ui/appwindow.ui:442
+#: rnote-ui/data/ui/appwindow.ui:430
 msgid "Workspace"
 msgstr "কর্মক্ষেত্র"
 
-#: rnote-ui/data/ui/appwindow.ui:453
+#: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
 msgstr "সেটিংস"
 
@@ -297,17 +293,23 @@ msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
 msgid "P_en sounds"
 msgstr "কলমের ধ্বনি"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59
+#: rnote-ui/data/ui/canvasmenu.ui:61
 #, fuzzy
 #| msgid "Clear document"
 msgid "_Clear document"
 msgstr "নথি পরিষ্কার করুন"
 
-#: rnote-ui/data/ui/canvasmenu.ui:98
+#: rnote-ui/data/ui/canvasmenu.ui:65
+#, fuzzy
+#| msgid "Return to the origin page"
+msgid "_Return to origin page"
+msgstr "আসল পৃষ্ঠায় ফিরে জান"
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "জুম রিসেট করুন"
 
-#: rnote-ui/data/ui/canvasmenu.ui:117
+#: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "পৃষ্ঠার প্রস্থ মাপসই করতে জুম করুন"
 

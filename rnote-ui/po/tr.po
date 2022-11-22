@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:28+0100\n"
+"POT-Creation-Date: 2022-11-22 12:04+0100\n"
 "PO-Revision-Date: 2022-11-20 18:53+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -210,39 +210,35 @@ msgstr "Sayfa ekle"
 msgid "Resize document to fit the strokes"
 msgstr "Belgeyi darbelere uyacak şekilde yeniden boyutlandır"
 
-#: rnote-ui/data/ui/appwindow.ui:192
-msgid "Return to the origin page"
-msgstr "Özgün sayfaya dön"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
+#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 msgid "Zoom in"
 msgstr "Yakınlaştır"
 
-#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Zoom out"
 msgstr "Uzaklaştır"
 
-#: rnote-ui/data/ui/appwindow.ui:229
+#: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
 msgstr "Geri al"
 
-#: rnote-ui/data/ui/appwindow.ui:242
+#: rnote-ui/data/ui/appwindow.ui:230
 msgid "Redo"
 msgstr "Yinele"
 
-#: rnote-ui/data/ui/appwindow.ui:355
+#: rnote-ui/data/ui/appwindow.ui:343
 msgid "Reveal / hide flap"
 msgstr "Kapağı göster / gizle"
 
-#: rnote-ui/data/ui/appwindow.ui:425
+#: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
 msgstr "Katlanmış kapağı kapat"
 
-#: rnote-ui/data/ui/appwindow.ui:442
+#: rnote-ui/data/ui/appwindow.ui:430
 msgid "Workspace"
 msgstr "Çalışma alanı"
 
-#: rnote-ui/data/ui/appwindow.ui:453
+#: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
 msgstr "Ayarlar"
 
@@ -274,15 +270,21 @@ msgstr "_Dokunmatik girişle çiz"
 msgid "P_en sounds"
 msgstr "_Kalem sesleri"
 
-#: rnote-ui/data/ui/canvasmenu.ui:59
+#: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"
 msgstr "Belgeyi _temizle"
 
-#: rnote-ui/data/ui/canvasmenu.ui:98
+#: rnote-ui/data/ui/canvasmenu.ui:65
+#, fuzzy
+#| msgid "Return to the origin page"
+msgid "_Return to origin page"
+msgstr "Özgün sayfaya dön"
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Yakınlaştırmayı sıfırla"
 
-#: rnote-ui/data/ui/canvasmenu.ui:117
+#: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Sayfa genişliğine sığdırmak için yakınlaştır"
 

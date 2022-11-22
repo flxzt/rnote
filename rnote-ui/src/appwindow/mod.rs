@@ -667,13 +667,13 @@ mod imp {
                 appwindow
                     .workspacebrowser()
                     .grid()
-                    .remove(&appwindow.workspacebrowser().workspace_bar());
+                    .remove(&appwindow.workspacebrowser().workspaces_bar());
                 appwindow
                     .workspacebrowser()
                     .grid()
                     .remove(&appwindow.workspacebrowser().files_scroller());
                 appwindow.workspacebrowser().grid().attach(
-                    &appwindow.workspacebrowser().workspace_bar(),
+                    &appwindow.workspacebrowser().workspaces_bar(),
                     0,
                     0,
                     1,
@@ -692,7 +692,7 @@ mod imp {
                     .set_window_placement(CornerType::TopRight);
                 appwindow
                     .workspacebrowser()
-                    .workspace_scroller()
+                    .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
                 appwindow
@@ -796,7 +796,7 @@ mod imp {
                 appwindow
                     .workspacebrowser()
                     .grid()
-                    .remove(&appwindow.workspacebrowser().workspace_bar());
+                    .remove(&appwindow.workspacebrowser().workspaces_bar());
                 appwindow.workspacebrowser().grid().attach(
                     &appwindow.workspacebrowser().files_scroller(),
                     0,
@@ -805,7 +805,7 @@ mod imp {
                     1,
                 );
                 appwindow.workspacebrowser().grid().attach(
-                    &appwindow.workspacebrowser().workspace_bar(),
+                    &appwindow.workspacebrowser().workspaces_bar(),
                     2,
                     0,
                     1,
@@ -817,7 +817,7 @@ mod imp {
                     .set_window_placement(CornerType::TopLeft);
                 appwindow
                     .workspacebrowser()
-                    .workspace_scroller()
+                    .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
                 appwindow

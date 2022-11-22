@@ -55,9 +55,15 @@
             <attribute name="toggle" />
             <attribute name="action">win.pen-sounds</attribute>
           </item>
+        </section>
+        <section>
           <item>
             <attribute name="label" translatable="yes">_Clear document</attribute>
             <attribute name="action">win.clear-doc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Return to origin page</attribute>
+            <attribute name="action">win.return-origin-page</attribute>
           </item>
         </section>
       </menu>

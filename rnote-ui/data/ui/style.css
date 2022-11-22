@@ -58,11 +58,11 @@
 }
 
 .setter_button:hover {
-    filter: brightness(90%);
+    filter: brightness(93%);
 }
 
 .setter_button:active {
-    filter: brightness(110%);
+    filter: brightness(86%);
 }
 
 .quickaction-button {

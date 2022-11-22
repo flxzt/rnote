@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 12:04+0100\n"
-"PO-Revision-Date: 2022-11-22 11:05+0000\n"
+"PO-Revision-Date: 2022-11-22 11:41+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -275,10 +275,8 @@ msgid "_Clear document"
 msgstr "Do_cument wissen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "Terug naar hoofdpagina"
+msgstr "Te_rug naar hoofdpagina"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"

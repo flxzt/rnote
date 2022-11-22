@@ -17,12 +17,11 @@ pub fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
 
     new_folder_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {
         if let Some(parent_path) = workspacebrowser.selected_workspace_dir() {
-            let folder_name_entry = Entry::new();
-
+            let folder_name_entry = create_folder_name_entry();
             let dialog_title_label = create_dialog_title_label();
             let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&folder_name_entry, &dialog_title_label);
 
-            // By default not sensitive, since the user did not enter text yet.
+            // at first don't allow applying, since the user did not enter any text yet.
             apply_button.set_sensitive(false);
 
             workspacebrowser.dir_controls_actions_box().append(&popover);
@@ -52,11 +51,17 @@ pub fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
     new_folder_action
 }
 
+fn create_folder_name_entry() -> Entry {
+    Entry::builder()
+        .placeholder_text(&gettext("Folder name"))
+        .build()
+}
+
 fn create_dialog_title_label() -> Label {
     let label = Label::builder()
         .margin_bottom(12)
         .halign(Align::Center)
-        .label(&gettext("New Folder name"))
+        .label(&gettext("New folder"))
         .width_chars(24)
         .ellipsize(pango::EllipsizeMode::End)
         .build();

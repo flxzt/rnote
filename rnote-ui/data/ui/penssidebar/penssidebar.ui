@@ -5,7 +5,7 @@
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
-    <property name="width_request">62</property>
+    <property name="width-request">62</property>
     <child>
       <object class="GtkStack" id="sidebar_stack">
         <property name="transition_duration">300</property>

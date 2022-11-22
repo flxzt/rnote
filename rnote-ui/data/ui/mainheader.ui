@@ -29,7 +29,7 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width_request">55</property>
+            <property name="width-request">50</property>
             <child>
               <object class="GtkButton">
                 <property name="visible">true</property>

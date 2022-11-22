@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:20+0100\n"
+"POT-Creation-Date: 2022-11-22 11:28+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -1496,10 +1496,8 @@ msgid "Open file"
 msgstr "ファイルを開く"
 
 #: rnote-ui/src/dialogs/import.rs:143
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "PNG / SVG / JPG/ PDF ファイル"
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1682,6 +1680,11 @@ msgstr ""
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "PNG / SVG / JPG / PDF file"
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "PNG / SVG / JPG/ PDF ファイル"
 
 #~ msgid "Export selection as PNG"
 #~ msgstr "選択範囲をPNGに保存"

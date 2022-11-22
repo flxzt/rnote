@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:20+0100\n"
+"POT-Creation-Date: 2022-11-22 11:28+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -1605,10 +1605,8 @@ msgid "Open file"
 msgstr "Öppna fil"
 
 #: rnote-ui/src/dialogs/import.rs:143
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "PNG / SVG / JPG / PDF fil"
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1788,6 +1786,11 @@ msgstr "Filnamn:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "PNG / SVG / JPG / PDF file"
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "PNG / SVG / JPG / PDF fil"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "Dra linjeelement baserat på närhet"

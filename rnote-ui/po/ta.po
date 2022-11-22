@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:20+0100\n"
+"POT-Creation-Date: 2022-11-22 11:28+0100\n"
 "PO-Revision-Date: 2022-11-14 06:22+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1541,10 +1541,8 @@ msgid "Open file"
 msgstr "கோப்பைத் திறக்கவும்"
 
 #: rnote-ui/src/dialogs/import.rs:143
-#, fuzzy
-#| msgid "Xopp / PNG / SVG / JPG / PDF file"
-msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "Xopp / PNG / SVG / JPG / PDF கோப்பு"
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1710,6 +1708,11 @@ msgstr "கோப்பு பெயர்:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Xopp / PNG / SVG / JPG / PDF file"
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "Xopp / PNG / SVG / JPG / PDF கோப்பு"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "அருகாமையின் அடிப்படையில் ஸ்ட்ரோக் கூறுகளை இழுக்கவும்"

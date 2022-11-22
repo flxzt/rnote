@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:20+0100\n"
+"POT-Creation-Date: 2022-11-22 11:28+0100\n"
 "PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -1553,10 +1553,8 @@ msgid "Open file"
 msgstr "Открыть файлы"
 
 #: rnote-ui/src/dialogs/import.rs:143
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "PNG / SVG / JPG / PDF файл"
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1729,6 +1727,11 @@ msgstr "Имя файла:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "PNG / SVG / JPG / PDF file"
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "PNG / SVG / JPG / PDF файл"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "Перетяните элементы обводки в зависимости от близости"

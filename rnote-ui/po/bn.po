@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:20+0100\n"
+"POT-Creation-Date: 2022-11-22 11:28+0100\n"
 "PO-Revision-Date: 2022-11-20 18:53+0000\n"
 "Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -1509,10 +1509,8 @@ msgid "Open file"
 msgstr "ফাইল খুলুন"
 
 #: rnote-ui/src/dialogs/import.rs:143
-#, fuzzy
-#| msgid "PNG / SVG / JPG / PDF file"
-msgid "Xopp, PNG, SVG, JPG, PDF"
-msgstr "PNG / SVG / JPG / PDF ফাইল"
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1685,6 +1683,11 @@ msgstr "ফাইলের নাম:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "PNG / SVG / JPG / PDF file"
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "PNG / SVG / JPG / PDF ফাইল"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "নৈকট্যের উপর ভিত্তি করে স্ট্রোক উপাদান টেনে আনুন"

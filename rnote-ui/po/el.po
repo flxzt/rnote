@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 11:20+0100\n"
+"POT-Creation-Date: 2022-11-22 11:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -1444,7 +1444,7 @@ msgid "Open file"
 msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:143
-msgid "Xopp, PNG, SVG, JPG, PDF"
+msgid "JPG, PDF, PNG, SVG, Xopp"
 msgstr ""
 
 #: rnote-ui/src/dialogs/import.rs:146

@@ -116,7 +116,7 @@
           <li>pdf import dialog with the added option to import aligned with the document pages ( one pdf page per document page )</li>
           <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @RickStanley!)</li>
           <li>proportial shapes / input constraints (thanks @sei0o!)</li>
-          <li>additional selector modes: apiece, intersecting path</li>
+          <li>additional selector modes: single, intersecting path</li>
           <li>improved workspace browser, added sidebar to select between different workspaces (inspired by the `Paper` app)</li>
           <li>mark underneath other strokes with the 'Marker' brush style</li>
           <li>bug fixes</li>

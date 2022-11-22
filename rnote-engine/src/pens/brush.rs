@@ -319,6 +319,8 @@ impl PenBehaviour for Brush {
                         PenProgress::InProgress
                     }
                     BuilderProgress::Finished(shapes) => {
+                        let mut n_segments = 0;
+
                         for shape in shapes {
                             match shape {
                                 Shape::Segment(new_segment) => {
@@ -326,6 +328,8 @@ impl PenBehaviour for Brush {
                                         *current_stroke_key,
                                         new_segment,
                                     );
+
+                                    n_segments += 1;
                                     widget_flags.indicate_changed_store = true;
                                 }
                                 _ => {
@@ -334,6 +338,18 @@ impl PenBehaviour for Brush {
                             }
                         }
 
+                        // First we draw the last segments immediately,
+                        if let Err(e) = engine_view.store.append_rendering_last_segments(
+                            engine_view.tasks_tx.clone(),
+                            *current_stroke_key,
+                            n_segments,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        ) {
+                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
+                        }
+
+                        // but then regenerate the entire stroke rendering because it gets rid of some artifacts
                         // Finish up the last stroke
                         engine_view
                             .store

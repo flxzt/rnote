@@ -172,7 +172,7 @@ impl PenPathModeledBuilder {
     }
 
     fn try_build_segments_end(&mut self) -> Vec<Shape> {
-        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
+        let elements_iter = self.buffer.iter();
 
         let segments = elements_iter
             .clone()
@@ -265,6 +265,7 @@ impl PenPathModeledBuilder {
         };
 
         self.buffer.clear();
+        self.prediction_buffer.clear();
         self.start_time = now;
         self.last_element_time = now;
         self.last_element = element;

@@ -180,7 +180,7 @@ mod imp {
 .setter_button {{
     margin{0}: 6px;
     background-color: rgba({3}, {4}, {5}, {6:.3});
-    border-color: alpha(darker(rgba({3}, {4}, {5}, {6:.3})), 0.3);
+    border-color: alpha(@borders, 0.7);
     transition: margin{0} 0.15s ease-out, border-radius 0.15s ease-out, filter 0.15s ease-out;
     {1}
 }}

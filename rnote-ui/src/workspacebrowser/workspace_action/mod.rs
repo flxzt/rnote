@@ -1,3 +1,3 @@
-mod create_dir;
+mod create_folder;
 
-pub use create_dir::create_dir;
+pub use create_folder::create_folder;

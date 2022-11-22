@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 11:20+0100\n"
-"PO-Revision-Date: 2022-11-18 10:59+0000\n"
+"PO-Revision-Date: 2022-11-22 10:29+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1059,10 +1059,8 @@ msgid "Remove workspace"
 msgstr "Arbeitsfläche entfernen"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:190
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
-msgstr "Erstelle ein Verzeichnis"
+msgstr "Erstelle neuen Ordner"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1629,14 +1627,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "Auswahl exportieren gescheitert, nichts ausgewählt."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "Dateiname:"
+msgstr "Ordnername"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "Neuer Ordner"
 
 #~ msgid "Drag stroke elements based on proximity"
 #~ msgstr "Ziehe Strichelemente in der Nähe"

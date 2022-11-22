@@ -95,7 +95,7 @@
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-polygon-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-rectangle-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-selector-apiece-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-selector-single-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-intersectingpath-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-trash-colliding-strokes-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-split-colliding-strokes-symbolic.svg</file>

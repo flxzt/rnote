@@ -14,7 +14,7 @@ mod imp {
         #[template_child]
         pub selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub selectorstyle_apiece_toggle: TemplateChild<ToggleButton>,
+        pub selectorstyle_single_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub selectorstyle_intersectingpath_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -75,8 +75,8 @@ impl SelectorPage {
         self.imp().selectorstyle_rect_toggle.get()
     }
 
-    pub fn selectorstyle_apiece_toggle(&self) -> ToggleButton {
-        self.imp().selectorstyle_apiece_toggle.get()
+    pub fn selectorstyle_single_toggle(&self) -> ToggleButton {
+        self.imp().selectorstyle_single_toggle.get()
     }
 
     pub fn selectorstyle_intersectingpath_toggle(&self) -> ToggleButton {
@@ -109,9 +109,9 @@ impl SelectorPage {
             }
         }));
 
-        self.selectorstyle_apiece_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_apiece_toggle| {
-            if selectorstyle_apiece_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Apiece;
+        self.selectorstyle_single_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
+            if selectorstyle_single_toggle.is_active() {
+                appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Single;
 
                 if let Err(e) = appwindow.save_engine_config() {
                     log::error!("saving engine config failed after changing selector style, Err `{}`", e);
@@ -150,7 +150,7 @@ impl SelectorPage {
         match selector.style {
             SelectorStyle::Polygon => self.selectorstyle_polygon_toggle().set_active(true),
             SelectorStyle::Rectangle => self.selectorstyle_rect_toggle().set_active(true),
-            SelectorStyle::Apiece => self.selectorstyle_apiece_toggle().set_active(true),
+            SelectorStyle::Single => self.selectorstyle_single_toggle().set_active(true),
             SelectorStyle::IntersectingPath => self
                 .selectorstyle_intersectingpath_toggle()
                 .set_active(true),

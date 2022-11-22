@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-18 11:56+0100\n"
+"POT-Creation-Date: 2022-11-22 11:20+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -245,47 +245,47 @@ msgstr "รูปแบบการเลือก"
 msgid "Tools"
 msgstr "เครื่องมือต่าง ๆ"
 
-#: rnote-ui/data/ui/appwindow.ui:163
+#: rnote-ui/data/ui/appwindow.ui:164
 msgid "Add page"
 msgstr "เพิ่มหน้าใหม่"
 
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:176
 msgid "Resize document to fit the strokes"
 msgstr "ปรับขนาดของเอกสารให้พอดีกับลายเส้น"
 
-#: rnote-ui/data/ui/appwindow.ui:191
+#: rnote-ui/data/ui/appwindow.ui:192
 msgid "Return to the origin page"
 msgstr "กลับไปหน้าแรก"
 
-#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:101
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
 msgid "Zoom in"
 msgstr "ซูมเข้า"
 
-#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:85
+#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
 msgid "Zoom out"
 msgstr "ซูมออก"
 
-#: rnote-ui/data/ui/appwindow.ui:228
+#: rnote-ui/data/ui/appwindow.ui:229
 msgid "Undo"
 msgstr "เลิกทำ"
 
-#: rnote-ui/data/ui/appwindow.ui:241
+#: rnote-ui/data/ui/appwindow.ui:242
 msgid "Redo"
 msgstr "ทำซ้ำ"
 
-#: rnote-ui/data/ui/appwindow.ui:354
+#: rnote-ui/data/ui/appwindow.ui:355
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:424
+#: rnote-ui/data/ui/appwindow.ui:425
 msgid "Close the folded flap"
 msgstr "ปิดแถบหน้าต่างด้านข้าง"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:442
 msgid "Workspace"
 msgstr "พื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/appwindow.ui:452
+#: rnote-ui/data/ui/appwindow.ui:453
 msgid "Settings"
 msgstr "การตั้งค่า"
 
@@ -337,16 +337,16 @@ msgstr "จำลองเสียงปากกา"
 msgid "_Clear document"
 msgstr "ล้างเอกสาร"
 
-#: rnote-ui/data/ui/canvasmenu.ui:94
+#: rnote-ui/data/ui/canvasmenu.ui:98
 msgid "Reset the zoom"
 msgstr "รีเซ็ตการซูม"
 
-#: rnote-ui/data/ui/canvasmenu.ui:113
+#: rnote-ui/data/ui/canvasmenu.ui:117
 msgid "Zoom to fit page width"
 msgstr "ซูมให้พอดีกับความกว้างของหน้ากระดาษ"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:232
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
 #: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
@@ -367,13 +367,13 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:201
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
 #: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
 #: rnote-ui/src/dialogs/import.rs:150 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
 #: rnote-ui/src/dialogs/export.rs:880
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "ยกเลิก"
 
@@ -414,12 +414,12 @@ msgid ""
 msgstr "การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:184
+#: rnote-ui/data/ui/workspacebrowser.ui:173
 msgid "Edit workspace"
 msgstr "แก้ไขพื้นที่ทำงาน"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
 msgid "Apply"
 msgstr "นำไปใช้"
 
@@ -1132,26 +1132,26 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "ทำซ้ำ"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:43
 msgid "Move directory up"
 msgstr "กลับไปไดเร็กทอรีก่อนหน้า"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:80
+#: rnote-ui/data/ui/workspacebrowser.ui:70
 #, fuzzy
 msgid "Workspace directory actions"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:154
 msgid "Add workspace"
 msgstr "เพิ่มพื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:174
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Remove workspace"
 msgstr "ลบพื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:202
+#: rnote-ui/data/ui/workspacebrowser.ui:190
 #, fuzzy
-msgid "Create Directory"
+msgid "Create new folder"
 msgstr "ไดเรกทอรี"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
@@ -1305,7 +1305,7 @@ msgstr "แบบก้าวหน้าย้อนกลับ"
 msgid "Trash strokes"
 msgstr "ลบทั้งเส้น"
 
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:54
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 msgid "Split strokes"
 msgstr "ลบเป็นส่วน ๆ"
 
@@ -1313,35 +1313,35 @@ msgstr "ลบเป็นส่วน ๆ"
 msgid "Selecting with a polygon"
 msgstr "การเลือกโดยใช้รูปทรงหลายเหลี่ยม"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:54
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
 msgid "Selecting with a rectangle"
 msgstr "การเลือกโดยใช้สี่เหลี่ยม"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Selecting apiece"
 msgstr "การเลือกเป็นชิ้น ๆ"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:92
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
 msgstr "เลือกโดยใช้เส้นตัด"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:122
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
 msgstr "รักษาอัตราส่วนในการย่อขยายสิ่งที่เลือก"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:139
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 msgid "Select all strokes"
 msgstr "เลือกเส้นทั้งหมด"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:157
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:145
 msgid "Deselect all strokes"
 msgstr "เลิกเลือกเส้นทั้งหมด"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:175
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:163
 msgid "Duplicate selection"
 msgstr "สำเนาสิ่งที่เลือก"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:193
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:181
 msgid "Delete selection"
 msgstr "ลบสิ่งที่เลือก"
 
@@ -1479,10 +1479,6 @@ msgid "Insert vertical space"
 msgstr "ใส่ที่ว่างคั่นแนวตั้ง"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:51
-msgid "Drag stroke elements based on proximity"
-msgstr "ลากตัวเส้นต่าง ๆ ตามระยะห่าง"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:71
 msgid "Offset the camera by dragging"
 msgstr "แพนหน้ากระดาษโดยการลาก"
 
@@ -1524,15 +1520,15 @@ msgstr "ขีดฆ่า"
 msgid "Align left"
 msgstr "ชิดซ้าย"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:177
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:174
 msgid "Align center"
 msgstr "กึ่งกลาง"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:187
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:181
 msgid "Align right"
 msgstr "ชิดขวา"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:197
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:188
 msgid "Fill"
 msgstr "เต็มบรรทัด"
 
@@ -1744,10 +1740,22 @@ msgstr "การพิมพ์เอกสารล้มเหลว"
 msgid "Export selection failed, nothing selected."
 msgstr "ส่งออกสิ่งที่เลือกเป็นไฟล์ SVG ล้มเหลว"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
+#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 #, fuzzy
-msgid "New Directory name"
-msgstr "ไดเรกทอรี"
+#| msgid "File name:"
+msgid "Folder name"
+msgstr "ชื่อไฟล์:"
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
+msgid "New folder"
+msgstr ""
+
+#~ msgid "Drag stroke elements based on proximity"
+#~ msgstr "ลากตัวเส้นต่าง ๆ ตามระยะห่าง"
+
+#, fuzzy
+#~ msgid "New Directory name"
+#~ msgstr "ไดเรกทอรี"
 
 #~ msgid "Paste from Clipboard"
 #~ msgstr "วางจากคลิปบอร์ด"

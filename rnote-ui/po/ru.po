@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-18 11:56+0100\n"
+"POT-Creation-Date: 2022-11-22 11:20+0100\n"
 "PO-Revision-Date: 2022-11-10 11:14+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -250,47 +250,47 @@ msgstr "Выделение"
 msgid "Tools"
 msgstr "Инструменты"
 
-#: rnote-ui/data/ui/appwindow.ui:163
+#: rnote-ui/data/ui/appwindow.ui:164
 msgid "Add page"
 msgstr "Добавить страницу"
 
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:176
 msgid "Resize document to fit the strokes"
 msgstr "Изменить размер документа в соответствии с содержимым"
 
-#: rnote-ui/data/ui/appwindow.ui:191
+#: rnote-ui/data/ui/appwindow.ui:192
 msgid "Return to the origin page"
 msgstr "Вернуться на начальную страницу"
 
-#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:101
+#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:105
 msgid "Zoom in"
 msgstr "Приблизить"
 
-#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:85
+#: rnote-ui/data/ui/appwindow.ui:216 rnote-ui/data/ui/canvasmenu.ui:89
 msgid "Zoom out"
 msgstr "Уменьшить"
 
-#: rnote-ui/data/ui/appwindow.ui:228
+#: rnote-ui/data/ui/appwindow.ui:229
 msgid "Undo"
 msgstr "Отменить"
 
-#: rnote-ui/data/ui/appwindow.ui:241
+#: rnote-ui/data/ui/appwindow.ui:242
 msgid "Redo"
 msgstr "Повторить"
 
-#: rnote-ui/data/ui/appwindow.ui:354
+#: rnote-ui/data/ui/appwindow.ui:355
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:424
+#: rnote-ui/data/ui/appwindow.ui:425
 msgid "Close the folded flap"
 msgstr "Закрыть боковую панель"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:442
 msgid "Workspace"
 msgstr "Коллекция"
 
-#: rnote-ui/data/ui/appwindow.ui:452
+#: rnote-ui/data/ui/appwindow.ui:453
 msgid "Settings"
 msgstr "Настройки"
 
@@ -342,16 +342,16 @@ msgstr "Звуки пера"
 msgid "_Clear document"
 msgstr "Очистить документ"
 
-#: rnote-ui/data/ui/canvasmenu.ui:94
+#: rnote-ui/data/ui/canvasmenu.ui:98
 msgid "Reset the zoom"
 msgstr "Сбросить масштаб"
 
-#: rnote-ui/data/ui/canvasmenu.ui:113
+#: rnote-ui/data/ui/canvasmenu.ui:117
 msgid "Zoom to fit page width"
 msgstr "Масштабировать до ширины страницы"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:232
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
 #: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
 msgid "Select"
@@ -372,13 +372,13 @@ msgstr "Это очистит весь документ. Пожалуйста, �
 #: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:201
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
 #: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
 #: rnote-ui/src/dialogs/import.rs:150 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
 #: rnote-ui/src/dialogs/export.rs:880
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -421,12 +421,12 @@ msgstr ""
 "документ?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:184
+#: rnote-ui/data/ui/workspacebrowser.ui:173
 msgid "Edit workspace"
 msgstr "Редактировать коллекцию"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
+#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
 msgid "Apply"
 msgstr "Применить"
 
@@ -1119,24 +1119,26 @@ msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Повторить"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:49
+#: rnote-ui/data/ui/workspacebrowser.ui:43
 msgid "Move directory up"
 msgstr "Переместить каталог вверх"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:80
+#: rnote-ui/data/ui/workspacebrowser.ui:70
 msgid "Workspace directory actions"
 msgstr "Действия над каталогом коллекции"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:165
+#: rnote-ui/data/ui/workspacebrowser.ui:154
 msgid "Add workspace"
 msgstr "Добавить коллекцию"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:174
+#: rnote-ui/data/ui/workspacebrowser.ui:163
 msgid "Remove workspace"
 msgstr "Удалить коллекцию"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:202
-msgid "Create Directory"
+#: rnote-ui/data/ui/workspacebrowser.ui:190
+#, fuzzy
+#| msgid "Create Directory"
+msgid "Create new folder"
 msgstr "Создать Каталог"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
@@ -1292,7 +1294,7 @@ msgstr "Обратное экспоненциальное"
 msgid "Trash strokes"
 msgstr "Удалить штрихи"
 
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:54
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 msgid "Split strokes"
 msgstr "Разделять штрихи"
 
@@ -1300,35 +1302,35 @@ msgstr "Разделять штрихи"
 msgid "Selecting with a polygon"
 msgstr "Свободное выделение"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:54
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
 msgid "Selecting with a rectangle"
 msgstr "Прямоугольное выделение"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Selecting apiece"
 msgstr "Выделение элементов"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:92
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
 msgstr "Выделить пересекающиеся элементы"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:122
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
 msgstr "Сохранять соотношение сторон при изменении размера выделения"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:139
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 msgid "Select all strokes"
 msgstr "Выделить всё"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:157
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:145
 msgid "Deselect all strokes"
 msgstr "Снять все выделения"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:175
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:163
 msgid "Duplicate selection"
 msgstr "Дублировать выделение"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:193
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:181
 msgid "Delete selection"
 msgstr "Удалить выделенное"
 
@@ -1471,10 +1473,6 @@ msgid "Insert vertical space"
 msgstr "Добавить вертикальный пробел"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:51
-msgid "Drag stroke elements based on proximity"
-msgstr "Перетяните элементы обводки в зависимости от близости"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:71
 msgid "Offset the camera by dragging"
 msgstr "Перемещение камеры перетаскиванием"
 
@@ -1516,15 +1514,15 @@ msgstr "Зачёркнутый"
 msgid "Align left"
 msgstr "Выровнять влево"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:177
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:174
 msgid "Align center"
 msgstr "По центру"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:187
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:181
 msgid "Align right"
 msgstr "Выровнять вправо"
 
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:197
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:188
 msgid "Fill"
 msgstr "По ширине"
 
@@ -1722,9 +1720,21 @@ msgstr "Не удалось распечатать документ"
 msgid "Export selection failed, nothing selected."
 msgstr "Не удалось экспортировать выделение, ничего не выделено."
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
-msgid "New Directory name"
-msgstr "Имя нового Каталога"
+#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
+#, fuzzy
+#| msgid "File name:"
+msgid "Folder name"
+msgstr "Имя файла:"
+
+#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
+msgid "New folder"
+msgstr ""
+
+#~ msgid "Drag stroke elements based on proximity"
+#~ msgstr "Перетяните элементы обводки в зависимости от близости"
+
+#~ msgid "New Directory name"
+#~ msgstr "Имя нового Каталога"
 
 #~ msgid "Paste from Clipboard"
 #~ msgstr "Вставить содержимое буфера обмена"

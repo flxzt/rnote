@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 11:20+0100\n"
-"PO-Revision-Date: 2022-11-18 11:00+0000\n"
+"PO-Revision-Date: 2022-11-22 10:29+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1061,8 +1061,6 @@ msgid "Remove workspace"
 msgstr "Werkblad verwijderen"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:190
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
 msgstr "Map aanmaken"
 
@@ -1633,10 +1631,8 @@ msgid "Export selection failed, nothing selected."
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "Bestandsnaam:"
+msgstr "Bestandsnaam"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"

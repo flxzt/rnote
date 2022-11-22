@@ -187,8 +187,8 @@
       <menu id="workspace_dir_actions_menu_model">
         <section>
           <item>
-            <attribute name="label" translatable="yes">Create Directory</attribute>
-            <attribute name="action">workspace_action.create-dir</attribute>
+            <attribute name="label" translatable="yes">Create new folder</attribute>
+            <attribute name="action">workspace_action.create-folder</attribute>
           </item>
         </section>
       </menu>

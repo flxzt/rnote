@@ -289,7 +289,7 @@ impl WorkspaceBrowser {
 
         self.imp()
             .workspace_actions
-            .add_action(&workspace_action::create_dir(self));
+            .add_action(&workspace_action::create_folder(self));
     }
 }
 

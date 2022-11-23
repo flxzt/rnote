@@ -1,6 +1,6 @@
 [package]
 name = "rnote"
-version = "0.5.7"
+version = "0.5.8"
 edition = "2021"
 rust-version = "1.65"
 

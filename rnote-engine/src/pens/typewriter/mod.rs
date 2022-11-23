@@ -581,11 +581,17 @@ impl Typewriter {
         }
     }
 
-    pub fn insert_text_at_current_cursors(
+    /// Inserts text either at the current cursor position or,
+    /// if the state is idle, a new textstroke (at the preferred position, if supplied. Else at a default offset).
+    pub fn insert_text(
         &mut self,
         text: String,
+        preferred_pos: Option<na::Vector2<f64>>,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
+        let pos = preferred_pos.unwrap_or_else(|| {
+            engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT
+        });
         let mut widget_flags = WidgetFlags::default();
 
         match &mut self.state {
@@ -601,11 +607,7 @@ impl Typewriter {
                     text_style.max_width = Some(self.text_width);
                 }
 
-                let textstroke = TextStroke::new(
-                    text,
-                    engine_view.camera.viewport().mins.coords + Stroke::IMPORT_OFFSET_DEFAULT,
-                    text_style,
-                );
+                let textstroke = TextStroke::new(text, pos, text_style);
 
                 let cursor = unicode_segmentation::GraphemeCursor::new(
                     text_len,

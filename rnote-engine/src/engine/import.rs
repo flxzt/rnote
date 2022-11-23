@@ -8,7 +8,7 @@ use crate::document::{background, Background, Format};
 use crate::pens::penholder::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::{StoreSnapshot, StrokeKey};
-use crate::strokes::{BitmapImage, Stroke, TextStroke, VectorImage};
+use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
 
 use super::EngineViewMut;
@@ -380,7 +380,8 @@ impl RnoteEngine {
     ) -> WidgetFlags {
         let mut widget_flags = self.store.record();
 
-        let all_strokes = self.store.keys_unordered();
+        // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
+        let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
         widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
@@ -412,26 +413,25 @@ impl RnoteEngine {
         text: String,
         pos: na::Vector2<f64>,
     ) -> anyhow::Result<WidgetFlags> {
-        let widget_flags = if self.penholder.current_style_w_override() == PenStyle::Typewriter {
-            // If the current pen is the typewriter, insert the text into it instead of creating a new textstroke
-            self.penholder.typewriter.insert_text_at_current_cursors(
-                text,
-                &mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                },
-            )
-        } else {
-            let mut text_style = self.penholder.typewriter.text_style.clone();
-            text_style.ranged_text_attributes.clear();
+        let mut widget_flags = self.store.record();
 
-            let textstroke = TextStroke::new(text, pos, text_style);
+        // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
+        let all_strokes = self.store.stroke_keys_as_rendered();
+        self.store.set_selected_keys(&all_strokes, false);
 
-            self.import_generated_strokes(vec![(Stroke::TextStroke(textstroke), None)])
-        };
+        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Typewriter));
+
+        widget_flags.merge_with_other(self.penholder.typewriter.insert_text(
+            text,
+            Some(pos),
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
+        ));
 
         Ok(widget_flags)
     }

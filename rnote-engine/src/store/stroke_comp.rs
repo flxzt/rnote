@@ -386,11 +386,11 @@ impl StrokeStore {
         let selector_polygon = {
             let selector_path_points = path
                 .iter()
-                .map(|element| geo::Coordinate {
+                .map(|element| geo::Coord {
                     x: element.pos[0],
                     y: element.pos[1],
                 })
-                .collect::<Vec<geo::Coordinate<f64>>>();
+                .collect::<Vec<geo::Coord<f64>>>();
 
             geo::Polygon::new(selector_path_points.into(), vec![])
         };
@@ -437,11 +437,11 @@ impl StrokeStore {
         let path_linestring = {
             let selector_path_points = path
                 .iter()
-                .map(|element| geo::Coordinate {
+                .map(|element| geo::Coord {
                     x: element.pos[0],
                     y: element.pos[1],
                 })
-                .collect::<Vec<geo::Coordinate<f64>>>();
+                .collect::<Vec<geo::Coord<f64>>>();
 
             geo::LineString::new(selector_path_points.into())
         };

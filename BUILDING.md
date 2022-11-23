@@ -81,8 +81,19 @@ meson setup --prefix=/usr _mesonbuild
 ```
 Meson will ask for the user password when needed.
 
-To enable the development profile, set `-Dprofile=devel` as a parameter. Else the `default` profile will be set. ( This can be reconfigured later )
+### Configuration
+To enable the development profile, set `-Dprofile=devel` as a parameter. Else the `default` profile will be set.
 
+To enable building the `rnote-cli` binary, set `-Dcli=true`.
+
+### Reconfigure
+reconfiguring the meson build options can be done with:
+
+```bash
+meson configure -D<option>=<value> _mesonbuild
+```
+
+For example if the profile needs to be changed.
 ### Compile
 Once the project is configured, it can be compiled with:
 
@@ -112,15 +123,6 @@ Meson has some tests to validate the desktop, gresources, ... files.
 ```bash
 meson test -v -C _mesonbuild
 ```
-
-### Reconfigure
-reconfiguring the meson build can be done with:
-
-```bash
-meson configure -Dprofile=default _mesonbuild
-```
-
-For example if the profile needs to be changed.
 
 ### Uninstall
 If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:

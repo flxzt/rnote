@@ -122,6 +122,11 @@ sources = [
 cargo_target_dir = meson.project_build_root() / 'target'
 cargo_options = ['--manifest-path', meson.project_source_root() / 'Cargo.toml']
 cargo_options += ['--target-dir', cargo_target_dir]
+cargo_options += ['-p', 'rnote']
+
+if get_option('cli') == true
+    cargo_options += ['-p', 'rnote-cli']
+endif
 
 if get_option('profile') == 'default'
     cargo_options += ['--release']

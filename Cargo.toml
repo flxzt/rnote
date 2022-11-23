@@ -6,6 +6,7 @@ members = [
     "rnote-engine",
     "rnote-ui",
     "rnote-fileformats",
+    "rnote-cli",
 ]
 
 exclude = [

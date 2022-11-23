@@ -333,7 +333,7 @@ impl RnoteEngine {
     }
 
     /// Exports the doc with the strokes as a SVG string.
-    fn export_doc_as_svg_bytes(
+    pub fn export_doc_as_svg_bytes(
         &self,
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
@@ -361,7 +361,7 @@ impl RnoteEngine {
     }
 
     /// Exports the doc with the strokes as a PDF file.
-    fn export_doc_as_pdf_bytes(
+    pub fn export_doc_as_pdf_bytes(
         &self,
         title: String,
         doc_export_prefs_override: Option<DocExportPrefs>,
@@ -488,7 +488,7 @@ impl RnoteEngine {
     }
 
     /// Exports the doc with the strokes as a Xournal++ .xopp file. Excluding the current selection.
-    fn export_doc_as_xopp_bytes(
+    pub fn export_doc_as_xopp_bytes(
         &self,
         title: String,
         _doc_export_prefs_override: Option<DocExportPrefs>,
@@ -630,7 +630,7 @@ impl RnoteEngine {
     }
 
     /// Exports the doc with the strokes as a SVG string.
-    fn export_doc_pages_as_svgs_bytes(
+    pub fn export_doc_pages_as_svgs_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
@@ -665,7 +665,7 @@ impl RnoteEngine {
     }
 
     /// Exports the document pages a bitmap bytes. Panics if the format pref is not set to a bitmap variant
-    fn export_doc_pages_as_bitmap_bytes(
+    pub fn export_doc_pages_as_bitmap_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<Vec<u8>>, anyhow::Error>> {
@@ -723,7 +723,7 @@ impl RnoteEngine {
     }
 
     /// Exports the selection to SVG bytes.
-    fn export_selection_as_svg_bytes(
+    pub fn export_selection_as_svg_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
@@ -757,7 +757,7 @@ impl RnoteEngine {
     }
 
     /// Exports the selection a bitmap bytes. Panics if the format pref is not set to a bitmap format
-    fn export_selection_as_bitmap_bytes(
+    pub fn export_selection_as_bitmap_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
     ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {

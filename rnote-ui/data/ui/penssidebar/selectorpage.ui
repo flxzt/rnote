@@ -31,7 +31,7 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_polygon_toggle">
-            <property name="tooltip_text" translatable="yes">Selecting with a polygon</property>
+            <property name="tooltip_text" translatable="yes">Select with a polygon</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
             <child>
@@ -48,7 +48,7 @@
         <child>
           <object class="GtkToggleButton" id="selectorstyle_rect_toggle">
             <property name="group">selectorstyle_polygon_toggle</property>
-            <property name="tooltip_text" translatable="yes">Selecting with a rectangle</property>
+            <property name="tooltip_text" translatable="yes">Select with a rectangle</property>
             <property name="vexpand">true</property>
             <child>
               <object class="GtkImage">
@@ -62,16 +62,16 @@
           </object>
         </child>
         <child>
-          <object class="GtkToggleButton" id="selectorstyle_apiece_toggle">
+          <object class="GtkToggleButton" id="selectorstyle_single_toggle">
             <property name="group">selectorstyle_polygon_toggle</property>
-            <property name="tooltip_text" translatable="yes">Selecting apiece</property>
+            <property name="tooltip_text" translatable="yes">Select one by one</property>
             <property name="vexpand">true</property>
             <child>
               <object class="GtkImage">
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
-                <property name="icon_name">pen-selector-apiece-symbolic</property>
+                <property name="icon_name">pen-selector-single-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>

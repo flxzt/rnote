@@ -104,14 +104,14 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="workspace_bar">
+          <object class="GtkBox" id="workspaces_bar">
             <property name="orientation">vertical</property>
             <layout>
               <property name="column">2</property>
               <property name="row">0</property>
             </layout>
             <child>
-              <object class="GtkScrolledWindow" id="workspace_scroller">
+              <object class="GtkScrolledWindow" id="workspaces_scroller">
                 <property name="propagate-natural-width">false</property>
                 <property name="propagate-natural-height">false</property>
                 <property name="vexpand">true</property>
@@ -119,7 +119,7 @@
                 <property name="halign">fill</property>
                 <property name="hscrollbar-policy">never</property>
                 <child>
-                  <object class="GtkListBox" id="workspace_listbox">
+                  <object class="GtkListBox" id="workspaces_listbox">
                     <property name="vexpand">true</property>
                     <property name="valign">fill</property>
                     <property name="halign">fill</property>
@@ -127,7 +127,7 @@
                     <property name="selection-mode">single</property>
                     <style>
                       <class name="background" />
-                      <class name="workspace-listbox" />
+                      <class name="workspaces-listbox" />
                     </style>
                   </object>
                 </child>
@@ -187,8 +187,8 @@
       <menu id="workspace_dir_actions_menu_model">
         <section>
           <item>
-            <attribute name="label" translatable="yes">Create Directory</attribute>
-            <attribute name="action">workspace_action.create-dir</attribute>
+            <attribute name="label" translatable="yes">Create new folder</attribute>
+            <attribute name="action">workspace_action.create-folder</attribute>
           </item>
         </section>
       </menu>

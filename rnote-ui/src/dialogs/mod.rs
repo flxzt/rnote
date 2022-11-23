@@ -322,7 +322,7 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
                         // refreshing the files list
                         appwindow.workspacebrowser().refresh();
                         // And save the state
-                        appwindow.workspacebrowser().save_to_settings(&appwindow.app_settings());
+                        appwindow.workspacebrowser().save_workspaces_to_settings(&appwindow.app_settings());
                     }
                 }
                 _ => {}

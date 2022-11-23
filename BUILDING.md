@@ -10,7 +10,11 @@ git submodule update --init --recursive
 ## Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
-Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
+Make sure you have `flatpak` and `flatkpak-builder` installed on your system. You also need the Gnome 43 Runtime, SDK and some extensions:
+
+```bash
+flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14
+```
 
 Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode) to build and run the application for you. **This is the easiest and recommended way.**
 
@@ -21,14 +25,9 @@ Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.vis
 
 - Building the flatpak aborts randomly with status `137` out of memory: Reset the flatpak app-id permissions with `flatpak permission-reset com.github.flxzt.rnote`, so it is able to run in the background. (see [this issue](https://github.com/flatpak/xdg-desktop-portal/issues/478))
 
-### Prerequisites
+### Manual flatpak build
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
-First the Gnome 43 SDK and some extensions are needed:
-
-```bash
-flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14
-```
 ### Build
 Building the app with flatpak is done with:
 
@@ -72,7 +71,7 @@ If a native build on the host is wanted, meson can be called directly.
 
 Install all needed dependencies and build tools, e.g. for fedora 37:
 ```bash
-sudo dnf install gcc gcc-c++ clang clang-devel make automake cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install gcc gcc-c++ clang clang-devel make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:

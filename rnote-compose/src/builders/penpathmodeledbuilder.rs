@@ -172,7 +172,7 @@ impl PenPathModeledBuilder {
     }
 
     fn try_build_segments_end(&mut self) -> Vec<Shape> {
-        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
+        let elements_iter = self.buffer.iter();
 
         let segments = elements_iter
             .clone()
@@ -238,17 +238,22 @@ impl PenPathModeledBuilder {
                 }),
         );
 
-        self.prediction_buffer = self
-            .stroke_modeler
-            .predict()
-            .into_iter()
-            .map(|r| {
-                let pos = r.get_pos();
-                let pressure = r.get_pressure();
+        // When the stroke is finished it is invalid to predict, and the existing prediction should be cleared.
+        if event_type == ModelerInputEventType::kUp {
+            self.prediction_buffer.clear();
+        } else {
+            self.prediction_buffer = self
+                .stroke_modeler
+                .predict()
+                .into_iter()
+                .map(|r| {
+                    let pos = r.get_pos();
+                    let pressure = r.get_pressure();
 
-                Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
-            })
-            .collect::<Vec<Element>>();
+                    Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                })
+                .collect::<Vec<Element>>();
+        }
     }
 
     fn restart(&mut self, element: Element, now: Instant) {
@@ -260,6 +265,7 @@ impl PenPathModeledBuilder {
         };
 
         self.buffer.clear();
+        self.prediction_buffer.clear();
         self.start_time = now;
         self.last_element_time = now;
         self.last_element = element;

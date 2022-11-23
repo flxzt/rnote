@@ -55,9 +55,15 @@
             <attribute name="toggle" />
             <attribute name="action">win.pen-sounds</attribute>
           </item>
+        </section>
+        <section>
           <item>
             <attribute name="label" translatable="yes">_Clear document</attribute>
             <attribute name="action">win.clear-doc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Return to origin page</attribute>
+            <attribute name="action">win.return-origin-page</attribute>
           </item>
         </section>
       </menu>
@@ -87,7 +93,7 @@
                     <object class="GtkButton" id="zoom_out_button">
                       <property name="icon_name">zoom-out-symbolic</property>
                       <property name="tooltip_text" translatable="yes">Zoom out</property>
-                      <property name="width_request">50</property>
+                      <property name="width-request">50</property>
                       <property name="hexpand">false</property>
                       <property name="action-name">win.zoom-out</property>
                     </object>
@@ -103,7 +109,7 @@
                     <object class="GtkButton" id="zoom_in_button">
                       <property name="icon_name">zoom-in-symbolic</property>
                       <property name="tooltip_text" translatable="yes">Zoom in</property>
-                      <property name="width_request">50</property>
+                      <property name="width-request">50</property>
                       <property name="hexpand">false</property>
                       <property name="action-name">win.zoom-in</property>
                     </object>

@@ -66,6 +66,20 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.8" date="2022-11-23">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: add keyboard shortcuts "Ctrl+1..5" to switch between the different pens</li>
+          <li>feature: add coordinate system builders (thanks to @Kneemund )</li>
+          <li>feature: drop text on the canvas</li>
+          <li>improvement: export preferences, new export dialogs and options</li>
+          <li>improvement: UI following Gnome HIG more closely ( with @bertob's help )</li>
+          <li>fix: update current document state when the file was modified from the workspace browser. (thanks @Kneemund )</li>
+          <li>fix: clearing text attributes for new text fields</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.7" date="2022-10-30">
       <description>
         <p>this release changes:</p>
@@ -116,7 +130,7 @@
           <li>pdf import dialog with the added option to import aligned with the document pages ( one pdf page per document page )</li>
           <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @RickStanley!)</li>
           <li>proportial shapes / input constraints (thanks @sei0o!)</li>
-          <li>additional selector modes: apiece, intersecting path</li>
+          <li>additional selector modes: single, intersecting path</li>
           <li>improved workspace browser, added sidebar to select between different workspaces (inspired by the `Paper` app)</li>
           <li>mark underneath other strokes with the 'Marker' brush style</li>
           <li>bug fixes</li>

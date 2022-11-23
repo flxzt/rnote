@@ -144,10 +144,10 @@
                       <object class="GtkBox" id="canvas_quickactions_box">
                         <property name="halign">start</property>
                         <property name="valign">start</property>
-                        <property name="margin-start">18</property>
-                        <property name="margin-end">18</property>
-                        <property name="margin-top">18</property>
-                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <property name="margin-top">12</property>
+                        <property name="margin-bottom">12</property>
                         <property name="spacing">6</property>
                         <child>
                           <object class="GtkRevealer" id="canvas_fixedsize_quickactions_revealer">
@@ -184,18 +184,6 @@
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="return_origin_page_button">
-                            <property name="icon_name">return-origin-page-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Return to the origin page</property>
-                            <property name="action-name">win.return-origin-page</property>
-                            <style>
-                              <class name="osd" />
-                              <class name="circular" />
-                              <class name="quickaction-button" />
-                            </style>
                           </object>
                         </child>
                         <child>

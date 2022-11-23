@@ -140,7 +140,7 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     filter.add_suffix("png");
     filter.add_suffix("jpg");
     filter.add_suffix("jpeg");
-    filter.set_name(Some(&gettext("Xopp, PNG, SVG, JPG, PDF")));
+    filter.set_name(Some(&gettext("JPG, PDF, PNG, SVG, Xopp")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Import file"))

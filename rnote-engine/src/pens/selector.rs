@@ -87,8 +87,8 @@ pub enum SelectorStyle {
     Polygon = 0,
     #[serde(rename = "rectangle")]
     Rectangle,
-    #[serde(rename = "apiece")]
-    Apiece,
+    #[serde(rename = "single", alias = "apiece")]
+    Single,
     #[serde(rename = "intersectingpath")]
     IntersectingPath,
 }
@@ -248,7 +248,7 @@ impl PenBehaviour for Selector {
                             None
                         }
                     }
-                    SelectorStyle::Apiece => {
+                    SelectorStyle::Single => {
                         if let Some(last) = path.last() {
                             if let Some(&new_key) = engine_view
                                 .store
@@ -380,14 +380,14 @@ impl PenBehaviour for Selector {
                     ModifyState::Up => {
                         widget_flags.merge_with_other(engine_view.store.record());
 
-                        // If we click on another, not-already selected stroke while in apiece style or while pressing Shift, we add it to the selection
+                        // If we click on another, not-already selected stroke while in separate style or while pressing Shift, we add it to the selection
                         let keys = engine_view.store.stroke_hitboxes_contain_coord(
                             engine_view.camera.viewport(),
                             element.pos,
                         );
                         let key_to_add = keys.last();
 
-                        if (self.style == SelectorStyle::Apiece
+                        if (self.style == SelectorStyle::Single
                             || shortcut_keys.contains(&ShortcutKey::KeyboardShift))
                             && key_to_add
                                 .and_then(|&key| engine_view.store.selected(key).map(|s| !s))
@@ -770,7 +770,7 @@ impl DrawOnDocBehaviour for Selector {
                         new_bounds.merge(&pos_bounds);
                     });
 
-                    Some(new_bounds.loosened(Self::APIECE_SELECTING_CIRCLE_RADIUS / total_zoom))
+                    Some(new_bounds.loosened(Self::SINGLE_SELECTING_CIRCLE_RADIUS / total_zoom))
                 } else {
                     None
                 }
@@ -846,12 +846,12 @@ impl DrawOnDocBehaviour for Selector {
                         );
                     }
                 }
-                SelectorStyle::Apiece => {
+                SelectorStyle::Single => {
                     if let Some(last) = path.last() {
                         cx.stroke(
                             kurbo::Circle::new(
                                 last.pos.to_kurbo_point(),
-                                Self::APIECE_SELECTING_CIRCLE_RADIUS / total_zoom,
+                                Self::SINGLE_SELECTING_CIRCLE_RADIUS / total_zoom,
                             ),
                             &Self::OUTLINE_COLOR,
                             Self::SELECTION_OUTLINE_WIDTH / total_zoom,
@@ -945,7 +945,7 @@ impl Selector {
     const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
-    const APIECE_SELECTING_CIRCLE_RADIUS: f64 = 4.0;
+    const SINGLE_SELECTING_CIRCLE_RADIUS: f64 = 4.0;
 
     /// resize node size, in surface coords
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
@@ -954,7 +954,7 @@ impl Selector {
 
     fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {
         match style {
-            SelectorStyle::Polygon | SelectorStyle::Apiece | SelectorStyle::IntersectingPath => {
+            SelectorStyle::Polygon | SelectorStyle::Single | SelectorStyle::IntersectingPath => {
                 path.push(element);
             }
             SelectorStyle::Rectangle => {

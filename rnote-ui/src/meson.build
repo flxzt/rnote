@@ -63,7 +63,7 @@ rnote_ui_sources = files(
     'workspacebrowser/mod.rs',
     'workspacebrowser/widget_helper/entry_dialog.rs',
     'workspacebrowser/widget_helper/mod.rs',
-    'workspacebrowser/workspace_action/create_dir.rs',
+    'workspacebrowser/workspace_action/create_folder.rs',
     'workspacebrowser/workspace_action/mod.rs',
     'workspacebrowser/workspacelist.rs',
     'workspacebrowser/workspacelistentry.rs',

@@ -35,8 +35,6 @@ pub fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popove
 
     connect_cancel_button(&cancel_button, &popover);
 
-    log::debug!("Creating entry dialog");
-
     (apply_button, popover)
 }
 

@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-19 15:23+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"Last-Translator: JohnnyLAmpAz <lorenzo.brivio9908@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -275,10 +275,8 @@ msgid "_Clear document"
 msgstr "_Pulisci documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "Ritorna alla pagina iniziale"
+msgstr "_Ritorna alla pagina iniziale"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
@@ -1063,10 +1061,8 @@ msgid "Remove workspace"
 msgstr "Rimuovi area di lavoro"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:190
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
-msgstr "Crea cartella"
+msgstr "Crea nuova cartella"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1226,20 +1222,16 @@ msgid "Split strokes"
 msgstr "Cancella punto de tratto"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
-msgstr "Selezione con un poligono"
+msgstr "Seleziona con un poligono"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
-msgstr "Selezione con un rettangolo"
+msgstr "Seleziona con un rettangolo"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "Seleziona uno ad uno"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1485,7 +1477,7 @@ msgstr "Apri file"
 
 #: rnote-ui/src/dialogs/import.rs:143
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1642,14 +1634,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "Esportazione della selezione fallita, non si è selezionato nulla."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "Nome file:"
+msgstr "Nome cartella"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "Nuova cartella"
 
 #~ msgid "Selecting apiece"
 #~ msgstr "Selezione singola"

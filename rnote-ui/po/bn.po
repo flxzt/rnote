@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-20 18:53+0000\n"
-"Last-Translator: ritamsaha00 <ritamsaha00@gmail.com>\n"
+"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
 "MIME-Version: 1.0\n"
@@ -65,32 +65,22 @@ msgid "A selection"
 msgstr "একটি নির্বাচন"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "Color scheme"
 msgid "_Color scheme"
 msgstr "_রঙ বিন্যাস"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors"
 msgid "Use _system colors"
 msgstr "_সিস্টেমের রঙ ব্যবহার করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _light colors"
 msgstr "_হালকা রঙ ব্যবহার করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _dark colors"
 msgstr "_গাঢ় রঙ ব্যবহার করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "_Developer mode"
 msgstr "_বিকাশকারী মোড"
 
@@ -107,8 +97,6 @@ msgid "_Visual debugging"
 msgstr "_ভিজ্যুয়াল ডিবাগিং"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export engine _state"
 msgstr "ইঞ্জিনের _অবস্থা রপ্তানী করুন"
 
@@ -153,8 +141,6 @@ msgid "Export _document"
 msgstr "_নথি রপ্তানি করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document _pages"
 msgstr "নথি _পৃষ্ঠা রপ্তানি করুন"
 
@@ -247,7 +233,6 @@ msgid "Redo"
 msgstr "পুনঃকরণ"
 
 #: rnote-ui/data/ui/appwindow.ui:343
-#, fuzzy
 msgid "Reveal / hide flap"
 msgstr "ফ্ল্যাপ প্রকাশ / লুকান"
 
@@ -294,10 +279,8 @@ msgid "P_en sounds"
 msgstr "কলমের ধ্বনি"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "_Clear document"
-msgstr "নথি পরিষ্কার করুন"
+msgstr "নথি _পরিষ্কার করুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 #, fuzzy

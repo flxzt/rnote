@@ -281,8 +281,9 @@ impl TypewriterPage {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                let widget_flags = engine.penholder.typewriter.insert_text_at_current_cursors(
+                let widget_flags = engine.penholder.typewriter.insert_text(
                     emoji_str.to_string(),
+                    None,
                     &mut EngineViewMut {
                         tasks_tx: engine.tasks_tx(),
                         doc: &mut engine.document,

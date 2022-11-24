@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
+"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"Last-Translator: Tymoteusz Majewski <tymekzszopin@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -27,7 +27,7 @@ msgstr "Szkicuj i rób odręczne notatki"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "Gnome;GTK;biuro;grafika;notatki;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -67,7 +67,7 @@ msgstr "Wybór"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "_Color scheme"
-msgstr ""
+msgstr "schemat kolorów"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
@@ -117,8 +117,9 @@ msgid "Export engine _config"
 msgstr "Eksportuj zaznaczenie"
 
 #: rnote-ui/data/ui/appmenu.ui:68
+#, fuzzy
 msgid "_New"
-msgstr ""
+msgstr "_Nowy"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 #, fuzzy

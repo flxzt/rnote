@@ -141,8 +141,8 @@ pub struct Brush {
 impl Clone for Brush {
     fn clone(&self) -> Self {
         Self {
-            style: self.style.clone(),
-            builder_type: self.builder_type.clone(),
+            style: self.style,
+            builder_type: self.builder_type,
             marker_options: self.marker_options.clone(),
             solid_options: self.solid_options.clone(),
             textured_options: self.textured_options.clone(),

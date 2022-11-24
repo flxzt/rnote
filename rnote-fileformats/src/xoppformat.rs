@@ -100,8 +100,8 @@ impl XmlLoadable for XoppRoot {
                     "preview" => {
                         if let Some(preview) = child.text() {
                             self.preview = preview
-                                .trim_start_matches(&[' ', '\n'])
-                                .trim_end_matches(&[' ', '\n'])
+                                .trim_start_matches([' ', '\n'])
+                                .trim_end_matches([' ', '\n'])
                                 .to_string();
                         }
                     }
@@ -748,8 +748,8 @@ impl XmlLoadable for XoppStroke {
 
         if let Some(coords) = node.text() {
             let coords = coords
-                .trim_start_matches(&[' ', '\n'])
-                .trim_end_matches(&[' ', '\n'])
+                .trim_start_matches([' ', '\n'])
+                .trim_end_matches([' ', '\n'])
                 .split(' ')
                 .filter_map(|splitted| splitted.parse::<f64>().ok());
 
@@ -980,8 +980,8 @@ impl XmlLoadable for XoppImage {
         // Data
         if let Some(data) = node.text() {
             self.data = data
-                .trim_start_matches(&[' ', '\n'])
-                .trim_end_matches(&[' ', '\n'])
+                .trim_start_matches([' ', '\n'])
+                .trim_end_matches([' ', '\n'])
                 .to_string();
         }
 

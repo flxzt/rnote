@@ -76,8 +76,8 @@ pub struct Shaper {
 impl Clone for Shaper {
     fn clone(&self) -> Self {
         Self {
-            builder_type: self.builder_type.clone(),
-            style: self.style.clone(),
+            builder_type: self.builder_type,
+            style: self.style,
             smooth_options: self.smooth_options.clone(),
             rough_options: self.rough_options.clone(),
             constraints: self.constraints.clone(),

@@ -221,7 +221,7 @@ impl StrokeStore {
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
-        keys.into_iter().for_each(|key| {
+        keys.iter().for_each(|&key| {
             if let (Some(stroke), Some(render_comp)) =
                 (self.stroke_components.get(key), self.render_components.get_mut(key))
             {

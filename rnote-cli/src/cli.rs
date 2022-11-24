@@ -69,7 +69,7 @@ pub(crate) async fn convert_file(
     let export_title = output_file
         .file_stem()
         .map(|s| s.to_string_lossy().to_string())
-        .unwrap_or_else(|| String::from("output_file").into());
+        .unwrap_or_else(|| String::from("output_file"));
 
     let export_bytes = match output_file.extension().and_then(|ext| ext.to_str()) {
         Some("svg") => engine.export_doc_as_svg_bytes(None).await??,

@@ -432,7 +432,7 @@ impl StrokeStore {
     /// stroke then needs to update its rendering
     pub fn insert_stroke(&mut self, stroke: Stroke, layer: Option<StrokeLayer>) -> StrokeKey {
         let bounds = stroke.bounds();
-        let layer = layer.unwrap_or(stroke.extract_default_layer());
+        let layer = layer.unwrap_or_else(|| stroke.extract_default_layer());
 
         let key = Arc::make_mut(&mut self.stroke_components).insert(Arc::new(stroke));
         self.key_tree.insert_with_key(key, bounds);

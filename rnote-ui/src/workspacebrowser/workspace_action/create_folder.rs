@@ -40,7 +40,7 @@ pub fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
                 }
             }));
 
-            connect_apply_button(&apply_button, &popover, &folder_name_entry, parent_path.clone());
+            connect_apply_button(&apply_button, &popover, &folder_name_entry, parent_path);
 
             popover.popup();
         } else {

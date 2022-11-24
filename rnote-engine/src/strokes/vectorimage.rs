@@ -206,7 +206,7 @@ impl VectorImage {
                 PdfImportPageSpacing::Continuous => {
                     insert_pos[1]
                         + f64::from(i as u32)
-                            * (f64::from(height) + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
+                            * (height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
                 }
                 PdfImportPageSpacing::OnePerDocumentPage => {
                     insert_pos[1]

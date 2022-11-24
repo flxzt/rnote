@@ -186,7 +186,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.start_pulsing_canvas_progressbar();
 
-                            let file_title = file.basename().and_then(|b| Some(b.file_stem()?.to_string_lossy().to_string())).unwrap_or(appwindow::OUTPUT_FILE_NEW_TITLE.clone());
+                            let file_title = file.basename().and_then(|b| Some(b.file_stem()?.to_string_lossy().to_string())).unwrap_or_else(|| appwindow::OUTPUT_FILE_NEW_TITLE.clone());
 
                             if let Err(e) = appwindow.export_doc(&file, file_title, None).await {
                                 log::error!("exporting document failed with error `{}`", e);

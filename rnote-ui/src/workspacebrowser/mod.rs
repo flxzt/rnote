@@ -324,7 +324,7 @@ fn setup_workspaces_sidebar(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
 
     wb.imp().add_workspace_button.get().connect_clicked(
         clone!(@weak wb, @weak appwindow => move |_add_workspace_button| {
-            let dir = wb.selected_workspace_dir().unwrap_or(PathBuf::from("./"));
+            let dir = wb.selected_workspace_dir().unwrap_or_else(|| PathBuf::from("./"));
             wb.add_workspace(dir);
 
             // Popup the edit dialog after creation
@@ -360,7 +360,7 @@ fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
         // Only activate on multi click
         if n_press > 1 {
             if let Some(parent_dir) = wb.selected_workspace_dir().and_then(|p| p.parent().map(|p| p.to_path_buf())) {
-                wb.set_current_workspace_dir(parent_dir.to_path_buf());
+                wb.set_current_workspace_dir(parent_dir);
             }
         }
     }));
@@ -489,7 +489,7 @@ fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
         !name
             .file_name()
             .and_then(|n| n.to_str())
-            .map(|s| s.starts_with("."))
+            .map(|s| s.starts_with('.'))
             .unwrap_or(false)
     });
 

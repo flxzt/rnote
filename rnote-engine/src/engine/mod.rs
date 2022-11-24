@@ -102,9 +102,9 @@ impl Default for EngineConfig {
             document: serde_json::to_value(&engine.document).unwrap(),
             penholder: serde_json::to_value(&engine.penholder).unwrap(),
 
-            import_prefs: serde_json::to_value(&engine.import_prefs).unwrap(),
-            export_prefs: serde_json::to_value(&engine.export_prefs).unwrap(),
-            pen_sounds: serde_json::to_value(&engine.pen_sounds).unwrap(),
+            import_prefs: serde_json::to_value(engine.import_prefs).unwrap(),
+            export_prefs: serde_json::to_value(engine.export_prefs).unwrap(),
+            pen_sounds: serde_json::to_value(engine.pen_sounds).unwrap(),
         }
     }
 }

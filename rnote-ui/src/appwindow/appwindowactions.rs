@@ -788,7 +788,7 @@ impl RnoteAppWindow {
 
         // Export selection
         action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            if appwindow.canvas().engine().borrow().store.selection_keys_unordered().len() > 0 {
+            if !appwindow.canvas().engine().borrow().store.selection_keys_unordered().is_empty() {
                 dialogs::export::dialog_export_selection_w_prefs(&appwindow);
             } else {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed, nothing selected.").to_variant()));
@@ -841,7 +841,7 @@ impl RnoteAppWindow {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             let file_paths = text.lines().filter_map(|line| {
-                                let file_path = if let Ok(path_uri) = url::Url::parse(&line) {
+                                let file_path = if let Ok(path_uri) = url::Url::parse(line) {
                                     path_uri.to_file_path().ok()?
                                 } else {
                                     PathBuf::from(&line)

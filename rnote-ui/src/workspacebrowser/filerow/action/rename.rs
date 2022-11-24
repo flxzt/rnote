@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use gtk4::{
     gio, glib,
@@ -31,8 +31,8 @@ pub fn rename(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleActio
                     filerow.menubutton_box().append(&popover);
 
                     connect_entry(&entry, &apply_button, parent_path.clone());
-                    connect_apply_button(&apply_button, &popover, &entry, parent_path.clone(), current_path.clone(),
-                        current_file.clone(), &appwindow);
+                    connect_apply_button(&apply_button, &popover, &entry, parent_path, current_path,
+                        current_file, &appwindow);
 
                     popover.popup();
                 }
@@ -43,8 +43,9 @@ pub fn rename(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleActio
     rename_action
 }
 
-fn create_entry(current_path: &PathBuf) -> Entry {
+fn create_entry(current_path: impl AsRef<Path>) -> Entry {
     let entry_name = current_path
+        .as_ref()
         .file_name()
         .map(|current_file_name| current_file_name.to_string_lossy().to_string())
         .unwrap_or_else(|| String::from(""));
@@ -67,7 +68,7 @@ fn create_label() -> Label {
 
 fn connect_entry(entry: &Entry, apply_button: &Button, parent_path: PathBuf) {
     entry.connect_text_notify(clone!(@weak apply_button => move |entry2| {
-        let new_file_path = parent_path.join(entry2.text().to_string());
+        let new_file_path = parent_path.join(&entry2.text());
         let new_file = gio::File::for_path(new_file_path);
 
         // Disable apply button to prevent overwrites when file already exists
@@ -86,7 +87,7 @@ fn connect_apply_button(
     appwindow: &RnoteAppWindow,
 ) {
     apply_button.connect_clicked(clone!(@weak popover, @weak entry, @weak appwindow => move |_| {
-        let new_path = parent_path.join(entry.text().to_string());
+        let new_path = parent_path.join(&entry.text());
         let new_file = gio::File::for_path(&new_path);
 
         if new_file.query_exists(None::<&gio::Cancellable>) {

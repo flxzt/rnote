@@ -166,8 +166,10 @@ impl WorkspaceListEntry {
 
     /// Expects a path to a directory
     pub fn from_path(dir: PathBuf) -> Self {
-        let mut inner = WorkspaceListEntryInner::default();
-        inner.dir = dir;
+        let inner = WorkspaceListEntryInner {
+            dir,
+            ..Default::default()
+        };
 
         Self::new(inner)
     }

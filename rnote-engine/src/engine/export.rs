@@ -300,9 +300,9 @@ impl RnoteEngine {
         let engine_config = EngineConfig {
             document: serde_json::to_value(&self.document)?,
             penholder: serde_json::to_value(&self.penholder)?,
-            import_prefs: serde_json::to_value(&self.import_prefs)?,
-            export_prefs: serde_json::to_value(&self.export_prefs)?,
-            pen_sounds: serde_json::to_value(&self.pen_sounds)?,
+            import_prefs: serde_json::to_value(self.import_prefs)?,
+            export_prefs: serde_json::to_value(self.export_prefs)?,
+            pen_sounds: serde_json::to_value(self.pen_sounds)?,
         };
 
         Ok(serde_json::to_string(&engine_config)?)

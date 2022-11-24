@@ -81,7 +81,7 @@ impl AudioPlayer {
         }
 
         // Init brush sounds
-        load_sound_from_path(&mut sounds, data_dir.clone(), format!("brush"), "wav")?;
+        load_sound_from_path(&mut sounds, data_dir.clone(), String::from("brush"), "wav")?;
 
         // Init typewriter sounds
         // the enumerated key sounds
@@ -98,28 +98,28 @@ impl AudioPlayer {
         load_sound_from_path(
             &mut sounds,
             data_dir.clone(),
-            format!("typewriter_insert"),
+            String::from("typewriter_insert"),
             "wav",
         )?;
 
         load_sound_from_path(
             &mut sounds,
             data_dir.clone(),
-            format!("typewriter_thump"),
+            String::from("typewriter_thump"),
             "wav",
         )?;
 
         load_sound_from_path(
             &mut sounds,
             data_dir.clone(),
-            format!("typewriter_bell"),
+            String::from("typewriter_bell"),
             "wav",
         )?;
 
         load_sound_from_path(
             &mut sounds,
             data_dir.clone(),
-            format!("typewriter_linefeed"),
+            String::from("typewriter_linefeed"),
             "wav",
         )?;
 

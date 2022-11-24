@@ -114,14 +114,12 @@ fn compose_lines_variable_width(
 
     let mut pos_offset_coords = offset_coords
         .clone()
-        .map(|offset_coords| offset_coords.0)
-        .flatten()
+        .flat_map(|offset_coords| offset_coords.0)
         .collect::<Vec<na::Vector2<f64>>>()
         .into_iter();
 
     let neg_offset_coords = offset_coords
-        .map(|offset_coords| offset_coords.1)
-        .flatten()
+        .flat_map(|offset_coords| offset_coords.1)
         .rev()
         .collect::<Vec<na::Vector2<f64>>>()
         .into_iter();

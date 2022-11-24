@@ -425,6 +425,7 @@ pub struct EllipseResult {
 }
 
 // Returns (all_points, core_points)
+#[allow(clippy::too_many_arguments)]
 pub(super) fn compute_ellipse_points<R>(
     increment: f64,
     center: na::Vector2<f64>,

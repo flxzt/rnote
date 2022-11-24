@@ -269,7 +269,7 @@ impl RnoteEngine {
 
         // Import into engine
         self.document = doc;
-        self.store.import_snapshot(&*store.take_store_snapshot());
+        self.store.import_snapshot(&store.take_store_snapshot());
 
         self.update_pens_states();
 
@@ -321,6 +321,7 @@ impl RnoteEngine {
     }
 
     /// generates image strokes for each page for the bytes ( from a PDF file )
+    #[allow(clippy::type_complexity)]
     pub fn generate_pdf_pages_from_bytes(
         &self,
         bytes: Vec<u8>,

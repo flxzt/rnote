@@ -376,7 +376,7 @@ impl Background {
         );
 
         self.rendernodes.iter().for_each(|rendernode| {
-            snapshot.append_node(&rendernode);
+            snapshot.append_node(rendernode);
         });
 
         snapshot.pop();

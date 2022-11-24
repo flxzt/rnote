@@ -71,12 +71,12 @@ mod imp {
     }
 
     impl ObjectImpl for PensSideBar {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -97,9 +97,7 @@ impl Default for PensSideBar {
 
 impl PensSideBar {
     pub fn new() -> Self {
-        let penssidebar: PensSideBar =
-            glib::Object::new(&[]).expect("Failed to create PensSideBar");
-        penssidebar
+        glib::Object::new(&[])
     }
 
     pub fn sidebar_stack(&self) -> Stack {

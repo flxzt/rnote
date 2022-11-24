@@ -1,4 +1,4 @@
-use gtk4::graphene;
+use gtk4::{graphene, prelude::*};
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};

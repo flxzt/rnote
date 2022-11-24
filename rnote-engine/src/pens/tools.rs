@@ -121,6 +121,8 @@ impl OffsetCameraTool {
     const FILL_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(0xf0);
     const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(0xf0);
     const PATH_WIDTH: f64 = 2.0;
+
+    const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
 }
 
 impl DrawOnDocBehaviour for OffsetCameraTool {
@@ -143,10 +145,7 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / engine_view.camera.total_zoom()));
 
-            let bez_path = kurbo::BezPath::from_svg(include_str!(
-                "../../data/images/offsetcameratool-path.txt"
-            ))
-            .unwrap();
+            let bez_path = kurbo::BezPath::from_svg(Self::CURSOR_PATH).unwrap();
 
             cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
             cx.fill(bez_path, &Self::FILL_COLOR);

@@ -16,7 +16,7 @@ use crate::store::StrokeKey;
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::{AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
-use gtk4::Snapshot;
+use gtk4::{prelude::*, Snapshot};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 

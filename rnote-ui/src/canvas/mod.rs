@@ -169,25 +169,26 @@ mod imp {
     }
 
     impl ObjectImpl for RnoteCanvas {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
+            self.parent_constructed();
 
-            obj.set_hexpand(false);
-            obj.set_vexpand(false);
-            obj.set_can_target(true);
-            obj.set_focusable(true);
-            obj.set_can_focus(true);
+            inst.set_hexpand(false);
+            inst.set_vexpand(false);
+            inst.set_can_target(true);
+            inst.set_focusable(true);
+            inst.set_can_focus(true);
 
-            obj.set_cursor(Some(&*self.regular_cursor.borrow()));
+            inst.set_cursor(Some(&*self.regular_cursor.borrow()));
 
-            obj.add_controller(&self.stylus_drawing_gesture);
-            obj.add_controller(&self.mouse_drawing_gesture);
-            obj.add_controller(&self.touch_drawing_gesture);
-            obj.add_controller(&self.key_controller);
+            inst.add_controller(&self.stylus_drawing_gesture);
+            inst.add_controller(&self.mouse_drawing_gesture);
+            inst.add_controller(&self.touch_drawing_gesture);
+            inst.add_controller(&self.key_controller);
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -250,7 +251,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "output-file" => self.output_file.borrow().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
@@ -266,13 +267,8 @@ mod imp {
             }
         }
 
-        fn set_property(
-            &self,
-            obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            let inst = self.instance();
             /*             let parent_scrolledwindow = obj
             .parent()
             .map(|parent| parent.downcast::<ScrolledWindow>().unwrap()); */
@@ -293,12 +289,12 @@ mod imp {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`.");
                     self.empty.replace(empty);
                     if empty {
-                        obj.set_unsaved_changes(false);
+                        inst.set_unsaved_changes(false);
                     }
                 }
                 "hadjustment" => {
                     let hadjustment = value.get().unwrap();
-                    obj.set_hadjustment(hadjustment);
+                    inst.set_hadjustment(hadjustment);
                 }
                 "hscroll-policy" => {
                     let hscroll_policy = value.get().unwrap();
@@ -306,7 +302,7 @@ mod imp {
                 }
                 "vadjustment" => {
                     let vadjustment = value.get().unwrap();
-                    obj.set_vadjustment(vadjustment);
+                    inst.set_vadjustment(vadjustment);
                 }
                 "vscroll-policy" => {
                     let vscroll_policy = value.get().unwrap();
@@ -344,7 +340,7 @@ mod imp {
 
                     self.regular_cursor.replace(cursor);
 
-                    obj.set_cursor(Some(&*self.regular_cursor.borrow()));
+                    inst.set_cursor(Some(&*self.regular_cursor.borrow()));
                 }
                 "drawing-cursor" => {
                     let icon_name = value.get().unwrap();
@@ -374,17 +370,19 @@ mod imp {
     impl WidgetImpl for RnoteCanvas {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
-        fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
+        fn snapshot(&self, snapshot: &gtk4::Snapshot) {
+            let inst = self.instance();
+
             if let Err(e) = || -> anyhow::Result<()> {
-                let clip_bounds = if let Some(parent) = widget.parent() {
+                let clip_bounds = if let Some(parent) = inst.parent() {
                     // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(widget, 0.0, 0.0).unwrap();
+                    let (clip_x, clip_y) = parent.translate_coordinates(&*inst, 0.0, 0.0).unwrap();
                     AABB::new_positive(
                         na::point![clip_x, clip_y],
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
-                    widget.bounds()
+                    inst.bounds()
                 };
                 // pushing the clip
                 snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
@@ -395,7 +393,7 @@ mod imp {
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_on_snapshot(snapshot, widget.bounds())?;
+                    .draw_on_snapshot(snapshot, inst.bounds())?;
 
                 // Restore original coordinate space
                 snapshot.restore();
@@ -434,9 +432,7 @@ impl RnoteCanvas {
     pub const ZOOM_STEP: f64 = 0.1;
 
     pub fn new() -> Self {
-        let canvas: RnoteCanvas = glib::Object::new(&[]).expect("Failed to create RnoteCanvas");
-
-        canvas
+        glib::Object::new(&[])
     }
 
     pub fn regular_cursor(&self) -> String {

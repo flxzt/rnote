@@ -109,28 +109,30 @@ mod imp {
     }
 
     impl ObjectImpl for SettingsPanel {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
+
+            self.parent_constructed();
 
             self.format_predefined_formats_row
                 .connect_selected_item_notify(
-                    clone!(@weak obj => move |_format_predefined_formats_row| {
-                        obj.imp().update_temporary_format_from_rows();
-                        obj.imp().apply_predefined_format();
+                    clone!(@weak inst as settings_panel => move |_format_predefined_formats_row| {
+                        settings_panel.imp().update_temporary_format_from_rows();
+                        settings_panel.imp().apply_predefined_format();
                     }),
                 );
 
             self.format_orientation_portrait_toggle.connect_toggled(
-                clone!(@weak obj => move |_format_orientation_portrait_toggle| {
-                    obj.imp().update_temporary_format_from_rows();
-                    obj.imp().apply_predefined_format();
+                clone!(@weak inst as settings_panel => move |_format_orientation_portrait_toggle| {
+                    settings_panel.imp().update_temporary_format_from_rows();
+                    settings_panel.imp().apply_predefined_format();
                 }),
             );
 
             self.format_orientation_landscape_toggle.connect_toggled(
-                clone!(@weak obj => move |_format_orientation_landscape_toggle| {
-                    obj.imp().update_temporary_format_from_rows();
-                    obj.imp().apply_predefined_format();
+                clone!(@weak inst as settings_panel => move |_format_orientation_landscape_toggle| {
+                    settings_panel.imp().update_temporary_format_from_rows();
+                    settings_panel.imp().apply_predefined_format();
                 }),
             );
 
@@ -194,7 +196,7 @@ mod imp {
             self.format_width_unitentry.get().connect_local(
                 "measurement-changed",
                 false,
-                clone!(@weak obj as settings_panel => @default-return None, move |_args| {
+                clone!(@weak inst as settings_panel => @default-return None, move |_args| {
                         settings_panel.imp().update_temporary_format_from_rows();
                         None
                 }),
@@ -203,14 +205,14 @@ mod imp {
             self.format_height_unitentry.get().connect_local(
                 "measurement-changed",
                 false,
-                clone!(@weak obj as settings_panel => @default-return None, move |_args| {
+                clone!(@weak inst as settings_panel => @default-return None, move |_args| {
                         settings_panel.imp().update_temporary_format_from_rows();
                         None
                 }),
             );
 
             self.format_dpi_adj.connect_value_changed(
-                clone!(@weak obj as settings_panel => move |format_dpi_adj| {
+                clone!(@weak inst as settings_panel => move |format_dpi_adj| {
                     settings_panel.imp().update_temporary_format_from_rows();
                     settings_panel.imp().format_width_unitentry.set_dpi(format_dpi_adj.value());
                     settings_panel.imp().format_height_unitentry.set_dpi(format_dpi_adj.value());
@@ -218,32 +220,10 @@ mod imp {
             );
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
-        }
-
-        fn properties() -> &'static [glib::ParamSpec] {
-            &[]
-        }
-
-        fn signals() -> &'static [glib::subclass::Signal] {
-            &[]
-        }
-
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            _value: &glib::Value,
-            _pspec: &glib::ParamSpec,
-        ) {
-            unimplemented!()
-        }
-
-        fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
-            unimplemented!()
         }
     }
 
@@ -386,7 +366,7 @@ impl Default for SettingsPanel {
 
 impl SettingsPanel {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create SettingsPanel")
+        glib::Object::new(&[])
     }
 
     pub fn temporary_format(&self) -> Rc<RefCell<Format>> {
@@ -591,8 +571,8 @@ impl SettingsPanel {
             .general_autosave_interval_secs_spinbutton
             .get()
             .bind_property("value", appwindow, "autosave-interval-secs")
-            .transform_to(|_, value| Some((value.get::<f64>().unwrap().round() as u32).to_value()))
-            .transform_from(|_, value| Some(f64::from(value.get::<u32>().unwrap()).to_value()))
+            .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
+            .transform_from(|_, val: u32| Some(f64::from(val).to_value()))
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
 

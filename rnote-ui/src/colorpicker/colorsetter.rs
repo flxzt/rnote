@@ -38,11 +38,13 @@ mod imp {
     }
 
     impl ObjectImpl for ColorSetter {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
 
-            obj.set_height_request(38);
-            obj.set_css_classes(&["setter_button"]);
+            self.parent_constructed();
+
+            inst.set_height_request(38);
+            inst.set_css_classes(&["setter_button"]);
 
             self.css.load_from_data(
                 self.generate_css_string(
@@ -51,7 +53,7 @@ mod imp {
                 )
                 .as_bytes(),
             );
-            obj.style_context()
+            inst.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
@@ -84,13 +86,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "color" => {
                     let color = value
@@ -116,7 +112,7 @@ mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "color" => self.color.get().to_value(),
                 "position" => self.position.get().to_value(),
@@ -220,7 +216,7 @@ impl ColorSetter {
     pub const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("failed to create `ColorSetter")
+        glib::Object::new(&[])
     }
 
     pub fn position(&self) -> PositionType {

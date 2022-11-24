@@ -7,7 +7,7 @@ use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, DrawBehaviour, RnoteEngine};
 
 use anyhow::Context;
-use gtk4::{gdk, graphene, gsk, Snapshot};
+use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;

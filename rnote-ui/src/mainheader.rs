@@ -59,12 +59,12 @@ mod imp {
     }
 
     impl ObjectImpl for MainHeader {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -85,8 +85,7 @@ impl Default for MainHeader {
 
 impl MainHeader {
     pub fn new() -> Self {
-        let mainheader: MainHeader = glib::Object::new(&[]).expect("Failed to create MainHeader");
-        mainheader
+        glib::Object::new(&[])
     }
 
     pub fn headerbar(&self) -> adw::HeaderBar {

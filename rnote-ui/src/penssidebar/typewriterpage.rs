@@ -69,15 +69,15 @@ mod imp {
     }
 
     impl ObjectImpl for TypewriterPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
 
             // Sets the level of the font chooser (we want FAMILY, as we have separate widgets for weight, style, etc.)
             self.fontchooser.set_level(FontChooserLevel::FAMILY);
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -99,7 +99,7 @@ impl Default for TypewriterPage {
 
 impl TypewriterPage {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create TypewriterPage")
+        glib::Object::new(&[])
     }
 
     pub fn fontchooser_menubutton(&self) -> MenuButton {
@@ -158,16 +158,16 @@ impl TypewriterPage {
         // Listening to connect_font_notify would always activate at app startup. font_activated only emits when the user interactively selects a font (with double click or Enter)
         // or we activate the signal manually elsewhere in the code
         self.fontchooser().connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
-            if let Some(Some(font_family)) = fontchooser.font_family().map(|font_family| font_family.name()) {
+            if let Some(font_family) = fontchooser.font_family().map(|font_family| font_family.name().to_string()) {
                 {
                     let engine = appwindow.canvas().engine();
                     let engine = &mut *engine.borrow_mut();
 
-                    engine.penholder.typewriter.text_style.font_family = font_family.to_string();
+                    engine.penholder.typewriter.text_style.font_family = font_family.clone();
 
                     let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
                         |text_style| {
-                            text_style.font_family = font_family.to_string();
+                            text_style.font_family = font_family;
                         },
                         &mut EngineViewMut {
                             tasks_tx: engine.tasks_tx(),
@@ -227,8 +227,7 @@ impl TypewriterPage {
         // Update the font chooser font size, to display the preview text in the correct size
         self.font_size_spinbutton()
             .bind_property("value", &fontchooser, "font-desc")
-            .transform_to(|binding, value| {
-                let font_size = value.get::<f64>().unwrap();
+            .transform_to(|binding, val: f64| {
                 let fontchooser = binding
                     .target()
                     .unwrap()
@@ -236,7 +235,7 @@ impl TypewriterPage {
                     .unwrap();
                 let mut font_desc = fontchooser.font_desc()?;
 
-                font_desc.set_size((font_size * f64::from(pango::SCALE)).round() as i32);
+                font_desc.set_size((val * f64::from(pango::SCALE)).round() as i32);
 
                 Some(font_desc.to_value())
             })

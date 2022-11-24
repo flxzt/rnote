@@ -22,15 +22,15 @@ mod imp {
     impl ObjectImpl for WorkspaceList {}
 
     impl ListModelImpl for WorkspaceList {
-        fn item_type(&self, _list_model: &Self::Type) -> glib::Type {
+        fn item_type(&self) -> glib::Type {
             WorkspaceListEntry::static_type()
         }
 
-        fn n_items(&self, _list_model: &Self::Type) -> u32 {
+        fn n_items(&self) -> u32 {
             self.list.borrow().len() as u32
         }
 
-        fn item(&self, _list_model: &Self::Type, position: u32) -> Option<glib::Object> {
+        fn item(&self, position: u32) -> Option<glib::Object> {
             self.list
                 .borrow()
                 .get(position as usize)
@@ -53,7 +53,7 @@ impl Default for WorkspaceList {
 
 impl WorkspaceList {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create WorkspaceList.")
+        glib::Object::new(&[])
     }
 
     pub fn from_vec(vec: Vec<WorkspaceListEntry>) -> Self {

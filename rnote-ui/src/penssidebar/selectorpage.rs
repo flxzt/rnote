@@ -37,12 +37,12 @@ mod imp {
     }
 
     impl ObjectImpl for SelectorPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -64,7 +64,7 @@ impl Default for SelectorPage {
 
 impl SelectorPage {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create SelectorPage")
+        glib::Object::new(&[])
     }
 
     pub fn selectorstyle_polygon_toggle(&self) -> ToggleButton {

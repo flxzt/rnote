@@ -84,13 +84,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "dir" => {
                     let dir = value
@@ -117,7 +111,7 @@ mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "dir" => self
                     .inner
@@ -161,7 +155,6 @@ impl WorkspaceListEntry {
             ),
             ("name", &inner.name.to_value()),
         ])
-        .expect("Failed to create `WorkspaceEntry`")
     }
 
     pub fn replace_data(&self, entry: &Self) {

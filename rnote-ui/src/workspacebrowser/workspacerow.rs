@@ -50,16 +50,16 @@ mod imp {
     }
 
     impl ObjectImpl for WorkspaceRow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
 
-            obj.set_css_classes(&["workspacerow"]);
+            self.instance().set_css_classes(&["workspacerow"]);
 
             self.connect_entry();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -76,13 +76,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "entry" => {
                     let entry = value
@@ -97,7 +91,7 @@ mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "entry" => self.entry.borrow().to_value(),
                 _ => unimplemented!(),
@@ -204,7 +198,7 @@ impl WorkspaceRow {
     pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 
     pub fn new(entry: WorkspaceListEntry) -> Self {
-        glib::Object::new(&[("entry", &entry.to_value())]).expect("Failed to create `WorkspaceRow`")
+        glib::Object::new(&[("entry", &entry.to_value())])
     }
 
     pub fn entry(&self) -> WorkspaceListEntry {

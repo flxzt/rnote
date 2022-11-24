@@ -84,24 +84,26 @@ mod imp {
     }
 
     impl ObjectImpl for ColorPicker {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
+            self.parent_constructed();
 
             let colorchooser = self.colorchooser.get();
             let first_colorsetter = self.first_colorsetter.get();
             let colorpicker_popover = self.colorpicker_popover.get();
             let colorchooser_editor_gobackbutton = self.colorchooser_editor_gobackbutton.get();
 
-            self.first_colorsetter
-                .connect_clicked(clone!(@weak obj => move |first_colorsetter| {
+            self.first_colorsetter.connect_clicked(
+                clone!(@weak inst as colorpicker => move |first_colorsetter| {
                     let color = first_colorsetter.property::<gdk::RGBA>("color");
-                    obj.set_property("current-color", &color.to_value());
+                    colorpicker.set_property("current-color", &color.to_value());
 
                     // Avoid loops
-                    if obj.selected() != 0_u32 {
-                        obj.set_selected(0_u32);
+                    if colorpicker.selected() != 0_u32 {
+                        colorpicker.set_selected(0_u32);
                     }
-                }));
+                }),
+            );
 
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
@@ -122,14 +124,14 @@ mod imp {
                 }),
             );
 
-            self.colorchooser
-                .connect_rgba_notify(clone!(@weak obj => move |colorchooser| {
+            self.colorchooser.connect_rgba_notify(
+                clone!(@weak inst as colorpicker => move |colorchooser| {
                     let color = colorchooser.rgba();
-                    obj.set_property("current-color", &color.to_value());
+                    colorpicker.set_property("current-color", &color.to_value());
+                }),
+            );
 
-                }));
-
-            obj.connect_notify_local(Some("current-color"), clone!(@weak first_colorsetter, @weak self.colorsetters as colorsetters => move |obj, _param| {
+            inst.connect_notify_local(Some("current-color"), clone!(@weak first_colorsetter, @weak self.colorsetters as colorsetters => move |obj, _param| {
                 let current_color = obj.current_color();
 
                 // store color in the buttons
@@ -145,8 +147,8 @@ mod imp {
             }));
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -192,16 +194,12 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            let inst = self.instance();
+
             match pspec.name() {
                 "position" => {
-                    let layout_manager = obj
+                    let layout_manager = inst
                         .layout_manager()
                         .unwrap()
                         .downcast::<BoxLayout>()
@@ -279,7 +277,7 @@ mod imp {
                 "amount-colorbuttons" => {
                     self.amount_colorbuttons
                         .set(value.get::<u32>().expect("value not of type `u32`"));
-                    self.init_colorsetters(obj);
+                    self.init_colorsetters();
                 }
                 "current-color" => {
                     self.current_color.set(
@@ -292,7 +290,7 @@ mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "position" => self.position.get().to_value(),
                 "selected" => self.selected.get().to_value(),
@@ -306,7 +304,9 @@ mod imp {
     impl WidgetImpl for ColorPicker {}
 
     impl ColorPicker {
-        fn init_colorsetters(&self, obj: &<Self as ObjectSubclass>::Type) {
+        fn init_colorsetters(&self) {
+            let inst = self.instance();
+
             let setterbox = self.setterbox.get();
             let first_colorsetter = self.first_colorsetter.get();
 
@@ -324,19 +324,21 @@ mod imp {
                 setter_button.set_vexpand(true);
                 setter_button.set_halign(Align::Fill);
                 setter_button.set_valign(Align::Fill);
-                setter_button.set_position(obj.position());
+                setter_button.set_position(inst.position());
                 setter_button.set_group(Some(&first_colorsetter));
                 setterbox.append(&setter_button);
 
-                setter_button.connect_clicked(clone!(@weak obj => move |setter_button| {
-                    let color = setter_button.property::<gdk::RGBA>("color");
-                    obj.set_property("current-color", &color.to_value());
+                setter_button.connect_clicked(
+                    clone!(@weak inst as colorpicker => move |setter_button| {
+                        let color = setter_button.property::<gdk::RGBA>("color");
+                        colorpicker.set_property("current-color", &color.to_value());
 
-                    // Avoid loops
-                    if obj.selected() != i {
-                        obj.set_selected(i);
-                    }
-                }));
+                        // Avoid loops
+                        if colorpicker.selected() != i {
+                            colorpicker.set_selected(i);
+                        }
+                    }),
+                );
 
                 self.colorsetters.borrow_mut().push(setter_button);
             }
@@ -383,10 +385,7 @@ impl ColorPicker {
     pub const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
 
     pub fn new(current_color: gdk::RGBA) -> Self {
-        let color_picker: ColorPicker =
-            glib::Object::new(&[("current-color", &current_color.to_value())])
-                .expect("Failed to create ColorPicker");
-        color_picker
+        glib::Object::new(&[("current-color", &current_color.to_value())])
     }
 
     pub fn position(&self) -> PositionType {

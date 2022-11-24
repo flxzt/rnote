@@ -1,4 +1,4 @@
-use gtk4::{gdk, graphene, gsk, Snapshot};
+use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::{RenderContext, Text, TextLayoutBuilder};
 use rnote_compose::helpers::Vector2Helpers;

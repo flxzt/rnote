@@ -1,5 +1,4 @@
 use std::cell::Cell;
-use std::rc::Rc;
 
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
@@ -14,15 +13,15 @@ use rnote_engine::{render, Document};
 mod imp {
     use super::*;
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug)]
     pub struct CanvasLayout {
-        pub old_viewport: Rc<Cell<AABB>>,
+        pub old_viewport: Cell<AABB>,
     }
 
     impl Default for CanvasLayout {
         fn default() -> Self {
             Self {
-                old_viewport: Rc::new(Cell::new(AABB::new_zero())),
+                old_viewport: Cell::new(AABB::new_zero()),
             }
         }
     }
@@ -35,14 +34,14 @@ mod imp {
     }
 
     impl ObjectImpl for CanvasLayout {}
+
     impl LayoutManagerImpl for CanvasLayout {
-        fn request_mode(&self, _layout_manager: &Self::Type, _widget: &Widget) -> SizeRequestMode {
+        fn request_mode(&self, _widget: &Widget) -> SizeRequestMode {
             SizeRequestMode::ConstantSize
         }
 
         fn measure(
             &self,
-            _layout_manager: &Self::Type,
             widget: &Widget,
             orientation: Orientation,
             _for_size: i32,
@@ -67,14 +66,7 @@ mod imp {
             }
         }
 
-        fn allocate(
-            &self,
-            _layout_manager: &Self::Type,
-            widget: &Widget,
-            width: i32,
-            height: i32,
-            _baseline: i32,
-        ) {
+        fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
             let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
@@ -179,7 +171,7 @@ impl Default for CanvasLayout {
 
 impl CanvasLayout {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create CanvasLayout")
+        glib::Object::new(&[])
     }
 
     // needs to be called after zooming

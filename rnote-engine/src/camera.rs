@@ -130,9 +130,7 @@ impl Camera {
                 -self.offset[0] as f32,
                 -self.offset[1] as f32,
             ))
-            .unwrap()
             .scale(total_zoom as f32, total_zoom as f32)
-            .unwrap()
     }
 }
 

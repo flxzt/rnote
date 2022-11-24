@@ -51,25 +51,24 @@ mod imp {
     }
 
     impl ObjectImpl for IconPicker {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
 
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder(
-                    "icon-picked",
-                    // Emits the icon name string
-                    &[String::static_type().into()],
-                    <()>::static_type().into(),
-                )
-                .build()]
+                vec![glib::subclass::Signal::builder("icon-picked")
+                    .param_types(
+                        // Emits the icon name string
+                        [String::static_type()],
+                    )
+                    .build()]
             });
             SIGNALS.as_ref()
         }
@@ -92,7 +91,7 @@ impl Default for IconPicker {
 
 impl IconPicker {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create `IconPicker`")
+        glib::Object::new(&[])
     }
 
     pub fn list(&self) -> Option<StringList> {
@@ -138,6 +137,8 @@ impl IconPicker {
         // Factory
         let icon_factory = SignalListItemFactory::new();
         icon_factory.connect_setup(move |_factory, list_item| {
+            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+
             let icon_image = Image::builder()
                 .halign(Align::Center)
                 .valign(Align::Center)
@@ -150,7 +151,7 @@ impl IconPicker {
 
             list_item.set_child(Some(&icon_image));
 
-            let list_item_expr = ConstantExpression::new(list_item);
+            let list_item_expr = ConstantExpression::new(&list_item);
             let string_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item")
                     .chain_property::<StringObject>("string");

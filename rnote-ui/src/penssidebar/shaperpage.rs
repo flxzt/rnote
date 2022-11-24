@@ -95,12 +95,12 @@ mod imp {
     }
 
     impl ObjectImpl for ShaperPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -122,7 +122,7 @@ impl Default for ShaperPage {
 
 impl ShaperPage {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create ShaperPage")
+        glib::Object::new(&[])
     }
 
     pub fn shaperstyle_menubutton(&self) -> MenuButton {

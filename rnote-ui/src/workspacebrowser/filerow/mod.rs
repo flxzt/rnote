@@ -67,15 +67,15 @@ mod imp {
     }
 
     impl ObjectImpl for FileRow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            obj.set_widget_name("filerow");
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.instance().set_widget_name("filerow");
 
-            Self::setup_input(obj);
+            self.setup_input();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -92,13 +92,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "current-file" => {
                     let current_file = value
@@ -110,7 +104,7 @@ mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "current-file" => self.current_file.borrow().to_value(),
                 _ => unimplemented!(),
@@ -121,17 +115,18 @@ mod imp {
     impl WidgetImpl for FileRow {}
 
     impl FileRow {
-        fn setup_input(obj: &super::FileRow) {
-            obj.add_controller(&obj.imp().drag_source);
+        fn setup_input(&self) {
+            let inst = self.instance();
+            inst.add_controller(&self.drag_source);
 
             let rightclick_gesture = GestureClick::builder()
                 .name("rightclick_gesture")
                 .button(gdk::BUTTON_SECONDARY)
                 .build();
-            obj.add_controller(&rightclick_gesture);
+            inst.add_controller(&rightclick_gesture);
             rightclick_gesture.connect_pressed(
-                clone!(@weak obj => move |_rightclick_gesture, _n_press, _x, _y| {
-                    obj.imp().popovermenu.popup();
+                clone!(@weak inst as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
+                    filerow.imp().popovermenu.popup();
                 }),
             );
 
@@ -139,12 +134,12 @@ mod imp {
                 .name("longpress_gesture")
                 .touch_only(true)
                 .build();
-            obj.add_controller(&longpress_gesture);
+            inst.add_controller(&longpress_gesture);
             longpress_gesture.group_with(&rightclick_gesture);
 
             longpress_gesture.connect_pressed(
-                clone!(@weak obj => move |_rightclick_gesture, _x, _y| {
-                    obj.imp().popovermenu.popup();
+                clone!(@weak inst as filerow => move |_rightclick_gesture, _x, _y| {
+                    filerow.imp().popovermenu.popup();
                 }),
             );
         }
@@ -164,7 +159,7 @@ impl Default for FileRow {
 
 impl FileRow {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create `FileRow`")
+        glib::Object::new(&[])
     }
 
     pub fn current_file(&self) -> Option<gio::File> {

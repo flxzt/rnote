@@ -484,12 +484,12 @@ impl Image {
             renderer
                     .render_document(
                         &cx,
-                        &cairo::Rectangle {
-                            x: bounds.mins[0],
-                            y: bounds.mins[1],
-                            width: bounds.extents()[0],
-                            height: bounds.extents()[1],
-                        },
+                        &cairo::Rectangle::new(
+                            bounds.mins[0],
+                            bounds.mins[1],
+                            bounds.extents()[0],
+                            bounds.extents()[1],
+                        ),
                     )
                     .map_err(|e| {
                         anyhow::Error::msg(format!(
@@ -775,12 +775,12 @@ impl Svg {
             renderer
                 .render_document(
                     cx,
-                    &cairo::Rectangle {
-                        x: svg.bounds.mins[0],
-                        y: svg.bounds.mins[1],
-                        width: svg.bounds.extents()[0],
-                        height: svg.bounds.extents()[1],
-                    },
+                    &cairo::Rectangle::new(
+                        svg.bounds.mins[0],
+                        svg.bounds.mins[1],
+                        svg.bounds.extents()[0],
+                        svg.bounds.extents()[1],
+                    ),
                 )
                 .map_err(|e| {
                     anyhow::Error::msg(format!(

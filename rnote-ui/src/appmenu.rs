@@ -36,24 +36,24 @@ mod imp {
     }
 
     impl ObjectImpl for AppMenu {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
 
             self.menubutton
                 .get()
                 .set_popover(Some(&self.popovermenu.get()));
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
     }
 
     impl WidgetImpl for AppMenu {
-        fn size_allocate(&self, widget: &Self::Type, width: i32, height: i32, baseline: i32) {
-            self.parent_size_allocate(widget, width, height, baseline);
+        fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
+            self.parent_size_allocate(width, height, baseline);
             self.popovermenu.get().present();
         }
     }
@@ -72,8 +72,7 @@ impl Default for AppMenu {
 
 impl AppMenu {
     pub fn new() -> Self {
-        let appmenu: AppMenu = glib::Object::new(&[]).expect("Failed to create AppMenu");
-        appmenu
+        glib::Object::new(&[])
     }
 
     pub fn menubutton(&self) -> MenuButton {

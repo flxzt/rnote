@@ -51,18 +51,19 @@ mod imp {
     }
 
     impl ObjectImpl for UnitEntry {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
+            self.parent_constructed();
 
             // Spinner
-            obj.bind_property("value", &self.value_spinner.get(), "value")
-                .transform_to(|_, value| Some(value.clone()))
-                .transform_from(|_, value| Some(value.clone()))
+            inst.bind_property("value", &self.value_spinner.get(), "value")
+                .transform_to(|_, val: f64| Some(val))
+                .transform_from(|_, val: f64| Some(val))
                 .flags(glib::BindingFlags::BIDIRECTIONAL | glib::BindingFlags::SYNC_CREATE)
                 .build();
 
             // DropDown
-            obj.connect_notify_local(Some("unit"), |unit_entry, _pspec| {
+            inst.connect_notify_local(Some("unit"), |unit_entry, _pspec| {
                 let unit = unit_entry.unit();
 
                 let unit_dropdown_listmodel = unit_entry
@@ -77,7 +78,7 @@ mod imp {
                     .set_selected(unit_dropdown_listmodel.find_position(unit as i32));
             });
             self.unit_dropdown.get().connect_selected_notify(
-                clone!(@weak obj as unit_entry => move |unit_dropdown| {
+                clone!(@weak inst as unit_entry => move |unit_dropdown| {
                     let unit_dropdown_listmodel = unit_entry
                         .unit_dropdown()
                         .model()
@@ -107,24 +108,15 @@ mod imp {
             );
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
 
         fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder(
-                    // Signal name
-                    "measurement-changed",
-                    // Types of the values which will be sent to the signal handler
-                    &[],
-                    // Type of the value the signal handler sends back
-                    <()>::static_type().into(),
-                )
-                .build()]
-            });
+            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> =
+                Lazy::new(|| vec![glib::subclass::Signal::builder("measurement-changed").build()]);
             SIGNALS.as_ref()
         }
 
@@ -162,7 +154,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "value" => self.value.get().to_value(),
                 "unit" => self.unit.get().to_value(),
@@ -171,19 +163,15 @@ mod imp {
             }
         }
 
-        fn set_property(
-            &self,
-            obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            let inst = self.instance();
+
             match pspec.name() {
                 "value" => {
                     let value_ = value.get::<f64>().expect("The value must be of type 'f64'");
                     if value_ != self.value.get() {
                         self.value.replace(value_);
-                        obj.emit_by_name::<()>("measurement-changed", &[]);
+                        inst.emit_by_name::<()>("measurement-changed", &[]);
                     }
                 }
                 "unit" => {
@@ -193,14 +181,14 @@ mod imp {
 
                     if unit != self.unit.get() {
                         self.unit.replace(unit);
-                        obj.emit_by_name::<()>("measurement-changed", &[]);
+                        inst.emit_by_name::<()>("measurement-changed", &[]);
                     }
                 }
                 "dpi" => {
                     let dpi = value.get::<f64>().expect("The value must be of type 'f64'");
                     if dpi != self.dpi.get() {
                         self.dpi.replace(dpi);
-                        obj.emit_by_name::<()>("measurement-changed", &[]);
+                        inst.emit_by_name::<()>("measurement-changed", &[]);
                     }
                 }
                 _ => unimplemented!(),
@@ -225,8 +213,7 @@ impl Default for UnitEntry {
 
 impl UnitEntry {
     pub fn new() -> Self {
-        let unitentry: Self = glib::Object::new(&[]).expect("Failed to create `UnitEntry`");
-        unitentry
+        glib::Object::new(&[])
     }
 
     pub fn value_adj(&self) -> Adjustment {

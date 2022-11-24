@@ -40,7 +40,9 @@ mod imp {
     impl ObjectImpl for RnoteApp {}
 
     impl ApplicationImpl for RnoteApp {
-        fn activate(&self, app: &Self::Type) {
+        fn activate(&self) {
+            let inst = self.instance();
+
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
             RnoteCanvas::static_type();
@@ -67,25 +69,26 @@ mod imp {
             PenShortcutRow::static_type();
 
             // Load the resources
-            app.set_resource_base_path(Some(config::APP_IDPATH));
+            inst.set_resource_base_path(Some(config::APP_IDPATH));
             let resource = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
             gio::resources_register(&resource);
 
             // setup the app
-            app.setup_actions();
-            app.setup_action_accels();
+            inst.setup_actions();
+            inst.setup_action_accels();
 
-            let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
+            let appwindow = RnoteAppWindow::new(inst.upcast_ref::<gtk4::Application>());
             appwindow.init();
 
             // Everything else before starting
-            app.init_misc(&appwindow);
+            inst.init_misc(&appwindow);
 
             appwindow.show();
         }
 
-        fn open(&self, application: &Self::Type, files: &[gio::File], _hint: &str) {
+        fn open(&self, files: &[gio::File], _hint: &str) {
+            let inst = self.instance();
             for file in files {
                 match utils::FileType::lookup_file_type(file) {
                     utils::FileType::Unsupported => {
@@ -96,7 +99,8 @@ mod imp {
                     }
                 };
             }
-            application.activate();
+
+            inst.activate();
         }
     }
 
@@ -122,7 +126,6 @@ impl RnoteApp {
             ("application-id", &config::APP_ID),
             ("flags", &gio::ApplicationFlags::HANDLES_OPEN),
         ])
-        .expect("failed to create RnoteApp")
     }
 
     pub fn input_file(&self) -> Option<gio::File> {

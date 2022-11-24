@@ -53,17 +53,19 @@ mod imp {
     }
 
     impl ObjectImpl for PenShortcutRow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
+
+            self.parent_constructed();
 
             let list_factory = ChangePenStyleListFactory::default();
             let icon_factory = ChangePenStyleIconFactory::default();
 
-            obj.set_model(Some(&*self.changepenstyle_model));
-            obj.set_list_factory(Some(&*list_factory));
-            obj.set_factory(Some(&*icon_factory));
+            inst.set_model(Some(&*self.changepenstyle_model));
+            inst.set_list_factory(Some(&*list_factory));
+            inst.set_factory(Some(&*icon_factory));
 
-            obj.connect_selected_item_notify(move |obj| {
+            inst.connect_selected_item_notify(move |obj| {
                 if let Some(selected_item) = obj.selected_item() {
                     let new_pen_style = PenStyle::try_from(
                         selected_item
@@ -86,45 +88,45 @@ mod imp {
             });
 
             self.permanent_checker.get().connect_toggled(
-                clone!(@weak obj => move |permanent_checker| {
-                    match &mut *obj.imp().action.borrow_mut() {
+                clone!(@weak inst as penshortcutrow => move |permanent_checker| {
+                    match &mut *penshortcutrow.imp().action.borrow_mut() {
                         ShortcutAction::ChangePenStyle { style: _, ref mut permanent } => {
                             *permanent = permanent_checker.is_active();
                         }
                     }
-                    obj.emit_by_name::<()>("action-changed", &[]);
+                    penshortcutrow.emit_by_name::<()>("action-changed", &[]);
                 }),
             );
 
-            obj.connect_local(
+            inst.connect_local(
                 "key-changed",
                 false,
-                clone!(@weak obj => @default-return None, move |_values| {
-                    obj.update_ui();
+                clone!(@weak inst as penshortcutrow => @default-return None, move |_values| {
+                    penshortcutrow.update_ui();
                     None
                 }),
             );
 
-            obj.connect_local(
+            inst.connect_local(
                 "action-changed",
                 false,
-                clone!(@weak obj => @default-return None, move |_values| {
-                    obj.update_ui();
+                clone!(@weak inst as penshortcutrow => @default-return None, move |_values| {
+                    penshortcutrow.update_ui();
                     None
                 }),
             );
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
         fn signals() -> &'static [Signal] {
             static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
                 vec![
-                    Signal::builder("key-changed", &[], <()>::static_type().into()).build(),
-                    Signal::builder("action-changed", &[], <()>::static_type().into()).build(),
+                    Signal::builder("key-changed").build(),
+                    Signal::builder("action-changed").build(),
                 ]
             });
             SIGNALS.as_ref()
@@ -149,12 +151,11 @@ glib::wrapper! {
 impl PenShortcutRow {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
-        glib::Object::new(&[]).unwrap()
+        glib::Object::new(&[])
     }
 
     fn update_ui(&self) {
-        let action = self.action();
-        match action {
+        match self.action() {
             ShortcutAction::ChangePenStyle { style, permanent } => {
                 self.set_selected(self.imp().changepenstyle_model.find_position(style as i32));
                 self.imp().permanent_checker.set_active(permanent);

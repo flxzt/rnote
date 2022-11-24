@@ -223,25 +223,27 @@ mod imp {
     }
 
     impl ObjectImpl for RnoteAppWindow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let inst = self.instance();
 
-            let _windowsettings = obj.settings();
+            self.parent_constructed();
+
+            let _windowsettings = inst.settings();
 
             // Add input controllers
-            obj.canvas_scroller()
+            inst.canvas_scroller()
                 .add_controller(&self.canvas_touch_drag_gesture);
-            obj.canvas_scroller()
+            inst.canvas_scroller()
                 .add_controller(&self.canvas_drag_empty_area_gesture);
-            obj.canvas_scroller()
+            inst.canvas_scroller()
                 .add_controller(&self.canvas_zoom_gesture);
-            obj.canvas_scroller()
+            inst.canvas_scroller()
                 .add_controller(&self.canvas_zoom_scroll_controller);
-            obj.canvas_scroller()
+            inst.canvas_scroller()
                 .add_controller(&self.canvas_mouse_drag_middle_gesture);
 
             if config::PROFILE == "devel" {
-                obj.add_css_class("devel");
+                inst.add_css_class("devel");
             }
 
             // Load the application css
@@ -255,40 +257,40 @@ mod imp {
                 gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
             );
 
-            self.setup_flap(obj);
+            self.setup_flap();
 
             // pens narrow toggles
-            self.narrow_brush_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_brush_toggle| {
+            self.narrow_brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_brush_toggle| {
                 if narrow_brush_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
                 }
             }));
 
-            self.narrow_shaper_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_shaper_toggle| {
+            self.narrow_shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_shaper_toggle| {
                 if narrow_shaper_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
                 }
             }));
 
-            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_typewriter_toggle| {
+            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_typewriter_toggle| {
                 if narrow_typewriter_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
                 }
             }));
 
-            self.narrow_eraser_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_eraser_toggle| {
+            self.narrow_eraser_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_eraser_toggle| {
                 if narrow_eraser_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
                 }
             }));
 
-            self.narrow_selector_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_selector_toggle| {
+            self.narrow_selector_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_selector_toggle| {
                 if narrow_selector_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
                 }
             }));
 
-            self.narrow_tools_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_tools_toggle| {
+            self.narrow_tools_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_tools_toggle| {
                 if narrow_tools_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
                 }
@@ -344,7 +346,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "autosave" => self.autosave.get().to_value(),
@@ -357,13 +359,7 @@ mod imp {
             }
         }
 
-        fn set_property(
-            &self,
-            obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
@@ -378,7 +374,7 @@ mod imp {
                     self.autosave.replace(autosave);
 
                     if autosave {
-                        self.update_autosave_handler(obj);
+                        self.update_autosave_handler();
                     } else if let Some(autosave_source_id) =
                         self.autosave_source_id.borrow_mut().take()
                     {
@@ -393,7 +389,7 @@ mod imp {
                     self.autosave_interval_secs.replace(autosave_interval_secs);
 
                     if self.autosave.get() {
-                        self.update_autosave_handler(obj);
+                        self.update_autosave_handler();
                     }
                 }
                 "righthanded" => {
@@ -430,12 +426,14 @@ mod imp {
 
     impl WindowImpl for RnoteAppWindow {
         // Save window state right before the window will be closed
-        fn close_request(&self, obj: &Self::Type) -> Inhibit {
+        fn close_request(&self) -> Inhibit {
+            let inst = self.instance();
+
             // Save current doc
-            if obj.unsaved_changes() {
-                dialogs::dialog_quit_save(obj);
+            if inst.unsaved_changes() {
+                dialogs::dialog_quit_save(&inst);
             } else {
-                obj.close_force();
+                inst.close_force();
             }
 
             // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
@@ -448,7 +446,9 @@ mod imp {
     impl AdwApplicationWindowImpl for RnoteAppWindow {}
 
     impl RnoteAppWindow {
-        fn update_autosave_handler(&self, obj: &super::RnoteAppWindow) {
+        fn update_autosave_handler(&self) {
+            let obj = self.instance();
+
             if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
                 if let Some(output_file) = appwindow.canvas().output_file() {
                     glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
@@ -468,7 +468,8 @@ mod imp {
         }
 
         // Setting up the sidebar flap
-        fn setup_flap(&self, obj: &super::RnoteAppWindow) {
+        fn setup_flap(&self) {
+            let inst = self.instance();
             let flap = self.flap.get();
             let flap_box = self.flap_box.get();
             let flap_resizer = self.flap_resizer.get();
@@ -496,7 +497,7 @@ mod imp {
             );
 
             self.flap
-                .connect_folded_notify(clone!(@weak obj as appwindow, @strong expanded_revealed, @weak flapreveal_toggle, @weak workspace_headerbar => move |flap| {
+                .connect_folded_notify(clone!(@weak inst as appwindow, @strong expanded_revealed, @weak flapreveal_toggle, @weak workspace_headerbar => move |flap| {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
@@ -529,7 +530,7 @@ mod imp {
                 }));
 
             self.flap
-                .connect_reveal_flap_notify(clone!(@weak obj as appwindow, @weak workspace_headerbar => move |flap| {
+                .connect_reveal_flap_notify(clone!(@weak inst as appwindow, @weak workspace_headerbar => move |flap| {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
@@ -554,7 +555,7 @@ mod imp {
                 }));
 
             self.flap.connect_flap_position_notify(
-                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box, @weak workspace_headerbar, @strong expanded_revealed, @weak obj as appwindow => move |flap| {
+                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box, @weak workspace_headerbar, @strong expanded_revealed, @weak inst as appwindow => move |flap| {
                     if flap.flap_position() == PackType::Start {
                         workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
                         workspace_headerbar.set_show_end_title_buttons(false);
@@ -591,7 +592,7 @@ mod imp {
                     prev_folded.set(flap.is_folded());
             }));
 
-            resizer_drag_gesture.connect_drag_update(clone!(@weak obj, @strong prev_folded, @weak flap, @weak flap_box, @weak flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
+            resizer_drag_gesture.connect_drag_update(clone!(@weak inst as appwindow, @strong prev_folded, @weak flap, @weak flap_box, @weak flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
                 if flap.is_folded() == prev_folded.get() {
                     // Set BEFORE new width request
                     prev_folded.set(flap.is_folded());
@@ -602,7 +603,7 @@ mod imp {
                         flap_box.width() - x.floor() as i32
                     };
 
-                    if new_width > 0 && new_width < obj.mainheader().width() - super::RnoteAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
+                    if new_width > 0 && new_width < appwindow.mainheader().width() - super::RnoteAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
                         flap_box.set_width_request(new_width);
                     }
                 } else if flap.is_folded() {
@@ -619,9 +620,9 @@ mod imp {
             );
 
             self.flap_close_button.get().connect_clicked(
-                clone!(@weak obj => move |_flap_close_button| {
-                    if obj.flap().reveals_flap() && obj.flap().is_folded() {
-                        obj.flap().set_reveal_flap(false);
+                clone!(@weak inst as appwindow => move |_flap_close_button| {
+                    if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
+                        appwindow.flap().set_reveal_flap(false);
                     }
                 }),
             );
@@ -902,7 +903,7 @@ impl RnoteAppWindow {
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub fn new(app: &Application) -> Self {
-        glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
+        glib::Object::new(&[("application", app)])
     }
 
     /// Called to close the window

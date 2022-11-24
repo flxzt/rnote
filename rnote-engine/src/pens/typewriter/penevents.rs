@@ -397,12 +397,11 @@ impl Typewriter {
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
+                widget_flags.merge_with_other(engine_view.store.record());
                 Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
-                        widget_flags.merge_with_other(engine_view.store.record());
-
                         let mut text_style = self.text_style.clone();
                         text_style.ranged_text_attributes.clear();
 
@@ -450,15 +449,13 @@ impl Typewriter {
                 pen_down,
             } => {
                 //log::debug!("key: {:?}", keyboard_key);
+                widget_flags.merge_with_other(engine_view.store.record());
+                Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
-
                     let mut update_stroke = |store: &mut StrokeStore| {
-                        widget_flags.merge_with_other(store.record());
-
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
                             engine_view.tasks_tx.clone(),
@@ -613,15 +610,13 @@ impl Typewriter {
                 finished,
             } => {
                 //log::debug!("key: {:?}", keyboard_key);
+                widget_flags.merge_with_other(engine_view.store.record());
+                Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
-
                     let mut update_stroke = |store: &mut StrokeStore| {
-                        widget_flags.merge_with_other(store.record());
-
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
                             engine_view.tasks_tx.clone(),
@@ -757,6 +752,7 @@ impl Typewriter {
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
+                widget_flags.merge_with_other(engine_view.store.record());
                 Self::start_audio(None, engine_view.audioplayer);
 
                 let mut text_style = self.text_style.clone();
@@ -796,14 +792,16 @@ impl Typewriter {
                 cursor,
                 pen_down,
             } => {
+                // Only record between words
+                if text.contains(' ') {
+                    widget_flags.merge_with_other(engine_view.store.record());
+                }
+                Self::start_audio(None, engine_view.audioplayer);
+
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(None, engine_view.audioplayer);
-
                     textstroke.insert_text_after_cursor(&text, cursor);
-
-                    widget_flags.merge_with_other(engine_view.store.record());
 
                     engine_view.store.update_geometry_for_stroke(*stroke_key);
                     engine_view.store.regenerate_rendering_for_stroke_threaded(
@@ -832,18 +830,19 @@ impl Typewriter {
                 selection_cursor,
                 finished,
             } => {
+                if text.contains(' ') {
+                    widget_flags.merge_with_other(engine_view.store.record());
+                }
+                Self::start_audio(None, engine_view.audioplayer);
+
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(None, engine_view.audioplayer);
-
                     textstroke.replace_text_between_selection_cursors(
                         cursor,
                         selection_cursor,
                         text.as_str(),
                     );
-
-                    widget_flags.merge_with_other(engine_view.store.record());
 
                     engine_view.store.update_geometry_for_stroke(*stroke_key);
                     engine_view.store.regenerate_rendering_for_stroke_threaded(

@@ -62,9 +62,6 @@ pub type StoreSnapshot = HistoryEntry;
 impl StoreSnapshot {
     /// Processes the snapshot before it is used to save to a file
     pub fn process_before_saving(&mut self) {
-        // clear the selection components. These will get rebuild on import, no need to save them.
-        Arc::make_mut(&mut self.selection_components).clear();
-
         // Remove all trashed strokes
         let trashed_keys = self
             .trash_components
@@ -77,6 +74,10 @@ impl StoreSnapshot {
             Arc::make_mut(&mut self.trash_components).remove(key);
             Arc::make_mut(&mut self.chrono_components).remove(key);
         }
+
+        // clear the components that will get rebuild on import.
+        Arc::make_mut(&mut self.trash_components).clear();
+        Arc::make_mut(&mut self.selection_components).clear();
     }
 }
 
@@ -119,7 +120,7 @@ pub struct StrokeStore {
     key_tree: KeyTree,
 
     // Other state
-    /// incrementing counter for chrono_components. value is equal chrono_component of the newest inserted or modified stroke.
+    /// incrementing counter for chrono_components. value must be equal chrono_component of the newest inserted or modified stroke.
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
 }
@@ -147,10 +148,6 @@ impl StrokeStore {
     /// The max length of the history
     pub(crate) const HISTORY_MAX_LEN: usize = 100;
 
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// imports a store snapshot. A loaded strokes store should always be imported with this method.
     /// the store then needs to update its rendering
     pub fn import_snapshot(&mut self, store_snapshot: &StoreSnapshot) {
@@ -165,6 +162,7 @@ impl StrokeStore {
         self.update_geometry_for_strokes(&self.keys_unordered());
 
         self.rebuild_selection_components_slotmap();
+        self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
         self.reload_tree();
     }

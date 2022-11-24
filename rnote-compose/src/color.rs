@@ -1,4 +1,3 @@
-#[allow(unused)]
 use rnote_fileformats::xoppformat;
 
 use serde::{Deserialize, Serialize};
@@ -84,26 +83,6 @@ impl Color {
             b: b.clamp(0.0, 1.0),
             a: a.clamp(0.0, 1.0),
         }
-    }
-
-    /// Returns the red part
-    pub fn r(&self) -> f64 {
-        self.r
-    }
-
-    /// Returns the green part
-    pub fn g(&self) -> f64 {
-        self.g
-    }
-
-    /// Returns the blue part
-    pub fn b(&self) -> f64 {
-        self.b
-    }
-
-    /// Returns the alpha part
-    pub fn a(&self) -> f64 {
-        self.a
     }
 
     /// The luma value, in range [0.0 - 1.0]

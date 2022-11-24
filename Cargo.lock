@@ -3551,7 +3551,6 @@ name = "rnote-compose"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "image 0.23.14",
  "ink-stroke-modeler-rs",
  "kurbo",
  "log",

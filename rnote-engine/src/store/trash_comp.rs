@@ -24,6 +24,15 @@ impl Default for TrashComponent {
 
 /// Systems that are related trashing
 impl StrokeStore {
+    /// Rebuilds the slotmap with default trash components from the keys returned from the primary map, stroke_components.
+    pub fn rebuild_trash_components_slotmap(&mut self) {
+        self.trash_components = Arc::new(slotmap::SecondaryMap::new());
+        self.stroke_components.keys().for_each(|key| {
+            Arc::make_mut(&mut self.trash_components)
+                .insert(key, Arc::new(TrashComponent::default()));
+        });
+    }
+
     pub fn can_trash(&self, key: StrokeKey) -> bool {
         self.trash_components.get(key).is_some()
     }

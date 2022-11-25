@@ -2154,9 +2154,9 @@ dependencies = [
 
 [[package]]
 name = "io-lifetimes"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7d367024b3f3414d8e01f437f704f41a9f64ab36f9067fa73e526ad4c763c87"
+checksum = "e394faa0efb47f9f227f1cd89978f854542b318a6f64fa695489c9c993056656"
 dependencies = [
  "libc",
  "windows-sys",
@@ -3266,7 +3266,8 @@ checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 [[package]]
 name = "piet"
 version = "0.6.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#45ac12b924455e46dbade0f85f803245b01f87eb"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddd2a0027c9ea84b51f42ea3148864e6fc58970ad927e78390d5f9cf7cfa2c78"
 dependencies = [
  "kurbo 0.9.0",
  "unic-bidi",
@@ -3275,7 +3276,8 @@ dependencies = [
 [[package]]
 name = "piet-cairo"
 version = "0.6.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#45ac12b924455e46dbade0f85f803245b01f87eb"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b98e21ec69eefb09d34e34050beb700749547dfc5da7a6cff27089dd59af1b3"
 dependencies = [
  "cairo-rs",
  "pango",
@@ -3288,7 +3290,8 @@ dependencies = [
 [[package]]
 name = "piet-svg"
 version = "0.6.0"
-source = "git+https://github.com/flxzt/piet?branch=rnote#45ac12b924455e46dbade0f85f803245b01f87eb"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15350578dc4839127b413594817790983a063a3836d313c8116731d44ba7e8e9"
 dependencies = [
  "base64",
  "font-kit",
@@ -3343,7 +3346,7 @@ dependencies = [
 [[package]]
 name = "points_on_curve"
 version = "0.2.0"
-source = "git+https://github.com/flxzt/rough-rs?branch=rnote#c6cd6dfa7bfb758dc8a37381a09447a1b20354d0"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3790,10 +3793,10 @@ dependencies = [
  "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
+ "once_cell",
  "parry2d-f64",
  "piet",
  "piet-cairo",
- "piet-svg",
  "pretty_env_logger",
  "rand 0.8.5",
  "rand_distr",
@@ -3822,13 +3825,13 @@ dependencies = [
  "image 0.23.14",
  "itertools 0.10.5",
  "kurbo 0.9.0",
- "lazy_static",
  "libadwaita",
  "librsvg",
  "log",
  "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
+ "once_cell",
  "parry2d-f64",
  "piet",
  "piet-cairo",
@@ -3889,7 +3892,7 @@ dependencies = [
 [[package]]
 name = "rough_piet"
 version = "0.3.0"
-source = "git+https://github.com/flxzt/rough-rs?branch=rnote#c6cd6dfa7bfb758dc8a37381a09447a1b20354d0"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3901,7 +3904,7 @@ dependencies = [
 [[package]]
 name = "roughr"
 version = "0.3.0"
-source = "git+https://github.com/flxzt/rough-rs?branch=rnote#c6cd6dfa7bfb758dc8a37381a09447a1b20354d0"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -4482,7 +4485,7 @@ checksum = "e72d8b19ab05827afefcca66bf47040c1e66a0901eb814784c77d4ec118bd309"
 [[package]]
 name = "svg_path_ops"
 version = "0.2.0"
-source = "git+https://github.com/flxzt/rough-rs?branch=rnote#c6cd6dfa7bfb758dc8a37381a09447a1b20354d0"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
 dependencies = [
  "svgtypes",
 ]

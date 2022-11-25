@@ -11,13 +11,6 @@ rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-engine = {path = "../rnote-engine", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-piet = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-#piet = { path = "../piet/piet" }
-piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-#piet-svg = { path = "../piet/piet-svg" }
-piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-#piet-cairo = { path = "../piet/piet-cairo" }
-
 log = "0.4.16"
 pretty_env_logger = "0.4.0"
 num-derive = "0.3.3"
@@ -39,9 +32,12 @@ cairo-rs = {version = "0.16.3", features = ["png", "svg", "pdf"]}
 poppler-rs = {version = "0.20.0", features = ["v21_12"] }
 svg = "0.10.0"
 image = "0.23.14"
-gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
+piet = "0.6"
+piet-svg = "0.6"
+piet-cairo = "0.6"
 kurbo = "0.9.0"
 url = "2.2.2"
 unicode-segmentation = "1.9.0"
+gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
 fs_extra = "1.2.0"
 regex = "1.6.0"

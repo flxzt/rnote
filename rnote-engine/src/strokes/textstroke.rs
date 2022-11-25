@@ -2,6 +2,7 @@ use std::ops::Range;
 
 use gtk4::pango;
 use kurbo::Shape;
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
@@ -438,8 +439,10 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2].with_a8(0xf0);
-        const FILL_COLOR: piet::Color = color::GNOME_BLUES[0].with_a8(0x17);
+        static OUTLINE_COLOR: Lazy<piet::Color> =
+            Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.941));
+        static FILL_COLOR: Lazy<piet::Color> =
+            Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.090));
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
@@ -448,8 +451,8 @@ impl TextStyle {
             for selection_rect in selection_rects {
                 let selection_rectpath = transform.to_kurbo() * selection_rect.to_path(0.1);
 
-                cx.fill(selection_rectpath.clone(), &FILL_COLOR);
-                cx.stroke(selection_rectpath, &OUTLINE_COLOR, outline_width);
+                cx.fill(selection_rectpath.clone(), &*FILL_COLOR);
+                cx.stroke(selection_rectpath, &*OUTLINE_COLOR, outline_width);
             }
         }
     }

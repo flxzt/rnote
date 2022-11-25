@@ -1,5 +1,6 @@
 //! Helpers for drawing edit nodes, guides, etc.
 
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use piet::RenderContext;
 
@@ -33,8 +34,8 @@ pub fn draw_pos_indicator(
     pos: na::Vector2<f64>,
     zoom: f64,
 ) {
-    const FILL_COLOR: piet::Color = color::GNOME_REDS[3].with_a8(0xb0);
-    const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[4];
+    static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_REDS[3].with_alpha(0.690));
+    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_REDS[4]);
 
     let pos_indicator = pos_indicator_shape(node_state, pos, zoom);
 
@@ -42,12 +43,12 @@ pub fn draw_pos_indicator(
         PenState::Up => {}
         PenState::Proximity => {}
         PenState::Down => {
-            cx.fill(pos_indicator, &FILL_COLOR);
+            cx.fill(pos_indicator, &*FILL_COLOR);
         }
     }
     cx.stroke(
         pos_indicator,
-        &OUTLINE_COLOR,
+        &*OUTLINE_COLOR,
         POS_INDICATOR_OUTLINE_WIDTH / zoom,
     );
 }
@@ -78,9 +79,9 @@ pub fn draw_vec_indicator(
     let vec_indicator = vec_indicator_shape(node_state, start, end, zoom);
 
     let line_color = match node_state {
-        PenState::Up => color::GNOME_DARKS[0].with_a8(0x80),
-        PenState::Proximity => color::GNOME_BRIGHTS[0].with_a8(0xa0),
-        PenState::Down => color::GNOME_DARKS[1].with_a8(0xa0),
+        PenState::Up => color::GNOME_DARKS[0].with_alpha(0.5),
+        PenState::Proximity => color::GNOME_BRIGHTS[0].with_alpha(0.627),
+        PenState::Down => color::GNOME_DARKS[1].with_alpha(0.627),
     };
 
     cx.stroke(vec_indicator, &line_color, VEC_INDICATOR_LINE_WIDTH / zoom);
@@ -114,8 +115,9 @@ pub fn draw_rectangular_node(
     bounds: AABB,
     zoom: f64,
 ) {
-    const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
-    const FILL_COLOR_STATE_DOWN: piet::Color = color::GNOME_BLUES[0].with_a8(0x80);
+    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);
+    static FILL_COLOR_STATE_DOWN: Lazy<piet::Color> =
+        Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.5));
 
     let rectangular_node = rectangular_node_shape(node_state, bounds, zoom);
 
@@ -123,13 +125,13 @@ pub fn draw_rectangular_node(
         PenState::Up => {}
         PenState::Proximity => {}
         PenState::Down => {
-            cx.fill(rectangular_node, &FILL_COLOR_STATE_DOWN);
+            cx.fill(rectangular_node, &*FILL_COLOR_STATE_DOWN);
         }
     }
 
     cx.stroke(
         rectangular_node,
-        &OUTLINE_COLOR,
+        &*OUTLINE_COLOR,
         RECTANGULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 }
@@ -160,14 +162,14 @@ pub fn draw_circular_node(
     bounding_sphere: BoundingSphere,
     zoom: f64,
 ) {
-    const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
-    const FILL_STATE_DOWN: piet::Color = color::GNOME_BLUES[0].with_a8(0x80);
+    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);
+    static FILL_STATE_DOWN: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.5));
 
     let circular_node = circular_node_shape(node_state, bounding_sphere, zoom);
 
     cx.stroke(
         circular_node,
-        &OUTLINE_COLOR,
+        &*OUTLINE_COLOR,
         CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 
@@ -175,7 +177,7 @@ pub fn draw_circular_node(
         PenState::Up => {}
         PenState::Proximity => {}
         PenState::Down => {
-            cx.fill(circular_node, &FILL_STATE_DOWN);
+            cx.fill(circular_node, &*FILL_STATE_DOWN);
         }
     }
 }
@@ -221,14 +223,15 @@ pub fn draw_triangular_down_node(
     size: na::Vector2<f64>,
     zoom: f64,
 ) {
-    const OUTLINE_COLOR: piet::Color = color::GNOME_ORANGES[4];
-    const FILL_STATE_DOWN: piet::Color = color::GNOME_ORANGES[3].with_a8(0x80);
+    static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_ORANGES[4]);
+    static FILL_STATE_DOWN: Lazy<piet::Color> =
+        Lazy::new(|| color::GNOME_ORANGES[3].with_alpha(0.5));
 
     let triangular_down_node = triangular_down_node_shape(node_state, center, size, zoom);
 
     cx.stroke(
         triangular_down_node.clone(),
-        &OUTLINE_COLOR,
+        &*OUTLINE_COLOR,
         CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 
@@ -236,7 +239,7 @@ pub fn draw_triangular_down_node(
         PenState::Up => {}
         PenState::Proximity => {}
         PenState::Down => {
-            cx.fill(triangular_down_node, &FILL_STATE_DOWN);
+            cx.fill(triangular_down_node, &*FILL_STATE_DOWN);
         }
     }
 }

@@ -423,7 +423,7 @@ impl StrokeStore {
     /// Draws a placeholder for the given stroke bounds
     fn draw_stroke_placeholder(snapshot: &Snapshot, stroke_bounds: AABB) {
         snapshot.append_color(
-            &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_a8(0x90)),
+            &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.564)),
             &graphene::Rect::from_p2d_aabb(stroke_bounds),
         );
     }

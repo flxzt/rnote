@@ -89,12 +89,6 @@ pub enum FillStyle {
     /// Hachure
     #[serde(rename = "hachure")]
     Hachure,
-    /// Zigzag
-    #[serde(rename = "zig_zag")]
-    ZigZag,
-    /// Zigzagline
-    #[serde(rename = "zig_zag_line")]
-    ZigZagLine,
     /// Crosshatch
     #[serde(rename = "crosshatch")]
     Crosshatch,
@@ -117,11 +111,11 @@ impl From<roughr::core::FillStyle> for FillStyle {
         match s {
             roughr::core::FillStyle::Solid => Self::Solid,
             roughr::core::FillStyle::Hachure => Self::Hachure,
-            roughr::core::FillStyle::ZigZag => Self::ZigZag,
             roughr::core::FillStyle::CrossHatch => Self::Crosshatch,
             roughr::core::FillStyle::Dots => Self::Dots,
             roughr::core::FillStyle::Dashed => Self::Dashed,
-            roughr::core::FillStyle::ZigZagLine => Self::ZigZagLine,
+            // These are not implemented yet in roughr, but already exist in the struct
+            _ => Self::Solid,
         }
     }
 }
@@ -131,8 +125,6 @@ impl From<FillStyle> for roughr::core::FillStyle {
         match s {
             FillStyle::Solid => roughr::core::FillStyle::Solid,
             FillStyle::Hachure => roughr::core::FillStyle::Hachure,
-            FillStyle::ZigZag => roughr::core::FillStyle::ZigZag,
-            FillStyle::ZigZagLine => roughr::core::FillStyle::ZigZagLine,
             FillStyle::Crosshatch => roughr::core::FillStyle::CrossHatch,
             FillStyle::Dots => roughr::core::FillStyle::Dots,
             FillStyle::Dashed => roughr::core::FillStyle::Dashed,

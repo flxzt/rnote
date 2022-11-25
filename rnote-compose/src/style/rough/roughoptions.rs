@@ -6,120 +6,32 @@ use crate::Color;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "rough_options")]
 pub struct RoughOptions {
-    /// limits the maximum offset the randomness is allowed to create.
-    #[serde(rename = "max_randomness_offset")]
-    pub max_randomness_offset: f64,
-    /// indicating how rough the drawing is. Good values are between 1 and 10
-    #[serde(rename = "roughness")]
-    pub roughness: f64,
-    /// how curvy the lines are when drawing a sketch. 0 is a straight line.
-    #[serde(rename = "bowing")]
-    pub bowing: f64,
     /// the stroke color. When set to None, no stroke outline is produced
     #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
     /// the stroke width
     #[serde(rename = "stroke_width")]
     pub stroke_width: f64,
-    /// when drawing ellipses, circles and arcs this sets the generated dimensions in comparison to the specified dimensions
-    /// A value of 1.0 means the generated dimensions are almost 100% accurate.
-    #[serde(rename = "curve_fitting")]
-    pub curve_fitting: f64,
-    /// the tightness of the curve
-    #[serde(rename = "curve_tightness")]
-    pub curve_tightness: f64,
-    /// The number of points when estimating curved shapes.
-    #[serde(rename = "curve_stepcount")]
-    pub curve_stepcount: f64,
     /// an optional fill color. When set to None no fill is produced.
     #[serde(rename = "fill_color")]
     pub fill_color: Option<Color>,
     /// the fill style
     #[serde(rename = "fill_style")]
     pub fill_style: FillStyle,
-    /// the fill weight. When the fill style produces lines, this is the width.
-    /// with dots this is the diameter
-    #[serde(rename = "fill_weight")]
-    pub fill_weight: f64,
-    /// The angle of the hachure lines in degrees.
-    #[serde(rename = "hachure_angle")]
-    pub hachure_angle: f64,
-    /// The gap between the hachure lines.
-    #[serde(rename = "hachure_gap")]
-    pub hachure_gap: f64,
-    /// When generating paths this simplifies the shape.
-    /// Values should be between 0.0 and 1.0, meaning 0.0 is no simplification.
-    /// a value of 0.5 means the number of generated points is halved.
-    #[serde(rename = "simplification")]
-    pub simplification: f64,
-    /// when filling the shape with the FillStyle::Dashed style this is the offset of the dashes
-    #[serde(rename = "dash_offset")]
-    pub dash_offset: f64,
-    /// when filling the shape with the FillStyle::Dashed style this is the gaps between the dashes
-    #[serde(rename = "dash_gap")]
-    pub dash_gap: f64,
-    /// when filling the shape with the FillStyle::Zigzag style this is the width of the zig-zag triangle.
-    #[serde(rename = "zigzag_offset")]
-    pub zigzag_offset: f64,
     /// an optional seed for creating random values used in shape generation.
     /// When using the same seed the generator produces the same shape.
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
-    /// If this vector has values, the strokes are dashed.
-    #[serde(rename = "stroke_line_dash")]
-    pub stroke_line_dash: Vec<f64>,
-    /// The offset of the dashes, when they exist
-    #[serde(rename = "stroke_line_dash_offset")]
-    pub stroke_line_dash_offset: f64,
-    /// like stroke line dash, but for the fill
-    #[serde(rename = "fill_line_dash")]
-    pub fill_line_dash: Vec<f64>,
-    /// like stroke line dash offset, but for the fill
-    #[serde(rename = "fill_line_dash_offset")]
-    pub fill_line_dash_offset: f64,
-    /// disables multiple stroke generation for a sketched look
-    #[serde(rename = "disable_multistroke")]
-    pub disable_multistroke: bool,
-    /// disables multiple fill stroke generation for a sketched look
-    #[serde(rename = "disable_multistroke_fill")]
-    pub disable_multistroke_fill: bool,
-    /// Enables the preservation of the end points when generating a shape.
-    #[serde(rename = "preserve_vertices")]
-    pub preserve_vertices: bool,
-    #[serde(rename = "fixed_decimal_place_digits")]
-    /// TODO: explain
-    pub fixed_decimal_place_digits: f64,
 }
 
 impl Default for RoughOptions {
     fn default() -> Self {
         Self {
-            max_randomness_offset: 2.0,
-            roughness: Self::ROUGHNESS_DEFAULT,
-            bowing: Self::BOWING_DEFAULT,
             stroke_color: Some(Color::BLACK),
             stroke_width: Self::STROKE_WIDTH_DEFAULT,
-            curve_fitting: 0.95,
-            curve_tightness: 0.0,
-            curve_stepcount: Self::CURVESTEPCOUNT_DEFAULT,
             fill_color: None,
             fill_style: FillStyle::Hachure,
-            fill_weight: -1.0,
-            hachure_angle: -41.0,
-            hachure_gap: -1.0,
-            simplification: 0.0,
-            dash_offset: -1.0,
-            dash_gap: -1.0,
-            zigzag_offset: -1.0,
             seed: None,
-            stroke_line_dash: Vec::new(),
-            stroke_line_dash_offset: 0.0,
-            fill_line_dash: Vec::new(),
-            fill_line_dash_offset: 0.0,
-            disable_multistroke: false,
-            disable_multistroke_fill: false,
-            preserve_vertices: false,
-            fixed_decimal_place_digits: 0.0,
         }
     }
 }
@@ -157,27 +69,66 @@ impl RoughOptions {
 
 /// available Fill styles
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename = "fill_style")]
 pub enum FillStyle {
     /// Solid
+    #[serde(rename = "solid")]
     Solid,
     /// Hachure
+    #[serde(rename = "hachure")]
     Hachure,
     /// Zigzag
+    #[serde(rename = "zigzag")]
     Zigzag,
     /// Zigzagline
+    #[serde(rename = "zigzag_line")]
     ZigzagLine,
     /// Crosshatch
+    #[serde(rename = "crosshatch")]
     Crosshatch,
     /// Dots
+    #[serde(rename = "dots")]
     Dots,
     /// Sunburst
+    #[serde(rename = "sunburst")]
     Sunburst,
     /// Dashed
+    #[serde(rename = "dashed")]
     Dashed,
 }
 
 impl Default for FillStyle {
     fn default() -> Self {
         Self::Hachure
+    }
+}
+
+impl From<roughr::core::FillStyle> for FillStyle {
+    fn from(s: roughr::core::FillStyle) -> Self {
+        match s {
+            roughr::core::FillStyle::Solid => Self::Solid,
+            roughr::core::FillStyle::Hachure => Self::Hachure,
+            roughr::core::FillStyle::ZigZag => Self::Zigzag,
+            roughr::core::FillStyle::CrossHatch => Self::Crosshatch,
+            roughr::core::FillStyle::Dots => Self::Dots,
+            roughr::core::FillStyle::Dashed => Self::Dashed,
+            roughr::core::FillStyle::ZigZagLine => Self::ZigzagLine,
+        }
+    }
+}
+
+impl From<FillStyle> for roughr::core::FillStyle {
+    fn from(s: FillStyle) -> Self {
+        match s {
+            FillStyle::Solid => roughr::core::FillStyle::Solid,
+            FillStyle::Hachure => roughr::core::FillStyle::Hachure,
+            FillStyle::Zigzag => roughr::core::FillStyle::ZigZag,
+            FillStyle::ZigzagLine => roughr::core::FillStyle::ZigZagLine,
+            FillStyle::Crosshatch => roughr::core::FillStyle::CrossHatch,
+            FillStyle::Dots => roughr::core::FillStyle::Dots,
+            // FIXME: Not implemented yet, defaulting to Hachure
+            FillStyle::Sunburst => roughr::core::FillStyle::Hachure,
+            FillStyle::Dashed => roughr::core::FillStyle::Dashed,
+        }
     }
 }

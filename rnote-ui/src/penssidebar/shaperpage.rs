@@ -4,7 +4,6 @@ use gtk4::{
     MenuButton, Popover, SpinButton, Switch,
 };
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
-use rnote_compose::style::rough::RoughOptions;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::Shaper;
 use rnote_engine::utils::GdkRGBAHelpers;
@@ -29,14 +28,6 @@ mod imp {
         pub shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub shapeconfig_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub roughconfig_roughness_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub roughconfig_bowing_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub roughconfig_curvestepcount_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub roughconfig_multistroke_switch: TemplateChild<Switch>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -155,22 +146,6 @@ impl ShaperPage {
 
     pub fn width_spinbutton(&self) -> SpinButton {
         self.imp().width_spinbutton.get()
-    }
-
-    pub fn roughconfig_roughness_spinbutton(&self) -> SpinButton {
-        self.imp().roughconfig_roughness_spinbutton.get()
-    }
-
-    pub fn roughconfig_bowing_spinbutton(&self) -> SpinButton {
-        self.imp().roughconfig_bowing_spinbutton.get()
-    }
-
-    pub fn roughconfig_curvestepcount_spinbutton(&self) -> SpinButton {
-        self.imp().roughconfig_curvestepcount_spinbutton.get()
-    }
-
-    pub fn roughconfig_multistroke_switch(&self) -> Switch {
-        self.imp().roughconfig_multistroke_switch.get()
     }
 
     pub fn stroke_colorpicker(&self) -> ColorPicker {
@@ -292,87 +267,6 @@ impl ShaperPage {
                 }
             }),
         );
-
-        // Roughness
-        self.imp()
-            .roughconfig_roughness_spinbutton
-            .get()
-            .set_increments(0.1, 2.0);
-        self.imp()
-            .roughconfig_roughness_spinbutton
-            .get()
-            .set_range(RoughOptions::ROUGHNESS_MIN, RoughOptions::ROUGHNESS_MAX);
-        self.imp()
-            .roughconfig_roughness_spinbutton
-            .get()
-            .set_value(RoughOptions::ROUGHNESS_DEFAULT);
-
-        self.imp().roughconfig_roughness_spinbutton.get().connect_value_changed(
-            clone!(@weak appwindow => move |roughconfig_roughness_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.roughness = roughconfig_roughness_spinbutton.value();
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing rough shape roughness, Err `{}`", e);
-                }
-            }),
-        );
-
-        // Bowing
-        self.imp()
-            .roughconfig_bowing_spinbutton
-            .get()
-            .set_increments(0.1, 2.0);
-        self.imp()
-            .roughconfig_bowing_spinbutton
-            .get()
-            .set_range(RoughOptions::BOWING_MIN, RoughOptions::BOWING_MAX);
-        self.imp()
-            .roughconfig_bowing_spinbutton
-            .get()
-            .set_value(RoughOptions::BOWING_DEFAULT);
-
-        self.imp().roughconfig_bowing_spinbutton.get().connect_value_changed(
-            clone!(@weak appwindow => move |roughconfig_bowing_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.bowing = roughconfig_bowing_spinbutton.value();
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing rough shape bowing, Err `{}`", e);
-                }
-            }),
-        );
-
-        // Curve stepcount
-        self.imp()
-            .roughconfig_curvestepcount_spinbutton
-            .get()
-            .set_increments(1.0, 2.0);
-        self.imp()
-            .roughconfig_curvestepcount_spinbutton
-            .get()
-            .set_range(
-                RoughOptions::CURVESTEPCOUNT_MIN,
-                RoughOptions::CURVESTEPCOUNT_MAX,
-            );
-        self.imp()
-            .roughconfig_curvestepcount_spinbutton
-            .get()
-            .set_value(RoughOptions::CURVESTEPCOUNT_DEFAULT);
-
-        self.imp().roughconfig_curvestepcount_spinbutton.get().connect_value_changed(
-            clone!(@weak appwindow => move |roughconfig_curvestepcount_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.curve_stepcount = roughconfig_curvestepcount_spinbutton.value();
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing rough shape curve stepcount, Err `{}`", e);
-                }
-            }),
-        );
-
-        // Multistroke
-        self.imp().roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.disable_multistroke = !roughconfig_multistroke_switch.state();
-        }));
-
         // Shaper style
         self.shaperstyle_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shaperstyle_listbox, selected_row| {
@@ -480,16 +374,6 @@ impl ShaperPage {
             .penholder
             .shaper
             .clone();
-
-        // style config
-        self.roughconfig_roughness_spinbutton()
-            .set_value(shaper.rough_options.roughness);
-        self.roughconfig_bowing_spinbutton()
-            .set_value(shaper.rough_options.bowing);
-        self.roughconfig_curvestepcount_spinbutton()
-            .set_value(shaper.rough_options.curve_stepcount);
-        self.roughconfig_multistroke_switch()
-            .set_active(!shaper.rough_options.disable_multistroke);
 
         // constraints
         self.imp()

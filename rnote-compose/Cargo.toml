@@ -20,6 +20,8 @@ piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
 #piet-cairo = { path = "../piet/piet-cairo" }
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main" }
 #ink-stroke-modeler-rs = { path = "../ink-stroke-modeler-rs" }
+roughr = { git = "https://github.com/flxzt/rough-rs", branch = "rnote" }
+rough_piet = { git = "https://github.com/flxzt/rough-rs", branch = "rnote" }
 
 log = "0.4.16"
 pretty_env_logger = "0.4.0"
@@ -34,6 +36,7 @@ regex = "1.5"
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
 kurbo = "0.9.0"
+euclid = "0.22"
 svg = "0.10.0"
 
 [dev-dependencies]

@@ -180,6 +180,23 @@ impl From<Color> for xoppformat::XoppColor {
     }
 }
 
+impl From<roughr::Srgb> for Color {
+    fn from(c: roughr::Srgb) -> Self {
+        Self {
+            r: c.blue as f64,
+            g: c.green as f64,
+            b: c.blue as f64,
+            a: 1.0,
+        }
+    }
+}
+
+impl From<Color> for roughr::Srgb {
+    fn from(c: Color) -> Self {
+        roughr::Srgb::new(c.r as f32, c.g as f32, c.b as f32)
+    }
+}
+
 /// Gnome palette blues
 pub const GNOME_BLUES: [piet::Color; 5] = [
     piet::Color::rgb8(0x99, 0xc1, 0xf1),

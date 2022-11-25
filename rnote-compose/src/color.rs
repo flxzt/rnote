@@ -3,7 +3,7 @@ use rnote_fileformats::xoppformat;
 use serde::{Deserialize, Serialize};
 
 /// A rgba color
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(default, rename = "color")]
 pub struct Color {
     /// red, ranging [0.0, 1.0]

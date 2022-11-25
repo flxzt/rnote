@@ -68,7 +68,19 @@ impl RoughOptions {
 }
 
 /// available Fill styles
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "fill_style")]
 pub enum FillStyle {
     /// Solid
@@ -78,20 +90,17 @@ pub enum FillStyle {
     #[serde(rename = "hachure")]
     Hachure,
     /// Zigzag
-    #[serde(rename = "zigzag")]
-    Zigzag,
+    #[serde(rename = "zig_zag")]
+    ZigZag,
     /// Zigzagline
-    #[serde(rename = "zigzag_line")]
-    ZigzagLine,
+    #[serde(rename = "zig_zag_line")]
+    ZigZagLine,
     /// Crosshatch
     #[serde(rename = "crosshatch")]
     Crosshatch,
     /// Dots
     #[serde(rename = "dots")]
     Dots,
-    /// Sunburst
-    #[serde(rename = "sunburst")]
-    Sunburst,
     /// Dashed
     #[serde(rename = "dashed")]
     Dashed,
@@ -108,11 +117,11 @@ impl From<roughr::core::FillStyle> for FillStyle {
         match s {
             roughr::core::FillStyle::Solid => Self::Solid,
             roughr::core::FillStyle::Hachure => Self::Hachure,
-            roughr::core::FillStyle::ZigZag => Self::Zigzag,
+            roughr::core::FillStyle::ZigZag => Self::ZigZag,
             roughr::core::FillStyle::CrossHatch => Self::Crosshatch,
             roughr::core::FillStyle::Dots => Self::Dots,
             roughr::core::FillStyle::Dashed => Self::Dashed,
-            roughr::core::FillStyle::ZigZagLine => Self::ZigzagLine,
+            roughr::core::FillStyle::ZigZagLine => Self::ZigZagLine,
         }
     }
 }
@@ -122,13 +131,21 @@ impl From<FillStyle> for roughr::core::FillStyle {
         match s {
             FillStyle::Solid => roughr::core::FillStyle::Solid,
             FillStyle::Hachure => roughr::core::FillStyle::Hachure,
-            FillStyle::Zigzag => roughr::core::FillStyle::ZigZag,
-            FillStyle::ZigzagLine => roughr::core::FillStyle::ZigZagLine,
+            FillStyle::ZigZag => roughr::core::FillStyle::ZigZag,
+            FillStyle::ZigZagLine => roughr::core::FillStyle::ZigZagLine,
             FillStyle::Crosshatch => roughr::core::FillStyle::CrossHatch,
             FillStyle::Dots => roughr::core::FillStyle::Dots,
-            // FIXME: Not implemented yet, defaulting to Hachure
-            FillStyle::Sunburst => roughr::core::FillStyle::Hachure,
             FillStyle::Dashed => roughr::core::FillStyle::Dashed,
         }
+    }
+}
+
+impl TryFrom<u32> for FillStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("FillStyle try_from::<u32>() for value {} failed", value)
+        })
     }
 }

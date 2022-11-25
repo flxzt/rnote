@@ -252,10 +252,7 @@ impl TryFrom<u32> for PressureCurve {
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "PressureProfile try_from::<u32>() for value {} failed",
-                value
-            )
+            anyhow::anyhow!("PressureCurve try_from::<u32>() for value {} failed", value)
         })
     }
 }

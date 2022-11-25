@@ -10,11 +10,14 @@ use crate::shapes::Line;
 use crate::shapes::Rectangle;
 use crate::shapes::{CubicBezier, ShapeBehaviour};
 use crate::shapes::{Ellipse, QuadraticBezier};
+use crate::Color;
 
 fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
     let mut roughr_options = roughr::core::OptionsBuilder::default();
 
-    roughr_options.stroke_width(options.stroke_width as f32);
+    roughr_options
+        .stroke_width(options.stroke_width as f32)
+        .fill_style(options.fill_style.into());
 
     if let Some(seed) = options.seed {
         roughr_options.seed(seed);
@@ -25,9 +28,11 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
     }
 
     if let Some(fill_color) = options.fill_color {
-        roughr_options
-            .fill(fill_color.into())
-            .fill_style(options.fill_style.into());
+        if fill_color != Color::TRANSPARENT {
+            roughr_options
+                .fill(fill_color.into())
+                .fill_style(options.fill_style.into());
+        }
     }
 
     roughr_options.build().unwrap()

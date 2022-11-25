@@ -1,9 +1,13 @@
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
-    MenuButton, Popover, SpinButton, Switch,
+    gdk, glib, glib::clone, CompositeTemplate, Image, ListBox, MenuButton, Popover, SpinButton,
+    Switch,
 };
+use num_traits::cast::ToPrimitive;
+
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
+use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::Shaper;
 use rnote_engine::utils::GdkRGBAHelpers;
@@ -28,6 +32,8 @@ mod imp {
         pub shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub shapeconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -144,6 +150,10 @@ impl ShaperPage {
         self.imp().shapeconfig_popover.get()
     }
 
+    pub fn roughstyle_fillstyle_row(&self) -> adw::ComboRow {
+        self.imp().roughstyle_fillstyle_row.get()
+    }
+
     pub fn width_spinbutton(&self) -> SpinButton {
         self.imp().width_spinbutton.get()
     }
@@ -208,6 +218,19 @@ impl ShaperPage {
         self.imp().shapebuildertype_menubutton.get()
     }
 
+    pub fn roughstyle_fillstyle(&self) -> FillStyle {
+        FillStyle::try_from(self.imp().roughstyle_fillstyle_row.get().selected()).unwrap()
+    }
+
+    pub fn set_roughstyle_fillstyle(&self, fill_style: FillStyle) {
+        let position = fill_style.to_u32().unwrap();
+
+        self.imp()
+            .roughstyle_fillstyle_row
+            .get()
+            .set_selected(position);
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         // Width
         self.width_spinbutton().set_increments(0.1, 2.0);
@@ -267,6 +290,7 @@ impl ShaperPage {
                 }
             }),
         );
+
         // Shaper style
         self.shaperstyle_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shaperstyle_listbox, selected_row| {
@@ -292,6 +316,16 @@ impl ShaperPage {
                 }
             }),
         );
+
+        // Rough style
+        // Fill style
+        self.imp().roughstyle_fillstyle_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_roughstyle_fillstyle_row| {
+            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
+
+            if let Err(e) = appwindow.save_engine_config() {
+                log::error!("saving engine config failed after changing shaper fill style, Err `{}`", e);
+            }
+        }));
 
         // Constraints
         self.imp()
@@ -374,6 +408,36 @@ impl ShaperPage {
             .penholder
             .shaper
             .clone();
+
+        match shaper.style {
+            ShaperStyle::Smooth => {
+                self.shaperstyle_listbox()
+                    .select_row(Some(&self.shaperstyle_smooth_row()));
+                self.width_spinbutton()
+                    .set_value(shaper.smooth_options.stroke_width);
+                self.stroke_colorpicker()
+                    .set_current_color(shaper.smooth_options.stroke_color);
+                self.fill_colorpicker()
+                    .set_current_color(shaper.smooth_options.fill_color);
+                self.shaperstyle_image()
+                    .set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
+            }
+            ShaperStyle::Rough => {
+                self.shaperstyle_listbox()
+                    .select_row(Some(&self.shaperstyle_rough_row()));
+                self.width_spinbutton()
+                    .set_value(shaper.rough_options.stroke_width);
+                self.stroke_colorpicker()
+                    .set_current_color(shaper.rough_options.stroke_color);
+                self.fill_colorpicker()
+                    .set_current_color(shaper.rough_options.fill_color);
+                self.shaperstyle_image()
+                    .set_icon_name(Some("pen-shaper-style-rough-symbolic"));
+            }
+        }
+
+        // Rough style
+        self.set_roughstyle_fillstyle(shaper.rough_options.fill_style);
 
         // constraints
         self.imp()
@@ -472,33 +536,6 @@ impl ShaperPage {
                 ));
                 self.shapebuildertype_image()
                     .set_icon_name(Some("shape-cubbez-symbolic"));
-            }
-        }
-
-        match shaper.style {
-            ShaperStyle::Smooth => {
-                self.shaperstyle_listbox()
-                    .select_row(Some(&self.shaperstyle_smooth_row()));
-                self.width_spinbutton()
-                    .set_value(shaper.smooth_options.stroke_width);
-                self.stroke_colorpicker()
-                    .set_current_color(shaper.smooth_options.stroke_color);
-                self.fill_colorpicker()
-                    .set_current_color(shaper.smooth_options.fill_color);
-                self.shaperstyle_image()
-                    .set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
-            }
-            ShaperStyle::Rough => {
-                self.shaperstyle_listbox()
-                    .select_row(Some(&self.shaperstyle_rough_row()));
-                self.width_spinbutton()
-                    .set_value(shaper.rough_options.stroke_width);
-                self.stroke_colorpicker()
-                    .set_current_color(shaper.rough_options.stroke_color);
-                self.fill_colorpicker()
-                    .set_current_color(shaper.rough_options.fill_color);
-                self.shaperstyle_image()
-                    .set_icon_name(Some("pen-shaper-style-rough-symbolic"));
             }
         }
     }

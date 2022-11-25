@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-14 06:22+0000\n"
+"PO-Revision-Date: 2022-11-25 14:37+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -65,147 +65,100 @@ msgid "A selection"
 msgstr "ஒரு தேர்வு"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "Color scheme"
 msgid "_Color scheme"
-msgstr "வண்ண திட்டம்"
+msgstr "_வண்ண திட்டம்"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors"
 msgid "Use _system colors"
-msgstr "கணினி வண்ணங்களைப் பயன்படுத்தவும்"
+msgstr "_கணினி வண்ணங்களைப் பயன்படுத்தவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _light colors"
-msgstr "வெளிர் நிறங்களைப் பயன்படுத்துங்கள்"
+msgstr "_வெளிர் நிறங்களைப் பயன்படுத்துங்கள்"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _dark colors"
-msgstr "இருண்ட வண்ணங்களைப் பயன்படுத்தவும்"
+msgstr "_இருண்ட வண்ணங்களைப் பயன்படுத்தவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "_Developer mode"
-msgstr "டெவலப்பர் பயன்முறை"
+msgstr "_டெவலப்பர் பயன்முறை"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
-msgstr "டெவலப்பர் மெனு"
+msgstr "டெவலப்பர்_மெனு"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "_Visual debugging"
-msgstr "காட்சி பிழைத்திருத்தம்"
+msgstr "_காட்சி பிழைத்திருத்தம்"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export engine _state"
-msgstr "ஏற்றுமதி இயந்திர நிலை"
+msgstr "ஏற்றுமதி இயந்திர _நிலை"
 
 #: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export engine _config"
-msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு"
+msgstr "ஏற்றுமதி இயந்திர _கட்டமைப்பு"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "_புதிய"
 
 #: rnote-ui/data/ui/appmenu.ui:72
-#, fuzzy
-#| msgid "Open"
 msgid "_Open"
-msgstr "திற"
+msgstr "_திற"
 
 #: rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "Save"
 msgid "_Save"
-msgstr "சேமி"
+msgstr "_சேமி"
 
 #: rnote-ui/data/ui/appmenu.ui:80
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _as"
-msgstr "என சேமிக்கவும்"
+msgstr "இவ்வாறு_சேமி"
 
 #: rnote-ui/data/ui/appmenu.ui:86
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "அச்சிடுக"
+msgstr "_அச்சிடு"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
-msgstr "கிளிப்போர்டை ஒட்டவும்"
+msgstr "_ கிளிப்போர்டை ஒட்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import file"
-msgstr "கோப்பு இறக்குமதி"
+msgstr "_இறக்குமதி கோப்பை"
 
 #: rnote-ui/data/ui/appmenu.ui:98
-#, fuzzy
-#| msgid "Export…"
 msgid "_Export…"
-msgstr "ஏற்றுமதி…"
+msgstr "_ஏற்றுமதி…"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgid "Export document"
 msgid "Export _document"
-msgstr "ஏற்றுமதி ஆவணம்"
+msgstr "ஏற்றுமதி _ ஆவணம்"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export document _pages"
-msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்யவும்"
+msgstr "ஏற்றுமதி செய்யவும் ஆவணம் _பக்கங்களை"
 
 #: rnote-ui/data/ui/appmenu.ui:108
-#, fuzzy
-#| msgid "Export selection"
 msgid "Export _selection"
-msgstr "ஏற்றுமதி தேர்வு"
+msgstr "ஏற்றுமதி _தேர்வு"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "அமைப்புகள்"
+msgstr "_அமைப்புகள்"
 
 #: rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard shortcuts"
-msgstr "கீபோர்டு ஷார்ட்கட்கள்"
+msgstr "_விசைப்பலகை குறுக்குவழிகள்"
 
 #: rnote-ui/data/ui/appmenu.ui:123
-#, fuzzy
-#| msgid "Donate 💝"
 msgid "_Donate 💝"
-msgstr "நன்கொடை 💝"
+msgstr "_நன்கொடை 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "About Rnote"
 msgid "_About Rnote"
-msgstr "Rnote பற்றி"
+msgstr "_Rnote பற்றி"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
@@ -275,7 +228,7 @@ msgstr "மீண்டும் செய்"
 
 #: rnote-ui/data/ui/appwindow.ui:343
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
 
 #: rnote-ui/data/ui/appwindow.ui:413
 msgid "Close the folded flap"
@@ -290,58 +243,40 @@ msgid "Settings"
 msgstr "அமைப்புகள்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document layout"
 msgid "Document _layout"
-msgstr "ஆவணத்தின் தளவமைப்பு"
+msgstr "ஆவணத்தின் _தளவமைப்பு"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
-#, fuzzy
-#| msgid "Fixed size"
 msgid "_Fixed size"
-msgstr "நிலையான அளவு"
+msgstr "_நிலையான அளவு"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-#, fuzzy
-#| msgid "Continuous vertical"
 msgid "_Continuous vertical"
-msgstr "தொடர்ச்சியான செங்குத்து"
+msgstr "_தொடர்ச்சியான செங்குத்து"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "Infinite"
 msgid "_Infinite"
-msgstr "எல்லையற்ற"
+msgstr "_எல்லையற்ற"
 
 #: rnote-ui/data/ui/canvasmenu.ui:44
-#, fuzzy
-#| msgid "Show format borders"
 msgid "Show _format borders"
-msgstr "பார்மட் பார்டர்களைக் காட்டு"
+msgstr "காட்டு _பார்மட் பார்டர்கள்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Draw with touch input"
 msgid "Draw with _touch input"
-msgstr "தொடு உள்ளீடு மூலம் வரையவும்"
+msgstr "_தொடு உள்ளீடு மூலம் வரையவும்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "P_en sounds"
-msgstr "பேனா ஒலிகள்"
+msgstr "_பேனா ஒலிகள்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "_Clear document"
-msgstr "தெளிவான ஆவணம்"
+msgstr "_தெளிவான ஆவணம்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "தோற்றம் பக்கத்திற்குத் திரும்பு"
+msgstr "_மூலப் பக்கத்திற்குத் திரும்பு"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
@@ -666,22 +601,16 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scalefactor"
 msgid "Bitmap scale factor"
-msgstr "பிட்மேப் அளவுகோல்"
+msgstr "பிட்மேப் அளவிலான காரணி"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
-#, fuzzy
-#| msgid ""
-#| "Set the scalefactor of the bitmap image in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"தொடர்புடைய பிட்மேப் படத்தின் அளவுகோலை அமைக்கவும் \n"
+"தொடர்பில் பிட்மேப் அளவுகோலை அமைக்கவும் \n"
 "ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
@@ -1127,10 +1056,8 @@ msgid "Remove workspace"
 msgstr "பணியிடத்தை அகற்று"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:190
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
-msgstr "கோப்பகத்தை உருவாக்கவும்"
+msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1290,20 +1217,16 @@ msgid "Split strokes"
 msgstr "பிளவு பக்கவாதம்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
-msgstr "ஒரு பலகோணத்துடன் தேர்ந்தெடுப்பது"
+msgstr "பலகோணத்துடன் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
-msgstr "ஒரு செவ்வகத்துடன் தேர்ந்தெடுப்பது"
+msgstr "ஒரு செவ்வகத்துடன் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "ஒவ்வொன்றாக தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1537,10 +1460,8 @@ msgid "Opening file failed."
 msgstr "கோப்பைத் திறப்பதில் தோல்வி."
 
 #: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote File"
 msgid ".rnote"
-msgstr ".rnote கோப்பு"
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
@@ -1548,7 +1469,7 @@ msgstr "கோப்பைத் திறக்கவும்"
 
 #: rnote-ui/src/dialogs/import.rs:143
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1644,10 +1565,8 @@ msgid "Export selection failed, no file selected."
 msgstr "ஏற்றுமதி தேர்வு தோல்வியடைந்தது, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "JSON கோப்பு"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:812
 msgid "Export engine state"
@@ -1706,14 +1625,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "ஏற்றுமதி தேர்வு தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "கோப்பு பெயர்:"
+msgstr "கோப்புறை பெயர்"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "புதிய அடைவு"
 
 #~ msgid "Selecting apiece"
 #~ msgstr "ஒவ்வொன்றாகத் தேர்ந்தெடுக்கிறது"

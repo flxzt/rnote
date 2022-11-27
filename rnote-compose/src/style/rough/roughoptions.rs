@@ -72,7 +72,9 @@ impl RoughOptions {
 #[serde(rename = "fill_style")]
 pub enum FillStyle {
     /// Solid
-    #[serde(rename = "solid")]
+    // pre v0.5.9 the fill style was always set to `Hachure` (capitalized), even though the app rendered a solid fill.
+    // For compatibility reasons we need set this alias.
+    #[serde(rename = "solid", alias = "Hachure")]
     Solid,
     /// Hachure
     #[serde(rename = "hachure")]

@@ -1,6 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
+use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
@@ -254,9 +255,11 @@ impl DrawOnDocBehaviour for Eraser {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
-        const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0xa0);
-        const PROXIMITY_FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x40);
+        static OUTLINE_COLOR: Lazy<piet::Color> =
+            Lazy::new(|| color::GNOME_REDS[2].with_alpha(0.941));
+        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_REDS[0].with_alpha(0.627));
+        static PROXIMITY_FILL_COLOR: Lazy<piet::Color> =
+            Lazy::new(|| color::GNOME_REDS[0].with_alpha(0.5));
         let outline_width = 2.0 / engine_view.camera.total_zoom();
 
         match &self.state {
@@ -267,8 +270,8 @@ impl DrawOnDocBehaviour for Eraser {
                 let fill_rect = bounds.to_kurbo_rect();
                 let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
 
-                cx.fill(fill_rect, &PROXIMITY_FILL_COLOR);
-                cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+                cx.fill(fill_rect, &*PROXIMITY_FILL_COLOR);
+                cx.stroke(outline_rect, &*OUTLINE_COLOR, outline_width);
             }
             EraserState::Down(current_element) => {
                 let bounds = Self::eraser_bounds(self.width, *current_element);
@@ -276,8 +279,8 @@ impl DrawOnDocBehaviour for Eraser {
                 let fill_rect = bounds.to_kurbo_rect();
                 let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
 
-                cx.fill(fill_rect, &FILL_COLOR);
-                cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+                cx.fill(fill_rect, &*FILL_COLOR);
+                cx.stroke(outline_rect, &*OUTLINE_COLOR, outline_width);
             }
         }
 

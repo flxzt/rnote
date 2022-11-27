@@ -2,6 +2,7 @@ mod penevents;
 
 use std::ops::Range;
 
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -122,7 +123,9 @@ impl DrawOnDocBehaviour for Typewriter {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
+        static OUTLINE_COLOR: Lazy<piet::Color> =
+            Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
+
         let total_zoom = engine_view.camera.total_zoom();
 
         let outline_width = 1.5 / total_zoom;
@@ -137,7 +140,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         .to_kurbo_rect()
                         .to_rounded_rect(outline_corner_radius);
 
-                    cx.stroke(rect, &OUTLINE_COLOR, outline_width);
+                    cx.stroke(rect, &*OUTLINE_COLOR, outline_width);
 
                     let text = String::from("|");
                     let text_len = text.len();
@@ -165,7 +168,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         .to_kurbo_rect()
                         .to_rounded_rect(outline_corner_radius);
 
-                    cx.stroke(text_drawrect, &OUTLINE_COLOR, outline_width);
+                    cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the cursor
                     textstroke.text_style.draw_cursor(
@@ -216,7 +219,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         .to_kurbo_rect()
                         .to_rounded_rect(outline_corner_radius);
 
-                    cx.stroke(text_drawrect, &OUTLINE_COLOR, outline_width);
+                    cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the text selection
                     textstroke.text_style.draw_text_selection(
@@ -272,7 +275,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         .to_kurbo_rect()
                         .to_rounded_rect(outline_corner_radius);
 
-                    cx.stroke(text_drawrect, &OUTLINE_COLOR, outline_width);
+                    cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the text width adjust node
                     drawhelpers::draw_triangular_down_node(
@@ -309,7 +312,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         .to_kurbo_rect()
                         .to_rounded_rect(outline_corner_radius);
 
-                    cx.stroke(text_drawrect, &OUTLINE_COLOR, outline_width);
+                    cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the text width adjust node
                     drawhelpers::draw_triangular_down_node(

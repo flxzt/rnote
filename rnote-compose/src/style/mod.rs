@@ -145,7 +145,7 @@ impl Composer<Style> for Segment {
     fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
-            Style::Rough(options) => self.composed_bounds(options),
+            Style::Rough(_) => unimplemented!(),
             Style::Textured(options) => self.composed_bounds(options),
         }
     }
@@ -153,7 +153,7 @@ impl Composer<Style> for Segment {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
         match options {
             Style::Smooth(options) => self.draw_composed(cx, options),
-            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Rough(_) => unimplemented!(),
             Style::Textured(options) => self.draw_composed(cx, options),
         }
     }
@@ -163,7 +163,7 @@ impl Composer<Style> for PenPath {
     fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
-            Style::Rough(options) => self.composed_bounds(options),
+            Style::Rough(_) => unimplemented!(),
             Style::Textured(options) => self.composed_bounds(options),
         }
     }
@@ -171,7 +171,7 @@ impl Composer<Style> for PenPath {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
         match options {
             Style::Smooth(options) => self.draw_composed(cx, options),
-            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Rough(_) => unimplemented!(),
             Style::Textured(options) => self.draw_composed(cx, options),
         }
     }
@@ -252,10 +252,7 @@ impl TryFrom<u32> for PressureCurve {
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "PressureProfile try_from::<u32>() for value {} failed",
-                value
-            )
+            anyhow::anyhow!("PressureCurve try_from::<u32>() for value {} failed", value)
         })
     }
 }

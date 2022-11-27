@@ -28,7 +28,7 @@ impl StrokeBehaviour for ShapeStroke {
     fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
         let bounds = self.bounds();
 
-        render::Svg::gen_with_piet_svg_backend_no_text(
+        render::Svg::gen_with_piet_cairo_backend(
             |cx| {
                 cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
                 self.draw(cx, 1.0)

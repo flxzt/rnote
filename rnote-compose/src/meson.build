@@ -27,7 +27,6 @@ rnote_compose_sources = files(
     'style/drawhelpers.rs',
     'style/mod.rs',
     'style/rough/mod.rs',
-    'style/rough/roughgenerator.rs',
     'style/rough/roughoptions.rs',
     'style/smooth/mod.rs',
     'style/smooth/smoothoptions.rs',

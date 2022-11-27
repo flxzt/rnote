@@ -3,6 +3,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
+use once_cell::sync::Lazy;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -814,10 +815,10 @@ impl DrawOnDocBehaviour for Selector {
                                 .collect::<Vec<f64>>(),
                         );
 
-                        cx.fill(bez_path.clone(), &Self::SELECTION_FILL_COLOR);
+                        cx.fill(bez_path.clone(), &*SELECTION_FILL_COLOR);
                         cx.stroke_styled(
                             bez_path,
-                            &Self::OUTLINE_COLOR,
+                            &*OUTLINE_COLOR,
                             Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                             &stroke_style,
                         );
@@ -838,10 +839,10 @@ impl DrawOnDocBehaviour for Selector {
                                 .collect::<Vec<f64>>(),
                         );
 
-                        cx.fill(select_rect, &Self::SELECTION_FILL_COLOR);
+                        cx.fill(select_rect, &*SELECTION_FILL_COLOR);
                         cx.stroke_styled(
                             select_rect,
-                            &Self::OUTLINE_COLOR,
+                            &*OUTLINE_COLOR,
                             Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                             &stroke_style,
                         );
@@ -854,7 +855,7 @@ impl DrawOnDocBehaviour for Selector {
                                 last.pos.to_kurbo_point(),
                                 Self::SINGLE_SELECTING_CIRCLE_RADIUS / total_zoom,
                             ),
-                            &Self::OUTLINE_COLOR,
+                            &*OUTLINE_COLOR,
                             Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                         );
                     }
@@ -880,7 +881,7 @@ impl DrawOnDocBehaviour for Selector {
 
                         cx.stroke_styled(
                             bez_path,
-                            &Self::OUTLINE_COLOR,
+                            &*OUTLINE_COLOR,
                             Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                             &stroke_style,
                         );
@@ -893,13 +894,14 @@ impl DrawOnDocBehaviour for Selector {
                 selection_bounds,
             } => {
                 // Draw the bounds outlines for the selected strokes
-                const SELECTED_BOUNDS_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(0x60);
+                static SELECTED_BOUNDS_COLOR: Lazy<piet::Color> =
+                    Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.376));
 
                 let selected_bounds_width = 1.5 / total_zoom;
                 for stroke in engine_view.store.get_strokes_ref(selection) {
                     cx.stroke(
                         stroke.bounds().to_kurbo_rect(),
-                        &SELECTED_BOUNDS_COLOR,
+                        &*SELECTED_BOUNDS_COLOR,
                         selected_bounds_width,
                     );
                 }
@@ -935,6 +937,10 @@ impl DrawOnDocBehaviour for Selector {
     }
 }
 
+static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
+static SELECTION_FILL_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.090));
+
 impl Selector {
     /// The threshold where a translation is applied ( in offset magnitude, surface coords )
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
@@ -942,8 +948,6 @@ impl Selector {
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
 
     const SELECTION_OUTLINE_WIDTH: f64 = 1.5;
-    const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
-    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
     const SINGLE_SELECTING_CIRCLE_RADIUS: f64 = 4.0;
@@ -1112,10 +1116,10 @@ impl Selector {
 
         piet_cx.clip(clip_path);
 
-        piet_cx.fill(selection_rect, &Selector::SELECTION_FILL_COLOR);
+        piet_cx.fill(selection_rect, &*SELECTION_FILL_COLOR);
         piet_cx.stroke(
             selection_rect,
-            &Selector::OUTLINE_COLOR,
+            &*OUTLINE_COLOR,
             Selector::SELECTION_OUTLINE_WIDTH / total_zoom,
         );
 

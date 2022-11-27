@@ -1,6 +1,7 @@
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
+use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -32,13 +33,14 @@ impl Default for VerticalSpaceTool {
     }
 }
 
+static VERTICALSPACETOOL_FILL_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.090));
+static VERTICALSPACETOOL_THRESHOLD_LINE_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_GREENS[4].with_alpha(0.941));
+
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
-
-    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
-    const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
     const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
-
     const THRESHOLD_LINE_WIDTH: f64 = 4.0;
     const OFFSET_LINE_WIDTH: f64 = 2.0;
 }
@@ -74,14 +76,14 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
             tool_bounds.mins.coords.to_kurbo_point(),
             tool_bounds.maxs.coords.to_kurbo_point(),
         );
-        cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
+        cx.fill(tool_bounds_rect, &*VERTICALSPACETOOL_FILL_COLOR);
 
         let threshold_line =
             kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
 
         cx.stroke_styled(
             threshold_line,
-            &Self::THRESHOLD_LINE_COLOR,
+            &*VERTICALSPACETOOL_THRESHOLD_LINE_COLOR,
             Self::THRESHOLD_LINE_WIDTH,
             &piet::StrokeStyle::new().dash_pattern(&[12.0, 6.0]),
         );
@@ -116,10 +118,13 @@ impl Default for OffsetCameraTool {
     }
 }
 
+static OFFSETCAMERATOOL_FILL_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_DARKS[3].with_alpha(0.941));
+static OFFSETCAMERATOOL_OUTLINE_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
+
 impl OffsetCameraTool {
     const DRAW_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
-    const FILL_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(0xf0);
-    const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(0xf0);
     const PATH_WIDTH: f64 = 2.0;
 
     const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
@@ -147,8 +152,12 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
 
             let bez_path = kurbo::BezPath::from_svg(Self::CURSOR_PATH).unwrap();
 
-            cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
-            cx.fill(bez_path, &Self::FILL_COLOR);
+            cx.stroke(
+                bez_path.clone(),
+                &*OFFSETCAMERATOOL_OUTLINE_COLOR,
+                Self::PATH_WIDTH,
+            );
+            cx.fill(bez_path, &*OFFSETCAMERATOOL_FILL_COLOR);
         }
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

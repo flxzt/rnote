@@ -5,6 +5,7 @@ use anyhow::Context;
 use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
 use image::GenericImageView;
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
@@ -16,14 +17,12 @@ use crate::utils::{base64, GrapheneRectHelpers};
 use crate::DrawBehaviour;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 
-lazy_static! {
-    pub static ref USVG_OPTIONS: usvg::Options = {
-        let mut usvg_options = usvg::Options::default();
-        usvg_options.fontdb.load_system_fonts();
+pub static USVG_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
+    let mut usvg_options = usvg::Options::default();
+    usvg_options.fontdb.load_system_fonts();
 
-        usvg_options
-    };
-}
+    usvg_options
+});
 
 pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
     id_prefix: None,
@@ -625,61 +624,6 @@ impl Svg {
         if let Some(bounds) = bounds {
             self.bounds = bounds
         }
-    }
-
-    /// Generates an svg with piet, using the piet_svg backend (context creation might be slow due to font loading).
-    pub fn gen_with_piet_svg_backend<F>(draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
-    {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
-        let mut piet_cx =
-            piet_svg::RenderContext::new(bounds.to_kurbo_rect(), bounds.to_kurbo_rect(), 2);
-
-        // Apply the draw function
-        draw_func(&mut piet_cx)?;
-
-        piet_cx
-            .finish()
-            .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
-
-        let mut data: Vec<u8> = vec![];
-        piet_cx.write(&mut data)?;
-
-        let svg_data = rnote_compose::utils::remove_xml_header(String::from_utf8(data)?.as_str());
-
-        Ok(Self { svg_data, bounds })
-    }
-
-    /// Generates an svg with piet, using the piet_svg backend without text loading (for faster context creation).
-    pub fn gen_with_piet_svg_backend_no_text<F>(
-        draw_func: F,
-        mut bounds: AABB,
-    ) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
-    {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
-        let mut piet_cx =
-            piet_svg::RenderContext::new_no_text(bounds.to_kurbo_rect(), bounds.to_kurbo_rect(), 2);
-
-        // Apply the draw function
-        draw_func(&mut piet_cx)?;
-
-        piet_cx
-            .finish()
-            .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
-
-        let mut data: Vec<u8> = vec![];
-        piet_cx.write(&mut data)?;
-
-        let svg_data = rnote_compose::utils::remove_xml_header(String::from_utf8(data)?.as_str());
-
-        Ok(Self { svg_data, bounds })
     }
 
     /// Generates an svg with piet, using the piet_cairo backend and a SvgSurface.

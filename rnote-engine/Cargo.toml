@@ -13,13 +13,6 @@ rust-version = "1.65"
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-piet = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-#piet = { path = "../piet/piet" }
-piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-#piet-svg = { path = "../piet/piet-svg" }
-piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-#piet-cairo = { path = "../piet/piet-cairo" }
-
 log = "0.4.16"
 pretty_env_logger = "0.4.0"
 anyhow = "1.0"
@@ -29,12 +22,12 @@ rand = "0.8.5"
 rand_pcg = "0.3.1"
 rand_distr = "0.4.3"
 regex = "1.5"
+once_cell = "1.8"
 num-derive = "0.3.3"
 num-traits = "0.2.14"
 itertools = "0.10.3"
 rayon = "1.5"
 futures = "0.3.21"
-lazy_static = "1.4"
 base64 = "0.13.0"
 flate2 = "1.0"
 chrono = {version ="0.4.19", features = ["serde"] }
@@ -47,6 +40,9 @@ adw = {version = "0.2.1", package="libadwaita", features = ["v1_2"]}
 cairo-rs = {version = "0.16.3", features = ["png", "svg", "pdf"]}
 poppler-rs = {version = "0.20.0", features = ["v21_12"] }
 librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "669a888bec641efc2b59cd605750582d6bb77244" }
+piet = "0.6"
+piet-svg = "0.6"
+piet-cairo = "0.6"
 kurbo = "0.9.0"
 image = "0.23.14"
 svg = "0.10.0"

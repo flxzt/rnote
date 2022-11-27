@@ -1,4 +1,3 @@
-mod roughgenerator;
 /// The module for the rough style.
 pub mod roughoptions;
 
@@ -7,22 +6,37 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 pub use roughoptions::RoughOptions;
 
 use super::Composer;
-use crate::helpers::{Affine2Helpers, Vector2Helpers};
-use crate::penpath::Segment;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
 use crate::shapes::{CubicBezier, ShapeBehaviour};
 use crate::shapes::{Ellipse, QuadraticBezier};
-use crate::PenPath;
+use crate::Color;
 
-/// This is a (incomplete) port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
-/// Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
+fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
+    let mut roughr_options = roughr::core::OptionsBuilder::default();
 
-/// Generating a fill polygon
-fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo::BezPath {
-    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
+    roughr_options
+        .stroke_width(options.stroke_width as f32)
+        .hachure_angle(options.hachure_angle.to_degrees() as f32)
+        .fill_style(options.fill_style.into());
 
-    roughgenerator::fill_polygon(coords, options, &mut rng)
+    if let Some(seed) = options.seed {
+        roughr_options.seed(seed);
+    }
+
+    if let Some(stroke_color) = options.stroke_color {
+        roughr_options.stroke(stroke_color.into());
+    }
+
+    if let Some(fill_color) = options.fill_color {
+        if fill_color != Color::TRANSPARENT {
+            roughr_options
+                .fill(fill_color.into())
+                .fill_style(options.fill_style.into());
+        }
+    }
+
+    roughr_options.build().unwrap()
 }
 
 // Composer implementations
@@ -35,19 +49,15 @@ impl Composer<RoughOptions> for Line {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
-        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-        let bez_path = if !options.disable_multistroke {
-            roughgenerator::doubleline(self.start, self.end, options, &mut rng)
-        } else {
-            roughgenerator::line(self.start, self.end, true, false, options, &mut rng)
-        };
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+            self.start[0],
+            self.start[1],
+            self.end[0],
+            self.end[1],
+        );
 
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-
-            cx.stroke(bez_path, &stroke_brush, options.stroke_width)
-        }
+        drawable.draw(cx);
 
         cx.restore().unwrap();
     }
@@ -61,112 +71,19 @@ impl Composer<RoughOptions> for Rectangle {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
-        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
-
-        let mut rect_path = kurbo::BezPath::new();
 
         let top_left = -self.cuboid.half_extents;
-        let bottom_right = self.cuboid.half_extents;
+        let size = self.cuboid.half_extents * 2.0;
 
-        if !options.disable_multistroke {
-            rect_path.extend(
-                roughgenerator::doubleline(
-                    top_left,
-                    na::vector![bottom_right[0], top_left[1]],
-                    options,
-                    &mut rng,
-                )
-                .into_iter(),
-            );
-            rect_path.extend(roughgenerator::doubleline(
-                na::vector![bottom_right[0], top_left[1]],
-                bottom_right,
-                options,
-                &mut rng,
-            ));
-            rect_path.extend(
-                roughgenerator::doubleline(
-                    bottom_right,
-                    na::vector![top_left[0], bottom_right[1]],
-                    options,
-                    &mut rng,
-                )
-                .into_iter(),
-            );
-            rect_path.extend(
-                roughgenerator::doubleline(
-                    na::vector![top_left[0], bottom_right[1]],
-                    top_left,
-                    options,
-                    &mut rng,
-                )
-                .into_iter(),
-            );
-        } else {
-            rect_path.extend(
-                roughgenerator::line(
-                    top_left,
-                    na::vector![bottom_right[0], top_left[1]],
-                    true,
-                    false,
-                    options,
-                    &mut rng,
-                )
-                .into_iter(),
-            );
-            rect_path.extend(
-                roughgenerator::line(
-                    na::vector![bottom_right[0], top_left[1]],
-                    bottom_right,
-                    true,
-                    false,
-                    options,
-                    &mut rng,
-                )
-                .into_iter(),
-            );
-            rect_path.extend(roughgenerator::line(
-                bottom_right,
-                na::vector![top_left[0], bottom_right[1]],
-                true,
-                false,
-                options,
-                &mut rng,
-            ));
-            rect_path.extend(
-                roughgenerator::line(
-                    na::vector![top_left[0], bottom_right[1]],
-                    top_left,
-                    true,
-                    false,
-                    options,
-                    &mut rng,
-                )
-                .into_iter(),
-            );
-        }
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).rectangle(
+            top_left[0],
+            top_left[1],
+            size[0],
+            size[1],
+        );
 
-        let rect_path = self.transform.affine.to_kurbo() * rect_path;
-
-        if let Some(fill_color) = options.fill_color {
-            let fill_points = vec![
-                na::vector![top_left[0], top_left[1]],
-                na::vector![bottom_right[0], top_left[1]],
-                na::vector![bottom_right[0], bottom_right[1]],
-                na::vector![top_left[0], bottom_right[1]],
-            ];
-            let fill_polygon =
-                self.transform.affine.to_kurbo() * fill_polygon(fill_points, options);
-
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(fill_polygon, &fill_brush);
-        }
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-
-            cx.stroke(rect_path, &stroke_brush, options.stroke_width)
-        }
+        cx.transform(self.transform.to_kurbo());
+        drawable.draw(cx);
 
         cx.restore().unwrap();
     }
@@ -180,31 +97,14 @@ impl Composer<RoughOptions> for Ellipse {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
-        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-        let mut ellipse_result = roughgenerator::ellipse(
-            na::vector![0.0, 0.0],
-            self.radii[0],
-            self.radii[1],
-            options,
-            &mut rng,
-        );
+        let size = self.radii * 2.0;
 
-        ellipse_result.bez_path = self.transform.affine.to_kurbo() * ellipse_result.bez_path;
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            .ellipse(0.0, 0.0, size[0], size[1]);
 
-        if let Some(fill_color) = options.fill_color {
-            let fill_polygon = self.transform.affine.to_kurbo()
-                * fill_polygon(ellipse_result.estimated_points, options);
-
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(fill_polygon, &fill_brush);
-        }
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-
-            cx.stroke(ellipse_result.bez_path, &stroke_brush, options.stroke_width)
-        }
+        cx.transform(self.transform.to_kurbo());
+        drawable.draw(cx);
 
         cx.restore().unwrap();
     }
@@ -218,16 +118,15 @@ impl Composer<RoughOptions> for QuadraticBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
-        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-        let bez_path =
-            roughgenerator::quadratic_bezier(self.start, self.cp, self.end, options, &mut rng);
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            .bezier_quadratic(
+                euclid::default::Point2D::new(self.start[0] as f32, self.start[1] as f32),
+                euclid::default::Point2D::new(self.cp[0] as f32, self.cp[1] as f32),
+                euclid::default::Point2D::new(self.end[0] as f32, self.end[1] as f32),
+            );
 
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-
-            cx.stroke(bez_path, &stroke_brush, options.stroke_width)
-        }
+        drawable.draw(cx);
 
         cx.restore().unwrap();
     }
@@ -241,108 +140,17 @@ impl Composer<RoughOptions> for CubicBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
-        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-        let bez_path = roughgenerator::cubic_bezier(
-            self.start, self.cp1, self.cp2, self.end, options, &mut rng,
-        );
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            .bezier_cubic(
+                euclid::default::Point2D::new(self.start[0] as f32, self.start[1] as f32),
+                euclid::default::Point2D::new(self.cp1[0] as f32, self.cp1[1] as f32),
+                euclid::default::Point2D::new(self.cp2[0] as f32, self.cp2[1] as f32),
+                euclid::default::Point2D::new(self.end[0] as f32, self.end[1] as f32),
+            );
 
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
+        drawable.draw(cx);
 
-            cx.stroke(bez_path, &stroke_brush, options.stroke_width)
-        }
-
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for Segment {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width * 0.5)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        let mut options = options.clone();
-        options.disable_multistroke = true;
-        options.preserve_vertices = true;
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-
-            match self {
-                Segment::Dot { element } => {
-                    let radii = na::Vector2::from_element(options.stroke_width * 0.5);
-                    let dot_ellipse = kurbo::Ellipse::new(
-                        element.pos.to_kurbo_point(),
-                        radii.to_kurbo_vec(),
-                        0.0,
-                    );
-
-                    cx.fill(dot_ellipse, &stroke_brush);
-                }
-                Segment::Line { start, end } => {
-                    let line = Line {
-                        start: start.pos,
-                        end: end.pos,
-                    };
-
-                    line.draw_composed(cx, &options)
-                }
-                Segment::QuadBez { start, cp, end } => {
-                    let n_splits = 5;
-
-                    let quadbez = QuadraticBezier {
-                        start: start.pos,
-                        cp: *cp,
-                        end: end.pos,
-                    };
-
-                    let lines = quadbez.approx_with_lines(n_splits);
-
-                    lines
-                        .iter()
-                        .for_each(|line| line.draw_composed(cx, &options));
-                }
-                Segment::CubBez {
-                    start,
-                    cp1,
-                    cp2,
-                    end,
-                } => {
-                    let n_splits = 5;
-
-                    let cubbez = CubicBezier {
-                        start: start.pos,
-                        cp1: *cp1,
-                        cp2: *cp2,
-                        end: end.pos,
-                    };
-                    let lines = cubbez.approx_with_lines(n_splits);
-
-                    lines
-                        .iter()
-                        .for_each(|line| line.draw_composed(cx, &options));
-                }
-            }
-        }
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for PenPath {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.iter()
-            .map(|segment| segment.composed_bounds(options))
-            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        for segment in self.iter() {
-            segment.draw_composed(cx, options);
-        }
         cx.restore().unwrap();
     }
 }
@@ -355,7 +163,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
             crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
-            crate::Shape::Segment(segment) => segment.composed_bounds(options),
+            crate::Shape::Segment(_) => unimplemented!(),
         }
     }
 
@@ -366,7 +174,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
             crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
-            crate::Shape::Segment(segment) => segment.draw_composed(cx, options),
+            crate::Shape::Segment(_) => unimplemented!(),
         }
     }
 }

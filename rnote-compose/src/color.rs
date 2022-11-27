@@ -3,7 +3,7 @@ use rnote_fileformats::xoppformat;
 use serde::{Deserialize, Serialize};
 
 /// A rgba color
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(default, rename = "color")]
 pub struct Color {
     /// red, ranging [0.0, 1.0]
@@ -177,6 +177,23 @@ impl From<Color> for xoppformat::XoppColor {
             blue: (color.b * 255.0).floor() as u8,
             alpha: (color.a * 255.0).floor() as u8,
         }
+    }
+}
+
+impl From<roughr::Srgb> for Color {
+    fn from(c: roughr::Srgb) -> Self {
+        Self {
+            r: c.blue as f64,
+            g: c.green as f64,
+            b: c.blue as f64,
+            a: 1.0,
+        }
+    }
+}
+
+impl From<Color> for roughr::Srgb {
+    fn from(c: Color) -> Self {
+        roughr::Srgb::new(c.r as f32, c.g as f32, c.b as f32)
     }
 }
 

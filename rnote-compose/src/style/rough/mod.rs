@@ -118,11 +118,12 @@ impl Composer<RoughOptions> for QuadraticBezier {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
 
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).curve(&[
-            euclid::default::Point2D::new(self.start[0] as f32, self.start[1] as f32),
-            euclid::default::Point2D::new(self.cp[0] as f32, self.cp[1] as f32),
-            euclid::default::Point2D::new(self.end[0] as f32, self.end[1] as f32),
-        ]);
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            .bezier_quadratic(
+                euclid::default::Point2D::new(self.start[0] as f32, self.start[1] as f32),
+                euclid::default::Point2D::new(self.cp[0] as f32, self.cp[1] as f32),
+                euclid::default::Point2D::new(self.end[0] as f32, self.end[1] as f32),
+            );
 
         drawable.draw(cx);
 
@@ -139,12 +140,13 @@ impl Composer<RoughOptions> for CubicBezier {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
 
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).curve(&[
-            euclid::default::Point2D::new(self.start[0] as f32, self.start[1] as f32),
-            euclid::default::Point2D::new(self.cp1[0] as f32, self.cp1[1] as f32),
-            euclid::default::Point2D::new(self.cp2[0] as f32, self.cp2[1] as f32),
-            euclid::default::Point2D::new(self.end[0] as f32, self.end[1] as f32),
-        ]);
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            .bezier_cubic(
+                euclid::default::Point2D::new(self.start[0] as f32, self.start[1] as f32),
+                euclid::default::Point2D::new(self.cp1[0] as f32, self.cp1[1] as f32),
+                euclid::default::Point2D::new(self.cp2[0] as f32, self.cp2[1] as f32),
+                euclid::default::Point2D::new(self.end[0] as f32, self.end[1] as f32),
+            );
 
         drawable.draw(cx);
 

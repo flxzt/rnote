@@ -150,13 +150,13 @@ dependencies = [
 
 [[package]]
 name = "async-io"
-version = "1.10.0"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e8121296a9f05be7f34aa4196b1747243b3b62e048bb7906f644f3fbfc490cf7"
+checksum = "8c374dda1ed3e7d8f0d9ba58715f924862c63eae6849c92d3a18e7fbde9e2794"
 dependencies = [
  "async-lock",
  "autocfg",
- "concurrent-queue 1.2.4",
+ "concurrent-queue 2.0.0",
  "futures-lite",
  "libc",
  "log",
@@ -165,7 +165,7 @@ dependencies = [
  "slab",
  "socket2",
  "waker-fn",
- "winapi",
+ "windows-sys",
 ]
 
 [[package]]
@@ -192,20 +192,20 @@ dependencies = [
 
 [[package]]
 name = "async-process"
-version = "1.5.0"
+version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02111fd8655a613c25069ea89fc8d9bb89331fa77486eb3bc059ee757cfa481c"
+checksum = "6381ead98388605d0d9ff86371043b5aa922a3905824244de40dc263a14fcba4"
 dependencies = [
  "async-io",
+ "async-lock",
  "autocfg",
  "blocking",
  "cfg-if",
  "event-listener",
  "futures-lite",
  "libc",
- "once_cell",
  "signal-hook",
- "winapi",
+ "windows-sys",
 ]
 
 [[package]]
@@ -442,16 +442,16 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
 name = "blocking"
-version = "1.2.0"
+version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6ccb65d468978a086b69884437ded69a90faab3bbe6e67f242173ea728acccc"
+checksum = "3c67b173a56acffd6d2326fb7ab938ba0b00a71480e14902b2591c87bc5741e8"
 dependencies = [
  "async-channel",
+ "async-lock",
  "async-task",
  "atomic-waker",
  "fastrand",
  "futures-lite",
- "once_cell",
 ]
 
 [[package]]
@@ -3346,7 +3346,7 @@ dependencies = [
 [[package]]
 name = "points_on_curve"
 version = "0.2.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3354,16 +3354,16 @@ dependencies = [
 
 [[package]]
 name = "polling"
-version = "2.4.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab4609a838d88b73d8238967b60dd115cc08d38e2bbaf51ee1e4b695f89122e2"
+checksum = "9f7d73f1eaed1ca1fb37b54dcc9b38e3b17d6c7b8ecb7abfffcac8d0351f17d4"
 dependencies = [
  "autocfg",
  "cfg-if",
  "libc",
  "log",
  "wepoll-ffi",
- "winapi",
+ "windows-sys",
 ]
 
 [[package]]
@@ -3892,7 +3892,7 @@ dependencies = [
 [[package]]
 name = "rough_piet"
 version = "0.3.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3904,7 +3904,7 @@ dependencies = [
 [[package]]
 name = "roughr"
 version = "0.3.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -4485,7 +4485,7 @@ checksum = "e72d8b19ab05827afefcca66bf47040c1e66a0901eb814784c77d4ec118bd309"
 [[package]]
 name = "svg_path_ops"
 version = "0.2.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#4d5c32753de2a6b4b97ac776b960d761ddebf704"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
 dependencies = [
  "svgtypes",
 ]
@@ -4623,9 +4623,9 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.44"
+version = "0.1.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6db9e6914ab8b1ae1c260a4ae7a49b6c5611b40328a735b21862567685e73255"
+checksum = "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
 dependencies = [
  "libc",
  "wasi 0.10.0+wasi-snapshot-preview1",

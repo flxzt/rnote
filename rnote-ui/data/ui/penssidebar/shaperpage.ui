@@ -241,6 +241,7 @@
                       <items>
                         <item translatable="yes">Solid</item>
                         <item translatable="yes">Hachure</item>
+                        <item translatable="yes">ZigZag</item>
                         <item translatable="yes">Crosshatch</item>
                         <item translatable="yes">Dots</item>
                         <item translatable="yes">Dashed</item>

@@ -460,32 +460,6 @@ impl RnoteCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
-        let mut current_output_file_monitor = self.imp().output_file_monitor.borrow_mut();
-
-        if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
-            old_output_file_monitor.cancel();
-        }
-
-        if let Some(file) = &output_file {
-            if let Ok(output_file_monitor) =
-                file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
-            {
-                output_file_monitor.connect_changed(
-                    glib::clone!(@weak self as canvas => move |_monitor, _file, other_file, event| {
-                        if event == gio::FileMonitorEvent::Renamed || event == gio::FileMonitorEvent::MovedOut {
-                            if other_file.is_none() {
-                                canvas.set_unsaved_changes(true);
-                            }
-
-                            canvas.set_output_file(other_file.cloned());
-                        }
-                    }),
-                );
-
-                *current_output_file_monitor = Some(output_file_monitor);
-            }
-        }
-
         self.set_property("output-file", output_file.to_value());
     }
 
@@ -605,6 +579,34 @@ impl RnoteCanvas {
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {
                 let output_file = canvas.output_file();
+
+                let mut current_output_file_monitor = canvas.imp().output_file_monitor.borrow_mut();
+
+                // cancel old monitor.
+                if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
+                    old_output_file_monitor.cancel();
+                }
+
+                // create new monitor.
+                if let Some(file) = &output_file {
+                    if let Ok(output_file_monitor) =
+                        file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
+                    {
+                        output_file_monitor.connect_changed(
+                            glib::clone!(@weak canvas => move |_monitor, _file, other_file, event| {
+                                if event == gio::FileMonitorEvent::Renamed || event == gio::FileMonitorEvent::MovedOut {
+                                    if other_file.is_none() {
+                                        canvas.set_unsaved_changes(true);
+                                    }
+
+                                    canvas.set_output_file(other_file.cloned());
+                                }
+                            }),
+                        );
+
+                        *current_output_file_monitor = Some(output_file_monitor);
+                    }
+                }
 
                 appwindow.update_titles_for_file(output_file.as_ref());
             }),

@@ -17,6 +17,7 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
 
     roughr_options
         .stroke_width(options.stroke_width as f32)
+        .hachure_angle(options.hachure_angle.to_degrees() as f32)
         .fill_style(options.fill_style.into());
 
     if let Some(seed) = options.seed {

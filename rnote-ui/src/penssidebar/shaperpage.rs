@@ -35,6 +35,8 @@ mod imp {
         #[template_child]
         pub roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
+        pub roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub stroke_colorpicker: TemplateChild<ColorPicker>,
@@ -148,10 +150,6 @@ impl ShaperPage {
 
     pub fn shapeconfig_popover(&self) -> Popover {
         self.imp().shapeconfig_popover.get()
-    }
-
-    pub fn roughstyle_fillstyle_row(&self) -> adw::ComboRow {
-        self.imp().roughstyle_fillstyle_row.get()
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
@@ -323,7 +321,16 @@ impl ShaperPage {
             appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
 
             if let Err(e) = appwindow.save_engine_config() {
-                log::error!("saving engine config failed after changing shaper fill style, Err `{}`", e);
+                log::error!("saving engine config failed after changing shaper rough style fill style, Err `{}`", e);
+            }
+        }));
+
+        // Hachure angle
+        self.imp().roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
+            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+
+            if let Err(e) = appwindow.save_engine_config() {
+                log::error!("saving engine config failed after changing shaper rough style hachure angle, Err `{}`", e);
             }
         }));
 
@@ -438,6 +445,9 @@ impl ShaperPage {
 
         // Rough style
         self.set_roughstyle_fillstyle(shaper.rough_options.fill_style);
+        self.imp()
+            .roughstyle_hachure_angle_spinbutton
+            .set_value(shaper.rough_options.hachure_angle.to_degrees());
 
         // constraints
         self.imp()

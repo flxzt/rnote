@@ -18,6 +18,9 @@ pub struct RoughOptions {
     /// the fill style
     #[serde(rename = "fill_style")]
     pub fill_style: FillStyle,
+    /// the hachure angle (in rad)
+    #[serde(rename = "hachure_angle")]
+    pub hachure_angle: f64,
     /// an optional seed for creating random values used in shape generation.
     /// When using the same seed the generator produces the same shape.
     #[serde(rename = "seed")]
@@ -31,6 +34,7 @@ impl Default for RoughOptions {
             stroke_width: Self::STROKE_WIDTH_DEFAULT,
             fill_color: None,
             fill_style: FillStyle::Hachure,
+            hachure_angle: Self::HACHURE_ANGLE_DEFAULT,
             seed: None,
         }
     }
@@ -47,24 +51,8 @@ impl RoughOptions {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     /// max stroke width
     pub const STROKE_WIDTH_MAX: f64 = 1000.0;
-    /// Roughness min
-    pub const ROUGHNESS_MIN: f64 = 0.0;
-    /// Roughness max
-    pub const ROUGHNESS_MAX: f64 = 10.0;
-    /// Roughness default
-    pub const ROUGHNESS_DEFAULT: f64 = 1.0;
-    /// Bowing min
-    pub const BOWING_MIN: f64 = 0.0;
-    /// Bowing max
-    pub const BOWING_MAX: f64 = 20.0;
-    /// Bowing default
-    pub const BOWING_DEFAULT: f64 = 1.0;
-    /// Curve stepcount min
-    pub const CURVESTEPCOUNT_MIN: f64 = 3.0;
-    /// Curve stepcount max
-    pub const CURVESTEPCOUNT_MAX: f64 = 1000.0;
-    /// Curve stepcount default
-    pub const CURVESTEPCOUNT_DEFAULT: f64 = 12.0;
+    /// Default hachure angle (in rad)
+    pub const HACHURE_ANGLE_DEFAULT: f64 = std::f64::consts::PI / 2.0;
 }
 
 /// available Fill styles

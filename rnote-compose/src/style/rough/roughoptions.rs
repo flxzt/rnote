@@ -51,8 +51,8 @@ impl RoughOptions {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     /// max stroke width
     pub const STROKE_WIDTH_MAX: f64 = 1000.0;
-    /// Default hachure angle (in rad)
-    pub const HACHURE_ANGLE_DEFAULT: f64 = std::f64::consts::PI / 2.0;
+    /// Default hachure angle (in rad). Defaults to -41 degrees
+    pub const HACHURE_ANGLE_DEFAULT: f64 = -0.715585;
 }
 
 /// available Fill styles

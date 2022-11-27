@@ -55,6 +55,7 @@ mod imp {
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
 
@@ -141,6 +142,7 @@ mod imp {
                 engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
+                output_file_monitor: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -458,6 +460,32 @@ impl RnoteCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
+        let mut current_output_file_monitor = self.imp().output_file_monitor.borrow_mut();
+
+        if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
+            old_output_file_monitor.cancel();
+        }
+
+        if let Some(file) = &output_file {
+            if let Ok(output_file_monitor) =
+                file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
+            {
+                output_file_monitor.connect_changed(
+                    glib::clone!(@weak self as canvas => move |_monitor, _file, other_file, event| {
+                        if event == gio::FileMonitorEvent::Renamed || event == gio::FileMonitorEvent::MovedOut {
+                            if other_file.is_none() {
+                                canvas.set_unsaved_changes(true);
+                            }
+
+                            canvas.set_output_file(other_file.cloned());
+                        }
+                    }),
+                );
+
+                *current_output_file_monitor = Some(output_file_monitor);
+            }
+        }
+
         self.set_property("output-file", output_file.to_value());
     }
 

@@ -8,168 +8,175 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-11-28 13:13+0000\n"
+"Last-Translator: Nguyen Phi Truong <Nguyenairport56@gmail.com>\n"
+"Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
+">\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "Phác thảo và viết ghi chú"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "Gnome;GTK;Office;Đồ Họa;Ghi Chú;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "Cửa Sổ Mới"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"Rnote là một ứng dụng vẽ dựa trên véc tơ để phác thảo, viết ghi chú và chú "
+"thích tài liệu và hình ảnh."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"Miễn trừ trách nhiệm: Định dạng tệp vẫn chưa ổn định. Nó có thể thay đổi và "
+"không tương thích giữa các phiên bản."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
-msgstr ""
+msgstr "Cửa sổ chính màu Sáng"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:36
 msgid "Main window in dark colors"
-msgstr ""
+msgstr "Cửa sổ chính màu tối"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A PDF annotation"
-msgstr ""
+msgstr "Chú thích PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:44
 msgid "A selection"
-msgstr ""
+msgstr "Vùng chọn"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "_Color scheme"
-msgstr ""
+msgstr "Bảng màu"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
-msgstr ""
+msgstr "Sử dụng màu hệ thống"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _light colors"
-msgstr ""
+msgstr "Sử dụng màu sáng"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _dark colors"
-msgstr ""
+msgstr "Dùng màu tối"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "_Developer mode"
-msgstr ""
+msgstr "Chế độ Nhà phát triển"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
-msgstr ""
+msgstr "Menu Nhà phát triển"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 msgid "_Visual debugging"
-msgstr ""
+msgstr "Debug Trực quan"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
-msgstr ""
+msgstr "Xuất trạng thái engine"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 msgid "Export engine _config"
-msgstr ""
+msgstr "Xuất cài đặt engine"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "Mới"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr ""
+msgstr "Mở"
 
 #: rnote-ui/data/ui/appmenu.ui:76
 msgid "_Save"
-msgstr ""
+msgstr "Lưu"
 
 #: rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _as"
-msgstr ""
+msgstr "Lưu thành"
 
 #: rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
-msgstr ""
+msgstr "In"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 msgid "_Paste clipboard"
-msgstr ""
+msgstr "Dán từ bộ đệm"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
-msgstr ""
+msgstr "Nhập tệp tin"
 
 #: rnote-ui/data/ui/appmenu.ui:98
 msgid "_Export…"
-msgstr ""
+msgstr "Xuất…"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "Export _document"
-msgstr ""
+msgstr "Xuất tài liệu"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "Export document _pages"
-msgstr ""
+msgstr "Xuất _pages tài liệu"
 
 #: rnote-ui/data/ui/appmenu.ui:108
 msgid "Export _selection"
-msgstr ""
+msgstr "Xuất phần chọn"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Se_ttings"
-msgstr ""
+msgstr "Cài đặt"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
-msgstr ""
+msgstr "Các phím tắt"
 
 #: rnote-ui/data/ui/appmenu.ui:123
 msgid "_Donate 💝"
-msgstr ""
+msgstr "Ủng hộ 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
 msgid "_About Rnote"
-msgstr ""
+msgstr "Thông tin về Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
-msgstr ""
+msgstr "Sidebar phía bên trái"
 
 #: rnote-ui/data/ui/appmenu.ui:167
 msgid "Sidebar on the right side"
-msgstr ""
+msgstr "Sidebar phía bên phải"
 
 #: rnote-ui/data/ui/appmenu.ui:177
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Bật/Tắt toàn màn hình"
 
 #: rnote-ui/data/ui/appwindow.ui:67 rnote-ui/data/ui/mainheader.ui:77
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
 msgid "Brush"
-msgstr ""
+msgstr "Cọ"
 
 #: rnote-ui/data/ui/appwindow.ui:74 rnote-ui/data/ui/mainheader.ui:84
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
@@ -184,7 +191,7 @@ msgstr ""
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Eraser"
-msgstr ""
+msgstr "Tẩy"
 
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
@@ -194,23 +201,23 @@ msgstr ""
 #: rnote-ui/data/ui/appwindow.ui:106 rnote-ui/data/ui/mainheader.ui:116
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
 msgid "Tools"
-msgstr ""
+msgstr "Công cụ"
 
 #: rnote-ui/data/ui/appwindow.ui:164
 msgid "Add page"
-msgstr ""
+msgstr "Thêm trang"
 
 #: rnote-ui/data/ui/appwindow.ui:176
 msgid "Resize document to fit the strokes"
-msgstr ""
+msgstr "Thay đổi kích thước tài liệu cho vừa nét"
 
 #: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
 msgid "Zoom in"
-msgstr ""
+msgstr "Phóng to"
 
 #: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
 msgid "Zoom out"
-msgstr ""
+msgstr "Thu nhỏ"
 
 #: rnote-ui/data/ui/appwindow.ui:217
 msgid "Undo"
@@ -234,11 +241,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:441
 msgid "Settings"
-msgstr ""
+msgstr "Các cài đặt"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "Document _layout"
-msgstr ""
+msgstr "Layout tài liệu"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed size"

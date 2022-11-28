@@ -589,22 +589,23 @@ impl RnoteCanvas {
 
                 // create new monitor.
                 if let Some(file) = &output_file {
-                    if let Ok(output_file_monitor) =
-                        file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE)
-                    {
-                        output_file_monitor.connect_changed(
-                            glib::clone!(@weak canvas => move |_monitor, _file, other_file, event| {
-                                if event == gio::FileMonitorEvent::Renamed || event == gio::FileMonitorEvent::MovedOut {
-                                    if other_file.is_none() {
-                                        canvas.set_unsaved_changes(true);
+                    match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
+                        Ok(output_file_monitor) => {
+                            output_file_monitor.connect_changed(
+                                glib::clone!(@weak canvas => move |_monitor, _file, other_file, event| {
+                                    if event == gio::FileMonitorEvent::Renamed || event == gio::FileMonitorEvent::MovedOut {
+                                        if other_file.is_none() {
+                                            canvas.set_unsaved_changes(true);
+                                        }
+
+                                        canvas.set_output_file(other_file.cloned());
                                     }
+                                }),
+                            );
 
-                                    canvas.set_output_file(other_file.cloned());
-                                }
-                            }),
-                        );
-
-                        *current_output_file_monitor = Some(output_file_monitor);
+                            *current_output_file_monitor = Some(output_file_monitor);
+                        },
+                        Err(e) => log::error!("creating a file monitor for the new output file failed with Err {}", e)
                     }
                 }
 

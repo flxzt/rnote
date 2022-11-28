@@ -33,7 +33,6 @@ poppler-rs = {version = "0.20.0", features = ["v21_12"] }
 svg = "0.10.0"
 image = "0.23.14"
 piet = "0.6"
-piet-svg = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9.0"
 url = "2.2.2"

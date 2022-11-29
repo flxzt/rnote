@@ -96,7 +96,7 @@ struct EngineConfig {
 
 impl Default for EngineConfig {
     fn default() -> Self {
-        let engine = RnoteEngine::new(None);
+        let engine = RnoteEngine::default();
 
         Self {
             document: serde_json::to_value(&engine.document).unwrap(),
@@ -146,31 +146,7 @@ pub struct RnoteEngine {
 
 impl Default for RnoteEngine {
     fn default() -> Self {
-        Self::new(None)
-    }
-}
-
-impl RnoteEngine {
-    #[allow(clippy::new_without_default)]
-    pub fn new(data_dir: Option<PathBuf>) -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
-        let pen_sounds = false;
-        let audioplayer = if let Some(data_dir) = data_dir {
-            AudioPlayer::new(data_dir)
-                .map_err(|e| {
-                    log::error!(
-                        "failed to create a new audio player in PenHolder::default(), Err {}",
-                        e
-                    );
-                })
-                .map(|mut audioplayer| {
-                    audioplayer.enabled = pen_sounds;
-                    audioplayer
-                })
-                .ok()
-        } else {
-            None
-        };
 
         Self {
             document: Document::default(),
@@ -180,15 +156,17 @@ impl RnoteEngine {
 
             import_prefs: ImportPrefs::default(),
             export_prefs: ExportPrefs::default(),
-            pen_sounds,
+            pen_sounds: false,
 
-            audioplayer,
+            audioplayer: None,
             visual_debug: false,
             tasks_tx,
             tasks_rx: Some(tasks_rx),
         }
     }
+}
 
+impl RnoteEngine {
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
     }
@@ -220,12 +198,26 @@ impl RnoteEngine {
         self.pen_sounds
     }
 
-    /// enables / disables the pen sounds
-    pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
+    /// enables / disables the pen sounds.
+    /// If pen sound should be enabled, the rnote data dir must be provided.
+    pub fn set_pen_sounds(&mut self, pen_sounds: bool, data_dir: Option<PathBuf>) {
         self.pen_sounds = pen_sounds;
 
-        if let Some(audioplayer) = self.audioplayer.as_mut() {
-            audioplayer.enabled = pen_sounds;
+        if pen_sounds {
+            if let Some(data_dir) = data_dir {
+                // Only create and init a new audioplayer if it does not already exists
+                if self.audioplayer.is_none() {
+                    self.audioplayer = match AudioPlayer::new_init(data_dir) {
+                        Ok(audioplayer) => Some(audioplayer),
+                        Err(e) => {
+                            log::error!("creating a new audioplayer failed, Err {e}");
+                            None
+                        }
+                    }
+                }
+            }
+        } else {
+            self.audioplayer.take();
         }
     }
 
@@ -662,8 +654,13 @@ impl RnoteEngine {
         Ok(())
     }
 
-    /// Imports and replace the engine config. NOT for opening files
-    pub fn load_engine_config(&mut self, serialized_config: &str) -> anyhow::Result<WidgetFlags> {
+    /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
+    /// NOT for opening files
+    pub fn load_engine_config(
+        &mut self,
+        serialized_config: &str,
+        data_dir: Option<PathBuf>,
+    ) -> anyhow::Result<WidgetFlags> {
         let mut widget_flags = WidgetFlags::default();
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
@@ -674,7 +671,7 @@ impl RnoteEngine {
         self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
 
         // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(self.pen_sounds);
+        self.set_pen_sounds(self.pen_sounds, data_dir);
 
         widget_flags.merge_with_other(self.penholder.handle_changed_pen_style());
 

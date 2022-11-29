@@ -31,8 +31,6 @@ use std::collections::VecDeque;
 use std::time;
 
 mod imp {
-    use std::path::PathBuf;
-
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -120,7 +118,7 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
-            let engine = RnoteEngine::new(Some(PathBuf::from(config::PKG_DATA_DIR)));
+            let engine = RnoteEngine::default();
 
             Self {
                 hadjustment: RefCell::new(None),

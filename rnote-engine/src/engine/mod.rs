@@ -131,7 +131,7 @@ pub struct RnoteEngine {
     #[serde(rename = "export_prefs")]
     pub export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
-    pub pen_sounds: bool,
+    pen_sounds: bool,
 
     #[serde(skip)]
     pub audioplayer: Option<AudioPlayer>,

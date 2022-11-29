@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-29 10:19+0000\n"
+"PO-Revision-Date: 2022-11-29 10:28+0000\n"
 "Last-Translator: Tymoteusz Majewski <tymekzszopin@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
@@ -1405,7 +1405,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:268
 msgid "Curve step count"
-msgstr ""
+msgstr "Liczba kroków krzywej"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:269
 msgid "How many steps make up a curve. Defaults to 12"
@@ -1448,12 +1448,14 @@ msgid "Ellipse with foci"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#, fuzzy
 msgid "Quadratic bezier curve"
-msgstr ""
+msgstr "Kwadratowa krzywa Beziera"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:417
+#, fuzzy
 msgid "Cubic bezier curve"
-msgstr ""
+msgstr "Sześcienna krzywa beziera"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:461
 msgid "Enabled"
@@ -1610,10 +1612,8 @@ msgid "Opening PDF file failed."
 msgstr "Otwarcie pliku PDF się nie powiodło."
 
 #: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
-#, fuzzy
-#| msgid "Import file"
 msgid "Opening Xournal++ file failed."
-msgstr "Importuj plik"
+msgstr "Otwarcie pliku Xournal++ nie powiodło się."
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1627,35 +1627,33 @@ msgstr "Zapisanie dokumentu zakończone sukcesem."
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export document failed."
-msgstr "Eksportuj dokument jako SVG"
+msgstr "Eksport dokumentu nie powiódł się."
 
 #: rnote-ui/src/dialogs/export.rs:195
 #, fuzzy
 #| msgid "Saved document successfully."
 msgid "Exported document successfully."
-msgstr "Zapisanie dokumentu zakończone sukcesem."
+msgstr "Dokument został wyeksportowany pomyślnie."
 
 #: rnote-ui/src/dialogs/export.rs:201
 msgid "Export document failed, no file selected."
 msgstr "Eksportowanie dokumentu się nie powiodło, nie wybrano pliku."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages failed."
-msgstr "Eksportuj dokument jako SVG"
+msgstr "Eksportowanie stron dokumentu nie powiodło się."
 
 #: rnote-ui/src/dialogs/export.rs:470
 #, fuzzy
 #| msgid "Saved document successfully."
 msgid "Exported document pages successfully."
-msgstr "Zapisanie dokumentu zakończone sukcesem."
+msgstr "Eksportowanie stron dokumentu zakończyło się sukcesem."
 
 #: rnote-ui/src/dialogs/export.rs:476
 #, fuzzy
 #| msgid "Export selection as SVG"
 msgid "Export document pages failed, no directory selected."
-msgstr "Eksportuj zaznaczenie jako SVG"
+msgstr "Eksport stron dokumentu nie powiódł się, nie wybrano żadnego katalogu."
 
 #: rnote-ui/src/dialogs/export.rs:711
 #, fuzzy

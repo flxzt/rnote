@@ -2849,9 +2849,9 @@ dependencies = [
 
 [[package]]
 name = "parking_lot_core"
-version = "0.9.4"
+version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4dc9e0dc2adc1c69d09143aff38d3d30c5c3f0df0dad82e6d25547af174ebec0"
+checksum = "7ff9f3fef3968a3ec5945535ed654cb38ff72d7495a25619e2247fb15a2ed9ba"
 dependencies = [
  "cfg-if",
  "libc",
@@ -3094,7 +3094,7 @@ dependencies = [
 [[package]]
 name = "points_on_curve"
 version = "0.2.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#aabca0bd62ae7fffb83c751b070e3ca8abb3e838"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3529,7 +3529,6 @@ dependencies = [
  "rand_distr",
  "rand_pcg 0.3.1",
  "regex",
- "rnote-fileformats",
  "rough_piet",
  "roughr",
  "serde",
@@ -3615,7 +3614,7 @@ dependencies = [
 [[package]]
 name = "rough_piet"
 version = "0.3.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#aabca0bd62ae7fffb83c751b070e3ca8abb3e838"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3627,7 +3626,7 @@ dependencies = [
 [[package]]
 name = "roughr"
 version = "0.3.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#aabca0bd62ae7fffb83c751b070e3ca8abb3e838"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -4171,7 +4170,7 @@ checksum = "e72d8b19ab05827afefcca66bf47040c1e66a0901eb814784c77d4ec118bd309"
 [[package]]
 name = "svg_path_ops"
 version = "0.2.0"
-source = "git+https://github.com/orhanbalci/rough-rs?branch=main#05cdbd702956d3b691b4b33bddffcf4a2a69b617"
+source = "git+https://github.com/orhanbalci/rough-rs?branch=main#aabca0bd62ae7fffb83c751b070e3ca8abb3e838"
 dependencies = [
  "svgtypes",
 ]

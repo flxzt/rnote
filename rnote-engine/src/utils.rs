@@ -1,7 +1,9 @@
 use geo::line_string;
 use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
 use p2d::bounding_volume::AABB;
+use rnote_compose::Color;
 use rnote_compose::{penhelpers::KeyboardKey, Transform};
+use rnote_fileformats::xoppformat;
 
 pub trait GdkRGBAHelpers
 where
@@ -43,6 +45,24 @@ impl GdkRGBAHelpers for gdk::RGBA {
             f64::from(self.blue()),
             f64::from(self.alpha()),
         )
+    }
+}
+
+pub fn color_from_xopp(xopp_color: xoppformat::XoppColor) -> Color {
+    Color {
+        r: f64::from(xopp_color.red) / 255.0,
+        g: f64::from(xopp_color.green) / 255.0,
+        b: f64::from(xopp_color.blue) / 255.0,
+        a: f64::from(xopp_color.alpha) / 255.0,
+    }
+}
+
+pub fn xoppcolor_from_color(color: Color) -> xoppformat::XoppColor {
+    xoppformat::XoppColor {
+        red: (color.r * 255.0).floor() as u8,
+        green: (color.g * 255.0).floor() as u8,
+        blue: (color.b * 255.0).floor() as u8,
+        alpha: (color.a * 255.0).floor() as u8,
     }
 }
 

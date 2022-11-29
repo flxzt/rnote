@@ -30,7 +30,7 @@ pub(crate) enum Commands {
 }
 
 pub(crate) async fn run() -> anyhow::Result<()> {
-    let mut engine = RnoteEngine::new(None);
+    let mut engine = RnoteEngine::default();
 
     let cli = Cli::parse();
 

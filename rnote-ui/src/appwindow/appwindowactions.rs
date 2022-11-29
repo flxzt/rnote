@@ -280,7 +280,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
 
-                appwindow.canvas().engine().borrow_mut().set_pen_sounds(pen_sounds);
+                appwindow.canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKG_DATA_DIR)));
 
                 action_pen_sounds.set_state(&pen_sounds.to_variant());
             }),

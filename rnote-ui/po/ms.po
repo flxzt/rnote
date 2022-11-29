@@ -8,71 +8,82 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-11-29 06:32+0000\n"
+"Last-Translator: izz dakwat 0.5 <izzirfan1337@gmail.com>\n"
+"Language-Team: Malay <https://hosted.weblate.org/projects/rnote/repo/ms/>\n"
 "Language: ms\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "Lakar dan ambil nota bertulis tangan"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
+#, fuzzy
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "Gnome;GTK;Office;Graphics;Notes;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "Tetingkap Baharu"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"RNote merupakan aplikasi berasaskan vektor bagi tujuan melakar, menulis "
+"nota, dan menganotasi dokumen dan gambar."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"Penafian: Format fail masih tidak stabil. Fail tersebut mungkin berubah dan "
+"hilang keserasian di antara versi-versinya."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
-msgstr ""
+msgstr "Tetingkap utama dalam warna yang cerah"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:36
 msgid "Main window in dark colors"
-msgstr ""
+msgstr "Tetingkap utama dalam warna yang gelap"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A PDF annotation"
-msgstr ""
+msgstr "Anotasi PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:44
 msgid "A selection"
-msgstr ""
+msgstr "Pilihan"
 
 #: rnote-ui/data/ui/appmenu.ui:24
+#, fuzzy
 msgid "_Color scheme"
-msgstr ""
+msgstr "_Color scheme"
 
 #: rnote-ui/data/ui/appmenu.ui:26
+#, fuzzy
 msgid "Use _system colors"
-msgstr ""
+msgstr "Use _system colors"
 
 #: rnote-ui/data/ui/appmenu.ui:31
+#, fuzzy
 msgid "Use _light colors"
-msgstr ""
+msgstr "Use _light colors"
 
 #: rnote-ui/data/ui/appmenu.ui:36
+#, fuzzy
 msgid "Use _dark colors"
-msgstr ""
+msgstr "Use _dark colors"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "_Developer mode"

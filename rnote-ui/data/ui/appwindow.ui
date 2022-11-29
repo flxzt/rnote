@@ -187,10 +187,10 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="quickactions_zoom_in_button">
-                            <property name="icon_name">zoom-in-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Zoom in</property>
-                            <property name="action-name">win.zoom-in</property>
+                          <object class="GtkButton" id="quickactions_zoom_out_button">
+                            <property name="icon_name">zoom-out-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Zoom out</property>
+                            <property name="action-name">win.zoom-out</property>
                             <style>
                               <class name="osd" />
                               <class name="circular" />
@@ -199,10 +199,10 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="quickactions_zoom_out_button">
-                            <property name="icon_name">zoom-out-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Zoom out</property>
-                            <property name="action-name">win.zoom-out</property>
+                          <object class="GtkButton" id="quickactions_zoom_in_button">
+                            <property name="icon_name">zoom-in-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Zoom in</property>
+                            <property name="action-name">win.zoom-in</property>
                             <style>
                               <class name="osd" />
                               <class name="circular" />

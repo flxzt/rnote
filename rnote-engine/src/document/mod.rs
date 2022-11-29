@@ -21,6 +21,8 @@ pub enum Layout {
     FixedSize,
     #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
     ContinuousVertical,
+    #[serde(rename = "continuous_xy", alias = "endless_xy")]
+    ContinuousXY,
     #[serde(rename = "infinite")]
     Infinite,
 }
@@ -121,6 +123,9 @@ impl Document {
             Layout::ContinuousVertical => {
                 self.resize_doc_continuous_vertical_layout(store);
             }
+            Layout::ContinuousXY => {
+                self.resize_doc_continuous_xy_layout(store);
+            }
             Layout::Infinite => {
                 self.resize_doc_infinite_layout_to_fit_strokes(store);
                 self.expand_doc_infinite_layout(camera.viewport());
@@ -135,6 +140,9 @@ impl Document {
             }
             Layout::ContinuousVertical => {
                 self.resize_doc_continuous_vertical_layout(store);
+            }
+            Layout::ContinuousXY => {
+                self.resize_doc_continuous_xy_layout(store);
             }
             Layout::Infinite => {
                 self.resize_doc_infinite_layout_to_fit_strokes(store);
@@ -160,6 +168,18 @@ impl Document {
         let padding_bottom = self.format.height;
         let new_height = store.calc_height() + padding_bottom;
         let new_width = self.format.width;
+
+        self.x = 0.0;
+        self.y = 0.0;
+        self.width = new_width;
+        self.height = new_height;
+    }
+
+    pub(crate) fn resize_doc_continuous_xy_layout(&mut self, store: &StrokeStore) {
+        let padding_bottom = self.format.height;
+        let new_height = store.calc_height() + padding_bottom;
+        let padding_left = self.format.width;
+        let new_width = store.calc_width() + padding_left;
 
         self.x = 0.0;
         self.y = 0.0;

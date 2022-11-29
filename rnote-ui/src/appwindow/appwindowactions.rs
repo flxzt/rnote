@@ -261,10 +261,14 @@ impl RnoteAppWindow {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
+                    "continuous-xy" => {
+                        appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousXY);
+                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
+                    },
                     "infinite" => {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
-                    }
+                    },
                     invalid_str => {
                         log::error!("action doc-layout failed, invalid str: {}", invalid_str);
                         return;
@@ -405,6 +409,7 @@ impl RnoteAppWindow {
                 let doc_layout = match doc_layout {
                     Layout::FixedSize => "fixed-size",
                     Layout::ContinuousVertical => "continuous-vertical",
+                    Layout::ContinuousXY => "continuous-xy",
                     Layout::Infinite => "infinite",
                 };
                 // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )

@@ -45,7 +45,7 @@ svg = "0.10.0"
 geo = "0.23.0"
 xmlwriter = "0.1.0"
 usvg = "0.22"
-rodio = {version = "0.16.0", default-features=false, features = ["wav"] }
+rodio = {version = "0.16.0", default-features=false, features = ["symphonia-wav"] }
 semver = { version = "1.0"}
 unicode-segmentation = "1.9.0"
 

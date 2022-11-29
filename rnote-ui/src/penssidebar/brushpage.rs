@@ -226,10 +226,6 @@ impl BrushPage {
                     BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.stroke_color = Some(color),
                     BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(color),
                 }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after selecting brush color, Err `{}`", e);
-                }
             }),
         );
 
@@ -241,10 +237,6 @@ impl BrushPage {
                     BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.marker_options.stroke_width = brush_widthscale_spinbutton.value(),
                     BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.stroke_width = brush_widthscale_spinbutton.value(),
                     BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_width = brush_widthscale_spinbutton.value(),
-                }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing brush width, Err `{}`", e);
                 }
             }),
         );
@@ -272,9 +264,6 @@ impl BrushPage {
                         }
                     }
 
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing brush style, Err `{}`", e);
-                    }
                     // Need to refresh the whole page, because changing the style affects multiple widgets
                     brushpage.refresh_ui(&appwindow);
                 }
@@ -285,13 +274,7 @@ impl BrushPage {
         self.brush_buildertype_listbox().connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    {
-                        appwindow.canvas().engine().borrow_mut().penholder.brush.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
-                    }
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing brush style, Err `{}`", e);
-                    }
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
                 }
             }),
         );
@@ -300,10 +283,6 @@ impl BrushPage {
         // Pressure curve
         self.imp().solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
             appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
-
-            if let Err(e) = appwindow.save_engine_config() {
-                log::error!("saving engine config failed after changing brush pressure curve, Err `{}`", e);
-            }
         }));
 
         // Textured style
@@ -324,10 +303,6 @@ impl BrushPage {
         self.imp().texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
                 appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.density = texturedstyle_density_adj.value();
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing brush textured density, Err `{}`", e);
-                }
             }),
         );
 
@@ -353,10 +328,6 @@ impl BrushPage {
                     let mut radii = appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii;
                     radii[0] = texturedstyle_radius_x_adj.value();
                     appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii = radii;
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing brush textured x radius, Err `{}`", e);
-                    }
                 }),
             );
 
@@ -382,20 +353,12 @@ impl BrushPage {
                     let mut radii = appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii;
                     radii[1] = texturedstyle_radius_y_adj.value();
                     appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii = radii;
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing brush textured y radius, Err `{}`", e);
-                    }
                 }),
             );
 
         // dots distribution
         self.imp().texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
             appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
-
-            if let Err(e) = appwindow.save_engine_config() {
-                log::error!("saving engine config failed after changing brush textured dots distribution, Err `{}`", e);
-            }
         }));
     }
 

@@ -92,49 +92,29 @@ impl SelectorPage {
         self.selectorstyle_polygon_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
             if selectorstyle_polygon_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Polygon;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing selector style, Err `{}`", e);
-                }
             }
         }));
 
         self.selectorstyle_rect_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
             if selectorstyle_rect_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Rectangle;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing selector style, Err `{}`", e);
-                }
             }
         }));
 
         self.selectorstyle_single_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
             if selectorstyle_single_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Single;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing selector style, Err `{}`", e);
-                }
             }
         }));
 
         self.selectorstyle_intersectingpath_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
             if selectorstyle_intersectingpath_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::IntersectingPath;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing selector style, Err `{}`", e);
-                }
             }
         }));
 
         self.resize_lock_aspectratio_togglebutton().connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
             appwindow.canvas().engine().borrow_mut().penholder.selector.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
-
-            if let Err(e) = appwindow.save_engine_config() {
-                log::error!("saving engine config failed after changing selector lock aspectratio, Err `{}`", e);
-            }
         }));
     }
 

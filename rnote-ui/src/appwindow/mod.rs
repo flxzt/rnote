@@ -38,8 +38,9 @@ mod imp {
     pub struct RnoteAppWindow {
         pub app_settings: gio::Settings,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
-        pub autosave_source_id: Rc<RefCell<Option<glib::SourceId>>>,
-        pub progresspulse_source_id: Rc<RefCell<Option<glib::SourceId>>>,
+        pub autosave_source_id: RefCell<Option<glib::SourceId>>,
+        pub progresspulse_source_id: RefCell<Option<glib::SourceId>>,
+        pub periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
 
         pub unsaved_changes: Cell<bool>,
         pub autosave: Cell<bool>,
@@ -155,8 +156,9 @@ mod imp {
             Self {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
-                autosave_source_id: Rc::new(RefCell::new(None)),
-                progresspulse_source_id: Rc::new(RefCell::new(None)),
+                autosave_source_id: RefCell::new(None),
+                progresspulse_source_id: RefCell::new(None),
+                periodic_configsave_source_id: RefCell::new(None),
 
                 unsaved_changes: Cell::new(false),
                 autosave: Cell::new(true),
@@ -898,7 +900,8 @@ pub static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
     once_cell::sync::Lazy::new(|| gettext("Draft"));
 
 impl RnoteAppWindow {
-    const AUTOSAVE_INTERVAL_DEFAULT: u32 = 120;
+    const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
+    const PERIODIC_CONFIGSAVE_INTERVAL: u32 = 10;
 
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
@@ -1158,6 +1161,19 @@ impl RnoteAppWindow {
 
         // Load settings
         self.load_settings();
+
+        // Periodically save engine config
+        if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
+            glib::source::timeout_add_seconds_local(
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@strong self as appwindow => @default-return glib::source::Continue(false), move || {
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config in periodic task failed with Err `{e}`");
+                    }
+
+                    glib::source::Continue(true)
+        }))) {
+            removed_id.remove();
+        }
 
         // Loading in input file, if Some
         if let Some(input_file) = self.app().input_file() {

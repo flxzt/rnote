@@ -179,10 +179,6 @@ impl TypewriterPage {
                     appwindow.handle_widget_flags(widget_flags);
                 }
 
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing typewriter font, Err `{}`", e);
-                }
-
                 fontchooser_popover.popdown();
             }
         }));
@@ -216,10 +212,6 @@ impl TypewriterPage {
                             audioplayer: &mut engine.audioplayer
                     });
                     appwindow.handle_widget_flags(widget_flags);
-                }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing typewriter font size, Err `{}`", e);
                 }
             }),
         );
@@ -266,10 +258,6 @@ impl TypewriterPage {
                             audioplayer: &mut engine.audioplayer
                     });
                     appwindow.handle_widget_flags(widget_flags);
-                }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing typewriter color, Err `{}`", e);
                 }
             }),
         );
@@ -408,10 +396,6 @@ impl TypewriterPage {
                         });
                         appwindow.handle_widget_flags(widget_flags);
                     }
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
-                    }
                 }
 
             }),
@@ -437,10 +421,6 @@ impl TypewriterPage {
                         });
                         appwindow.handle_widget_flags(widget_flags);
                     }
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
-                    }
                 }
             }),
         );
@@ -465,10 +445,6 @@ impl TypewriterPage {
                         });
                         appwindow.handle_widget_flags(widget_flags);
                     }
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
-                    }
                 }
             }),
         );
@@ -492,10 +468,6 @@ impl TypewriterPage {
                                 audioplayer: &mut engine.audioplayer
                         });
                         appwindow.handle_widget_flags(widget_flags);
-                    }
-
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
                     }
                 }
             }),

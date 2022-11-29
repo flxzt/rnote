@@ -246,10 +246,6 @@ impl ShaperPage {
                     ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = width_spinbutton.value(),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = width_spinbutton.value(),
                 }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shape width, Err `{}`", e);
-                }
             }),
         );
 
@@ -264,10 +260,6 @@ impl ShaperPage {
                     ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(color),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color= Some(color),
                 }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shaper color, Err `{}`", e);
-                }
             }),
         );
 
@@ -281,10 +273,6 @@ impl ShaperPage {
                 match shaper_style {
                     ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.fill_color = Some(color),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_color= Some(color),
-                }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shaper fill color, Err `{}`", e);
                 }
             }),
         );
@@ -306,9 +294,6 @@ impl ShaperPage {
                         engine.penholder.shaper.rough_options.fill_color = Some(shaperpage.fill_colorpicker().current_color());
                     }
 
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing shaper style, Err `{}`", e);
-                    }
                     // Need to refresh the whole page, because changing the style affects multiple widgets
                     shaperpage.refresh_ui(&appwindow);
                 }
@@ -319,19 +304,11 @@ impl ShaperPage {
         // Fill style
         self.imp().roughstyle_fillstyle_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_roughstyle_fillstyle_row| {
             appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
-
-            if let Err(e) = appwindow.save_engine_config() {
-                log::error!("saving engine config failed after changing shaper rough style fill style, Err `{}`", e);
-            }
         }));
 
         // Hachure angle
         self.imp().roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
             appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
-
-            if let Err(e) = appwindow.save_engine_config() {
-                log::error!("saving engine config failed after changing shaper rough style hachure angle, Err `{}`", e);
-            }
         }));
 
         // Constraints
@@ -340,10 +317,6 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.enabled = switch.state();
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shaper constraint enabled, Err `{}`", e);
-                }
             }));
 
         self.imp()
@@ -354,10 +327,6 @@ impl ShaperPage {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::OneToOne);
-                }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shaper one to one constraint, Err `{}`", e);
                 }
             }));
 
@@ -370,10 +339,6 @@ impl ShaperPage {
                 } else {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
                 }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shaper three to two constraint, Err `{}`", e);
-                }
             }));
 
         self.imp()
@@ -385,10 +350,6 @@ impl ShaperPage {
                 } else {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::Golden);
                 }
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing shaper golden ratio constraint, Err `{}`", e);
-                }
             }));
 
         // shape builder type
@@ -397,9 +358,6 @@ impl ShaperPage {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
 
-                    if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config failed after changing shape builder type, Err `{}`", e);
-                    }
                     // Need to refresh the whole page, because changing the builder type affects multiple widgets
                     shaperpage.refresh_ui(&appwindow);
                 }

@@ -10,8 +10,6 @@ rust-version = "1.65"
 # even though all submodule dependencies are specified with their url, cargo will search the root repository for the local packages
 # see: https://github.com/rust-lang/cargo/issues/1462
 
-rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
-
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main" }
 #ink-stroke-modeler-rs = { path = "../ink-stroke-modeler-rs" }
 roughr = { git = "https://github.com/orhanbalci/rough-rs", branch = "main" }

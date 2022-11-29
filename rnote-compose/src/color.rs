@@ -1,5 +1,3 @@
-use rnote_fileformats::xoppformat;
-
 use serde::{Deserialize, Serialize};
 
 /// A rgba color
@@ -155,28 +153,6 @@ impl From<Color> for u32 {
             | ((((color.g * 255.0).round() as u32) & 0xff) << 16)
             | ((((color.b * 255.0).round() as u32) & 0xff) << 8)
             | (((color.a * 255.0).round() as u32) & 0xff)
-    }
-}
-
-impl From<xoppformat::XoppColor> for Color {
-    fn from(xopp_color: xoppformat::XoppColor) -> Self {
-        Self {
-            r: f64::from(xopp_color.red) / 255.0,
-            g: f64::from(xopp_color.green) / 255.0,
-            b: f64::from(xopp_color.blue) / 255.0,
-            a: f64::from(xopp_color.alpha) / 255.0,
-        }
-    }
-}
-
-impl From<Color> for xoppformat::XoppColor {
-    fn from(color: Color) -> Self {
-        xoppformat::XoppColor {
-            red: (color.r * 255.0).floor() as u8,
-            green: (color.g * 255.0).floor() as u8,
-            blue: (color.b * 255.0).floor() as u8,
-            alpha: (color.a * 255.0).floor() as u8,
-        }
     }
 }
 

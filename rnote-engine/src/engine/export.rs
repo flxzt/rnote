@@ -500,7 +500,7 @@ impl RnoteEngine {
         let background = xoppformat::XoppBackground {
             name: None,
             bg_type: xoppformat::XoppBackgroundType::Solid {
-                color: self.document.background.color.into(),
+                color: crate::utils::xoppcolor_from_color(self.document.background.color),
                 style: xoppformat::XoppBackgroundSolidStyle::Plain,
             },
         };

@@ -206,11 +206,11 @@ impl Stroke {
 
         let layer = match stroke.tool {
             xoppformat::XoppTool::Pen => {
-                smooth_options.stroke_color = Some(Color::from(stroke.color));
+                smooth_options.stroke_color = Some(crate::utils::color_from_xopp(stroke.color));
                 StrokeLayer::UserLayer(0)
             }
             xoppformat::XoppTool::Highlighter => {
-                let mut color = Color::from(stroke.color);
+                let mut color = crate::utils::color_from_xopp(stroke.color);
                 // the highlighter always has alpha 0.5
                 color.a = 0.5;
 
@@ -313,11 +313,18 @@ impl Stroke {
             Stroke::BrushStroke(brushstroke) => {
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
-                    Style::Smooth(options) => (options.stroke_width, options.stroke_color?.into()),
-                    Style::Rough(options) => (options.stroke_width, options.stroke_color?.into()),
-                    Style::Textured(options) => {
-                        (options.stroke_width, options.stroke_color?.into())
-                    }
+                    Style::Smooth(options) => (
+                        options.stroke_width,
+                        crate::utils::xoppcolor_from_color(options.stroke_color?),
+                    ),
+                    Style::Rough(options) => (
+                        options.stroke_width,
+                        crate::utils::xoppcolor_from_color(options.stroke_color?),
+                    ),
+                    Style::Textured(options) => (
+                        options.stroke_width,
+                        crate::utils::xoppcolor_from_color(options.stroke_color?),
+                    ),
                 };
 
                 let tool = xoppformat::XoppTool::Pen;

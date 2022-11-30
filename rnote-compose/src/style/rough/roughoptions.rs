@@ -82,6 +82,9 @@ pub enum FillStyle {
     /// Zig zag
     #[serde(rename = "zig_zag")]
     ZigZag,
+    /// Zig zag line
+    #[serde(rename = "zig_zag_line")]
+    ZigZagLine,
     /// Crosshatch
     #[serde(rename = "crosshatch")]
     Crosshatch,
@@ -108,8 +111,7 @@ impl From<roughr::core::FillStyle> for FillStyle {
             roughr::core::FillStyle::CrossHatch => Self::Crosshatch,
             roughr::core::FillStyle::Dots => Self::Dots,
             roughr::core::FillStyle::Dashed => Self::Dashed,
-            // These are not implemented yet in roughr, but already exist in the struct
-            _ => Self::Solid,
+            roughr::core::FillStyle::ZigZagLine => Self::ZigZag,
         }
     }
 }
@@ -123,6 +125,7 @@ impl From<FillStyle> for roughr::core::FillStyle {
             FillStyle::Crosshatch => roughr::core::FillStyle::CrossHatch,
             FillStyle::Dots => roughr::core::FillStyle::Dots,
             FillStyle::Dashed => roughr::core::FillStyle::Dashed,
+            FillStyle::ZigZagLine => roughr::core::FillStyle::ZigZagLine,
         }
     }
 }

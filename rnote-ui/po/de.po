@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-30 14:17+0100\n"
-"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"PO-Revision-Date: 2022-11-30 22:35+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1081,10 +1081,8 @@ msgid "Marker"
 msgstr "Markierer"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
-msgstr "Markiere unter anderen Pinselstrichen"
+msgstr "Markiere unter anderen Strichen"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
@@ -1295,46 +1293,40 @@ msgid "Rough style"
 msgstr "Grober Stil"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "Durchgängiger Stil"
+msgstr "Füllstil"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "Wähle ein Format"
+msgstr "Wähle ein Füllstil"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "Schraffiert"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Zick-Zack"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Zick-Zack Linien"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "Kreuzschraffur"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "Gestrichelt"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "Schraffurwinkel"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "Ändere den Cursor beim Zeichnen"
+msgstr "Ändere den Winkel von Schraffurfüllungen"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"

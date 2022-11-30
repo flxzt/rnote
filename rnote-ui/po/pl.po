@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-29 10:28+0000\n"
-"Last-Translator: Tymoteusz Majewski <tymekzszopin@gmail.com>\n"
+"PO-Revision-Date: 2022-11-30 09:31+0000\n"
+"Last-Translator: Larix_45 <milarczek2004@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -218,9 +218,8 @@ msgstr "Pędzel"
 
 #: rnote-ui/data/ui/appwindow.ui:74 rnote-ui/data/ui/mainheader.ui:84
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#, fuzzy
 msgid "Shaper"
-msgstr "Shaper"
+msgstr "Ostrzejszy"
 
 #: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
@@ -689,12 +688,11 @@ msgstr "Współczynnik skali mapy bitowej"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
-#, fuzzy
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Ustawia współczynnik skali bitmapy w stosunku do\n"
+"Ustaw współczynnik skali bitmapy w stosunku do\n"
 "do rzeczywistego rozmiaru na dokumencie"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
@@ -756,7 +754,7 @@ msgstr "Zapisz dokument"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
-msgstr "trwale"
+msgstr "trwałe"
 
 #: rnote-ui/data/ui/settingspanel.ui:41
 msgid "General"
@@ -1171,7 +1169,7 @@ msgstr "Zaznacz pod innymi pociągnięciami pędzla"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
 msgid "Solid"
-msgstr ""
+msgstr "Wypełniony"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:128
 msgid "Draw solid color strokes"
@@ -1216,10 +1214,12 @@ msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Tworzy linię przy użyciu algorytmu fizycznego.\n"
+"Wynikiem jest najlepiej wyglądające pismo odręczne."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Solid style"
-msgstr ""
+msgstr "Styl ciągły"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:221
 msgid "Pressure curve"
@@ -1268,23 +1268,23 @@ msgstr "Gęstość to liczba kropek na pole 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
 msgid "Stroke dots radii"
-msgstr ""
+msgstr "Promień kropek pociągnięcia pędzlem"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
+msgstr "Promienie pojedynczych kropek w pociągnięciu pędzla z teksturą"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
-msgstr ""
+msgstr "Rozłożenie kropek pociągnięcia pędzla"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:321
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "Wybierz prawdopodobieństwo rozłożenia kropek"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:325
 msgid "Uniform"
-msgstr ""
+msgstr "Jednolity"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:326
 msgid "Normal"
@@ -1304,7 +1304,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 msgid "Split strokes"
-msgstr ""
+msgstr "Podzielone pociągnięcia pędzlem"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
 #, fuzzy
@@ -1327,7 +1327,7 @@ msgstr "Wybierz przecinającą ścieżkę"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
-msgstr ""
+msgstr "Zablokuj współczynnik proporcji podczas zmiany rozmiaru zaznaczenia"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 #, fuzzy
@@ -1395,13 +1395,15 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:252
 msgid "Bowing"
-msgstr ""
+msgstr "Krzywizna"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
 msgstr ""
+"Jak bardzo zakrzywione zą linie podczas rysowania ostrej figury. 0.0 jest "
+"prostą linią. Domyślnie 1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:268
 msgid "Curve step count"
@@ -1409,15 +1411,17 @@ msgstr "Liczba kroków krzywej"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:269
 msgid "How many steps make up a curve. Defaults to 12"
-msgstr ""
+msgstr "Jak wielu kroków użyć, aby stworzyć krzywą. Domyślnie 12"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
 msgid "Multistroke"
-msgstr ""
+msgstr "Wielopędzel"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:285
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
 msgstr ""
+"Generowanie wielu pociągnięć pędzla dla bardziej rzeczywistego wyglądu "
+"rysowania. Domyślnie ustawione na tak"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:329
 msgid "Line"
@@ -1656,16 +1660,12 @@ msgid "Export document pages failed, no directory selected."
 msgstr "Eksport stron dokumentu nie powiódł się, nie wybrano żadnego katalogu."
 
 #: rnote-ui/src/dialogs/export.rs:711
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export selection failed."
-msgstr "Eksportuj zaznaczenie jako SVG"
+msgstr "Eksport zaznaczenia nie powiódł się."
 
 #: rnote-ui/src/dialogs/export.rs:713
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Exported selection successfully."
-msgstr "Eksportuj zaznaczenie jako SVG"
+msgstr "Eksport zaznaczenie pomyślny."
 
 #: rnote-ui/src/dialogs/export.rs:719
 msgid "Export selection failed, no file selected."
@@ -1728,10 +1728,8 @@ msgid "Printing document failed"
 msgstr "Drukowanie dokumentu się nie powiodło"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:794
-#, fuzzy
-#| msgid "Export selection as SVG"
 msgid "Export selection failed, nothing selected."
-msgstr "Eksportuj zaznaczenie jako SVG"
+msgstr "Eksport zaznaczenia nie powiódł się, nic nie jest zaznaczone."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

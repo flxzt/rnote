@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-30 14:17+0100\n"
-"PO-Revision-Date: 2022-11-22 20:56+0000\n"
+"PO-Revision-Date: 2022-12-01 11:29+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1080,10 +1080,8 @@ msgid "Marker"
 msgstr "Filc"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
-msgstr "Más ecsetvonások kiemelése"
+msgstr "Más vonások kiemelése"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
@@ -1294,46 +1292,40 @@ msgid "Rough style"
 msgstr "Durva stílus"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "Folyamatos stílus"
+msgstr "Kitöltés típusa"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "Válasszon formátumot"
+msgstr "Válasszon kitöltés típusa"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "Kikelés"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Cikcakkos"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Cikcakkos vonal"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "Keresztmintás"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "Szaggatott"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "Kikelési szög"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "Rajz kurzor beállítása"
+msgstr "Kikelés kitöltések szögének beállítása"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"

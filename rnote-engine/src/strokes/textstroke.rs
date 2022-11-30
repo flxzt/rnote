@@ -499,12 +499,15 @@ impl ShapeBehaviour for TextStroke {
         let untransformed_size = self
             .text_style
             .untransformed_size(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size));
+            .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size))
+            .maxs(&na::vector![1.0, 1.0]);
 
-        self.transform.transform_aabb(AABB::new(
+        let bounds = self.transform.transform_aabb(AABB::new(
             na::point![0.0, 0.0],
             na::Point2::from(untransformed_size),
-        ))
+        ));
+        log::debug!("{bounds:?}");
+        bounds
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
@@ -518,15 +521,29 @@ impl ShapeBehaviour for TextStroke {
                     "build_text_layout() failed while calculating the hitboxes, Err {}",
                     e
                 );
+
                 return vec![self.bounds()];
             }
         };
 
-        text_layout
+        let mut hitboxes: Vec<AABB> = text_layout
             .rects_for_range(0..self.text.len())
             .into_iter()
             .map(|rect| self.transform.transform_aabb(AABB::from_kurbo_rect(rect)))
-            .collect()
+            .collect();
+
+        let text_size = text_layout.size();
+
+        if hitboxes.is_empty() {
+            hitboxes.push(self.transform.transform_aabb(AABB::new_positive(
+                na::point![0.0, 0.0],
+                na::Point2::from(
+                    na::vector![text_size.width, text_size.height].maxs(&na::vector![1.0, 1.0]),
+                ),
+            )))
+        }
+
+        hitboxes
     }
 }
 

@@ -1355,7 +1355,7 @@ impl RnoteAppWindow {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    let current_zoom = appwindow.canvas().engine().borrow().camera.zoom();
+                    let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
                     canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
                     zoom_begin.set(current_zoom);

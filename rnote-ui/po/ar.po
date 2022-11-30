@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-11-27 20:00+0000\n"
+"Last-Translator: Brian Polier <unknown989@proton.me>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -67,10 +67,9 @@ msgstr "اختيار"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "_Color scheme"
-msgstr ""
+msgstr "مخطط الألوان"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
 msgid "Use _system colors"
 msgstr "استخدم وضع النظام المفضل"
 
@@ -99,10 +98,8 @@ msgid "Developer _menu"
 msgstr "قائمة المطور"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "_Visual debugging"
-msgstr "debugging بواجهة رسومية"
+msgstr "التصحيح بواجهة رسومية"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 #, fuzzy
@@ -118,7 +115,7 @@ msgstr "تصدير إعدادت المحرك"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "جديد"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 #, fuzzy
@@ -170,10 +167,8 @@ msgid "Export _document"
 msgstr "تصدير ملف"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document _pages"
-msgstr "تصدير الصفحة ك SVG"
+msgstr "تصدير صفحات الملف"
 
 #: rnote-ui/data/ui/appmenu.ui:108
 #, fuzzy
@@ -330,16 +325,12 @@ msgid "P_en sounds"
 msgstr "صوت اﻷقلام"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "_Clear document"
-msgstr "تتظيف الصفحة"
+msgstr "تنظيف الصفحة"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "استعادة الحدود الأولى"
+msgstr "العودة الى الصفحة الأولى"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
@@ -494,7 +485,7 @@ msgstr "تفضيلات استيراد ملفات PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"
-msgstr ""
+msgstr "صفحة البداية"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
 #, fuzzy
@@ -542,16 +533,12 @@ msgid "One per document page"
 msgstr "واحد لكل صفحة في الملف"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ file"
-msgstr "إستيراد ملف"
+msgstr "إستيراد ملف Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ file import preferences"
-msgstr "تفضيلات استيراد ملفات PDF"
+msgstr "اعدادات استيراد ملف Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
@@ -559,7 +546,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "حدد عدد النقط لكل إنش المفضل لملف Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
 msgid "Export document"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-22 13:17+0000\n"
+"PO-Revision-Date: 2022-11-25 14:37+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -244,7 +244,7 @@ msgstr "Einstellungen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "Document _layout"
-msgstr "Dokument-_Layout"
+msgstr "_Dokument-Layout"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed size"

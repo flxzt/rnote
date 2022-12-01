@@ -3,6 +3,7 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::CanvasLayout;
+use gettextrs::gettext;
 use rnote_engine::pens::PenMode;
 
 // Imports
@@ -56,6 +57,7 @@ mod imp {
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
+        pub(crate) output_file_monitor_signal: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
 
@@ -143,6 +145,7 @@ mod imp {
 
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
+                output_file_monitor_signal: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -556,6 +559,30 @@ impl RnoteCanvas {
         }
     }
 
+    pub(crate) fn block_output_file_monitor(&self) {
+        let output_file_monitor = self.imp().output_file_monitor.borrow();
+        let output_file_monitor_signal = self.imp().output_file_monitor_signal.borrow();
+
+        if let (Some(output_file_monitor), Some(output_file_monitor_signal)) = (
+            output_file_monitor.as_ref(),
+            output_file_monitor_signal.as_ref(),
+        ) {
+            output_file_monitor.block_signal(&output_file_monitor_signal);
+        }
+    }
+
+    pub(crate) fn unblock_output_file_monitor(&self) {
+        let output_file_monitor = self.imp().output_file_monitor.borrow();
+        let output_file_monitor_signal = self.imp().output_file_monitor_signal.borrow();
+
+        if let (Some(output_file_monitor), Some(output_file_monitor_signal)) = (
+            output_file_monitor.as_ref(),
+            output_file_monitor_signal.as_ref(),
+        ) {
+            output_file_monitor.unblock_signal(&output_file_monitor_signal);
+        }
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
@@ -581,6 +608,7 @@ impl RnoteCanvas {
                 let output_file = canvas.output_file();
 
                 let mut current_output_file_monitor = canvas.imp().output_file_monitor.borrow_mut();
+                let mut current_output_file_monitor_signal = canvas.imp().output_file_monitor_signal.borrow_mut();
 
                 // cancel old monitor.
                 if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
@@ -591,19 +619,46 @@ impl RnoteCanvas {
                 if let Some(file) = &output_file {
                     match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
                         Ok(output_file_monitor) => {
-                            output_file_monitor.connect_changed(
-                                glib::clone!(@weak canvas => move |_monitor, _file, other_file, event| {
-                                    if event == gio::FileMonitorEvent::Renamed || event == gio::FileMonitorEvent::MovedOut {
-                                        if other_file.is_none() {
-                                            canvas.set_unsaved_changes(true);
-                                        }
+                            let output_file_monitor_signal = output_file_monitor.connect_changed(
+                                glib::clone!(@weak canvas, @weak appwindow => move |_monitor, _file, other_file, event| {
+                                    match event {
+                                        gio::FileMonitorEvent::Changed => {
+                                            appwindow.canvas().set_unsaved_changes(true);
 
-                                        canvas.set_output_file(other_file.cloned());
+                                            let reload_toast = adw::Toast::builder().title(&gettext("Opened file was modified on disk.")).priority(adw::ToastPriority::High).button_label(&gettext("Reload")).timeout(0).build();
+                                            reload_toast.connect_button_clicked(
+                                                clone!(@weak appwindow => move |_reload_toast| {
+                                                    if let Some(output_file) = appwindow.canvas().output_file() {
+                                                        if let Err(e) = appwindow.load_in_file(&output_file, None) {
+                                                            log::error!("failed to reload current output file, {}", e);
+                                                        }
+                                                    }
+                                                })
+                                            );
+
+                                            appwindow.toast_overlay().add_toast(&reload_toast);
+                                        },
+                                        gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
+                                            canvas.set_unsaved_changes(true);
+                                            canvas.set_output_file(None);
+
+                                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Opened file was moved or deleted on disk.").to_variant()));
+                                        },
+                                        gio::FileMonitorEvent::Renamed => {
+                                            // other_file *should* never be none.
+                                            if other_file.is_none() {
+                                                canvas.set_unsaved_changes(true);
+                                            }
+
+                                            canvas.set_output_file(other_file.cloned());
+                                        },
+                                        _ => (),
                                     }
                                 }),
                             );
 
                             *current_output_file_monitor = Some(output_file_monitor);
+                            *current_output_file_monitor_signal = Some(output_file_monitor_signal);
                         },
                         Err(e) => log::error!("creating a file monitor for the new output file failed with Err {}", e)
                     }

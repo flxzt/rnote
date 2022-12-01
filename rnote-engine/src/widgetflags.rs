@@ -14,8 +14,6 @@ pub struct WidgetFlags {
     pub indicate_changed_store: bool,
     /// update the current view offsets and size
     pub update_view: bool,
-    /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
-    pub hide_scrollbars: Option<bool>,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed
     pub hide_undo: Option<bool>,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed
@@ -34,7 +32,6 @@ impl Default for WidgetFlags {
             refresh_ui: false,
             indicate_changed_store: false,
             update_view: false,
-            hide_scrollbars: None,
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
@@ -51,11 +48,6 @@ impl WidgetFlags {
         self.refresh_ui |= other.refresh_ui;
         self.indicate_changed_store |= other.indicate_changed_store;
         self.update_view |= other.update_view;
-        self.hide_scrollbars = if other.hide_scrollbars.is_some() {
-            other.hide_scrollbars
-        } else {
-            self.hide_scrollbars
-        };
         self.hide_undo = if other.hide_undo.is_some() {
             other.hide_undo
         } else {

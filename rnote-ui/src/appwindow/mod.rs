@@ -12,9 +12,8 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
     CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
-    PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext,
-    ToggleButton,
+    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PositionType,
+    ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 
@@ -1439,17 +1438,6 @@ impl RnoteAppWindow {
             let camera_offset = self.canvas().engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
             self.canvas().update_camera_offset(camera_offset);
-        }
-        if !self.permanently_hide_canvas_scrollbars() {
-            if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
-                if hide_scrollbars {
-                    self.canvas_scroller()
-                        .set_policy(PolicyType::Never, PolicyType::Never);
-                } else {
-                    self.canvas_scroller()
-                        .set_policy(PolicyType::Automatic, PolicyType::Automatic);
-                }
-            }
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
             self.undo_button().set_sensitive(!hide_undo);

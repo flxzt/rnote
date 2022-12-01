@@ -155,7 +155,6 @@ impl PenBehaviour for Selector {
 
                 widget_flags.redraw = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
@@ -305,7 +304,6 @@ impl PenBehaviour for Selector {
 
                 widget_flags.redraw = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 pen_progress
             }
@@ -360,7 +358,6 @@ impl PenBehaviour for Selector {
 
                 widget_flags.redraw = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }

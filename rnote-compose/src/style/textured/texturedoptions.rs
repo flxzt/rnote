@@ -22,9 +22,6 @@ pub struct TexturedOptions {
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
     pub density: f64,
-    /// the radii of the dots
-    #[serde(rename = "radii")]
-    pub radii: na::Vector2<f64>,
     /// the distribution type
     #[serde(rename = "distribution")]
     pub distribution: TexturedDotsDistribution,
@@ -40,7 +37,6 @@ impl Default for TexturedOptions {
             stroke_width: Self::WIDTH_DEFAULT,
             density: Self::DENSITY_DEFAULT,
             stroke_color: Some(Color::BLACK),
-            radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
             pressure_curve: PressureCurve::default(),
         }
@@ -52,6 +48,8 @@ impl TexturedOptions {
     pub const WIDTH_DEFAULT: f64 = 2.0;
     /// Density default
     pub const DENSITY_DEFAULT: f64 = 5.0;
-    /// Radii default
-    pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![2.4, 0.6];
+    /// dots dadii for brush width 1.0
+    pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
+    /// The weight factor the stroke width has to the radii of the dots
+    pub const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
 }

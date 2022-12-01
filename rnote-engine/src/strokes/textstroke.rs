@@ -502,12 +502,10 @@ impl ShapeBehaviour for TextStroke {
             .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size))
             .maxs(&na::vector![1.0, 1.0]);
 
-        let bounds = self.transform.transform_aabb(AABB::new(
+        self.transform.transform_aabb(AABB::new(
             na::point![0.0, 0.0],
             na::Point2::from(untransformed_size),
-        ));
-        log::debug!("{bounds:?}");
-        bounds
+        ))
     }
 
     fn hitboxes(&self) -> Vec<AABB> {

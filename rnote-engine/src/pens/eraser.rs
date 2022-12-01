@@ -109,7 +109,6 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Down(element);
 
                 widget_flags.redraw = true;
-                widget_flags.hide_scrollbars = Some(true);
                 widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
@@ -182,7 +181,6 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Up;
 
                 widget_flags.redraw = true;
-                widget_flags.hide_scrollbars = Some(false);
                 widget_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
@@ -204,7 +202,6 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Up;
 
                 widget_flags.redraw = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }

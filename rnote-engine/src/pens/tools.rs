@@ -269,7 +269,6 @@ impl PenBehaviour for Tools {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
@@ -358,7 +357,6 @@ impl PenBehaviour for Tools {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
@@ -375,7 +373,6 @@ impl PenBehaviour for Tools {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }

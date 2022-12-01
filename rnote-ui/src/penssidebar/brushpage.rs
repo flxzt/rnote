@@ -53,10 +53,6 @@ mod imp {
         #[template_child]
         pub texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub texturedstyle_radius_x_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub texturedstyle_radius_y_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
         pub texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
     }
 
@@ -106,10 +102,6 @@ impl BrushPage {
         glib::Object::new(&[])
     }
 
-    pub fn width_spinbutton(&self) -> SpinButton {
-        self.imp().width_spinbutton.get()
-    }
-
     pub fn colorpicker(&self) -> ColorPicker {
         self.imp().colorpicker.get()
     }
@@ -118,64 +110,8 @@ impl BrushPage {
         self.imp().brushstyle_menubutton.get()
     }
 
-    pub fn brushstyle_image(&self) -> Image {
-        self.imp().brushstyle_image.get()
-    }
-
-    pub fn brushstyle_listbox(&self) -> ListBox {
-        self.imp().brushstyle_listbox.get()
-    }
-
-    pub fn brushstyle_marker_row(&self) -> adw::ActionRow {
-        self.imp().brushstyle_marker_row.get()
-    }
-
-    pub fn brushstyle_solid_row(&self) -> adw::ActionRow {
-        self.imp().brushstyle_solid_row.get()
-    }
-
-    pub fn brushstyle_textured_row(&self) -> adw::ActionRow {
-        self.imp().brushstyle_textured_row.get()
-    }
-
     pub fn brushconfig_menubutton(&self) -> MenuButton {
         self.imp().brushconfig_menubutton.get()
-    }
-
-    pub fn brushconfig_popover(&self) -> Popover {
-        self.imp().brushconfig_popover.get()
-    }
-
-    pub fn brush_buildertype_listbox(&self) -> ListBox {
-        self.imp().brush_buildertype_listbox.get()
-    }
-
-    pub fn brush_buildertype_simple(&self) -> adw::ActionRow {
-        self.imp().brush_buildertype_simple.get()
-    }
-
-    pub fn brush_buildertype_curved(&self) -> adw::ActionRow {
-        self.imp().brush_buildertype_curved.get()
-    }
-
-    pub fn brush_buildertype_modeled(&self) -> adw::ActionRow {
-        self.imp().brush_buildertype_modeled.get()
-    }
-
-    pub fn texturedstyle_distribution_row(&self) -> adw::ComboRow {
-        self.imp().texturedstyle_distribution_row.clone()
-    }
-
-    pub fn texturedstyle_density_spinbutton(&self) -> SpinButton {
-        self.imp().texturedstyle_density_spinbutton.clone()
-    }
-
-    pub fn texturedstyle_radius_x_spinbutton(&self) -> SpinButton {
-        self.imp().texturedstyle_radius_x_spinbutton.clone()
-    }
-
-    pub fn texturedstyle_radius_y_spinbutton(&self) -> SpinButton {
-        self.imp().texturedstyle_radius_y_spinbutton.clone()
     }
 
     pub fn solidstyle_pressure_curve(&self) -> PressureCurve {
@@ -208,14 +144,15 @@ impl BrushPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.width_spinbutton().set_increments(0.1, 2.0);
-        self.width_spinbutton()
+        let imp = self.imp();
+
+        imp.width_spinbutton.set_increments(0.1, 2.0);
+        imp.width_spinbutton
             .set_range(Brush::STROKE_WIDTH_MIN, Brush::STROKE_WIDTH_MAX);
         // Must be after set_range() !
-        self.width_spinbutton()
-            .set_value(Brush::STROKE_WIDTH_DEFAULT);
+        imp.width_spinbutton.set_value(Brush::STROKE_WIDTH_DEFAULT);
 
-        self.colorpicker().connect_notify_local(
+        imp.colorpicker.connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
@@ -229,7 +166,7 @@ impl BrushPage {
             }),
         );
 
-        self.width_spinbutton().connect_value_changed(
+        imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
                 let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
@@ -241,7 +178,7 @@ impl BrushPage {
             }),
         );
 
-        self.brushstyle_listbox().connect_row_selected(
+        imp.brushstyle_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_brushstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     {
@@ -271,7 +208,7 @@ impl BrushPage {
         );
 
         // Builder type
-        self.brush_buildertype_listbox().connect_row_selected(
+        imp.brush_buildertype_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     appwindow.canvas().engine().borrow_mut().penholder.brush.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
@@ -281,143 +218,87 @@ impl BrushPage {
 
         // Solid style
         // Pressure curve
-        self.imp().solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
+        imp.solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
             appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
         }));
 
         // Textured style
         // Density
-        self.imp()
-            .texturedstyle_density_spinbutton
+        imp.texturedstyle_density_spinbutton
             .get()
             .set_increments(0.1, 2.0);
-        self.imp()
-            .texturedstyle_density_spinbutton
+        imp.texturedstyle_density_spinbutton
             .get()
             .set_range(0.0, f64::MAX);
-        self.imp()
-            .texturedstyle_density_spinbutton
+        imp.texturedstyle_density_spinbutton
             .get()
             .set_value(TexturedOptions::DENSITY_DEFAULT);
 
-        self.imp().texturedstyle_density_spinbutton.get().connect_value_changed(
+        imp.texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
                 appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.density = texturedstyle_density_adj.value();
             }),
         );
 
-        // Radius X
-        self.imp()
-            .texturedstyle_radius_x_spinbutton
-            .get()
-            .set_increments(0.1, 2.0);
-        self.imp()
-            .texturedstyle_radius_x_spinbutton
-            .get()
-            .set_range(0.1, f64::MAX);
-        self.imp()
-            .texturedstyle_radius_x_spinbutton
-            .get()
-            .set_value(TexturedOptions::RADII_DEFAULT[0]);
-
-        self.imp()
-            .texturedstyle_radius_x_spinbutton
-            .get()
-            .connect_value_changed(
-                clone!(@weak appwindow => move |texturedstyle_radius_x_adj| {
-                    let mut radii = appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii;
-                    radii[0] = texturedstyle_radius_x_adj.value();
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii = radii;
-                }),
-            );
-
-        // Radius Y
-        self.imp()
-            .texturedstyle_radius_y_spinbutton
-            .get()
-            .set_increments(0.1, 2.0);
-        self.imp()
-            .texturedstyle_radius_y_spinbutton
-            .get()
-            .set_range(0.1, f64::MAX);
-        self.imp()
-            .texturedstyle_radius_y_spinbutton
-            .get()
-            .set_value(TexturedOptions::RADII_DEFAULT[1]);
-
-        self.imp()
-            .texturedstyle_radius_y_spinbutton
-            .get()
-            .connect_value_changed(
-                clone!(@weak appwindow => move |texturedstyle_radius_y_adj| {
-                    let mut radii = appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii;
-                    radii[1] = texturedstyle_radius_y_adj.value();
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii = radii;
-                }),
-            );
-
         // dots distribution
-        self.imp().texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
+        imp.texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
             appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
         }));
     }
 
     pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
         let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
 
         self.set_solidstyle_pressure_curve(brush.solid_options.pressure_curve);
-        self.texturedstyle_density_spinbutton()
+        imp.texturedstyle_density_spinbutton
             .set_value(brush.textured_options.density);
-        self.texturedstyle_radius_x_spinbutton()
-            .set_value(brush.textured_options.radii[0]);
-        self.texturedstyle_radius_y_spinbutton()
-            .set_value(brush.textured_options.radii[1]);
         self.set_texturedstyle_distribution_variant(brush.textured_options.distribution);
 
         match brush.builder_type {
             PenPathBuilderType::Simple => {
-                self.brush_buildertype_listbox()
-                    .select_row(Some(&self.brush_buildertype_simple()));
+                imp.brush_buildertype_listbox
+                    .select_row(Some(&*imp.brush_buildertype_simple));
             }
             PenPathBuilderType::Curved => {
-                self.brush_buildertype_listbox()
-                    .select_row(Some(&self.brush_buildertype_curved()));
+                imp.brush_buildertype_listbox
+                    .select_row(Some(&*imp.brush_buildertype_curved));
             }
             PenPathBuilderType::Modeled => {
-                self.brush_buildertype_listbox()
-                    .select_row(Some(&self.brush_buildertype_modeled()));
+                imp.brush_buildertype_listbox
+                    .select_row(Some(&*imp.brush_buildertype_modeled));
             }
         }
 
         match brush.style {
             BrushStyle::Marker => {
-                self.brushstyle_listbox()
-                    .select_row(Some(&self.brushstyle_marker_row()));
-                self.width_spinbutton()
+                imp.brushstyle_listbox
+                    .select_row(Some(&*imp.brushstyle_marker_row));
+                imp.width_spinbutton
                     .set_value(brush.marker_options.stroke_width);
-                self.colorpicker()
+                imp.colorpicker
                     .set_current_color(brush.marker_options.stroke_color);
-                self.brushstyle_image()
+                imp.brushstyle_image
                     .set_icon_name(Some("pen-brush-style-marker-symbolic"));
             }
             BrushStyle::Solid => {
-                self.brushstyle_listbox()
-                    .select_row(Some(&self.brushstyle_solid_row()));
-                self.width_spinbutton()
+                imp.brushstyle_listbox
+                    .select_row(Some(&*imp.brushstyle_solid_row));
+                imp.width_spinbutton
                     .set_value(brush.solid_options.stroke_width);
-                self.colorpicker()
+                imp.colorpicker
                     .set_current_color(brush.solid_options.stroke_color);
-                self.brushstyle_image()
+                imp.brushstyle_image
                     .set_icon_name(Some("pen-brush-style-solid-symbolic"));
             }
             BrushStyle::Textured => {
-                self.brushstyle_listbox()
-                    .select_row(Some(&self.brushstyle_textured_row()));
-                self.width_spinbutton()
+                imp.brushstyle_listbox
+                    .select_row(Some(&*imp.brushstyle_textured_row));
+                imp.width_spinbutton
                     .set_value(brush.textured_options.stroke_width);
-                self.colorpicker()
+                imp.colorpicker
                     .set_current_color(brush.textured_options.stroke_color);
-                self.brushstyle_image()
+                imp.brushstyle_image
                     .set_icon_name(Some("pen-brush-style-textured-symbolic"));
             }
         }

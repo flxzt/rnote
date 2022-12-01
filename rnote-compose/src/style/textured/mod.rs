@@ -36,12 +36,16 @@ impl Composer<TexturedOptions> for Line {
 
             let area = 4.0 * line_rect.cuboid.half_extents[0] * line_rect.cuboid.half_extents[1];
 
+            // Radii scale with the stroke width, with a weight.
+            let dots_radii = TexturedOptions::RADII_DEFAULT
+                * (1.0 + options.stroke_width * TexturedOptions::STROKE_WIDTH_RADII_WEIGHT);
+
             // Ranges for randomization
             let range_x = -line_rect.cuboid.half_extents[0]..line_rect.cuboid.half_extents[0];
             let range_y = -line_rect.cuboid.half_extents[1]..line_rect.cuboid.half_extents[1];
             let range_dots_rot = -std::f64::consts::FRAC_PI_8..std::f64::consts::FRAC_PI_8;
-            let range_dots_rx = options.radii[0] * 0.8..options.radii[0] * 1.25;
-            let range_dots_ry = options.radii[1] * 0.8..options.radii[1] * 1.25;
+            let range_dots_rx = dots_radii[0] * 0.8..dots_radii[0] * 1.25;
+            let range_dots_ry = dots_radii[1] * 0.8..dots_radii[1] * 1.25;
 
             let distr_x = Uniform::from(range_x);
             let distr_dots_rot = Uniform::from(range_dots_rot);

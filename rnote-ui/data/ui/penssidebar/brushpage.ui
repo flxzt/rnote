@@ -257,65 +257,6 @@ Results in the best looking handwriting.</property>
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Stroke dots radii</property>
-                  <property name="subtitle" translatable="yes">The radii of the individual dots in the textured stroke</property>
-                  <child type="suffix">
-                    <object class="GtkBox">
-                      <property name="orientation">vertical</property>
-                      <property name="margin-top">6</property>
-                      <property name="margin-bottom">6</property>
-                      <property name="spacing">6</property>
-                      <property name="halign">end</property>
-                      <child>
-                        <object class="GtkBox">
-                          <property name="orientation">horizontal</property>
-                          <property name="halign">end</property>
-                          <child>
-                            <object class="GtkLabel">
-                              <property name="label">X:</property>
-                              <property name="margin-start">6</property>
-                              <property name="margin-end">6</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
-                              <property name="valign">center</property>
-                              <property name="orientation">horizontal</property>
-                              <property name="numeric">true</property>
-                              <property name="digits">1</property>
-                              <property name="climb-rate">0.5</property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkBox">
-                          <property name="orientation">horizontal</property>
-                          <property name="halign">end</property>
-                          <child>
-                            <object class="GtkLabel">
-                              <property name="label">Y:</property>
-                              <property name="margin-start">6</property>
-                              <property name="margin-end">6</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
-                              <property name="valign">center</property>
-                              <property name="orientation">horizontal</property>
-                              <property name="numeric">true</property>
-                              <property name="digits">1</property>
-                              <property name="climb-rate">0.5</property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
                 <object class="AdwComboRow" id="texturedstyle_distribution_row">
                   <property name="title" translatable="yes">Stroke dots position distribution</property>
                   <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>

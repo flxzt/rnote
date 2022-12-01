@@ -48,7 +48,7 @@ impl TexturedOptions {
     pub const WIDTH_DEFAULT: f64 = 2.0;
     /// Density default
     pub const DENSITY_DEFAULT: f64 = 5.0;
-    /// dots dadii for brush width 1.0
+    /// dots dadii default (without width weight)
     pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
     /// The weight factor the stroke width has to the radii of the dots
     pub const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;

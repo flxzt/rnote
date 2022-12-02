@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-30 14:17+0100\n"
-"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"PO-Revision-Date: 2022-12-03 08:47+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1078,10 +1078,8 @@ msgid "Marker"
 msgstr "குறிப்பான்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
-msgstr "மற்ற பிரஷ் ஸ்ட்ரோக்குகளின் அடியில் குறிக்கவும்"
+msgstr "மற்ற ஸ்ட்ரோக்குகளின் அடியில் குறிக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
@@ -1292,46 +1290,40 @@ msgid "Rough style"
 msgstr "கரடுமுரடான பாணி"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "உறுதியான பாணி"
+msgstr "நிரப்பு பாணி"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "ஒரு வடிவமைப்பைத் தேர்வுசெய்க"
+msgstr "நிரப்பு பாணியைத் தேர்வுசெய்க"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "ஹச்சுரே"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "ஜிக்-ஜாக்"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "ஜிக்-ஜாக் வரி"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "குறுக்குவெட்டு"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "கோடு போட்டது"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "ஹச்சூர் கோணம்"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "வரைதல் சுட்டியை அமைக்கவும்"
+msgstr "ஹச்சூர் ஃபில்ஸின் கோணத்தை அமைக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"

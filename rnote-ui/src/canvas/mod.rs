@@ -58,6 +58,7 @@ mod imp {
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_signal: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
 
@@ -146,6 +147,7 @@ mod imp {
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_signal: RefCell::new(None),
+                output_file_modified_toast_singleton: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -620,37 +622,47 @@ impl RnoteCanvas {
                     match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
                         Ok(output_file_monitor) => {
                             let output_file_monitor_signal = output_file_monitor.connect_changed(
-                                glib::clone!(@weak canvas, @weak appwindow => move |_monitor, _file, other_file, event| {
+                                glib::clone!(@weak canvas, @weak appwindow => move |_monitor, file, other_file, event| {
+                                    let dispatch_toast_reload_modified_file = || {
+                                        appwindow.canvas().set_unsaved_changes(true);
+
+                                        appwindow.dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
+                                            if let Some(output_file) = appwindow.canvas().output_file() {
+                                                if let Err(e) = appwindow.load_in_file(&output_file, None) {
+                                                    log::error!("failed to reload current output file, {}", e);
+                                                }
+                                            }
+                                        }), 0, &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                                    };
+
                                     match event {
                                         gio::FileMonitorEvent::Changed => {
-                                            appwindow.canvas().set_unsaved_changes(true);
-
-                                            let reload_toast = adw::Toast::builder().title(&gettext("Opened file was modified on disk.")).priority(adw::ToastPriority::High).button_label(&gettext("Reload")).timeout(0).build();
-                                            reload_toast.connect_button_clicked(
-                                                clone!(@weak appwindow => move |_reload_toast| {
-                                                    if let Some(output_file) = appwindow.canvas().output_file() {
-                                                        if let Err(e) = appwindow.load_in_file(&output_file, None) {
-                                                            log::error!("failed to reload current output file, {}", e);
-                                                        }
-                                                    }
-                                                })
-                                            );
-
-                                            appwindow.toast_overlay().add_toast(&reload_toast);
-                                        },
-                                        gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
-                                            canvas.set_unsaved_changes(true);
-                                            canvas.set_output_file(None);
-
-                                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Opened file was moved or deleted on disk.").to_variant()));
+                                            dispatch_toast_reload_modified_file();
                                         },
                                         gio::FileMonitorEvent::Renamed => {
+                                            // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio (most likely by another rnote instance).
+                                            // => file has been modified, handle it the same as the Changed event.
+                                            if let Some(old_path) = file.path() {
+                                                if let Some(old_file_name) = old_path.file_name() {
+                                                    if String::from(old_file_name.to_string_lossy()).starts_with(".goutputstream-") {
+                                                        dispatch_toast_reload_modified_file();
+                                                        return;
+                                                    }
+                                                }
+                                            }
+
                                             // other_file *should* never be none.
                                             if other_file.is_none() {
                                                 canvas.set_unsaved_changes(true);
                                             }
 
                                             canvas.set_output_file(other_file.cloned());
+                                        },
+                                        gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
+                                            canvas.set_unsaved_changes(true);
+                                            canvas.set_output_file(None);
+
+                                            appwindow.dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
                                         },
                                         _ => (),
                                     }

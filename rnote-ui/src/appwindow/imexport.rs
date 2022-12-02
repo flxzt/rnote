@@ -76,7 +76,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes.to_vec(), file.path()).await {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
+                            appwindow.dispatch_toast_error(&gettext("Opening .rnote file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
@@ -94,7 +94,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening vector image file failed.").to_variant()));
+                            appwindow.dispatch_toast_error(&gettext("Opening vector image file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
@@ -112,7 +112,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening bitmap image file failed.").to_variant()));
+                            appwindow.dispatch_toast_error(&gettext("Opening bitmap image file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
@@ -130,7 +130,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Xournal++ file failed.").to_variant()));
+                            appwindow.dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err: {e:?}"
                             );
@@ -148,7 +148,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, None).await {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
+                            appwindow.dispatch_toast_error(&gettext("Opening PDF file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
@@ -161,20 +161,12 @@ impl RnoteAppWindow {
             crate::utils::FileType::Folder => {
                 self.app().set_input_file(None);
                 log::error!("tried to open a folder as a file.");
-                adw::prelude::ActionGroupExt::activate_action(
-                    self,
-                    "error-toast",
-                    Some(&gettext("Error: Tried opening folder as file").to_variant()),
-                );
+                self.dispatch_toast_error(&gettext("Error: Tried opening folder as file"));
             }
             crate::utils::FileType::Unsupported => {
                 self.app().set_input_file(None);
                 log::error!("tried to open a unsupported file type.");
-                adw::prelude::ActionGroupExt::activate_action(
-                    self,
-                    "error-toast",
-                    Some(&gettext("Failed to open file: Unsupported file type.").to_variant()),
-                );
+                self.dispatch_toast_error(&gettext("Failed to open file: Unsupported file type."));
             }
         }
 

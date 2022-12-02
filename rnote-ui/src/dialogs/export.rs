@@ -65,9 +65,9 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
                                 appwindow.canvas().set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Saving document failed."));
                             } else {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Saved document successfully.").to_variant()));
+                                appwindow.dispatch_toast_text(&gettext("Saved document successfully."));
                             }
 
                             appwindow.finish_canvas_progressbar();
@@ -190,15 +190,15 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
 
                             if let Err(e) = appwindow.export_doc(&file, file_title, None).await {
                                 log::error!("exporting document failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Export document failed."));
                             } else {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported document successfully.").to_variant()));
+                                appwindow.dispatch_toast_text(&gettext("Exported document successfully."));
                             }
 
                             appwindow.finish_canvas_progressbar();
                         }));
                     } else {
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document failed, no file selected.").to_variant()));
+                        appwindow.dispatch_toast_error(&gettext("Export document failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -465,15 +465,15 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
                             if let Err(e) = appwindow.export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document pages failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Export document pages failed."));
                             } else {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported document pages successfully.").to_variant()));
+                                appwindow.dispatch_toast_text(&gettext("Exported document pages successfully."));
                             }
 
                             appwindow.finish_canvas_progressbar();
                         }));
                     } else {
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document pages failed, no directory selected.").to_variant()));
+                        appwindow.dispatch_toast_error(&gettext("Export document pages failed, no directory selected."));
                     }
                 }
                 _ => {}
@@ -708,15 +708,15 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
 
                             if let Err(e) = appwindow.export_selection(&file, None).await {
                                 log::error!("exporting selection failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Export selection failed."));
                             } else {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection successfully.").to_variant()));
+                                appwindow.dispatch_toast_text(&gettext("Exported selection successfully."));
                             }
 
                             appwindow.finish_canvas_progressbar();
                         }));
                     } else {
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed, no file selected.").to_variant()));
+                        appwindow.dispatch_toast_error(&gettext("Export selection failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -847,9 +847,9 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
 
                             if let Err(e) = appwindow.export_engine_state(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine state failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Export engine state failed."));
                             } else {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine state successfully.").to_variant()));
+                                appwindow.dispatch_toast_text(&gettext("Exported engine state successfully."));
                             }
 
                             appwindow.finish_canvas_progressbar();
@@ -911,9 +911,9 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
 
                             if let Err(e) = appwindow.export_engine_config(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine config failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Export engine config failed."));
                             } else {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine config successfully.").to_variant()));
+                                appwindow.dispatch_toast_text(&gettext("Exported engine config successfully."));
                             }
 
                             appwindow.finish_canvas_progressbar();

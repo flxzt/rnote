@@ -44,10 +44,9 @@ struct RnotefileWrapper {
     data: serde_json::Value,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
 /// the Rnote file in the newest format version. The actual (de-) serialization into strong types is happening in `rnote-engine`.
 /// This struct exists to allow for upgrading older versions before loading the file in.
-
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "rnotefile")]
 pub struct Rnotefile {
     /// the document
@@ -69,18 +68,21 @@ impl FileFormatLoader for Rnotefile {
             .context("from_str() for RnoteFileWrapper failed.")?;
 
         // Conversions for older file format versions happens here
-        if semver::Version::parse("0.5.8").unwrap() == wrapped_rnote_file.version {
-            Ok(Self::try_from(
-                serde_json::from_value::<RnoteFileMaj0Min5Patch8>(wrapped_rnote_file.data)
-                    .context("from_value() for RnoteFileMaj0Min5Patch8 failed.")?,
-            )
-            .context("try_from() from RnoteFileMaj0Min5Patch8 failed.")?)
-        } else if semver::VersionReq::parse(">=0.5.0")
+        if semver::VersionReq::parse(">=0.5.9")
             .unwrap()
             .matches(&wrapped_rnote_file.version)
         {
             Ok(serde_json::from_value::<Rnotefile>(wrapped_rnote_file.data)
                 .context("from_value() for RnoteFile failed.")?)
+        } else if semver::VersionReq::parse(">=0.5.0")
+            .unwrap()
+            .matches(&wrapped_rnote_file.version)
+        {
+            Ok(Self::try_from(
+                serde_json::from_value::<RnoteFileMaj0Min5Patch8>(wrapped_rnote_file.data)
+                    .context("from_value() for RnoteFileMaj0Min5Patch8 failed.")?,
+            )
+            .context("try_from() from RnoteFileMaj0Min5Patch8 failed.")?)
         } else {
             Err(anyhow::anyhow!(
                 "failed to load rnote file from bytes, unsupported version: {}",

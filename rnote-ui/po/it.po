@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-30 14:17+0100\n"
-"PO-Revision-Date: 2022-12-01 15:01+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"PO-Revision-Date: 2022-12-04 11:35+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -1327,10 +1327,8 @@ msgid "Hachure angle"
 msgstr "Angolo di ombreggiatura"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "Imposta il cursore da disegno"
+msgstr "Imposta l'angolo dei riempimenti del tratteggio"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"

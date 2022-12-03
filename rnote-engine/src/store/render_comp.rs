@@ -304,13 +304,15 @@ impl StrokeStore {
         ) {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
-                    let mut images =
-                        brushstroke.gen_images_for_last_segments(n_segments, image_scale)?;
+                    if let Some(image) =
+                        brushstroke.gen_image_for_last_segments(n_segments, image_scale)?
+                    {
+                        let mut rendernodes =
+                            render::Image::images_to_rendernodes(&[image.clone()])?;
 
-                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
-
-                    render_comp.rendernodes.append(&mut rendernodes);
-                    render_comp.images.append(&mut images);
+                        render_comp.rendernodes.append(&mut rendernodes);
+                        render_comp.images.push(image);
+                    }
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_)

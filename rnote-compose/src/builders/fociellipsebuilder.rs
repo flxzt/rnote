@@ -10,7 +10,7 @@ use crate::shapes::Ellipse;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
@@ -50,7 +50,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -84,12 +84,12 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             (FociEllipseBuilderState::FociAndPoint { foci, point }, PenEvent::Up { .. }) => {
                 let shape = Ellipse::from_foci_and_point(*foci, *point);
 
-                return BuilderProgress::Finished(vec![Shape::Ellipse(shape)]);
+                return ShapeBuilderProgress::Finished(vec![Shape::Ellipse(shape)]);
             }
             (FociEllipseBuilderState::FociAndPoint { .. }, _) => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {

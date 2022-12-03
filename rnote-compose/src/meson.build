@@ -13,6 +13,7 @@ rnote_compose_sources = files(
     'builders/coordsystem3dbuilder.rs',
     'builders/quadrantcoordsystem2dbuilder.rs',
     'builders/shapebuilderbehaviour.rs',
+    'builders/penpathbuilderbehaviour.rs',
     'penpath/element.rs',
     'penpath/mod.rs',
     'penpath/segment.rs',

@@ -8,14 +8,15 @@ use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::AudioPlayer;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
-use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::{Constraints, PenPathModeledBuilder};
-use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder, ShapeBuilderBehaviour};
+use rnote_compose::builders::{
+    Constraints, PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress,
+    PenPathModeledBuilder,
+};
+use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
 use rnote_compose::penhelpers::PenEvent;
-use rnote_compose::penpath::Segment;
 use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::PressureCurve;
-use rnote_compose::{Shape, Style};
+use rnote_compose::Style;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
@@ -116,7 +117,7 @@ impl std::ops::DerefMut for SolidOptions {
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: Box<dyn ShapeBuilderBehaviour>,
+        path_builder: Box<dyn PenPathBuilderBehaviour>,
         current_stroke_key: StrokeKey,
     },
 }
@@ -200,14 +201,14 @@ impl PenBehaviour for Brush {
                     self.textured_options.seed = seed;
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
-                        Segment::Dot { element },
+                        element,
                         self.style_for_current_options(),
                     ));
                     let current_stroke_key = engine_view
                         .store
                         .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
 
-                    let path_builder: Box<dyn ShapeBuilderBehaviour> = match self.builder_type {
+                    let path_builder: Box<dyn PenPathBuilderBehaviour> = match self.builder_type {
                         PenPathBuilderType::Simple => {
                             Box::new(PenPathSimpleBuilder::start(element, Instant::now()))
                         }
@@ -279,72 +280,58 @@ impl PenBehaviour for Brush {
                 pen_event,
             ) => {
                 match path_builder.handle_event(pen_event, Instant::now(), Constraints::default()) {
-                    BuilderProgress::InProgress => {
+                    PenPathBuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::EmitContinue(shapes) => {
-                        let mut n_segments = 0;
+                    PenPathBuilderProgress::EmitContinue(segments) => {
+                        let n_segments = segments.len();
 
-                        for shape in shapes {
-                            match shape {
-                                Shape::Segment(new_segment) => {
-                                    engine_view.store.add_segment_to_brushstroke(
-                                        *current_stroke_key,
-                                        new_segment,
-                                    );
-                                    n_segments += 1;
-                                    widget_flags.indicate_changed_store = true;
-                                }
-                                _ => {
-                                    // not reachable, pen builder should only produce segments
-                                }
+                        if n_segments != 0 {
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_mut(*current_stroke_key)
+                            {
+                                brushstroke.extend_w_segments(segments);
+                                widget_flags.indicate_changed_store = true;
+                            }
+
+                            if let Err(e) = engine_view.store.append_rendering_last_segments(
+                                engine_view.tasks_tx.clone(),
+                                *current_stroke_key,
+                                n_segments,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            ) {
+                                log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
                             }
                         }
 
-                        if let Err(e) = engine_view.store.append_rendering_last_segments(
-                            engine_view.tasks_tx.clone(),
-                            *current_stroke_key,
-                            n_segments,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
-                        }
                         widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::Finished(shapes) => {
-                        let mut n_segments = 0;
+                    PenPathBuilderProgress::Finished(segments) => {
+                        let n_segments = segments.len();
 
-                        for shape in shapes {
-                            match shape {
-                                Shape::Segment(new_segment) => {
-                                    engine_view.store.add_segment_to_brushstroke(
-                                        *current_stroke_key,
-                                        new_segment,
-                                    );
-
-                                    n_segments += 1;
-                                    widget_flags.indicate_changed_store = true;
-                                }
-                                _ => {
-                                    // not reachable, pen builder should only produce segments
-                                }
+                        if n_segments != 0 {
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_mut(*current_stroke_key)
+                            {
+                                brushstroke.extend_w_segments(segments);
+                                widget_flags.indicate_changed_store = true;
                             }
-                        }
 
-                        // First we draw the last segments immediately,
-                        if let Err(e) = engine_view.store.append_rendering_last_segments(
-                            engine_view.tasks_tx.clone(),
-                            *current_stroke_key,
-                            n_segments,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
+                            // First we draw the last segments immediately,
+                            if let Err(e) = engine_view.store.append_rendering_last_segments(
+                                engine_view.tasks_tx.clone(),
+                                *current_stroke_key,
+                                n_segments,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            ) {
+                                log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
+                            }
                         }
 
                         // but then regenerate the entire stroke rendering because it gets rid of some artifacts

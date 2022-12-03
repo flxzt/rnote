@@ -10,6 +10,8 @@ pub mod ellipsebuilder;
 pub mod fociellipsebuilder;
 /// line builder
 pub mod linebuilder;
+/// pen path builder behaviour
+pub mod penpathbuilderbehaviour;
 /// the regular pen path builder, using bezier curves to interpolate between input elements.
 pub mod penpathcurvedbuilder;
 /// modeled pen path builder, uses ink-stroke-modeler for smooth paths with advanced algorithms and its predictor to reduce input latency
@@ -25,8 +27,6 @@ pub mod rectanglebuilder;
 /// shape builder behaviour
 pub mod shapebuilderbehaviour;
 
-use std::collections::HashSet;
-
 // Re-exports
 pub use coordsystem2dbuilder::CoordSystem2DBuilder;
 pub use coordsystem3dbuilder::CoordSystem3DBuilder;
@@ -34,6 +34,9 @@ pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
 pub use linebuilder::LineBuilder;
+pub use penpathbuilderbehaviour::PenPathBuilderBehaviour;
+pub use penpathbuilderbehaviour::PenPathBuilderCreator;
+pub use penpathbuilderbehaviour::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
@@ -41,8 +44,11 @@ pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
+pub use shapebuilderbehaviour::ShapeBuilderCreator;
+pub use shapebuilderbehaviour::ShapeBuilderProgress;
 
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,

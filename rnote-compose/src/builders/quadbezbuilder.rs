@@ -9,7 +9,7 @@ use crate::shapes::QuadraticBezier;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
@@ -56,7 +56,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         // we always want to allow horizontal and vertical constraints while building a quadbez
@@ -88,16 +88,18 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 *end = constraints.constrain(element.pos - *cp) + *cp;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
-                return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
-                    start: *start,
-                    cp: *cp,
-                    end: *end,
-                })]);
+                return ShapeBuilderProgress::Finished(vec![Shape::QuadraticBezier(
+                    QuadraticBezier {
+                        start: *start,
+                        cp: *cp,
+                        end: *end,
+                    },
+                )]);
             }
             (QuadBezBuilderState::End { .. }, ..) => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {

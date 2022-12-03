@@ -1,7 +1,7 @@
 use ink_stroke_modeler_rs::{
     ModelerInput, ModelerInputEventType, PredictionParams, StrokeModeler, StrokeModelerParams,
 };
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use std::collections::VecDeque;
 use std::time::Instant;
@@ -9,10 +9,9 @@ use std::time::Instant;
 use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
-use crate::{PenPath, Shape, Style};
+use crate::{PenPath, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::{Constraints, PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress};
 
 /// The pen path builder
 pub struct PenPathModeledBuilder {
@@ -39,7 +38,7 @@ impl std::fmt::Debug for PenPathModeledBuilder {
     }
 }
 
-impl ShapeBuilderCreator for PenPathModeledBuilder {
+impl PenPathBuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
         let buffer = VecDeque::new();
 
@@ -60,13 +59,13 @@ impl ShapeBuilderCreator for PenPathModeledBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for PenPathModeledBuilder {
+impl PenPathBuilderBehaviour for PenPathModeledBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,
         now: Instant,
         _constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> PenPathBuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,
@@ -80,8 +79,8 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
                 match self.try_build_segments_during() {
-                    Some(shapes) => BuilderProgress::EmitContinue(shapes),
-                    None => BuilderProgress::InProgress,
+                    Some(segments) => PenPathBuilderProgress::EmitContinue(segments),
+                    None => PenPathBuilderProgress::InProgress,
                 }
             }
             PenEvent::Up { element, .. } => {
@@ -89,49 +88,34 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
 
                 let segment = self.try_build_segments_end();
 
-                BuilderProgress::Finished(segment)
+                PenPathBuilderProgress::Finished(segment)
             }
             PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {
-                BuilderProgress::InProgress
+                PenPathBuilderProgress::InProgress
             }
-            PenEvent::Cancel => BuilderProgress::Finished(vec![]),
+            PenEvent::Cancel => PenPathBuilderProgress::Finished(vec![]),
         }
     }
 
     fn bounds(&self, style: &Style, _zoom: f64) -> Option<AABB> {
-        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
-
-        let penpath = elements_iter
-            .clone()
-            .zip(elements_iter.skip(1))
-            .map(|(start, end)| Segment::Line {
-                start: *start,
-                end: *end,
-            })
-            .collect::<PenPath>();
-
-        if penpath.is_empty() {
-            return None;
-        }
-
-        Some(penpath.iter().fold(AABB::new_invalid(), |acc, x| {
-            acc.merged(&x.composed_bounds(style))
-        }))
+        PenPath::try_from_elements(
+            self.buffer
+                .iter()
+                .chain(self.prediction_buffer.iter())
+                .copied(),
+        )
+        .map(|pp| pp.composed_bounds(style))
     }
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
         cx.save().unwrap();
 
-        let elements_iter = self.buffer.iter().chain(self.prediction_buffer.iter());
-
-        let penpath = elements_iter
-            .clone()
-            .zip(elements_iter.skip(1))
-            .map(|(start, end)| Segment::Line {
-                start: *start,
-                end: *end,
-            })
-            .collect::<PenPath>();
+        let pen_path = PenPath::try_from_elements(
+            self.buffer
+                .iter()
+                .chain(self.prediction_buffer.iter())
+                .copied(),
+        );
 
         /*
                 // Change prediction stroke color for debugging
@@ -144,7 +128,10 @@ impl ShapeBuilderBehaviour for PenPathModeledBuilder {
                 }
         */
 
-        penpath.draw_composed(cx, style);
+        if let Some(pen_path) = pen_path {
+            pen_path.draw_composed(cx, style);
+        }
+
         cx.restore().unwrap();
     }
 }
@@ -153,36 +140,24 @@ impl PenPathModeledBuilder {
     const MODELER_MIN_OUTPUT_RATE: f64 = 180.0;
     const MODELER_MAX_OUTPUTS_PER_CALL: i32 = 100;
 
-    fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
-        if self.buffer.len() < 2 {
+    fn try_build_segments_during(&mut self) -> Option<Vec<Segment>> {
+        if self.buffer.len() < 1 {
             return None;
         }
         let mut segments = vec![];
 
-        while self.buffer.len() > 2 {
-            segments.push(Shape::Segment(Segment::Line {
-                start: self.buffer[0],
-                end: self.buffer[1],
-            }));
-
-            self.buffer.pop_front();
+        while let Some(el) = self.buffer.pop_front() {
+            segments.push(Segment::LineTo { end: el });
         }
 
         Some(segments)
     }
 
-    fn try_build_segments_end(&mut self) -> Vec<Shape> {
-        let elements_iter = self.buffer.iter();
-
-        let segments = elements_iter
-            .clone()
-            .zip(elements_iter.skip(1))
-            .map(|(start, end)| {
-                Shape::Segment(Segment::Line {
-                    start: *start,
-                    end: *end,
-                })
-            })
+    fn try_build_segments_end(&mut self) -> Vec<Segment> {
+        let segments = self
+            .buffer
+            .iter()
+            .map(|el| Segment::LineTo { end: *el })
             .collect();
 
         self.buffer.clear();

@@ -9,7 +9,7 @@ use crate::shapes::Line;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 /// line builder
@@ -36,7 +36,7 @@ impl ShapeBuilderBehaviour for LineBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         // we always want to allow horizontal and vertical constraints while building a line
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
@@ -46,12 +46,12 @@ impl ShapeBuilderBehaviour for LineBuilder {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
+                return ShapeBuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
             }
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {

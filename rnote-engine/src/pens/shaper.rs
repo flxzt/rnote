@@ -9,7 +9,7 @@ use crate::{DrawOnDocBehaviour, WidgetFlags};
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
-use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use rnote_compose::builders::{Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
@@ -200,12 +200,12 @@ impl PenBehaviour for Shaper {
                 };
 
                 match builder.handle_event(event, Instant::now(), constraints) {
-                    BuilderProgress::InProgress => {
+                    ShapeBuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::EmitContinue(shapes) => {
+                    ShapeBuilderProgress::EmitContinue(shapes) => {
                         let drawstyle = self.gen_style_for_current_options();
 
                         if !shapes.is_empty() {
@@ -232,7 +232,7 @@ impl PenBehaviour for Shaper {
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::Finished(shapes) => {
+                    ShapeBuilderProgress::Finished(shapes) => {
                         let drawstyle = self.gen_style_for_current_options();
 
                         if !shapes.is_empty() {

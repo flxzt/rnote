@@ -157,6 +157,7 @@ impl StrokeStore {
                 let stroke_bounds = stroke.bounds();
 
                 match stroke {
+                    /*
                     Stroke::BrushStroke(brushstroke) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
                             let stroke_width = brushstroke.style.stroke_width();
@@ -211,8 +212,8 @@ impl StrokeStore {
                                 }
                             }
                         }
-                    }
-                    Stroke::ShapeStroke(_) => {
+                    } */
+                    Stroke::BrushStroke(_) | Stroke::ShapeStroke(_) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
                             for hitbox_elem in stroke.hitboxes().iter() {
                                 if eraser_bounds.intersects(hitbox_elem) {
@@ -221,15 +222,8 @@ impl StrokeStore {
                             }
                         }
                     }
-                    Stroke::TextStroke(_textstroke) => {
-                        // Ignore text strokes when trashing with the Eraser
-                    }
-                    Stroke::VectorImage(_vectorimage) => {
-                        // Ignore vector images when trashing with the Eraser
-                    }
-                    Stroke::BitmapImage(_bitmapimage) => {
-                        // Ignore bitmap images when trashing with the Eraser
-                    }
+                    // Ignore other strokes when trashing with the Eraser
+                    Stroke::TextStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {}
                 }
 
                 if trash_current_stroke {

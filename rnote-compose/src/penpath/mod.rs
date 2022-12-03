@@ -3,63 +3,147 @@ mod segment;
 
 // Re exports
 pub use element::Element;
+use kurbo::Shape;
 pub use segment::Segment;
 
 use std::collections::VecDeque;
-use std::ops::{Deref, DerefMut};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-use crate::shapes::ShapeBehaviour;
+use crate::helpers::KurboHelpers;
+use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "pen_path")]
 /// a pen path, consisting of segments of pen input elements
-pub struct PenPath(VecDeque<Segment>);
-
-impl Deref for PenPath {
-    type Target = VecDeque<Segment>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for PenPath {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
+pub struct PenPath {
+    /// The path start
+    #[serde(rename = "start")]
+    pub start: Element,
+    /// The segments
+    #[serde(rename = "segments")]
+    pub segments: VecDeque<Segment>,
 }
 
 impl ShapeBehaviour for PenPath {
     fn bounds(&self) -> AABB {
-        self.iter()
-            .map(|segment| segment.bounds())
-            .fold(AABB::new_invalid(), |prev, next| prev.merged(&next))
+        let mut bounds = AABB::from_points(&[na::Point2::from(self.start.pos)]);
+
+        let mut prev = self.start;
+        for seg in self.segments.iter() {
+            match seg {
+                Segment::LineTo { end } => {
+                    bounds.take_point(na::Point2::from(end.pos));
+
+                    prev = *end;
+                }
+                Segment::QuadBezTo { cp, end } => {
+                    let quadbez = QuadraticBezier {
+                        start: prev.pos,
+                        cp: *cp,
+                        end: end.pos,
+                    };
+
+                    bounds.merge(&quadbez.to_kurbo().bounding_box().bounds_as_p2d_aabb());
+                    prev = *end;
+                }
+                Segment::CubBezTo { cp1, cp2, end } => {
+                    let cubbez = CubicBezier {
+                        start: prev.pos,
+                        cp1: *cp1,
+                        cp2: *cp2,
+                        end: end.pos,
+                    };
+
+                    bounds.merge(&cubbez.to_kurbo().bounding_box().bounds_as_p2d_aabb());
+                    prev = *end;
+                }
+            }
+        }
+
+        bounds
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        self.iter().flat_map(|segment| segment.hitboxes()).collect()
+        let mut hitboxes = Vec::with_capacity(self.segments.len());
+
+        let mut prev = self.start;
+        for seg in self.segments.iter() {
+            match seg {
+                Segment::LineTo { end } => {
+                    let n_splits = hitbox_elems_for_segment_len((end.pos - prev.pos).magnitude());
+                    let line = Line {
+                        start: prev.pos,
+                        end: end.pos,
+                    };
+
+                    hitboxes.extend(line.split(n_splits).into_iter().map(|line| line.bounds()));
+                    prev = *end;
+                }
+                Segment::QuadBezTo { cp, end } => {
+                    let quadbez = QuadraticBezier {
+                        start: prev.pos,
+                        cp: *cp,
+                        end: end.pos,
+                    };
+
+                    // TODO: basing this off of the actual curve len
+                    let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.1));
+
+                    hitboxes.extend(
+                        quadbez
+                            .approx_with_lines(n_splits)
+                            .into_iter()
+                            .map(|line| line.bounds()),
+                    );
+                    prev = *end;
+                }
+                Segment::CubBezTo { cp1, cp2, end } => {
+                    let cubbez = CubicBezier {
+                        start: prev.pos,
+                        cp1: *cp1,
+                        cp2: *cp2,
+                        end: end.pos,
+                    };
+
+                    // TODO: basing this off of the actual curve len
+                    let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.1));
+
+                    hitboxes.extend(
+                        cubbez
+                            .approx_with_lines(n_splits)
+                            .into_iter()
+                            .map(|line| line.bounds()),
+                    );
+                    prev = *end;
+                }
+            }
+        }
+
+        hitboxes
     }
 }
 
 impl TransformBehaviour for PenPath {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
-        self.iter_mut().for_each(|segment| {
+        self.start.translate(offset);
+        self.segments.iter_mut().for_each(|segment| {
             segment.translate(offset);
         });
     }
 
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
-        self.iter_mut().for_each(|segment| {
+        self.start.rotate(angle, center);
+        self.segments.iter_mut().for_each(|segment| {
             segment.rotate(angle, center);
         });
     }
 
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
-        self.iter_mut().for_each(|segment| {
+        self.start.scale(scale);
+        self.segments.iter_mut().for_each(|segment| {
             segment.scale(scale);
         });
     }
@@ -67,39 +151,88 @@ impl TransformBehaviour for PenPath {
 
 impl PenPath {
     /// A new pen path with a first dot segment
-    pub fn new_w_dot(element: Element) -> Self {
-        Self::new_w_segment(Segment::Dot { element })
+    pub fn new(start: Element) -> Self {
+        Self {
+            start,
+            segments: VecDeque::default(),
+        }
     }
 
-    /// A new pen path with a first segment
-    pub fn new_w_segment(segment: Segment) -> Self {
-        let mut segment_vec = VecDeque::with_capacity(1);
-        segment_vec.push_back(segment);
-
-        Self(segment_vec)
+    /// A new pen path with segments
+    pub fn new_w_segments(start: Element, segments: impl IntoIterator<Item = Segment>) -> Self {
+        Self {
+            start,
+            segments: segments.into_iter().collect(),
+        }
     }
 
     /// extracts the elements from the path. the path shape will be lost, as only the actual input elements are returned.
     pub fn into_elements(self) -> Vec<Element> {
-        self.0
-            .into_iter()
-            .flat_map(|segment| match segment {
-                Segment::Dot { element: pos } => vec![pos],
-                Segment::Line { start, end } => vec![start, end],
-                Segment::QuadBez { start, cp: _, end } => vec![start, end],
-                Segment::CubBez {
-                    start,
-                    cp1: _,
-                    cp2: _,
-                    end,
-                } => vec![start, end],
-            })
-            .collect()
+        let mut elements = vec![self.start];
+
+        elements.extend(self.segments.into_iter().map(|seg| match seg {
+            Segment::LineTo { end } => end,
+            Segment::QuadBezTo { end, .. } => end,
+            Segment::CubBezTo { end, .. } => end,
+        }));
+
+        elements
+    }
+
+    /// Try to create a pen path from the elements. the first element will be the start
+    pub fn try_from_elements(elements_iter: impl IntoIterator<Item = Element>) -> Option<Self> {
+        let mut elements_iter = elements_iter.into_iter();
+
+        let start = elements_iter.next()?;
+        let segments = elements_iter
+            .map(|el| Segment::LineTo { end: el })
+            .collect::<VecDeque<Segment>>();
+
+        Some(Self { start, segments })
+    }
+
+    /// Push front segment
+    pub fn push_front_segment(&mut self, segment: Segment) {
+        self.segments.push_front(segment);
+    }
+
+    /// Push back segment
+    pub fn push_back_segment(&mut self, segment: Segment) {
+        self.segments.push_back(segment);
+    }
+
+    /// Pop front segment
+    pub fn pop_front_segment(&mut self) -> Option<Segment> {
+        self.segments.pop_front()
+    }
+
+    /// Pop back segment
+    pub fn pop_back_segment(&mut self) -> Option<Segment> {
+        self.segments.pop_back()
+    }
+
+    /// Extends the pen path with the segments of the other.
+    pub fn extend_w_other(&mut self, other: Self) {
+        self.segments.extend(other.segments);
     }
 }
 
-impl std::iter::FromIterator<Segment> for PenPath {
-    fn from_iter<T: IntoIterator<Item = Segment>>(iter: T) -> Self {
-        Self(VecDeque::from_iter(iter))
+impl Extend<Segment> for PenPath {
+    fn extend<T: IntoIterator<Item = Segment>>(&mut self, iter: T) {
+        self.segments.extend(iter);
+    }
+}
+
+/// Calculates the number hitbox elems for the given length capped with a maximum no of hitbox elements
+fn hitbox_elems_for_segment_len(len: f64) -> i32 {
+    // Maximum hitbox diagonal ( below the threshold )
+    const MAX_HITBOX_DIAGONAL: f64 = 15.0;
+    const MAX_ELEMS: i32 = 6;
+
+    if len < MAX_HITBOX_DIAGONAL * f64::from(MAX_ELEMS) {
+        ((len / MAX_HITBOX_DIAGONAL).ceil() as i32).max(1)
+    } else {
+        // capping the no of elements for bigger len's, avoiding huge amounts of hitboxes for large strokes that are drawn when zoomed out
+        MAX_ELEMS
     }
 }

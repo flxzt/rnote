@@ -16,6 +16,7 @@ use super::{Constraints, PenPathBuilderBehaviour, PenPathBuilderCreator, PenPath
 pub struct PenPathModeledBuilder {
     /// Buffered elements, which are filled up by new pen events and used to build path segments
     pub buffer: Vec<Element>,
+    prediction_start: Element,
     /// Holding the current prediction. Is recalculated after the modeler is updated with a new element
     prediction_buffer: Vec<Element>,
     start_time: Instant,
@@ -41,6 +42,7 @@ impl PenPathBuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
         let mut builder = Self {
             buffer: vec![],
+            prediction_start: element,
             prediction_buffer: vec![],
             start_time: now,
             last_element: element,
@@ -96,6 +98,7 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
         PenPath::try_from_elements(
             self.buffer
                 .iter()
+                .chain(std::iter::once(&self.prediction_start))
                 .chain(self.prediction_buffer.iter())
                 .copied(),
         )
@@ -108,6 +111,7 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
         let pen_path = PenPath::try_from_elements(
             self.buffer
                 .iter()
+                .chain(std::iter::once(&self.prediction_start))
                 .chain(self.prediction_buffer.iter())
                 .copied(),
         );
@@ -202,6 +206,11 @@ impl PenPathModeledBuilder {
                     Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
                 }),
         );
+
+        // The prediciton start is the last buffer element (which will get drained)
+        if let Some(last) = self.buffer.last() {
+            self.prediction_start = *last;
+        }
 
         // When the stroke is finished it is invalid to predict, and the existing prediction should be cleared.
         if event_type == ModelerInputEventType::kUp {

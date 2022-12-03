@@ -1,5 +1,6 @@
 use std::ops::Range;
 
+use anyhow::Context;
 use futures::channel::oneshot;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
@@ -127,16 +128,19 @@ impl RnoteEngine {
         &mut self,
         bytes: Vec<u8>,
     ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<StoreSnapshot>>> {
-        let rnote_file = rnoteformat::Rnotefile::load_from_bytes(&bytes)?;
+        let rnote_file = rnoteformat::Rnotefile::load_from_bytes(&bytes)
+            .context("RnoteFile load_from_bytes() failed.")?;
 
-        self.document = serde_json::from_value(rnote_file.document)?;
+        self.document = serde_json::from_value(rnote_file.document)
+            .context("serde_json::from_value() for rnote_file.document failed.")?;
 
         let (store_snapshot_sender, store_snapshot_receiver) =
             oneshot::channel::<anyhow::Result<StoreSnapshot>>();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<StoreSnapshot> {
-                Ok(serde_json::from_value(rnote_file.store_snapshot)?)
+                Ok(serde_json::from_value(rnote_file.store_snapshot)
+                    .context("serde_json::from_value() for rnote_file.store_snapshot failed")?)
             };
 
             if let Err(_data) = store_snapshot_sender.send(result()) {

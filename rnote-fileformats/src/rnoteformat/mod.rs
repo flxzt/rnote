@@ -4,6 +4,7 @@
 
 pub(crate) mod maj0min5patch8;
 
+use anyhow::Context;
 use maj0min5patch8::RnoteFileMaj0Min5Patch8;
 
 use serde::{Deserialize, Serialize};
@@ -59,22 +60,27 @@ pub struct Rnotefile {
 
 impl FileFormatLoader for Rnotefile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Rnotefile> {
-        let decompressed = String::from_utf8(decompress_from_gzip(bytes)?)?;
+        let decompressed = String::from_utf8(
+            decompress_from_gzip(bytes).context("decompress_from_gzip() failed.")?,
+        )
+        .context("String::from_utf8() with unzipped data failed.")?;
 
-        let wrapped_rnote_file = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())?;
+        let wrapped_rnote_file = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())
+            .context("from_str() for RnoteFileWrapper failed.")?;
 
         // Conversions for older file format versions happens here
         if semver::Version::parse("0.5.8").unwrap() == wrapped_rnote_file.version {
-            Ok(Self::try_from(serde_json::from_value::<
-                RnoteFileMaj0Min5Patch8,
-            >(wrapped_rnote_file.data)?)?)
+            Ok(Self::try_from(
+                serde_json::from_value::<RnoteFileMaj0Min5Patch8>(wrapped_rnote_file.data)
+                    .context("from_value() for RnoteFileMaj0Min5Patch8 failed.")?,
+            )
+            .context("try_from() from RnoteFileMaj0Min5Patch8 failed.")?)
         } else if semver::VersionReq::parse(">=0.5.0")
             .unwrap()
             .matches(&wrapped_rnote_file.version)
         {
-            Ok(serde_json::from_value::<Rnotefile>(
-                wrapped_rnote_file.data,
-            )?)
+            Ok(serde_json::from_value::<Rnotefile>(wrapped_rnote_file.data)
+                .context("from_value() for RnoteFile failed.")?)
         } else {
             Err(anyhow::anyhow!(
                 "failed to load rnote file from bytes, unsupported version: {}",
@@ -88,10 +94,16 @@ impl FileFormatSaver for Rnotefile {
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let output = RnotefileWrapper {
             version: semver::Version::parse("0.5.9").unwrap(),
-            data: serde_json::to_value(self)?,
+            data: serde_json::to_value(self).context("to_value() for RnoteFile failed.")?,
         };
 
-        let compressed = compress_to_gzip(serde_json::to_string(&output)?.as_bytes(), file_name)?;
+        let compressed = compress_to_gzip(
+            serde_json::to_string(&output)
+                .context("serde_json::to_string() for output RnoteFileWrapper failed.")?
+                .as_bytes(),
+            file_name,
+        )
+        .context("compress_to_gzip() failed")?;
 
         Ok(compressed)
     }

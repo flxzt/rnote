@@ -127,7 +127,7 @@ impl RnoteEngine {
         &mut self,
         bytes: Vec<u8>,
     ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<StoreSnapshot>>> {
-        let rnote_file = rnoteformat::RnotefileMaj0Min5::load_from_bytes(&bytes)?;
+        let rnote_file = rnoteformat::Rnotefile::load_from_bytes(&bytes)?;
 
         self.document = serde_json::from_value(rnote_file.document)?;
 

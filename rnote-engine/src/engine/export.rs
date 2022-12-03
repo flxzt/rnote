@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
+use rnote_fileformats::rnoteformat::Rnotefile;
 use rnote_fileformats::{xoppformat, FileFormatSaver};
 
 use crate::store::StrokeKey;
@@ -279,7 +279,7 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = RnotefileMaj0Min5 {
+                let rnote_file = Rnotefile {
                     document: doc,
                     store_snapshot: serde_json::to_value(&*store_snapshot)?,
                 };

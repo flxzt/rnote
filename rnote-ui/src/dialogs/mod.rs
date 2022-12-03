@@ -133,7 +133,7 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
                         if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                             appwindow.canvas().set_output_file(None);
 
-                            log::error!("saving document failed with error `{}`", e);
+                            log::error!("saving document failed with error `{e:?}`");
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                         }
 
@@ -183,7 +183,7 @@ pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
                             if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                                 appwindow.canvas().set_output_file(None);
 
-                                log::error!("saving document failed with error `{}`", e);
+                                log::error!("saving document failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                             }
 
@@ -252,7 +252,7 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         if let Err(e) =
             filechooser_change_workspace_dir.set_file(&gio::File::for_path(&row.entry().dir()))
         {
-            log::error!("set file in change workspace dialog failed with Err {}", e);
+            log::error!("set file in change workspace dialog failed with Err: {e:?}");
         }
 
         // set initial dialog UI on popup

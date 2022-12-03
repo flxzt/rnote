@@ -443,7 +443,7 @@ impl DrawOnDocBehaviour for PenHolder {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match self.current_style_w_override() {
             PenStyle::Brush => self.brush.draw_on_doc(cx, engine_view),
@@ -454,7 +454,7 @@ impl DrawOnDocBehaviour for PenHolder {
             PenStyle::Tools => self.tools.draw_on_doc(cx, engine_view),
         }?;
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

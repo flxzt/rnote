@@ -23,14 +23,13 @@ impl RnoteAppWindow {
                     dialogs::import::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!(
-                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
-                        e
+                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
                     );
                 }
             }
             crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
                 if let Err(e) = self.load_in_file(file, target_pos) {
-                    log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
+                    log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {e:?}");
                 }
             }
             crate::utils::FileType::XoppFile => {
@@ -75,8 +74,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes.to_vec(), file.path()).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
-                                e
+                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
@@ -94,8 +92,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening vector image file failed.").to_variant()));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
-                                e
+                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
@@ -113,8 +110,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening bitmap image file failed.").to_variant()));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
-                                e
+                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
@@ -132,8 +128,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Xournal++ file failed.").to_variant()));
                             log::error!(
-                                "load_in_xopp_bytes() failed in load_in_file() with Err {}",
-                                e
+                                "load_in_xopp_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
@@ -151,8 +146,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, None).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
-                                e
+                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }

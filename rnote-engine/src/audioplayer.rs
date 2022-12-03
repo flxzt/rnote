@@ -118,7 +118,7 @@ impl AudioPlayer {
                 sink.detach();
             }
             Err(e) => log::error!(
-                "failed to create sink in play_random_marker_sound(), Err {}",
+                "failed to create sink in play_random_marker_sound(), Err {:?}",
                 e
             ),
         }
@@ -143,7 +143,7 @@ impl AudioPlayer {
                 self.brush_sink = Some(sink);
             }
             Err(e) => log::error!(
-                "failed to create sink in start_play_random_brush_sound(), Err {}",
+                "failed to create sink in start_play_random_brush_sound(), Err {:?}",
                 e
             ),
         }
@@ -189,7 +189,7 @@ impl AudioPlayer {
                 }
             },
             Err(e) => log::error!(
-                "failed to create sink in play_typewriter_sound(), Err {}",
+                "failed to create sink in play_typewriter_sound(), Err {:?}",
                 e
             ),
         }

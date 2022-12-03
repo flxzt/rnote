@@ -317,7 +317,7 @@ impl TextStyle {
 
         text_layout_builder
             .build()
-            .map_err(|e| anyhow::anyhow!("{}", e))
+            .map_err(|e| anyhow::anyhow!("{e:?}"))
     }
 
     pub fn untransformed_size<T>(&self, piet_text: &mut T, text: String) -> Option<na::Vector2<f64>>
@@ -382,7 +382,7 @@ impl TextStyle {
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let range = if selection_cursor.cur_cursor() >= cursor.cur_cursor() {
             cursor.cur_cursor()..selection_cursor.cur_cursor()
@@ -516,8 +516,7 @@ impl ShapeBehaviour for TextStroke {
             Ok(text_layout) => text_layout,
             Err(e) => {
                 log::error!(
-                    "build_text_layout() failed while calculating the hitboxes, Err {}",
-                    e
+                    "build_text_layout() failed while calculating the hitboxes, Err: {e:?}"
                 );
 
                 return vec![self.bounds()];
@@ -594,7 +593,7 @@ impl StrokeBehaviour for TextStroke {
 
 impl DrawBehaviour for TextStroke {
     fn draw(&self, cx: &mut impl RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         if let Ok(text_layout) = self
             .text_style
@@ -604,7 +603,7 @@ impl DrawBehaviour for TextStroke {
             cx.draw_text(&text_layout, kurbo::Point::new(0.0, 0.0))
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -630,7 +629,7 @@ impl TextStroke {
         let text_layout = self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
             (self.transform.affine.inverse() * na::Point2::from(coord))
                 .coords

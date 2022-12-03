@@ -27,6 +27,7 @@ pub mod rectanglebuilder;
 /// shape builder behaviour
 pub mod shapebuilderbehaviour;
 
+use anyhow::Context;
 // Re-exports
 pub use coordsystem2dbuilder::CoordSystem2DBuilder;
 pub use coordsystem3dbuilder::CoordSystem3DBuilder;
@@ -95,12 +96,8 @@ impl TryFrom<u32> for ShapeBuilderType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "ShapeBuilderType try_from::<u32>() for value {} failed",
-                value
-            )
-        })
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("ShapeBuilderType try_from::<u32>() for value {value} failed"))
     }
 }
 
@@ -131,11 +128,8 @@ impl TryFrom<u32> for PenPathBuilderType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "PenPathBuilderType try_from::<u32>() for value {} failed",
-                value
-            )
+        num_traits::FromPrimitive::from_u32(value).with_context(|| {
+            format!("PenPathBuilderType try_from::<u32>() for value {value} failed",)
         })
     }
 }

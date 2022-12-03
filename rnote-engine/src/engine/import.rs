@@ -139,8 +139,8 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<StoreSnapshot> {
-                Ok(serde_json::from_value(rnote_file.store_snapshot)
-                    .context("serde_json::from_value() for rnote_file.store_snapshot failed")?)
+                serde_json::from_value(rnote_file.store_snapshot)
+                    .context("serde_json::from_value() for rnote_file.store_snapshot failed")
             };
 
             if let Err(_data) = store_snapshot_sender.send(result()) {
@@ -237,7 +237,7 @@ impl RnoteEngine {
                         }
                         Err(e) => {
                             log::error!(
-                                "from_xoppstroke() failed in open_from_xopp_bytes() with Err {}",
+                                "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
                                 e
                             );
                         }
@@ -252,7 +252,7 @@ impl RnoteEngine {
                         }
                         Err(e) => {
                             log::error!(
-                                "from_xoppimage() failed in open_from_xopp_bytes() with Err {}",
+                                "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
                                 e
                             );
                         }

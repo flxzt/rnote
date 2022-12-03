@@ -456,7 +456,7 @@ mod imp {
                         if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                             appwindow.canvas().set_output_file(None);
 
-                            log::error!("saving document failed with error `{}`", e);
+                            log::error!("saving document failed with error `{e:?}`");
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                         }
                     }));
@@ -911,8 +911,8 @@ impl RnoteAppWindow {
     /// Called to close the window
     pub fn close_force(&self) {
         // Saving all state
-        if let Err(err) = self.save_to_settings() {
-            log::error!("Failed to save appwindow to settings, with Err `{}`", &err);
+        if let Err(e) = self.save_to_settings() {
+            log::error!("Failed to save appwindow to settings, with Err: {e:?}");
         }
 
         // Closing the state tasks channel receiver
@@ -923,10 +923,7 @@ impl RnoteAppWindow {
             .tasks_tx()
             .unbounded_send(EngineTask::Quit)
         {
-            log::error!(
-                "failed to send StateTask::Quit on store tasks_tx, Err {}",
-                e
-            );
+            log::error!("failed to send StateTask::Quit on store tasks_tx, Err: {e:?}");
         }
 
         self.destroy();
@@ -1166,7 +1163,7 @@ impl RnoteAppWindow {
             glib::source::timeout_add_seconds_local(
                 Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@strong self as appwindow => @default-return glib::source::Continue(false), move || {
                     if let Err(e) = appwindow.save_engine_config() {
-                        log::error!("saving engine config in periodic task failed with Err `{e}`");
+                        log::error!("saving engine config in periodic task failed with Err: {e:?}");
                     }
 
                     glib::source::Continue(true)

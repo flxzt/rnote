@@ -223,7 +223,7 @@ impl PenBehaviour for Shaper {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             ) {
-                                log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                                log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err: {e:?}");
                             }
                         }
 
@@ -259,7 +259,7 @@ impl PenBehaviour for Shaper {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             ) {
-                                log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
+                                log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err: {e:?}");
                             }
                         }
 
@@ -294,7 +294,7 @@ impl DrawOnDocBehaviour for Shaper {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -304,7 +304,7 @@ impl DrawOnDocBehaviour for Shaper {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

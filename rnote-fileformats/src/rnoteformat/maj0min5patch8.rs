@@ -8,9 +8,11 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for Rnotefile {
     fn try_from(mut file: RnoteFileMaj0Min5Patch8) -> Result<Self, Self::Error> {
         for value in file.store_snapshot["stroke_components"]
             .as_array_mut()
-            .ok_or(anyhow::anyhow!("failure"))?
+            .ok_or_else(|| anyhow::anyhow!("failure"))?
         {
-            let stroke = value.get_mut("value").ok_or(anyhow::anyhow!("failure"))?;
+            let stroke = value
+                .get_mut("value")
+                .ok_or_else(|| anyhow::anyhow!("failure"))?;
 
             if let Some(brushstroke) = stroke.get_mut("brushstroke") {
                 let brushstroke = brushstroke
@@ -25,8 +27,8 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for Rnotefile {
 
                 let mut path_upgraded = serde_json::Map::new();
 
-                let mut seg_iter = path.0.into_iter();
-                if let Some(start) = seg_iter.next() {
+                let mut seg_iter = path.0.into_iter().peekable();
+                if let Some(start) = seg_iter.peek() {
                     let start = match start {
                         SegmentMaj0Min5Patch8::Dot { element } => element,
                         SegmentMaj0Min5Patch8::Line { start, .. } => start,
@@ -86,7 +88,7 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for Rnotefile {
 
                     path_upgraded.insert(
                         String::from("segments"),
-                        serde_json::Value::Array(segments_upgraded.into()),
+                        serde_json::Value::Array(segments_upgraded),
                     );
                 }
 

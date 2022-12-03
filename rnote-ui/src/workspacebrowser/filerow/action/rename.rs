@@ -92,13 +92,13 @@ fn connect_apply_button(
 
         if new_file.query_exists(None::<&gio::Cancellable>) {
             // Should have been caught earlier, but making sure
-            log::error!("file already exists");
+            log::error!("file already exists.");
         } else {
             // directory check must happen before moving the file or directory
             let is_directory = current_path.is_dir();
 
             if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
-                log::error!("rename file failed with Err {}", e);
+                log::error!("rename file failed with Err: {e:?}");
             } else if let Some(current_output_file) = appwindow.canvas().output_file() {
                 if is_directory {
                     // if the output file shares a sub-tree with the renamed directory, rename the directory in the output file's path too

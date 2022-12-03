@@ -68,7 +68,7 @@ impl StrokeBehaviour for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            log::error!("gen_images() in brushstroke failed with Err: {e:?}");
                             vec![]
                         }
                     }
@@ -90,7 +90,7 @@ impl StrokeBehaviour for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            log::error!("gen_images() in brushstroke failed with Err: {e:?}");
                             vec![]
                         }
                     }
@@ -115,7 +115,7 @@ impl StrokeBehaviour for BrushStroke {
                         ) {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!("gen_images() in brushstroke failed with Err {}", e)
+                                log::error!("gen_images() in brushstroke failed with Err: {e:?}")
                             }
                         }
 
@@ -146,7 +146,7 @@ impl StrokeBehaviour for BrushStroke {
                         ) {
                             Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!("gen_images() in brushstroke failed with Err {}", e)
+                                log::error!("gen_images() in brushstroke failed with Err: {e:?}")
                             }
                         }
 
@@ -169,7 +169,7 @@ impl StrokeBehaviour for BrushStroke {
 
 impl DrawBehaviour for BrushStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &self.style {
             Style::Smooth(options) => self.path.draw_composed(cx, options),
@@ -179,7 +179,7 @@ impl DrawBehaviour for BrushStroke {
             Style::Textured(options) => self.path.draw_composed(cx, options),
         };
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

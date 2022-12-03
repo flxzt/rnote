@@ -201,11 +201,11 @@ impl StrokeStore {
                             key,
                             images,
                         }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
                 }
                 Err(e) => {
-                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
+                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err: {e:?}");
                 }
             });
         }
@@ -277,11 +277,11 @@ impl StrokeStore {
                                 key,
                                 images,
                             }).unwrap_or_else(|e| {
-                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded() for stroke with key {key:?}, with Err, {e}");
                             });
                         }
                         Err(e) => {
-                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded() for stroke with key {:?}, with Err {}", key, e);
+                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded() for stroke with key {key:?}, with Err: {e:?}");
                         }
                     }
                 });
@@ -442,16 +442,15 @@ impl StrokeStore {
             .for_each(|key| {
                 if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         stroke
                             .draw(piet_cx, image_scale)
-                            .map_err(|e| anyhow::anyhow!("{}", e))?;
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         Ok(())
                     }() {
                         log::error!(
-                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err {}",
-                            e
+                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err: {e:?}"
                         );
                     }
                 }
@@ -473,16 +472,15 @@ impl StrokeStore {
             .for_each(|key| {
                 if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         stroke
                             .draw(piet_cx, image_scale)
-                            .map_err(|e| anyhow::anyhow!("{}", e))?;
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         Ok(())
                     }() {
                         log::error!(
-                            "drawing stroke in draw_selection_immediate_w_piet() failed with Err {}",
-                            e
+                            "drawing stroke in draw_selection_immediate_w_piet() failed with Err: {e:?}"
                         );
                     }
                 }

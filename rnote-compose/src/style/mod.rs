@@ -12,6 +12,7 @@ pub mod textured;
 use self::rough::RoughOptions;
 use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
+use anyhow::Context;
 pub use composer::Composer;
 
 use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
@@ -230,8 +231,7 @@ impl TryFrom<u32> for PressureCurve {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("PressureCurve try_from::<u32>() for value {} failed", value)
-        })
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("PressureCurve try_from::<u32>() for value {value} failed"))
     }
 }

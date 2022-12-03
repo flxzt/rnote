@@ -149,7 +149,7 @@ impl DrawBehaviour for Image {
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
     /// image_scale has no meaning here, as the image pixels are already provided
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
 
         let piet_image = cx
@@ -159,7 +159,7 @@ impl DrawBehaviour for Image {
                 &self.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         cx.transform(self.rect.transform.to_kurbo());
 
@@ -168,7 +168,7 @@ impl DrawBehaviour for Image {
             self.rect.cuboid.local_aabb().to_kurbo_rect(),
             piet::InterpolationMode::Bilinear,
         );
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -404,10 +404,7 @@ impl Image {
             }
 
             piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!(
-                    "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
-                    e
-                )
+                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
             })?;
         }
         // Surface needs to be flushed before accessing its data
@@ -417,8 +414,7 @@ impl Image {
                    .data()
                    .map_err(|e| {
                        anyhow::Error::msg(format!(
-                   "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err {}",
-                   e
+                   "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
                ))
                    })?
                    .to_vec();
@@ -459,10 +455,7 @@ impl Image {
             )
             .map_err(|e| {
                 anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({}, {}) failed in gen_image_from_svg_librsvg(), Err {}",
-                    width_scaled,
-                    height_scaled,
-                    e
+                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg_librsvg(), Err: {e:?}"
                 )
             })?;
 
@@ -494,8 +487,7 @@ impl Image {
                     )
                     .map_err(|e| {
                         anyhow::Error::msg(format!(
-                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err {}",
-                            e
+                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err: {e:?}"
                         ))
                     })?;
         }
@@ -506,8 +498,7 @@ impl Image {
                 .data()
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err {}",
-                        e
+                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err: {e:?}"
                     ))
                 })?
                 .to_vec();
@@ -562,10 +553,7 @@ impl Image {
             draw_func(&mut piet_cx)?;
 
             piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!(
-                    "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
-                    e
-                )
+                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
             })?;
         }
         // Surface needs to be flushed before accessing its data
@@ -575,8 +563,7 @@ impl Image {
                 .data()
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err {}",
-                e
+                "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
             ))
                 })?
                 .to_vec();
@@ -667,15 +654,14 @@ impl Svg {
 
             piet_cx.finish().map_err(|e| {
                 anyhow::anyhow!(
-                    "piet_cx.finish() failed in Svg gen_with_piet_cairo_backend() with Err {}",
-                    e
+                    "piet_cx.finish() failed in Svg gen_with_piet_cairo_backend() with Err: {e:?}"
                 )
             })?;
         }
 
         let file_content = svg_surface
             .finish_output_stream()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let svg_data = rnote_compose::utils::remove_xml_header(
             String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|_e| {
@@ -730,8 +716,7 @@ impl Svg {
                 )
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                    "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err {}",
-                    e
+                    "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err: {e:?}"
                 ))
                 })?;
         }

@@ -365,7 +365,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -430,7 +430,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -469,7 +469,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -508,7 +508,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };

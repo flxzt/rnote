@@ -121,7 +121,7 @@ impl DrawOnDocBehaviour for Typewriter {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         static OUTLINE_COLOR: Lazy<piet::Color> =
             Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
@@ -340,7 +340,7 @@ impl DrawOnDocBehaviour for Typewriter {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -627,7 +627,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err: {e:?}");
                 }
 
                 self.state = TypewriterState::Modifying {
@@ -667,7 +667,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err: {e:?}");
                 }
 
                 self.state = TypewriterState::Modifying {
@@ -779,7 +779,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() failed with Err: {e:?}");
                 }
 
                 widget_flags.redraw = true;
@@ -810,7 +810,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() failed with Err: {e:?}");
                 }
 
                 widget_flags.redraw = true;
@@ -848,7 +848,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() failed with Err: {e:?}");
                 }
 
                 widget_flags.redraw = true;

@@ -3,7 +3,6 @@ use ink_stroke_modeler_rs::{
 };
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
-use std::collections::VecDeque;
 use std::time::Instant;
 
 use crate::penhelpers::PenEvent;
@@ -15,8 +14,8 @@ use super::{Constraints, PenPathBuilderBehaviour, PenPathBuilderCreator, PenPath
 
 /// The pen path builder
 pub struct PenPathModeledBuilder {
-    /// Buffered elements, which are filled up by new pen events and used to try to build path segments
-    pub buffer: VecDeque<Element>,
+    /// Buffered elements, which are filled up by new pen events and used to build path segments
+    pub buffer: Vec<Element>,
     /// Holding the current prediction. Is recalculated after the modeler is updated with a new element
     prediction_buffer: Vec<Element>,
     start_time: Instant,
@@ -40,17 +39,13 @@ impl std::fmt::Debug for PenPathModeledBuilder {
 
 impl PenPathBuilderCreator for PenPathModeledBuilder {
     fn start(element: Element, now: Instant) -> Self {
-        let buffer = VecDeque::new();
-
-        let stroke_modeler = StrokeModeler::default();
-
         let mut builder = Self {
-            buffer,
+            buffer: vec![],
             prediction_buffer: vec![],
             start_time: now,
             last_element: element,
             last_element_time: now,
-            stroke_modeler,
+            stroke_modeler: StrokeModeler::default(),
         };
 
         builder.restart(element, now);
@@ -75,10 +70,10 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
 
         match event {
             PenEvent::Down { element, .. } => {
-                // kDown is already fed when instantiating the builder
+                // kDown is already fed into the modeler when the builder was instantiated (with start())
                 self.update_modeler_w_element(element, ModelerInputEventType::kMove, now);
 
-                match self.try_build_segments_during() {
+                match self.try_build_segments() {
                     Some(segments) => PenPathBuilderProgress::EmitContinue(segments),
                     None => PenPathBuilderProgress::InProgress,
                 }
@@ -86,9 +81,9 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
             PenEvent::Up { element, .. } => {
                 self.update_modeler_w_element(element, ModelerInputEventType::kUp, now);
 
-                let segment = self.try_build_segments_end();
+                let segments = self.build_segments_end();
 
-                PenPathBuilderProgress::Finished(segment)
+                PenPathBuilderProgress::Finished(segments)
             }
             PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {
                 PenPathBuilderProgress::InProgress
@@ -140,29 +135,24 @@ impl PenPathModeledBuilder {
     const MODELER_MIN_OUTPUT_RATE: f64 = 180.0;
     const MODELER_MAX_OUTPUTS_PER_CALL: i32 = 100;
 
-    fn try_build_segments_during(&mut self) -> Option<Vec<Segment>> {
-        if self.buffer.len() < 1 {
+    fn try_build_segments(&mut self) -> Option<Vec<Segment>> {
+        if self.buffer.is_empty() {
             return None;
         }
-        let mut segments = vec![];
 
-        while let Some(el) = self.buffer.pop_front() {
-            segments.push(Segment::LineTo { end: el });
-        }
-
-        Some(segments)
+        Some(
+            self.buffer
+                .drain(..)
+                .map(|el| Segment::LineTo { end: el })
+                .collect(),
+        )
     }
 
-    fn try_build_segments_end(&mut self) -> Vec<Segment> {
-        let segments = self
-            .buffer
-            .iter()
-            .map(|el| Segment::LineTo { end: *el })
-            .collect();
-
-        self.buffer.clear();
-
-        segments
+    fn build_segments_end(&mut self) -> Vec<Segment> {
+        self.buffer
+            .drain(..)
+            .map(|el| Segment::LineTo { end: el })
+            .collect()
     }
 
     fn update_modeler_w_element(
@@ -184,7 +174,7 @@ impl PenPathModeledBuilder {
         if n_steps > Self::MODELER_MAX_OUTPUTS_PER_CALL {
             // If the no of outputs the modeler would need to produce exceeds the configured maximum
             // ( because the time delta between the last elements is too large ), it needs to be restarted.
-            log::info!("penpathmodeledbuilder: update_modeler_w_element(): n_steps exceeds configured max outputs per call, restarting modeler");
+            log::debug!("penpathmodeledbuilder: update_modeler_w_element(): n_steps exceeds configured max outputs per call, restarting modeler");
 
             self.restart(element, now);
         }

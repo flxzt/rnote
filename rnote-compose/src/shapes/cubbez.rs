@@ -96,7 +96,7 @@ impl CubicBezier {
             end,
         };
 
-        // returnsing None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
+        // returning None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
         if (cubbez.end - cubbez.start).magnitude() == 0.0 {
             return None;
         }

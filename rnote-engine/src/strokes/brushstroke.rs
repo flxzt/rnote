@@ -264,7 +264,7 @@ impl BrushStroke {
 
     pub fn gen_image_for_last_segments(
         &self,
-        no_last_segments: usize,
+        n_last_segments: usize,
         image_scale: f64,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let image = match &self.style {
@@ -274,14 +274,14 @@ impl BrushStroke {
                 let start_el = self
                     .path
                     .segments
-                    .get(path_len.saturating_sub(no_last_segments).saturating_sub(1))
+                    .get(path_len.saturating_sub(n_last_segments).saturating_sub(1))
                     .map(|s| s.end())
-                    .unwrap_or_else(|| self.path.start);
+                    .unwrap_or(self.path.start);
 
                 let range_path = PenPath::new_w_segments(
                     start_el,
-                    self.path.segments[path_len.saturating_sub(no_last_segments)..]
-                        .into_iter()
+                    self.path.segments[path_len.saturating_sub(n_last_segments)..]
+                        .iter()
                         .copied(),
                 );
 
@@ -301,21 +301,21 @@ impl BrushStroke {
                 let mut options = options.clone();
                 let path_len = self.path.segments.len();
 
-                (0..path_len.saturating_sub(no_last_segments)).for_each(|_| {
+                (0..path_len.saturating_sub(n_last_segments)).for_each(|_| {
                     options.seed = options.seed.map(rnote_compose::utils::seed_advance)
                 });
 
                 let start_el = self
                     .path
                     .segments
-                    .get(path_len.saturating_sub(no_last_segments).saturating_sub(1))
+                    .get(path_len.saturating_sub(n_last_segments).saturating_sub(1))
                     .map(|s| s.end())
-                    .unwrap_or_else(|| self.path.start);
+                    .unwrap_or(self.path.start);
 
                 let range_path = PenPath::new_w_segments(
                     start_el,
-                    self.path.segments[path_len.saturating_sub(no_last_segments)..]
-                        .into_iter()
+                    self.path.segments[path_len.saturating_sub(n_last_segments)..]
+                        .iter()
                         .copied(),
                 );
 

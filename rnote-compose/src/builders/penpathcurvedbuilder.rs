@@ -116,7 +116,7 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
 
         let pen_path = match &self.state {
             PenPathCurvedBuilderState::Start => {
-                PenPath::try_from_elements(self.buffer[self.i..].into_iter().copied())
+                PenPath::try_from_elements(self.buffer[self.i..].iter().copied())
             }
             // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
             PenPathCurvedBuilderState::During => {
@@ -134,7 +134,7 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
 
 impl PenPathCurvedBuilder {
     fn try_build_segments_start(&mut self) -> Option<Vec<Segment>> {
-        if self.buffer.len().saturating_sub(1) >= self.i + 1 {
+        if self.buffer.len().saturating_sub(1) > self.i {
             let segment = Segment::LineTo {
                 end: self.buffer[self.i],
             };

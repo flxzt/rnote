@@ -193,7 +193,6 @@ impl PenBehaviour for Brush {
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
                     widget_flags.merge_with_other(engine_view.store.record());
-
                     Self::start_audio(style, engine_view.audioplayer);
 
                     // A new seed for a new brush stroke
@@ -395,7 +394,16 @@ impl DrawOnDocBehaviour for Brush {
                         // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
                     }
                     BrushStyle::Solid | BrushStyle::Textured => {
-                        let style = self.style_for_current_options();
+                        let mut style = self.style_for_current_options();
+
+                        // Change color for debugging
+                        match &mut style {
+                            Style::Smooth(options) => {
+                                options.stroke_color = Some(rnote_compose::Color::RED)
+                            }
+                            Style::Rough(_) | Style::Textured(_) => {}
+                        }
+
                         path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
                     }
                 }

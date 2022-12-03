@@ -142,13 +142,13 @@ impl PenPath {
         self.segments.extend(other.segments);
     }
 
-    /// Checks whether a bounds collides with the path. If it does, it returns the colliding segment
+    /// Checks whether a bounds collides with the path. If it does, it returns the index of the colliding segment
     pub fn hittest(&self, hit: &AABB) -> Option<usize> {
         for (i, seg_hitboxes) in self.hitboxes_priv() {
-            if seg_hitboxes.into_iter().any(|hitbox| {
-                // The hitboxes of the individual segments need to be loosened with the style stroke width
-                hitbox.intersects(&hit)
-            }) {
+            if seg_hitboxes
+                .into_iter()
+                .any(|hitbox| hitbox.intersects(hit))
+            {
                 return Some(i);
             }
         }

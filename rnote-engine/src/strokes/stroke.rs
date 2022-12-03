@@ -244,9 +244,7 @@ impl Stroke {
                 .zip(widths.into_iter())
                 .map(|(pos, pressure)| Element::new(pos + offset, pressure)),
         )
-        .ok_or(anyhow::anyhow!(
-            "from_xoppstroke() failed, failed to create pen path"
-        ))?;
+        .ok_or_else(|| anyhow::anyhow!("from_xoppstroke() failed, failed to create pen path"))?;
 
         let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options));
 

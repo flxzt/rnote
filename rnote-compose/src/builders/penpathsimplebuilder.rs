@@ -50,9 +50,10 @@ impl PenPathBuilderBehaviour for PenPathSimpleBuilder {
             }
             PenEvent::Up { element, .. } => {
                 self.buffer.push_back(element);
-                let segments = self.build_segments();
 
+                let segments = self.build_segments();
                 self.reset();
+
                 PenPathBuilderProgress::Finished(segments)
             }
             PenEvent::Proximity { .. } | PenEvent::KeyPressed { .. } | PenEvent::Text { .. } => {

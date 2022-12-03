@@ -294,7 +294,7 @@ impl StrokeStore {
         &mut self,
         tasks_tx: EngineTaskSender,
         key: StrokeKey,
-        n_segments: usize,
+        n_last_segments: usize,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
@@ -305,10 +305,9 @@ impl StrokeStore {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
                     if let Some(image) =
-                        brushstroke.gen_image_for_last_segments(n_segments, image_scale)?
+                        brushstroke.gen_image_for_last_segments(n_last_segments, image_scale)?
                     {
-                        let mut rendernodes =
-                            render::Image::images_to_rendernodes(&[image.clone()])?;
+                        let mut rendernodes = render::Image::images_to_rendernodes([&image])?;
 
                         render_comp.rendernodes.append(&mut rendernodes);
                         render_comp.images.push(image);

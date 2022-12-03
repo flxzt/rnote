@@ -331,7 +331,9 @@ impl Image {
         Ok(transform_node)
     }
 
-    pub fn images_to_rendernodes(images: &[Self]) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
+    pub fn images_to_rendernodes<'a>(
+        images: impl IntoIterator<Item = &'a Self>,
+    ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
         let mut rendernodes = vec![];
 
         for image in images {

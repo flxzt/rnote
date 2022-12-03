@@ -6,8 +6,6 @@ pub use element::Element;
 use kurbo::Shape;
 pub use segment::Segment;
 
-use std::collections::VecDeque;
-
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -24,7 +22,7 @@ pub struct PenPath {
     pub start: Element,
     /// The segments
     #[serde(rename = "segments")]
-    pub segments: VecDeque<Segment>,
+    pub segments: Vec<Segment>,
 }
 
 impl ShapeBehaviour for PenPath {
@@ -67,62 +65,10 @@ impl ShapeBehaviour for PenPath {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        let mut hitboxes = Vec::with_capacity(self.segments.len());
-
-        let mut prev = self.start;
-        for seg in self.segments.iter() {
-            match seg {
-                Segment::LineTo { end } => {
-                    let n_splits = hitbox_elems_for_segment_len((end.pos - prev.pos).magnitude());
-                    let line = Line {
-                        start: prev.pos,
-                        end: end.pos,
-                    };
-
-                    hitboxes.extend(line.split(n_splits).into_iter().map(|line| line.bounds()));
-                    prev = *end;
-                }
-                Segment::QuadBezTo { cp, end } => {
-                    let quadbez = QuadraticBezier {
-                        start: prev.pos,
-                        cp: *cp,
-                        end: end.pos,
-                    };
-
-                    // TODO: basing this off of the actual curve len
-                    let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.1));
-
-                    hitboxes.extend(
-                        quadbez
-                            .approx_with_lines(n_splits)
-                            .into_iter()
-                            .map(|line| line.bounds()),
-                    );
-                    prev = *end;
-                }
-                Segment::CubBezTo { cp1, cp2, end } => {
-                    let cubbez = CubicBezier {
-                        start: prev.pos,
-                        cp1: *cp1,
-                        cp2: *cp2,
-                        end: end.pos,
-                    };
-
-                    // TODO: basing this off of the actual curve len
-                    let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.1));
-
-                    hitboxes.extend(
-                        cubbez
-                            .approx_with_lines(n_splits)
-                            .into_iter()
-                            .map(|line| line.bounds()),
-                    );
-                    prev = *end;
-                }
-            }
-        }
-
-        hitboxes
+        self.hitboxes_priv()
+            .into_iter()
+            .flat_map(|(_, hb)| hb)
+            .collect()
     }
 }
 
@@ -154,7 +100,7 @@ impl PenPath {
     pub fn new(start: Element) -> Self {
         Self {
             start,
-            segments: VecDeque::default(),
+            segments: Vec::default(),
         }
     }
 
@@ -186,34 +132,97 @@ impl PenPath {
         let start = elements_iter.next()?;
         let segments = elements_iter
             .map(|el| Segment::LineTo { end: el })
-            .collect::<VecDeque<Segment>>();
+            .collect::<Vec<Segment>>();
 
         Some(Self { start, segments })
-    }
-
-    /// Push front segment
-    pub fn push_front_segment(&mut self, segment: Segment) {
-        self.segments.push_front(segment);
-    }
-
-    /// Push back segment
-    pub fn push_back_segment(&mut self, segment: Segment) {
-        self.segments.push_back(segment);
-    }
-
-    /// Pop front segment
-    pub fn pop_front_segment(&mut self) -> Option<Segment> {
-        self.segments.pop_front()
-    }
-
-    /// Pop back segment
-    pub fn pop_back_segment(&mut self) -> Option<Segment> {
-        self.segments.pop_back()
     }
 
     /// Extends the pen path with the segments of the other.
     pub fn extend_w_other(&mut self, other: Self) {
         self.segments.extend(other.segments);
+    }
+
+    /// Checks whether a bounds collides with the path. If it does, it returns the colliding segment
+    pub fn hittest(&self, hit: &AABB) -> Option<usize> {
+        for (i, seg_hitboxes) in self.hitboxes_priv() {
+            if seg_hitboxes.into_iter().any(|hitbox| {
+                // The hitboxes of the individual segments need to be loosened with the style stroke width
+                hitbox.intersects(&hit)
+            }) {
+                return Some(i);
+            }
+        }
+
+        None
+    }
+
+    fn hitboxes_priv(&self) -> Vec<(usize, Vec<AABB>)> {
+        let mut hitboxes = Vec::with_capacity(self.segments.len());
+
+        let mut prev = self.start;
+        for (i, seg) in self.segments.iter().enumerate() {
+            match seg {
+                Segment::LineTo { end } => {
+                    let n_splits = hitbox_elems_for_segment_len((end.pos - prev.pos).magnitude());
+                    let line = Line {
+                        start: prev.pos,
+                        end: end.pos,
+                    };
+
+                    hitboxes.push((
+                        i,
+                        line.split(n_splits)
+                            .into_iter()
+                            .map(|line| line.bounds())
+                            .collect(),
+                    ));
+                    prev = *end;
+                }
+                Segment::QuadBezTo { cp, end } => {
+                    let quadbez = QuadraticBezier {
+                        start: prev.pos,
+                        cp: *cp,
+                        end: end.pos,
+                    };
+
+                    // TODO: basing this off of the actual curve len
+                    let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.1));
+
+                    hitboxes.push((
+                        i,
+                        quadbez
+                            .approx_with_lines(n_splits)
+                            .into_iter()
+                            .map(|line| line.bounds())
+                            .collect(),
+                    ));
+                    prev = *end;
+                }
+                Segment::CubBezTo { cp1, cp2, end } => {
+                    let cubbez = CubicBezier {
+                        start: prev.pos,
+                        cp1: *cp1,
+                        cp2: *cp2,
+                        end: end.pos,
+                    };
+
+                    // TODO: basing this off of the actual curve len
+                    let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.1));
+
+                    hitboxes.push((
+                        i,
+                        cubbez
+                            .approx_with_lines(n_splits)
+                            .into_iter()
+                            .map(|line| line.bounds())
+                            .collect(),
+                    ));
+                    prev = *end;
+                }
+            }
+        }
+
+        hitboxes
     }
 }
 

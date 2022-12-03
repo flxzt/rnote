@@ -218,10 +218,11 @@ impl BrushStroke {
     pub fn new(start: Element, style: Style) -> Self {
         let path = PenPath::new(start);
 
-        Self::from_penpath(path, style).unwrap()
+        Self::from_penpath(path, style)
     }
 
-    pub fn from_penpath(path: PenPath, style: Style) -> Option<Self> {
+    /// New from pen path.
+    pub fn from_penpath(path: PenPath, style: Style) -> Self {
         let mut new_brushstroke = Self {
             path,
             style,
@@ -229,11 +230,11 @@ impl BrushStroke {
         };
         new_brushstroke.update_geometry();
 
-        Some(new_brushstroke)
+        new_brushstroke
     }
 
     pub fn push_segment(&mut self, segment: Segment) {
-        self.path.push_back_segment(segment);
+        self.path.segments.push(segment);
     }
 
     pub fn extend_w_segments(&mut self, segments: impl IntoIterator<Item = Segment>) {
@@ -279,9 +280,7 @@ impl BrushStroke {
 
                 let range_path = PenPath::new_w_segments(
                     start_el,
-                    self.path
-                        .segments
-                        .range(path_len.saturating_sub(no_last_segments)..)
+                    self.path.segments[path_len.saturating_sub(no_last_segments)..]
                         .into_iter()
                         .copied(),
                 );
@@ -315,9 +314,7 @@ impl BrushStroke {
 
                 let range_path = PenPath::new_w_segments(
                     start_el,
-                    self.path
-                        .segments
-                        .range(path_len.saturating_sub(no_last_segments)..)
+                    self.path.segments[path_len.saturating_sub(no_last_segments)..]
                         .into_iter()
                         .copied(),
                 );

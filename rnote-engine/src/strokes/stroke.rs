@@ -248,10 +248,7 @@ impl Stroke {
             "from_xoppstroke() failed, failed to create pen path"
         ))?;
 
-        let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options))
-            .ok_or_else(|| {
-                anyhow::anyhow!("creating brushstroke from penpath in from_xoppstroke() failed.")
-            })?;
+        let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options));
 
         Ok((Stroke::BrushStroke(brushstroke), layer))
     }

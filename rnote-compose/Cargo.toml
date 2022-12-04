@@ -12,8 +12,6 @@ rust-version = "1.65"
 
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", branch = "main" }
 #ink-stroke-modeler-rs = { path = "../ink-stroke-modeler-rs" }
-roughr = { git = "https://github.com/orhanbalci/rough-rs", branch = "main" }
-rough_piet = { git = "https://github.com/orhanbalci/rough-rs", branch = "main" }
 
 log = "0.4.16"
 anyhow = "1.0"
@@ -32,5 +30,7 @@ piet-cairo = "0.6"
 kurbo = "0.9.0"
 euclid = "0.22"
 svg = "0.10.0"
+roughr = "0.4.0"
+rough_piet = "0.4.0"
 
 [dev-dependencies]

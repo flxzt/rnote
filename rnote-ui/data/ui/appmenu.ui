@@ -39,7 +39,7 @@
             </item>
           </submenu>
           <item>
-            <attribute name="label" translatable="yes">_Developer mode</attribute>
+            <attribute name="label" translatable="yes">De_veloper mode</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.devel-mode</attribute>
           </item>
@@ -49,7 +49,7 @@
             <attribute name="hidden-when">action-disabled</attribute>
             <section>
               <item>
-                <attribute name="label" translatable="yes">_Visual debugging</attribute>
+                <attribute name="label" translatable="yes">Visual _debugging</attribute>
                 <attribute name="action">win.visual-debug</attribute>
               </item>
               <item>
@@ -87,7 +87,7 @@
             <attribute name="action">win.print-doc</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">_Paste clipboard</attribute>
+            <attribute name="label" translatable="yes">Paste _clipboard</attribute>
             <attribute name="action">win.clipboard-paste</attribute>
           </item>
           <item>
@@ -124,7 +124,7 @@
             <attribute name="action">win.donate</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">_About Rnote</attribute>
+            <attribute name="label" translatable="yes">A_bout Rnote</attribute>
             <attribute name="action">win.about</attribute>
           </item>
         </section>

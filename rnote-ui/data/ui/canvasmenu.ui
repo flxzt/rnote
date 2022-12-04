@@ -51,7 +51,7 @@
             <attribute name="action">win.touch-drawing</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">P_en sounds</attribute>
+            <attribute name="label" translatable="yes">_Pen sounds</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.pen-sounds</attribute>
           </item>

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-11-30 22:35+0000\n"
+"PO-Revision-Date: 2022-12-04 15:59+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -81,20 +81,16 @@ msgid "Use _dark colors"
 msgstr "_Donker thema gebruiken"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
-msgstr "Ontwikkelaarsmo_dus"
+msgstr "Ont_wikkelaarsmodus"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
 msgstr "Ontwikkelaars_menu"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "_Visuele foutopsporing"
+msgstr "Visuele fouto_psporing"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -125,11 +121,8 @@ msgid "_Print"
 msgstr "Afdru_kken"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "Klembord plakken"
+msgstr "_Klembord plakken"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -164,8 +157,6 @@ msgid "_Donate 💝"
 msgstr "_Doneren 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
 msgstr "_Over Rnote"
 
@@ -276,10 +267,8 @@ msgid "Draw with _touch input"
 msgstr "Tekenen met _touchscreen/pen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
-msgstr "P_engeluiden"
+msgstr "_Pengeluiden"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"

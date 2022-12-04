@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 14:17+0100\n"
+"POT-Creation-Date: 2022-12-04 14:39+0100\n"
 "PO-Revision-Date: 2022-11-20 18:53+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -81,7 +81,9 @@ msgid "Use _dark colors"
 msgstr "_Koyu renkler kullan"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-msgid "_Developer mode"
+#, fuzzy
+#| msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "_Geliştirici kipi"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -89,7 +91,9 @@ msgid "Developer _menu"
 msgstr "Geliştirici _menüsü"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-msgid "_Visual debugging"
+#, fuzzy
+#| msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "_Görsel hata ayıklama"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -121,8 +125,11 @@ msgid "_Print"
 msgstr "_Yazdır"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-msgid "_Paste clipboard"
-msgstr "_Panodan yapıştır"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard"
+msgid "Paste _clipboard"
+msgstr "Panodan yapıştır"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -157,7 +164,9 @@ msgid "_Donate 💝"
 msgstr "_Bağış yap 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-msgid "_About Rnote"
+#, fuzzy
+#| msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "Rnote _Hakkında"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -267,7 +276,9 @@ msgid "Draw with _touch input"
 msgstr "_Dokunmatik girişle çiz"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-msgid "P_en sounds"
+#, fuzzy
+#| msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "_Kalem sesleri"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -324,7 +335,7 @@ msgstr "İptal Et"
 msgid "Clear"
 msgstr "Temizle"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:898
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
 msgid "New Document"
 msgstr "Yeni Belge"
 
@@ -665,7 +676,7 @@ msgstr "İkizle"
 msgid "New document"
 msgstr "Yeni belge"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:900
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
 msgid "Draft"
 msgstr "Taslak"
 
@@ -1189,34 +1200,26 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Yoğunluk, 10x10 alan başına nokta miktarıdır"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Darbe nokta yarıçapları"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "Dokulu darbedeki tek tek noktaların yarıçapları"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
 msgstr "Darbe noktaları konum dağılımı"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "Nokta konum olasılık dağılımı seç"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr "Birbiçimli"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 msgid "Normal"
 msgstr "Normal"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr "Katsayısal"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr "Ters Katsayısal"
 
@@ -1472,7 +1475,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:461
+#: rnote-ui/src/appwindow/mod.rs:460
 #: rnote-ui/src/appwindow/appwindowactions.rs:642
 msgid "Saving document failed."
 msgstr "Belge kaydedilemedi."
@@ -1533,11 +1536,11 @@ msgstr "Değiştirilme tarihi:"
 msgid "Pages:"
 msgstr "Sayfalar:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
 msgid "Opening PDF file failed."
 msgstr "PDF dosyası açılamadı."
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ dosyası açılamadı."
 
@@ -1613,35 +1616,35 @@ msgstr "Motor ayarı dışa aktarılamadı."
 msgid "Exported engine config successfully."
 msgstr "Motor ayarı dışa aktarıldı."
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:75
 msgid "Opening .rnote file failed."
 msgstr ".rnote dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:93
 msgid "Opening vector image file failed."
 msgstr "Vektör görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:111
 msgid "Opening bitmap image file failed."
 msgstr "Biteşlem görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr "Dosya açılamadı: Desteklenmeyen dosya türü."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:758
 msgid "Printed document successfully"
 msgstr "Belge yazdırıldı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:767
 msgid "Printing document failed"
 msgstr "Belge yazdırılamadı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 msgid "Export selection failed, nothing selected."
 msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi."
 
@@ -1654,6 +1657,15 @@ msgstr "Dosya adı:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "_Panodan yapıştır"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Darbe nokta yarıçapları"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "Dokulu darbedeki tek tek noktaların yarıçapları"
 
 #~ msgid "Roughness"
 #~ msgstr "Kabalık"

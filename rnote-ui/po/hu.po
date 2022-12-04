@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 14:17+0100\n"
+"POT-Creation-Date: 2022-12-04 14:39+0100\n"
 "PO-Revision-Date: 2022-12-01 11:29+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -82,7 +82,9 @@ msgid "Use _dark colors"
 msgstr "_Sötét színek használata"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-msgid "_Developer mode"
+#, fuzzy
+#| msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "_Fejlesztői mód"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -90,7 +92,9 @@ msgid "Developer _menu"
 msgstr "Fejlesztői _menü"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-msgid "_Visual debugging"
+#, fuzzy
+#| msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "_Látásható hibakeresés"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -122,8 +126,11 @@ msgid "_Print"
 msgstr "_Nyomtatás"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-msgid "_Paste clipboard"
-msgstr "Vágólap _beillesztése"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard"
+msgid "Paste _clipboard"
+msgstr "Vágólap beillesztése"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -158,7 +165,9 @@ msgid "_Donate 💝"
 msgstr "_Hozzájárulás 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-msgid "_About Rnote"
+#, fuzzy
+#| msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "_A Rnote névjegye"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -268,7 +277,9 @@ msgid "Draw with _touch input"
 msgstr "Rajzolás _érintéses bemenettel"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-msgid "P_en sounds"
+#, fuzzy
+#| msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "_Ceruza hangok"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -323,7 +334,7 @@ msgstr "Mégse"
 msgid "Clear"
 msgstr "Törlés"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:898
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
 msgid "New Document"
 msgstr "Új dokumentum"
 
@@ -661,7 +672,7 @@ msgstr "Megkettőzés"
 msgid "New document"
 msgstr "Új dokumentum"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:900
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
 msgid "Draft"
 msgstr "Piszkozat"
 
@@ -1181,34 +1192,26 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "A sűrűség a 10x10 területre jutó pontok mennyisége"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Körvonalpontok sugarai"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "Az egyes pontok sugarai a textúrázott vonásban"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
 msgstr "A körvonalpontok pozícióeloszlása"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "Pontok pozíció valószínűségi eloszlásának kiválasztása"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr "Egységes"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 msgid "Normal"
 msgstr "Normál"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr "Exponenciális"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr "Fordított exponenciális"
 
@@ -1453,7 +1456,7 @@ msgstr "Szobonya <szobonya.david@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:461
+#: rnote-ui/src/appwindow/mod.rs:460
 #: rnote-ui/src/appwindow/appwindowactions.rs:642
 msgid "Saving document failed."
 msgstr "A dokumentum mentése sikertelen."
@@ -1514,11 +1517,11 @@ msgstr "Módosítás dátuma:"
 msgid "Pages:"
 msgstr "Oldalak:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
 msgid "Opening PDF file failed."
 msgstr "A PDF fájl megnyitása sikertelen."
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
 msgid "Opening Xournal++ file failed."
 msgstr "A Xournal++ fájl megnyitása sikertelen."
 
@@ -1594,35 +1597,35 @@ msgstr "A motor konfiguráció exportálása sikertelen."
 msgid "Exported engine config successfully."
 msgstr "A motor konfigurációja sikeresen exportálva."
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:75
 msgid "Opening .rnote file failed."
 msgstr "A .rnote fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:93
 msgid "Opening vector image file failed."
 msgstr "A vektoros képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:111
 msgid "Opening bitmap image file failed."
 msgstr "A pontképes képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "Hiba: Mappa fájlként való megnyitása"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:758
 msgid "Printed document successfully"
 msgstr "A dokumentum sikeresen ki lett nyomtatva"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:767
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 msgid "Export selection failed, nothing selected."
 msgstr "A kijelölés exportálása sikertelen, nincs kijelölve semmi."
 
@@ -1633,6 +1636,15 @@ msgstr "Mappanév"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr "Új mappa"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "Vágólap _beillesztése"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Körvonalpontok sugarai"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "Az egyes pontok sugarai a textúrázott vonásban"
 
 #~ msgid "Roughness"
 #~ msgstr "Durvaság"

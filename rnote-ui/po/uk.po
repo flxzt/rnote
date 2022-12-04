@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 14:17+0100\n"
+"POT-Creation-Date: 2022-12-04 14:39+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -85,7 +85,7 @@ msgstr "Використовувати темні кольори"
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
 #| msgid "Developer mode"
-msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "Режим розробника"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -97,7 +97,7 @@ msgstr "Меню розробника"
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
 #| msgid "Visual debugging"
-msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "Візуальне налагодження"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -142,7 +142,7 @@ msgstr "Друк"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
-msgid "_Paste clipboard"
+msgid "Paste _clipboard"
 msgstr "Вставити буфер обміну як виділення"
 
 #: rnote-ui/data/ui/appmenu.ui:94
@@ -195,7 +195,7 @@ msgstr "Підтримати 💝"
 #: rnote-ui/data/ui/appmenu.ui:127
 #, fuzzy
 #| msgid "About Rnote"
-msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "Про Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -322,7 +322,7 @@ msgstr "Малюйте за допомогою сенсорного введен
 #: rnote-ui/data/ui/canvasmenu.ui:54
 #, fuzzy
 #| msgid "Pen sounds"
-msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "Звуки пера"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -383,7 +383,7 @@ msgstr "Скасувати"
 msgid "Clear"
 msgstr "Очистити"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:898
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
 #, fuzzy
 msgid "New Document"
 msgstr "Новий документ"
@@ -764,7 +764,7 @@ msgstr "Дублікат виділення"
 msgid "New document"
 msgstr "Новий документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:900
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
 msgid "Draft"
 msgstr "Чернетка"
 
@@ -1309,36 +1309,28 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Щільність - це кількість точок на площу 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Радіуси точок штрихів"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 #, fuzzy
 msgid "Stroke dots position distribution"
 msgstr "Виберіть розподіл ймовірності розташування точок"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "Виберіть розподіл ймовірності розташування точок"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 #, fuzzy
 msgid "Normal"
 msgstr "Формат"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr ""
 
@@ -1596,7 +1588,7 @@ msgstr "Володимир Лісівка <vlisivka@gmail.com>, https://linux.or
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:461
+#: rnote-ui/src/appwindow/mod.rs:460
 #: rnote-ui/src/appwindow/appwindowactions.rs:642
 msgid "Saving document failed."
 msgstr ""
@@ -1659,11 +1651,11 @@ msgstr ""
 msgid "Pages:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
 msgid "Opening PDF file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
 #, fuzzy
 #| msgid "Import file"
 msgid "Opening Xournal++ file failed."
@@ -1752,35 +1744,35 @@ msgstr ""
 msgid "Exported engine config successfully."
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:75
 msgid "Opening .rnote file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:93
 msgid "Opening vector image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:111
 msgid "Opening bitmap image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:758
 msgid "Printed document successfully"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:767
 msgid "Printing document failed"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 #, fuzzy
 msgid "Export selection failed, nothing selected."
 msgstr "Експортувати вибране як SVG"
@@ -1792,6 +1784,13 @@ msgstr ""
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~ msgid "_Paste clipboard"
+#~ msgstr "Вставити буфер обміну як виділення"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Радіуси точок штрихів"
 
 #~ msgid "Roughness"
 #~ msgstr "Грубість"

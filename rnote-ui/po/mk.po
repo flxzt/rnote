@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 14:17+0100\n"
+"POT-Creation-Date: 2022-12-04 14:39+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -92,7 +92,7 @@ msgstr "Користи темни бои"
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
 #| msgid "Developer mode"
-msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "Развоен модус"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -104,7 +104,7 @@ msgstr "Развојно мени"
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
 #| msgid "Visual debugging"
-msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "Визуелно одстранување на проблеми"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -151,7 +151,7 @@ msgstr "Печати"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Paste clipboard"
-msgid "_Paste clipboard"
+msgid "Paste _clipboard"
 msgstr "Налепи од привремената меморија"
 
 #: rnote-ui/data/ui/appmenu.ui:94
@@ -205,7 +205,7 @@ msgstr "Донирај 💝"
 #: rnote-ui/data/ui/appmenu.ui:127
 #, fuzzy
 #| msgid "About Rnote"
-msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "За Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -329,7 +329,7 @@ msgstr "Цртај со допир"
 #: rnote-ui/data/ui/canvasmenu.ui:54
 #, fuzzy
 #| msgid "Pen sounds"
-msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "Звуци на пенкалото"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -388,7 +388,7 @@ msgstr "Одкажи"
 msgid "Clear"
 msgstr "Избриши"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:898
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
 msgid "New Document"
 msgstr "Нов документ"
 
@@ -759,7 +759,7 @@ msgstr "Удвои"
 msgid "New document"
 msgstr "Нов документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:900
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
 msgid "Draft"
 msgstr "Урнек"
 
@@ -1283,34 +1283,26 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Густината е бројот на точки на површина од 10х10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Радиус на точките"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "Радиусот на поединечните точки во текстурираната црта"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
 msgstr "Позиционен распоред на цртежните точки"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "Одбери веројатносен распоред на позицијата на точките"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr "Воедначено"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 msgid "Normal"
 msgstr "Нормално"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr "Експоненцијално"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr "Обратно експоненцијално"
 
@@ -1564,7 +1556,7 @@ msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:461
+#: rnote-ui/src/appwindow/mod.rs:460
 #: rnote-ui/src/appwindow/appwindowactions.rs:642
 msgid "Saving document failed."
 msgstr "Зачувувањето на документот беше неуспешно."
@@ -1627,11 +1619,11 @@ msgstr "Датум на промена:"
 msgid "Pages:"
 msgstr "Страници:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
 msgid "Opening PDF file failed."
 msgstr "Отворањето на PDF-от беше неуспешно."
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
@@ -1729,35 +1721,35 @@ msgstr "Неуспешно вадење на внатрешните нагоду
 msgid "Exported engine config successfully."
 msgstr "Успешно вадење на внатрешните нагодувања."
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:75
 msgid "Opening .rnote file failed."
 msgstr "Неуспешно отворање на .rnote датотеката."
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:93
 msgid "Opening vector image file failed."
 msgstr "Неуспешно отворање на векторската датотека."
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:111
 msgid "Opening bitmap image file failed."
 msgstr "Неуспешно отворање на сликата."
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "Грешка: Папка не може да се отвора како датотека"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr "Неуспех: Неподдржан датотечен вид."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:758
 msgid "Printed document successfully"
 msgstr "Документот беше успешно испечатен"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:767
 msgid "Printing document failed"
 msgstr "Печатењето на документот беше неуспешно"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
@@ -1772,6 +1764,18 @@ msgstr "Име на датотека:"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Paste clipboard"
+#~ msgid "_Paste clipboard"
+#~ msgstr "Налепи од привремената меморија"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Радиус на точките"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "Радиусот на поединечните точки во текстурираната црта"
 
 #~ msgid "Roughness"
 #~ msgstr "Грубост"

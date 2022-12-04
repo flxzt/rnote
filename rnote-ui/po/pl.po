@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 14:17+0100\n"
+"POT-Creation-Date: 2022-12-04 14:39+0100\n"
 "PO-Revision-Date: 2022-11-30 09:31+0000\n"
 "Last-Translator: Larix_45 <milarczek2004@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
@@ -89,7 +89,7 @@ msgstr "Używaj ciemnych kolorów"
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
 #| msgid "Developer mode"
-msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "Tryb programisty"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -101,7 +101,7 @@ msgstr "Menu programisty"
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
 #| msgid "Visual debugging"
-msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "Debugowanie wizualne"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -146,8 +146,11 @@ msgid "_Print"
 msgstr "Drukuj"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-msgid "_Paste clipboard"
-msgstr "Wklej ze schowka"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard"
+msgid "Paste _clipboard"
+msgstr "Wklej ze schowek"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 #, fuzzy
@@ -196,7 +199,7 @@ msgstr "Przekaż darowiznę 💝"
 #: rnote-ui/data/ui/appmenu.ui:127
 #, fuzzy
 #| msgid "About Rnote"
-msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "O Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -319,7 +322,7 @@ msgstr "Rysuj za pomocą dotyku"
 #: rnote-ui/data/ui/canvasmenu.ui:54
 #, fuzzy
 #| msgid "Pen sounds"
-msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "Dźwięki pióra"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -378,7 +381,7 @@ msgstr "Anuluj"
 msgid "Clear"
 msgstr "Wyczyść"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:898
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
 msgid "New Document"
 msgstr "Nowy dokument"
 
@@ -744,7 +747,7 @@ msgstr "Duplikuj"
 msgid "New document"
 msgstr "Nowy dokument"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:900
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
 msgid "Draft"
 msgstr "Szkic"
 
@@ -1269,34 +1272,26 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Gęstość to liczba kropek na pole 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Promień kropek pociągnięcia pędzlem"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "Promienie pojedynczych kropek w pociągnięciu pędzla z teksturą"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
 msgstr "Rozłożenie kropek pociągnięcia pędzla"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "Wybierz prawdopodobieństwo rozłożenia kropek"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr "Jednolity"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 msgid "Normal"
 msgstr "Normalna"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr "Wykładnicza"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr "Odwrócona Wykładnicza"
 
@@ -1552,7 +1547,7 @@ msgstr "podziękowania-dla-tłumaczy"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:461
+#: rnote-ui/src/appwindow/mod.rs:460
 #: rnote-ui/src/appwindow/appwindowactions.rs:642
 msgid "Saving document failed."
 msgstr "Zapisywanie dokumentu się nie powiodło."
@@ -1615,11 +1610,11 @@ msgstr "Data modyfikacji:"
 msgid "Pages:"
 msgstr "Strony:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
 msgid "Opening PDF file failed."
 msgstr "Otwarcie pliku PDF się nie powiodło."
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
 msgid "Opening Xournal++ file failed."
 msgstr "Otwarcie pliku Xournal++ nie powiodło się."
 
@@ -1703,35 +1698,35 @@ msgstr ""
 msgid "Exported engine config successfully."
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:75
 msgid "Opening .rnote file failed."
 msgstr "Otwarcie pliku .rnote się nie powiodło."
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:93
 msgid "Opening vector image file failed."
 msgstr "Otwarcie pliku obrazu wektorowego się nie powiodło."
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:111
 msgid "Opening bitmap image file failed."
 msgstr "Otwarcie pliku bitmapy się nie powiodło."
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr "Błąd: Próbowano otworzyć folder jako plik"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr "Nie można otworzyć pliku: Nieobsługiwany format pliku."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:758
 msgid "Printed document successfully"
 msgstr "Wydrukowano dokument pomyślnie"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:767
 msgid "Printing document failed"
 msgstr "Drukowanie dokumentu się nie powiodło"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 msgid "Export selection failed, nothing selected."
 msgstr "Eksport zaznaczenia nie powiódł się, nic nie jest zaznaczone."
 
@@ -1742,6 +1737,15 @@ msgstr "Nazwa folderu"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr "Nowy folder"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "Wklej ze schowka"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Promień kropek pociągnięcia pędzlem"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "Promienie pojedynczych kropek w pociągnięciu pędzla z teksturą"
 
 #~ msgid "Roughness"
 #~ msgstr "Szorstkość"

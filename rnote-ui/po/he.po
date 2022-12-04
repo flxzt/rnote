@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 14:17+0100\n"
+"POT-Creation-Date: 2022-12-04 14:39+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -92,7 +92,7 @@ msgstr "להשתמש בצבעים כהים"
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
 #| msgid "Developer mode"
-msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "מצב מפתחים"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -103,7 +103,7 @@ msgstr "מצב מפתחים"
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
 #| msgid "Visual debugging"
-msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "ניפוי שגיאות חזותי"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -146,7 +146,7 @@ msgstr "הדפסה"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
-msgid "_Paste clipboard"
+msgid "Paste _clipboard"
 msgstr "הדבקת לוח הגזירים כבחירה"
 
 #: rnote-ui/data/ui/appmenu.ui:94
@@ -195,7 +195,7 @@ msgstr ""
 #: rnote-ui/data/ui/appmenu.ui:127
 #, fuzzy
 #| msgid "About Rnote"
-msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "על rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -318,7 +318,7 @@ msgstr "ציור עם קלט מגע"
 #: rnote-ui/data/ui/canvasmenu.ui:54
 #, fuzzy
 #| msgid "Pen sounds"
-msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "צלילי עט"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -377,7 +377,7 @@ msgstr "ביטול"
 msgid "Clear"
 msgstr "ניקוי"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:898
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
 #, fuzzy
 msgid "New Document"
 msgstr "מסמך חדש"
@@ -751,7 +751,7 @@ msgstr "שכפול הבחירה"
 msgid "New document"
 msgstr "מסמך חדש"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:900
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
 msgid "Draft"
 msgstr "טיוטה"
 
@@ -1294,36 +1294,28 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "צפיפות היא כמות הנקודות לשטח של 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 #, fuzzy
 msgid "Stroke dots position distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 #, fuzzy
 msgid "Normal"
 msgstr "תצורה"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr ""
 
@@ -1581,7 +1573,7 @@ msgstr "ירון שהרבני <sh.yaron@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:461
+#: rnote-ui/src/appwindow/mod.rs:460
 #: rnote-ui/src/appwindow/appwindowactions.rs:642
 #, fuzzy
 msgid "Saving document failed."
@@ -1647,12 +1639,12 @@ msgstr ""
 msgid "Pages:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
 #, fuzzy
 msgid "Opening PDF file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
 #, fuzzy
 msgid "Opening Xournal++ file failed."
 msgstr "פתיחת הגיליון נכשלה"
@@ -1747,40 +1739,40 @@ msgstr "ייצוא הבחירה ל־SVG נכשל"
 msgid "Exported engine config successfully."
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:75
 #, fuzzy
 msgid "Opening .rnote file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:93
 #, fuzzy
 msgid "Opening vector image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:111
 #, fuzzy
 msgid "Opening bitmap image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:163
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:172
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:758
 #, fuzzy
 msgid "Printed document successfully"
 msgstr "הגיליון נשמר בהצלחה"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:767
 #, fuzzy
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:793
 #, fuzzy
 msgid "Export selection failed, nothing selected."
 msgstr "ייצוא הבחירה ל־SVG נכשל"
@@ -1793,6 +1785,10 @@ msgstr "שינוי שם"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~ msgid "_Paste clipboard"
+#~ msgstr "הדבקת לוח הגזירים כבחירה"
 
 #~ msgid "Roughness"
 #~ msgstr "חספוס"

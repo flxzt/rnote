@@ -169,13 +169,21 @@ and a `launch.json` entry:
         {
             "type": "lldb",
             "request": "launch",
-            "name": "launch debug build of 'rnote'",
+            "name": "compile and launch debug build of 'rnote'",
             "args": [],
             "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
             "preLaunchTask": "meson compile"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "install and launch debug build of 'rnote'",
+            "args": [],
+            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
+            "preLaunchTask": "meson install"
         }
     ]
 }
 ```
 
-This launch configuration can then be launched through `Run -> Start Debugging` or by selecting and running it in the `Run and Debug` panel. 
+These configurations can then be selected in the `Run and Debug` panel and launched there or through `Run -> Start Debugging`.

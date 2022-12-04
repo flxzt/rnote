@@ -172,7 +172,7 @@ impl CubicBezier {
 }
 
 /// Calculates a point on a cubic curve given t ranging [0.0, 1.0]
-fn cubbez_calc(
+pub fn cubbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

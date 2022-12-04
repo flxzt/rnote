@@ -143,11 +143,11 @@ impl PenPath {
     }
 
     /// Checks whether a bounds collides with the path. If it does, it returns the index of the colliding segment
-    pub fn hittest(&self, hit: &AABB) -> Option<usize> {
+    pub fn hittest(&self, hit: &AABB, loosened: f64) -> Option<usize> {
         for (i, seg_hitboxes) in self.hitboxes_priv() {
             if seg_hitboxes
                 .into_iter()
-                .any(|hitbox| hitbox.intersects(hit))
+                .any(|hitbox| hitbox.loosened(loosened).intersects(hit))
             {
                 return Some(i);
             }

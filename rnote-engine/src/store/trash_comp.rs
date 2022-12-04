@@ -152,7 +152,10 @@ impl StrokeStore {
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
-                            if let Some(split_at) = brushstroke.path.hittest(&eraser_bounds) {
+                            if let Some(split_at) = brushstroke
+                                .path
+                                .hittest(&eraser_bounds, brushstroke.style.stroke_width() * 0.5)
+                            {
                                 let (first_split, second_split) =
                                     brushstroke.path.segments[..].split_at(split_at);
                                 let first_split = first_split.to_vec();

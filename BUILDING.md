@@ -172,7 +172,8 @@ and a `launch.json` entry:
             "name": "compile and launch debug build of 'rnote'",
             "args": [],
             "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
-            "preLaunchTask": "meson compile"
+            "preLaunchTask": "meson compile",
+            "env": {"RUST_LOG": "rnote=debug"}
         },
         {
             "type": "lldb",
@@ -180,7 +181,8 @@ and a `launch.json` entry:
             "name": "install and launch debug build of 'rnote'",
             "args": [],
             "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
-            "preLaunchTask": "meson install"
+            "preLaunchTask": "meson install",
+            "env": {"RUST_LOG": "rnote=debug"}
         }
     ]
 }

@@ -193,7 +193,7 @@ impl RnoteAppWindow {
         action_error_toast.connect_activate(
             clone!(@weak self as appwindow => move |_action_error_toast, parameter| {
                 let error_text = parameter.unwrap().get::<String>().unwrap();
-                log::error!("{}", error_text);
+                log::error!("{error_text}");
                 let error_toast = adw::Toast::builder().title(error_text.as_str()).priority(adw::ToastPriority::High).timeout(0).build();
 
                 appwindow.toast_overlay().add_toast(&error_toast);
@@ -266,7 +266,7 @@ impl RnoteAppWindow {
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     }
                     invalid_str => {
-                        log::error!("action doc-layout failed, invalid str: {}", invalid_str);
+                        log::error!("action doc-layout failed, invalid str: {invalid_str}");
                         return;
                     }
                 }
@@ -323,7 +323,7 @@ impl RnoteAppWindow {
                         Some(PenStyle::Tools)
                     }
                     _ => {
-                        log::error!("invalid target for action_pen_style, `{}`", pen_style);
+                        log::error!("invalid target for action_pen_style, `{pen_style}`");
                         None
                     }
                 };
@@ -373,7 +373,7 @@ impl RnoteAppWindow {
                         Some(None)
                     }
                     _ => {
-                        log::error!("invalid target for action_pen_overwrite, `{}`", pen_style_override);
+                        log::error!("invalid target for action_pen_overwrite, `{pen_style_override}`");
                         None
                     }
                 };
@@ -638,7 +638,7 @@ impl RnoteAppWindow {
                     if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                         appwindow.canvas().set_output_file(None);
 
-                        log::error!("saving document failed with error `{}`", e);
+                        log::error!("saving document failed with error `{e:?}`");
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                     }
 
@@ -675,8 +675,7 @@ impl RnoteAppWindow {
                     .gen_svg(doc_bounds, true)
                     .map_err(|e| {
                         log::error!(
-                            "background.gen_svg() failed in in the print document action, with Err {}",
-                            e
+                            "background.gen_svg() failed in in the print document action, with Err: {e:?}"
                         )
                     })
                     .ok()
@@ -746,9 +745,9 @@ impl RnoteAppWindow {
                         }
                     }
 
-                    piet_cx.finish().map_err(|e| anyhow::anyhow!("piet_cx finish() failed while printing page {}, with Err {}", page_no, e))
+                    piet_cx.finish().map_err(|e| anyhow::anyhow!("piet_cx finish() failed while printing page {page_no}, with Err: {e:?}"))
                 }() {
-                    log::error!("draw_page() failed while printing page: {}, Err {}", page_no, e);
+                    log::error!("draw_page() failed while printing page: {page_no}, Err: {e:?}");
                 }
             }));
 
@@ -764,7 +763,7 @@ impl RnoteAppWindow {
 
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-                log::error!("print_op.run() failed with Err, {}", e);
+                log::error!("print_op.run() failed with Err, {e:?}");
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing document failed").to_variant()));
             }
 
@@ -804,14 +803,14 @@ impl RnoteAppWindow {
                 let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
 
                 if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {
-                    log::error!("clipboard set_content() failed in clipboard-copy action, Err {}", e);
+                    log::error!("clipboard set_content() failed in clipboard-copy action, Err: {e:?}");
                 }
             }
             Ok(None) => {
                 log::debug!("no data available to copy into clipboard.");
             }
             Err(e) => {
-                log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err {}", e);
+                log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err: {e:?}");
             }
         }
     }));
@@ -826,12 +825,12 @@ impl RnoteAppWindow {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                                 if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
-                                    log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err `{}`", e);
+                                    log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err: {e:?}");
                                 };
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::debug!("could not load clipboard contents as svg, read_text() failed with Err `{}`", e);
+                            log::debug!("could not load clipboard contents as svg, read_text() failed with Err: {e:?}");
 
                         }
                     }
@@ -862,7 +861,7 @@ impl RnoteAppWindow {
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!("failed to paste clipboard from path, read_text() failed with Err {}", e);
+                            log::error!("failed to paste clipboard from path, read_text() failed with Err: {e:?}");
 
                         }
                     }
@@ -884,12 +883,12 @@ impl RnoteAppWindow {
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
                                 if let Err(e) = appwindow.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
-                                    log::error!("failed to paste clipboard as {}, load_in_bitmapimage_bytes() returned Err {}", mime_type, e);
+                                    log::error!("failed to paste clipboard as {mime_type}, load_in_bitmapimage_bytes() returned Err: {e:?}");
                                 };
                             }
                             Ok(None) => {}
                             Err(e) => {
-                                log::error!("failed to paste clipboard as {}, read_texture_future() failed with Err {}", mime_type, e);
+                                log::error!("failed to paste clipboard as {mime_type}, read_texture_future() failed with Err: {e:?}");
                             }
                         };
                     }));
@@ -899,12 +898,12 @@ impl RnoteAppWindow {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             if let Err(e) = appwindow.load_in_text(text.to_string(), None) {
-                                log::error!("failed to paste clipboard text, Err `{e}`");
+                                log::error!("failed to paste clipboard text, Err: {e:?}");
                             }
                         }
                         Ok(None) => {}
                         Err(e) => {
-                            log::error!("failed to paste clipboard text, read_text() failed with Err {}", e);
+                            log::error!("failed to paste clipboard text, read_text() failed with Err: {e:?}");
 
                         }
                     }

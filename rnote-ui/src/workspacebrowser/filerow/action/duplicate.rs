@@ -68,8 +68,8 @@ fn duplicate_file(source_path: PathBuf) {
 
         log::debug!("Duplicate source: {}", source.display());
         log::debug!("Duplicate destination: {}", destination.display());
-        if let Err(err) = std::fs::copy(source, destination) {
-            log::error!("Couldn't duplicate file: {}", err);
+        if let Err(e) = std::fs::copy(source, destination) {
+            log::error!("Couldn't duplicate file: {e:?}");
         }
     }
     log::info!("Destination-file for duplication not found.");
@@ -88,10 +88,10 @@ where
 
         log::debug!("Duplicate source: {}", source.display());
         log::debug!("Duplicate destination: {}", destination.display());
-        if let Err(err) =
+        if let Err(e) =
             copy_items_with_progress(&[source], destination, &options, process_evaluator)
         {
-            log::error!("Couldn't copy items: {}", err);
+            log::error!("Couldn't copy items: {e:?}");
         }
     }
 }

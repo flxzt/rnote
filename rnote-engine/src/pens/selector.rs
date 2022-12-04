@@ -785,7 +785,7 @@ impl DrawOnDocBehaviour for Selector {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
@@ -929,7 +929,7 @@ impl DrawOnDocBehaviour for Selector {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -1007,7 +1007,7 @@ impl Selector {
         modify_state: &ModifyState,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = camera.total_zoom();
 
         let rotate_node_state = match modify_state {
@@ -1059,7 +1059,7 @@ impl Selector {
         // Selection rect
         let selection_rect = selection_bounds.to_kurbo_rect();
 
-        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let mut clip_path = kurbo::BezPath::new();
         clip_path.extend(
@@ -1120,7 +1120,7 @@ impl Selector {
             Selector::SELECTION_OUTLINE_WIDTH / total_zoom,
         );
 
-        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         // Rotate Node
         drawhelpers::draw_circular_node(piet_cx, rotate_node_state, rotate_node_sphere, total_zoom);
@@ -1151,7 +1151,7 @@ impl Selector {
             total_zoom,
         );
 
-        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 
@@ -1162,7 +1162,7 @@ impl Selector {
         current_rotation_angle: f64,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         const CENTER_CROSS_COLOR: Color = Color {
             r: 0.964,
             g: 0.380,
@@ -1200,7 +1200,7 @@ impl Selector {
             &piet::Color::from(CENTER_CROSS_COLOR),
             center_cross_path_width,
         );
-        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         Ok(())
     }

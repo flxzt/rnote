@@ -96,7 +96,7 @@ impl CubicBezier {
             end,
         };
 
-        // returnsing None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
+        // returning None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
         if (cubbez.end - cubbez.start).magnitude() == 0.0 {
             return None;
         }
@@ -172,7 +172,7 @@ impl CubicBezier {
 }
 
 /// Calculates a point on a cubic curve given t ranging [0.0, 1.0]
-fn cubbez_calc(
+pub fn cubbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

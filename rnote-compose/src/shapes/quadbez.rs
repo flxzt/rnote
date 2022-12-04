@@ -155,7 +155,7 @@ fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
 
 /// calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
 #[allow(dead_code)]
-fn quadbez_calc(
+pub fn quadbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -180,7 +180,7 @@ fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vec
 
 #[allow(dead_code)]
 /// calculating the derivative of the bezier curve for t: between 0.0 and 1.0
-fn quadbez_derive_calc(
+pub fn quadbez_derive_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

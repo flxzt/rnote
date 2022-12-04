@@ -9,7 +9,7 @@ use crate::shapes::Line;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 /// 2D single quadrant coordinate system builder
@@ -36,13 +36,13 @@ impl ShapeBuilderBehaviour for QuadrantCoordSystem2DBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(
+                return ShapeBuilderProgress::Finished(
                     self.state_as_lines()
                         .iter()
                         .map(|&line| Shape::Line(line))
@@ -52,7 +52,7 @@ impl ShapeBuilderBehaviour for QuadrantCoordSystem2DBuilder {
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {

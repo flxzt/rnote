@@ -95,83 +95,66 @@ impl Composer<TexturedOptions> for Line {
     }
 }
 
-impl Composer<TexturedOptions> for Segment {
-    fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width * 0.5)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
-        cx.save().unwrap();
-        match self {
-            Self::Dot { .. } => {
-                // Dont draw dots for textured segments.
-            }
-            Self::Line { start, end } => {
-                let line = Line {
-                    start: start.pos,
-                    end: end.pos,
-                };
-
-                let mut options = options.clone();
-
-                options.stroke_width = options
-                    .pressure_curve
-                    .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
-
-                line.draw_composed(cx, &options);
-            }
-            Self::QuadBez { start, cp: _, end } => {
-                let line = Line {
-                    start: start.pos,
-                    end: end.pos,
-                };
-
-                let mut options = options.clone();
-
-                options.stroke_width = options
-                    .pressure_curve
-                    .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
-
-                line.draw_composed(cx, &options);
-            }
-            Self::CubBez {
-                start,
-                cp1: _,
-                cp2: _,
-                end,
-            } => {
-                let line = Line {
-                    start: start.pos,
-                    end: end.pos,
-                };
-
-                let mut options = options.clone();
-
-                options.stroke_width = options
-                    .pressure_curve
-                    .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
-
-                line.draw_composed(cx, &options);
-            }
-        }
-        cx.restore().unwrap();
-    }
-}
-
 impl Composer<TexturedOptions> for PenPath {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.iter()
-            .map(|segment| segment.composed_bounds(options))
-            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
         cx.save().unwrap();
         let mut options = options.clone();
 
-        for segment in self.iter() {
+        let mut prev = self.start;
+        for seg in self.segments.iter() {
+            match seg {
+                Segment::LineTo { end } => {
+                    let line = Line {
+                        start: prev.pos,
+                        end: end.pos,
+                    };
+
+                    let mut options = options.clone();
+
+                    options.stroke_width = options
+                        .pressure_curve
+                        .apply(options.stroke_width, (prev.pressure + end.pressure) * 0.5);
+
+                    line.draw_composed(cx, &options);
+                    prev = *end;
+                }
+                Segment::QuadBezTo { end, .. } => {
+                    let line = Line {
+                        start: prev.pos,
+                        end: end.pos,
+                    };
+
+                    let mut options = options.clone();
+
+                    options.stroke_width = options
+                        .pressure_curve
+                        .apply(options.stroke_width, (prev.pressure + end.pressure) * 0.5);
+
+                    line.draw_composed(cx, &options);
+                    prev = *end;
+                }
+                Segment::CubBezTo { end, .. } => {
+                    let line = Line {
+                        start: prev.pos,
+                        end: end.pos,
+                    };
+
+                    let mut options = options.clone();
+
+                    options.stroke_width = options
+                        .pressure_curve
+                        .apply(options.stroke_width, (prev.pressure + end.pressure) * 0.5);
+
+                    line.draw_composed(cx, &options);
+                    prev = *end;
+                }
+            }
+
             options.seed = options.seed.map(crate::utils::seed_advance);
-            segment.draw_composed(cx, &options);
         }
         cx.restore().unwrap();
     }

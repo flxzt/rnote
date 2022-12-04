@@ -14,26 +14,15 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default, rename = "brushstroke")]
+#[serde(rename = "brushstroke")]
 pub struct BrushStroke {
     #[serde(rename = "path")]
     pub path: PenPath,
-    #[serde(rename = "style")]
+    #[serde(default, rename = "style")]
     pub style: Style,
     #[serde(skip)]
     // since the path can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
     hitboxes: Vec<AABB>,
-}
-
-impl Default for BrushStroke {
-    fn default() -> Self {
-        Self::new(
-            Segment::Dot {
-                element: Element::default(),
-            },
-            Style::default(),
-        )
-    }
 }
 
 impl StrokeBehaviour for BrushStroke {
@@ -79,7 +68,7 @@ impl StrokeBehaviour for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            log::error!("gen_images() in brushstroke failed with Err: {e:?}");
                             vec![]
                         }
                     }
@@ -101,7 +90,7 @@ impl StrokeBehaviour for BrushStroke {
                     match image {
                         Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            log::error!("gen_images() in brushstroke failed with Err: {e:?}");
                             vec![]
                         }
                     }
@@ -109,61 +98,63 @@ impl StrokeBehaviour for BrushStroke {
             }
         } else {
             match &self.style {
-                Style::Smooth(options) => self
-                    .path
-                    .iter()
-                    .filter_map(|segment| {
-                        let image = render::Image::gen_with_piet(
+                Style::Smooth(options) => {
+                    let mut images = Vec::with_capacity(self.path.segments.len());
+
+                    let mut prev = self.path.start;
+                    for seg in self.path.segments.iter() {
+                        let seg_path = PenPath::new_w_segments(prev, [*seg]);
+
+                        match render::Image::gen_with_piet(
                             |piet_cx| {
-                                segment.draw_composed(piet_cx, options);
+                                seg_path.draw_composed(piet_cx, options);
                                 Ok(())
                             },
-                            segment.composed_bounds(options),
+                            seg_path.composed_bounds(options),
                             image_scale,
-                        );
-
-                        match image {
-                            Ok(image) => Some(image),
+                        ) {
+                            Ok(image) => images.push(image),
                             Err(e) => {
-                                log::error!("gen_images() in brushstroke failed with Err {}", e);
-                                None
+                                log::error!("gen_images() in brushstroke failed with Err: {e:?}")
                             }
                         }
-                    })
-                    .collect::<Vec<render::Image>>(),
+
+                        prev = seg.end();
+                    }
+
+                    images
+                }
                 Style::Rough(_) => {
                     // Unsupported
                     vec![]
                 }
                 Style::Textured(options) => {
                     let mut options = options.clone();
+                    let mut images = Vec::with_capacity(self.path.segments.len());
 
-                    self.path
-                        .iter()
-                        .filter_map(|segment| {
-                            options.seed = options.seed.map(rnote_compose::utils::seed_advance);
+                    let mut prev = self.path.start;
+                    for seg in self.path.segments.iter() {
+                        let seg_path = PenPath::new_w_segments(prev, [*seg]);
 
-                            let image = render::Image::gen_with_piet(
-                                |piet_cx| {
-                                    segment.draw_composed(piet_cx, &options);
-                                    Ok(())
-                                },
-                                segment.composed_bounds(&options),
-                                image_scale,
-                            );
-
-                            match image {
-                                Ok(image) => Some(image),
-                                Err(e) => {
-                                    log::error!(
-                                        "gen_images() in brushstroke failed with Err {}",
-                                        e
-                                    );
-                                    None
-                                }
+                        match render::Image::gen_with_piet(
+                            |piet_cx| {
+                                seg_path.draw_composed(piet_cx, &options);
+                                Ok(())
+                            },
+                            seg_path.composed_bounds(&options),
+                            image_scale,
+                        ) {
+                            Ok(image) => images.push(image),
+                            Err(e) => {
+                                log::error!("gen_images() in brushstroke failed with Err: {e:?}")
                             }
-                        })
-                        .collect::<Vec<render::Image>>()
+                        }
+
+                        options.seed = options.seed.map(rnote_compose::utils::seed_advance);
+                        prev = seg.end();
+                    }
+
+                    images
                 }
             }
         };
@@ -178,7 +169,7 @@ impl StrokeBehaviour for BrushStroke {
 
 impl DrawBehaviour for BrushStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &self.style {
             Style::Smooth(options) => self.path.draw_composed(cx, options),
@@ -188,7 +179,7 @@ impl DrawBehaviour for BrushStroke {
             Style::Textured(options) => self.path.draw_composed(cx, options),
         };
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -224,16 +215,14 @@ impl BrushStroke {
     /// when one of the extents of the stroke is above this threshold, images are generated separately for each stroke segment (to avoid very large images)
     pub const IMAGES_SEGMENTS_THRESHOLD: f64 = 1000.0;
 
-    pub fn new(segment: Segment, style: Style) -> Self {
-        let path = PenPath::new_w_segment(segment);
+    pub fn new(start: Element, style: Style) -> Self {
+        let path = PenPath::new(start);
 
-        Self::from_penpath(path, style).unwrap()
+        Self::from_penpath(path, style)
     }
 
-    pub fn from_penpath(path: PenPath, style: Style) -> Option<Self> {
-        if path.is_empty() {
-            return None;
-        }
+    /// New from pen path.
+    pub fn from_penpath(path: PenPath, style: Style) -> Self {
         let mut new_brushstroke = Self {
             path,
             style,
@@ -241,11 +230,15 @@ impl BrushStroke {
         };
         new_brushstroke.update_geometry();
 
-        Some(new_brushstroke)
+        new_brushstroke
     }
 
     pub fn push_segment(&mut self, segment: Segment) {
-        self.path.push_back(segment);
+        self.path.segments.push(segment);
+    }
+
+    pub fn extend_w_segments(&mut self, segments: impl IntoIterator<Item = Segment>) {
+        self.path.extend(segments);
     }
 
     pub fn update_geometry(&mut self) {
@@ -263,82 +256,82 @@ impl BrushStroke {
         let stroke_width = self.style.stroke_width();
 
         self.path
-            .iter()
-            .flat_map(|segment| {
-                segment
-                    .hitboxes()
-                    .into_iter()
-                    .map(|hitbox| hitbox.loosened(stroke_width * 0.5))
-            })
+            .hitboxes()
+            .into_iter()
+            .map(|hb| hb.loosened(stroke_width * 0.5))
             .collect()
     }
 
-    pub fn gen_images_for_last_segments(
+    pub fn gen_image_for_last_segments(
         &self,
-        no_last_segments: usize,
+        n_last_segments: usize,
         image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        let images = match &self.style {
-            Style::Smooth(options) => self
-                .path
-                .iter()
-                .rev()
-                .take(no_last_segments)
-                .rev()
-                .filter_map(|segment| {
-                    let image = render::Image::gen_with_piet(
-                        |piet_cx| {
-                            segment.draw_composed(piet_cx, options);
-                            Ok(())
-                        },
-                        segment.composed_bounds(options),
-                        image_scale,
-                    );
+    ) -> Result<Option<render::Image>, anyhow::Error> {
+        let image = match &self.style {
+            Style::Smooth(options) => {
+                let path_len = self.path.segments.len();
 
-                    match image {
-                        Ok(image) => Some(image),
-                        Err(e) => {
-                            log::error!("gen_images_for_last_segments() failed with Err {}", e);
-                            None
-                        }
-                    }
-                })
-                .collect::<Vec<render::Image>>(),
-            Style::Rough(_) => vec![],
-            Style::Textured(options) => self
-                .path
-                .iter()
-                .enumerate()
-                .rev()
-                .take(no_last_segments)
-                .rev()
-                .filter_map(|(i, segment)| {
-                    let mut options = options.clone();
+                let start_el = self
+                    .path
+                    .segments
+                    .get(path_len.saturating_sub(n_last_segments).saturating_sub(1))
+                    .map(|s| s.end())
+                    .unwrap_or(self.path.start);
 
-                    (0..=i).for_each(|_| {
-                        options.seed = options.seed.map(rnote_compose::utils::seed_advance)
-                    });
+                let range_path = PenPath::new_w_segments(
+                    start_el,
+                    self.path.segments[path_len.saturating_sub(n_last_segments)..]
+                        .iter()
+                        .copied(),
+                );
 
-                    let image = render::Image::gen_with_piet(
-                        |piet_cx| {
-                            segment.draw_composed(piet_cx, &options);
-                            Ok(())
-                        },
-                        segment.composed_bounds(&options),
-                        image_scale,
-                    );
+                let image = render::Image::gen_with_piet(
+                    |piet_cx| {
+                        range_path.draw_composed(piet_cx, options);
+                        Ok(())
+                    },
+                    range_path.composed_bounds(options),
+                    image_scale,
+                )?;
 
-                    match image {
-                        Ok(image) => Some(image),
-                        Err(e) => {
-                            log::error!("gen_images_for_last_segments() failed with Err {}", e);
-                            None
-                        }
-                    }
-                })
-                .collect::<Vec<render::Image>>(),
+                Some(image)
+            }
+            Style::Rough(_) => None,
+            Style::Textured(options) => {
+                let mut options = options.clone();
+                let path_len = self.path.segments.len();
+
+                (0..path_len.saturating_sub(n_last_segments)).for_each(|_| {
+                    options.seed = options.seed.map(rnote_compose::utils::seed_advance)
+                });
+
+                let start_el = self
+                    .path
+                    .segments
+                    .get(path_len.saturating_sub(n_last_segments).saturating_sub(1))
+                    .map(|s| s.end())
+                    .unwrap_or(self.path.start);
+
+                let range_path = PenPath::new_w_segments(
+                    start_el,
+                    self.path.segments[path_len.saturating_sub(n_last_segments)..]
+                        .iter()
+                        .copied(),
+                );
+
+                let image = render::Image::gen_with_piet(
+                    |piet_cx| {
+                        range_path.draw_composed(piet_cx, &options);
+                        Ok(())
+                    },
+                    range_path.composed_bounds(&options),
+                    image_scale,
+                )?;
+
+                Some(image)
+            }
         };
 
-        Ok(images)
+        Ok(image)
     }
 }

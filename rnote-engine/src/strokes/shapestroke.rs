@@ -72,11 +72,11 @@ impl StrokeBehaviour for ShapeStroke {
 
 impl DrawBehaviour for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         self.shape.draw_composed(cx, &self.style);
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

@@ -217,7 +217,7 @@ impl Format {
 
         piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
 
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         Ok(cairo_node.upcast())
     }

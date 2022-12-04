@@ -63,7 +63,7 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let viewport = engine_view.camera.viewport();
         let x = viewport.mins[0];
@@ -98,7 +98,7 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
             Self::OFFSET_LINE_WIDTH,
         );
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -144,7 +144,7 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
@@ -160,7 +160,7 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
             cx.fill(bez_path, &*OFFSETCAMERATOOL_FILL_COLOR);
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -399,7 +399,7 @@ impl DrawOnDocBehaviour for Tools {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &self.style {
             ToolsStyle::VerticalSpace => {
@@ -410,7 +410,7 @@ impl DrawOnDocBehaviour for Tools {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

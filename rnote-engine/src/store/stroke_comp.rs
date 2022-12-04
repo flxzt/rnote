@@ -183,8 +183,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in translate_strokes_images() with Err {}",
-                        e
+                        "images_to_rendernode() failed in translate_strokes_images() with Err: {e:?}"
                     ),
                 }
             }
@@ -227,8 +226,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() with Err {}",
-                        e
+                        "images_to_rendernode() failed in rotate_strokes() with Err: {e:?}"
                     ),
                 }
             }
@@ -266,8 +264,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() with Err {}",
-                        e
+                        "images_to_rendernode() failed in rotate_strokes() with Err: {e:?}"
                     ),
                 }
             }
@@ -369,8 +366,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in resize_strokes() with Err {}",
-                        e
+                        "images_to_rendernode() failed in resize_strokes() with Err: {e:?}"
                     ),
                 }
             }

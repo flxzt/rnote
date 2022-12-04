@@ -215,7 +215,7 @@ impl RnoteAppWindow {
                     if engine_config.is_empty() {
                         log::debug!("did not load `engine-config` from settings, was empty");
                     } else {
-                        log::error!("failed to load `engine-config` from settings, Err {}", e);
+                        log::error!("failed to load `engine-config` from settings, Err: {e:?}");
                     }
                     None
                 }

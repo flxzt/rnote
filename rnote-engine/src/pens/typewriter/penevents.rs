@@ -225,7 +225,7 @@ impl Typewriter {
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
                     ) {
-                        log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err {}", e);
+                        log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err: {e:?}");
                     }
 
                     *current_pos = element.pos;
@@ -260,7 +260,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() while adjusting text width textstroke failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() while adjusting text width textstroke failed with Err: {e:?}");
                 }
 
                 *current_pos = element.pos;
@@ -309,7 +309,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err: {e:?}");
                 }
 
                 self.state = TypewriterState::Modifying {
@@ -339,7 +339,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() while adjusting textstroke text width failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() while adjusting textstroke text width failed with Err: {e:?}");
                 }
 
                 self.state = TypewriterState::Modifying {
@@ -427,7 +427,7 @@ impl Typewriter {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         ) {
-                            log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err {}", e);
+                            log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err: {e:?}");
                         }
 
                         self.state = TypewriterState::Modifying {
@@ -776,7 +776,7 @@ impl Typewriter {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err {}", e);
+                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err: {e:?}");
                 }
 
                 self.state = TypewriterState::Modifying {

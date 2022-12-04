@@ -399,7 +399,7 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed with Err {}", e);
+                log::error!("canvas snapshot() failed with Err: {e:?}");
             }
         }
     }
@@ -901,7 +901,7 @@ impl RnoteCanvas {
                     return true;
                 } else if value.is::<String>() {
                     if let Err(e) = appwindow.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
-                        log::error!("failed to insert dropped in text, Err `{e}`");
+                        log::error!("failed to insert dropped in text, Err: {e:?}");
                     }
                 }
 
@@ -1081,7 +1081,7 @@ impl RnoteCanvas {
             .background
             .regenerate_pattern(viewport, image_scale)
         {
-            log::error!("failed to regenerate background, {}", e)
+            log::error!("failed to regenerate background, {e:?}")
         };
 
         self.queue_draw();

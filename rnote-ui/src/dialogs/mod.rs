@@ -291,25 +291,33 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         }),
     );
 
-    filechooser_change_workspace_dir.connect_response(
-        clone!(@weak edit_workspace_preview_row, @weak change_workspace_dir_label, @weak dialog_edit_workspace, @weak appwindow => move |filechooser, responsetype| {
-            match responsetype {
-                ResponseType::Accept => {
-                    if let Some(p) = filechooser.file().and_then(|f| f.path()) {
-                        let path_string = p.to_string_lossy().to_string();
-                        change_workspace_dir_label.set_label(&path_string);
-                        edit_workspace_preview_row.entry().set_dir(path_string);
-                    } else {
-                        change_workspace_dir_label.set_label(&gettext("- no directory selected -"));
-                    }
-                }
-                _ => {}
-            }
+    filechooser_change_workspace_dir.connect_response(clone!(
+        @weak edit_workspace_preview_row,
+        @weak change_workspace_name_entryrow,
+        @weak change_workspace_dir_label,
+        @weak dialog_edit_workspace,
+        @weak appwindow => move |filechooser, responsetype| {
+        match responsetype {
+            ResponseType::Accept => {
+                if let Some(p) = filechooser.file().and_then(|f| f.path()) {
+                    let path_string = p.to_string_lossy().to_string();
+                    change_workspace_dir_label.set_label(&path_string);
+                    edit_workspace_preview_row.entry().set_dir(path_string);
 
-            filechooser.hide();
-            dialog_edit_workspace.show();
-        }),
-    );
+                    // Update the entry row with the file name of the new selected directory
+                    if let Some(file_name) = p.file_name().map(|n| n.to_string_lossy()) {
+                        change_workspace_name_entryrow.set_text(&file_name);
+                    }
+                } else {
+                    change_workspace_dir_label.set_label(&gettext("- no directory selected -"));
+                }
+            }
+            _ => {}
+        }
+
+        filechooser.hide();
+        dialog_edit_workspace.show();
+    }));
 
     dialog_edit_workspace.connect_response(
         clone!(@weak edit_workspace_preview_row, @weak appwindow => move |dialog_modify_workspace, responsetype| {

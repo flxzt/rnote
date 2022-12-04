@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-11-30 22:35+0000\n"
+"PO-Revision-Date: 2022-12-04 15:23+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -81,8 +81,6 @@ msgid "Use _dark colors"
 msgstr "Verwende _dunkle Farben"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
 msgstr "_Entwicklermodus"
 
@@ -91,8 +89,6 @@ msgid "Developer _menu"
 msgstr "Entwickler_menü"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
 msgstr "_Visuelles Debugging"
 
@@ -125,11 +121,8 @@ msgid "_Print"
 msgstr "_Drucken"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "Zwischenablage einfügen"
+msgstr "_Zwischenablage einfügen"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -164,8 +157,6 @@ msgid "_Donate 💝"
 msgstr "_Spende 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
 msgstr "_Über Rnote"
 
@@ -276,8 +267,6 @@ msgid "Draw with _touch input"
 msgstr "Zeichne mit _Touch-Eingabe"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
 msgstr "_Stiftklänge"
 

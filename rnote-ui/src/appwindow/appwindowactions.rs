@@ -820,6 +820,8 @@ impl RnoteAppWindow {
             let content_formats = appwindow.clipboard().formats();
 
             // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in many text based formats
+            // TODO: Fix the broken svg import
+            /*
             if content_formats.contain_mime_type("image/svg+xml") {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
@@ -835,7 +837,9 @@ impl RnoteAppWindow {
                         }
                     }
                 }));
-            } else if content_formats.contain_mime_type("text/uri-list") {
+            } else
+            */
+             if content_formats.contain_mime_type("text/uri-list") {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {

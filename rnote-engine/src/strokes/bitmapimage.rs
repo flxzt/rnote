@@ -87,7 +87,7 @@ impl StrokeBehaviour for BitmapImage {
 
 impl DrawBehaviour for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
 
@@ -100,12 +100,12 @@ impl DrawBehaviour for BitmapImage {
                 &self.image.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -245,7 +245,7 @@ impl BitmapImage {
                 match result() {
                     Ok(ret) => Some(ret),
                     Err(e) => {
-                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err {}", e);
+                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err: {e:?}");
                         None
                     }
                 }
@@ -261,7 +261,7 @@ impl BitmapImage {
                 ) {
                     Ok(bitmapimage) => Some(bitmapimage),
                     Err(e) => {
-                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err {}", e);
+                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err: {e:?}");
                         None
                     }
                 }

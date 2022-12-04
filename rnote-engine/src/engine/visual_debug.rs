@@ -158,7 +158,7 @@ pub fn draw_statistics_overlay(
             .alignment(piet::TextAlignment::End)
             .font(piet::FontFamily::MONOSPACE, 10.0)
             .build()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         piet_cx.fill(
             Rectangle::from_p2d_aabb(text_bounds).to_kurbo(),
@@ -169,7 +169,7 @@ pub fn draw_statistics_overlay(
             &text_layout,
             (text_bounds.mins.coords + na::vector![20.0, 10.0]).to_kurbo_point(),
         );
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
     }
     Ok(())
 }

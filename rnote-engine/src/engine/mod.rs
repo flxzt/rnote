@@ -210,7 +210,7 @@ impl RnoteEngine {
                     self.audioplayer = match AudioPlayer::new_init(data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
-                            log::error!("creating a new audioplayer failed, Err {e}");
+                            log::error!("creating a new audioplayer failed, Err: {e:?}");
                             None
                         }
                     }
@@ -320,7 +320,7 @@ impl RnoteEngine {
         match task {
             EngineTask::UpdateStrokeWithImages { key, images } => {
                 if let Err(e) = self.store.replace_rendering_with_images(key, images) {
-                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
+                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err: {e:?}");
                 }
 
                 widget_flags.redraw = true;
@@ -328,8 +328,7 @@ impl RnoteEngine {
             EngineTask::AppendImagesToStroke { key, images } => {
                 if let Err(e) = self.store.append_rendering_images(key, images) {
                     log::error!(
-                        "append_rendering_images() in process_received_task() failed with Err {}",
-                        e
+                        "append_rendering_images() in process_received_task() failed with Err: {e:?}"
                     );
                 }
 
@@ -424,10 +423,7 @@ impl RnoteEngine {
 
         // Update background and strokes for the new viewport
         if let Err(e) = self.document.background.update_rendernodes(viewport) {
-            log::error!(
-                "failed to update background rendernodes on canvas resize with Err {}",
-                e
-            );
+            log::error!("failed to update background rendernodes on canvas resize with Err: {e:?}");
         }
     }
 
@@ -623,18 +619,18 @@ impl RnoteEngine {
                    // Transform to doc coordinate space
                    piet_cx.transform(self.camera.transform().to_kurbo());
 
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                    self.store
                        .draw_strokes_immediate_w_piet(&mut piet_cx, doc_bounds, viewport, zoom)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
                    self.penholder
                        .draw_on_doc(&mut piet_cx, doc_bounds, &self.camera)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                }
         */
         snapshot.save();

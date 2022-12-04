@@ -45,7 +45,7 @@ impl Default for TexturedOptions {
 
 impl TexturedOptions {
     /// The default width
-    pub const WIDTH_DEFAULT: f64 = 2.0;
+    pub const WIDTH_DEFAULT: f64 = 6.0;
     /// Density default
     pub const DENSITY_DEFAULT: f64 = 5.0;
     /// dots dadii default (without width weight)

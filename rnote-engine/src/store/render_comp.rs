@@ -201,11 +201,11 @@ impl StrokeStore {
                             key,
                             images,
                         }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                            log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
                 }
                 Err(e) => {
-                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
+                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err: {e:?}");
                 }
             });
         }
@@ -277,11 +277,11 @@ impl StrokeStore {
                                 key,
                                 images,
                             }).unwrap_or_else(|e| {
-                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded() for stroke with key {key:?}, with Err, {e}");
                             });
                         }
                         Err(e) => {
-                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded() for stroke with key {:?}, with Err {}", key, e);
+                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded() for stroke with key {key:?}, with Err: {e:?}");
                         }
                     }
                 });
@@ -294,7 +294,7 @@ impl StrokeStore {
         &mut self,
         tasks_tx: EngineTaskSender,
         key: StrokeKey,
-        n_segments: usize,
+        n_last_segments: usize,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
@@ -304,13 +304,14 @@ impl StrokeStore {
         ) {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
-                    let mut images =
-                        brushstroke.gen_images_for_last_segments(n_segments, image_scale)?;
+                    if let Some(image) =
+                        brushstroke.gen_image_for_last_segments(n_last_segments, image_scale)?
+                    {
+                        let mut rendernodes = render::Image::images_to_rendernodes([&image])?;
 
-                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
-
-                    render_comp.rendernodes.append(&mut rendernodes);
-                    render_comp.images.append(&mut images);
+                        render_comp.rendernodes.append(&mut rendernodes);
+                        render_comp.images.push(image);
+                    }
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_)
@@ -441,16 +442,15 @@ impl StrokeStore {
             .for_each(|key| {
                 if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         stroke
                             .draw(piet_cx, image_scale)
-                            .map_err(|e| anyhow::anyhow!("{}", e))?;
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         Ok(())
                     }() {
                         log::error!(
-                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err {}",
-                            e
+                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err: {e:?}"
                         );
                     }
                 }
@@ -472,16 +472,15 @@ impl StrokeStore {
             .for_each(|key| {
                 if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         stroke
                             .draw(piet_cx, image_scale)
-                            .map_err(|e| anyhow::anyhow!("{}", e))?;
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                         Ok(())
                     }() {
                         log::error!(
-                            "drawing stroke in draw_selection_immediate_w_piet() failed with Err {}",
-                            e
+                            "drawing stroke in draw_selection_immediate_w_piet() failed with Err: {e:?}"
                         );
                     }
                 }

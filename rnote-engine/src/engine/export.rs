@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
+use rnote_fileformats::rnoteformat::Rnotefile;
 use rnote_fileformats::{xoppformat, FileFormatSaver};
 
 use crate::store::StrokeKey;
@@ -279,7 +279,7 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = RnotefileMaj0Min5 {
+                let rnote_file = Rnotefile {
                     document: doc,
                     store_snapshot: serde_json::to_value(&*store_snapshot)?,
                 };
@@ -380,7 +380,7 @@ impl RnoteEngine {
                 .gen_svg(doc_bounds, doc_export_prefs.with_pattern)
                 .map_err(|e| {
                     log::error!(
-                        "background.gen_svg() failed in export_doc_as_pdf_bytes() with Err {}",
+                        "background.gen_svg() failed in export_doc_as_pdf_bytes() with Err {:?}",
                         e
                     )
                 })
@@ -436,7 +436,7 @@ impl RnoteEngine {
 
                         // Draw the strokes with piet
                         let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
                         piet_cx.transform(kurbo::Affine::translate(
                             -page_bounds.mins.coords.to_kurbo_vec(),
@@ -451,28 +451,24 @@ impl RnoteEngine {
 
                         cairo_cx.show_page().map_err(|e| {
                             anyhow::anyhow!(
-                                "show_page() failed when exporting page {} as pdf, Err {}",
-                                i,
-                                e
+                                "show_page() failed when exporting page {i} as pdf, Err: {e:?}"
                             )
                         })?;
 
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
                     }
                 }
                 let data = *surface
                     .finish_output_stream()
                     .map_err(|e| {
                         anyhow::anyhow!(
-                            "finish_outputstream() failed in export_doc_as_pdf_bytes with Err {:?}",
-                            e
+                            "finish_outputstream() failed in export_doc_as_pdf_bytes with Err: {e:?}"
                         )
                     })?
                     .downcast::<Vec<u8>>()
                     .map_err(|e| {
                         anyhow::anyhow!(
-                            "downcast() finished output stream failed in export_doc_as_pdf_bytes with Err {:?}",
-                            e
+                            "downcast() finished output stream failed in export_doc_as_pdf_bytes with Err: {e:?}"
                         )
                     })?;
 

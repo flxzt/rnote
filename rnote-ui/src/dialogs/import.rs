@@ -25,7 +25,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
             let open_overwrite = |appwindow: &RnoteAppWindow| {
                 if let Some(input_file) = appwindow.app().input_file().as_ref() {
                     if let Err(e) = appwindow.load_in_file(input_file, None) {
-                        log::error!("failed to load in input file, {}", e);
+                        log::error!("failed to load in input file, {e:?}");
                         adw::prelude::ActionGroupExt::activate_action(appwindow, "error-toast", Some(&gettext("Opening file failed.").to_variant()));
                     }
                 }
@@ -43,7 +43,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                             if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                                 appwindow.canvas().set_output_file(None);
 
-                                log::error!("saving document failed with error `{}`", e);
+                                log::error!("saving document failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                             }
 
@@ -92,7 +92,7 @@ pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
-            log::error!("set_current_folder() for dialog_open_doc failed with Err `{e}`");
+            log::error!("set_current_folder() for dialog_open_doc failed with Err: {e:?}");
         }
     }
 
@@ -105,7 +105,7 @@ pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
                         if !appwindow.unsaved_changes() {
                             if let Some(input_file) = appwindow.app().input_file().as_ref() {
                                 if let Err(e) = appwindow.load_in_file(input_file, None) {
-                                    log::error!("failed to load in input file, {}", e);
+                                    log::error!("failed to load in input file, {e:?}");
                                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening file failed.").to_variant()));
                                 }
                             }
@@ -158,7 +158,7 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
-            log::error!("set_current_folder() for dialog_import_file failed with Err `{e}`");
+            log::error!("set_current_folder() for dialog_import_file failed with Err: {e:?}");
         }
     }
 
@@ -318,8 +318,7 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
                             if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                                 log::error!(
-                                    "load_in_rnote_bytes() failed in dialog import pdf with Err {}",
-                                    e
+                                    "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
                                 );
                             }
                         }
@@ -385,8 +384,7 @@ pub fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
                             if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Xournal++ file failed.").to_variant()));
                                 log::error!(
-                                    "load_in_xopp_bytes() failed in dialog import xopp with Err {}",
-                                    e
+                                    "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
                                 );
                             }
                         }

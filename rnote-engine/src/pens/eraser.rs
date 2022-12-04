@@ -101,7 +101,7 @@ impl PenBehaviour for Eraser {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         ) {
-                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err {}", e);
+                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err: {e:?}");
                         }
                     }
                 }
@@ -142,7 +142,7 @@ impl PenBehaviour for Eraser {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         ) {
-                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err {}", e);
+                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err: {e:?}");
                         }
                     }
                 }
@@ -173,7 +173,7 @@ impl PenBehaviour for Eraser {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         ) {
-                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err {}", e);
+                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err: {e:?}");
                         }
                     }
                 }
@@ -250,7 +250,7 @@ impl DrawOnDocBehaviour for Eraser {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         static OUTLINE_COLOR: Lazy<piet::Color> =
             Lazy::new(|| color::GNOME_REDS[2].with_alpha(0.941));
@@ -281,7 +281,7 @@ impl DrawOnDocBehaviour for Eraser {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

@@ -109,7 +109,7 @@ pub fn random_id_prefix() -> String {
         .collect::<String>()
 }
 
-/// returns a new seed by generating a random value seeded from the old seed using the Pcg algo
+/// returns a new seed by generating a random value seeded from the old seed using the Pcg algorithm
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()

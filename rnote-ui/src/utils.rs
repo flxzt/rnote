@@ -104,8 +104,7 @@ pub async fn create_replace_file_future(bytes: Vec<u8>, file: &gio::File) -> any
         .await
         .map_err(|e| {
             anyhow::anyhow!(
-                "file replace_future() failed in create_replace_file_future(), Err {}",
-                e
+                "file replace_future() failed in create_replace_file_future(), Err: {e:?}"
             )
         })?;
 
@@ -114,8 +113,7 @@ pub async fn create_replace_file_future(bytes: Vec<u8>, file: &gio::File) -> any
         .await
         .map_err(|(_, e)| {
             anyhow::anyhow!(
-                "output_stream write_all_future() failed in create_replace_file_future(), Err {}",
-                e
+                "output_stream write_all_future() failed in create_replace_file_future(), Err: {e:?}"
             )
         })?;
     output_stream
@@ -123,8 +121,7 @@ pub async fn create_replace_file_future(bytes: Vec<u8>, file: &gio::File) -> any
         .await
         .map_err(|e| {
             anyhow::anyhow!(
-                "output_stream close_future() failed in create_replace_file_future(), Err {}",
-                e
+                "output_stream close_future() failed in create_replace_file_future(), Err: {e:?}"
             )
         })?;
 

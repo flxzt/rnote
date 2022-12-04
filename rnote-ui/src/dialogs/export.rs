@@ -33,14 +33,14 @@ pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     // Set the output file as default, else at least the current workspace directory
     if let Some(output_file) = appwindow.canvas().output_file() {
         if let Err(e) = filechooser.set_file(&output_file) {
-            log::error!("set_file() for dialog_save_doc_as failed with Err `{e}`");
+            log::error!("set_file() for dialog_save_doc_as failed with Err: {e:?}");
         }
     } else {
         if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
             if let Err(e) =
                 filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
             {
-                log::error!("set_current_folder() for dialog_save_doc_as failed with Err `{e}`");
+                log::error!("set_current_folder() for dialog_save_doc_as failed with Err: {e:?}");
             }
         }
 
@@ -64,7 +64,7 @@ pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
                             if let Err(e) = appwindow.save_document_to_file(&file).await {
                                 appwindow.canvas().set_output_file(None);
 
-                                log::error!("saving document failed with error `{}`", e);
+                                log::error!("saving document failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Saved document successfully.").to_variant()));
@@ -189,7 +189,7 @@ pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
                             let file_title = file.basename().and_then(|b| Some(b.file_stem()?.to_string_lossy().to_string())).unwrap_or_else(|| appwindow::OUTPUT_FILE_NEW_TITLE.clone());
 
                             if let Err(e) = appwindow.export_doc(&file, file_title, None).await {
-                                log::error!("exporting document failed with error `{}`", e);
+                                log::error!("exporting document failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported document successfully.").to_variant()));
@@ -227,7 +227,7 @@ fn create_filechooser_export_doc(appwindow: &RnoteAppWindow) -> FileChooserNativ
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
-            log::error!("set_current_folder() for dialog_export_doc failed with Err `{e}`");
+            log::error!("set_current_folder() for dialog_export_doc failed with Err: {e:?}");
         }
     }
 
@@ -464,7 +464,7 @@ pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
 
                             if let Err(e) = appwindow.export_doc_pages(&dir, file_stem_name, None).await {
-                                log::error!("exporting document pages failed with error `{}`", e);
+                                log::error!("exporting document pages failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document pages failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported document pages successfully.").to_variant()));
@@ -502,7 +502,7 @@ fn create_filechooser_export_doc_pages(appwindow: &RnoteAppWindow) -> FileChoose
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
-            log::error!("set_current_folder() for dialog_export_doc_pages failed with Err `{e}`");
+            log::error!("set_current_folder() for dialog_export_doc_pages failed with Err: {e:?}");
         }
     }
 
@@ -707,7 +707,7 @@ pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
                             appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_selection(&file, None).await {
-                                log::error!("exporting selection failed with error `{}`", e);
+                                log::error!("exporting selection failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection successfully.").to_variant()));
@@ -745,7 +745,7 @@ fn create_filechooser_export_selection(appwindow: &RnoteAppWindow) -> FileChoose
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
-            log::error!("set_current_folder() for dialog_export_selection failed with Err `{e}`");
+            log::error!("set_current_folder() for dialog_export_selection failed with Err: {e:?}");
         }
     }
 
@@ -824,7 +824,7 @@ pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
             log::error!(
-                "set_current_folder() for dialog_export_engine_state failed with Err `{e}`"
+                "set_current_folder() for dialog_export_engine_state failed with Err: {e:?}"
             );
         }
     }
@@ -846,7 +846,7 @@ pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
                             appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_engine_state(&file).await {
-                                log::error!("exporting engine state failed with error `{}`", e);
+                                log::error!("exporting engine state failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine state failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine state successfully.").to_variant()));
@@ -888,7 +888,7 @@ pub fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
             log::error!(
-                "set_current_folder() for dialog_export_engine_config failed with Err `{e}`"
+                "set_current_folder() for dialog_export_engine_config failed with Err: {e:?}"
             );
         }
     }
@@ -910,7 +910,7 @@ pub fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
                             appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_engine_config(&file).await {
-                                log::error!("exporting engine state failed with error `{}`", e);
+                                log::error!("exporting engine state failed with error `{e:?}`");
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine config failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine config successfully.").to_variant()));

@@ -9,7 +9,7 @@ use crate::shapes::CubicBezier;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
@@ -67,7 +67,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         // we always want to allow horizontal and vertical constraints while building a cubbez
@@ -119,7 +119,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 },
                 PenEvent::Up { .. },
             ) => {
-                return BuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
+                return ShapeBuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
                     start: *start,
                     cp1: *cp1,
                     cp2: *cp2,
@@ -129,7 +129,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             (CubBezBuilderState::End { .. }, ..) => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {

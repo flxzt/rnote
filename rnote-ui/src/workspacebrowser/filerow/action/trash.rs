@@ -13,7 +13,7 @@ pub fn trash(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction
 
             current_file.trash_async(glib::PRIORITY_DEFAULT, None::<&gio::Cancellable>, clone!(@weak filerow, @weak current_file => move |res| {
                 if let Err(e) = res {
-                    log::error!("filerow trash file failed with Err {}", e);
+                    log::error!("filerow trash file failed with Err: {e:?}");
                 } else {
                     filerow.set_current_file(None);
 

@@ -9,7 +9,7 @@ use crate::shapes::Line;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 /// 3D coordinate system builder
@@ -36,13 +36,13 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.tip_y = constraints.constrain(element.pos - self.tip_z) + self.tip_z;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(
+                return ShapeBuilderProgress::Finished(
                     self.state_as_lines()
                         .iter()
                         .map(|&line| Shape::Line(line))
@@ -52,7 +52,7 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {

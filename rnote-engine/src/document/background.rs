@@ -289,7 +289,7 @@ impl Background {
         }
 
         let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
-            .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
+            .context("svg_node_to_string() failed for background.")?;
 
         Ok(render::Svg { svg_data, bounds })
     }
@@ -339,7 +339,7 @@ impl Background {
             }
             Err(e) => {
                 log::error!(
-                    "gen_rendernode() failed in update_rendernode() of background with Err: {}",
+                    "gen_rendernode() failed in update_rendernode() of background with Err: {:?}",
                     e
                 );
             }

@@ -257,17 +257,14 @@ impl WorkspaceBrowser {
 
     pub fn save_workspaces_to_settings(&self, settings: &gio::Settings) {
         if let Err(e) = settings.set("workspace-list", &self.imp().workspace_list) {
-            log::error!("saving `workspace-list` to settings failed with Err {}", e);
+            log::error!("saving `workspace-list` to settings failed with Err: {e:?}");
         }
 
         if let Err(e) = settings.set(
             "current-workspace-index",
             &self.selected_workspace_index().unwrap_or(0),
         ) {
-            log::error!(
-                "saving `current-workspace-index` to settings failed with Err {}",
-                e
-            );
+            log::error!("saving `current-workspace-index` to settings failed with Err: {e:?}");
         }
     }
 

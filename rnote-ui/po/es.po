@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-12-04 11:35+0000\n"
+"PO-Revision-Date: 2022-12-05 11:54+0000\n"
 "Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -81,20 +81,16 @@ msgid "Use _dark colors"
 msgstr "Usar colores _oscuros"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
-msgstr "Modo de _desarrollo"
+msgstr "Modo de de_sarrollo"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
 msgstr "_Menú del desarrollador"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "Depuración _visual"
+msgstr "_Depuración visual"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -125,11 +121,8 @@ msgid "_Print"
 msgstr "_Imprimir"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "Pegar portapapeles"
+msgstr "Pegar _portapapeles"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -164,10 +157,8 @@ msgid "_Donate 💝"
 msgstr "_Donar 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
-msgstr "_Acerca de Rnote"
+msgstr "A_cerca de Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
@@ -276,8 +267,6 @@ msgid "Draw with _touch input"
 msgstr "Dibujar con entrada _táctil"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
 msgstr "Sonidos de _bolígrafo"
 

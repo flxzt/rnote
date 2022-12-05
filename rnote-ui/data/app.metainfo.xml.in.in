@@ -70,7 +70,7 @@
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>feature: add keyboard shortcuts "Ctrl+1..5" to switch between the different pens</li>
+          <li>feature: add keyboard shortcuts "Ctrl+1..6" to switch between the different pens</li>
           <li>feature: add coordinate system builders (thanks to @Kneemund )</li>
           <li>feature: drop text on the canvas</li>
           <li>improvement: export preferences, new export dialogs and options</li>

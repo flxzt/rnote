@@ -11,6 +11,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use crate::config;
+use crate::utils::FileType;
 use rnote_engine::RnoteEngine;
 
 use gtk4::{
@@ -56,8 +57,8 @@ mod imp {
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_expect_write: RefCell<bool>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
-        pub(crate) output_file_monitor_signal: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
@@ -145,8 +146,8 @@ mod imp {
                 engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
+                output_file_expect_write: RefCell::new(false),
                 output_file_monitor: RefCell::new(None),
-                output_file_monitor_signal: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
@@ -464,6 +465,26 @@ impl RnoteCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn clear_output_file_monitor(&self) {
+        let mut current_output_file_monitor = self.imp().output_file_monitor.borrow_mut();
+
+        // cancel old monitor.
+        if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_output_file_expect_write(&self, enable: bool) {
+        *self.imp().output_file_expect_write.borrow_mut() = enable;
+    }
+
+    #[allow(unused)]
+    pub(crate) fn output_file_expect_write(&self) -> bool {
+        *self.imp().output_file_expect_write.borrow()
+    }
+
+    #[allow(unused)]
     pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
     }
@@ -561,27 +582,72 @@ impl RnoteCanvas {
         }
     }
 
-    pub(crate) fn block_output_file_monitor(&self) {
-        let output_file_monitor = self.imp().output_file_monitor.borrow();
-        let output_file_monitor_signal = self.imp().output_file_monitor_signal.borrow();
+    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnoteAppWindow) {
+        match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
+            Ok(output_file_monitor) => {
+                output_file_monitor.connect_changed(
+                    glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
+                        let dispatch_toast_reload_modified_file = || {
+                            appwindow.canvas().set_unsaved_changes(true);
 
-        if let (Some(output_file_monitor), Some(output_file_monitor_signal)) = (
-            output_file_monitor.as_ref(),
-            output_file_monitor_signal.as_ref(),
-        ) {
-            output_file_monitor.block_signal(&output_file_monitor_signal);
-        }
-    }
+                            appwindow.dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
+                                if let Some(output_file) = appwindow.canvas().output_file() {
+                                    if let Err(e) = appwindow.load_in_file(&output_file, None) {
+                                        log::error!("failed to reload current output file, {}", e);
+                                    }
+                                }
+                            }), 0, &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                        };
 
-    pub(crate) fn unblock_output_file_monitor(&self) {
-        let output_file_monitor = self.imp().output_file_monitor.borrow();
-        let output_file_monitor_signal = self.imp().output_file_monitor_signal.borrow();
+                        match event {
+                            gio::FileMonitorEvent::Changed => {
+                                dispatch_toast_reload_modified_file();
+                            },
+                            gio::FileMonitorEvent::Renamed => {
+                                // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
+                                if FileType::is_goutputstream_file(&file) {
+                                    if canvas.output_file_expect_write() {
+                                        // => file has been modified due to own save, don't do anything.
+                                        canvas.set_output_file_expect_write(false);
+                                        return;
+                                    } else {
+                                        // => file has been modified by external means, handle it the same as the Changed event.
+                                        dispatch_toast_reload_modified_file();
+                                        return;
+                                    }
+                                }
 
-        if let (Some(output_file_monitor), Some(output_file_monitor_signal)) = (
-            output_file_monitor.as_ref(),
-            output_file_monitor_signal.as_ref(),
-        ) {
-            output_file_monitor.unblock_signal(&output_file_monitor_signal);
+                                // other_file *should* never be none.
+                                if other_file.is_none() {
+                                    canvas.set_unsaved_changes(true);
+                                }
+
+                                canvas.set_output_file(other_file.cloned());
+
+                                appwindow.dispatch_toast_text(&gettext("Opened file was renamed on disk."))
+                            },
+                            gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
+                                canvas.set_unsaved_changes(true);
+                                canvas.set_output_file(None);
+
+                                appwindow.dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
+                            },
+                            _ => (),
+                        }
+                    }),
+                );
+
+                self.imp()
+                    .output_file_monitor
+                    .borrow_mut()
+                    .replace(output_file_monitor);
+            }
+            Err(e) => {
+                self.clear_output_file_monitor();
+                log::error!(
+                    "creating a file monitor for the new output file failed with Err: {e:?}"
+                )
+            }
         }
     }
 
@@ -609,71 +675,16 @@ impl RnoteCanvas {
             clone!(@weak appwindow => move |canvas, _pspec| {
                 let output_file = canvas.output_file();
 
-                let mut current_output_file_monitor = canvas.imp().output_file_monitor.borrow_mut();
-                let mut current_output_file_monitor_signal = canvas.imp().output_file_monitor_signal.borrow_mut();
+                if let Some(output_file) = &output_file {
+                    // set output file
 
-                // cancel old monitor.
-                if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
-                    old_output_file_monitor.cancel();
-                }
-
-                // create new monitor.
-                if let Some(file) = &output_file {
-                    match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
-                        Ok(output_file_monitor) => {
-                            let output_file_monitor_signal = output_file_monitor.connect_changed(
-                                glib::clone!(@weak canvas, @weak appwindow => move |_monitor, file, other_file, event| {
-                                    let dispatch_toast_reload_modified_file = || {
-                                        appwindow.canvas().set_unsaved_changes(true);
-
-                                        appwindow.dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
-                                            if let Some(output_file) = appwindow.canvas().output_file() {
-                                                if let Err(e) = appwindow.load_in_file(&output_file, None) {
-                                                    log::error!("failed to reload current output file, {}", e);
-                                                }
-                                            }
-                                        }), 0, &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
-                                    };
-
-                                    match event {
-                                        gio::FileMonitorEvent::Changed => {
-                                            dispatch_toast_reload_modified_file();
-                                        },
-                                        gio::FileMonitorEvent::Renamed => {
-                                            // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio (most likely by another rnote instance).
-                                            // => file has been modified, handle it the same as the Changed event.
-                                            if let Some(old_path) = file.path() {
-                                                if let Some(old_file_name) = old_path.file_name() {
-                                                    if String::from(old_file_name.to_string_lossy()).starts_with(".goutputstream-") {
-                                                        dispatch_toast_reload_modified_file();
-                                                        return;
-                                                    }
-                                                }
-                                            }
-
-                                            // other_file *should* never be none.
-                                            if other_file.is_none() {
-                                                canvas.set_unsaved_changes(true);
-                                            }
-
-                                            canvas.set_output_file(other_file.cloned());
-                                        },
-                                        gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
-                                            canvas.set_unsaved_changes(true);
-                                            canvas.set_output_file(None);
-
-                                            appwindow.dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
-                                        },
-                                        _ => (),
-                                    }
-                                }),
-                            );
-
-                            *current_output_file_monitor = Some(output_file_monitor);
-                            *current_output_file_monitor_signal = Some(output_file_monitor_signal);
-                        },
-                        Err(e) => log::error!("creating a file monitor for the new output file failed with Err {}", e)
+                    if !canvas.output_file_expect_write() || !FileType::is_goutputstream_file(output_file) {
+                        canvas.create_output_file_monitor(output_file, &appwindow);
                     }
+                } else {
+                    // clear output file
+
+                    canvas.clear_output_file_monitor();
                 }
 
                 appwindow.update_titles_for_file(output_file.as_ref());

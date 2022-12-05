@@ -73,6 +73,18 @@ impl FileType {
 
         Self::Unsupported
     }
+
+    pub fn is_goutputstream_file(file: &gio::File) -> bool {
+        if let Some(path) = file.path() {
+            if let Some(file_name) = path.file_name() {
+                if String::from(file_name.to_string_lossy()).starts_with(".goutputstream-") {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
 
 /// Translates a AABB to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor

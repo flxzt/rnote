@@ -369,9 +369,8 @@ impl RnoteAppWindow {
                 .borrow()
                 .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
 
-            self.canvas().block_output_file_monitor();
+            self.canvas().set_output_file_expect_write(true);
             crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
-            self.canvas().unblock_output_file_monitor();
 
             self.canvas().set_output_file(Some(file.to_owned()));
             self.canvas().set_unsaved_changes(false);

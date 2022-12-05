@@ -74,7 +74,7 @@ impl FileType {
         Self::Unsupported
     }
 
-    pub fn is_goutputstream_file(file: &gio::File) -> bool {
+    pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
         if let Some(path) = file.path() {
             if let Some(file_name) = path.file_name() {
                 if String::from(file_name.to_string_lossy()).starts_with(".goutputstream-") {

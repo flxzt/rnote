@@ -100,21 +100,24 @@ endif
 cargo_sources = files(
     meson.project_source_root() + '/' + 'Cargo.toml',
     meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
     meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-cli' + '/' + 'Cargo.toml',
     meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
 )
 
 subdir('rnote-compose')
-subdir('rnote-engine')
 subdir('rnote-fileformats')
+subdir('rnote-engine')
+subdir('rnote-cli')
 subdir('rnote-ui')
 
 # Cargo
 sources = [
     rnote_compose_sources,
-    rnote_engine_sources,
     rnote_fileformats_sources,
+    rnote_engine_sources,
+    rnote_cli_sources,
     rnote_ui_sources,
     cargo_sources,
 ]

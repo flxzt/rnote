@@ -16,6 +16,8 @@ use crate::{
 };
 
 mod imp {
+    use once_cell::sync::Lazy;
+
     use super::*;
     #[allow(missing_debug_implementations)]
     pub(crate) struct RnoteApp {
@@ -37,7 +39,39 @@ mod imp {
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for RnoteApp {}
+    impl ObjectImpl for RnoteApp {
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![glib::ParamSpecObject::new(
+                    "input-file",
+                    "input-file",
+                    "input-file",
+                    Option::<gio::File>::static_type(),
+                    glib::ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "input-file" => self.input_file.borrow().to_value(),
+                _ => unimplemented!(),
+            }
+        }
+
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            match pspec.name() {
+                "input-file" => {
+                    let input_file = value
+                        .get::<Option<gio::File>>()
+                        .expect("The value needs to be of type `Option<gio::File>`.");
+                    self.input_file.replace(input_file);
+                }
+                _ => unimplemented!(),
+            }
+        }
+    }
 
     impl ApplicationImpl for RnoteApp {
         fn activate(&self) {
@@ -130,12 +164,12 @@ impl RnoteApp {
 
     #[allow(unused)]
     pub(crate) fn input_file(&self) -> Option<gio::File> {
-        self.imp().input_file.borrow().clone()
+        self.property::<Option<gio::File>>("input-file")
     }
 
     #[allow(unused)]
     pub(crate) fn set_input_file(&self, input_file: Option<gio::File>) {
-        *self.imp().input_file.borrow_mut() = input_file;
+        self.set_property("input-file", input_file.to_value());
     }
 
     // Anything that needs to be done right before showing the appwindow

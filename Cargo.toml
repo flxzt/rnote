@@ -1,18 +1,11 @@
-
-
 [workspace]
 members = [
     "rnote-compose",
-    "rnote-engine",
-    "rnote-ui",
     "rnote-fileformats",
+    "rnote-engine",
     "rnote-cli",
+    "rnote-ui",
 ]
-
-exclude = [
-    "ink-stroke-modeler-rs"
-]
-
 
 [profile.dev]
 opt-level = 2

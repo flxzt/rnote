@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-12-03 08:47+0000\n"
+"PO-Revision-Date: 2022-12-05 11:54+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -81,20 +81,16 @@ msgid "Use _dark colors"
 msgstr "_இருண்ட வண்ணங்களைப் பயன்படுத்தவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
-msgstr "_டெவலப்பர் பயன்முறை"
+msgstr "(De)டெ_வலப்பர் பயன்முறை"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
 msgstr "டெவலப்பர்_மெனு"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "_காட்சி பிழைத்திருத்தம்"
+msgstr "காட்சி_பிழைத்திருத்தம்"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -125,11 +121,8 @@ msgid "_Print"
 msgstr "_அச்சிடு"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "கிளிப்போர்டை ஒட்டவும்"
+msgstr "ஒட்டவும் _கிளிப்போர்டை"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -164,10 +157,8 @@ msgid "_Donate 💝"
 msgstr "_நன்கொடை 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
-msgstr "_Rnote பற்றி"
+msgstr "Rnote _பற்றி"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
@@ -276,8 +267,6 @@ msgid "Draw with _touch input"
 msgstr "_தொடு உள்ளீடு மூலம் வரையவும்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
 msgstr "_பேனா ஒலிகள்"
 

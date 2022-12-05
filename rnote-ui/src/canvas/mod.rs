@@ -57,9 +57,9 @@ mod imp {
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
-        pub(crate) output_file_expect_write: RefCell<bool>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
+        pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
 
@@ -146,9 +146,9 @@ mod imp {
                 engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
-                output_file_expect_write: RefCell::new(false),
                 output_file_monitor: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
+                output_file_expect_write: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -476,12 +476,12 @@ impl RnoteCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_output_file_expect_write(&self, enable: bool) {
-        *self.imp().output_file_expect_write.borrow_mut() = enable;
+        self.imp().output_file_expect_write.set(enable);
     }
 
     #[allow(unused)]
     pub(crate) fn output_file_expect_write(&self) -> bool {
-        *self.imp().output_file_expect_write.borrow()
+        self.imp().output_file_expect_write.get()
     }
 
     #[allow(unused)]

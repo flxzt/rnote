@@ -183,8 +183,8 @@ pub(crate) fn dialog_quit_save(appwindow: &RnoteAppWindow) {
                             if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                                 appwindow.canvas().set_output_file(None);
 
-                                log::error!("saving document failed with error `{}`", e);
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
+                                log::error!("saving document failed with error `{e:?}`");
+                                appwindow.dispatch_toast_error(&gettext("Saving document failed."));
                             }
 
                             appwindow.finish_canvas_progressbar();

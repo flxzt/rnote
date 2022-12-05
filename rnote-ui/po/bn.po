@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"PO-Revision-Date: 2022-12-05 15:19+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -664,11 +664,11 @@ msgstr "রপ্তানি চিত্র বিন্যাস"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr ""
+msgstr "মার্জিন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "নির্বাচিত এলাকার চারপাশে মার্জিন সেট করুন"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
@@ -967,32 +967,32 @@ msgstr "নেভিগেশন"
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "'তুলি'-তে পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "'শেপার'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "'টাইপরাইটার'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "'ইরেজার'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "'নির্বাচক'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "'টুলস'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103
@@ -1259,7 +1259,7 @@ msgstr "আয়তক্ষেত্র দিয়ে নির্বাচ�
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "একে একে নির্বাচন করুন"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1338,15 +1338,15 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "আঁকা-বাঁকা"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "আঁকা-বাঁকা রেখা"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "ক্রসহ্যাচ"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
@@ -1372,11 +1372,11 @@ msgstr "আয়তক্ষেত্র"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "2D coordinate system"
-msgstr ""
+msgstr "দ্বিমাত্রিক স্থানাঙ্ক"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "3D coordinate system"
-msgstr ""
+msgstr "ত্রিমাত্রিক স্থানাঙ্ক"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "2D single quadrant coordinate system"
@@ -1508,7 +1508,7 @@ msgstr "ফাইল খুলুন"
 
 #: rnote-ui/src/dialogs/import.rs:143
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1680,7 +1680,7 @@ msgstr "ফাইলের নাম:"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "নতুন ফোল্ডার"
 
 #~ msgid "_Paste clipboard"
 #~ msgstr "ক্লিপবোর্ডে _পেস্ট করুন"

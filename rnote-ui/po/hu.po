@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-12-01 11:29+0000\n"
+"PO-Revision-Date: 2022-12-05 11:54+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -82,8 +82,6 @@ msgid "Use _dark colors"
 msgstr "_Sötét színek használata"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
 msgstr "_Fejlesztői mód"
 
@@ -92,10 +90,8 @@ msgid "Developer _menu"
 msgstr "Fejlesztői _menü"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "_Látásható hibakeresés"
+msgstr "Látásható _hibakeresés"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -126,11 +122,8 @@ msgid "_Print"
 msgstr "_Nyomtatás"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "Vágólap beillesztése"
+msgstr "_Vágólap beillesztése"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -165,8 +158,6 @@ msgid "_Donate 💝"
 msgstr "_Hozzájárulás 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
 msgstr "_A Rnote névjegye"
 
@@ -277,8 +268,6 @@ msgid "Draw with _touch input"
 msgstr "Rajzolás _érintéses bemenettel"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
 msgstr "_Ceruza hangok"
 

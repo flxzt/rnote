@@ -128,9 +128,7 @@ mod imp {
                     utils::FileType::Unsupported => {
                         log::warn!("tried to open unsupported file type");
                     }
-                    _ => {
-                        *self.input_file.borrow_mut() = Some(file.clone());
-                    }
+                    _ => inst.set_input_file(Some(file.clone())),
                 };
             }
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-04 14:39+0100\n"
-"PO-Revision-Date: 2022-12-05 15:19+0000\n"
+"PO-Revision-Date: 2022-12-05 15:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -87,16 +87,12 @@ msgid "De_veloper mode"
 msgstr "_বিকাশকারী মোড"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
 msgstr "বিকাশকারী _মেনু"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "Visual _debugging"
-msgstr "_ভিজ্যুয়াল ডিবাগিং"
+msgstr "ভিজ্যুয়াল _ডিবাগিং"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -127,11 +123,8 @@ msgid "_Print"
 msgstr "_প্রিন্ট করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "ক্লিপবোর্ডে পেস্ট করুন"
+msgstr "_ক্লিপবোর্ডে পেস্ট করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -154,10 +147,8 @@ msgid "Export _selection"
 msgstr "_নির্বাচন রপ্তানি করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "সেটিংস"
+msgstr "সে_টিংস"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
@@ -280,20 +271,16 @@ msgid "Draw with _touch input"
 msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "_Pen sounds"
-msgstr "কলমের ধ্বনি"
+msgstr "_কলমের ধ্বনি"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"
 msgstr "নথি _পরিষ্কার করুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "আসল পৃষ্ঠায় ফিরে জান"
+msgstr "আসল পৃষ্ঠায় _ফিরে জান"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
@@ -499,8 +486,6 @@ msgid "Import Xournal++ file"
 msgstr "Xournal++ ফাইল আমদানি করুন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ file import preferences"
 msgstr "Xournal++ ফাইল আমদানি পছন্দসমূহ"
 
@@ -524,8 +509,6 @@ msgid "Export"
 msgstr "রপ্তানি"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Import file"
 msgid "Export file"
 msgstr "ফাইল রপ্তানি করুন"
 
@@ -558,15 +541,11 @@ msgstr "পটভূমি রপ্তানি করা উচিত কি�
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
 msgstr "প্যাটার্ন সহ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
 msgstr "পটভূমি রপ্তানি করা উচিত কিনা তা সেট করুন"
 
@@ -597,22 +576,16 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "SVG হিসাবে নথি রপ্তানী করুন"
+msgstr "পৃষ্ঠা হিসাবে নথি রপ্তানী করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "ডিরেক্টরি তৈরি করুন"
+msgstr "ডিরেক্টরি রপ্তানি করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "রপ্তানি ফাইল নির্বাচন করুন"
+msgstr "রপ্তানির ডাইরেক্টরি নির্বাচন করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy

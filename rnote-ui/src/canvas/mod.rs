@@ -35,30 +35,30 @@ mod imp {
 
     #[allow(missing_debug_implementations)]
     pub(crate) struct RnoteCanvas {
-        pub hadjustment: RefCell<Option<Adjustment>>,
-        pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
-        pub vadjustment: RefCell<Option<Adjustment>>,
-        pub vadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
-        pub hscroll_policy: Cell<ScrollablePolicy>,
-        pub vscroll_policy: Cell<ScrollablePolicy>,
-        pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
-        pub regular_cursor: RefCell<gdk::Cursor>,
-        pub regular_cursor_icon_name: RefCell<String>,
-        pub drawing_cursor: RefCell<gdk::Cursor>,
-        pub drawing_cursor_icon_name: RefCell<String>,
-        pub stylus_drawing_gesture: GestureStylus,
-        pub mouse_drawing_gesture: GestureDrag,
-        pub touch_drawing_gesture: GestureDrag,
-        pub key_controller: EventControllerKey,
-        pub key_controller_im_context: IMContextSimple,
+        pub(crate) hadjustment: RefCell<Option<Adjustment>>,
+        pub(crate) hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) vadjustment: RefCell<Option<Adjustment>>,
+        pub(crate) vadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
+        pub(crate) vscroll_policy: Cell<ScrollablePolicy>,
+        pub(crate) zoom_timeout_id: RefCell<Option<glib::SourceId>>,
+        pub(crate) regular_cursor: RefCell<gdk::Cursor>,
+        pub(crate) regular_cursor_icon_name: RefCell<String>,
+        pub(crate) drawing_cursor: RefCell<gdk::Cursor>,
+        pub(crate) drawing_cursor_icon_name: RefCell<String>,
+        pub(crate) stylus_drawing_gesture: GestureStylus,
+        pub(crate) mouse_drawing_gesture: GestureDrag,
+        pub(crate) touch_drawing_gesture: GestureDrag,
+        pub(crate) key_controller: EventControllerKey,
+        pub(crate) key_controller_im_context: IMContextSimple,
 
-        pub engine: Rc<RefCell<RnoteEngine>>,
+        pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
-        pub output_file: RefCell<Option<gio::File>>,
-        pub unsaved_changes: Cell<bool>,
-        pub empty: Cell<bool>,
+        pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) empty: Cell<bool>,
 
-        pub touch_drawing: Cell<bool>,
+        pub(crate) touch_drawing: Cell<bool>,
     }
 
     impl Default for RnoteCanvas {
@@ -423,9 +423,9 @@ impl Default for RnoteCanvas {
 
 impl RnoteCanvas {
     // the zoom timeout time
-    pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
+    pub(crate) const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
-    pub const ZOOM_STEP: f64 = 0.1;
+    pub(crate) const ZOOM_STEP: f64 = 0.1;
 
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])

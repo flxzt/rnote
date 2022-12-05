@@ -10,11 +10,11 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
     pub(crate) struct EraserPage {
         #[template_child]
-        pub eraserstyle_trash_colliding_strokes_toggle: TemplateChild<ToggleButton>,
+        pub(crate) eraserstyle_trash_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub eraserstyle_split_colliding_strokes_toggle: TemplateChild<ToggleButton>,
+        pub(crate) eraserstyle_split_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub width_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) width_spinbutton: TemplateChild<SpinButton>,
     }
 
     #[glib::object_subclass]

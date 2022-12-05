@@ -14,12 +14,12 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penshortcutrow.ui")]
     pub(crate) struct PenShortcutRow {
-        pub key: RefCell<Option<ShortcutKey>>,
-        pub action: RefCell<ShortcutAction>,
-        pub changepenstyle_model: ChangePenStyleListModel,
+        pub(crate) key: RefCell<Option<ShortcutKey>>,
+        pub(crate) action: RefCell<ShortcutAction>,
+        pub(crate) changepenstyle_model: ChangePenStyleListModel,
 
         #[template_child]
-        pub permanent_checker: TemplateChild<CheckButton>,
+        pub(crate) permanent_checker: TemplateChild<CheckButton>,
     }
 
     impl Default for PenShortcutRow {

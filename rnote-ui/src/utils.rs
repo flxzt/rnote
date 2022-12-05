@@ -94,7 +94,10 @@ pub(crate) fn translate_aabb_to_widget(
 }
 
 /// Create a new file or replace if it already exists, asynchronously
-pub async fn create_replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
+pub(crate) async fn create_replace_file_future(
+    bytes: Vec<u8>,
+    file: &gio::File,
+) -> anyhow::Result<()> {
     let output_stream = file
         .replace_future(
             None,

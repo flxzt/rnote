@@ -16,13 +16,13 @@ mod imp {
     #[serde(default, rename = "workspacelistentryinner")]
     pub(crate) struct WorkspaceListEntryInner {
         #[serde(rename = "dir")]
-        pub dir: PathBuf,
+        pub(crate) dir: PathBuf,
         #[serde(rename = "icon")]
-        pub icon: String,
+        pub(crate) icon: String,
         #[serde(rename = "color")]
-        pub color: u32,
+        pub(crate) color: u32,
         #[serde(rename = "name")]
-        pub name: String,
+        pub(crate) name: String,
     }
 
     impl Default for WorkspaceListEntryInner {
@@ -38,7 +38,7 @@ mod imp {
 
     #[derive(Debug, Default)]
     pub(crate) struct WorkspaceEntry {
-        pub inner: RefCell<WorkspaceListEntryInner>,
+        pub(crate) inner: RefCell<WorkspaceListEntryInner>,
     }
 
     #[glib::object_subclass]
@@ -143,7 +143,7 @@ impl Default for WorkspaceListEntry {
 }
 
 impl WorkspaceListEntry {
-    pub const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
+    pub(crate) const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
 
     pub(crate) fn new(inner: WorkspaceListEntryInner) -> Self {
         glib::Object::new(&[

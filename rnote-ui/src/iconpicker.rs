@@ -15,12 +15,12 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/iconpicker.ui")]
     pub(crate) struct IconPicker {
-        pub list: RefCell<Option<StringList>>,
-        pub selection: RefCell<Option<SingleSelection>>,
-        pub selected_handlerid: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) list: RefCell<Option<StringList>>,
+        pub(crate) selection: RefCell<Option<SingleSelection>>,
+        pub(crate) selected_handlerid: RefCell<Option<glib::SignalHandlerId>>,
 
         #[template_child]
-        pub gridview: TemplateChild<GridView>,
+        pub(crate) gridview: TemplateChild<GridView>,
     }
 
     impl Default for IconPicker {

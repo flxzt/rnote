@@ -10,15 +10,15 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
     pub(crate) struct SelectorPage {
         #[template_child]
-        pub selectorstyle_polygon_toggle: TemplateChild<ToggleButton>,
+        pub(crate) selectorstyle_polygon_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
+        pub(crate) selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub selectorstyle_single_toggle: TemplateChild<ToggleButton>,
+        pub(crate) selectorstyle_single_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub selectorstyle_intersectingpath_toggle: TemplateChild<ToggleButton>,
+        pub(crate) selectorstyle_intersectingpath_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
+        pub(crate) resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]

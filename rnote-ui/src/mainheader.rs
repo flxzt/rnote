@@ -12,35 +12,35 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
     pub(crate) struct MainHeader {
         #[template_child]
-        pub headerbar: TemplateChild<adw::HeaderBar>,
+        pub(crate) headerbar: TemplateChild<adw::HeaderBar>,
         #[template_child]
-        pub main_title: TemplateChild<adw::WindowTitle>,
+        pub(crate) main_title: TemplateChild<adw::WindowTitle>,
         #[template_child]
-        pub main_title_unsaved_indicator: TemplateChild<Label>,
+        pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
-        pub menus_box: TemplateChild<gtk4::Box>,
+        pub(crate) menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
+        pub(crate) pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
         #[template_child]
-        pub pens_toggles_clamp: TemplateChild<adw::Clamp>,
+        pub(crate) pens_toggles_clamp: TemplateChild<adw::Clamp>,
         #[template_child]
-        pub pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
+        pub(crate) pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub brush_toggle: TemplateChild<ToggleButton>,
+        pub(crate) brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub shaper_toggle: TemplateChild<ToggleButton>,
+        pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub typewriter_toggle: TemplateChild<ToggleButton>,
+        pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub eraser_toggle: TemplateChild<ToggleButton>,
+        pub(crate) eraser_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub selector_toggle: TemplateChild<ToggleButton>,
+        pub(crate) selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub tools_toggle: TemplateChild<ToggleButton>,
+        pub(crate) tools_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub canvasmenu: TemplateChild<CanvasMenu>,
+        pub(crate) canvasmenu: TemplateChild<CanvasMenu>,
         #[template_child]
-        pub appmenu: TemplateChild<AppMenu>,
+        pub(crate) appmenu: TemplateChild<AppMenu>,
     }
 
     #[glib::object_subclass]

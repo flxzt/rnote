@@ -12,19 +12,19 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
     pub(crate) struct CanvasMenu {
         #[template_child]
-        pub menubutton: TemplateChild<MenuButton>,
+        pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub popovermenu: TemplateChild<PopoverMenu>,
+        pub(crate) popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
-        pub menu_model: TemplateChild<gio::MenuModel>,
+        pub(crate) menu_model: TemplateChild<gio::MenuModel>,
         #[template_child]
-        pub zoom_in_button: TemplateChild<Button>,
+        pub(crate) zoom_in_button: TemplateChild<Button>,
         #[template_child]
-        pub zoom_out_button: TemplateChild<Button>,
+        pub(crate) zoom_out_button: TemplateChild<Button>,
         #[template_child]
-        pub zoom_reset_button: TemplateChild<Button>,
+        pub(crate) zoom_reset_button: TemplateChild<Button>,
         #[template_child]
-        pub zoom_fit_width_button: TemplateChild<Button>,
+        pub(crate) zoom_fit_width_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]

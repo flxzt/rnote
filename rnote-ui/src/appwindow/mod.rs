@@ -1,6 +1,6 @@
 mod appsettings;
 mod appwindowactions;
-pub mod imexport;
+pub(crate) mod imexport;
 
 use std::{
     cell::{Cell, RefCell},
@@ -35,90 +35,90 @@ mod imp {
     #[derive(CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
     pub(crate) struct RnoteAppWindow {
-        pub app_settings: gio::Settings,
-        pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
-        pub autosave_source_id: RefCell<Option<glib::SourceId>>,
-        pub progresspulse_source_id: RefCell<Option<glib::SourceId>>,
-        pub periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
+        pub(crate) app_settings: gio::Settings,
+        pub(crate) filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
+        pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
+        pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
+        pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
 
-        pub unsaved_changes: Cell<bool>,
-        pub autosave: Cell<bool>,
-        pub autosave_interval_secs: Cell<u32>,
-        pub righthanded: Cell<bool>,
-        pub permanently_hide_canvas_scrollbars: Cell<bool>,
+        pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) autosave: Cell<bool>,
+        pub(crate) autosave_interval_secs: Cell<u32>,
+        pub(crate) righthanded: Cell<bool>,
+        pub(crate) permanently_hide_canvas_scrollbars: Cell<bool>,
 
-        pub canvas_touch_drag_gesture: GestureDrag,
-        pub canvas_drag_empty_area_gesture: GestureDrag,
-        pub canvas_zoom_gesture: GestureZoom,
-        pub canvas_zoom_scroll_controller: EventControllerScroll,
-        pub canvas_mouse_drag_middle_gesture: GestureDrag,
+        pub(crate) canvas_touch_drag_gesture: GestureDrag,
+        pub(crate) canvas_drag_empty_area_gesture: GestureDrag,
+        pub(crate) canvas_zoom_gesture: GestureZoom,
+        pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
+        pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
 
         #[template_child]
-        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
+        pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
-        pub main_grid: TemplateChild<Grid>,
+        pub(crate) main_grid: TemplateChild<Grid>,
         #[template_child]
-        pub canvas_box: TemplateChild<gtk4::Box>,
+        pub(crate) canvas_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub canvas_quickactions_box: TemplateChild<gtk4::Box>,
+        pub(crate) canvas_quickactions_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub canvas_fixedsize_quickactions_revealer: TemplateChild<Revealer>,
+        pub(crate) canvas_fixedsize_quickactions_revealer: TemplateChild<Revealer>,
         #[template_child]
-        pub undo_button: TemplateChild<Button>,
+        pub(crate) undo_button: TemplateChild<Button>,
         #[template_child]
-        pub redo_button: TemplateChild<Button>,
+        pub(crate) redo_button: TemplateChild<Button>,
         #[template_child]
-        pub canvas_scroller: TemplateChild<ScrolledWindow>,
+        pub(crate) canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub canvas_progressbar: TemplateChild<ProgressBar>,
+        pub(crate) canvas_progressbar: TemplateChild<ProgressBar>,
         #[template_child]
-        pub canvas: TemplateChild<RnoteCanvas>,
+        pub(crate) canvas: TemplateChild<RnoteCanvas>,
         #[template_child]
-        pub settings_panel: TemplateChild<SettingsPanel>,
+        pub(crate) settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
-        pub sidebar_scroller: TemplateChild<ScrolledWindow>,
+        pub(crate) sidebar_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub sidebar_grid: TemplateChild<Grid>,
+        pub(crate) sidebar_grid: TemplateChild<Grid>,
         #[template_child]
-        pub sidebar_sep: TemplateChild<Separator>,
+        pub(crate) sidebar_sep: TemplateChild<Separator>,
         #[template_child]
-        pub flap: TemplateChild<adw::Flap>,
+        pub(crate) flap: TemplateChild<adw::Flap>,
         #[template_child]
-        pub flap_box: TemplateChild<gtk4::Box>,
+        pub(crate) flap_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub flap_header: TemplateChild<adw::HeaderBar>,
+        pub(crate) flap_header: TemplateChild<adw::HeaderBar>,
         #[template_child]
-        pub flap_resizer: TemplateChild<gtk4::Box>,
+        pub(crate) flap_resizer: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub flap_resizer_box: TemplateChild<gtk4::Box>,
+        pub(crate) flap_resizer_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub flap_close_button: TemplateChild<Button>,
+        pub(crate) flap_close_button: TemplateChild<Button>,
         #[template_child]
-        pub flap_stack: TemplateChild<adw::ViewStack>,
+        pub(crate) flap_stack: TemplateChild<adw::ViewStack>,
         #[template_child]
-        pub workspacebrowser: TemplateChild<WorkspaceBrowser>,
+        pub(crate) workspacebrowser: TemplateChild<WorkspaceBrowser>,
         #[template_child]
-        pub flapreveal_toggle: TemplateChild<ToggleButton>,
+        pub(crate) flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub flap_menus_box: TemplateChild<Box>,
+        pub(crate) flap_menus_box: TemplateChild<Box>,
         #[template_child]
-        pub mainheader: TemplateChild<MainHeader>,
+        pub(crate) mainheader: TemplateChild<MainHeader>,
         #[template_child]
-        pub narrow_pens_toggles_revealer: TemplateChild<Revealer>,
+        pub(crate) narrow_pens_toggles_revealer: TemplateChild<Revealer>,
         #[template_child]
-        pub narrow_brush_toggle: TemplateChild<ToggleButton>,
+        pub(crate) narrow_brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub narrow_shaper_toggle: TemplateChild<ToggleButton>,
+        pub(crate) narrow_shaper_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub narrow_eraser_toggle: TemplateChild<ToggleButton>,
+        pub(crate) narrow_eraser_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub narrow_selector_toggle: TemplateChild<ToggleButton>,
+        pub(crate) narrow_selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub narrow_typewriter_toggle: TemplateChild<ToggleButton>,
+        pub(crate) narrow_typewriter_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub narrow_tools_toggle: TemplateChild<ToggleButton>,
+        pub(crate) narrow_tools_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub penssidebar: TemplateChild<PensSideBar>,
+        pub(crate) penssidebar: TemplateChild<PensSideBar>,
     }
 
     impl Default for RnoteAppWindow {
@@ -837,9 +837,9 @@ glib::wrapper! {
         @implements gio::ActionMap, gio::ActionGroup;
 }
 
-pub static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
+pub(crate) static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
     once_cell::sync::Lazy::new(|| gettext("New Document"));
-pub static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
+pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
     once_cell::sync::Lazy::new(|| gettext("Draft"));
 
 impl RnoteAppWindow {

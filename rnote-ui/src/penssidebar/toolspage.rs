@@ -9,9 +9,9 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
     pub(crate) struct ToolsPage {
         #[template_child]
-        pub toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
+        pub(crate) toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
+        pub(crate) toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]

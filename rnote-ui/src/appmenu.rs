@@ -9,15 +9,15 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/appmenu.ui")]
     pub(crate) struct AppMenu {
         #[template_child]
-        pub menubutton: TemplateChild<MenuButton>,
+        pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub popovermenu: TemplateChild<PopoverMenu>,
+        pub(crate) popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
-        pub menu_model: TemplateChild<gio::MenuModel>,
+        pub(crate) menu_model: TemplateChild<gio::MenuModel>,
         #[template_child]
-        pub lefthanded_toggle: TemplateChild<ToggleButton>,
+        pub(crate) lefthanded_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub righthanded_toggle: TemplateChild<ToggleButton>,
+        pub(crate) righthanded_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]

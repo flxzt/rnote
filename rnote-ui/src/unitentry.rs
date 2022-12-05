@@ -11,15 +11,15 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/unitentry.ui")]
     pub(crate) struct UnitEntry {
-        pub value: Cell<f64>,
-        pub unit: Cell<format::MeasureUnit>,
-        pub dpi: Cell<f64>,
+        pub(crate) value: Cell<f64>,
+        pub(crate) unit: Cell<format::MeasureUnit>,
+        pub(crate) dpi: Cell<f64>,
         #[template_child]
-        pub value_adj: TemplateChild<Adjustment>,
+        pub(crate) value_adj: TemplateChild<Adjustment>,
         #[template_child]
-        pub value_spinner: TemplateChild<SpinButton>,
+        pub(crate) value_spinner: TemplateChild<SpinButton>,
         #[template_child]
-        pub unit_dropdown: TemplateChild<DropDown>,
+        pub(crate) unit_dropdown: TemplateChild<DropDown>,
     }
 
     impl Default for UnitEntry {

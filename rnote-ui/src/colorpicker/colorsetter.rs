@@ -13,9 +13,9 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct ColorSetter {
-        pub css: CssProvider,
-        pub color: Cell<gdk::RGBA>,
-        pub position: Cell<PositionType>,
+        pub(crate) css: CssProvider,
+        pub(crate) color: Cell<gdk::RGBA>,
+        pub(crate) position: Cell<PositionType>,
     }
 
     #[glib::object_subclass]
@@ -213,7 +213,7 @@ impl Default for ColorSetter {
 }
 
 impl ColorSetter {
-    pub const COLOR_DEFAULT: Color = Color::BLACK;
+    pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])

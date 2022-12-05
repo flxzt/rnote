@@ -21,7 +21,7 @@ mod imp {
     use super::*;
     #[allow(missing_debug_implementations)]
     pub(crate) struct RnoteApp {
-        pub input_file: RefCell<Option<gio::File>>,
+        pub(crate) input_file: RefCell<Option<gio::File>>,
     }
 
     impl Default for RnoteApp {

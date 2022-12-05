@@ -1,10 +1,10 @@
 #![warn(missing_debug_implementations)]
 #![allow(clippy::single_match)]
 
-pub mod config;
-pub mod dialogs;
-pub mod globals;
-pub mod utils;
+pub(crate) mod config;
+pub(crate) mod dialogs;
+pub(crate) mod globals;
+pub(crate) mod utils;
 
 /// Widgets
 mod app;
@@ -15,7 +15,7 @@ mod canvasmenu;
 mod colorpicker;
 mod iconpicker;
 mod mainheader;
-pub mod penssidebar;
+pub(crate) mod penssidebar;
 mod settingspanel;
 mod unitentry;
 mod workspacebrowser;

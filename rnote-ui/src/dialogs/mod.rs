@@ -1,5 +1,5 @@
-pub mod export;
-pub mod import;
+pub(crate) mod export;
+pub(crate) mod import;
 
 use adw::prelude::*;
 use gettextrs::gettext;

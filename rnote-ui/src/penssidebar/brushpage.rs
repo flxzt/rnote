@@ -22,39 +22,39 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub(crate) struct BrushPage {
         #[template_child]
-        pub width_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub colorpicker: TemplateChild<ColorPicker>,
+        pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
-        pub brushstyle_menubutton: TemplateChild<MenuButton>,
+        pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub brushstyle_image: TemplateChild<Image>,
+        pub(crate) brushstyle_image: TemplateChild<Image>,
         #[template_child]
-        pub brushstyle_listbox: TemplateChild<ListBox>,
+        pub(crate) brushstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub brushstyle_marker_row: TemplateChild<adw::ActionRow>,
+        pub(crate) brushstyle_marker_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub brushstyle_solid_row: TemplateChild<adw::ActionRow>,
+        pub(crate) brushstyle_solid_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub brushstyle_textured_row: TemplateChild<adw::ActionRow>,
+        pub(crate) brushstyle_textured_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub brushconfig_menubutton: TemplateChild<MenuButton>,
+        pub(crate) brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub brushconfig_popover: TemplateChild<Popover>,
+        pub(crate) brushconfig_popover: TemplateChild<Popover>,
         #[template_child]
-        pub brush_buildertype_listbox: TemplateChild<ListBox>,
+        pub(crate) brush_buildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub brush_buildertype_simple: TemplateChild<adw::ActionRow>,
+        pub(crate) brush_buildertype_simple: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub brush_buildertype_curved: TemplateChild<adw::ActionRow>,
+        pub(crate) brush_buildertype_curved: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub brush_buildertype_modeled: TemplateChild<adw::ActionRow>,
+        pub(crate) brush_buildertype_modeled: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
+        pub(crate) solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
+        pub(crate) texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
     }
 
     #[glib::object_subclass]

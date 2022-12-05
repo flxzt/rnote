@@ -181,7 +181,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn load_in_rnote_bytes<P>(
+    pub(crate) async fn load_in_rnote_bytes<P>(
         &self,
         bytes: Vec<u8>,
         path: Option<P>,
@@ -224,7 +224,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn load_in_vectorimage_bytes(
+    pub(crate) async fn load_in_vectorimage_bytes(
         &self,
         bytes: Vec<u8>,
         // In coordinate space of the doc
@@ -260,7 +260,7 @@ impl RnoteAppWindow {
     }
 
     /// Target position is in the coordinate space of the doc
-    pub async fn load_in_bitmapimage_bytes(
+    pub(crate) async fn load_in_bitmapimage_bytes(
         &self,
         bytes: Vec<u8>,
         // In the coordinate space of the doc
@@ -314,7 +314,7 @@ impl RnoteAppWindow {
     }
 
     /// Target position is in the coordinate space of the doc
-    pub async fn load_in_pdf_bytes(
+    pub(crate) async fn load_in_pdf_bytes(
         &self,
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
@@ -369,7 +369,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let rnote_bytes_receiver = self
                 .canvas()
@@ -385,7 +385,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc(
+    pub(crate) async fn export_doc(
         &self,
         file: &gio::File,
         title: String,
@@ -405,7 +405,7 @@ impl RnoteAppWindow {
     /// Exports document pages
     /// file_stem_name: the stem name of the created files. This is extended by an enumeration of the page number and file extension
     /// overwrites existing files with the same name!
-    pub async fn export_doc_pages(
+    pub(crate) async fn export_doc_pages(
         &self,
         dir: &gio::File,
         file_stem_name: String,
@@ -451,7 +451,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_selection(
+    pub(crate) async fn export_selection(
         &self,
         file: &gio::File,
         export_prefs_override: Option<SelectionExportPrefs>,
@@ -471,7 +471,7 @@ impl RnoteAppWindow {
 
     /// exports and writes the engine state as json into the file.
     /// Only for debugging!
-    pub async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub(crate) async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
         let exported_engine_state = self.canvas().engine().borrow().export_state_as_json()?;
 
         crate::utils::create_replace_file_future(exported_engine_state.into_bytes(), file).await?;
@@ -481,7 +481,7 @@ impl RnoteAppWindow {
 
     /// exports and writes the engine config as json into the file.
     /// Only for debugging!
-    pub async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub(crate) async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
         let exported_engine_config = self.canvas().engine().borrow().save_engine_config()?;
 
         crate::utils::create_replace_file_future(exported_engine_config.into_bytes(), file).await?;

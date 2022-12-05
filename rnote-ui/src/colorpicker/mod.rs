@@ -23,25 +23,25 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
     pub(crate) struct ColorPicker {
         #[template_child]
-        pub setterbox: TemplateChild<Box>,
+        pub(crate) setterbox: TemplateChild<Box>,
         #[template_child]
-        pub first_colorsetter: TemplateChild<ColorSetter>,
+        pub(crate) first_colorsetter: TemplateChild<ColorSetter>,
         #[template_child]
-        pub colorpicker_button: TemplateChild<MenuButton>,
+        pub(crate) colorpicker_button: TemplateChild<MenuButton>,
         #[template_child]
-        pub colorpicker_popover: TemplateChild<Popover>,
+        pub(crate) colorpicker_popover: TemplateChild<Popover>,
         #[template_child]
-        pub colorchooser: TemplateChild<ColorChooserWidget>,
+        pub(crate) colorchooser: TemplateChild<ColorChooserWidget>,
         #[template_child]
-        pub colorchooser_editor_gobackbutton: TemplateChild<Button>,
+        pub(crate) colorchooser_editor_gobackbutton: TemplateChild<Button>,
         #[template_child]
-        pub colorchooser_editor_selectbutton: TemplateChild<Button>,
+        pub(crate) colorchooser_editor_selectbutton: TemplateChild<Button>,
 
-        pub position: Cell<PositionType>,
-        pub selected: Cell<u32>,
-        pub amount_colorbuttons: Cell<u32>,
-        pub colorsetters: Rc<RefCell<Vec<ColorSetter>>>,
-        pub current_color: Cell<gdk::RGBA>,
+        pub(crate) position: Cell<PositionType>,
+        pub(crate) selected: Cell<u32>,
+        pub(crate) amount_colorbuttons: Cell<u32>,
+        pub(crate) colorsetters: Rc<RefCell<Vec<ColorSetter>>>,
+        pub(crate) current_color: Cell<gdk::RGBA>,
     }
 
     impl Default for ColorPicker {
@@ -379,10 +379,10 @@ impl Default for ColorPicker {
 }
 
 impl ColorPicker {
-    pub const COLOR_DEFAULT: Color = Color::BLACK;
-    pub const AMOUNT_COLORBUTTONS_MIN: u32 = 1;
-    pub const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
-    pub const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
+    pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
+    pub(crate) const AMOUNT_COLORBUTTONS_MIN: u32 = 1;
+    pub(crate) const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
+    pub(crate) const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
 
     pub(crate) fn new(current_color: gdk::RGBA) -> Self {
         glib::Object::new(&[("current-color", &current_color.to_value())])

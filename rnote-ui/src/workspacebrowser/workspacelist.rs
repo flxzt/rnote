@@ -9,7 +9,7 @@ mod imp {
 
     #[derive(Debug, Default)]
     pub(crate) struct WorkspaceList {
-        pub list: RefCell<Vec<WorkspaceListEntry>>,
+        pub(crate) list: RefCell<Vec<WorkspaceListEntry>>,
     }
 
     #[glib::object_subclass]

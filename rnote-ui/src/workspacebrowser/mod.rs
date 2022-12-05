@@ -28,32 +28,32 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub(crate) struct WorkspaceBrowser {
-        pub workspace_actions: gio::SimpleActionGroup,
-        pub files_dirlist: DirectoryList,
-        pub workspace_list: WorkspaceList,
+        pub(crate) workspace_actions: gio::SimpleActionGroup,
+        pub(crate) files_dirlist: DirectoryList,
+        pub(crate) workspace_list: WorkspaceList,
 
         #[template_child]
-        pub grid: TemplateChild<Grid>,
+        pub(crate) grid: TemplateChild<Grid>,
         #[template_child]
-        pub files_scroller: TemplateChild<ScrolledWindow>,
+        pub(crate) files_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub files_listview: TemplateChild<ListView>,
+        pub(crate) files_listview: TemplateChild<ListView>,
         #[template_child]
-        pub dir_controls_dir_up_button: TemplateChild<Button>,
+        pub(crate) dir_controls_dir_up_button: TemplateChild<Button>,
         #[template_child]
-        pub dir_controls_actions_box: TemplateChild<gtk4::Box>,
+        pub(crate) dir_controls_actions_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub workspaces_bar: TemplateChild<gtk4::Box>,
+        pub(crate) workspaces_bar: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub workspaces_scroller: TemplateChild<ScrolledWindow>,
+        pub(crate) workspaces_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub workspaces_listbox: TemplateChild<ListBox>,
+        pub(crate) workspaces_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub add_workspace_button: TemplateChild<Button>,
+        pub(crate) add_workspace_button: TemplateChild<Button>,
         #[template_child]
-        pub remove_workspace_button: TemplateChild<Button>,
+        pub(crate) remove_workspace_button: TemplateChild<Button>,
         #[template_child]
-        pub edit_workspace_button: TemplateChild<Button>,
+        pub(crate) edit_workspace_button: TemplateChild<Button>,
     }
 
     impl Default for WorkspaceBrowser {

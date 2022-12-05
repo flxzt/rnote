@@ -20,63 +20,63 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub(crate) struct ShaperPage {
         #[template_child]
-        pub shaperstyle_menubutton: TemplateChild<MenuButton>,
+        pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub shaperstyle_image: TemplateChild<Image>,
+        pub(crate) shaperstyle_image: TemplateChild<Image>,
         #[template_child]
-        pub shaperstyle_listbox: TemplateChild<ListBox>,
+        pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapeconfig_menubutton: TemplateChild<MenuButton>,
+        pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub shapeconfig_popover: TemplateChild<Popover>,
+        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
         #[template_child]
-        pub roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
+        pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub width_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub stroke_colorpicker: TemplateChild<ColorPicker>,
+        pub(crate) stroke_colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
-        pub fill_colorpicker: TemplateChild<ColorPicker>,
+        pub(crate) fill_colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
-        pub shapebuildertype_menubutton: TemplateChild<MenuButton>,
+        pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub shapebuildertype_image: TemplateChild<Image>,
+        pub(crate) shapebuildertype_image: TemplateChild<Image>,
         #[template_child]
-        pub shapebuildertype_listbox: TemplateChild<ListBox>,
+        pub(crate) shapebuildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_coordsystem2d_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_coordsystem2d_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_coordsystem3d_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_coordsystem3d_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_quadrantcoordsystem2d_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_quadrantcoordsystem2d_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_quadbez_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_quadbez_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub constraint_menubutton: TemplateChild<MenuButton>,
+        pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub constraint_enabled_switch: TemplateChild<Switch>,
+        pub(crate) constraint_enabled_switch: TemplateChild<Switch>,
         #[template_child]
-        pub constraint_one_to_one_switch: TemplateChild<Switch>,
+        pub(crate) constraint_one_to_one_switch: TemplateChild<Switch>,
         #[template_child]
-        pub constraint_three_to_two_switch: TemplateChild<Switch>,
+        pub(crate) constraint_three_to_two_switch: TemplateChild<Switch>,
         #[template_child]
-        pub constraint_golden_switch: TemplateChild<Switch>,
+        pub(crate) constraint_golden_switch: TemplateChild<Switch>,
     }
 
     #[glib::object_subclass]

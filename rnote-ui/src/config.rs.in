@@ -1,18 +1,19 @@
-pub const APP_NAME: &str = @APP_NAME@;
-pub const APP_NAME_CAPITALIZED: &str = @APP_NAME_CAPITALIZED@;
-pub const APP_ID: &str = @APP_ID@;
-pub const APP_IDPATH: &str = @APP_IDPATH@;
-pub const APP_VERSION: &str = @VERSION@;
-pub const APP_VERSION_SUFFIX: &str = @VERSION_SUFFIX@;
-pub const APP_AUTHOR_NAME: &str = @APP_AUTHOR_NAME@;
-pub const APP_AUTHORS: &[&str] = &[@APP_AUTHORS@];
-pub const APP_WEBSITE: &str = @APP_WEBSITE@;
-pub const APP_ISSUES_URL: &str = @APP_ISSUES_URL@;
-pub const APP_SUPPORT_URL: &str = @APP_SUPPORT_URL@;
-pub const APP_DONATE_URL: &str = @APP_DONATE_URL@;
-pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
-pub const LOCALEDIR: &str = @LOCALEDIR@;
+#[allow(unused)]
+pub(crate) const APP_NAME: &str = @APP_NAME@;
+pub(crate) const APP_NAME_CAPITALIZED: &str = @APP_NAME_CAPITALIZED@;
+pub(crate) const APP_ID: &str = @APP_ID@;
+pub(crate) const APP_IDPATH: &str = @APP_IDPATH@;
+pub(crate) const APP_VERSION: &str = @VERSION@;
+pub(crate) const APP_VERSION_SUFFIX: &str = @VERSION_SUFFIX@;
+pub(crate) const APP_AUTHOR_NAME: &str = @APP_AUTHOR_NAME@;
+pub(crate) const APP_AUTHORS: &[&str] = &[@APP_AUTHORS@];
+pub(crate) const APP_WEBSITE: &str = @APP_WEBSITE@;
+pub(crate) const APP_ISSUES_URL: &str = @APP_ISSUES_URL@;
+pub(crate) const APP_SUPPORT_URL: &str = @APP_SUPPORT_URL@;
+pub(crate) const APP_DONATE_URL: &str = @APP_DONATE_URL@;
+pub(crate) const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
+pub(crate) const LOCALEDIR: &str = @LOCALEDIR@;
 
-pub const PKG_DATA_DIR: &str = @PKG_DATA_DIR@;
-pub const RESOURCES_FILE: &str = @RESOURCES_FILE@;
-pub const PROFILE: &str = @PROFILE@;
+pub(crate) const PKG_DATA_DIR: &str = @PKG_DATA_DIR@;
+pub(crate) const RESOURCES_FILE: &str = @RESOURCES_FILE@;
+pub(crate) const PROFILE: &str = @PROFILE@;

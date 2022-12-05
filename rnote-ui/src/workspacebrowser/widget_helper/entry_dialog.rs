@@ -6,7 +6,7 @@ use gtk4::{
     Align, Button, Entry, Grid, Label, Popover, PositionType,
 };
 
-pub type ApplyButton = Button;
+pub(crate) type ApplyButton = Button;
 
 /// A template-function to create a simple dialog widget for an action:
 ///

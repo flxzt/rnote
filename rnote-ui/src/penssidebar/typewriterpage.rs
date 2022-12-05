@@ -16,41 +16,41 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/typewriterpage.ui")]
     pub(crate) struct TypewriterPage {
         #[template_child]
-        pub fontchooser_menubutton: TemplateChild<MenuButton>,
+        pub(crate) fontchooser_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub fontchooser_buttonimage: TemplateChild<Image>,
+        pub(crate) fontchooser_buttonimage: TemplateChild<Image>,
         #[template_child]
-        pub fontchooser_popover: TemplateChild<Popover>,
+        pub(crate) fontchooser_popover: TemplateChild<Popover>,
         #[template_child]
-        pub fontchooser: TemplateChild<FontChooserWidget>,
+        pub(crate) fontchooser: TemplateChild<FontChooserWidget>,
         #[template_child]
-        pub fontchooser_cancelbutton: TemplateChild<Button>,
+        pub(crate) fontchooser_cancelbutton: TemplateChild<Button>,
         #[template_child]
-        pub fontchooser_selectbutton: TemplateChild<Button>,
+        pub(crate) fontchooser_selectbutton: TemplateChild<Button>,
         #[template_child]
-        pub font_size_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) font_size_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub emojichooser: TemplateChild<EmojiChooser>,
+        pub(crate) emojichooser: TemplateChild<EmojiChooser>,
         #[template_child]
-        pub text_reset_button: TemplateChild<Button>,
+        pub(crate) text_reset_button: TemplateChild<Button>,
         #[template_child]
-        pub text_bold_button: TemplateChild<Button>,
+        pub(crate) text_bold_button: TemplateChild<Button>,
         #[template_child]
-        pub text_italic_button: TemplateChild<Button>,
+        pub(crate) text_italic_button: TemplateChild<Button>,
         #[template_child]
-        pub text_underline_button: TemplateChild<Button>,
+        pub(crate) text_underline_button: TemplateChild<Button>,
         #[template_child]
-        pub text_strikethrough_button: TemplateChild<Button>,
+        pub(crate) text_strikethrough_button: TemplateChild<Button>,
         #[template_child]
-        pub colorpicker: TemplateChild<ColorPicker>,
+        pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
-        pub text_align_start_togglebutton: TemplateChild<ToggleButton>,
+        pub(crate) text_align_start_togglebutton: TemplateChild<ToggleButton>,
         #[template_child]
-        pub text_align_center_togglebutton: TemplateChild<ToggleButton>,
+        pub(crate) text_align_center_togglebutton: TemplateChild<ToggleButton>,
         #[template_child]
-        pub text_align_end_togglebutton: TemplateChild<ToggleButton>,
+        pub(crate) text_align_end_togglebutton: TemplateChild<ToggleButton>,
         #[template_child]
-        pub text_align_fill_togglebutton: TemplateChild<ToggleButton>,
+        pub(crate) text_align_fill_togglebutton: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]

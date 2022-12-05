@@ -1,4 +1,4 @@
-pub mod penshortcutmodels;
+pub(crate) mod penshortcutmodels;
 mod penshortcutrow;
 
 use gtk4::{Image, StringList};
@@ -29,68 +29,68 @@ mod imp {
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub(crate) struct SettingsPanel {
-        pub temporary_format: Rc<RefCell<Format>>,
+        pub(crate) temporary_format: Rc<RefCell<Format>>,
 
         #[template_child]
-        pub settings_scroller: TemplateChild<ScrolledWindow>,
+        pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub general_autosave_enable_switch: TemplateChild<Switch>,
+        pub(crate) general_autosave_enable_switch: TemplateChild<Switch>,
         #[template_child]
-        pub general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
+        pub(crate) general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
+        pub(crate) general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
-        pub general_permanently_hide_scrollbars_switch: TemplateChild<Switch>,
+        pub(crate) general_permanently_hide_scrollbars_switch: TemplateChild<Switch>,
         #[template_child]
-        pub general_regular_cursor_picker: TemplateChild<IconPicker>,
+        pub(crate) general_regular_cursor_picker: TemplateChild<IconPicker>,
         #[template_child]
-        pub general_regular_cursor_picker_image: TemplateChild<Image>,
+        pub(crate) general_regular_cursor_picker_image: TemplateChild<Image>,
         #[template_child]
-        pub general_drawing_cursor_picker: TemplateChild<IconPicker>,
+        pub(crate) general_drawing_cursor_picker: TemplateChild<IconPicker>,
         #[template_child]
-        pub general_drawing_cursor_picker_image: TemplateChild<Image>,
+        pub(crate) general_drawing_cursor_picker_image: TemplateChild<Image>,
         #[template_child]
-        pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
+        pub(crate) format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub format_orientation_row: TemplateChild<adw::ActionRow>,
+        pub(crate) format_orientation_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub format_orientation_portrait_toggle: TemplateChild<ToggleButton>,
+        pub(crate) format_orientation_portrait_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub format_orientation_landscape_toggle: TemplateChild<ToggleButton>,
+        pub(crate) format_orientation_landscape_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub format_width_row: TemplateChild<adw::ActionRow>,
+        pub(crate) format_width_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub format_width_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) format_width_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
-        pub format_height_row: TemplateChild<adw::ActionRow>,
+        pub(crate) format_height_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub format_height_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) format_height_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
-        pub format_dpi_row: TemplateChild<adw::ActionRow>,
+        pub(crate) format_dpi_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub format_dpi_adj: TemplateChild<Adjustment>,
+        pub(crate) format_dpi_adj: TemplateChild<Adjustment>,
         #[template_child]
-        pub format_revert_button: TemplateChild<Button>,
+        pub(crate) format_revert_button: TemplateChild<Button>,
         #[template_child]
-        pub format_apply_button: TemplateChild<Button>,
+        pub(crate) format_apply_button: TemplateChild<Button>,
         #[template_child]
-        pub background_color_choosebutton: TemplateChild<ColorButton>,
+        pub(crate) background_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
-        pub background_patterns_row: TemplateChild<adw::ComboRow>,
+        pub(crate) background_patterns_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub background_pattern_color_choosebutton: TemplateChild<ColorButton>,
+        pub(crate) background_pattern_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
-        pub background_pattern_width_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) background_pattern_width_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
-        pub background_pattern_height_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) background_pattern_height_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
-        pub penshortcut_stylus_button_primary_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<PenShortcutRow>,
         #[template_child]
-        pub penshortcut_stylus_button_secondary_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_stylus_button_secondary_row: TemplateChild<PenShortcutRow>,
         #[template_child]
-        pub penshortcut_mouse_button_secondary_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_mouse_button_secondary_row: TemplateChild<PenShortcutRow>,
     }
 
     #[glib::object_subclass]

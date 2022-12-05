@@ -28,31 +28,31 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/penssidebar.ui")]
     pub(crate) struct PensSideBar {
         #[template_child]
-        pub sidebar_stack: TemplateChild<Stack>,
+        pub(crate) sidebar_stack: TemplateChild<Stack>,
         #[template_child]
-        pub brush_stackpage: TemplateChild<StackPage>,
+        pub(crate) brush_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub brush_page: TemplateChild<BrushPage>,
+        pub(crate) brush_page: TemplateChild<BrushPage>,
         #[template_child]
-        pub shaper_stackpage: TemplateChild<StackPage>,
+        pub(crate) shaper_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub shaper_page: TemplateChild<ShaperPage>,
+        pub(crate) shaper_page: TemplateChild<ShaperPage>,
         #[template_child]
-        pub typewriter_stackpage: TemplateChild<StackPage>,
+        pub(crate) typewriter_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub typewriter_page: TemplateChild<TypewriterPage>,
+        pub(crate) typewriter_page: TemplateChild<TypewriterPage>,
         #[template_child]
-        pub eraser_stackpage: TemplateChild<StackPage>,
+        pub(crate) eraser_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub eraser_page: TemplateChild<EraserPage>,
+        pub(crate) eraser_page: TemplateChild<EraserPage>,
         #[template_child]
-        pub selector_stackpage: TemplateChild<StackPage>,
+        pub(crate) selector_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub selector_page: TemplateChild<SelectorPage>,
+        pub(crate) selector_page: TemplateChild<SelectorPage>,
         #[template_child]
-        pub tools_stackpage: TemplateChild<StackPage>,
+        pub(crate) tools_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub tools_page: TemplateChild<ToolsPage>,
+        pub(crate) tools_page: TemplateChild<ToolsPage>,
     }
 
     #[glib::object_subclass]

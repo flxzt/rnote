@@ -17,11 +17,11 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacerow.ui")]
     pub(crate) struct WorkspaceRow {
-        pub entry: RefCell<WorkspaceListEntry>,
+        pub(crate) entry: RefCell<WorkspaceListEntry>,
         #[template_child]
-        pub folder_image: TemplateChild<Image>,
+        pub(crate) folder_image: TemplateChild<Image>,
         #[template_child]
-        pub name_label: TemplateChild<Label>,
+        pub(crate) name_label: TemplateChild<Label>,
     }
 
     impl Default for WorkspaceRow {
@@ -195,7 +195,7 @@ impl Default for WorkspaceRow {
 
 impl WorkspaceRow {
     /// The threshold of the luminance of the workspacerow color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
-    pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
+    pub(crate) const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 
     pub(crate) fn new(entry: WorkspaceListEntry) -> Self {
         glib::Object::new(&[("entry", &entry.to_value())])

@@ -15,7 +15,7 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct CanvasLayout {
-        pub old_viewport: Cell<AABB>,
+        pub(crate) old_viewport: Cell<AABB>,
     }
 
     impl Default for CanvasLayout {

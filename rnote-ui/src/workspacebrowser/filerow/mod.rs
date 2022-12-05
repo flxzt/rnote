@@ -15,20 +15,20 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
     pub(crate) struct FileRow {
-        pub current_file: RefCell<Option<gio::File>>,
-        pub drag_source: DragSource,
-        pub action_group: gio::SimpleActionGroup,
+        pub(crate) current_file: RefCell<Option<gio::File>>,
+        pub(crate) drag_source: DragSource,
+        pub(crate) action_group: gio::SimpleActionGroup,
 
         #[template_child]
-        pub file_image: TemplateChild<Image>,
+        pub(crate) file_image: TemplateChild<Image>,
         #[template_child]
-        pub file_label: TemplateChild<Label>,
+        pub(crate) file_label: TemplateChild<Label>,
         #[template_child]
-        pub menubutton_box: TemplateChild<gtk4::Box>,
+        pub(crate) menubutton_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub menubutton: TemplateChild<MenuButton>,
+        pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub popovermenu: TemplateChild<PopoverMenu>,
+        pub(crate) popovermenu: TemplateChild<PopoverMenu>,
     }
 
     impl Default for FileRow {

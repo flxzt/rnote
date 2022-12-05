@@ -1860,7 +1860,7 @@ checksum = "adab1eaa3408fb7f0c777a73e7465fd5656136fc93b670eb6df3c88c2c1344e3"
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
-source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?branch=main#9d02f080864f6978bb3066fdbe41a1d8c0577953"
+source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=9d02f080864f6978bb3066fdbe41a1d8c0577953#9d02f080864f6978bb3066fdbe41a1d8c0577953"
 dependencies = [
  "anyhow",
  "autocxx",
@@ -2080,8 +2080,8 @@ checksum = "348108ab3fba42ec82ff6e9564fc4ca0247bdccdc68dd8af9764bbc79c3c8ffb"
 
 [[package]]
 name = "librsvg"
-version = "2.55.0"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg?rev=669a888bec641efc2b59cd605750582d6bb77244#669a888bec641efc2b59cd605750582d6bb77244"
+version = "2.55.90"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg?tag=2.55.90#2a06e2408ebcd8cb438975a906f48be9c570ba3b"
 dependencies = [
  "byteorder",
  "cairo-rs",

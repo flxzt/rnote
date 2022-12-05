@@ -7,11 +7,10 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# even though all submodule dependencies are specified with their url, cargo will search the root repository for the local packages
-# see: https://github.com/rust-lang/cargo/issues/1462
-
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
+
+librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.55.90" }
 
 log = "0.4.16"
 anyhow = "1.0"
@@ -36,7 +35,6 @@ parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
 gtk4 = {version = "0.5.3", features = ["v4_8"]}
 cairo-rs = {version = "0.16.3", features = ["png", "svg", "pdf"]}
 poppler-rs = {version = "0.20.0", features = ["v21_12"] }
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", rev = "669a888bec641efc2b59cd605750582d6bb77244" }
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9.0"

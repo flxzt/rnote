@@ -10,7 +10,7 @@ mod imp {
     use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/unitentry.ui")]
-    pub struct UnitEntry {
+    pub(crate) struct UnitEntry {
         pub value: Cell<f64>,
         pub unit: Cell<format::MeasureUnit>,
         pub dpi: Cell<f64>,
@@ -200,7 +200,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct UnitEntry(ObjectSubclass<imp::UnitEntry>)
+    pub(crate) struct UnitEntry(ObjectSubclass<imp::UnitEntry>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
@@ -212,47 +212,53 @@ impl Default for UnitEntry {
 }
 
 impl UnitEntry {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn value_adj(&self) -> Adjustment {
-        self.imp().value_adj.get()
-    }
-
-    pub fn value_spinner(&self) -> SpinButton {
-        self.imp().value_spinner.get()
-    }
-
-    pub fn unit_dropdown(&self) -> DropDown {
-        self.imp().unit_dropdown.get()
-    }
-
-    pub fn value(&self) -> f64 {
+    #[allow(unused)]
+    pub(crate) fn value(&self) -> f64 {
         self.property::<f64>("value")
     }
 
-    pub fn set_value(&self, value: f64) {
+    #[allow(unused)]
+    pub(crate) fn set_value(&self, value: f64) {
         self.set_property("value", value.to_value());
     }
 
-    pub fn unit(&self) -> format::MeasureUnit {
+    #[allow(unused)]
+    pub(crate) fn unit(&self) -> format::MeasureUnit {
         self.property::<format::MeasureUnit>("unit")
     }
 
-    pub fn set_unit(&self, unit: format::MeasureUnit) {
+    #[allow(unused)]
+    pub(crate) fn set_unit(&self, unit: format::MeasureUnit) {
         self.set_property("unit", unit.to_value());
     }
 
-    pub fn dpi(&self) -> f64 {
+    #[allow(unused)]
+    pub(crate) fn dpi(&self) -> f64 {
         self.property::<f64>("dpi")
     }
 
-    pub fn set_dpi(&self, dpi: f64) {
+    #[allow(unused)]
+    pub(crate) fn set_dpi(&self, dpi: f64) {
         self.set_property("dpi", dpi.to_value());
     }
 
-    pub fn value_in_px(&self) -> f64 {
+    pub(crate) fn value_adj(&self) -> Adjustment {
+        self.imp().value_adj.get()
+    }
+
+    pub(crate) fn value_spinner(&self) -> SpinButton {
+        self.imp().value_spinner.get()
+    }
+
+    pub(crate) fn unit_dropdown(&self) -> DropDown {
+        self.imp().unit_dropdown.get()
+    }
+
+    pub(crate) fn value_in_px(&self) -> f64 {
         format::MeasureUnit::convert_measurement(
             self.value(),
             self.unit(),
@@ -260,17 +266,5 @@ impl UnitEntry {
             format::MeasureUnit::Px,
             self.dpi(),
         )
-    }
-
-    pub fn convert_current_value(&self, desired_unit: format::MeasureUnit) {
-        let converted_value = format::MeasureUnit::convert_measurement(
-            self.value(),
-            self.unit(),
-            self.dpi(),
-            desired_unit,
-            self.dpi(),
-        );
-        self.set_unit(desired_unit);
-        self.set_value(converted_value);
     }
 }

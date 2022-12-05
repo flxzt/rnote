@@ -6,13 +6,13 @@ mod toolspage;
 mod typewriterpage;
 
 // Re-exports
-pub use brushpage::BrushPage;
-pub use eraserpage::EraserPage;
+pub(crate) use brushpage::BrushPage;
+pub(crate) use eraserpage::EraserPage;
 use rnote_engine::pens::penholder::PenStyle;
-pub use selectorpage::SelectorPage;
-pub use shaperpage::ShaperPage;
-pub use toolspage::ToolsPage;
-pub use typewriterpage::TypewriterPage;
+pub(crate) use selectorpage::SelectorPage;
+pub(crate) use shaperpage::ShaperPage;
+pub(crate) use toolspage::ToolsPage;
+pub(crate) use typewriterpage::TypewriterPage;
 
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
@@ -26,7 +26,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/penssidebar.ui")]
-    pub struct PensSideBar {
+    pub(crate) struct PensSideBar {
         #[template_child]
         pub sidebar_stack: TemplateChild<Stack>,
         #[template_child]
@@ -85,7 +85,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
+    pub(crate) struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
         @extends gtk4::Widget;
 }
 
@@ -96,63 +96,39 @@ impl Default for PensSideBar {
 }
 
 impl PensSideBar {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn sidebar_stack(&self) -> Stack {
+    pub(crate) fn sidebar_stack(&self) -> Stack {
         self.imp().sidebar_stack.get()
     }
 
-    pub fn brush_stackpage(&self) -> StackPage {
-        self.imp().brush_stackpage.get()
-    }
-
-    pub fn brush_page(&self) -> BrushPage {
+    pub(crate) fn brush_page(&self) -> BrushPage {
         self.imp().brush_page.get()
     }
 
-    pub fn shaper_stackpage(&self) -> StackPage {
-        self.imp().shaper_stackpage.get()
-    }
-
-    pub fn shaper_page(&self) -> ShaperPage {
+    pub(crate) fn shaper_page(&self) -> ShaperPage {
         self.imp().shaper_page.get()
     }
 
-    pub fn typewriter_stackpage(&self) -> StackPage {
-        self.imp().typewriter_stackpage.get()
-    }
-
-    pub fn typewriter_page(&self) -> TypewriterPage {
+    pub(crate) fn typewriter_page(&self) -> TypewriterPage {
         self.imp().typewriter_page.get()
     }
 
-    pub fn eraser_stackpage(&self) -> StackPage {
-        self.imp().eraser_stackpage.get()
-    }
-
-    pub fn eraser_page(&self) -> EraserPage {
+    pub(crate) fn eraser_page(&self) -> EraserPage {
         self.imp().eraser_page.get()
     }
 
-    pub fn selector_stackpage(&self) -> StackPage {
-        self.imp().selector_stackpage.get()
-    }
-
-    pub fn selector_page(&self) -> SelectorPage {
+    pub(crate) fn selector_page(&self) -> SelectorPage {
         self.imp().selector_page.get()
     }
 
-    pub fn tools_stackpage(&self) -> StackPage {
-        self.imp().tools_stackpage.get()
-    }
-
-    pub fn tools_page(&self) -> ToolsPage {
+    pub(crate) fn tools_page(&self) -> ToolsPage {
         self.imp().tools_page.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.imp().sidebar_stack.get().connect_visible_child_name_notify(
             clone!(@weak appwindow => move |sidebar_stack| {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {

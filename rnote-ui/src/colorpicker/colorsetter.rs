@@ -12,7 +12,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub struct ColorSetter {
+    pub(crate) struct ColorSetter {
         pub css: CssProvider,
         pub color: Cell<gdk::RGBA>,
         pub position: Cell<PositionType>,
@@ -201,7 +201,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
+    pub(crate) struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
         @extends ToggleButton, Button, Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
@@ -215,23 +215,27 @@ impl Default for ColorSetter {
 impl ColorSetter {
     pub const COLOR_DEFAULT: Color = Color::BLACK;
 
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn position(&self) -> PositionType {
+    #[allow(unused)]
+    pub(crate) fn position(&self) -> PositionType {
         self.property::<PositionType>("position")
     }
 
-    pub fn set_position(&self, position: PositionType) {
+    #[allow(unused)]
+    pub(crate) fn set_position(&self, position: PositionType) {
         self.set_property("position", position.to_value());
     }
 
-    pub fn color(&self) -> gdk::RGBA {
+    #[allow(unused)]
+    pub(crate) fn color(&self) -> gdk::RGBA {
         self.property::<gdk::RGBA>("color")
     }
 
-    pub fn set_color(&self, color: gdk::RGBA) {
+    #[allow(unused)]
+    pub(crate) fn set_color(&self, color: gdk::RGBA) {
         self.set_property("color", color.to_value());
     }
 }

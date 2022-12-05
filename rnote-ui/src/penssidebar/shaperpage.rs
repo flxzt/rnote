@@ -8,6 +8,7 @@ use num_traits::cast::ToPrimitive;
 
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
 use rnote_compose::style::rough::roughoptions::FillStyle;
+use rnote_compose::Color;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::Shaper;
 use rnote_engine::utils::GdkRGBAHelpers;
@@ -17,7 +18,7 @@ mod imp {
     use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
-    pub struct ShaperPage {
+    pub(crate) struct ShaperPage {
         #[template_child]
         pub shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -109,7 +110,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
+    pub(crate) struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
         @extends gtk4::Widget;
 }
 
@@ -120,107 +121,103 @@ impl Default for ShaperPage {
 }
 
 impl ShaperPage {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn shaperstyle_menubutton(&self) -> MenuButton {
+    pub(crate) fn shaperstyle_menubutton(&self) -> MenuButton {
         self.imp().shaperstyle_menubutton.get()
     }
 
-    pub fn shaperstyle_image(&self) -> Image {
+    pub(crate) fn shaperstyle_image(&self) -> Image {
         self.imp().shaperstyle_image.get()
     }
 
-    pub fn shaperstyle_listbox(&self) -> ListBox {
+    pub(crate) fn shaperstyle_listbox(&self) -> ListBox {
         self.imp().shaperstyle_listbox.get()
     }
 
-    pub fn shaperstyle_smooth_row(&self) -> adw::ActionRow {
+    pub(crate) fn shaperstyle_smooth_row(&self) -> adw::ActionRow {
         self.imp().shaperstyle_smooth_row.get()
     }
 
-    pub fn shaperstyle_rough_row(&self) -> adw::ActionRow {
+    pub(crate) fn shaperstyle_rough_row(&self) -> adw::ActionRow {
         self.imp().shaperstyle_rough_row.get()
     }
 
-    pub fn shapeconfig_menubutton(&self) -> MenuButton {
+    pub(crate) fn shapeconfig_menubutton(&self) -> MenuButton {
         self.imp().shapeconfig_menubutton.get()
     }
 
-    pub fn shapeconfig_popover(&self) -> Popover {
-        self.imp().shapeconfig_popover.get()
-    }
-
-    pub fn width_spinbutton(&self) -> SpinButton {
+    pub(crate) fn width_spinbutton(&self) -> SpinButton {
         self.imp().width_spinbutton.get()
     }
 
-    pub fn stroke_colorpicker(&self) -> ColorPicker {
+    pub(crate) fn stroke_colorpicker(&self) -> ColorPicker {
         self.imp().stroke_colorpicker.get()
     }
 
-    pub fn fill_colorpicker(&self) -> ColorPicker {
+    pub(crate) fn fill_colorpicker(&self) -> ColorPicker {
         self.imp().fill_colorpicker.get()
     }
 
-    pub fn shapebuildertype_menubutton(&self) -> MenuButton {
+    pub(crate) fn shapebuildertype_menubutton(&self) -> MenuButton {
         self.imp().shapebuildertype_menubutton.get()
     }
 
-    pub fn shapebuildertype_image(&self) -> Image {
+    pub(crate) fn shapebuildertype_image(&self) -> Image {
         self.imp().shapebuildertype_image.get()
     }
 
-    pub fn shapebuildertype_listbox(&self) -> ListBox {
+    pub(crate) fn shapebuildertype_listbox(&self) -> ListBox {
         self.imp().shapebuildertype_listbox.get()
     }
 
-    pub fn shapebuildertype_line_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_line_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_line_row.get()
     }
 
-    pub fn shapebuildertype_rectangle_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_rectangle_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_rectangle_row.get()
     }
 
-    pub fn shapebuildertype_coordsystem2d_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_coordsystem2d_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_coordsystem2d_row.get()
     }
 
-    pub fn shapebuildertype_coordsystem3d_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_coordsystem3d_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_coordsystem3d_row.get()
     }
 
-    pub fn shapebuildertype_quadrantcoordsystem2d_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_quadrantcoordsystem2d_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_quadrantcoordsystem2d_row.get()
     }
 
-    pub fn shapebuildertype_ellipse_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_ellipse_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_ellipse_row.get()
     }
 
-    pub fn shapebuildertype_fociellipse_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_fociellipse_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_fociellipse_row.get()
     }
 
-    pub fn shapebuildertype_quadbez_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_quadbez_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_quadbez_row.get()
     }
 
-    pub fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
+    pub(crate) fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_cubbez_row.get()
     }
 
-    pub fn constraint_menubutton(&self) -> MenuButton {
+    pub(crate) fn constraint_menubutton(&self) -> MenuButton {
         self.imp().shapebuildertype_menubutton.get()
     }
 
-    pub fn roughstyle_fillstyle(&self) -> FillStyle {
+    pub(crate) fn roughstyle_fillstyle(&self) -> FillStyle {
         FillStyle::try_from(self.imp().roughstyle_fillstyle_row.get().selected()).unwrap()
     }
 
-    pub fn set_roughstyle_fillstyle(&self, fill_style: FillStyle) {
+    pub(crate) fn set_roughstyle_fillstyle(&self, fill_style: FillStyle) {
         let position = fill_style.to_u32().unwrap();
 
         self.imp()
@@ -229,7 +226,7 @@ impl ShaperPage {
             .set_selected(position);
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         // Width
         self.width_spinbutton().set_increments(0.1, 2.0);
         self.width_spinbutton()
@@ -287,11 +284,11 @@ impl ShaperPage {
 
                         engine.penholder.shaper.style = ShaperStyle::try_from(selected_row.index() as u32).unwrap_or_default();
                         engine.penholder.shaper.smooth_options.stroke_width = shaperpage.width_spinbutton().value();
-                        engine.penholder.shaper.smooth_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color());
-                        engine.penholder.shaper.smooth_options.fill_color = Some(shaperpage.fill_colorpicker().current_color());
+                        engine.penholder.shaper.smooth_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color().into_compose_color());
+                        engine.penholder.shaper.smooth_options.fill_color = Some(shaperpage.fill_colorpicker().current_color().into_compose_color());
                         engine.penholder.shaper.rough_options.stroke_width = shaperpage.width_spinbutton().value();
-                        engine.penholder.shaper.rough_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color());
-                        engine.penholder.shaper.rough_options.fill_color = Some(shaperpage.fill_colorpicker().current_color());
+                        engine.penholder.shaper.rough_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color().into_compose_color());
+                        engine.penholder.shaper.rough_options.fill_color = Some(shaperpage.fill_colorpicker().current_color().into_compose_color());
                     }
 
                     // Need to refresh the whole page, because changing the style affects multiple widgets
@@ -365,7 +362,7 @@ impl ShaperPage {
         );
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let shaper = appwindow
             .canvas()
             .engine()
@@ -381,9 +378,19 @@ impl ShaperPage {
                 self.width_spinbutton()
                     .set_value(shaper.smooth_options.stroke_width);
                 self.stroke_colorpicker()
-                    .set_current_color(shaper.smooth_options.stroke_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        shaper
+                            .smooth_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 self.fill_colorpicker()
-                    .set_current_color(shaper.smooth_options.fill_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        shaper
+                            .smooth_options
+                            .fill_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 self.shaperstyle_image()
                     .set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
             }
@@ -393,9 +400,19 @@ impl ShaperPage {
                 self.width_spinbutton()
                     .set_value(shaper.rough_options.stroke_width);
                 self.stroke_colorpicker()
-                    .set_current_color(shaper.rough_options.stroke_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        shaper
+                            .rough_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 self.fill_colorpicker()
-                    .set_current_color(shaper.rough_options.fill_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        shaper
+                            .rough_options
+                            .fill_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 self.shaperstyle_image()
                     .set_icon_name(Some("pen-shaper-style-rough-symbolic"));
             }

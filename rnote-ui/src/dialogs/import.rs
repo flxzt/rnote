@@ -10,7 +10,7 @@ use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 use crate::{config, RnoteAppWindow};
 
 /// Asks to open the document from the app `input-file` property and overwrites the current document.
-pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -70,7 +70,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     dialog_open_input_file.show();
 }
 
-pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_suffix("rnote");
@@ -127,7 +127,7 @@ pub fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/x-xopp");
     filter.add_mime_type("application/pdf");
@@ -179,7 +179,10 @@ pub fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<na::Vector2<f64>>) {
+pub(crate) fn dialog_import_pdf_w_prefs(
+    appwindow: &RnoteAppWindow,
+    target_pos: Option<na::Vector2<f64>>,
+) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -344,7 +347,7 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
     }
 }
 
-pub fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );

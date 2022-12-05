@@ -8,7 +8,7 @@ use adw::prelude::*;
 
 impl RnoteAppWindow {
     /// Settings binds
-    pub fn setup_settings_binds(&self) {
+    pub(crate) fn setup_settings_binds(&self) {
         let app = self.app();
 
         // Color scheme
@@ -113,7 +113,7 @@ impl RnoteAppWindow {
     }
 
     /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
-    pub fn load_settings(&self) {
+    pub(crate) fn load_settings(&self) {
         let _app = self.app();
 
         // appwindow
@@ -229,7 +229,7 @@ impl RnoteAppWindow {
     }
 
     /// Save all settings at shutdown that are not bound in setup_settings
-    pub fn save_to_settings(&self) -> anyhow::Result<()> {
+    pub(crate) fn save_to_settings(&self) -> anyhow::Result<()> {
         {
             // Appwindow
             self.app_settings().set_int("window-width", self.width())?;

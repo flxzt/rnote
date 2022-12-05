@@ -12,7 +12,7 @@ use rnote_engine::engine::export::{
 
 use crate::{appwindow, config, RnoteAppWindow};
 
-pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_suffix("rnote");
@@ -85,7 +85,7 @@ pub fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
     );
@@ -283,7 +283,7 @@ fn update_export_doc_filechooser_with_prefs(
     filechooser.set_current_name(&(file_title + "." + &file_ext));
 }
 
-pub fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
     );
@@ -549,7 +549,7 @@ fn update_export_doc_pages_filechooser_with_prefs(
     filechooser.set_filter(&filter);
 }
 
-pub fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
     );
@@ -802,7 +802,7 @@ fn update_export_selection_filechooser_with_prefs(
     filechooser.set_current_name(&(file_title + "." + &file_ext));
 }
 
-pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
@@ -866,7 +866,7 @@ pub fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_suffix("json");

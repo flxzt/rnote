@@ -14,7 +14,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
-    pub struct FileRow {
+    pub(crate) struct FileRow {
         pub current_file: RefCell<Option<gio::File>>,
         pub drag_source: DragSource,
         pub action_group: gio::SimpleActionGroup,
@@ -147,7 +147,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct FileRow(ObjectSubclass<imp::FileRow>)
+    pub(crate) struct FileRow(ObjectSubclass<imp::FileRow>)
         @extends gtk4::Widget;
 }
 
@@ -158,39 +158,37 @@ impl Default for FileRow {
 }
 
 impl FileRow {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn current_file(&self) -> Option<gio::File> {
+    #[allow(unused)]
+    pub(crate) fn current_file(&self) -> Option<gio::File> {
         self.property::<Option<gio::File>>("current-file")
     }
 
-    pub fn set_current_file(&self, current_file: Option<gio::File>) {
+    #[allow(unused)]
+    pub(crate) fn set_current_file(&self, current_file: Option<gio::File>) {
         self.set_property("current-file", current_file.to_value());
     }
 
-    pub fn action_group(&self) -> gio::SimpleActionGroup {
-        self.imp().action_group.clone()
-    }
-
-    pub fn file_image(&self) -> Image {
+    pub(crate) fn file_image(&self) -> Image {
         self.imp().file_image.clone()
     }
 
-    pub fn file_label(&self) -> Label {
+    pub(crate) fn file_label(&self) -> Label {
         self.imp().file_label.clone()
     }
 
-    pub fn drag_source(&self) -> DragSource {
+    pub(crate) fn drag_source(&self) -> DragSource {
         self.imp().drag_source.clone()
     }
 
-    pub fn menubutton_box(&self) -> gtk4::Box {
+    pub(crate) fn menubutton_box(&self) -> gtk4::Box {
         self.imp().menubutton_box.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_actions(appwindow);
     }
 

@@ -8,7 +8,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
-    pub struct SelectorPage {
+    pub(crate) struct SelectorPage {
         #[template_child]
         pub selectorstyle_polygon_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -52,7 +52,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct SelectorPage(ObjectSubclass<imp::SelectorPage>)
+    pub(crate) struct SelectorPage(ObjectSubclass<imp::SelectorPage>)
         @extends gtk4::Widget;
 }
 
@@ -63,31 +63,31 @@ impl Default for SelectorPage {
 }
 
 impl SelectorPage {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn selectorstyle_polygon_toggle(&self) -> ToggleButton {
+    pub(crate) fn selectorstyle_polygon_toggle(&self) -> ToggleButton {
         self.imp().selectorstyle_polygon_toggle.get()
     }
 
-    pub fn selectorstyle_rect_toggle(&self) -> ToggleButton {
+    pub(crate) fn selectorstyle_rect_toggle(&self) -> ToggleButton {
         self.imp().selectorstyle_rect_toggle.get()
     }
 
-    pub fn selectorstyle_single_toggle(&self) -> ToggleButton {
+    pub(crate) fn selectorstyle_single_toggle(&self) -> ToggleButton {
         self.imp().selectorstyle_single_toggle.get()
     }
 
-    pub fn selectorstyle_intersectingpath_toggle(&self) -> ToggleButton {
+    pub(crate) fn selectorstyle_intersectingpath_toggle(&self) -> ToggleButton {
         self.imp().selectorstyle_intersectingpath_toggle.get()
     }
 
-    pub fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
+    pub(crate) fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
         self.imp().resize_lock_aspectratio_togglebutton.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         // selecting with Polygon / Rect toggles
         self.selectorstyle_polygon_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
             if selectorstyle_polygon_toggle.is_active() {
@@ -118,7 +118,7 @@ impl SelectorPage {
         }));
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let selector = appwindow
             .canvas()
             .engine()

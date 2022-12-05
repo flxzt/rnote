@@ -12,7 +12,7 @@ use gtk4::{
 use crate::{workspacebrowser::widget_helper, WorkspaceBrowser};
 
 /// Creates a new `create_folder` action
-pub fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
+pub(crate) fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
     let new_folder_action = gio::SimpleAction::new("create-folder", None);
 
     new_folder_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {

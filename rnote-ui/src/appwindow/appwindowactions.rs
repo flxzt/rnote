@@ -16,7 +16,7 @@ impl RnoteAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
     /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
-    pub fn setup_actions(&self) {
+    pub(crate) fn setup_actions(&self) {
         let action_close_active = gio::SimpleAction::new("close-active", None);
         self.add_action(&action_close_active);
         let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
@@ -584,7 +584,7 @@ impl RnoteAppWindow {
 
                 appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, RnoteCanvas::ZOOM_TIMEOUT_TIME);
 
-                appwindow.mainheader().canvasmenu().zoomreset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());
+                appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());
             }));
 
         // Add page to doc in fixed size mode
@@ -918,7 +918,7 @@ impl RnoteAppWindow {
         }));
     }
 
-    pub fn setup_action_accels(&self) {
+    pub(crate) fn setup_action_accels(&self) {
         let app = self.app();
 
         app.set_accels_for_action("win.close-active", &["<Ctrl>w"]);

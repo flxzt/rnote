@@ -8,7 +8,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
-    pub struct EraserPage {
+    pub(crate) struct EraserPage {
         #[template_child]
         pub eraserstyle_trash_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -48,7 +48,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct EraserPage(ObjectSubclass<imp::EraserPage>)
+    pub(crate) struct EraserPage(ObjectSubclass<imp::EraserPage>)
         @extends gtk4::Widget;
 }
 
@@ -59,23 +59,23 @@ impl Default for EraserPage {
 }
 
 impl EraserPage {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn eraserstyle_trash_colliding_strokes_toggle(&self) -> ToggleButton {
+    pub(crate) fn eraserstyle_trash_colliding_strokes_toggle(&self) -> ToggleButton {
         self.imp().eraserstyle_trash_colliding_strokes_toggle.get()
     }
 
-    pub fn eraserstyle_split_colliding_strokes_toggle(&self) -> ToggleButton {
+    pub(crate) fn eraserstyle_split_colliding_strokes_toggle(&self) -> ToggleButton {
         self.imp().eraserstyle_split_colliding_strokes_toggle.get()
     }
 
-    pub fn width_spinbutton(&self) -> SpinButton {
+    pub(crate) fn width_spinbutton(&self) -> SpinButton {
         self.imp().width_spinbutton.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.eraserstyle_trash_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
             if eraserstyle_trash_colliding_strokes_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::TrashCollidingStrokes;
@@ -100,7 +100,7 @@ impl EraserPage {
         );
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let eraser = appwindow
             .canvas()
             .engine()

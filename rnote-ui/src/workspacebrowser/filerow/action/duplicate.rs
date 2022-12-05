@@ -22,7 +22,7 @@ const DUPLICATE_SUFFIX: &str = ".dup";
 const DOT: &str = ".";
 
 /// Creates a new `duplicate` action
-pub fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
+pub(crate) fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 
     action.connect_activate(

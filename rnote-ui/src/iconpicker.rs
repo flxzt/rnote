@@ -14,7 +14,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/iconpicker.ui")]
-    pub struct IconPicker {
+    pub(crate) struct IconPicker {
         pub list: RefCell<Option<StringList>>,
         pub selection: RefCell<Option<SingleSelection>>,
         pub selected_handlerid: RefCell<Option<glib::SignalHandlerId>>,
@@ -78,7 +78,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct IconPicker(ObjectSubclass<imp::IconPicker>)
+    pub(crate) struct IconPicker(ObjectSubclass<imp::IconPicker>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
@@ -90,15 +90,15 @@ impl Default for IconPicker {
 }
 
 impl IconPicker {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn list(&self) -> Option<StringList> {
+    pub(crate) fn list(&self) -> Option<StringList> {
         self.imp().list.borrow().clone()
     }
 
-    pub fn picked(&self) -> Option<String> {
+    pub(crate) fn picked(&self) -> Option<String> {
         self.imp()
             .selection
             .borrow()
@@ -113,7 +113,7 @@ impl IconPicker {
     }
 
     /// Binds a list containing the icon names
-    pub fn set_list(&self, list: StringList) {
+    pub(crate) fn set_list(&self, list: StringList) {
         let single_selection = SingleSelection::builder()
             .model(&list)
             // Ensures nothing is selected when initially setting the list

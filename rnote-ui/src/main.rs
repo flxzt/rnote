@@ -21,18 +21,18 @@ mod unitentry;
 mod workspacebrowser;
 
 // Re-exports
-pub use app::RnoteApp;
-pub use appmenu::AppMenu;
-pub use appwindow::RnoteAppWindow;
-pub use canvas::RnoteCanvas;
-pub use canvasmenu::CanvasMenu;
-pub use colorpicker::ColorPicker;
-pub use iconpicker::IconPicker;
-pub use mainheader::MainHeader;
-pub use penssidebar::PensSideBar;
-pub use settingspanel::SettingsPanel;
-pub use unitentry::UnitEntry;
-pub use workspacebrowser::WorkspaceBrowser;
+pub(crate) use app::RnoteApp;
+pub(crate) use appmenu::AppMenu;
+pub(crate) use appwindow::RnoteAppWindow;
+pub(crate) use canvas::RnoteCanvas;
+pub(crate) use canvasmenu::CanvasMenu;
+pub(crate) use colorpicker::ColorPicker;
+pub(crate) use iconpicker::IconPicker;
+pub(crate) use mainheader::MainHeader;
+pub(crate) use penssidebar::PensSideBar;
+pub(crate) use settingspanel::SettingsPanel;
+pub(crate) use unitentry::UnitEntry;
+pub(crate) use workspacebrowser::WorkspaceBrowser;
 
 use gettextrs::LocaleCategory;
 use gtk4::prelude::*;
@@ -49,6 +49,6 @@ fn main() {
     gettextrs::bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
     gettextrs::textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
 
-    let app = app::RnoteApp::new();
+    let app = RnoteApp::new();
     app.run();
 }

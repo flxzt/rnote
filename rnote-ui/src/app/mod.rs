@@ -18,7 +18,7 @@ use crate::{
 mod imp {
     use super::*;
     #[allow(missing_debug_implementations)]
-    pub struct RnoteApp {
+    pub(crate) struct RnoteApp {
         pub input_file: RefCell<Option<gio::File>>,
     }
 
@@ -109,7 +109,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
+    pub(crate) struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
         @extends gio::Application, gtk4::Application, adw::Application,
         @implements gio::ActionGroup, gio::ActionMap;
 }
@@ -121,23 +121,25 @@ impl Default for RnoteApp {
 }
 
 impl RnoteApp {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[
             ("application-id", &config::APP_ID),
             ("flags", &gio::ApplicationFlags::HANDLES_OPEN),
         ])
     }
 
-    pub fn input_file(&self) -> Option<gio::File> {
+    #[allow(unused)]
+    pub(crate) fn input_file(&self) -> Option<gio::File> {
         self.imp().input_file.borrow().clone()
     }
 
-    pub fn set_input_file(&self, input_file: Option<gio::File>) {
+    #[allow(unused)]
+    pub(crate) fn set_input_file(&self, input_file: Option<gio::File>) {
         *self.imp().input_file.borrow_mut() = input_file;
     }
 
     // Anything that needs to be done right before showing the appwindow
-    pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init_misc(&self, appwindow: &RnoteAppWindow) {
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
         appwindow.undo_button().set_sensitive(false);
         appwindow.redo_button().set_sensitive(false);

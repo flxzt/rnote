@@ -1,7 +1,7 @@
 mod colorsetter;
 
 // Re-exports
-pub use colorsetter::ColorSetter;
+pub(crate) use colorsetter::ColorSetter;
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -21,7 +21,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
-    pub struct ColorPicker {
+    pub(crate) struct ColorPicker {
         #[template_child]
         pub setterbox: TemplateChild<Box>,
         #[template_child]
@@ -136,11 +136,11 @@ mod imp {
 
                 // store color in the buttons
                 if first_colorsetter.is_active() {
-                    first_colorsetter.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
+                    first_colorsetter.set_property("color", current_color.to_value());
                 } else {
                     for colorsetter in &*colorsetters.borrow() {
                         if colorsetter.is_active() {
-                            colorsetter.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
+                            colorsetter.set_property("color", current_color.to_value());
                         }
                     }
                 }
@@ -368,7 +368,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
+    pub(crate) struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
         @extends Widget;
 }
 
@@ -384,49 +384,52 @@ impl ColorPicker {
     pub const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
     pub const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
 
-    pub fn new(current_color: gdk::RGBA) -> Self {
+    pub(crate) fn new(current_color: gdk::RGBA) -> Self {
         glib::Object::new(&[("current-color", &current_color.to_value())])
     }
 
-    pub fn position(&self) -> PositionType {
+    #[allow(unused)]
+    pub(crate) fn position(&self) -> PositionType {
         self.property::<PositionType>("position")
     }
 
-    pub fn set_position(&self, position: PositionType) {
+    #[allow(unused)]
+    pub(crate) fn set_position(&self, position: PositionType) {
         self.set_property("position", position.to_value());
     }
 
-    pub fn current_color(&self) -> Color {
+    #[allow(unused)]
+    pub(crate) fn current_color(&self) -> gdk::RGBA {
         self.property::<gdk::RGBA>("current-color")
-            .into_compose_color()
     }
 
-    pub fn set_current_color(&self, color: Option<Color>) {
-        let color = color.unwrap_or(Color::TRANSPARENT);
-        self.set_property(
-            "current-color",
-            gdk::RGBA::from_compose_color(color).to_value(),
-        );
+    #[allow(unused)]
+    pub(crate) fn set_current_color(&self, color: gdk::RGBA) {
+        self.set_property("current-color", color.to_value());
     }
 
-    pub fn amount_colorbuttons(&self) -> u32 {
+    #[allow(unused)]
+    pub(crate) fn amount_colorbuttons(&self) -> u32 {
         self.property::<u32>("amount-colorbuttons")
     }
 
-    pub fn set_amount_colorbuttons(&self, amount: u32) {
+    #[allow(unused)]
+    pub(crate) fn set_amount_colorbuttons(&self, amount: u32) {
         self.set_property("amount-colorbuttons", amount.to_value());
     }
 
-    pub fn selected(&self) -> u32 {
+    #[allow(unused)]
+    pub(crate) fn selected(&self) -> u32 {
         self.property::<u32>("selected")
     }
 
-    pub fn set_selected(&self, selected: u32) {
+    #[allow(unused)]
+    pub(crate) fn set_selected(&self, selected: u32) {
         self.set_property("selected", selected.to_value());
     }
 
     /// Returns a vector of the colors
-    pub fn fetch_all_colors(&self) -> Vec<Color> {
+    pub(crate) fn fetch_all_colors(&self) -> Vec<Color> {
         let mut all_colors = Vec::with_capacity(8);
         all_colors.push(
             self.imp()
@@ -442,7 +445,7 @@ impl ColorPicker {
         all_colors
     }
 
-    pub fn load_colors(&self, all_colors: &[Color]) {
+    pub(crate) fn load_colors(&self, all_colors: &[Color]) {
         let mut all_colors_iter = all_colors.iter();
         if let Some(&first_color) = all_colors_iter.next() {
             self.imp()

@@ -3340,7 +3340,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.5.8"
+version = "0.5.9"
 dependencies = [
  "anyhow",
  "cairo-rs",
@@ -3378,7 +3378,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-cli"
-version = "0.1.0"
+version = "0.5.9"
 dependencies = [
  "anyhow",
  "clap 4.0.29",
@@ -4358,9 +4358,9 @@ checksum = "375812fa44dab6df41c195cd2f7fecb488f6c09fbaafb62807488cefab642bff"
 
 [[package]]
 name = "typenum"
-version = "1.15.0"
+version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcf81ac59edc17cc8697ff311e8f5ef2d99fcbd9817b34cec66f90b6c3dfd987"
+checksum = "497961ef93d974e23eb6f433eb5fe1b7930b659f06d12dec6fc44a8f554c0bba"
 
 [[package]]
 name = "ucd-trie"

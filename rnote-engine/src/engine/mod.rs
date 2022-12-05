@@ -539,6 +539,11 @@ impl RnoteEngine {
             Layout::ContinuousXY => {
                 self.document.resize_doc_continuous_xy_layout(&self.store);
             }
+            Layout::SemiInfinite => {
+                // only expand, don't resize to fit strokes
+                self.document
+                    .expand_doc_semi_infinite_layout(self.camera.viewport());
+            }
             Layout::Infinite => {
                 // only expand, don't resize to fit strokes
                 self.document

@@ -265,6 +265,10 @@ impl RnoteAppWindow {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousXY);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
+                    "semi-infinite" => {
+                        appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::SemiInfinite);
+                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
+                    },
                     "infinite" => {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
@@ -410,6 +414,7 @@ impl RnoteAppWindow {
                     Layout::FixedSize => "fixed-size",
                     Layout::ContinuousVertical => "continuous-vertical",
                     Layout::ContinuousXY => "continuous-xy",
+                    Layout::SemiInfinite => "semi-infinite",
                     Layout::Infinite => "infinite",
                 };
                 // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )

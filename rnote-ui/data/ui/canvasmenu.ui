@@ -39,6 +39,11 @@
                 <attribute name="target">continuous-xy</attribute>
               </item>
               <item>
+                <attribute name="label" translatable="yes">_Semi infinite</attribute>
+                <attribute name="action">win.doc-layout</attribute>
+                <attribute name="target">semi-infinite</attribute>
+              </item>
+              <item>
                 <attribute name="label" translatable="yes">_Infinite</attribute>
                 <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">infinite</attribute>

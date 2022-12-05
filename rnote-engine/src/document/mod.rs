@@ -23,6 +23,8 @@ pub enum Layout {
     ContinuousVertical,
     #[serde(rename = "continuous_xy", alias = "endless_xy")]
     ContinuousXY,
+    #[serde(rename = "semi-infinite")]
+    SemiInfinite,
     #[serde(rename = "infinite")]
     Infinite,
 }
@@ -126,6 +128,10 @@ impl Document {
             Layout::ContinuousXY => {
                 self.resize_doc_continuous_xy_layout(store);
             }
+            Layout::SemiInfinite => {
+                self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
+                self.expand_doc_semi_infinite_layout(camera.viewport());
+            }
             Layout::Infinite => {
                 self.resize_doc_infinite_layout_to_fit_strokes(store);
                 self.expand_doc_infinite_layout(camera.viewport());
@@ -143,6 +149,10 @@ impl Document {
             }
             Layout::ContinuousXY => {
                 self.resize_doc_continuous_xy_layout(store);
+            }
+            Layout::SemiInfinite => {
+                self.resize_doc_semi_infinite_layout_to_fit_strokes(store);
+                self.expand_doc_semi_infinite_layout(camera.viewport());
             }
             Layout::Infinite => {
                 self.resize_doc_infinite_layout_to_fit_strokes(store);
@@ -187,6 +197,20 @@ impl Document {
         self.height = new_height;
     }
 
+    pub(crate) fn expand_doc_semi_infinite_layout(&mut self, viewport: AABB) {
+        let padding_horizontal = self.format.width * 2.0;
+        let padding_vertical = self.format.height * 2.0;
+
+        let new_bounds = self.bounds().merged(
+            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
+        );
+
+        self.x = 0.0; // new_bounds.mins[0];
+        self.y = 0.0; // new_bounds.mins[1];
+        self.width = new_bounds.extents()[0];
+        self.height = new_bounds.extents()[1];
+    }
+
     pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: AABB) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
@@ -197,6 +221,28 @@ impl Document {
 
         self.x = new_bounds.mins[0];
         self.y = new_bounds.mins[1];
+        self.width = new_bounds.extents()[0];
+        self.height = new_bounds.extents()[1];
+    }
+
+    pub(crate) fn resize_doc_semi_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
+        let padding_horizontal = self.format.width * 2.0;
+        let padding_vertical = self.format.height * 2.0;
+
+        let keys = store.stroke_keys_as_rendered();
+
+        let new_bounds = if let Some(new_bounds) = store.bounds_for_strokes(&keys) {
+            new_bounds.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+        } else {
+            // If doc is empty, resize to one page with the format size
+            AABB::new(
+                na::point![0.0, 0.0],
+                na::point![self.format.width, self.format.height],
+            )
+            .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+        };
+        self.x = 0.0; //new_bounds.mins[0];
+        self.y = 0.0; //new_bounds.mins[1];
         self.width = new_bounds.extents()[0];
         self.height = new_bounds.extents()[1];
     }

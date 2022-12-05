@@ -85,7 +85,7 @@ mod imp {
                     (engine.document.x + engine.document.width + Document::SHADOW_WIDTH)
                         * total_zoom,
                 ),
-                Layout::Infinite => (
+                Layout::Infinite | Layout::SemiInfinite => (
                     engine.document.x * total_zoom,
                     (engine.document.x + engine.document.width) * total_zoom,
                 ),
@@ -97,7 +97,7 @@ mod imp {
                     (engine.document.y + engine.document.height + Document::SHADOW_WIDTH)
                         * total_zoom,
                 ),
-                Layout::Infinite => (
+                Layout::Infinite | Layout::SemiInfinite => (
                     engine.document.y * total_zoom,
                     (engine.document.y + engine.document.height) * total_zoom,
                 ),

@@ -468,15 +468,23 @@ impl RnoteCanvas {
     pub(crate) fn clear_output_file_monitor(&self) {
         let mut current_output_file_monitor = self.imp().output_file_monitor.borrow_mut();
 
-        // cancel old monitor.
         if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
             old_output_file_monitor.cancel();
         }
     }
 
     #[allow(unused)]
-    pub(crate) fn set_output_file_expect_write(&self, enable: bool) {
-        self.imp().output_file_expect_write.set(enable);
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        let output_file_modified_toast = self.imp().output_file_modified_toast_singleton.borrow();
+
+        if let Some(output_file_modified_toast) = output_file_modified_toast.as_ref() {
+            output_file_modified_toast.dismiss();
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_output_file_expect_write(&self, expect_write: bool) {
+        self.imp().output_file_expect_write.set(expect_write);
     }
 
     #[allow(unused)]
@@ -606,25 +614,23 @@ impl RnoteCanvas {
                             gio::FileMonitorEvent::Renamed => {
                                 // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
                                 if FileType::is_goutputstream_file(&file) {
-                                    if canvas.output_file_expect_write() {
-                                        // => file has been modified due to own save, don't do anything.
-                                        canvas.set_output_file_expect_write(false);
-                                        return;
-                                    } else {
+                                    if !canvas.output_file_expect_write() {
                                         // => file has been modified by external means, handle it the same as the Changed event.
                                         dispatch_toast_reload_modified_file();
-                                        return;
                                     }
+                                    // else => file has been modified due to own save, don't do anything.
+                                } else {
+                                    // => file has been renamed.
+
+                                    // other_file *should* never be none.
+                                    if other_file.is_none() {
+                                        canvas.set_unsaved_changes(true);
+                                    }
+
+                                    canvas.set_output_file(other_file.cloned());
+
+                                    appwindow.dispatch_toast_text(&gettext("Opened file was renamed on disk."))
                                 }
-
-                                // other_file *should* never be none.
-                                if other_file.is_none() {
-                                    canvas.set_unsaved_changes(true);
-                                }
-
-                                canvas.set_output_file(other_file.cloned());
-
-                                appwindow.dispatch_toast_text(&gettext("Opened file was renamed on disk."))
                             },
                             gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
                                 canvas.set_unsaved_changes(true);
@@ -634,6 +640,8 @@ impl RnoteCanvas {
                             },
                             _ => (),
                         }
+
+                        canvas.set_output_file_expect_write(false);
                     }),
                 );
 
@@ -676,15 +684,10 @@ impl RnoteCanvas {
                 let output_file = canvas.output_file();
 
                 if let Some(output_file) = &output_file {
-                    // set output file
-
-                    if !canvas.output_file_expect_write() || !FileType::is_goutputstream_file(output_file) {
-                        canvas.create_output_file_monitor(output_file, &appwindow);
-                    }
+                    canvas.create_output_file_monitor(output_file, &appwindow);
                 } else {
-                    // clear output file
-
                     canvas.clear_output_file_monitor();
+                    canvas.dismiss_output_file_modified_toast();
                 }
 
                 appwindow.update_titles_for_file(output_file.as_ref());

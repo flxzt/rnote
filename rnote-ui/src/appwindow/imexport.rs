@@ -200,6 +200,7 @@ impl RnoteAppWindow {
         app.set_input_file(None);
         if let Some(path) = path {
             let file = gio::File::for_path(path);
+            self.canvas().dismiss_output_file_modified_toast();
             self.canvas().set_output_file(Some(file));
         }
 
@@ -370,6 +371,8 @@ impl RnoteAppWindow {
                 .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
 
             self.canvas().set_output_file_expect_write(true);
+            self.canvas().dismiss_output_file_modified_toast();
+
             crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
 
             self.canvas().set_output_file(Some(file.to_owned()));

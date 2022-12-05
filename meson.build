@@ -13,6 +13,7 @@ fs = import('fs')
 
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
+app_cli_name = 'rnote-cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
@@ -170,6 +171,14 @@ custom_target(
         meson.project_build_root() / '@OUTPUT@',
     ],
 )
+
+# Install the cli
+if get_option('cli') == true
+    install_data(
+        cargo_target_dir / rust_target / app_cli_name,
+        install_dir: bindir,
+    )
+endif
 
 # meson >= 0.64 will include `update-mime-database` in the gnome module.
 # Then this script can be replaced by `gnome.post_install(..)`

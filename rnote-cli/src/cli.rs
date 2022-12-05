@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 
 use rnote_engine::RnoteEngine;
 
-/// Rnote Cli
+/// rnote-cli
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub(crate) struct Cli {

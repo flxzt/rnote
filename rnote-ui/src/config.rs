@@ -15,8 +15,8 @@ pub(crate) const APP_ISSUES_URL: &str = "https://github.com/flxzt/rnote/issues";
 pub(crate) const APP_SUPPORT_URL: &str = "https://github.com/flxzt/rnote/discussions";
 pub(crate) const APP_DONATE_URL: &str = "https://rnote.flxzt.net/donate/";
 pub(crate) const GETTEXT_PACKAGE: &str = "rnote";
-pub(crate) const LOCALEDIR: &str = "/app/share/locale";
+pub(crate) const LOCALEDIR: &str = "/usr/share/locale";
 
-pub(crate) const PKG_DATA_DIR: &str = "/app/share/rnote";
-pub(crate) const RESOURCES_FILE: &str = "/app/share/rnote/resources.gresource";
+pub(crate) const PKG_DATA_DIR: &str = "/usr/share/rnote";
+pub(crate) const RESOURCES_FILE: &str = "/usr/share/rnote/resources.gresource";
 pub(crate) const PROFILE: &str = "devel";

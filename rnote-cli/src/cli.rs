@@ -16,14 +16,13 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
-    /// Converts the input file (expecting a rnote save file) and saves it in the output file.
-    /// The export format is recognized from the file extension of the output file.
-    /// Currently `.svg`, `.xopp`, and `.pdf` are supported.
-    Convert {
-        /// The input file
-        #[arg(short, long)]
-        input_file: PathBuf,
-        /// The output file
+    /// Exports the Rnote file and saves it in the output file.{n}
+    /// The export format is recognized from the file extension of the output file.{n}
+    /// Currently `.svg`, `.xopp` and `.pdf` are supported.
+    Export {
+        /// the rnote save file
+        rnote_file: PathBuf,
+        /// the export output file
         #[arg(short, long)]
         output_file: PathBuf,
     },
@@ -35,17 +34,15 @@ pub(crate) async fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Convert {
-            input_file,
+        Commands::Export {
+            rnote_file,
             output_file,
         } => {
             println!("Converting..");
-
-            convert_file(&mut engine, input_file, output_file).await?;
+            convert_file(&mut engine, rnote_file, output_file).await?;
+            println!("Finished!");
         }
     }
-
-    println!("Finished!");
 
     Ok(())
 }

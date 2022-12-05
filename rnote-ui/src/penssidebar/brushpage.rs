@@ -7,6 +7,7 @@ use num_traits::cast::ToPrimitive;
 
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
+use rnote_compose::Color;
 use rnote_engine::pens::Brush;
 
 use crate::{appwindow::RnoteAppWindow, ColorPicker};
@@ -19,7 +20,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
-    pub struct BrushPage {
+    pub(crate) struct BrushPage {
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -87,7 +88,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct BrushPage(ObjectSubclass<imp::BrushPage>)
+    pub(crate) struct BrushPage(ObjectSubclass<imp::BrushPage>)
         @extends gtk4::Widget;
 }
 
@@ -98,27 +99,27 @@ impl Default for BrushPage {
 }
 
 impl BrushPage {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn colorpicker(&self) -> ColorPicker {
+    pub(crate) fn colorpicker(&self) -> ColorPicker {
         self.imp().colorpicker.get()
     }
 
-    pub fn brushstyle_menubutton(&self) -> MenuButton {
+    pub(crate) fn brushstyle_menubutton(&self) -> MenuButton {
         self.imp().brushstyle_menubutton.get()
     }
 
-    pub fn brushconfig_menubutton(&self) -> MenuButton {
+    pub(crate) fn brushconfig_menubutton(&self) -> MenuButton {
         self.imp().brushconfig_menubutton.get()
     }
 
-    pub fn solidstyle_pressure_curve(&self) -> PressureCurve {
+    pub(crate) fn solidstyle_pressure_curve(&self) -> PressureCurve {
         PressureCurve::try_from(self.imp().solidstyle_pressure_curves_row.get().selected()).unwrap()
     }
 
-    pub fn set_solidstyle_pressure_curve(&self, pressure_curve: PressureCurve) {
+    pub(crate) fn set_solidstyle_pressure_curve(&self, pressure_curve: PressureCurve) {
         let position = pressure_curve.to_u32().unwrap();
 
         self.imp()
@@ -127,14 +128,17 @@ impl BrushPage {
             .set_selected(position);
     }
 
-    pub fn texturedstyle_dots_distribution(&self) -> TexturedDotsDistribution {
+    pub(crate) fn texturedstyle_dots_distribution(&self) -> TexturedDotsDistribution {
         TexturedDotsDistribution::try_from(
             self.imp().texturedstyle_distribution_row.get().selected(),
         )
         .unwrap()
     }
 
-    pub fn set_texturedstyle_distribution_variant(&self, distribution: TexturedDotsDistribution) {
+    pub(crate) fn set_texturedstyle_distribution_variant(
+        &self,
+        distribution: TexturedDotsDistribution,
+    ) {
         let position = distribution.to_u32().unwrap();
 
         self.imp()
@@ -143,7 +147,7 @@ impl BrushPage {
             .set_selected(position);
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
         imp.width_spinbutton.set_increments(0.1, 2.0);
@@ -190,13 +194,13 @@ impl BrushPage {
                         // Overwrite the color, but not the width
                         match engine.penholder.brush.style {
                             BrushStyle::Marker => {
-                                engine.penholder.brush.marker_options.stroke_color = Some(brushpage.colorpicker().current_color());
+                                engine.penholder.brush.marker_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
                             },
                             BrushStyle::Solid => {
-                                engine.penholder.brush.solid_options.stroke_color = Some(brushpage.colorpicker().current_color());
+                                engine.penholder.brush.solid_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
                             },
                             BrushStyle::Textured => {
-                                engine.penholder.brush.textured_options.stroke_color = Some(brushpage.colorpicker().current_color());
+                                engine.penholder.brush.textured_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
                             },
                         }
                     }
@@ -246,7 +250,7 @@ impl BrushPage {
         }));
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
         let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
 
@@ -277,7 +281,12 @@ impl BrushPage {
                 imp.width_spinbutton
                     .set_value(brush.marker_options.stroke_width);
                 imp.colorpicker
-                    .set_current_color(brush.marker_options.stroke_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        brush
+                            .marker_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 imp.brushstyle_image
                     .set_icon_name(Some("pen-brush-style-marker-symbolic"));
             }
@@ -287,7 +296,12 @@ impl BrushPage {
                 imp.width_spinbutton
                     .set_value(brush.solid_options.stroke_width);
                 imp.colorpicker
-                    .set_current_color(brush.solid_options.stroke_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        brush
+                            .solid_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 imp.brushstyle_image
                     .set_icon_name(Some("pen-brush-style-solid-symbolic"));
             }
@@ -297,7 +311,12 @@ impl BrushPage {
                 imp.width_spinbutton
                     .set_value(brush.textured_options.stroke_width);
                 imp.colorpicker
-                    .set_current_color(brush.textured_options.stroke_color);
+                    .set_current_color(gdk::RGBA::from_compose_color(
+                        brush
+                            .textured_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT),
+                    ));
                 imp.brushstyle_image
                     .set_icon_name(Some("pen-brush-style-textured-symbolic"));
             }

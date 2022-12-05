@@ -11,7 +11,11 @@ use crate::dialogs;
 use super::RnoteAppWindow;
 
 impl RnoteAppWindow {
-    pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
+    pub(crate) fn open_file_w_dialogs(
+        &self,
+        file: &gio::File,
+        target_pos: Option<na::Vector2<f64>>,
+    ) {
         let app = self.app();
 
         match crate::utils::FileType::lookup_file_type(file) {
@@ -55,7 +59,7 @@ impl RnoteAppWindow {
     }
 
     /// Loads in a file of any supported type into the engine.
-    pub fn load_in_file(
+    pub(crate) fn load_in_file(
         &self,
         file: &gio::File,
         target_pos: Option<na::Vector2<f64>>,
@@ -289,7 +293,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
+    pub(crate) fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
         self.canvas()
             .engine()
             .borrow_mut()
@@ -344,7 +348,7 @@ impl RnoteAppWindow {
     }
 
     /// Target position is in the coordinate space of the doc
-    pub fn load_in_text(
+    pub(crate) fn load_in_text(
         &self,
         text: String,
         target_pos: Option<na::Vector2<f64>>,

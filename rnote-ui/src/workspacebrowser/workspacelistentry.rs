@@ -14,7 +14,7 @@ mod imp {
 
     #[derive(Debug, Clone, glib::Variant, serde::Serialize, serde::Deserialize)]
     #[serde(default, rename = "workspacelistentryinner")]
-    pub struct WorkspaceListEntryInner {
+    pub(crate) struct WorkspaceListEntryInner {
         #[serde(rename = "dir")]
         pub dir: PathBuf,
         #[serde(rename = "icon")]
@@ -37,7 +37,7 @@ mod imp {
     }
 
     #[derive(Debug, Default)]
-    pub struct WorkspaceEntry {
+    pub(crate) struct WorkspaceEntry {
         pub inner: RefCell<WorkspaceListEntryInner>,
     }
 
@@ -133,7 +133,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct WorkspaceListEntry(ObjectSubclass<imp::WorkspaceEntry>);
+    pub(crate) struct WorkspaceListEntry(ObjectSubclass<imp::WorkspaceEntry>);
 }
 
 impl Default for WorkspaceListEntry {
@@ -145,7 +145,7 @@ impl Default for WorkspaceListEntry {
 impl WorkspaceListEntry {
     pub const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
 
-    pub fn new(inner: WorkspaceListEntryInner) -> Self {
+    pub(crate) fn new(inner: WorkspaceListEntryInner) -> Self {
         glib::Object::new(&[
             ("dir", &inner.dir.to_string_lossy().to_string().to_value()),
             ("icon", &inner.icon.to_value()),
@@ -157,7 +157,7 @@ impl WorkspaceListEntry {
         ])
     }
 
-    pub fn replace_data(&self, entry: &Self) {
+    pub(crate) fn replace_data(&self, entry: &Self) {
         self.set_name(entry.name());
         self.set_icon(entry.icon());
         self.set_color(entry.color());
@@ -165,7 +165,7 @@ impl WorkspaceListEntry {
     }
 
     /// Expects a path to a directory
-    pub fn from_path(dir: PathBuf) -> Self {
+    pub(crate) fn from_path(dir: PathBuf) -> Self {
         let inner = WorkspaceListEntryInner {
             dir,
             ..Default::default()
@@ -174,35 +174,35 @@ impl WorkspaceListEntry {
         Self::new(inner)
     }
 
-    pub fn dir(&self) -> String {
+    pub(crate) fn dir(&self) -> String {
         self.property::<String>("dir")
     }
 
-    pub fn set_dir(&self, dir: String) {
+    pub(crate) fn set_dir(&self, dir: String) {
         self.set_property("dir", dir.to_value());
     }
 
-    pub fn icon(&self) -> String {
+    pub(crate) fn icon(&self) -> String {
         self.property::<String>("icon")
     }
 
-    pub fn set_icon(&self, icon: String) {
+    pub(crate) fn set_icon(&self, icon: String) {
         self.set_property("icon", icon.to_value());
     }
 
-    pub fn color(&self) -> gdk::RGBA {
+    pub(crate) fn color(&self) -> gdk::RGBA {
         self.property::<gdk::RGBA>("color")
     }
 
-    pub fn set_color(&self, color: gdk::RGBA) {
+    pub(crate) fn set_color(&self, color: gdk::RGBA) {
         self.set_property("color", color.to_value());
     }
 
-    pub fn name(&self) -> String {
+    pub(crate) fn name(&self) -> String {
         self.property::<String>("name")
     }
 
-    pub fn set_name(&self, name: String) {
+    pub(crate) fn set_name(&self, name: String) {
         self.set_property("name", name.to_value());
     }
 }

@@ -148,13 +148,13 @@ fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f6
 }
 
 /// Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-#[allow(dead_code)]
+#[allow(unused)]
 fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0
 }
 
 /// calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
-#[allow(dead_code)]
+#[allow(unused)]
 pub fn quadbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -178,7 +178,7 @@ fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vec
     2.0 * p1 - 2.0 * p0
 }
 
-#[allow(dead_code)]
+#[allow(unused)]
 /// calculating the derivative of the bezier curve for t: between 0.0 and 1.0
 pub fn quadbez_derive_calc(
     p0: na::Vector2<f64>,

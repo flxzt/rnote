@@ -7,7 +7,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
-    pub struct ToolsPage {
+    pub(crate) struct ToolsPage {
         #[template_child]
         pub toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -45,7 +45,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
+    pub(crate) struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
         @extends gtk4::Widget;
 }
 
@@ -56,19 +56,19 @@ impl Default for ToolsPage {
 }
 
 impl ToolsPage {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn toolstyle_verticalspace_toggle(&self) -> ToggleButton {
+    pub(crate) fn toolstyle_verticalspace_toggle(&self) -> ToggleButton {
         self.imp().toolstyle_verticalspace_toggle.get()
     }
 
-    pub fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
+    pub(crate) fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
         self.imp().toolstyle_offsetcamera_toggle.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.toolstyle_verticalspace_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::VerticalSpace;
@@ -82,7 +82,7 @@ impl ToolsPage {
         }));
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
 
         match tools.style {

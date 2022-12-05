@@ -17,7 +17,7 @@ use crate::{
 };
 
 /// Creates a new `rename` action
-pub fn rename(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
+pub(crate) fn rename(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 
     rename_action.connect_activate(clone!(@weak filerow as filerow, @weak appwindow => move |_action_rename_file, _| {

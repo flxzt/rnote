@@ -14,7 +14,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub struct CanvasLayout {
+    pub(crate) struct CanvasLayout {
         pub old_viewport: Cell<AABB>,
     }
 
@@ -159,7 +159,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
+    pub(crate) struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
         @extends LayoutManager;
 }
 
@@ -170,12 +170,12 @@ impl Default for CanvasLayout {
 }
 
 impl CanvasLayout {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
     // needs to be called after zooming
-    pub fn update_state(&self, canvas: &RnoteCanvas) {
+    pub(crate) fn update_state(&self, canvas: &RnoteCanvas) {
         self.imp()
             .old_viewport
             .set(canvas.engine().borrow().camera.viewport());

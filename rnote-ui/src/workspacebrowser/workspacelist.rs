@@ -8,7 +8,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug, Default)]
-    pub struct WorkspaceList {
+    pub(crate) struct WorkspaceList {
         pub list: RefCell<Vec<WorkspaceListEntry>>,
     }
 
@@ -41,7 +41,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct WorkspaceList(ObjectSubclass<imp::WorkspaceList>)
+    pub(crate) struct WorkspaceList(ObjectSubclass<imp::WorkspaceList>)
         @implements gio::ListModel;
 }
 
@@ -52,33 +52,34 @@ impl Default for WorkspaceList {
 }
 
 impl WorkspaceList {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn from_vec(vec: Vec<WorkspaceListEntry>) -> Self {
+    pub(crate) fn from_vec(vec: Vec<WorkspaceListEntry>) -> Self {
         let list = Self::new();
         list.append(vec);
 
         list
     }
 
-    pub fn replace_self(&self, list: Self) {
+    pub(crate) fn replace_self(&self, list: Self) {
         self.clear();
         self.append(list.iter().collect());
     }
 
-    pub fn iter(&self) -> Iter {
+    pub(crate) fn iter(&self) -> Iter {
         Iter::new(self.clone())
     }
 
-    pub fn push(&self, item: WorkspaceListEntry) {
+    pub(crate) fn push(&self, item: WorkspaceListEntry) {
         self.imp().list.borrow_mut().push(item);
 
         self.items_changed(self.n_items().saturating_sub(1), 0, 1);
     }
 
-    pub fn pop(&self) -> Option<WorkspaceListEntry> {
+    #[allow(unused)]
+    pub(crate) fn pop(&self) -> Option<WorkspaceListEntry> {
         let popped = self.imp().list.borrow_mut().pop();
 
         self.items_changed(self.n_items().saturating_sub(1), 1, 0);
@@ -87,21 +88,21 @@ impl WorkspaceList {
     }
 
     /// Inserts at position i. Panics if i is OOB
-    pub fn insert(&self, i: usize, el: WorkspaceListEntry) {
+    pub(crate) fn insert(&self, i: usize, el: WorkspaceListEntry) {
         self.imp().list.borrow_mut().insert(i, el);
 
         self.items_changed(i as u32, 0, 1);
     }
 
     /// Removes at position i. Panics if i is OOB
-    pub fn remove(&self, i: usize) -> WorkspaceListEntry {
+    pub(crate) fn remove(&self, i: usize) -> WorkspaceListEntry {
         let removed = self.imp().list.borrow_mut().remove(i);
 
         self.items_changed(i as u32, 1, 0);
         removed
     }
 
-    pub fn append(&self, mut items: Vec<WorkspaceListEntry>) {
+    pub(crate) fn append(&self, mut items: Vec<WorkspaceListEntry>) {
         let amount = items.len() as u32;
 
         if amount > 0 {
@@ -112,7 +113,7 @@ impl WorkspaceList {
         }
     }
 
-    pub fn clear(&self) {
+    pub(crate) fn clear(&self) {
         let amount = self.n_items() as u32;
         self.imp().list.borrow_mut().clear();
 
@@ -121,7 +122,7 @@ impl WorkspaceList {
 }
 
 #[derive(Debug, Clone)]
-pub struct Iter {
+pub(crate) struct Iter {
     model: WorkspaceList,
     i: Cell<u32>,
 }

@@ -14,7 +14,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/typewriterpage.ui")]
-    pub struct TypewriterPage {
+    pub(crate) struct TypewriterPage {
         #[template_child]
         pub fontchooser_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -87,7 +87,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct TypewriterPage(ObjectSubclass<imp::TypewriterPage>)
+    pub(crate) struct TypewriterPage(ObjectSubclass<imp::TypewriterPage>)
         @extends gtk4::Widget;
 }
 
@@ -98,43 +98,39 @@ impl Default for TypewriterPage {
 }
 
 impl TypewriterPage {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn fontchooser_menubutton(&self) -> MenuButton {
-        self.imp().fontchooser_menubutton.get()
-    }
-
-    pub fn fontchooser(&self) -> FontChooserWidget {
+    pub(crate) fn fontchooser(&self) -> FontChooserWidget {
         self.imp().fontchooser.get()
     }
 
-    pub fn colorpicker(&self) -> ColorPicker {
+    pub(crate) fn colorpicker(&self) -> ColorPicker {
         self.imp().colorpicker.get()
     }
 
-    pub fn font_size_spinbutton(&self) -> SpinButton {
+    pub(crate) fn font_size_spinbutton(&self) -> SpinButton {
         self.imp().font_size_spinbutton.get()
     }
 
-    pub fn text_align_start_togglebutton(&self) -> ToggleButton {
+    pub(crate) fn text_align_start_togglebutton(&self) -> ToggleButton {
         self.imp().text_align_start_togglebutton.get()
     }
 
-    pub fn text_align_center_togglebutton(&self) -> ToggleButton {
+    pub(crate) fn text_align_center_togglebutton(&self) -> ToggleButton {
         self.imp().text_align_center_togglebutton.get()
     }
 
-    pub fn text_align_end_togglebutton(&self) -> ToggleButton {
+    pub(crate) fn text_align_end_togglebutton(&self) -> ToggleButton {
         self.imp().text_align_end_togglebutton.get()
     }
 
-    pub fn text_align_fill_togglebutton(&self) -> ToggleButton {
+    pub(crate) fn text_align_fill_togglebutton(&self) -> ToggleButton {
         self.imp().text_align_fill_togglebutton.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let fontchooser = self.imp().fontchooser.get();
         let fontchooser_popover = self.imp().fontchooser_popover.get();
 
@@ -474,7 +470,7 @@ impl TypewriterPage {
         );
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let typewriter = appwindow
             .canvas()
             .engine()
@@ -488,7 +484,7 @@ impl TypewriterPage {
         self.font_size_spinbutton()
             .set_value(typewriter.text_style.font_size);
         self.colorpicker()
-            .set_current_color(Some(typewriter.text_style.color));
+            .set_current_color(gdk::RGBA::from_compose_color(typewriter.text_style.color));
 
         match typewriter.text_style.alignment {
             TextAlignment::Start => self.text_align_start_togglebutton().set_active(true),

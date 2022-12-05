@@ -21,7 +21,7 @@ pub type ApplyButton = Button;
 ///
 /// Only `ApplyButton` and `Popover` are returned because you likely want to
 /// apply a connection to them.
-pub fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
+pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
     let grid = create_grid();
     let cancel_button = create_cancel_button();
     let apply_button = create_apply_button();

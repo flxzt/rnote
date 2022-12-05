@@ -2,7 +2,7 @@ mod canvaslayout;
 mod input;
 
 // Re-exports
-pub use canvaslayout::CanvasLayout;
+pub(crate) use canvaslayout::CanvasLayout;
 use rnote_engine::pens::PenMode;
 
 // Imports
@@ -34,7 +34,7 @@ mod imp {
     use super::*;
 
     #[allow(missing_debug_implementations)]
-    pub struct RnoteCanvas {
+    pub(crate) struct RnoteCanvas {
         pub hadjustment: RefCell<Option<Adjustment>>,
         pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
         pub vadjustment: RefCell<Option<Adjustment>>,
@@ -410,7 +410,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct RnoteCanvas(ObjectSubclass<imp::RnoteCanvas>)
+    pub(crate) struct RnoteCanvas(ObjectSubclass<imp::RnoteCanvas>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Scrollable;
 }
@@ -422,68 +422,77 @@ impl Default for RnoteCanvas {
 }
 
 impl RnoteCanvas {
-    /// The zoom amount when activating the zoom-in / zoom-out action
-    pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     // the zoom timeout time
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub const ZOOM_STEP: f64 = 0.1;
 
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn regular_cursor(&self) -> String {
+    #[allow(unused)]
+    pub(crate) fn regular_cursor(&self) -> String {
         self.property::<String>("regular-cursor")
     }
 
-    pub fn set_regular_cursor(&self, regular_cursor: String) {
+    #[allow(unused)]
+    pub(crate) fn set_regular_cursor(&self, regular_cursor: String) {
         self.set_property("regular-cursor", regular_cursor.to_value());
     }
 
-    pub fn drawing_cursor(&self) -> String {
+    #[allow(unused)]
+    pub(crate) fn drawing_cursor(&self) -> String {
         self.property::<String>("drawing-cursor")
     }
 
-    pub fn set_drawing_cursor(&self, drawing_cursor: String) {
+    #[allow(unused)]
+    pub(crate) fn set_drawing_cursor(&self, drawing_cursor: String) {
         self.set_property("drawing-cursor", drawing_cursor.to_value());
     }
 
-    /// Only change the engine state in actions to avoid nested mutable borrows!
-    pub fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
-        self.imp().engine.clone()
-    }
-
-    pub fn output_file(&self) -> Option<gio::File> {
+    #[allow(unused)]
+    pub(crate) fn output_file(&self) -> Option<gio::File> {
         self.property::<Option<gio::File>>("output-file")
     }
 
-    pub fn set_output_file(&self, output_file: Option<gio::File>) {
+    #[allow(unused)]
+    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
     }
 
-    pub fn unsaved_changes(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn unsaved_changes(&self) -> bool {
         self.property::<bool>("unsaved-changes")
     }
 
-    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
         self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
-    pub fn empty(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn empty(&self) -> bool {
         self.property::<bool>("empty")
     }
 
-    pub fn set_empty(&self, empty: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_empty(&self, empty: bool) {
         self.set_property("empty", empty.to_value());
     }
 
-    pub fn touch_drawing(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn touch_drawing(&self) -> bool {
         self.property::<bool>("touch-drawing")
     }
 
-    pub fn set_touch_drawing(&self, touch_drawing: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
         self.set_property("touch-drawing", touch_drawing.to_value());
+    }
+
+    pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
+        self.imp().engine.clone()
     }
 
     fn set_hadjustment(&self, adj: Option<Adjustment>) {
@@ -524,7 +533,7 @@ impl RnoteCanvas {
         self.imp().vadjustment.replace(adj);
     }
 
-    pub fn set_text_preprocessing(&self, enable: bool) {
+    pub(crate) fn set_text_preprocessing(&self, enable: bool) {
         if enable {
             self.imp()
                 .key_controller
@@ -537,7 +546,7 @@ impl RnoteCanvas {
     }
 
     /// Switches between the regular and the drawing cursor
-    pub fn switch_between_cursors(&self, drawing_cursor: bool) {
+    pub(crate) fn switch_between_cursors(&self, drawing_cursor: bool) {
         if drawing_cursor {
             self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
         } else {
@@ -545,7 +554,7 @@ impl RnoteCanvas {
         }
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
         // receiving and handling engine tasks
@@ -910,7 +919,7 @@ impl RnoteCanvas {
         );
     }
 
-    pub fn bounds(&self) -> AABB {
+    pub(crate) fn bounds(&self) -> AABB {
         AABB::new_positive(
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
@@ -919,7 +928,7 @@ impl RnoteCanvas {
 
     // updates the camera offset with a new one ( for example from touch drag gestures )
     // update_engine_rendering() then needs to be called.
-    pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
         self.engine().borrow_mut().update_camera_offset(new_offset);
 
         // By setting new adjustment values, the callback connected to their value property is called,
@@ -929,7 +938,7 @@ impl RnoteCanvas {
     }
 
     /// returns the center of the current view on the doc
-    pub fn current_center_on_doc(&self) -> na::Vector2<f64> {
+    pub(crate) fn current_center_on_doc(&self) -> na::Vector2<f64> {
         (self.engine().borrow().camera.transform().inverse()
             * na::point![
                 f64::from(self.width()) * 0.5,
@@ -940,7 +949,7 @@ impl RnoteCanvas {
 
     /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
     // update_engine_rendering() then needs to be called.
-    pub fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
+    pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
         let (parent_width, parent_height) = (
             f64::from(self.parent().unwrap().width()),
             f64::from(self.parent().unwrap().height()),
@@ -957,7 +966,7 @@ impl RnoteCanvas {
 
     /// Centering the view to the origin page
     // update_engine_rendering() then needs to be called.
-    pub fn return_to_origin_page(&self) {
+    pub(crate) fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
 
         let new_offset = if self.engine().borrow().document.format.width * zoom
@@ -1009,7 +1018,7 @@ impl RnoteCanvas {
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
     /// Repeated calls to this function reset the timeout.
     /// should only be called from the "zoom-to-value" action.
-    pub fn zoom_temporarily_then_scale_to_after_timeout(
+    pub(crate) fn zoom_temporarily_then_scale_to_after_timeout(
         &self,
         new_zoom: f64,
         timeout_time: time::Duration,
@@ -1056,7 +1065,7 @@ impl RnoteCanvas {
     /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
-    pub fn update_engine_rendering(&self) {
+    pub(crate) fn update_engine_rendering(&self) {
         // background rendering is updated in the layout manager
         self.queue_resize();
 
@@ -1070,7 +1079,7 @@ impl RnoteCanvas {
 
     /// updates the background pattern and rendering for the current viewport.
     /// to be called for example when changing the background pattern or zoom.
-    pub fn regenerate_background_pattern(&self) {
+    pub(crate) fn regenerate_background_pattern(&self) {
         let viewport = self.engine().borrow().camera.viewport();
         let image_scale = self.engine().borrow().camera.image_scale();
 

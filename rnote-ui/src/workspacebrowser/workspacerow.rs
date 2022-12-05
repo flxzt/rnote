@@ -16,7 +16,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacerow.ui")]
-    pub struct WorkspaceRow {
+    pub(crate) struct WorkspaceRow {
         pub entry: RefCell<WorkspaceListEntry>,
         #[template_child]
         pub folder_image: TemplateChild<Image>,
@@ -183,7 +183,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct WorkspaceRow(ObjectSubclass<imp::WorkspaceRow>)
+    pub(crate) struct WorkspaceRow(ObjectSubclass<imp::WorkspaceRow>)
         @extends gtk4::Widget;
 }
 
@@ -197,19 +197,21 @@ impl WorkspaceRow {
     /// The threshold of the luminance of the workspacerow color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
     pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 
-    pub fn new(entry: WorkspaceListEntry) -> Self {
+    pub(crate) fn new(entry: WorkspaceListEntry) -> Self {
         glib::Object::new(&[("entry", &entry.to_value())])
     }
 
-    pub fn entry(&self) -> WorkspaceListEntry {
+    #[allow(unused)]
+    pub(crate) fn entry(&self) -> WorkspaceListEntry {
         self.property::<WorkspaceListEntry>("entry")
     }
 
-    pub fn set_entry(&self, entry: WorkspaceListEntry) {
+    #[allow(unused)]
+    pub(crate) fn set_entry(&self, entry: WorkspaceListEntry) {
         self.set_property("entry", entry.to_value());
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let rightclick_gesture = GestureClick::builder()
             .name("rightclick_gesture")
             .button(gdk::BUTTON_SECONDARY)

@@ -13,7 +13,7 @@ mod imp {
     use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penshortcutrow.ui")]
-    pub struct PenShortcutRow {
+    pub(crate) struct PenShortcutRow {
         pub key: RefCell<Option<ShortcutKey>>,
         pub action: RefCell<ShortcutAction>,
         pub changepenstyle_model: ChangePenStyleListModel,
@@ -143,14 +143,15 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct PenShortcutRow(ObjectSubclass<imp::PenShortcutRow>)
+    pub(crate) struct PenShortcutRow(ObjectSubclass<imp::PenShortcutRow>)
         @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
 }
 
 impl PenShortcutRow {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
+    #[allow(unused)]
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
@@ -163,20 +164,24 @@ impl PenShortcutRow {
         }
     }
 
-    pub fn key(&self) -> Option<ShortcutKey> {
+    #[allow(unused)]
+    pub(crate) fn key(&self) -> Option<ShortcutKey> {
         *self.imp().key.borrow()
     }
 
-    pub fn set_key(&self, key: Option<ShortcutKey>) {
+    #[allow(unused)]
+    pub(crate) fn set_key(&self, key: Option<ShortcutKey>) {
         *self.imp().key.borrow_mut() = key;
         self.emit_by_name::<()>("key-changed", &[]);
     }
 
-    pub fn action(&self) -> ShortcutAction {
+    #[allow(unused)]
+    pub(crate) fn action(&self) -> ShortcutAction {
         *self.imp().action.borrow()
     }
 
-    pub fn set_action(&self, action: ShortcutAction) {
+    #[allow(unused)]
+    pub(crate) fn set_action(&self, action: ShortcutAction) {
         *self.imp().action.borrow_mut() = action;
         self.emit_by_name::<()>("action-changed", &[]);
     }

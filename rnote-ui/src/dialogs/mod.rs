@@ -14,7 +14,7 @@ use crate::workspacebrowser::WorkspaceRow;
 use crate::{globals, IconPicker};
 
 // About Dialog
-pub fn dialog_about(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_about(appwindow: &RnoteAppWindow) {
     let aboutdialog = adw::AboutWindow::builder()
         .modal(true)
         .transient_for(appwindow)
@@ -44,7 +44,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
     aboutdialog.show();
 }
 
-pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
     let dialog_shortcuts: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
@@ -57,7 +57,7 @@ pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
     dialog_shortcuts.show();
 }
 
-pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -93,7 +93,7 @@ pub fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
     dialog_clear_doc.show();
 }
 
-pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
     let new_doc = |appwindow: &RnoteAppWindow| {
         appwindow.canvas().engine().borrow_mut().clear();
 
@@ -160,7 +160,7 @@ pub fn dialog_new_doc(appwindow: &RnoteAppWindow) {
     dialog_new_doc.show();
 }
 
-pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -210,7 +210,7 @@ pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     dialog_quit_save.show();
 }
 
-pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );

@@ -3,7 +3,7 @@ mod penshortcutrow;
 
 use gtk4::{Image, StringList};
 // Re-exports
-pub use penshortcutrow::PenShortcutRow;
+pub(crate) use penshortcutrow::PenShortcutRow;
 
 use adw::prelude::*;
 use gtk4::{
@@ -28,7 +28,7 @@ mod imp {
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
-    pub struct SettingsPanel {
+    pub(crate) struct SettingsPanel {
         pub temporary_format: Rc<RefCell<Format>>,
 
         #[template_child]
@@ -230,7 +230,7 @@ mod imp {
     impl WidgetImpl for SettingsPanel {}
 
     impl SettingsPanel {
-        pub fn update_temporary_format_from_rows(&self) {
+        pub(crate) fn update_temporary_format_from_rows(&self) {
             // border color
             self.temporary_format.borrow_mut().border_color = self
                 .general_format_border_color_choosebutton
@@ -354,7 +354,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
+    pub(crate) struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
     @extends Widget;
 }
 
@@ -365,20 +365,16 @@ impl Default for SettingsPanel {
 }
 
 impl SettingsPanel {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn temporary_format(&self) -> Rc<RefCell<Format>> {
-        Rc::clone(&self.imp().temporary_format)
-    }
-
-    pub fn format_predefined_format(&self) -> PredefinedFormat {
+    pub(crate) fn format_predefined_format(&self) -> PredefinedFormat {
         PredefinedFormat::try_from(self.imp().format_predefined_formats_row.get().selected())
             .unwrap()
     }
 
-    pub fn set_format_predefined_format_variant(
+    pub(crate) fn set_format_predefined_format_variant(
         &self,
         predefined_format: format::PredefinedFormat,
     ) {
@@ -390,11 +386,11 @@ impl SettingsPanel {
             .set_selected(position);
     }
 
-    pub fn background_pattern(&self) -> PatternStyle {
+    pub(crate) fn background_pattern(&self) -> PatternStyle {
         PatternStyle::try_from(self.imp().background_patterns_row.get().selected()).unwrap()
     }
 
-    pub fn set_background_pattern(&self, pattern: PatternStyle) {
+    pub(crate) fn set_background_pattern(&self, pattern: PatternStyle) {
         let position = pattern.to_u32().unwrap();
 
         self.imp()
@@ -403,7 +399,7 @@ impl SettingsPanel {
             .set_selected(position);
     }
 
-    pub fn set_format_orientation(&self, orientation: format::Orientation) {
+    pub(crate) fn set_format_orientation(&self, orientation: format::Orientation) {
         if orientation == format::Orientation::Portrait {
             self.imp()
                 .format_orientation_portrait_toggle
@@ -415,19 +411,19 @@ impl SettingsPanel {
         }
     }
 
-    pub fn settings_scroller(&self) -> ScrolledWindow {
+    pub(crate) fn settings_scroller(&self) -> ScrolledWindow {
         self.imp().settings_scroller.clone()
     }
 
-    pub fn general_regular_cursor_picker_image(&self) -> Image {
+    pub(crate) fn general_regular_cursor_picker_image(&self) -> Image {
         self.imp().general_regular_cursor_picker_image.clone()
     }
 
-    pub fn general_drawing_cursor_picker_image(&self) -> Image {
+    pub(crate) fn general_drawing_cursor_picker_image(&self) -> Image {
         self.imp().general_drawing_cursor_picker_image.clone()
     }
 
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         *self.imp().temporary_format.borrow_mut() =
             appwindow.canvas().engine().borrow().document.format.clone();
 
@@ -540,7 +536,7 @@ impl SettingsPanel {
             });
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let temporary_format = self.imp().temporary_format.clone();
         let penshortcut_stylus_button_primary_row =
             self.imp().penshortcut_stylus_button_primary_row.get();

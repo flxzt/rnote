@@ -10,7 +10,7 @@ mod imp {
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
-    pub struct MainHeader {
+    pub(crate) struct MainHeader {
         #[template_child]
         pub headerbar: TemplateChild<adw::HeaderBar>,
         #[template_child]
@@ -73,7 +73,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct MainHeader(ObjectSubclass<imp::MainHeader>)
+    pub(crate) struct MainHeader(ObjectSubclass<imp::MainHeader>)
         @extends Widget;
 }
 
@@ -84,67 +84,63 @@ impl Default for MainHeader {
 }
 
 impl MainHeader {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn headerbar(&self) -> adw::HeaderBar {
+    pub(crate) fn headerbar(&self) -> adw::HeaderBar {
         self.imp().headerbar.get()
     }
 
-    pub fn main_title(&self) -> adw::WindowTitle {
+    pub(crate) fn main_title(&self) -> adw::WindowTitle {
         self.imp().main_title.get()
     }
 
-    pub fn main_title_unsaved_indicator(&self) -> Label {
+    pub(crate) fn main_title_unsaved_indicator(&self) -> Label {
         self.imp().main_title_unsaved_indicator.get()
     }
 
-    pub fn menus_box(&self) -> gtk4::Box {
+    pub(crate) fn menus_box(&self) -> gtk4::Box {
         self.imp().menus_box.get()
     }
 
-    pub fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
-        self.imp().pens_toggles_placeholderbox.get()
-    }
-
-    pub fn pens_toggles_squeezer(&self) -> adw::Squeezer {
+    pub(crate) fn pens_toggles_squeezer(&self) -> adw::Squeezer {
         self.imp().pens_toggles_squeezer.get()
     }
 
-    pub fn brush_toggle(&self) -> ToggleButton {
+    pub(crate) fn brush_toggle(&self) -> ToggleButton {
         self.imp().brush_toggle.get()
     }
 
-    pub fn shaper_toggle(&self) -> ToggleButton {
+    pub(crate) fn shaper_toggle(&self) -> ToggleButton {
         self.imp().shaper_toggle.get()
     }
 
-    pub fn typewriter_toggle(&self) -> ToggleButton {
+    pub(crate) fn typewriter_toggle(&self) -> ToggleButton {
         self.imp().typewriter_toggle.get()
     }
 
-    pub fn eraser_toggle(&self) -> ToggleButton {
+    pub(crate) fn eraser_toggle(&self) -> ToggleButton {
         self.imp().eraser_toggle.get()
     }
 
-    pub fn selector_toggle(&self) -> ToggleButton {
+    pub(crate) fn selector_toggle(&self) -> ToggleButton {
         self.imp().selector_toggle.get()
     }
 
-    pub fn tools_toggle(&self) -> ToggleButton {
+    pub(crate) fn tools_toggle(&self) -> ToggleButton {
         self.imp().tools_toggle.get()
     }
 
-    pub fn canvasmenu(&self) -> CanvasMenu {
+    pub(crate) fn canvasmenu(&self) -> CanvasMenu {
         self.imp().canvasmenu.get()
     }
 
-    pub fn appmenu(&self) -> AppMenu {
+    pub(crate) fn appmenu(&self) -> AppMenu {
         self.imp().appmenu.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.imp()
             .headerbar
             .get()

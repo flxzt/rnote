@@ -3,7 +3,7 @@ mod open;
 mod rename;
 mod trash;
 
-pub use duplicate::duplicate;
-pub use open::open;
-pub use rename::rename;
-pub use trash::trash;
+pub(crate) use duplicate::duplicate;
+pub(crate) use open::open;
+pub(crate) use rename::rename;
+pub(crate) use trash::trash;

@@ -7,11 +7,11 @@ mod workspacelistentry;
 mod workspacerow;
 
 // Re-exports
-pub use filerow::FileRow;
+pub(crate) use filerow::FileRow;
 use gtk4::{CustomFilter, GestureClick, PropagationPhase};
-pub use workspacelist::WorkspaceList;
-pub use workspacelistentry::WorkspaceListEntry;
-pub use workspacerow::WorkspaceRow;
+pub(crate) use workspacelist::WorkspaceList;
+pub(crate) use workspacelistentry::WorkspaceListEntry;
+pub(crate) use workspacerow::WorkspaceRow;
 
 use crate::appwindow::RnoteAppWindow;
 use gtk4::{
@@ -27,7 +27,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
-    pub struct WorkspaceBrowser {
+    pub(crate) struct WorkspaceBrowser {
         pub workspace_actions: gio::SimpleActionGroup,
         pub files_dirlist: DirectoryList,
         pub workspace_list: WorkspaceList,
@@ -112,7 +112,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
+    pub(crate) struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
         @extends gtk4::Widget;
 }
 
@@ -123,35 +123,31 @@ impl Default for WorkspaceBrowser {
 }
 
 impl WorkspaceBrowser {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn grid(&self) -> Grid {
+    pub(crate) fn grid(&self) -> Grid {
         self.imp().grid.clone()
     }
 
-    pub fn files_scroller(&self) -> ScrolledWindow {
+    pub(crate) fn files_scroller(&self) -> ScrolledWindow {
         self.imp().files_scroller.clone()
     }
 
-    pub fn files_listview(&self) -> ListView {
-        self.imp().files_listview.clone()
-    }
-
-    pub fn workspaces_bar(&self) -> gtk4::Box {
+    pub(crate) fn workspaces_bar(&self) -> gtk4::Box {
         self.imp().workspaces_bar.clone()
     }
 
-    pub fn workspaces_scroller(&self) -> ScrolledWindow {
+    pub(crate) fn workspaces_scroller(&self) -> ScrolledWindow {
         self.imp().workspaces_scroller.clone()
     }
 
-    pub fn dir_controls_actions_box(&self) -> gtk4::Box {
+    pub(crate) fn dir_controls_actions_box(&self) -> gtk4::Box {
         self.imp().dir_controls_actions_box.clone()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         setup_workspaces_sidebar(self, appwindow);
 
         setup_dir_controls(self, appwindow);
@@ -160,7 +156,7 @@ impl WorkspaceBrowser {
         self.setup_dir_actions(appwindow);
     }
 
-    pub fn add_workspace(&self, dir: PathBuf) {
+    pub(crate) fn add_workspace(&self, dir: PathBuf) {
         let entry = WorkspaceListEntry::from_path(dir);
         self.imp().workspace_list.push(entry);
 
@@ -168,7 +164,7 @@ impl WorkspaceBrowser {
         self.select_workspace_by_index(n_items.saturating_sub(1));
     }
 
-    pub fn remove_current_workspace(&self) {
+    pub(crate) fn remove_current_workspace(&self) {
         let n_items = self.imp().workspace_list.n_items();
 
         // never remove the last row
@@ -183,7 +179,7 @@ impl WorkspaceBrowser {
         }
     }
 
-    pub fn select_workspace_by_index(&self, index: u32) {
+    pub(crate) fn select_workspace_by_index(&self, index: u32) {
         let n_items = self.imp().workspace_list.n_items();
 
         self.imp().workspaces_listbox.select_row(
@@ -194,7 +190,7 @@ impl WorkspaceBrowser {
         );
     }
 
-    pub fn refresh(&self) {
+    pub(crate) fn refresh(&self) {
         if let Some(current_workspace_dir) = self.selected_workspace_dir() {
             self.imp()
                 .files_dirlist
@@ -202,14 +198,14 @@ impl WorkspaceBrowser {
         }
     }
 
-    pub fn selected_workspace_index(&self) -> Option<u32> {
+    pub(crate) fn selected_workspace_index(&self) -> Option<u32> {
         self.imp()
             .workspaces_listbox
             .selected_row()
             .map(|r| r.index() as u32)
     }
 
-    pub fn selected_workspace_dir(&self) -> Option<PathBuf> {
+    pub(crate) fn selected_workspace_dir(&self) -> Option<PathBuf> {
         self.selected_workspace_index().and_then(|i| {
             self.imp()
                 .workspace_list
@@ -218,7 +214,8 @@ impl WorkspaceBrowser {
         })
     }
 
-    pub fn set_current_workspace_dir(&self, dir: PathBuf) {
+    #[allow(unused)]
+    pub(crate) fn set_current_workspace_dir(&self, dir: PathBuf) {
         let i = self.selected_workspace_index().unwrap_or(0);
 
         let row = self.imp().workspace_list.remove(i as usize);
@@ -228,7 +225,8 @@ impl WorkspaceBrowser {
         self.select_workspace_by_index(i);
     }
 
-    pub fn set_current_workspace_color(&self, color: gdk::RGBA) {
+    #[allow(unused)]
+    pub(crate) fn set_current_workspace_color(&self, color: gdk::RGBA) {
         let i = self.selected_workspace_index().unwrap_or(0);
 
         let row = self.imp().workspace_list.remove(i as usize);
@@ -238,7 +236,8 @@ impl WorkspaceBrowser {
         self.select_workspace_by_index(i);
     }
 
-    pub fn set_current_workspace_name(&self, name: String) {
+    #[allow(unused)]
+    pub(crate) fn set_current_workspace_name(&self, name: String) {
         let i = self.selected_workspace_index().unwrap_or(0);
 
         let row = self.imp().workspace_list.remove(i as usize);
@@ -248,14 +247,14 @@ impl WorkspaceBrowser {
         self.select_workspace_by_index(i);
     }
 
-    pub fn current_selected_workspace_row(&self) -> Option<WorkspaceRow> {
+    pub(crate) fn current_selected_workspace_row(&self) -> Option<WorkspaceRow> {
         self.imp()
             .workspaces_listbox
             .selected_row()
             .and_then(|row| row.child().map(|w| w.downcast::<WorkspaceRow>().unwrap()))
     }
 
-    pub fn save_workspaces_to_settings(&self, settings: &gio::Settings) {
+    pub(crate) fn save_workspaces_to_settings(&self, settings: &gio::Settings) {
         if let Err(e) = settings.set("workspace-list", &self.imp().workspace_list) {
             log::error!("saving `workspace-list` to settings failed with Err: {e:?}");
         }
@@ -268,7 +267,7 @@ impl WorkspaceBrowser {
         }
     }
 
-    pub fn load_from_settings(&self, settings: &gio::Settings) {
+    pub(crate) fn load_from_settings(&self, settings: &gio::Settings) {
         let workspace_list = settings.get::<WorkspaceList>("workspace-list");
         // Be sure to get the index before loading the workspaces, else the setting gets overridden
         let current_workspace_index = settings.uint("current-workspace-index");

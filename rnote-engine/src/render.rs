@@ -740,7 +740,7 @@ impl Svg {
         Ok(())
     }
 
-    #[allow(dead_code)]
+    #[allow(unused)]
     fn render_to_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
         if self.bounds.extents()[0] < 0.0 || self.bounds.extents()[1] < 0.0 {
             return Err(anyhow::anyhow!(

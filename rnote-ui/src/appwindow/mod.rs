@@ -18,12 +18,12 @@ use gtk4::{
 use once_cell::sync::Lazy;
 
 use crate::{
-    app::RnoteApp,
     canvas::RnoteCanvas,
     config,
     penssidebar::PensSideBar,
     settingspanel::SettingsPanel,
     workspacebrowser::WorkspaceBrowser,
+    RnoteApp,
     {dialogs, mainheader::MainHeader},
 };
 use rnote_engine::{engine::EngineTask, pens::penholder::PenStyle, Camera, WidgetFlags};
@@ -34,7 +34,7 @@ mod imp {
     #[allow(missing_debug_implementations)]
     #[derive(CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
-    pub struct RnoteAppWindow {
+    pub(crate) struct RnoteAppWindow {
         pub app_settings: gio::Settings,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
         pub autosave_source_id: RefCell<Option<glib::SourceId>>,
@@ -630,255 +630,199 @@ mod imp {
         }
 
         fn handle_righthanded_property(&self, righthanded: bool) {
-            let appwindow = self.instance();
+            let inst = self.instance();
 
             if righthanded {
-                appwindow.flap().set_flap_position(PackType::Start);
-                appwindow.main_grid().remove(&appwindow.sidebar_grid());
-                appwindow.main_grid().remove(&appwindow.sidebar_sep());
-                appwindow
-                    .main_grid()
-                    .remove(&appwindow.narrow_pens_toggles_revealer());
-                appwindow.main_grid().remove(&appwindow.canvas_box());
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.sidebar_grid(), 0, 1, 1, 2);
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.canvas_box(), 2, 2, 1, 1);
-                appwindow.canvas_quickactions_box().set_halign(Align::End);
-                appwindow
-                    .mainheader()
+                inst.flap().set_flap_position(PackType::Start);
+                inst.main_grid().remove(&inst.sidebar_grid());
+                inst.main_grid().remove(&inst.sidebar_sep());
+                inst.main_grid()
+                    .remove(&inst.narrow_pens_toggles_revealer());
+                inst.main_grid().remove(&inst.canvas_box());
+                inst.main_grid().attach(&inst.sidebar_grid(), 0, 1, 1, 2);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
+                inst.main_grid()
+                    .attach(&inst.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
+                inst.main_grid().attach(&inst.canvas_box(), 2, 2, 1, 1);
+                inst.canvas_quickactions_box().set_halign(Align::End);
+                inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
                     .set_active(true);
-                appwindow
-                    .mainheader()
+                inst.mainheader()
                     .headerbar()
-                    .remove(&appwindow.mainheader().pens_toggles_squeezer());
-                appwindow
-                    .mainheader()
+                    .remove(&inst.mainheader().pens_toggles_squeezer());
+                inst.mainheader()
                     .headerbar()
-                    .pack_start(&appwindow.mainheader().pens_toggles_squeezer());
-                appwindow
-                    .workspacebrowser()
+                    .pack_start(&inst.mainheader().pens_toggles_squeezer());
+                inst.workspacebrowser()
                     .grid()
-                    .remove(&appwindow.workspacebrowser().workspaces_bar());
-                appwindow
-                    .workspacebrowser()
+                    .remove(&inst.workspacebrowser().workspaces_bar());
+                inst.workspacebrowser()
                     .grid()
-                    .remove(&appwindow.workspacebrowser().files_scroller());
-                appwindow.workspacebrowser().grid().attach(
-                    &appwindow.workspacebrowser().workspaces_bar(),
+                    .remove(&inst.workspacebrowser().files_scroller());
+                inst.workspacebrowser().grid().attach(
+                    &inst.workspacebrowser().workspaces_bar(),
                     0,
                     0,
                     1,
                     1,
                 );
-                appwindow.workspacebrowser().grid().attach(
-                    &appwindow.workspacebrowser().files_scroller(),
+                inst.workspacebrowser().grid().attach(
+                    &inst.workspacebrowser().files_scroller(),
                     2,
                     0,
                     1,
                     1,
                 );
-                appwindow
-                    .workspacebrowser()
+                inst.workspacebrowser()
                     .files_scroller()
                     .set_window_placement(CornerType::TopRight);
-                appwindow
-                    .workspacebrowser()
+                inst.workspacebrowser()
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
-                appwindow
-                    .canvas_scroller()
+                inst.canvas_scroller()
                     .set_window_placement(CornerType::BottomRight);
-                appwindow
-                    .sidebar_scroller()
+                inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopRight);
-                appwindow
-                    .settings_panel()
+                inst.settings_panel()
                     .settings_scroller()
                     .set_window_placement(CornerType::TopRight);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .brush_page()
                     .brushconfig_menubutton()
                     .set_direction(ArrowType::Right);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Right);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .brush_page()
                     .colorpicker()
                     .set_property("position", PositionType::Left.to_value());
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .stroke_colorpicker()
                     .set_property("position", PositionType::Left.to_value());
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .fill_colorpicker()
                     .set_property("position", PositionType::Left.to_value());
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Right);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .shapeconfig_menubutton()
                     .set_direction(ArrowType::Right);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .shapebuildertype_menubutton()
                     .set_direction(ArrowType::Right);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Right);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .typewriter_page()
                     .colorpicker()
                     .set_property("position", PositionType::Left.to_value());
             } else {
-                appwindow.flap().set_flap_position(PackType::End);
-                appwindow.main_grid().remove(&appwindow.canvas_box());
-                appwindow
-                    .main_grid()
-                    .remove(&appwindow.narrow_pens_toggles_revealer());
-                appwindow.main_grid().remove(&appwindow.sidebar_sep());
-                appwindow.main_grid().remove(&appwindow.sidebar_grid());
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.canvas_box(), 0, 2, 1, 1);
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
-                appwindow
-                    .main_grid()
-                    .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
-                appwindow.canvas_quickactions_box().set_halign(Align::Start);
-                appwindow
-                    .mainheader()
+                inst.flap().set_flap_position(PackType::End);
+                inst.main_grid().remove(&inst.canvas_box());
+                inst.main_grid()
+                    .remove(&inst.narrow_pens_toggles_revealer());
+                inst.main_grid().remove(&inst.sidebar_sep());
+                inst.main_grid().remove(&inst.sidebar_grid());
+                inst.main_grid().attach(&inst.canvas_box(), 0, 2, 1, 1);
+                inst.main_grid()
+                    .attach(&inst.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
+                inst.main_grid().attach(&inst.sidebar_grid(), 2, 1, 1, 2);
+                inst.canvas_quickactions_box().set_halign(Align::Start);
+                inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()
                     .set_active(true);
-                appwindow
-                    .mainheader()
+                inst.mainheader()
                     .headerbar()
-                    .remove(&appwindow.mainheader().pens_toggles_squeezer());
-                appwindow
-                    .mainheader()
+                    .remove(&inst.mainheader().pens_toggles_squeezer());
+                inst.mainheader()
                     .headerbar()
-                    .pack_end(&appwindow.mainheader().pens_toggles_squeezer());
-                appwindow
-                    .workspacebrowser()
+                    .pack_end(&inst.mainheader().pens_toggles_squeezer());
+                inst.workspacebrowser()
                     .grid()
-                    .remove(&appwindow.workspacebrowser().files_scroller());
-                appwindow
-                    .workspacebrowser()
+                    .remove(&inst.workspacebrowser().files_scroller());
+                inst.workspacebrowser()
                     .grid()
-                    .remove(&appwindow.workspacebrowser().workspaces_bar());
-                appwindow.workspacebrowser().grid().attach(
-                    &appwindow.workspacebrowser().files_scroller(),
+                    .remove(&inst.workspacebrowser().workspaces_bar());
+                inst.workspacebrowser().grid().attach(
+                    &inst.workspacebrowser().files_scroller(),
                     0,
                     0,
                     1,
                     1,
                 );
-                appwindow.workspacebrowser().grid().attach(
-                    &appwindow.workspacebrowser().workspaces_bar(),
+                inst.workspacebrowser().grid().attach(
+                    &inst.workspacebrowser().workspaces_bar(),
                     2,
                     0,
                     1,
                     1,
                 );
-                appwindow
-                    .workspacebrowser()
+                inst.workspacebrowser()
                     .files_scroller()
                     .set_window_placement(CornerType::TopLeft);
-                appwindow
-                    .workspacebrowser()
+                inst.workspacebrowser()
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
-                appwindow
-                    .canvas_scroller()
+                inst.canvas_scroller()
                     .set_window_placement(CornerType::BottomLeft);
-                appwindow
-                    .sidebar_scroller()
+                inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopLeft);
-                appwindow
-                    .settings_panel()
+                inst.settings_panel()
                     .settings_scroller()
                     .set_window_placement(CornerType::TopLeft);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .brush_page()
                     .brushconfig_menubutton()
                     .set_direction(ArrowType::Left);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Left);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .brush_page()
                     .colorpicker()
                     .set_property("position", PositionType::Right.to_value());
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .stroke_colorpicker()
                     .set_property("position", PositionType::Right.to_value());
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .fill_colorpicker()
                     .set_property("position", PositionType::Right.to_value());
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Left);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .shapeconfig_menubutton()
                     .set_direction(ArrowType::Left);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .shapebuildertype_menubutton()
                     .set_direction(ArrowType::Left);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Left);
-                appwindow
-                    .penssidebar()
+                inst.penssidebar()
                     .typewriter_page()
                     .colorpicker()
                     .set_property("position", PositionType::Right.to_value());
@@ -888,7 +832,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct RnoteAppWindow(ObjectSubclass<imp::RnoteAppWindow>)
+    pub(crate) struct RnoteAppWindow(ObjectSubclass<imp::RnoteAppWindow>)
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
         @implements gio::ActionMap, gio::ActionGroup;
 }
@@ -904,232 +848,200 @@ impl RnoteAppWindow {
 
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
-    pub fn new(app: &Application) -> Self {
+    pub(crate) fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)])
     }
 
-    /// Called to close the window
-    pub fn close_force(&self) {
-        // Saving all state
-        if let Err(e) = self.save_to_settings() {
-            log::error!("Failed to save appwindow to settings, with Err: {e:?}");
-        }
-
-        // Closing the state tasks channel receiver
-        if let Err(e) = self
-            .canvas()
-            .engine()
-            .borrow()
-            .tasks_tx()
-            .unbounded_send(EngineTask::Quit)
-        {
-            log::error!("failed to send StateTask::Quit on store tasks_tx, Err: {e:?}");
-        }
-
-        self.destroy();
-    }
-
-    pub fn app(&self) -> RnoteApp {
-        self.application().unwrap().downcast::<RnoteApp>().unwrap()
-    }
-
-    pub fn app_settings(&self) -> gio::Settings {
-        self.imp().app_settings.clone()
-    }
-
-    pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
-        self.imp().filechoosernative.clone()
-    }
-
-    pub fn unsaved_changes(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn unsaved_changes(&self) -> bool {
         self.property::<bool>("unsaved-changes")
     }
 
-    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
         self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
-    pub fn autosave(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn autosave(&self) -> bool {
         self.property::<bool>("autosave")
     }
 
-    pub fn set_autosave(&self, autosave: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_autosave(&self, autosave: bool) {
         self.set_property("autosave", autosave.to_value());
     }
 
-    pub fn autosave_interval_secs(&self) -> u32 {
+    #[allow(unused)]
+    pub(crate) fn autosave_interval_secs(&self) -> u32 {
         self.property::<u32>("autosave-interval-secs")
     }
 
-    pub fn set_autosave_interval_secs(&self, autosave_interval_secs: u32) {
+    #[allow(unused)]
+    pub(crate) fn set_autosave_interval_secs(&self, autosave_interval_secs: u32) {
         self.set_property("autosave-interval-secs", autosave_interval_secs.to_value());
     }
 
-    pub fn righthanded(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn righthanded(&self) -> bool {
         self.property::<bool>("righthanded")
     }
 
-    pub fn set_righthanded(&self, righthanded: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_righthanded(&self, righthanded: bool) {
         self.set_property("righthanded", righthanded.to_value());
     }
 
-    pub fn permanently_hide_canvas_scrollbars(&self) -> bool {
+    #[allow(unused)]
+    pub(crate) fn permanently_hide_canvas_scrollbars(&self) -> bool {
         self.property::<bool>("permanently_hide_canvas_scrollbars")
     }
 
-    pub fn set_permanently_hide_canvas_scrollbars(&self, permanently_hide_canvas_scrollbars: bool) {
+    #[allow(unused)]
+    pub(crate) fn set_permanently_hide_canvas_scrollbars(
+        &self,
+        permanently_hide_canvas_scrollbars: bool,
+    ) {
         self.set_property(
             "permanently_hide_canvas_scrollbars",
             permanently_hide_canvas_scrollbars.to_value(),
         );
     }
 
-    pub fn canvas_touch_drag_gesture(&self) -> GestureDrag {
-        self.imp().canvas_touch_drag_gesture.clone()
+    pub(crate) fn app(&self) -> RnoteApp {
+        self.application().unwrap().downcast::<RnoteApp>().unwrap()
     }
 
-    pub fn canvas_drag_empty_area_gesture(&self) -> GestureDrag {
-        self.imp().canvas_drag_empty_area_gesture.clone()
+    pub(crate) fn app_settings(&self) -> gio::Settings {
+        self.imp().app_settings.clone()
     }
 
-    pub fn canvas_zoom_gesture(&self) -> GestureZoom {
-        self.imp().canvas_zoom_gesture.clone()
+    pub(crate) fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
+        self.imp().filechoosernative.clone()
     }
 
-    pub fn canvas_zoom_scroll_controller(&self) -> EventControllerScroll {
-        self.imp().canvas_zoom_scroll_controller.clone()
-    }
-
-    pub fn canvas_mouse_drag_middle_gesture(&self) -> GestureDrag {
-        self.imp().canvas_mouse_drag_middle_gesture.clone()
-    }
-
-    pub fn toast_overlay(&self) -> adw::ToastOverlay {
+    pub(crate) fn toast_overlay(&self) -> adw::ToastOverlay {
         self.imp().toast_overlay.get()
     }
 
-    pub fn main_grid(&self) -> Grid {
+    pub(crate) fn main_grid(&self) -> Grid {
         self.imp().main_grid.get()
     }
 
-    pub fn canvas_box(&self) -> gtk4::Box {
+    pub(crate) fn canvas_box(&self) -> gtk4::Box {
         self.imp().canvas_box.get()
     }
 
-    pub fn canvas_quickactions_box(&self) -> gtk4::Box {
+    pub(crate) fn canvas_quickactions_box(&self) -> gtk4::Box {
         self.imp().canvas_quickactions_box.get()
     }
 
-    pub fn canvas_fixedsize_quickactions_revealer(&self) -> Revealer {
+    pub(crate) fn canvas_fixedsize_quickactions_revealer(&self) -> Revealer {
         self.imp().canvas_fixedsize_quickactions_revealer.get()
     }
 
-    pub fn undo_button(&self) -> Button {
+    pub(crate) fn undo_button(&self) -> Button {
         self.imp().undo_button.get()
     }
 
-    pub fn redo_button(&self) -> Button {
+    pub(crate) fn redo_button(&self) -> Button {
         self.imp().redo_button.get()
     }
 
-    pub fn canvas_progressbar(&self) -> ProgressBar {
+    pub(crate) fn canvas_progressbar(&self) -> ProgressBar {
         self.imp().canvas_progressbar.get()
     }
 
-    pub fn canvas_scroller(&self) -> ScrolledWindow {
+    pub(crate) fn canvas_scroller(&self) -> ScrolledWindow {
         self.imp().canvas_scroller.get()
     }
 
-    pub fn canvas(&self) -> RnoteCanvas {
+    pub(crate) fn canvas(&self) -> RnoteCanvas {
         self.imp().canvas.get()
     }
 
-    pub fn settings_panel(&self) -> SettingsPanel {
+    pub(crate) fn settings_panel(&self) -> SettingsPanel {
         self.imp().settings_panel.get()
     }
 
-    pub fn sidebar_scroller(&self) -> ScrolledWindow {
+    pub(crate) fn sidebar_scroller(&self) -> ScrolledWindow {
         self.imp().sidebar_scroller.get()
     }
 
-    pub fn sidebar_grid(&self) -> Grid {
+    pub(crate) fn sidebar_grid(&self) -> Grid {
         self.imp().sidebar_grid.get()
     }
 
-    pub fn sidebar_sep(&self) -> Separator {
+    pub(crate) fn sidebar_sep(&self) -> Separator {
         self.imp().sidebar_sep.get()
     }
 
-    pub fn flap_box(&self) -> gtk4::Box {
+    pub(crate) fn flap_box(&self) -> gtk4::Box {
         self.imp().flap_box.get()
     }
 
-    pub fn flap_header(&self) -> adw::HeaderBar {
+    pub(crate) fn flap_header(&self) -> adw::HeaderBar {
         self.imp().flap_header.get()
     }
 
-    pub fn workspacebrowser(&self) -> WorkspaceBrowser {
+    pub(crate) fn workspacebrowser(&self) -> WorkspaceBrowser {
         self.imp().workspacebrowser.get()
     }
 
-    pub fn flap(&self) -> adw::Flap {
+    pub(crate) fn flap(&self) -> adw::Flap {
         self.imp().flap.get()
     }
 
-    pub fn flapreveal_toggle(&self) -> ToggleButton {
-        self.imp().flapreveal_toggle.get()
-    }
-
-    pub fn flap_menus_box(&self) -> Box {
+    pub(crate) fn flap_menus_box(&self) -> Box {
         self.imp().flap_menus_box.get()
     }
 
-    pub fn flap_close_button(&self) -> Button {
+    pub(crate) fn flap_close_button(&self) -> Button {
         self.imp().flap_close_button.get()
     }
 
-    pub fn flap_stack(&self) -> adw::ViewStack {
+    pub(crate) fn flap_stack(&self) -> adw::ViewStack {
         self.imp().flap_stack.get()
     }
 
-    pub fn mainheader(&self) -> MainHeader {
+    pub(crate) fn mainheader(&self) -> MainHeader {
         self.imp().mainheader.get()
     }
 
-    pub fn narrow_pens_toggles_revealer(&self) -> Revealer {
+    pub(crate) fn narrow_pens_toggles_revealer(&self) -> Revealer {
         self.imp().narrow_pens_toggles_revealer.get()
     }
 
-    pub fn narrow_brush_toggle(&self) -> ToggleButton {
+    pub(crate) fn narrow_brush_toggle(&self) -> ToggleButton {
         self.imp().narrow_brush_toggle.get()
     }
 
-    pub fn narrow_shaper_toggle(&self) -> ToggleButton {
+    pub(crate) fn narrow_shaper_toggle(&self) -> ToggleButton {
         self.imp().narrow_shaper_toggle.get()
     }
 
-    pub fn narrow_typewriter_toggle(&self) -> ToggleButton {
+    pub(crate) fn narrow_typewriter_toggle(&self) -> ToggleButton {
         self.imp().narrow_typewriter_toggle.get()
     }
 
-    pub fn narrow_eraser_toggle(&self) -> ToggleButton {
+    pub(crate) fn narrow_eraser_toggle(&self) -> ToggleButton {
         self.imp().narrow_eraser_toggle.get()
     }
 
-    pub fn narrow_selector_toggle(&self) -> ToggleButton {
+    pub(crate) fn narrow_selector_toggle(&self) -> ToggleButton {
         self.imp().narrow_selector_toggle.get()
     }
 
-    pub fn narrow_tools_toggle(&self) -> ToggleButton {
+    pub(crate) fn narrow_tools_toggle(&self) -> ToggleButton {
         self.imp().narrow_tools_toggle.get()
     }
 
-    pub fn penssidebar(&self) -> PensSideBar {
+    pub(crate) fn penssidebar(&self) -> PensSideBar {
         self.imp().penssidebar.get()
     }
 
     // Must be called after application is associated with it else it fails
-    pub fn init(&self) {
+    pub(crate) fn init(&self) {
         self.imp().workspacebrowser.get().init(self);
         self.imp().settings_panel.get().init(self);
         self.imp().mainheader.get().init(self);
@@ -1180,7 +1092,29 @@ impl RnoteAppWindow {
         self.update_titles_for_file(None);
     }
 
-    pub fn canvas_touch_drag_gesture_enable(&self, enable: bool) {
+    /// Called to close the window
+    pub(crate) fn close_force(&self) {
+        // Saving all state
+        if let Err(e) = self.save_to_settings() {
+            log::error!("Failed to save appwindow to settings, with Err: {e:?}");
+        }
+
+        // Closing the state tasks channel receiver
+        if let Err(e) = self
+            .canvas()
+            .engine()
+            .borrow()
+            .tasks_tx()
+            .unbounded_send(EngineTask::Quit)
+        {
+            log::error!("failed to send StateTask::Quit on store tasks_tx, Err: {e:?}");
+        }
+
+        self.destroy();
+    }
+
+    #[allow(unused)]
+    pub(crate) fn canvas_touch_drag_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
                 .canvas_touch_drag_gesture
@@ -1192,7 +1126,8 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn canvas_drag_empty_area_gesture_enable(&self, enable: bool) {
+    #[allow(unused)]
+    pub(crate) fn canvas_drag_empty_area_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
                 .canvas_drag_empty_area_gesture
@@ -1204,7 +1139,8 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn canvas_zoom_gesture_enable(&self, enable: bool) {
+    #[allow(unused)]
+    pub(crate) fn canvas_zoom_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
                 .canvas_zoom_gesture
@@ -1216,7 +1152,8 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn canvas_zoom_scroll_controller_enable(&self, enable: bool) {
+    #[allow(unused)]
+    pub(crate) fn canvas_zoom_scroll_controller_enable(&self, enable: bool) {
         if enable {
             self.imp()
                 .canvas_zoom_scroll_controller
@@ -1228,7 +1165,8 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn canvas_mouse_drag_middle_gesture_enable(&self, enable: bool) {
+    #[allow(unused)]
+    pub(crate) fn canvas_mouse_drag_middle_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
                 .canvas_mouse_drag_middle_gesture
@@ -1240,7 +1178,7 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn setup_input(&self) {
+    pub(crate) fn setup_input(&self) {
         // Gesture Grouping
         self.imp()
             .canvas_mouse_drag_middle_gesture
@@ -1417,7 +1355,7 @@ impl RnoteAppWindow {
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
-    pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
+    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
         if widget_flags.redraw {
             self.canvas().queue_draw();
         }
@@ -1450,7 +1388,7 @@ impl RnoteAppWindow {
         widget_flags.quit
     }
 
-    pub fn save_engine_config(&self) -> anyhow::Result<()> {
+    pub(crate) fn save_engine_config(&self) -> anyhow::Result<()> {
         let engine_config = self.canvas().engine().borrow().save_engine_config()?;
         self.app_settings()
             .set_string("engine-config", engine_config.as_str())?;
@@ -1458,7 +1396,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn update_titles_for_file(&self, file: Option<&gio::File>) {
+    pub(crate) fn update_titles_for_file(&self, file: Option<&gio::File>) {
         let title: String = file
             .and_then(|f| f.basename())
             .map(|t| t.with_extension("").display().to_string())
@@ -1476,7 +1414,7 @@ impl RnoteAppWindow {
         self.mainheader().main_title().set_subtitle(&subtitle);
     }
 
-    pub fn start_pulsing_canvas_progressbar(&self) {
+    pub(crate) fn start_pulsing_canvas_progressbar(&self) {
         const PROGRESS_BAR_PULSE_INTERVAL: std::time::Duration =
             std::time::Duration::from_millis(300);
 
@@ -1492,7 +1430,7 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn finish_canvas_progressbar(&self) {
+    pub(crate) fn finish_canvas_progressbar(&self) {
         const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
             std::time::Duration::from_millis(300);
 
@@ -1510,7 +1448,8 @@ impl RnoteAppWindow {
         );
     }
 
-    pub fn abort_canvas_progressbar(&self) {
+    #[allow(unused)]
+    pub(crate) fn abort_canvas_progressbar(&self) {
         if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
             pulse_source.remove();
         }

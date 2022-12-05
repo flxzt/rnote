@@ -2,7 +2,7 @@ use gtk4::{gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::AABB;
 
 #[derive(Debug)]
-pub enum FileType {
+pub(crate) enum FileType {
     Folder,
     RnoteFile,
     VectorImageFile,
@@ -13,7 +13,7 @@ pub enum FileType {
 }
 
 impl FileType {
-    pub fn lookup_file_type(file: &gio::File) -> Self {
+    pub(crate) fn lookup_file_type(file: &gio::File) -> Self {
         if let Ok(info) = file.query_info(
             "standard::*",
             gio::FileQueryInfoFlags::NONE,
@@ -76,7 +76,8 @@ impl FileType {
 }
 
 /// Translates a AABB to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
-pub fn translate_aabb_to_widget(
+#[allow(unused)]
+pub(crate) fn translate_aabb_to_widget(
     aabb: AABB,
     widget: &impl IsA<Widget>,
     dest_widget: &impl IsA<Widget>,

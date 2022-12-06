@@ -202,7 +202,6 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    // Flag for any unsaved changes on the canvas. Propagates to the application 'unsaved-changes' property
                     glib::ParamSpecObject::new(
                         "output-file",
                         "output-file",
@@ -210,6 +209,7 @@ mod imp {
                         Option::<gio::File>::static_type(),
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Flag to indicate that there are unsaved changes to the canvas
                     glib::ParamSpecBoolean::new(
                         "unsaved-changes",
                         "unsaved-changes",
@@ -703,10 +703,6 @@ impl RnoteCanvas {
                 appwindow.canvas_wrapper().canvas_zoom_gesture_enable(!touch_drawing);
             }),
         );
-
-        self.bind_property("unsaved-changes", appwindow, "unsaved-changes")
-            .flags(glib::BindingFlags::DEFAULT)
-            .build();
 
         self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |canvas, _pspec| {
             appwindow.mainheader().main_title_unsaved_indicator().set_visible(canvas.unsaved_changes());

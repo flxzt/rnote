@@ -55,7 +55,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                         }
 
                         // only open and overwrite document if saving was successful
-                        if !appwindow.unsaved_changes() {
+                        if !appwindow.canvas().unsaved_changes() {
                             open_overwrite(&appwindow);
                         }
                     }));
@@ -102,7 +102,7 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
                 if let Some(file) = filechooser.file() {
                     appwindow.app().set_input_file(Some(file));
 
-                    if !appwindow.unsaved_changes() {
+                    if !appwindow.canvas().unsaved_changes() {
                         if let Some(input_file) = appwindow.app().input_file().as_ref() {
                             if let Err(e) = appwindow.load_in_file(input_file, None) {
                                 log::error!("failed to load in input file, {e:?}");

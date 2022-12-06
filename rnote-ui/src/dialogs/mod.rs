@@ -108,7 +108,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
         appwindow.canvas().set_output_file(None);
     };
 
-    if !appwindow.unsaved_changes() {
+    if !appwindow.canvas().unsaved_changes() {
         return new_doc(appwindow);
     }
 
@@ -141,7 +141,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
                         // No success toast on saving without dialog, success is already indicated in the header title
 
                         // only create new document if saving was successful
-                        if !appwindow.unsaved_changes() {
+                        if !appwindow.canvas().unsaved_changes() {
                             new_doc(&appwindow)
                         }
                     } else {
@@ -195,7 +195,7 @@ pub(crate) fn dialog_quit_save(appwindow: &RnoteAppWindow) {
                         }
 
                         // only close if saving was successful
-                        if !appwindow.unsaved_changes() {
+                        if !appwindow.canvas().unsaved_changes() {
                             appwindow.close_force();
                         }
                     }));

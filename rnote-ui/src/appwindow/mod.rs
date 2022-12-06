@@ -40,7 +40,6 @@ mod imp {
         pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
         pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
 
-        pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) autosave: Cell<bool>,
         pub(crate) autosave_interval_secs: Cell<u32>,
         pub(crate) righthanded: Cell<bool>,
@@ -105,7 +104,6 @@ mod imp {
                 autosave_source_id: RefCell::new(None),
                 periodic_configsave_source_id: RefCell::new(None),
 
-                unsaved_changes: Cell::new(false),
                 autosave: Cell::new(true),
                 autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
@@ -184,13 +182,6 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecBoolean::new(
-                        "unsaved-changes",
-                        "unsaved-changes",
-                        "unsaved-changes",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
                     // autosave
                     glib::ParamSpecBoolean::new(
                         "autosave",
@@ -224,7 +215,6 @@ mod imp {
 
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
-                "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "autosave" => self.autosave.get().to_value(),
                 "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
@@ -234,11 +224,6 @@ mod imp {
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
-                "unsaved-changes" => {
-                    let unsaved_changes: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
-                    self.unsaved_changes.replace(unsaved_changes);
-                }
                 "autosave" => {
                     let autosave = value
                         .get::<bool>()
@@ -287,7 +272,7 @@ mod imp {
             let inst = self.instance();
 
             // Save current doc
-            if inst.unsaved_changes() {
+            if inst.canvas().unsaved_changes() {
                 dialogs::dialog_quit_save(&inst);
             } else {
                 inst.close_force();
@@ -753,16 +738,6 @@ impl RnoteAppWindow {
 
     pub(crate) fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)])
-    }
-
-    #[allow(unused)]
-    pub(crate) fn unsaved_changes(&self) -> bool {
-        self.property::<bool>("unsaved-changes")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
     #[allow(unused)]

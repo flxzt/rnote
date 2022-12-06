@@ -23,7 +23,7 @@ impl RnoteAppWindow {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
-                if self.unsaved_changes() {
+                if self.canvas().unsaved_changes() {
                     dialogs::import::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!(
@@ -96,7 +96,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
                             appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening vector image file failed."));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
+                                "load_in_vectorimage_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
@@ -114,7 +114,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
                             appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
+                                "load_in_bitmapimage_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
@@ -150,7 +150,7 @@ impl RnoteAppWindow {
                         if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, None).await {
                             appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening PDF file failed."));
                             log::error!(
-                                "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
+                                "load_in_pdf_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }

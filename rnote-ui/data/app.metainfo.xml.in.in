@@ -66,12 +66,27 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.9" date="2022-12-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: hatched fills for the rough shape style</li>
+          <li>improvements to the monitoring and handling of file changes to the currently opened file (thanks @Kneemund !)</li>
+          <li>simplified textured brush style options</li>
+          <li>faster start up times</li>
+          <li>switch to the typewriter when dropping text</li>
+          <li>more icon improvements (thanks @bertob !)</li>
+          <li>fix: view "jumps" when quickly zooming multiple times</li>
+          <li>fix: typewriter now handles cut (Ctrl + x) properly</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.8" date="2022-11-23">
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>feature: add keyboard shortcuts "Ctrl+1..6" to switch between the different pens</li>
-          <li>feature: add coordinate system builders (thanks to @Kneemund )</li>
+          <li>feature: added keyboard shortcuts "Ctrl+1..6" to switch between the different pens</li>
+          <li>feature: added coordinate system builders (thanks to @Kneemund )</li>
           <li>feature: drop text on the canvas</li>
           <li>improvement: export preferences, new export dialogs and options</li>
           <li>improvement: UI following Gnome HIG more closely ( with @bertob's help )</li>

@@ -457,7 +457,7 @@ mod imp {
                             appwindow.canvas().set_output_file(None);
 
                             log::error!("saving document failed with error `{e:?}`");
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
+                            appwindow.dispatch_toast_error(&gettext("Saving document failed."));
                         }
                     }));
                 }

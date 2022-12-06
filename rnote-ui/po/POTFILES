@@ -31,6 +31,7 @@ rnote-ui/src/dialogs/export.rs
 rnote-ui/src/appwindow/mod.rs
 rnote-ui/src/appwindow/imexport.rs
 rnote-ui/src/appwindow/appwindowactions.rs
+rnote-ui/src/canvas/mod.rs
 rnote-ui/src/workspacebrowser/filerow/action/rename.rs
 rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs
 rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs

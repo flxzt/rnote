@@ -4,10 +4,10 @@
 
 <div align="start">
     <a href="https://liberapay.com/flxzt/donate">
-        <img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg" width="75" height="25">
+        <img alt="Donate using Liberapay" src="https://github.com/flxzt/rnote/blob/main/misc/assets/liberapay-donate-button.svg" width="75" height="25">
     </a>
     <a href="https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG">
-        <img src="https://github.com/flxzt/rnote/blob/main/misc/media/paypal-donate-button.png" alt="Donate with PayPal" width="75" height="25"/>
+        <img src="https://github.com/flxzt/rnote/blob/main/misc/assets/paypal-donate-button.png" alt="Donate with PayPal" width="75" height="25"/>
     </a>
 </div><br>
 

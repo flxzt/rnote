@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 01:11+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-11-27 20:00+0000\n"
 "Last-Translator: Brian Polier <unknown989@proton.me>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -244,43 +244,19 @@ msgstr "تحديد"
 msgid "Tools"
 msgstr "أدوات"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "إضافة صفحة"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "موافقة حجم الصفحة للحدود"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "تصغير"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "تكبير"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "للخلف"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "للأمام"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "إغلق الجانب المطوي"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "مجلد العمل"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "الإعدادات"
 
@@ -334,13 +310,37 @@ msgstr "تنظيف الصفحة"
 msgid "_Return to origin page"
 msgstr "العودة الى الصفحة الأولى"
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "تصغير"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "إعادة ضبط التكبير"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "تكبير"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "تكبير لموافقة عرض الصفحة"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "إضافة صفحة"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "موافقة حجم الصفحة للحدود"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "للخلف"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "للأمام"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -378,7 +378,7 @@ msgstr "إلغاء"
 msgid "Clear"
 msgstr "تنظيف"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 msgid "New Document"
 msgstr "صفحة جديدة"
 
@@ -744,7 +744,7 @@ msgstr "كرر الاختيار"
 msgid "New document"
 msgstr "ملف جديد"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "مخطط"
 
@@ -1542,7 +1542,7 @@ msgstr "المترجمون"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:460
+#: rnote-ui/src/appwindow/mod.rs:316
 #: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "فشل حفظ الملف."
@@ -1719,11 +1719,11 @@ msgstr "فشل فتح ملف صورة Vector."
 msgid "Opening bitmap image file failed."
 msgstr "فشل فتح ملف صورة bitmap."
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "خطأ: محاولة فتح المجلد كملف"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:171
 #, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "فشل في فتح الملف ، نوع ملف غير مدعوم."

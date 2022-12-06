@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 01:11+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: fredrikrab <fredrrbo@stud.ntnu.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/rnote/"
@@ -249,44 +249,19 @@ msgstr "Markeringsverktøy"
 msgid "Tools"
 msgstr "Verktøy"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-#, fuzzy
-msgid "Add page"
-msgstr "Legg til en side"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "Forminsk"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "Forstørr"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "Innstillinger"
 
@@ -334,12 +309,37 @@ msgstr "Nytt dokument"
 msgid "_Return to origin page"
 msgstr ""
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "Forminsk"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Tilbakestill forestørrelse"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "Forstørr"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
+msgstr ""
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+#, fuzzy
+msgid "Add page"
+msgstr "Legg til en side"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr ""
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
 msgstr ""
 
 #: rnote-ui/data/ui/colorpicker.ui:64
@@ -378,7 +378,7 @@ msgstr "Avbryt"
 msgid "Clear"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 #, fuzzy
 msgid "New Document"
 msgstr "Nytt dokument"
@@ -741,7 +741,7 @@ msgstr ""
 msgid "New document"
 msgstr "Nytt dokument"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr ""
 
@@ -1527,7 +1527,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:460
+#: rnote-ui/src/appwindow/mod.rs:316
 #: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr ""
@@ -1702,11 +1702,11 @@ msgstr ""
 msgid "Opening bitmap image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "Feil: Prøvde å åpne mappe som fil"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 

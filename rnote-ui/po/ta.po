@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 01:11+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-12-05 11:54+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -202,43 +202,19 @@ msgstr "தேர்வாளர்"
 msgid "Tools"
 msgstr "கருவிகள்"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "பக்கத்தைச் சேர்"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "ஸ்ட்ரோக்குகளுக்கு ஏற்றவாறு ஆவணத்தின் அளவை மாற்றவும்"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "ஜூம் அவுட்"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "பெரிதாக்கு"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "செயல்தவிர்"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "மீண்டும் செய்"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "மடிந்த மடலை மூடு"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "பணியிடம்"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "அமைப்புகள்"
 
@@ -278,13 +254,37 @@ msgstr "_தெளிவான ஆவணம்"
 msgid "_Return to origin page"
 msgstr "_மூலப் பக்கத்திற்குத் திரும்பு"
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "ஜூம் அவுட்"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "ஜூமை மீட்டமை"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "பெரிதாக்கு"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "பக்க அகலத்திற்கு ஏற்றவாறு பெரிதாக்கவும்"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "பக்கத்தைச் சேர்"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "ஸ்ட்ரோக்குகளுக்கு ஏற்றவாறு ஆவணத்தின் அளவை மாற்றவும்"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "செயல்தவிர்"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "மீண்டும் செய்"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -322,7 +322,7 @@ msgstr "ரத்துசெய்"
 msgid "Clear"
 msgstr "தெளிவு"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
@@ -660,7 +660,7 @@ msgstr "நகல்"
 msgid "New document"
 msgstr "புதிய ஆவணம்"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "வரைவு"
 
@@ -1442,7 +1442,7 @@ msgstr "மொழிபெயர்ப்பாளர்-வரவுகள்"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:460
+#: rnote-ui/src/appwindow/mod.rs:316
 #: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
@@ -1596,11 +1596,11 @@ msgstr "திசையன் படக் கோப்பைத் திறப
 msgid "Opening bitmap image file failed."
 msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
 

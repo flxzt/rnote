@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 01:11+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-12-06 11:56+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -202,43 +202,19 @@ msgstr "Selectie"
 msgid "Tools"
 msgstr "Gereedschappen"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "Pagina toevoegen"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "Aanpassen aan inhoud"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "Uitzoomen"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "Inzoomen"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "Ongedaan maken"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "Opnieuw uitvoeren"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr "Omvouw tonen/verbergen"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "Omgevouwen pagina sluiten"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "Werkblad"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "Voorkeuren"
 
@@ -278,13 +254,37 @@ msgstr "Do_cument wissen"
 msgid "_Return to origin page"
 msgstr "Te_rug naar hoofdpagina"
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "Uitzoomen"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Oorspronkelijk zoomniveau"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "Inzoomen"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Aanpassen aan paginabreedte"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "Pagina toevoegen"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "Aanpassen aan inhoud"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "Ongedaan maken"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "Opnieuw uitvoeren"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -322,7 +322,7 @@ msgstr "Annuleren"
 msgid "Clear"
 msgstr "Leegmaken"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 msgid "New Document"
 msgstr "Nieuw document"
 
@@ -662,7 +662,7 @@ msgstr "Klonen"
 msgid "New document"
 msgstr "Nieuw document"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "Concept"
 
@@ -1447,7 +1447,7 @@ msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:460
+#: rnote-ui/src/appwindow/mod.rs:316
 #: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "Het document kan niet worden opgeslagen."
@@ -1600,11 +1600,11 @@ msgstr "Het bestand kan niet worden geopend."
 msgid "Opening bitmap image file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "Een map kan niet als bestand worden geopend"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr "Dit bestandstype wordt niet ondersteund."
 

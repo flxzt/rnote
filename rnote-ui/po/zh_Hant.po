@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 01:11+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: matriz <wboy111@outlook.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -246,43 +246,19 @@ msgstr "選擇"
 msgid "Tools"
 msgstr "工具"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "新建頁面"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "調整文件大小以適應畫筆"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "縮小"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "放大"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "撤銷"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "重做"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "關閉摺疊"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "工作區"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "設定"
 
@@ -340,13 +316,37 @@ msgstr "清空文件"
 msgid "_Return to origin page"
 msgstr "返回初始頁面"
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "縮小"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "重置縮放"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "放大"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "縮放以適合頁寬"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "新建頁面"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "調整文件大小以適應畫筆"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "撤銷"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "重做"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -384,7 +384,7 @@ msgstr "取消"
 msgid "Clear"
 msgstr "清空"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 #, fuzzy
 msgid "New Document"
 msgstr "新建文件"
@@ -754,7 +754,7 @@ msgstr "複製所選內容"
 msgid "New document"
 msgstr "新建文件"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "草稿"
 
@@ -1549,7 +1549,7 @@ msgstr "譯者注"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:460
+#: rnote-ui/src/appwindow/mod.rs:316
 #: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "文件儲存失敗。"
@@ -1726,11 +1726,11 @@ msgstr "向量圖檔案開啟失敗。"
 msgid "Opening bitmap image file failed."
 msgstr "點陣圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "錯誤：將資料夾作為檔案開啟"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:171
 #, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "開啟檔案失敗：不支援的檔案型別。"

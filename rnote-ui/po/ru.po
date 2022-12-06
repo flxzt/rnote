@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 01:11+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -212,43 +212,19 @@ msgstr "Выделение"
 msgid "Tools"
 msgstr "Инструменты"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "Добавить страницу"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "Изменить размер документа в соответствии с содержимым"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "Уменьшить"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "Приблизить"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "Отменить"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "Повторить"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "Закрыть боковую панель"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "Коллекция"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "Настройки"
 
@@ -290,13 +266,37 @@ msgstr "_Очистить документ"
 msgid "_Return to origin page"
 msgstr "_Вернуться на начальную страницу"
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "Уменьшить"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Сбросить масштаб"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "Приблизить"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Масштабировать до ширины страницы"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "Добавить страницу"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "Изменить размер документа в соответствии с содержимым"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "Отменить"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "Повторить"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -334,7 +334,7 @@ msgstr "Отменить"
 msgid "Clear"
 msgstr "Очистить"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 msgid "New Document"
 msgstr "Новый Документ"
 
@@ -678,7 +678,7 @@ msgstr "Дублировать"
 msgid "New document"
 msgstr "Новый документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "Черновик"
 
@@ -1468,7 +1468,7 @@ msgstr "Валерий Манжос <Manzhos.VA@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:460
+#: rnote-ui/src/appwindow/mod.rs:316
 #: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "Не удалось сохранить документ."
@@ -1627,11 +1627,11 @@ msgstr "Не удалось открыть векторное изображен
 msgid "Opening bitmap image file failed."
 msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/appwindow/imexport.rs:164
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr "Не удалось открыть файл: формат файла не поддерживается."
 

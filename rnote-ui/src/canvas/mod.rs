@@ -3,6 +3,7 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::CanvasLayout;
+use gettextrs::gettext;
 use rnote_engine::pens::PenMode;
 
 // Imports
@@ -10,6 +11,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use crate::config;
+use crate::utils::FileType;
 use rnote_engine::RnoteEngine;
 
 use gtk4::{
@@ -55,6 +57,9 @@ mod imp {
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
+        pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
+        pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
 
@@ -141,6 +146,9 @@ mod imp {
                 engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
+                output_file_monitor: RefCell::new(None),
+                output_file_modified_toast_singleton: RefCell::new(None),
+                output_file_expect_write: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -457,6 +465,34 @@ impl RnoteCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn clear_output_file_monitor(&self) {
+        let mut current_output_file_monitor = self.imp().output_file_monitor.borrow_mut();
+
+        if let Some(old_output_file_monitor) = current_output_file_monitor.take() {
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        let output_file_modified_toast = self.imp().output_file_modified_toast_singleton.borrow();
+
+        if let Some(output_file_modified_toast) = output_file_modified_toast.as_ref() {
+            output_file_modified_toast.dismiss();
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_output_file_expect_write(&self, expect_write: bool) {
+        self.imp().output_file_expect_write.set(expect_write);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn output_file_expect_write(&self) -> bool {
+        self.imp().output_file_expect_write.get()
+    }
+
+    #[allow(unused)]
     pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
     }
@@ -554,6 +590,75 @@ impl RnoteCanvas {
         }
     }
 
+    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnoteAppWindow) {
+        match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
+            Ok(output_file_monitor) => {
+                output_file_monitor.connect_changed(
+                    glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
+                        let dispatch_toast_reload_modified_file = || {
+                            appwindow.canvas().set_unsaved_changes(true);
+
+                            appwindow.dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
+                                if let Some(output_file) = appwindow.canvas().output_file() {
+                                    if let Err(e) = appwindow.load_in_file(&output_file, None) {
+                                        log::error!("failed to reload current output file, {}", e);
+                                    }
+                                }
+                            }), 0, &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                        };
+
+                        match event {
+                            gio::FileMonitorEvent::Changed => {
+                                dispatch_toast_reload_modified_file();
+                            },
+                            gio::FileMonitorEvent::Renamed => {
+                                // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
+                                if FileType::is_goutputstream_file(&file) {
+                                    if !canvas.output_file_expect_write() {
+                                        // => file has been modified by external means, handle it the same as the Changed event.
+                                        dispatch_toast_reload_modified_file();
+                                    }
+                                    // else => file has been modified due to own save, don't do anything.
+                                } else {
+                                    // => file has been renamed.
+
+                                    // other_file *should* never be none.
+                                    if other_file.is_none() {
+                                        canvas.set_unsaved_changes(true);
+                                    }
+
+                                    canvas.set_output_file(other_file.cloned());
+
+                                    appwindow.dispatch_toast_text(&gettext("Opened file was renamed on disk."))
+                                }
+                            },
+                            gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
+                                canvas.set_unsaved_changes(true);
+                                canvas.set_output_file(None);
+
+                                appwindow.dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
+                            },
+                            _ => (),
+                        }
+
+                        canvas.set_output_file_expect_write(false);
+                    }),
+                );
+
+                self.imp()
+                    .output_file_monitor
+                    .borrow_mut()
+                    .replace(output_file_monitor);
+            }
+            Err(e) => {
+                self.clear_output_file_monitor();
+                log::error!(
+                    "creating a file monitor for the new output file failed with Err: {e:?}"
+                )
+            }
+        }
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
@@ -577,6 +682,13 @@ impl RnoteCanvas {
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {
                 let output_file = canvas.output_file();
+
+                if let Some(output_file) = &output_file {
+                    canvas.create_output_file_monitor(output_file, &appwindow);
+                } else {
+                    canvas.clear_output_file_monitor();
+                    canvas.dismiss_output_file_modified_toast();
+                }
 
                 appwindow.update_titles_for_file(output_file.as_ref());
             }),

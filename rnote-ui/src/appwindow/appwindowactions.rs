@@ -33,12 +33,6 @@ impl RnoteAppWindow {
         self.add_action(&action_open_canvasmenu);
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
-        let action_text_toast =
-            gio::SimpleAction::new("text-toast", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_text_toast);
-        let action_error_toast =
-            gio::SimpleAction::new("error-toast", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_error_toast);
         let action_devel_mode =
             gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
         self.add_action(&action_devel_mode);
@@ -178,27 +172,6 @@ impl RnoteAppWindow {
         action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.mainheader().appmenu().popovermenu().popup();
         }));
-
-        // Notify with a text toast
-        action_text_toast.connect_activate(
-            clone!(@weak self as appwindow => move |_action_text_toast, parameter| {
-                let text = parameter.unwrap().get::<String>().unwrap();
-                let text_notify_toast = adw::Toast::builder().title(text.as_str()).priority(adw::ToastPriority::High).timeout(5).build();
-
-                appwindow.toast_overlay().add_toast(&text_notify_toast);
-            }),
-        );
-
-        // Error toast
-        action_error_toast.connect_activate(
-            clone!(@weak self as appwindow => move |_action_error_toast, parameter| {
-                let error_text = parameter.unwrap().get::<String>().unwrap();
-                log::error!("{error_text}");
-                let error_toast = adw::Toast::builder().title(error_text.as_str()).priority(adw::ToastPriority::High).timeout(0).build();
-
-                appwindow.toast_overlay().add_toast(&error_toast);
-            }),
-        );
 
         // Developer mode
         action_devel_mode.connect_activate(
@@ -639,7 +612,7 @@ impl RnoteAppWindow {
                         appwindow.canvas().set_output_file(None);
 
                         log::error!("saving document failed with error `{e:?}`");
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
+                        appwindow.dispatch_toast_error(&gettext("Saving document failed."));
                     }
 
                     appwindow.finish_canvas_progressbar();
@@ -755,7 +728,7 @@ impl RnoteAppWindow {
                 log::debug!("{:?}", print_op.status());
                 match print_op.status() {
                     PrintStatus::Finished => {
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed document successfully").to_variant()));
+                        appwindow.dispatch_toast_text(&gettext("Printed document successfully"));
                     }
                     _ => {}
                 }
@@ -764,7 +737,7 @@ impl RnoteAppWindow {
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
                 log::error!("print_op.run() failed with Err, {e:?}");
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing document failed").to_variant()));
+                appwindow.dispatch_toast_error(&gettext("Printing document failed"));
             }
 
             appwindow.finish_canvas_progressbar();
@@ -790,7 +763,7 @@ impl RnoteAppWindow {
             if !appwindow.canvas().engine().borrow().store.selection_keys_unordered().is_empty() {
                 dialogs::export::dialog_export_selection_w_prefs(&appwindow);
             } else {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection failed, nothing selected.").to_variant()));
+                appwindow.dispatch_toast_error(&gettext("Export selection failed, nothing selected."));
             }
         }));
 
@@ -916,6 +889,69 @@ impl RnoteAppWindow {
                 log::debug!("failed to paste clipboard, unsupported mime-types: {:?}", content_formats.mime_types());
             }
         }));
+    }
+
+    pub(crate) fn dispatch_toast_w_button<F: Fn(&adw::Toast) + 'static>(
+        &self,
+        text: &String,
+        button_label: &String,
+        button_callback: F,
+        timeout: u32,
+    ) -> adw::Toast {
+        let text_notify_toast = adw::Toast::builder()
+            .title(text.as_str())
+            .priority(adw::ToastPriority::High)
+            .button_label(button_label)
+            .timeout(timeout)
+            .build();
+
+        text_notify_toast.connect_button_clicked(button_callback);
+        self.toast_overlay().add_toast(&text_notify_toast);
+
+        text_notify_toast
+    }
+
+    /// Ensures that only one toast per `singleton_toast` is queued at the same time by dismissing the previous toast.
+    ///
+    /// `singleton_toast` is a mutable reference to an `Option<Toast>`. It will always hold the most recently dispatched toast
+    /// and it should not be modified, because it's used to keep track of previous toasts.
+    pub(crate) fn dispatch_toast_w_button_singleton<F: Fn(&adw::Toast) + 'static>(
+        &self,
+        text: &String,
+        button_label: &String,
+        button_callback: F,
+        timeout: u32,
+        singleton_toast: &mut Option<adw::Toast>,
+    ) {
+        if let Some(previous_toast) = singleton_toast {
+            previous_toast.dismiss();
+        }
+
+        let text_notify_toast =
+            self.dispatch_toast_w_button(text, button_label, button_callback, timeout);
+        *singleton_toast = Some(text_notify_toast);
+    }
+
+    pub(crate) fn dispatch_toast_text(&self, text: &String) {
+        let text_notify_toast = adw::Toast::builder()
+            .title(text.as_str())
+            .priority(adw::ToastPriority::High)
+            .timeout(5)
+            .build();
+
+        self.toast_overlay().add_toast(&text_notify_toast);
+    }
+
+    pub(crate) fn dispatch_toast_error(&self, error: &String) {
+        let text_notify_toast = adw::Toast::builder()
+            .title(error.as_str())
+            .priority(adw::ToastPriority::High)
+            .timeout(0)
+            .build();
+
+        log::error!("{error}");
+
+        self.toast_overlay().add_toast(&text_notify_toast);
     }
 
     pub(crate) fn setup_action_accels(&self) {

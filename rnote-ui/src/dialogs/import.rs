@@ -26,7 +26,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                 if let Some(input_file) = appwindow.app().input_file().as_ref() {
                     if let Err(e) = appwindow.load_in_file(input_file, None) {
                         log::error!("failed to load in input file, {e:?}");
-                        adw::prelude::ActionGroupExt::activate_action(appwindow, "error-toast", Some(&gettext("Opening file failed.").to_variant()));
+                        appwindow.dispatch_toast_error(&gettext("Opening file failed."));
                     }
                 }
             };
@@ -44,7 +44,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                                 appwindow.canvas().set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Saving document failed."));
                             }
 
                             appwindow.finish_canvas_progressbar();
@@ -97,29 +97,29 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     }
 
     filechooser.connect_response(clone!(@weak appwindow => move |filechooser, responsetype| {
-            match responsetype {
-                ResponseType::Accept => {
-                    if let Some(file) = filechooser.file() {
-                        appwindow.app().set_input_file(Some(file));
+        match responsetype {
+            ResponseType::Accept => {
+                if let Some(file) = filechooser.file() {
+                    appwindow.app().set_input_file(Some(file));
 
-                        if !appwindow.unsaved_changes() {
-                            if let Some(input_file) = appwindow.app().input_file().as_ref() {
-                                if let Err(e) = appwindow.load_in_file(input_file, None) {
-                                    log::error!("failed to load in input file, {e:?}");
-                                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening file failed.").to_variant()));
-                                }
+                    if !appwindow.unsaved_changes() {
+                        if let Some(input_file) = appwindow.app().input_file().as_ref() {
+                            if let Err(e) = appwindow.load_in_file(input_file, None) {
+                                log::error!("failed to load in input file, {e:?}");
+                                appwindow.dispatch_toast_error(&gettext("Opening file failed."));
                             }
-                        } else {
-                            // Open a dialog to ask for overwriting the current doc
-                            dialog_open_overwrite(&appwindow);
                         }
+                    } else {
+                        // Open a dialog to ask for overwriting the current doc
+                        dialog_open_overwrite(&appwindow);
                     }
-                },
-                _ => {
                 }
+            },
+            _ => {
             }
+        }
 
-        }));
+    }));
 
     filechooser.show();
 
@@ -319,7 +319,7 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Opening PDF file failed."));
                                 log::error!(
                                     "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
                                 );
@@ -385,7 +385,7 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
-                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Xournal++ file failed.").to_variant()));
+                                appwindow.dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                                 log::error!(
                                     "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
                                 );

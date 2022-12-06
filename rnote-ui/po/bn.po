@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-25 14:37+0000\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
+"PO-Revision-Date: 2022-12-05 15:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -81,20 +81,18 @@ msgid "Use _dark colors"
 msgstr "_গাঢ় রঙ ব্যবহার করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-msgid "_Developer mode"
+#, fuzzy
+#| msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "_বিকাশকারী মোড"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
 msgstr "বিকাশকারী _মেনু"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
-msgid "_Visual debugging"
-msgstr "_ভিজ্যুয়াল ডিবাগিং"
+msgid "Visual _debugging"
+msgstr "ভিজ্যুয়াল _ডিবাগিং"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -125,8 +123,8 @@ msgid "_Print"
 msgstr "_প্রিন্ট করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-msgid "_Paste clipboard"
-msgstr "ক্লিপবোর্ডে _পেস্ট করুন"
+msgid "Paste _clipboard"
+msgstr "_ক্লিপবোর্ডে পেস্ট করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -149,10 +147,8 @@ msgid "Export _selection"
 msgstr "_নির্বাচন রপ্তানি করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "সেটিংস"
+msgstr "সে_টিংস"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
@@ -163,7 +159,9 @@ msgid "_Donate 💝"
 msgstr "_দান করুন 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-msgid "_About Rnote"
+#, fuzzy
+#| msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "Rnote _সম্পর্কে"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -208,43 +206,19 @@ msgstr "নির্বাচক"
 msgid "Tools"
 msgstr "সরঞ্জাম"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "পৃষ্ঠা যোগ করুন"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "স্ট্রোকের সাথে সমতুল্যভাবে নথির আকার পরিবর্তন করুন"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "প্রসারিত করো"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "ছোট করুন"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "পূর্বাবস্থায় ফিরুন"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "পুনঃকরণ"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr "ফ্ল্যাপ প্রকাশ / লুকান"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "ভাঁজ করা ফ্ল্যাপটি বন্ধ করুন"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "কর্মক্ষেত্র"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "সেটিংস"
 
@@ -273,28 +247,48 @@ msgid "Draw with _touch input"
 msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
-msgid "P_en sounds"
-msgstr "কলমের ধ্বনি"
+msgid "_Pen sounds"
+msgstr "_কলমের ধ্বনি"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"
 msgstr "নথি _পরিষ্কার করুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "আসল পৃষ্ঠায় ফিরে জান"
+msgstr "আসল পৃষ্ঠায় _ফিরে জান"
+
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "ছোট করুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "জুম রিসেট করুন"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "প্রসারিত করো"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "পৃষ্ঠার প্রস্থ মাপসই করতে জুম করুন"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "পৃষ্ঠা যোগ করুন"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "স্ট্রোকের সাথে সমতুল্যভাবে নথির আকার পরিবর্তন করুন"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "পূর্বাবস্থায় ফিরুন"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "পুনঃকরণ"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -332,7 +326,7 @@ msgstr "বাতিল করুন"
 msgid "Clear"
 msgstr "পরিষ্কার করুন"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 msgid "New Document"
 msgstr "নতুন নথি"
 
@@ -405,7 +399,7 @@ msgid "Change the workspace directory"
 msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
@@ -492,8 +486,6 @@ msgid "Import Xournal++ file"
 msgstr "Xournal++ ফাইল আমদানি করুন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ file import preferences"
 msgstr "Xournal++ ফাইল আমদানি পছন্দসমূহ"
 
@@ -517,8 +509,6 @@ msgid "Export"
 msgstr "রপ্তানি"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Import file"
 msgid "Export file"
 msgstr "ফাইল রপ্তানি করুন"
 
@@ -551,15 +541,11 @@ msgstr "পটভূমি রপ্তানি করা উচিত কি�
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
 msgstr "প্যাটার্ন সহ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
 msgstr "পটভূমি রপ্তানি করা উচিত কিনা তা সেট করুন"
 
@@ -590,22 +576,16 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "SVG হিসাবে নথি রপ্তানী করুন"
+msgstr "পৃষ্ঠা হিসাবে নথি রপ্তানী করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "ডিরেক্টরি তৈরি করুন"
+msgstr "ডিরেক্টরি রপ্তানি করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "রপ্তানি ফাইল নির্বাচন করুন"
+msgstr "রপ্তানির ডাইরেক্টরি নির্বাচন করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy
@@ -657,18 +637,18 @@ msgstr "রপ্তানি চিত্র বিন্যাস"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr ""
+msgstr "মার্জিন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "নির্বাচিত এলাকার চারপাশে মার্জিন সেট করুন"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
 msgstr "খুলুন"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:59
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "নাম পরিবর্তন করুন"
 
@@ -684,7 +664,7 @@ msgstr "নকল করুন"
 msgid "New document"
 msgstr "নতুন নথি"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "খসড়া"
 
@@ -861,6 +841,7 @@ msgid "Grid"
 msgstr "গ্রিড"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:247
 msgid "Dots"
 msgstr "বিন্দু"
 
@@ -959,32 +940,32 @@ msgstr "নেভিগেশন"
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "'তুলি'-তে পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "'শেপার'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "'টাইপরাইটার'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "'ইরেজার'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "'নির্বাচক'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "'টুলস'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103
@@ -1103,10 +1084,13 @@ msgid "Marker"
 msgstr "মার্কার"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-msgid "Mark underneath other brush strokes"
+#, fuzzy
+#| msgid "Mark underneath other brush strokes"
+msgid "Mark underneath other strokes"
 msgstr "অন্যান্য তুলি স্ট্রোকের নীচে চিহ্নিত করুন"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
 msgid "Solid"
 msgstr "পূর্ণ"
 
@@ -1203,34 +1187,26 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "ঘনত্ব হল প্রতি ১০×১০ এলাকায় বিন্দুর পরিমাণ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "স্ট্রোক বিন্দুর ব্যাসার্ধ"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "টেক্সচারযুক্ত স্ট্রোকের পৃথক বিন্দুগুলির ব্যাসার্ধ"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
 msgstr "স্ট্রোক ডটগুলির অবস্থান বন্টন"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "একটি বিন্দু অবস্থান সম্ভাব্যতা বন্টন নির্বাচন করুন"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr "সমভাবাপন্ন"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 msgid "Normal"
 msgstr "সাধারন"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr "সূচকীয়"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr "বিপরীত সূচকীয়"
 
@@ -1256,7 +1232,7 @@ msgstr "আয়তক্ষেত্র দিয়ে নির্বাচ�
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "একে একে নির্বাচন করুন"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1292,12 +1268,12 @@ msgid "Shape configuration"
 msgstr "আকৃতি কনফিগারেশন"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:90
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:311
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:292
 msgid "Shape builders"
 msgstr "আকৃতি নির্মাতা"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:113
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:444
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:425
 msgid "Constraints"
 msgstr "সীমাবদ্ধতা"
 
@@ -1317,83 +1293,89 @@ msgstr "রুক্ষ"
 msgid "Rough style"
 msgstr "রুক্ষ স্টাইল"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:236
-msgid "Roughness"
-msgstr "রুক্ষতা"
-
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-msgid ""
-"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr "অঙ্কনটি কতটা রুক্ষ তা নির্দেশ করে। ০.০ একটি মসৃণ লাইন। ডিফল্ট ১.০"
+#, fuzzy
+#| msgid "Solid style"
+msgid "Fill style"
+msgstr "পূর্ণ করা স্টাইল"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:252
-msgid "Bowing"
-msgstr "ঝোঁক"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
+#, fuzzy
+#| msgid "Choose a format"
+msgid "Choose a fill style"
+msgstr "একটি বিন্যাস ঠিক করুন"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-msgid ""
-"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
-"Defaults to 1.0"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
+msgid "Hachure"
 msgstr ""
-"রুক্ষ আকৃতি আঁকার সময় লাইনগুলি কতটা বক্র হয়। ০.০ একটি সরল রেখা। ডিফল্ট থেকে ১.০"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:268
-msgid "Curve step count"
-msgstr "বক্ররেখা পদক্ষেপ গণনা"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
+msgid "Zig-Zag"
+msgstr "আঁকা-বাঁকা"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:269
-msgid "How many steps make up a curve. Defaults to 12"
-msgstr "কতগুলি পদক্ষেপ একটি বক্ররেখা তৈরি করে। ডিফল্ট ১২"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
+msgid "Zig-Zag Line"
+msgstr "আঁকা-বাঁকা রেখা"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "Multistroke"
-msgstr "মাল্টিস্ট্রোক"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
+msgid "Crosshatch"
+msgstr "ক্রসহ্যাচ"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:285
-msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr "স্কেচ করা চেহারার জন্য একাধিক স্ট্রোক প্রজন্ম। ডিফল্ট সত্য"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
+msgid "Dashed"
+msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:329
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
+msgid "Hachure angle"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
+#, fuzzy
+#| msgid "Set the drawing cursor"
+msgid "Set the angle of hachure fills"
+msgstr "অঙ্কন কার্সার সেট করুন"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
 msgstr "রেখা"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:340
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:321
 msgid "Rectangle"
 msgstr "আয়তক্ষেত্র"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:351
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "2D coordinate system"
-msgstr ""
+msgstr "দ্বিমাত্রিক স্থানাঙ্ক"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:362
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "3D coordinate system"
-msgstr ""
+msgstr "ত্রিমাত্রিক স্থানাঙ্ক"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:373
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "Ellipse"
 msgstr "উপবৃত্ত"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse with foci"
 msgstr "নাভী সহিত উপবৃত্ত"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:387
 msgid "Quadratic bezier curve"
 msgstr "দ্বিঘাত বেজিয়ে বক্ররেখা"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:417
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:398
 msgid "Cubic bezier curve"
 msgstr "ত্রিঘাত বেজিয়ে বক্ররেখা"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:461
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:442
 msgid "Enabled"
 msgstr "সক্রিয়"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:462
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:443
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
@@ -1401,15 +1383,15 @@ msgstr ""
 "সাময়িকভাবে সীমাবদ্ধতা সক্ষম/অক্ষম করতে Ctrl ধরে রাখুন\n"
 "যখন এই সুইচ বন্ধ/চালু হয়"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:473
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:454
 msgid "1:1"
 msgstr "১ঃ১"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:483
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:464
 msgid "3:2"
 msgstr "৩ঃ২"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:493
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:474
 msgid "Golden ratio (1:1.618)"
 msgstr "সোনালী অনুপাত (১ঃ১.৬১৮)"
 
@@ -1478,8 +1460,8 @@ msgstr "অনুবাদক-কৃতিত্ব"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:459
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#: rnote-ui/src/appwindow/mod.rs:316
+#: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে।"
 
@@ -1499,53 +1481,53 @@ msgstr "ফাইল খুলুন"
 
 #: rnote-ui/src/dialogs/import.rs:143
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
 msgstr "ফাইল আমদানি করুন"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no file name -"
 msgstr "- কোন ফাইলের নাম নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:260
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "- no title -"
 msgstr "- কোনো শিরোনাম নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
 msgstr "- কোন লেখক নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"
 msgstr "- তারিখ নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:274
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "File name:"
 msgstr "ফাইলের নাম:"
 
-#: rnote-ui/src/dialogs/import.rs:278
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Title:"
 msgstr "শিরোনাম:"
 
-#: rnote-ui/src/dialogs/import.rs:282
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Author:"
 msgstr "লেখক:"
 
-#: rnote-ui/src/dialogs/import.rs:286
+#: rnote-ui/src/dialogs/import.rs:289
 msgid "Modification date:"
 msgstr "পরিবর্তনের তারিখ:"
 
-#: rnote-ui/src/dialogs/import.rs:290
+#: rnote-ui/src/dialogs/import.rs:293
 msgid "Pages:"
 msgstr "পৃষ্ঠা:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
 msgid "Opening PDF file failed."
 msgstr "PDF ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
@@ -1631,37 +1613,53 @@ msgstr "ইঞ্জিন কনফিগ রপ্তানী ব্যর্
 msgid "Exported engine config successfully."
 msgstr "ইঞ্জিন কনফিগ সফলভাবে রপ্তানি করা হয়েছে।"
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:79
 msgid "Opening .rnote file failed."
 msgstr ".rnote ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:97
 msgid "Opening vector image file failed."
 msgstr "ভেক্টর ইমেজ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:115
 msgid "Opening bitmap image file failed."
 msgstr "বিটম্যাপ ইমেজ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "ত্রুটি: ফাইল হিসাবে ফোল্ডার খোলার চেষ্টা করা হয়েছে"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr "ফাইল খুলতে ব্যর্থ: অসমর্থিত ফাইল প্রকার।"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:731
 msgid "Printed document successfully"
 msgstr "সফলভাবে নথি প্রিন্ট করা হয়েছে"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:740
 msgid "Printing document failed"
 msgstr "নথি প্রিন্ট করা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:766
 msgid "Export selection failed, nothing selected."
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কিছুই নির্বাচিত হয়নি।"
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Opened file was modified on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Reload"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:632
+msgid "Opened file was renamed on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:639
+msgid "Opened file was moved or deleted on disk."
+msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 #, fuzzy
@@ -1671,7 +1669,44 @@ msgstr "ফাইলের নাম:"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "নতুন ফোল্ডার"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "ক্লিপবোর্ডে _পেস্ট করুন"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "স্ট্রোক বিন্দুর ব্যাসার্ধ"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "টেক্সচারযুক্ত স্ট্রোকের পৃথক বিন্দুগুলির ব্যাসার্ধ"
+
+#~ msgid "Roughness"
+#~ msgstr "রুক্ষতা"
+
+#~ msgid ""
+#~ "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+#~ msgstr "অঙ্কনটি কতটা রুক্ষ তা নির্দেশ করে। ০.০ একটি মসৃণ লাইন। ডিফল্ট ১.০"
+
+#~ msgid "Bowing"
+#~ msgstr "ঝোঁক"
+
+#~ msgid ""
+#~ "How curvy the lines are when drawing a rough shape. 0.0 is a straight "
+#~ "line. Defaults to 1.0"
+#~ msgstr ""
+#~ "রুক্ষ আকৃতি আঁকার সময় লাইনগুলি কতটা বক্র হয়। ০.০ একটি সরল রেখা। ডিফল্ট থেকে ১.০"
+
+#~ msgid "Curve step count"
+#~ msgstr "বক্ররেখা পদক্ষেপ গণনা"
+
+#~ msgid "How many steps make up a curve. Defaults to 12"
+#~ msgstr "কতগুলি পদক্ষেপ একটি বক্ররেখা তৈরি করে। ডিফল্ট ১২"
+
+#~ msgid "Multistroke"
+#~ msgstr "মাল্টিস্ট্রোক"
+
+#~ msgid "Multiple stroke generation for a sketched look. Defaults to true"
+#~ msgstr "স্কেচ করা চেহারার জন্য একাধিক স্ট্রোক প্রজন্ম। ডিফল্ট সত্য"
 
 #~ msgid "Selecting apiece"
 #~ msgstr "প্রতিটি নির্বাচন"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 13:50+0100\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -92,7 +92,7 @@ msgstr "להשתמש בצבעים כהים"
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
 #| msgid "Developer mode"
-msgid "_Developer mode"
+msgid "De_veloper mode"
 msgstr "מצב מפתחים"
 
 #: rnote-ui/data/ui/appmenu.ui:47
@@ -103,7 +103,7 @@ msgstr "מצב מפתחים"
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
 #| msgid "Visual debugging"
-msgid "_Visual debugging"
+msgid "Visual _debugging"
 msgstr "ניפוי שגיאות חזותי"
 
 #: rnote-ui/data/ui/appmenu.ui:56
@@ -146,7 +146,7 @@ msgstr "הדפסה"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
-msgid "_Paste clipboard"
+msgid "Paste _clipboard"
 msgstr "הדבקת לוח הגזירים כבחירה"
 
 #: rnote-ui/data/ui/appmenu.ui:94
@@ -195,7 +195,7 @@ msgstr ""
 #: rnote-ui/data/ui/appmenu.ui:127
 #, fuzzy
 #| msgid "About Rnote"
-msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "על rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -240,46 +240,19 @@ msgstr "בוחר"
 msgid "Tools"
 msgstr "כלים"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "הוספת עמוד"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-#, fuzzy
-msgid "Resize document to fit the strokes"
-msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
-#, fuzzy
-msgid "Zoom in"
-msgstr "התקרבות"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
-#, fuzzy
-msgid "Zoom out"
-msgstr "התרחקות"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "סגירת הדש המקופל"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "סביבת עבודה"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "הגדרות"
 
@@ -318,7 +291,7 @@ msgstr "ציור עם קלט מגע"
 #: rnote-ui/data/ui/canvasmenu.ui:54
 #, fuzzy
 #| msgid "Pen sounds"
-msgid "P_en sounds"
+msgid "_Pen sounds"
 msgstr "צלילי עט"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
@@ -330,14 +303,41 @@ msgstr "מסמך חדש"
 msgid "_Return to origin page"
 msgstr ""
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+#, fuzzy
+msgid "Zoom out"
+msgstr "התרחקות"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+#, fuzzy
+msgid "Zoom in"
+msgstr "התקרבות"
 
 #: rnote-ui/data/ui/canvasmenu.ui:123
 #, fuzzy
 msgid "Zoom to fit page width"
 msgstr "הגדרת התקריב כדי להתאים לרוחב הגיליון"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "הוספת עמוד"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+#, fuzzy
+msgid "Resize document to fit the strokes"
+msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr ""
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr ""
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -377,7 +377,7 @@ msgstr "ביטול"
 msgid "Clear"
 msgstr "ניקוי"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 #, fuzzy
 msgid "New Document"
 msgstr "מסמך חדש"
@@ -456,7 +456,7 @@ msgid "Change the workspace directory"
 msgstr "החלפת תיקיית סביבת עבודה"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr ""
@@ -734,7 +734,7 @@ msgid "Open"
 msgstr "פתיחה"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:59
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "שינוי שם"
 
@@ -751,7 +751,7 @@ msgstr "שכפול הבחירה"
 msgid "New document"
 msgstr "מסמך חדש"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "טיוטה"
 
@@ -937,6 +937,7 @@ msgid "Grid"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:319
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:247
 msgid "Dots"
 msgstr ""
 
@@ -1190,10 +1191,11 @@ msgid "Marker"
 msgstr "סמן"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-msgid "Mark underneath other brush strokes"
+msgid "Mark underneath other strokes"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
 msgid "Solid"
 msgstr "אחיד"
 
@@ -1292,36 +1294,28 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "צפיפות היא כמות הנקודות לשטח של 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 #, fuzzy
 msgid "Stroke dots position distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 #, fuzzy
 msgid "Normal"
 msgstr "תצורה"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr ""
 
@@ -1388,13 +1382,13 @@ msgid "Shape configuration"
 msgstr "הגדרת צורות מחוספסות"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:90
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:311
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:292
 #, fuzzy
 msgid "Shape builders"
 msgstr "מעצב צורות"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:113
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:444
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:425
 #, fuzzy
 msgid "Constraints"
 msgstr "לאורך"
@@ -1419,98 +1413,101 @@ msgstr "חספוס"
 msgid "Rough style"
 msgstr "סגנון מברשת"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:236
-msgid "Roughness"
-msgstr "חספוס"
-
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-msgid ""
-"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr "מציין כמה מחוספס הציור. 0.0 הוא קו חלק. ברירת המחדל היא 1.0"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:252
-msgid "Bowing"
-msgstr "הקשתה"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-msgid ""
-"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
-"Defaults to 1.0"
-msgstr ""
-"כמה מפותלים הקווים בעת ציור צורה מחוספסת. 0.0 זה קו ישר. ברירת המחדל היא 1.0"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:268
-msgid "Curve step count"
-msgstr "מניין צעדי עקומה"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:269
 #, fuzzy
-msgid "How many steps make up a curve. Defaults to 12"
-msgstr "כמה צעדים דרושים ליצירת עקומה. ברירת המחדל היא 9"
+msgid "Fill style"
+msgstr "אחיד"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "Multistroke"
-msgstr "ריבוי משיכות"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
+#, fuzzy
+#| msgid "Choose a format"
+msgid "Choose a fill style"
+msgstr "בחירת תצורה"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:285
-msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr "יצירת מספר משיכות למראה משורטט"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
+msgid "Hachure"
+msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:329
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
+msgid "Zig-Zag"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
+msgid "Zig-Zag Line"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
+msgid "Crosshatch"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
+msgid "Dashed"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
+msgid "Hachure angle"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
+#, fuzzy
+msgid "Set the angle of hachure fills"
+msgstr "הגדרת צבע הרקע"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
 msgstr "קו"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:340
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:321
 msgid "Rectangle"
 msgstr "מרובע"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:351
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "2D coordinate system"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:362
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "3D coordinate system"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:373
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "Ellipse"
 msgstr "אליפסה"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse with foci"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:387
 msgid "Quadratic bezier curve"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:417
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:398
 msgid "Cubic bezier curve"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:461
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:442
 msgid "Enabled"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:462
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:443
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:473
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:454
 msgid "1:1"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:483
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:464
 msgid "3:2"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:493
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:474
 msgid "Golden ratio (1:1.618)"
 msgstr ""
 
@@ -1576,8 +1573,8 @@ msgstr "ירון שהרבני <sh.yaron@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:459
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#: rnote-ui/src/appwindow/mod.rs:316
+#: rnote-ui/src/appwindow/appwindowactions.rs:615
 #, fuzzy
 msgid "Saving document failed."
 msgstr "שמירת הגיליון נכשלה"
@@ -1605,49 +1602,49 @@ msgstr ""
 msgid "Import file"
 msgstr "ייבוא קובץ"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no file name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:260
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "- no title -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:274
+#: rnote-ui/src/dialogs/import.rs:277
 #, fuzzy
 msgid "File name:"
 msgstr "שינוי שם"
 
-#: rnote-ui/src/dialogs/import.rs:278
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Title:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:282
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Author:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:286
+#: rnote-ui/src/dialogs/import.rs:289
 msgid "Modification date:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:290
+#: rnote-ui/src/dialogs/import.rs:293
 msgid "Pages:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
 #, fuzzy
 msgid "Opening PDF file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
 #, fuzzy
 msgid "Opening Xournal++ file failed."
 msgstr "פתיחת הגיליון נכשלה"
@@ -1742,43 +1739,59 @@ msgstr "ייצוא הבחירה ל־SVG נכשל"
 msgid "Exported engine config successfully."
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:79
 #, fuzzy
 msgid "Opening .rnote file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:97
 #, fuzzy
 msgid "Opening vector image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:115
 #, fuzzy
 msgid "Opening bitmap image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:731
 #, fuzzy
 msgid "Printed document successfully"
 msgstr "הגיליון נשמר בהצלחה"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:740
 #, fuzzy
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:766
 #, fuzzy
 msgid "Export selection failed, nothing selected."
 msgstr "ייצוא הבחירה ל־SVG נכשל"
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Opened file was modified on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Reload"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:632
+msgid "Opened file was renamed on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:639
+msgid "Opened file was moved or deleted on disk."
+msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 #, fuzzy
@@ -1788,6 +1801,40 @@ msgstr "שינוי שם"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~ msgid "_Paste clipboard"
+#~ msgstr "הדבקת לוח הגזירים כבחירה"
+
+#~ msgid "Roughness"
+#~ msgstr "חספוס"
+
+#~ msgid ""
+#~ "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+#~ msgstr "מציין כמה מחוספס הציור. 0.0 הוא קו חלק. ברירת המחדל היא 1.0"
+
+#~ msgid "Bowing"
+#~ msgstr "הקשתה"
+
+#~ msgid ""
+#~ "How curvy the lines are when drawing a rough shape. 0.0 is a straight "
+#~ "line. Defaults to 1.0"
+#~ msgstr ""
+#~ "כמה מפותלים הקווים בעת ציור צורה מחוספסת. 0.0 זה קו ישר. ברירת המחדל היא "
+#~ "1.0"
+
+#~ msgid "Curve step count"
+#~ msgstr "מניין צעדי עקומה"
+
+#, fuzzy
+#~ msgid "How many steps make up a curve. Defaults to 12"
+#~ msgstr "כמה צעדים דרושים ליצירת עקומה. ברירת המחדל היא 9"
+
+#~ msgid "Multistroke"
+#~ msgstr "ריבוי משיכות"
+
+#~ msgid "Multiple stroke generation for a sketched look. Defaults to true"
+#~ msgstr "יצירת מספר משיכות למראה משורטט"
 
 #, fuzzy
 #~ msgid "Selecting apiece"

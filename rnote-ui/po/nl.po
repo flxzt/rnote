@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-22 13:17+0000\n"
+"POT-Creation-Date: 2022-12-06 14:51+0100\n"
+"PO-Revision-Date: 2022-12-06 11:56+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -81,16 +81,16 @@ msgid "Use _dark colors"
 msgstr "_Donker thema gebruiken"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-msgid "_Developer mode"
-msgstr "Ontwikkelaarsmo_dus"
+msgid "De_veloper mode"
+msgstr "Ont_wikkelaarsmodus"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
 msgstr "Ontwikkelaars_menu"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-msgid "_Visual debugging"
-msgstr "_Visuele foutopsporing"
+msgid "Visual _debugging"
+msgstr "Visuele fouto_psporing"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -121,8 +121,8 @@ msgid "_Print"
 msgstr "Afdru_kken"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-msgid "_Paste clipboard"
-msgstr "Klembord _plakken"
+msgid "Paste _clipboard"
+msgstr "_Klembord plakken"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -157,7 +157,7 @@ msgid "_Donate 💝"
 msgstr "_Doneren 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-msgid "_About Rnote"
+msgid "A_bout Rnote"
 msgstr "_Over Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
@@ -202,43 +202,19 @@ msgstr "Selectie"
 msgid "Tools"
 msgstr "Gereedschappen"
 
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "Pagina toevoegen"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "Aanpassen aan inhoud"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "Inzoomen"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "Uitzoomen"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "Ongedaan maken"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "Opnieuw uitvoeren"
-
-#: rnote-ui/data/ui/appwindow.ui:343
+#: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
 msgstr "Omvouw tonen/verbergen"
 
-#: rnote-ui/data/ui/appwindow.ui:413
+#: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
 msgstr "Omgevouwen pagina sluiten"
 
-#: rnote-ui/data/ui/appwindow.ui:430
+#: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
 msgstr "Werkblad"
 
-#: rnote-ui/data/ui/appwindow.ui:441
+#: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "Voorkeuren"
 
@@ -267,8 +243,8 @@ msgid "Draw with _touch input"
 msgstr "Tekenen met _touchscreen/pen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-msgid "P_en sounds"
-msgstr "P_engeluiden"
+msgid "_Pen sounds"
+msgstr "_Pengeluiden"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"
@@ -278,13 +254,37 @@ msgstr "Do_cument wissen"
 msgid "_Return to origin page"
 msgstr "Te_rug naar hoofdpagina"
 
+#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
+msgid "Zoom out"
+msgstr "Uitzoomen"
+
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
 msgstr "Oorspronkelijk zoomniveau"
 
+#: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
+msgid "Zoom in"
+msgstr "Inzoomen"
+
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
 msgstr "Aanpassen aan paginabreedte"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:49
+msgid "Add page"
+msgstr "Pagina toevoegen"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:61
+msgid "Resize document to fit the strokes"
+msgstr "Aanpassen aan inhoud"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:102
+msgid "Undo"
+msgstr "Ongedaan maken"
+
+#: rnote-ui/data/ui/canvaswrapper.ui:115
+msgid "Redo"
+msgstr "Opnieuw uitvoeren"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -322,7 +322,7 @@ msgstr "Annuleren"
 msgid "Clear"
 msgstr "Leegmaken"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
 msgid "New Document"
 msgstr "Nieuw document"
 
@@ -396,7 +396,7 @@ msgid "Change the workspace directory"
 msgstr "Wijzig de werkbladmap"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- Geen map gekozen -"
@@ -646,7 +646,7 @@ msgid "Open"
 msgstr "Openen"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:59
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "Naam wijzigen"
 
@@ -662,7 +662,7 @@ msgstr "Klonen"
 msgid "New document"
 msgstr "Nieuw document"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "Concept"
 
@@ -842,6 +842,7 @@ msgid "Grid"
 msgstr "Rooster"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:247
 msgid "Dots"
 msgstr "Stippen"
 
@@ -1082,10 +1083,11 @@ msgid "Marker"
 msgstr "Markeerstift"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-msgid "Mark underneath other brush strokes"
-msgstr "Markeren onder andere penseelstreken"
+msgid "Mark underneath other strokes"
+msgstr "Markeren onder andere streken"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
 msgid "Solid"
 msgstr "Vaste kleur"
 
@@ -1182,34 +1184,26 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "De dichtheid is het aantal punten op een gebied van 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Omvang van aangestipte punten"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "De omvang van de aangestipte punten in het textuur"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
 msgid "Stroke dots position distribution"
 msgstr "Puntenverspreiding"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
 msgid "Choose a dots position probability distribution"
 msgstr "Geef aan hoe punten verspreid dienen te worden"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:266
 msgid "Uniform"
 msgstr "Gelijk"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:267
 msgid "Normal"
 msgstr "Normaal"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:268
 msgid "Exponential"
 msgstr "Exponentieel"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:269
 msgid "Reverse Exponential"
 msgstr "Exponentieel (omgekeerd)"
 
@@ -1267,12 +1261,12 @@ msgid "Shape configuration"
 msgstr "Vorm afstellen"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:90
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:311
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:292
 msgid "Shape builders"
 msgstr "Vormbepalingen"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:113
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:444
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:425
 msgid "Constraints"
 msgstr "Beperkingen"
 
@@ -1292,87 +1286,83 @@ msgstr "Ruig"
 msgid "Rough style"
 msgstr "Ruige stijl"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:236
-msgid "Roughness"
-msgstr "Ruigheid"
-
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-msgid ""
-"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr ""
-"Geef aan hoe ruig de tekening dient te zijn. Gladgestreken lijn: 0.0 - "
-"Standaardvoorkeur: 1.0"
+msgid "Fill style"
+msgstr "Opvulstijl"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:252
-msgid "Bowing"
-msgstr "Afbuiging"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
+msgid "Choose a fill style"
+msgstr "Kies een opvulstijl"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-msgid ""
-"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
-"Defaults to 1.0"
-msgstr ""
-"Geef aan hoe gebogen de lijnen dienen te zijn bij het tekenen van een ruige "
-"vorm. Rechte lijn: 0.0 - Standaardvoorkeur: 1.0"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
+msgid "Hachure"
+msgstr "Reliëf"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:268
-msgid "Curve step count"
-msgstr "Aantal curvestappen"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
+msgid "Zig-Zag"
+msgstr "Kris-kras"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:269
-msgid "How many steps make up a curve. Defaults to 12"
-msgstr "Hoeveel stappen samen een curve vormen. Standaard: 12"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
+msgid "Zig-Zag Line"
+msgstr "Kris-kraslijn"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "Multistroke"
-msgstr "Meerdere penseelstreken"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
+msgid "Crosshatch"
+msgstr "Kruislings"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:285
-msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr ""
-"Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
+msgid "Dashed"
+msgstr "Gestreept"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:329
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
+msgid "Hachure angle"
+msgstr "Reliëfhoek"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
+msgid "Set the angle of hachure fills"
+msgstr "Stel de hoek van het reliëf in"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
 msgstr "Lijn"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:340
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:321
 msgid "Rectangle"
 msgstr "Rechthoek"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:351
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "2D coordinate system"
 msgstr "2D-coördinaten"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:362
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "3D coordinate system"
 msgstr "3D-coördinaten"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:373
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "2D single quadrant coordinate system"
 msgstr "2D-coördinaten met losse kwadranten"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "Ellipse"
 msgstr "Ellips"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse with foci"
 msgstr "Ellips plaatsen met focusring"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:387
 msgid "Quadratic bezier curve"
 msgstr "Kwadratische curve"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:417
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:398
 msgid "Cubic bezier curve"
 msgstr "Kubieke curve"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:461
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:442
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:462
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:443
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
@@ -1380,15 +1370,15 @@ msgstr ""
 "Houd Ctrl ingedrukt om de beperkingen tijdelijk\n"
 "in of uit te schakelen"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:473
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:454
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:483
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:464
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:493
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:474
 msgid "Golden ratio (1:1.618)"
 msgstr "Ideaal (1:1.618)"
 
@@ -1457,8 +1447,8 @@ msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:459
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#: rnote-ui/src/appwindow/mod.rs:316
+#: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "Het document kan niet worden opgeslagen."
 
@@ -1482,47 +1472,47 @@ msgstr "JPG, PDF, PNG, SVG, Xopp"
 msgid "Import file"
 msgstr "Bestand importeren"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no file name -"
 msgstr "- geen bestandsnaam -"
 
-#: rnote-ui/src/dialogs/import.rs:260
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "- no title -"
 msgstr "- naamloos -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
 msgstr "- geen auteur -"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"
 msgstr "- geen datum -"
 
-#: rnote-ui/src/dialogs/import.rs:274
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "File name:"
 msgstr "Bestandsnaam:"
 
-#: rnote-ui/src/dialogs/import.rs:278
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Title:"
 msgstr "Titel:"
 
-#: rnote-ui/src/dialogs/import.rs:282
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Author:"
 msgstr "Auteur:"
 
-#: rnote-ui/src/dialogs/import.rs:286
+#: rnote-ui/src/dialogs/import.rs:289
 msgid "Modification date:"
 msgstr "Bewerkt op"
 
-#: rnote-ui/src/dialogs/import.rs:290
+#: rnote-ui/src/dialogs/import.rs:293
 msgid "Pages:"
 msgstr "Aantal pagina's:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
 msgid "Opening PDF file failed."
 msgstr "Het document kan niet worden geopend."
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
 msgid "Opening Xournal++ file failed."
 msgstr "Het Xournal++-bestand kan niet worden geopend."
 
@@ -1598,37 +1588,53 @@ msgstr "De configuratie kan niet worden geëxporteerd."
 msgid "Exported engine config successfully."
 msgstr "De configuratie is geëxporteerd."
 
-#: rnote-ui/src/appwindow/imexport.rs:76
+#: rnote-ui/src/appwindow/imexport.rs:79
 msgid "Opening .rnote file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/imexport.rs:95
+#: rnote-ui/src/appwindow/imexport.rs:97
 msgid "Opening vector image file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/imexport.rs:114
+#: rnote-ui/src/appwindow/imexport.rs:115
 msgid "Opening bitmap image file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/imexport.rs:169
+#: rnote-ui/src/appwindow/imexport.rs:165
 msgid "Error: Tried opening folder as file"
 msgstr "Een map kan niet als bestand worden geopend"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
+#: rnote-ui/src/appwindow/imexport.rs:171
 msgid "Failed to open file: Unsupported file type."
 msgstr "Dit bestandstype wordt niet ondersteund."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
+#: rnote-ui/src/appwindow/appwindowactions.rs:731
 msgid "Printed document successfully"
 msgstr "Het werkblad is afgedrukt."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
+#: rnote-ui/src/appwindow/appwindowactions.rs:740
 msgid "Printing document failed"
 msgstr "Het afdrukken is mislukt"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
+#: rnote-ui/src/appwindow/appwindowactions.rs:766
 msgid "Export selection failed, nothing selected."
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Opened file was modified on disk."
+msgstr "Het geopende bestand is elders bewerkt."
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Reload"
+msgstr "Herladen"
+
+#: rnote-ui/src/canvas/mod.rs:632
+msgid "Opened file was renamed on disk."
+msgstr "Het geopende bestand is van naam gewijzigd."
+
+#: rnote-ui/src/canvas/mod.rs:639
+msgid "Opened file was moved or deleted on disk."
+msgstr "Het geopende bestand is verplaatst of verwijderd."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"
@@ -1637,6 +1643,47 @@ msgstr "Bestandsnaam"
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
 msgstr "Nieuwe map"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "Klembord _plakken"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Omvang van aangestipte punten"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "De omvang van de aangestipte punten in het textuur"
+
+#~ msgid "Roughness"
+#~ msgstr "Ruigheid"
+
+#~ msgid ""
+#~ "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+#~ msgstr ""
+#~ "Geef aan hoe ruig de tekening dient te zijn. Gladgestreken lijn: 0.0 - "
+#~ "Standaardvoorkeur: 1.0"
+
+#~ msgid "Bowing"
+#~ msgstr "Afbuiging"
+
+#~ msgid ""
+#~ "How curvy the lines are when drawing a rough shape. 0.0 is a straight "
+#~ "line. Defaults to 1.0"
+#~ msgstr ""
+#~ "Geef aan hoe gebogen de lijnen dienen te zijn bij het tekenen van een "
+#~ "ruige vorm. Rechte lijn: 0.0 - Standaardvoorkeur: 1.0"
+
+#~ msgid "Curve step count"
+#~ msgstr "Aantal curvestappen"
+
+#~ msgid "How many steps make up a curve. Defaults to 12"
+#~ msgstr "Hoeveel stappen samen een curve vormen. Standaard: 12"
+
+#~ msgid "Multistroke"
+#~ msgstr "Meerdere penseelstreken"
+
+#~ msgid "Multiple stroke generation for a sketched look. Defaults to true"
+#~ msgstr ""
+#~ "Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
 
 #~ msgid "Selecting apiece"
 #~ msgstr "Itemselectie"

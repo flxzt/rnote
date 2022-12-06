@@ -36,21 +36,11 @@ pub(crate) use settingspanel::SettingsPanel;
 pub(crate) use unitentry::UnitEntry;
 pub(crate) use workspacebrowser::WorkspaceBrowser;
 
-use gettextrs::LocaleCategory;
 use gtk4::prelude::*;
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
-use self::config::{GETTEXT_PACKAGE, LOCALEDIR};
-
 fn main() {
-    pretty_env_logger::init();
-    log::debug!("... env_logger initialized");
-
-    gettextrs::setlocale(LocaleCategory::LcAll, "");
-    gettextrs::bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
-    gettextrs::textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
-
     let app = RnoteApp::new();
     app.run();
 }

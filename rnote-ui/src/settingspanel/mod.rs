@@ -110,9 +110,8 @@ mod imp {
 
     impl ObjectImpl for SettingsPanel {
         fn constructed(&self) {
-            let inst = self.instance();
-
             self.parent_constructed();
+            let inst = self.instance();
 
             self.format_predefined_formats_row
                 .connect_selected_item_notify(

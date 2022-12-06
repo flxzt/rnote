@@ -85,8 +85,8 @@ mod imp {
 
     impl ObjectImpl for ColorPicker {
         fn constructed(&self) {
-            let inst = self.instance();
             self.parent_constructed();
+            let inst = self.instance();
 
             let colorchooser = self.colorchooser.get();
             let first_colorsetter = self.first_colorsetter.get();

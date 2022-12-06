@@ -69,6 +69,7 @@ mod imp {
     impl ObjectImpl for FileRow {
         fn constructed(&self) {
             self.parent_constructed();
+
             self.instance().set_widget_name("filerow");
 
             self.setup_input();

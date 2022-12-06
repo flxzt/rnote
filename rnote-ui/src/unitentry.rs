@@ -52,8 +52,8 @@ mod imp {
 
     impl ObjectImpl for UnitEntry {
         fn constructed(&self) {
-            let inst = self.instance();
             self.parent_constructed();
+            let inst = self.instance();
 
             // Spinner
             inst.bind_property("value", &self.value_spinner.get(), "value")

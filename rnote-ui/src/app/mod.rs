@@ -32,40 +32,64 @@ mod imp {
     impl ObjectImpl for RnoteApp {}
 
     impl ApplicationImpl for RnoteApp {
-        fn activate(&self) {
-            let inst = self.instance();
+        fn startup(&self) {
+            self.parent_startup();
 
-            // Load in the needed gresources
-            self.load_gresources();
-
-            // setup the app
-            inst.setup_actions();
-            inst.setup_action_accels();
-
-            // and init and show the first window
-            self.new_window_show(None);
+            self.init();
         }
 
-        fn open(&self, files: &[gio::File], _hint: &str) {
-            self.load_gresources();
+        fn activate(&self) {
+            self.parent_activate();
 
-            self.new_window_show(files.first().cloned());
+            // init and show the first window
+            self.new_appwindow_init_show(None);
+        }
+
+        fn open(&self, files: &[gio::File], hint: &str) {
+            self.parent_open(files, hint);
+
+            // open another appwindow and load the file
+            self.new_appwindow_init_show(files.first().cloned());
         }
     }
 
     impl GtkApplicationImpl for RnoteApp {}
+
     impl AdwApplicationImpl for RnoteApp {}
 
     impl RnoteApp {
+        fn init(&self) {
+            let inst = self.instance();
+
+            self.setup_logging();
+            self.setup_i18n();
+            self.setup_gresources();
+            inst.setup_actions();
+            inst.setup_action_accels();
+        }
+
         /// Initializes and shows a new app window
-        fn new_window_show(&self, input_file: Option<gio::File>) {
+        fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnoteAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
             appwindow.init(input_file);
 
             appwindow.show();
         }
 
-        fn load_gresources(&self) {
+        fn setup_logging(&self) {
+            pretty_env_logger::init();
+            log::debug!("... env_logger initialized");
+        }
+
+        fn setup_i18n(&self) {
+            gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
+            gettextrs::bindtextdomain(config::GETTEXT_PACKAGE, config::LOCALEDIR)
+                .expect("Unable to bind the text domain");
+            gettextrs::textdomain(config::GETTEXT_PACKAGE)
+                .expect("Unable to switch to the text domain");
+        }
+
+        fn setup_gresources(&self) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
             RnoteCanvasWrapper::static_type();

@@ -176,8 +176,8 @@ mod imp {
 
     impl ObjectImpl for RnoteCanvas {
         fn constructed(&self) {
-            let inst = self.instance();
             self.parent_constructed();
+            let inst = self.instance();
 
             inst.set_hexpand(false);
             inst.set_vexpand(false);

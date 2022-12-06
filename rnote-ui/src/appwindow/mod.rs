@@ -154,10 +154,8 @@ mod imp {
 
     impl ObjectImpl for RnoteAppWindow {
         fn constructed(&self) {
-            let inst = self.instance();
-
             self.parent_constructed();
-
+            let inst = self.instance();
             let _windowsettings = inst.settings();
 
             if config::PROFILE == "devel" {

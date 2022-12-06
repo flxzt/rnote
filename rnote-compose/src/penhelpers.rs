@@ -109,9 +109,6 @@ impl KeyboardKey {
 #[serde(rename = "shortcut_key")]
 /// A input shortcut key (could also be named modifier key)
 pub enum ShortcutKey {
-    /// A keyboard key
-    #[serde(rename = "keyboard_key")]
-    KeyboardKey(char),
     /// the primary button of the stylus
     #[serde(rename = "stylus_primary_button")]
     StylusPrimaryButton,

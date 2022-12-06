@@ -402,19 +402,14 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let cursor_pos = cursor.cur_cursor();
-                    let selection_cursor_pos = selection_cursor.cur_cursor();
-
-                    // ensure range is positive
-                    let pos_cursor_range = if cursor_pos < selection_cursor_pos {
-                        cursor_pos..selection_cursor_pos
-                    } else {
-                        selection_cursor_pos..cursor_pos
-                    };
+                    let selection_range = crate::utils::positive_range(
+                        cursor.cur_cursor(),
+                        selection_cursor.cur_cursor(),
+                    );
 
                     // Current selection as clipboard text
                     let selection_text = textstroke
-                        .get_text_slice_for_range(pos_cursor_range)
+                        .get_text_slice_for_range(selection_range)
                         .to_string();
 
                     return Ok(Some((

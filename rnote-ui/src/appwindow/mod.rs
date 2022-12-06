@@ -1384,6 +1384,14 @@ impl RnoteAppWindow {
             self.canvas()
                 .set_text_preprocessing(enable_text_preprocessing);
         }
+        if let Some((mime_type, data)) = widget_flags.copy_into_clipboard {
+            let content =
+                gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+
+            if let Err(e) = self.clipboard().set_content(Some(&content)) {
+                log::error!("clipboard set_content() failed in handle_widget_flags() copy into clipboard, Err: {e:?}");
+            }
+        }
 
         widget_flags.quit
     }

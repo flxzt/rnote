@@ -1,6 +1,6 @@
 /// Flags returned to the widget holding the engine
 #[must_use]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct WidgetFlags {
     /// application should be quit
     pub quit: bool,
@@ -21,6 +21,8 @@ pub struct WidgetFlags {
     /// Changes whether text preprocessing should be enabled. Meaning, instead of key events text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter
     pub enable_text_preprocessing: Option<bool>,
+    /// tells the widget to copy the content (Vec<u8>) with the mime type (String) into the clipboard.
+    pub copy_into_clipboard: Option<(String, Vec<u8>)>,
 }
 
 impl Default for WidgetFlags {
@@ -35,40 +37,31 @@ impl Default for WidgetFlags {
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
+            copy_into_clipboard: None,
         }
     }
 }
 
 impl WidgetFlags {
     /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
-    pub fn merged_with_other(mut self, other: Self) -> Self {
+    pub fn merge_with_other(&mut self, other: Self) {
         self.quit |= other.quit;
         self.redraw |= other.redraw;
         self.resize |= other.resize;
         self.refresh_ui |= other.refresh_ui;
         self.indicate_changed_store |= other.indicate_changed_store;
         self.update_view |= other.update_view;
-        self.hide_undo = if other.hide_undo.is_some() {
-            other.hide_undo
-        } else {
-            self.hide_undo
-        };
-        self.hide_redo = if other.hide_redo.is_some() {
-            other.hide_redo
-        } else {
-            self.hide_redo
-        };
-        self.enable_text_preprocessing = if other.enable_text_preprocessing.is_some() {
-            other.enable_text_preprocessing
-        } else {
-            self.enable_text_preprocessing
-        };
-
-        self
-    }
-
-    /// Merging with another SurfaceFlags struct in place, prioritizing other for conflicting values.
-    pub fn merge_with_other(&mut self, other: Self) {
-        *self = self.merged_with_other(other);
+        if other.hide_undo.is_some() {
+            self.hide_undo = other.hide_undo
+        }
+        if other.hide_redo.is_some() {
+            self.hide_redo = other.hide_redo;
+        }
+        if other.enable_text_preprocessing.is_some() {
+            self.enable_text_preprocessing = other.enable_text_preprocessing;
+        }
+        if other.copy_into_clipboard.is_some() {
+            self.copy_into_clipboard = other.copy_into_clipboard;
+        }
     }
 }

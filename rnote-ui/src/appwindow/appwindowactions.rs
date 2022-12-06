@@ -307,7 +307,7 @@ impl RnoteAppWindow {
                         let mut widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(
                             new_pen_style,
                         );
-                        widget_flags = widget_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
+                        widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                             None,
                         ));
 

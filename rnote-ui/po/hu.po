@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 01:11+0100\n"
-"PO-Revision-Date: 2022-12-05 11:54+0000\n"
+"PO-Revision-Date: 2022-12-06 11:56+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1620,19 +1620,19 @@ msgstr "A kijelölés exportálása sikertelen, nincs kijelölve semmi."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "A megnyitott fájl módosításra került a lemezen."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Újratöltés"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "A megnyitott fájl át lett nevezve a lemezen."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "A megnyitott fájl át lett helyezve vagy törölve lett a lemezről."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

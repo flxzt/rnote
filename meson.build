@@ -97,28 +97,25 @@ if get_option('profile') == 'devel'
     )
 endif
 
-# local crates
-cargo_sources = files(
-    meson.project_source_root() + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-cli' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
-)
-
+# workspaces crates
 subdir('rnote-compose')
 subdir('rnote-fileformats')
 subdir('rnote-engine')
 subdir('rnote-cli')
 subdir('rnote-ui')
 
-# Cargo
+cargo_sources = files(
+    meson.project_source_root() + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
+)
+
 sources = [
     rnote_compose_sources,
     rnote_fileformats_sources,
     rnote_engine_sources,
-    rnote_cli_sources,
     rnote_ui_sources,
     cargo_sources,
 ]
@@ -130,6 +127,11 @@ cargo_options += ['-p', 'rnote']
 
 if get_option('cli') == true
     cargo_options += ['-p', 'rnote-cli']
+
+    sources += rnote_cli_sources
+    sources += files([
+        meson.project_source_root() + '/' + 'rnote-cli' + '/' + 'Cargo.toml',
+    ])
 endif
 
 if get_option('profile') == 'default'
@@ -172,13 +174,7 @@ custom_target(
     ],
 )
 
-# Install the cli
-if get_option('cli') == true
-    install_data(
-        cargo_target_dir / rust_target / app_cli_name,
-        install_dir: bindir,
-    )
-endif
+# TODO: Install the cli
 
 # meson >= 0.64 will include `update-mime-database` in the gnome module.
 # Then this script can be replaced by `gnome.post_install(..)`

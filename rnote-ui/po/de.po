@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 01:11+0100\n"
-"PO-Revision-Date: 2022-12-04 15:23+0000\n"
+"PO-Revision-Date: 2022-12-06 11:56+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1620,19 +1620,19 @@ msgstr "Auswahl exportieren gescheitert, nichts ausgewählt."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "Geöffnete Datei wurde auf dem Datenträger geändert."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Neu laden"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "Geöffnete Datei wurde auf dem Datenträger umbenannt."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "Geöffnete Datei wurde auf dem Datenträger verschoben oder gelöscht."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

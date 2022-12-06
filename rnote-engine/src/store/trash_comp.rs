@@ -159,7 +159,7 @@ impl StrokeStore {
                                 let (first_split, second_split) =
                                     brushstroke.path.segments[..].split_at(split_at);
                                 let first_split = first_split.to_vec();
-                                // We want to exlude the colliding segment, so +1
+                                // We want to exclude the colliding segment, so +1
                                 let second_split =
                                     second_split[1.min(second_split.len())..].to_vec();
 

@@ -566,14 +566,10 @@ impl Typewriter {
             ..
         } = &self.state
         {
-            let cursor_index = cursor.cur_cursor();
-            let selection_cursor_index = selection_cursor.cur_cursor();
+            let selection_range =
+                crate::utils::positive_range(cursor.cur_cursor(), selection_cursor.cur_cursor());
 
-            if cursor_index < selection_cursor_index {
-                Some((cursor_index..selection_cursor_index, *stroke_key))
-            } else {
-                Some((selection_cursor_index..cursor_index, *stroke_key))
-            }
+            Some((selection_range, *stroke_key))
         } else {
             None
         }

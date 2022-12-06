@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-04 14:39+0100\n"
+"POT-Creation-Date: 2022-12-06 01:11+0100\n"
 "PO-Revision-Date: 2022-11-20 18:53+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -335,7 +335,7 @@ msgstr "İptal Et"
 msgid "Clear"
 msgstr "Temizle"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
 msgid "New Document"
 msgstr "Yeni Belge"
 
@@ -409,7 +409,7 @@ msgid "Change the workspace directory"
 msgstr "Çalışma alanı dizinini değiştir"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- dizin seçilmedi -"
@@ -660,7 +660,7 @@ msgid "Open"
 msgstr "Aç"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:60
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "Yeniden adlandır"
 
@@ -676,7 +676,7 @@ msgstr "İkizle"
 msgid "New document"
 msgstr "Yeni belge"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
 msgid "Draft"
 msgstr "Taslak"
 
@@ -1476,7 +1476,7 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:460
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "Belge kaydedilemedi."
 
@@ -1500,47 +1500,47 @@ msgstr ""
 msgid "Import file"
 msgstr "Dosya içe aktar"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no file name -"
 msgstr "- adsız -"
 
-#: rnote-ui/src/dialogs/import.rs:260
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "- no title -"
 msgstr "- başlıksız -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
 msgstr "- yazar yok -"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"
 msgstr "- tarih yok -"
 
-#: rnote-ui/src/dialogs/import.rs:274
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "File name:"
 msgstr "Dosya adı:"
 
-#: rnote-ui/src/dialogs/import.rs:278
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Title:"
 msgstr "Başlık:"
 
-#: rnote-ui/src/dialogs/import.rs:282
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Author:"
 msgstr "Yazar:"
 
-#: rnote-ui/src/dialogs/import.rs:286
+#: rnote-ui/src/dialogs/import.rs:289
 msgid "Modification date:"
 msgstr "Değiştirilme tarihi:"
 
-#: rnote-ui/src/dialogs/import.rs:290
+#: rnote-ui/src/dialogs/import.rs:293
 msgid "Pages:"
 msgstr "Sayfalar:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
+#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
 msgid "Opening PDF file failed."
 msgstr "PDF dosyası açılamadı."
 
-#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
+#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ dosyası açılamadı."
 
@@ -1616,37 +1616,53 @@ msgstr "Motor ayarı dışa aktarılamadı."
 msgid "Exported engine config successfully."
 msgstr "Motor ayarı dışa aktarıldı."
 
-#: rnote-ui/src/appwindow/imexport.rs:75
+#: rnote-ui/src/appwindow/imexport.rs:79
 msgid "Opening .rnote file failed."
 msgstr ".rnote dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:93
+#: rnote-ui/src/appwindow/imexport.rs:97
 msgid "Opening vector image file failed."
 msgstr "Vektör görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:111
+#: rnote-ui/src/appwindow/imexport.rs:115
 msgid "Opening bitmap image file failed."
 msgstr "Biteşlem görüntü dosyası açılamadı."
 
-#: rnote-ui/src/appwindow/imexport.rs:163
+#: rnote-ui/src/appwindow/imexport.rs:164
 msgid "Error: Tried opening folder as file"
 msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
 
-#: rnote-ui/src/appwindow/imexport.rs:172
+#: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Failed to open file: Unsupported file type."
 msgstr "Dosya açılamadı: Desteklenmeyen dosya türü."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:758
+#: rnote-ui/src/appwindow/appwindowactions.rs:731
 msgid "Printed document successfully"
 msgstr "Belge yazdırıldı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:767
+#: rnote-ui/src/appwindow/appwindowactions.rs:740
 msgid "Printing document failed"
 msgstr "Belge yazdırılamadı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:793
+#: rnote-ui/src/appwindow/appwindowactions.rs:766
 msgid "Export selection failed, nothing selected."
 msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi."
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Opened file was modified on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Reload"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:632
+msgid "Opened file was renamed on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:639
+msgid "Opened file was moved or deleted on disk."
+msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 #, fuzzy

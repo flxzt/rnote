@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-04 14:39+0100\n"
+"POT-Creation-Date: 2022-12-06 01:11+0100\n"
 "PO-Revision-Date: 2022-11-16 14:33+0000\n"
 "Last-Translator: Qiu Ni <niqiu.kilin@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -343,7 +343,7 @@ msgstr "取消"
 msgid "Clear"
 msgstr "清空"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
 msgid "New Document"
 msgstr "新建文档"
 
@@ -413,7 +413,7 @@ msgid "Change the workspace directory"
 msgstr "更改工作区目录"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
@@ -663,7 +663,7 @@ msgid "Open"
 msgstr "打开"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:60
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "重命名"
 
@@ -680,7 +680,7 @@ msgstr "复制所选内容"
 msgid "New document"
 msgstr "新建文档"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
 msgid "Draft"
 msgstr "草稿"
 
@@ -1475,7 +1475,7 @@ msgstr "译者注"
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:460
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "文档保存失败。"
 
@@ -1499,47 +1499,47 @@ msgstr ""
 msgid "Import file"
 msgstr "导入文件"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no file name -"
 msgstr "—— 没有文件名 ——"
 
-#: rnote-ui/src/dialogs/import.rs:260
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "- no title -"
 msgstr "—— 无标题 ——"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
 msgstr "—— 无作者 ——"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"
 msgstr "—— 无日期 ——"
 
-#: rnote-ui/src/dialogs/import.rs:274
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "File name:"
 msgstr "文件名："
 
-#: rnote-ui/src/dialogs/import.rs:278
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Title:"
 msgstr "标题："
 
-#: rnote-ui/src/dialogs/import.rs:282
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Author:"
 msgstr "作者："
 
-#: rnote-ui/src/dialogs/import.rs:286
+#: rnote-ui/src/dialogs/import.rs:289
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: rnote-ui/src/dialogs/import.rs:290
+#: rnote-ui/src/dialogs/import.rs:293
 msgid "Pages:"
 msgstr "页码："
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
+#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
 msgid "Opening PDF file failed."
 msgstr "PDF打开失败。"
 
-#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
+#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ 文件打开失败。"
 
@@ -1635,40 +1635,56 @@ msgstr "引擎设置导出失败。"
 msgid "Exported engine config successfully."
 msgstr "引擎设置导出成功。"
 
-#: rnote-ui/src/appwindow/imexport.rs:75
+#: rnote-ui/src/appwindow/imexport.rs:79
 msgid "Opening .rnote file failed."
 msgstr ".rnote 文件打开失败。"
 
-#: rnote-ui/src/appwindow/imexport.rs:93
+#: rnote-ui/src/appwindow/imexport.rs:97
 msgid "Opening vector image file failed."
 msgstr "矢量图文件打开失败。"
 
-#: rnote-ui/src/appwindow/imexport.rs:111
+#: rnote-ui/src/appwindow/imexport.rs:115
 msgid "Opening bitmap image file failed."
 msgstr "位图文件打开失败。"
 
-#: rnote-ui/src/appwindow/imexport.rs:163
+#: rnote-ui/src/appwindow/imexport.rs:164
 msgid "Error: Tried opening folder as file"
 msgstr "错误：将文件夹作为文件打开"
 
-#: rnote-ui/src/appwindow/imexport.rs:172
+#: rnote-ui/src/appwindow/imexport.rs:169
 #, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "打开文件失败：不支持的文件类型。"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:758
+#: rnote-ui/src/appwindow/appwindowactions.rs:731
 msgid "Printed document successfully"
 msgstr "打印成功"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:767
+#: rnote-ui/src/appwindow/appwindowactions.rs:740
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:793
+#: rnote-ui/src/appwindow/appwindowactions.rs:766
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
 msgstr "导出所选为 SVG 失败。"
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Opened file was modified on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Reload"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:632
+msgid "Opened file was renamed on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:639
+msgid "Opened file was moved or deleted on disk."
+msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 #, fuzzy

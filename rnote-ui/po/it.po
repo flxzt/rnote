@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-04 14:39+0100\n"
+"POT-Creation-Date: 2022-12-06 01:11+0100\n"
 "PO-Revision-Date: 2022-12-04 11:35+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -333,7 +333,7 @@ msgstr "Annulla"
 msgid "Clear"
 msgstr "Pulisci"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:841
 msgid "New Document"
 msgstr "Nuovo Documento"
 
@@ -407,7 +407,7 @@ msgid "Change the workspace directory"
 msgstr "Cambia la cartella dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- nessuna cartella selezionata -"
@@ -658,7 +658,7 @@ msgid "Open"
 msgstr "Apri"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:60
+#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
 msgid "Rename"
 msgstr "Rinomina"
 
@@ -674,7 +674,7 @@ msgstr "Duplica"
 msgid "New document"
 msgstr "Nuovo documento"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:899
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:843
 msgid "Draft"
 msgstr "Bozza"
 
@@ -1459,7 +1459,7 @@ msgstr "Albano Battistella <albano_battistella@hotmail.com>"
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:460
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#: rnote-ui/src/appwindow/appwindowactions.rs:615
 msgid "Saving document failed."
 msgstr "Salvataggio del documento non riuscito."
 
@@ -1483,47 +1483,47 @@ msgstr "JPG, PDF, PNG, SVG, Xopp"
 msgid "Import file"
 msgstr "Importa file"
 
-#: rnote-ui/src/dialogs/import.rs:255
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no file name -"
 msgstr "- nessun nome file -"
 
-#: rnote-ui/src/dialogs/import.rs:260
+#: rnote-ui/src/dialogs/import.rs:263
 msgid "- no title -"
 msgstr "- senza titolo -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
 msgstr "- nessun autore -"
 
-#: rnote-ui/src/dialogs/import.rs:267
+#: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"
 msgstr "- nessuna data -"
 
-#: rnote-ui/src/dialogs/import.rs:274
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "File name:"
 msgstr "Nome file:"
 
-#: rnote-ui/src/dialogs/import.rs:278
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Title:"
 msgstr "Titolo:"
 
-#: rnote-ui/src/dialogs/import.rs:282
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Author:"
 msgstr "Autore:"
 
-#: rnote-ui/src/dialogs/import.rs:286
+#: rnote-ui/src/dialogs/import.rs:289
 msgid "Modification date:"
 msgstr "Data di modifica:"
 
-#: rnote-ui/src/dialogs/import.rs:290
+#: rnote-ui/src/dialogs/import.rs:293
 msgid "Pages:"
 msgstr "Pagine:"
 
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:147
+#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
 msgid "Opening PDF file failed."
 msgstr "Apertura file PDF fallita."
 
-#: rnote-ui/src/dialogs/import.rs:385 rnote-ui/src/appwindow/imexport.rs:129
+#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
 msgid "Opening Xournal++ file failed."
 msgstr "Apertura file Xournal++ fallita."
 
@@ -1601,37 +1601,53 @@ msgstr "Esportazione del 'engine config' fallita."
 msgid "Exported engine config successfully."
 msgstr "Esportazione del 'engine config' avvenuta con successo."
 
-#: rnote-ui/src/appwindow/imexport.rs:75
+#: rnote-ui/src/appwindow/imexport.rs:79
 msgid "Opening .rnote file failed."
 msgstr "Apertura file .rnote fallita."
 
-#: rnote-ui/src/appwindow/imexport.rs:93
+#: rnote-ui/src/appwindow/imexport.rs:97
 msgid "Opening vector image file failed."
 msgstr "Apertura del file immagine vettoriale non riuscita."
 
-#: rnote-ui/src/appwindow/imexport.rs:111
+#: rnote-ui/src/appwindow/imexport.rs:115
 msgid "Opening bitmap image file failed."
 msgstr "Apertura del file immagine bitmap non riuscita."
 
-#: rnote-ui/src/appwindow/imexport.rs:163
+#: rnote-ui/src/appwindow/imexport.rs:164
 msgid "Error: Tried opening folder as file"
 msgstr "Errore: si è provato ad aprire la cartella come file"
 
-#: rnote-ui/src/appwindow/imexport.rs:172
+#: rnote-ui/src/appwindow/imexport.rs:169
 msgid "Failed to open file: Unsupported file type."
 msgstr "Apertura del file fallita: il formato del file non è supportato."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:758
+#: rnote-ui/src/appwindow/appwindowactions.rs:731
 msgid "Printed document successfully"
 msgstr "Stampa avvenuta correttamente"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:767
+#: rnote-ui/src/appwindow/appwindowactions.rs:740
 msgid "Printing document failed"
 msgstr "Stampa del documento fallita"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:793
+#: rnote-ui/src/appwindow/appwindowactions.rs:766
 msgid "Export selection failed, nothing selected."
 msgstr "Esportazione della selezione fallita, non si è selezionato nulla."
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Opened file was modified on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:601
+msgid "Reload"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:632
+msgid "Opened file was renamed on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:639
+msgid "Opened file was moved or deleted on disk."
+msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

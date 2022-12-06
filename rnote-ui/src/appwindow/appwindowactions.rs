@@ -228,15 +228,15 @@ impl RnoteAppWindow {
                 match doc_layout {
                     "fixed-size" => {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::FixedSize);
-                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(true);
+                        appwindow.canvas_wrapper().fixedsize_quickactions_revealer().set_reveal_child(true);
                     },
                     "continuous-vertical" => {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
-                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
+                        appwindow.canvas_wrapper().fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     "infinite" => {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
-                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
+                        appwindow.canvas_wrapper().fixedsize_quickactions_revealer().set_reveal_child(false);
                     }
                     invalid_str => {
                         log::error!("action doc-layout failed, invalid str: {invalid_str}");
@@ -525,7 +525,7 @@ impl RnoteAppWindow {
 
         // Zoom fit to width
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = f64::from(appwindow.canvas_scroller().width()) / (appwindow.canvas().engine().borrow().document.format.width as f64 + 2.0 * Document::SHADOW_WIDTH);
+            let new_zoom = f64::from(appwindow.canvas_wrapper().scroller().width()) / (appwindow.canvas().engine().borrow().document.format.width as f64 + 2.0 * Document::SHADOW_WIDTH);
 
             let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
@@ -606,16 +606,16 @@ impl RnoteAppWindow {
         action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                 if let Some(output_file) = appwindow.canvas().output_file() {
-                    appwindow.start_pulsing_canvas_progressbar();
+                    appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                     if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                         appwindow.canvas().set_output_file(None);
 
                         log::error!("saving document failed with error `{e:?}`");
-                        appwindow.dispatch_toast_error(&gettext("Saving document failed."));
+                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
                     }
 
-                    appwindow.finish_canvas_progressbar();
+                    appwindow.canvas_wrapper().finish_progressbar();
                     // No success toast on saving without dialog, success is already indicated in the header title
                 } else {
                     // Open a dialog to choose a save location
@@ -640,7 +640,7 @@ impl RnoteAppWindow {
             // TODO: Exposing this as a setting in the print dialog
             let with_background = true;
 
-            appwindow.start_pulsing_canvas_progressbar();
+            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
             let background_svg = if with_background {
                 appwindow.canvas().engine().borrow().document
@@ -728,7 +728,7 @@ impl RnoteAppWindow {
                 log::debug!("{:?}", print_op.status());
                 match print_op.status() {
                     PrintStatus::Finished => {
-                        appwindow.dispatch_toast_text(&gettext("Printed document successfully"));
+                        appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Printed document successfully"));
                     }
                     _ => {}
                 }
@@ -737,10 +737,10 @@ impl RnoteAppWindow {
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
                 log::error!("print_op.run() failed with Err, {e:?}");
-                appwindow.dispatch_toast_error(&gettext("Printing document failed"));
+                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Printing document failed"));
             }
 
-            appwindow.finish_canvas_progressbar();
+            appwindow.canvas_wrapper().finish_progressbar();
         }));
 
         // Import
@@ -763,7 +763,7 @@ impl RnoteAppWindow {
             if !appwindow.canvas().engine().borrow().store.selection_keys_unordered().is_empty() {
                 dialogs::export::dialog_export_selection_w_prefs(&appwindow);
             } else {
-                appwindow.dispatch_toast_error(&gettext("Export selection failed, nothing selected."));
+                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export selection failed, nothing selected."));
             }
         }));
 
@@ -889,69 +889,6 @@ impl RnoteAppWindow {
                 log::debug!("failed to paste clipboard, unsupported mime-types: {:?}", content_formats.mime_types());
             }
         }));
-    }
-
-    pub(crate) fn dispatch_toast_w_button<F: Fn(&adw::Toast) + 'static>(
-        &self,
-        text: &String,
-        button_label: &String,
-        button_callback: F,
-        timeout: u32,
-    ) -> adw::Toast {
-        let text_notify_toast = adw::Toast::builder()
-            .title(text.as_str())
-            .priority(adw::ToastPriority::High)
-            .button_label(button_label)
-            .timeout(timeout)
-            .build();
-
-        text_notify_toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(&text_notify_toast);
-
-        text_notify_toast
-    }
-
-    /// Ensures that only one toast per `singleton_toast` is queued at the same time by dismissing the previous toast.
-    ///
-    /// `singleton_toast` is a mutable reference to an `Option<Toast>`. It will always hold the most recently dispatched toast
-    /// and it should not be modified, because it's used to keep track of previous toasts.
-    pub(crate) fn dispatch_toast_w_button_singleton<F: Fn(&adw::Toast) + 'static>(
-        &self,
-        text: &String,
-        button_label: &String,
-        button_callback: F,
-        timeout: u32,
-        singleton_toast: &mut Option<adw::Toast>,
-    ) {
-        if let Some(previous_toast) = singleton_toast {
-            previous_toast.dismiss();
-        }
-
-        let text_notify_toast =
-            self.dispatch_toast_w_button(text, button_label, button_callback, timeout);
-        *singleton_toast = Some(text_notify_toast);
-    }
-
-    pub(crate) fn dispatch_toast_text(&self, text: &String) {
-        let text_notify_toast = adw::Toast::builder()
-            .title(text.as_str())
-            .priority(adw::ToastPriority::High)
-            .timeout(5)
-            .build();
-
-        self.toast_overlay().add_toast(&text_notify_toast);
-    }
-
-    pub(crate) fn dispatch_toast_error(&self, error: &String) {
-        let text_notify_toast = adw::Toast::builder()
-            .title(error.as_str())
-            .priority(adw::ToastPriority::High)
-            .timeout(0)
-            .build();
-
-        log::error!("{error}");
-
-        self.toast_overlay().add_toast(&text_notify_toast);
     }
 
     pub(crate) fn setup_action_accels(&self) {

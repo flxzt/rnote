@@ -598,7 +598,7 @@ impl RnoteCanvas {
                         let dispatch_toast_reload_modified_file = || {
                             appwindow.canvas().set_unsaved_changes(true);
 
-                            appwindow.dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
+                            appwindow.canvas_wrapper().dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
                                 if let Some(output_file) = appwindow.canvas().output_file() {
                                     if let Err(e) = appwindow.load_in_file(&output_file, None) {
                                         log::error!("failed to reload current output file, {}", e);
@@ -613,7 +613,7 @@ impl RnoteCanvas {
                             },
                             gio::FileMonitorEvent::Renamed => {
                                 // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
-                                if FileType::is_goutputstream_file(&file) {
+                                if FileType::is_goutputstream_file(file) {
                                     if !canvas.output_file_expect_write() {
                                         // => file has been modified by external means, handle it the same as the Changed event.
                                         dispatch_toast_reload_modified_file();
@@ -629,14 +629,14 @@ impl RnoteCanvas {
 
                                     canvas.set_output_file(other_file.cloned());
 
-                                    appwindow.dispatch_toast_text(&gettext("Opened file was renamed on disk."))
+                                    appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Opened file was renamed on disk."))
                                 }
                             },
                             gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
                                 canvas.set_unsaved_changes(true);
                                 canvas.set_output_file(None);
 
-                                appwindow.dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
                             },
                             _ => (),
                         }
@@ -700,7 +700,7 @@ impl RnoteCanvas {
                 let touch_drawing = canvas.touch_drawing();
 
                 // Disable the zoom gesture when touch drawing is enabled
-                appwindow.canvas_zoom_gesture_enable(!touch_drawing);
+                appwindow.canvas_wrapper().canvas_zoom_gesture_enable(!touch_drawing);
             }),
         );
 
@@ -762,9 +762,9 @@ impl RnoteCanvas {
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
             // disable drag and zoom gestures entirely while drawing with stylus
-            appwindow.canvas_touch_drag_gesture_enable(false);
-            appwindow.canvas_zoom_gesture_enable(false);
-            appwindow.canvas_drag_empty_area_gesture_enable(false);
+            appwindow.canvas_wrapper().canvas_touch_drag_gesture_enable(false);
+            appwindow.canvas_wrapper().canvas_zoom_gesture_enable(false);
+            appwindow.canvas_wrapper().canvas_drag_empty_area_gesture_enable(false);
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
@@ -803,11 +803,11 @@ impl RnoteCanvas {
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
             // enable drag and zoom gestures again
-            appwindow.canvas_touch_drag_gesture_enable(true);
-            appwindow.canvas_drag_empty_area_gesture_enable(true);
+            appwindow.canvas_wrapper().canvas_touch_drag_gesture_enable(true);
+            appwindow.canvas_wrapper().canvas_drag_empty_area_gesture_enable(true);
 
             if !canvas.touch_drawing() {
-                appwindow.canvas_zoom_gesture_enable(true);
+                appwindow.canvas_wrapper().canvas_zoom_gesture_enable(true);
             }
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }

@@ -12,7 +12,8 @@ use crate::{
     penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
     penssidebar::TypewriterPage, settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow,
     workspacebrowser::WorkspaceRow, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
-    PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry, WorkspaceBrowser,
+    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, SettingsPanel, UnitEntry,
+    WorkspaceBrowser,
 };
 
 mod imp {
@@ -79,6 +80,7 @@ mod imp {
 
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
+            RnoteCanvasWrapper::static_type();
             RnoteCanvas::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
@@ -173,8 +175,14 @@ impl RnoteApp {
     // Anything that needs to be done right before showing the appwindow
     pub(crate) fn init_misc(&self, appwindow: &RnoteAppWindow) {
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        appwindow.undo_button().set_sensitive(false);
-        appwindow.redo_button().set_sensitive(false);
+        appwindow
+            .canvas_wrapper()
+            .undo_button()
+            .set_sensitive(false);
+        appwindow
+            .canvas_wrapper()
+            .redo_button()
+            .set_sensitive(false);
 
         appwindow.canvas().regenerate_background_pattern();
         appwindow.canvas().update_engine_rendering();

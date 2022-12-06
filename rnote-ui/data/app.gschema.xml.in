@@ -45,7 +45,7 @@
       <default>120</default>
       <summary>the sec interval for the autosave</summary>
     </key>
-    <key name="permanently-hide-canvas-scrollbars" type="b">
+    <key name="permanently-hide-scrollbars" type="b">
       <default>false</default>
       <summary>Whether the canvas scrollbars are permanently hidden</summary>
     </key>

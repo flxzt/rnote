@@ -83,7 +83,7 @@ impl FileType {
             }
         }
 
-        return false;
+        false
     }
 }
 

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 01:11+0100\n"
-"PO-Revision-Date: 2022-12-04 15:59+0000\n"
+"PO-Revision-Date: 2022-12-06 11:56+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1622,19 +1622,19 @@ msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "Het geopende bestand is elders bewerkt."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Herladen"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "Het geopende bestand is van naam gewijzigd."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "Het geopende bestand is verplaatst of verwijderd."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

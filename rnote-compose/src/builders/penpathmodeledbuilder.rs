@@ -207,7 +207,7 @@ impl PenPathModeledBuilder {
                 }),
         );
 
-        // The prediciton start is the last buffer element (which will get drained)
+        // The prediction start is the last buffer element (which will get drained)
         if let Some(last) = self.buffer.last() {
             self.prediction_start = *last;
         }

@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use geo::line_string;
 use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
 use p2d::bounding_volume::AABB;
@@ -211,6 +213,17 @@ pub fn keyboard_key_from_gdk(gdk_key: gdk::Key) -> KeyboardKey {
             gdk::Key::Control_R => KeyboardKey::CtrlRight,
             _ => KeyboardKey::Unsupported,
         }
+    }
+}
+
+pub fn positive_range<I>(first: I, second: I) -> Range<I>
+where
+    I: PartialOrd,
+{
+    if first < second {
+        first..second
+    } else {
+        second..first
     }
 }
 

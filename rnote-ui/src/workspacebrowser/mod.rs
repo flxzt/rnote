@@ -566,10 +566,8 @@ fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
                     .expect("selected item in primary_listview does not exist.")
                     .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
-                if let Some(file) = fileinfo.attribute_object("standard::file") {
-                    let file = file.downcast::<gio::File>().unwrap();
-
-                    appwindow.open_file_w_dialogs(&file, None);
+                if let Some(input_file) = fileinfo.attribute_object("standard::file") {
+                    appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None);
                 };
 
                 multisorter.changed(SorterChange::Different);

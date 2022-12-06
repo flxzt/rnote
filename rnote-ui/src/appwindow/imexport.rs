@@ -13,42 +13,32 @@ use super::RnoteAppWindow;
 impl RnoteAppWindow {
     pub(crate) fn open_file_w_dialogs(
         &self,
-        file: &gio::File,
+        input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
     ) {
-        let app = self.app();
-
-        match crate::utils::FileType::lookup_file_type(file) {
+        match crate::utils::FileType::lookup_file_type(&input_file) {
             crate::utils::FileType::RnoteFile => {
-                // Set as input file to hand it to the dialog
-                app.set_input_file(Some(file.clone()));
-
                 if self.canvas().unsaved_changes() {
-                    dialogs::import::dialog_open_overwrite(self);
-                } else if let Err(e) = self.load_in_file(file, target_pos) {
+                    dialogs::import::dialog_open_overwrite(self, input_file);
+                } else if let Err(e) = self.load_in_file(input_file, target_pos) {
                     log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
                     );
                 }
             }
             crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
-                if let Err(e) = self.load_in_file(file, target_pos) {
+                if let Err(e) = self.load_in_file(input_file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {e:?}");
                 }
             }
             crate::utils::FileType::XoppFile => {
-                app.set_input_file(Some(file.clone()));
-
-                dialogs::import::dialog_import_xopp_w_prefs(self);
+                dialogs::import::dialog_import_xopp_w_prefs(self, input_file);
             }
             crate::utils::FileType::PdfFile => {
-                // Set as input file to hand it to the dialog
-                app.set_input_file(Some(file.clone()));
-
-                dialogs::import::dialog_import_pdf_w_prefs(self, target_pos);
+                dialogs::import::dialog_import_pdf_w_prefs(self, input_file, target_pos);
             }
             crate::utils::FileType::Folder => {
-                if let Some(dir) = file.path() {
+                if let Some(dir) = input_file.path() {
                     self.workspacebrowser().set_current_workspace_dir(dir);
                 }
             }
@@ -61,11 +51,10 @@ impl RnoteAppWindow {
     /// Loads in a file of any supported type into the engine.
     pub(crate) fn load_in_file(
         &self,
-        file: &gio::File,
+        file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let main_cx = glib::MainContext::default();
-        let file = file.clone();
 
         match crate::utils::FileType::lookup_file_type(&file) {
             crate::utils::FileType::RnoteFile => {
@@ -159,13 +148,11 @@ impl RnoteAppWindow {
                 }));
             }
             crate::utils::FileType::Folder => {
-                self.app().set_input_file(None);
                 log::error!("tried to open a folder as a file.");
                 self.canvas_wrapper()
                     .dispatch_toast_error(&gettext("Error: Tried opening folder as file"));
             }
             crate::utils::FileType::Unsupported => {
-                self.app().set_input_file(None);
                 log::error!("tried to open a unsupported file type.");
                 self.canvas_wrapper()
                     .dispatch_toast_error(&gettext("Failed to open file: Unsupported file type."));
@@ -183,8 +170,6 @@ impl RnoteAppWindow {
     where
         P: AsRef<Path>,
     {
-        let app = self.app();
-
         let store_snapshot_receiver = self
             .canvas()
             .engine()
@@ -198,8 +183,6 @@ impl RnoteAppWindow {
             .borrow_mut()
             .open_from_store_snapshot_p2(&store_snapshot)?;
 
-        self.canvas().set_unsaved_changes(false);
-        app.set_input_file(None);
         if let Some(path) = path {
             let file = gio::File::for_path(path);
             self.canvas().dismiss_output_file_modified_toast();
@@ -225,8 +208,6 @@ impl RnoteAppWindow {
         // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.app();
-
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -249,8 +230,6 @@ impl RnoteAppWindow {
             .import_generated_strokes(vec![(Stroke::VectorImage(vectorimage), None)]);
         self.handle_widget_flags(widget_flags);
 
-        app.set_input_file(None);
-
         Ok(())
     }
 
@@ -261,8 +240,6 @@ impl RnoteAppWindow {
         // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.app();
-
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -283,8 +260,6 @@ impl RnoteAppWindow {
             .import_generated_strokes(vec![(Stroke::BitmapImage(bitmapimage), None)]);
         self.handle_widget_flags(widget_flags);
 
-        app.set_input_file(None);
-
         Ok(())
     }
 
@@ -294,7 +269,6 @@ impl RnoteAppWindow {
             .borrow_mut()
             .open_from_xopp_bytes(bytes)?;
 
-        self.app().set_input_file(None);
         self.canvas().set_output_file(None);
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
@@ -315,8 +289,6 @@ impl RnoteAppWindow {
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
-        let app = self.app();
-
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -337,8 +309,6 @@ impl RnoteAppWindow {
             .import_generated_strokes(strokes);
         self.handle_widget_flags(widget_flags);
 
-        app.set_input_file(None);
-
         Ok(())
     }
 
@@ -348,8 +318,6 @@ impl RnoteAppWindow {
         text: String,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let app = self.app();
-
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -358,8 +326,6 @@ impl RnoteAppWindow {
 
         let widget_flags = self.canvas().engine().borrow_mut().insert_text(text, pos)?;
         self.handle_widget_flags(widget_flags);
-
-        app.set_input_file(None);
 
         Ok(())
     }

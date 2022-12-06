@@ -103,8 +103,6 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
 
         appwindow.canvas().set_unsaved_changes(false);
         appwindow.canvas().set_empty(true);
-
-        appwindow.app().set_input_file(None);
         appwindow.canvas().set_output_file(None);
     };
 

@@ -600,7 +600,7 @@ impl RnoteCanvas {
 
                             appwindow.canvas_wrapper().dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
                                 if let Some(output_file) = appwindow.canvas().output_file() {
-                                    if let Err(e) = appwindow.load_in_file(&output_file, None) {
+                                    if let Err(e) = appwindow.load_in_file(output_file, None) {
                                         log::error!("failed to reload current output file, {}", e);
                                     }
                                 }
@@ -1013,7 +1013,7 @@ impl RnoteCanvas {
                     na::point![x,y]).coords;
 
                 if value.is::<gio::File>() {
-                    appwindow.open_file_w_dialogs(&value.get::<gio::File>().unwrap(), Some(pos));
+                    appwindow.open_file_w_dialogs(value.get::<gio::File>().unwrap(), Some(pos));
 
                     return true;
                 } else if value.is::<String>() {

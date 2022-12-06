@@ -875,7 +875,7 @@ impl RnoteAppWindow {
     }
 
     // Must be called after application is associated with it else it fails
-    pub(crate) fn init(&self) {
+    pub(crate) fn init(&self, input_file: Option<gio::File>) {
         let imp = self.imp();
 
         imp.workspacebrowser.get().init(self);
@@ -918,12 +918,25 @@ impl RnoteAppWindow {
         }
 
         // Loading in input file, if Some
-        if let Some(input_file) = self.app().input_file() {
-            self.open_file_w_dialogs(&input_file, None);
+        if let Some(input_file) = input_file {
+            self.open_file_w_dialogs(input_file, None);
         }
 
         // Initial titles
         self.update_titles_for_file(None);
+
+        self.init_misc();
+    }
+
+    // Anything that needs to be done right before showing the appwindow
+    pub(crate) fn init_misc(&self) {
+        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
+        self.canvas_wrapper().undo_button().set_sensitive(false);
+        self.canvas_wrapper().redo_button().set_sensitive(false);
+
+        // rerender the canvas
+        self.canvas().regenerate_background_pattern();
+        self.canvas().update_engine_rendering();
     }
 
     /// Called to close the window

@@ -832,8 +832,8 @@ impl RnoteAppWindow {
 
                             for file_path in file_paths {
                                 log::debug!("pasting from path: {:?}", file_path);
-                                // Offsetting 
-                                appwindow.open_file_w_dialogs(&gio::File::for_path(&file_path), None);
+
+                                appwindow.open_file_w_dialogs(gio::File::for_path(&file_path), None);
                             }
                         }
                         Ok(None) => {}

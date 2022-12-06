@@ -1,37 +1,26 @@
 mod appactions;
 
-use std::{cell::RefCell, path};
-
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::pens::penholder::PenStyle;
+use std::path::Path;
 
 use crate::{
     colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
     penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-    penssidebar::TypewriterPage, settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow,
+    penssidebar::TypewriterPage, settingspanel::PenShortcutRow, workspacebrowser::FileRow,
     workspacebrowser::WorkspaceRow, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
     PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, SettingsPanel, UnitEntry,
     WorkspaceBrowser,
 };
 
 mod imp {
-    use once_cell::sync::Lazy;
 
     use super::*;
     #[allow(missing_debug_implementations)]
-    pub(crate) struct RnoteApp {
-        pub(crate) input_file: RefCell<Option<gio::File>>,
-    }
-
-    impl Default for RnoteApp {
-        fn default() -> Self {
-            Self {
-                input_file: RefCell::new(None),
-            }
-        }
-    }
+    #[derive(Default)]
+    pub(crate) struct RnoteApp {}
 
     #[glib::object_subclass]
     impl ObjectSubclass for RnoteApp {
@@ -40,44 +29,43 @@ mod imp {
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for RnoteApp {
-        fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecObject::new(
-                    "input-file",
-                    "input-file",
-                    "input-file",
-                    Option::<gio::File>::static_type(),
-                    glib::ParamFlags::READWRITE,
-                )]
-            });
-            PROPERTIES.as_ref()
-        }
-
-        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "input-file" => self.input_file.borrow().to_value(),
-                _ => unimplemented!(),
-            }
-        }
-
-        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            match pspec.name() {
-                "input-file" => {
-                    let input_file = value
-                        .get::<Option<gio::File>>()
-                        .expect("The value needs to be of type `Option<gio::File>`.");
-                    self.input_file.replace(input_file);
-                }
-                _ => unimplemented!(),
-            }
-        }
-    }
+    impl ObjectImpl for RnoteApp {}
 
     impl ApplicationImpl for RnoteApp {
         fn activate(&self) {
             let inst = self.instance();
 
+            // Load in the needed gresources
+            self.load_gresources();
+
+            // setup the app
+            inst.setup_actions();
+            inst.setup_action_accels();
+
+            // and init and show the first window
+            self.new_window_show(None);
+        }
+
+        fn open(&self, files: &[gio::File], _hint: &str) {
+            self.load_gresources();
+
+            self.new_window_show(files.first().cloned());
+        }
+    }
+
+    impl GtkApplicationImpl for RnoteApp {}
+    impl AdwApplicationImpl for RnoteApp {}
+
+    impl RnoteApp {
+        /// Initializes and shows a new app window
+        fn new_window_show(&self, input_file: Option<gio::File>) {
+            let appwindow = RnoteAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
+            appwindow.init(input_file);
+
+            appwindow.show();
+        }
+
+        fn load_gresources(&self) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
             RnoteCanvasWrapper::static_type();
@@ -104,42 +92,13 @@ mod imp {
             IconPicker::static_type();
             PenShortcutRow::static_type();
 
-            // Load the resources
-            inst.set_resource_base_path(Some(config::APP_IDPATH));
-            let resource = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
+            self.instance()
+                .set_resource_base_path(Some(config::APP_IDPATH));
+            let resource = gio::Resource::load(Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
             gio::resources_register(&resource);
-
-            // setup the app
-            inst.setup_actions();
-            inst.setup_action_accels();
-
-            let appwindow = RnoteAppWindow::new(inst.upcast_ref::<gtk4::Application>());
-            appwindow.init();
-
-            // Everything else before starting
-            inst.init_misc(&appwindow);
-
-            appwindow.show();
-        }
-
-        fn open(&self, files: &[gio::File], _hint: &str) {
-            let inst = self.instance();
-            for file in files {
-                match utils::FileType::lookup_file_type(file) {
-                    utils::FileType::Unsupported => {
-                        log::warn!("tried to open unsupported file type");
-                    }
-                    _ => inst.set_input_file(Some(file.clone())),
-                };
-            }
-
-            inst.activate();
         }
     }
-
-    impl GtkApplicationImpl for RnoteApp {}
-    impl AdwApplicationImpl for RnoteApp {}
 }
 
 glib::wrapper! {
@@ -160,31 +119,5 @@ impl RnoteApp {
             ("application-id", &config::APP_ID),
             ("flags", &gio::ApplicationFlags::HANDLES_OPEN),
         ])
-    }
-
-    #[allow(unused)]
-    pub(crate) fn input_file(&self) -> Option<gio::File> {
-        self.property::<Option<gio::File>>("input-file")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_input_file(&self, input_file: Option<gio::File>) {
-        self.set_property("input-file", input_file.to_value());
-    }
-
-    // Anything that needs to be done right before showing the appwindow
-    pub(crate) fn init_misc(&self, appwindow: &RnoteAppWindow) {
-        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        appwindow
-            .canvas_wrapper()
-            .undo_button()
-            .set_sensitive(false);
-        appwindow
-            .canvas_wrapper()
-            .redo_button()
-            .set_sensitive(false);
-
-        appwindow.canvas().regenerate_background_pattern();
-        appwindow.canvas().update_engine_rendering();
     }
 }

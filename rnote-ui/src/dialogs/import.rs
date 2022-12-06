@@ -10,7 +10,7 @@ use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 use crate::{config, RnoteAppWindow};
 
 /// Asks to open the document from the app `input-file` property and overwrites the current document.
-pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow, input_file: gio::File) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -22,12 +22,11 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     dialog_open_input_file.connect_response(
         None,
         clone!(@weak appwindow => move |_dialog_open_input_file, response| {
+            let input_file = input_file.clone();
             let open_overwrite = |appwindow: &RnoteAppWindow| {
-                if let Some(input_file) = appwindow.app().input_file().as_ref() {
-                    if let Err(e) = appwindow.load_in_file(input_file, None) {
-                        log::error!("failed to load in input file, {e:?}");
-                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
-                    }
+                if let Err(e) = appwindow.load_in_file(input_file, None) {
+                    log::error!("failed to load in input file, {e:?}");
+                    appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
                 }
             };
 
@@ -99,19 +98,15 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     filechooser.connect_response(clone!(@weak appwindow => move |filechooser, responsetype| {
         match responsetype {
             ResponseType::Accept => {
-                if let Some(file) = filechooser.file() {
-                    appwindow.app().set_input_file(Some(file));
-
+                if let Some(input_file) = filechooser.file() {
                     if !appwindow.canvas().unsaved_changes() {
-                        if let Some(input_file) = appwindow.app().input_file().as_ref() {
-                            if let Err(e) = appwindow.load_in_file(input_file, None) {
-                                log::error!("failed to load in input file, {e:?}");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
-                            }
+                        if let Err(e) = appwindow.load_in_file(input_file, None) {
+                            log::error!("failed to load in input file, {e:?}");
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
                         }
                     } else {
                         // Open a dialog to ask for overwriting the current doc
-                        dialog_open_overwrite(&appwindow);
+                        dialog_open_overwrite(&appwindow, input_file);
                     }
                 }
             },
@@ -165,8 +160,8 @@ pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
     filechooser.connect_response(clone!(@weak appwindow => move |filechooser, responsetype| {
         match responsetype {
             ResponseType::Accept => {
-                if let Some(file) = filechooser.file() {
-                    appwindow.open_file_w_dialogs(&file, None);
+                if let Some(input_file) = filechooser.file() {
+                    appwindow.open_file_w_dialogs(input_file, None);
                 }
             }
             _ => {
@@ -181,6 +176,7 @@ pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
 
 pub(crate) fn dialog_import_pdf_w_prefs(
     appwindow: &RnoteAppWindow,
+    input_file: gio::File,
     target_pos: Option<na::Vector2<f64>>,
 ) {
     let builder = Builder::from_resource(
@@ -250,61 +246,60 @@ pub(crate) fn dialog_import_pdf_w_prefs(
         appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
     }));
 
-    if let Some(input_file) = appwindow.app().input_file() {
-        if let Ok(poppler_doc) =
-            poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
-        {
-            let file_name = input_file.basename().map_or_else(
-                || gettext("- no file name -"),
-                |s| s.to_string_lossy().to_string(),
-            );
-            let title = poppler_doc
-                .title()
-                .map_or_else(|| gettext("- no title -"), |s| s.to_string());
-            let author = poppler_doc
-                .author()
-                .map_or_else(|| gettext("- no author -"), |s| s.to_string());
-            let mod_date = poppler_doc
-                .mod_datetime()
-                .and_then(|dt| dt.format("%F").ok())
-                .map_or_else(|| gettext("- no date -"), |s| s.to_string());
-            let n_pages = poppler_doc.n_pages();
+    if let Ok(poppler_doc) =
+        poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
+    {
+        let file_name = input_file.basename().map_or_else(
+            || gettext("- no file name -"),
+            |s| s.to_string_lossy().to_string(),
+        );
+        let title = poppler_doc
+            .title()
+            .map_or_else(|| gettext("- no title -"), |s| s.to_string());
+        let author = poppler_doc
+            .author()
+            .map_or_else(|| gettext("- no author -"), |s| s.to_string());
+        let mod_date = poppler_doc
+            .mod_datetime()
+            .and_then(|dt| dt.format("%F").ok())
+            .map_or_else(|| gettext("- no date -"), |s| s.to_string());
+        let n_pages = poppler_doc.n_pages();
 
-            // pdf info
-            pdf_info_label.set_label(
-                (String::from("")
-                    + "<b>"
-                    + &gettext("File name:")
-                    + "  </b>"
-                    + &format!("{file_name}\n")
-                    + "<b>"
-                    + &gettext("Title:")
-                    + "  </b>"
-                    + &format!("{title}\n")
-                    + "<b>"
-                    + &gettext("Author:")
-                    + "  </b>"
-                    + &format!("{author}\n")
-                    + "<b>"
-                    + &gettext("Modification date:")
-                    + "  </b>"
-                    + &format!("{mod_date}\n")
-                    + "<b>"
-                    + &gettext("Pages:")
-                    + "  </b>"
-                    + &format!("{n_pages}\n"))
-                    .as_str(),
-            );
+        // pdf info
+        pdf_info_label.set_label(
+            (String::from("")
+                + "<b>"
+                + &gettext("File name:")
+                + "  </b>"
+                + &format!("{file_name}\n")
+                + "<b>"
+                + &gettext("Title:")
+                + "  </b>"
+                + &format!("{title}\n")
+                + "<b>"
+                + &gettext("Author:")
+                + "  </b>"
+                + &format!("{author}\n")
+                + "<b>"
+                + &gettext("Modification date:")
+                + "  </b>"
+                + &format!("{mod_date}\n")
+                + "<b>"
+                + &gettext("Pages:")
+                + "  </b>"
+                + &format!("{n_pages}\n"))
+                .as_str(),
+        );
 
-            // Configure pages spinners
-            pdf_page_start_spinbutton.set_range(1.into(), n_pages.into());
-            pdf_page_start_spinbutton.set_value(1.into());
+        // Configure pages spinners
+        pdf_page_start_spinbutton.set_range(1.into(), n_pages.into());
+        pdf_page_start_spinbutton.set_value(1.into());
 
-            pdf_page_end_spinbutton.set_range(1.into(), n_pages.into());
-            pdf_page_end_spinbutton.set_value(n_pages.into());
-        }
+        pdf_page_end_spinbutton.set_range(1.into(), n_pages.into());
+        pdf_page_end_spinbutton.set_value(n_pages.into());
+    }
 
-        dialog_import_pdf.connect_response(
+    dialog_import_pdf.connect_response(
         clone!(@weak appwindow => move |dialog_import_pdf, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
@@ -331,23 +326,18 @@ pub(crate) fn dialog_import_pdf_w_prefs(
                 }
                 ResponseType::Cancel => {
                     dialog_import_pdf.close();
-
-                    appwindow.app().set_input_file(None);
                 }
                 _ => {
                     dialog_import_pdf.close();
-
-                    appwindow.app().set_input_file(None);
                 }
             }
         }),
     );
 
-        dialog_import_pdf.show();
-    }
+    dialog_import_pdf.show();
 }
 
-pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow, input_file: gio::File) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -371,8 +361,7 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
         appwindow.canvas().engine().borrow_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
     }));
 
-    if let Some(input_file) = appwindow.app().input_file() {
-        dialog.connect_response(
+    dialog.connect_response(
         clone!(@weak appwindow => move |dialog, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
@@ -397,18 +386,13 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
                 }
                 ResponseType::Cancel => {
                     dialog.close();
-
-                    appwindow.app().set_input_file(None);
                 }
                 _ => {
                     dialog.close();
-
-                    appwindow.app().set_input_file(None);
                 }
             }
         }),
     );
 
-        dialog.show();
-    }
+    dialog.show();
 }

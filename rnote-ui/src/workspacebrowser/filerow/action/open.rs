@@ -9,7 +9,7 @@ pub(crate) fn open(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::Simple
     action_open_file.connect_activate(
         clone!(@weak filerow as filerow, @weak appwindow => move |_action_open_file, _| {
             if let Some(current_file) = filerow.current_file() {
-                 appwindow.open_file_w_dialogs(&current_file, None);
+                 appwindow.open_file_w_dialogs(current_file, None);
             }
         }),
     );

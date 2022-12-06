@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 01:11+0100\n"
-"PO-Revision-Date: 2022-12-04 11:35+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2022-12-06 11:56+0000\n"
+"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -94,7 +94,7 @@ msgstr "Menu_sviluppatore"
 #, fuzzy
 #| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "_Debug visivo"
+msgstr "Debug_visivo"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -129,7 +129,7 @@ msgstr "_Stampa"
 #| msgctxt "shortcut window"
 #| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "Incolla gli appunti"
+msgstr "_Incolla gli appunti"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -1635,19 +1635,19 @@ msgstr "Esportazione della selezione fallita, non si è selezionato nulla."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "Il file aperto è stato modificato."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Ricarica"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "Il file aperto è stato rinominato."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "Il file aperto è stato spostato o cancellato."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

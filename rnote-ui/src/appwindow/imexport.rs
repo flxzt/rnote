@@ -70,103 +70,105 @@ impl RnoteAppWindow {
         match crate::utils::FileType::lookup_file_type(&file) {
             crate::utils::FileType::RnoteFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.start_pulsing_canvas_progressbar();
+                    appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes.to_vec(), file.path()).await {
-                            appwindow.dispatch_toast_error(&gettext("Opening .rnote file failed."));
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening .rnote file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
 
-                    appwindow.finish_canvas_progressbar();
+                    appwindow.canvas_wrapper().finish_progressbar();
                 }));
             }
             crate::utils::FileType::VectorImageFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.start_pulsing_canvas_progressbar();
+                    appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
-                            appwindow.dispatch_toast_error(&gettext("Opening vector image file failed."));
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening vector image file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
 
-                    appwindow.finish_canvas_progressbar();
+                    appwindow.canvas_wrapper().finish_progressbar();
                 }));
             }
             crate::utils::FileType::BitmapImageFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.start_pulsing_canvas_progressbar();
+                    appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
-                            appwindow.dispatch_toast_error(&gettext("Opening bitmap image file failed."));
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
 
-                    appwindow.finish_canvas_progressbar();
+                    appwindow.canvas_wrapper().finish_progressbar();
                 }));
             }
             crate::utils::FileType::XoppFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.start_pulsing_canvas_progressbar();
+                    appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
-                            appwindow.dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
 
-                    appwindow.finish_canvas_progressbar();
+                    appwindow.canvas_wrapper().finish_progressbar();
                 }));
             }
             crate::utils::FileType::PdfFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.start_pulsing_canvas_progressbar();
+                    appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, None).await {
-                            appwindow.dispatch_toast_error(&gettext("Opening PDF file failed."));
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening PDF file failed."));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err: {e:?}"
                             );
                         }
                     }
 
-                    appwindow.finish_canvas_progressbar();
+                    appwindow.canvas_wrapper().finish_progressbar();
                 }));
             }
             crate::utils::FileType::Folder => {
                 self.app().set_input_file(None);
                 log::error!("tried to open a folder as a file.");
-                self.dispatch_toast_error(&gettext("Error: Tried opening folder as file"));
+                self.canvas_wrapper()
+                    .dispatch_toast_error(&gettext("Error: Tried opening folder as file"));
             }
             crate::utils::FileType::Unsupported => {
                 self.app().set_input_file(None);
                 log::error!("tried to open a unsupported file type.");
-                self.dispatch_toast_error(&gettext("Failed to open file: Unsupported file type."));
+                self.canvas_wrapper()
+                    .dispatch_toast_error(&gettext("Failed to open file: Unsupported file type."));
             }
         }
 

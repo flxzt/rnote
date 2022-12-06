@@ -11,9 +11,9 @@ use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
-    CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PositionType,
-    ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    CornerType, CssProvider, FileChooserNative, GestureDrag, Grid, IconTheme, Inhibit, PackType,
+    PositionType, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext,
+    ToggleButton,
 };
 use once_cell::sync::Lazy;
 
@@ -23,10 +23,10 @@ use crate::{
     penssidebar::PensSideBar,
     settingspanel::SettingsPanel,
     workspacebrowser::WorkspaceBrowser,
-    RnoteApp,
+    RnoteApp, RnoteCanvasWrapper,
     {dialogs, mainheader::MainHeader},
 };
-use rnote_engine::{engine::EngineTask, pens::penholder::PenStyle, Camera, WidgetFlags};
+use rnote_engine::{engine::EngineTask, pens::penholder::PenStyle, WidgetFlags};
 
 mod imp {
     use super::*;
@@ -38,41 +38,17 @@ mod imp {
         pub(crate) app_settings: gio::Settings,
         pub(crate) filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
         pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
-        pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
         pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
 
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) autosave: Cell<bool>,
         pub(crate) autosave_interval_secs: Cell<u32>,
         pub(crate) righthanded: Cell<bool>,
-        pub(crate) permanently_hide_canvas_scrollbars: Cell<bool>,
 
-        pub(crate) canvas_touch_drag_gesture: GestureDrag,
-        pub(crate) canvas_drag_empty_area_gesture: GestureDrag,
-        pub(crate) canvas_zoom_gesture: GestureZoom,
-        pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
-        pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
-
-        #[template_child]
-        pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
         pub(crate) main_grid: TemplateChild<Grid>,
         #[template_child]
-        pub(crate) canvas_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub(crate) canvas_quickactions_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub(crate) canvas_fixedsize_quickactions_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub(crate) undo_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) redo_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) canvas_scroller: TemplateChild<ScrolledWindow>,
-        #[template_child]
-        pub(crate) canvas_progressbar: TemplateChild<ProgressBar>,
-        #[template_child]
-        pub(crate) canvas: TemplateChild<RnoteCanvas>,
+        pub(crate) canvas_wrapper: TemplateChild<RnoteCanvasWrapper>,
         #[template_child]
         pub(crate) settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
@@ -123,64 +99,19 @@ mod imp {
 
     impl Default for RnoteAppWindow {
         fn default() -> Self {
-            let canvas_touch_drag_gesture = GestureDrag::builder()
-                .name("canvas_touch_drag_gesture")
-                .touch_only(true)
-                .propagation_phase(PropagationPhase::Bubble)
-                .build();
-
-            let canvas_drag_empty_area_gesture = GestureDrag::builder()
-                .name("canvas_mouse_drag_empty_area_gesture")
-                .button(gdk::BUTTON_PRIMARY)
-                .propagation_phase(PropagationPhase::Bubble)
-                .build();
-
-            let canvas_zoom_gesture = GestureZoom::builder()
-                .name("canvas_zoom_gesture")
-                .propagation_phase(PropagationPhase::Capture)
-                .build();
-
-            let canvas_zoom_scroll_controller = EventControllerScroll::builder()
-                .name("canvas_zoom_scroll_controller")
-                .propagation_phase(PropagationPhase::Bubble)
-                .flags(EventControllerScrollFlags::VERTICAL)
-                .build();
-
-            let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
-                .name("canvas_mouse_drag_middle_gesture")
-                .button(gdk::BUTTON_MIDDLE)
-                .propagation_phase(PropagationPhase::Bubble)
-                .build();
-
             Self {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
                 autosave_source_id: RefCell::new(None),
-                progresspulse_source_id: RefCell::new(None),
                 periodic_configsave_source_id: RefCell::new(None),
 
                 unsaved_changes: Cell::new(false),
                 autosave: Cell::new(true),
                 autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
-                permanently_hide_canvas_scrollbars: Cell::new(false),
 
-                canvas_touch_drag_gesture,
-                canvas_drag_empty_area_gesture,
-                canvas_zoom_gesture,
-                canvas_zoom_scroll_controller,
-                canvas_mouse_drag_middle_gesture,
-
-                toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
-                canvas_box: TemplateChild::<gtk4::Box>::default(),
-                canvas_quickactions_box: TemplateChild::<gtk4::Box>::default(),
-                canvas_fixedsize_quickactions_revealer: TemplateChild::<Revealer>::default(),
-                undo_button: TemplateChild::<Button>::default(),
-                redo_button: TemplateChild::<Button>::default(),
-                canvas_progressbar: TemplateChild::<ProgressBar>::default(),
-                canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
-                canvas: TemplateChild::<RnoteCanvas>::default(),
+                canvas_wrapper: TemplateChild::<RnoteCanvasWrapper>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
                 sidebar_scroller: TemplateChild::<ScrolledWindow>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
@@ -231,18 +162,6 @@ mod imp {
 
             let _windowsettings = inst.settings();
 
-            // Add input controllers
-            inst.canvas_scroller()
-                .add_controller(&self.canvas_touch_drag_gesture);
-            inst.canvas_scroller()
-                .add_controller(&self.canvas_drag_empty_area_gesture);
-            inst.canvas_scroller()
-                .add_controller(&self.canvas_zoom_gesture);
-            inst.canvas_scroller()
-                .add_controller(&self.canvas_zoom_scroll_controller);
-            inst.canvas_scroller()
-                .add_controller(&self.canvas_mouse_drag_middle_gesture);
-
             if config::PROFILE == "devel" {
                 inst.add_css_class("devel");
             }
@@ -259,43 +178,7 @@ mod imp {
             );
 
             self.setup_flap();
-
-            // pens narrow toggles
-            self.narrow_brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_brush_toggle| {
-                if narrow_brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_shaper_toggle| {
-                if narrow_shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_typewriter_toggle| {
-                if narrow_typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_eraser_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_eraser_toggle| {
-                if narrow_eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_selector_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_selector_toggle| {
-                if narrow_selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_tools_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_tools_toggle| {
-                if narrow_tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
-                }
-            }));
+            self.setup_narrow_pens_toggles();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -334,14 +217,6 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // permanently hide canvas scrollbars
-                    glib::ParamSpecBoolean::new(
-                        "permanently-hide-canvas-scrollbars",
-                        "permanently-hide-canvas-scrollbars",
-                        "permanently-hide-canvas-scrollbars",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -353,9 +228,6 @@ mod imp {
                 "autosave" => self.autosave.get().to_value(),
                 "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
-                "permanently-hide-canvas-scrollbars" => {
-                    self.permanently_hide_canvas_scrollbars.get().to_value()
-                }
                 _ => unimplemented!(),
             }
         }
@@ -402,22 +274,6 @@ mod imp {
 
                     self.handle_righthanded_property(righthanded);
                 }
-                "permanently-hide-canvas-scrollbars" => {
-                    let permanently_hide_canvas_scrollbars = value
-                        .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
-
-                    self.permanently_hide_canvas_scrollbars
-                        .replace(permanently_hide_canvas_scrollbars);
-
-                    if permanently_hide_canvas_scrollbars {
-                        self.canvas_scroller.hscrollbar().set_visible(false);
-                        self.canvas_scroller.vscrollbar().set_visible(false);
-                    } else {
-                        self.canvas_scroller.hscrollbar().set_visible(true);
-                        self.canvas_scroller.vscrollbar().set_visible(true);
-                    }
-                }
                 _ => unimplemented!(),
             }
         }
@@ -451,13 +307,13 @@ mod imp {
             let obj = self.instance();
 
             if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
-                if let Some(output_file) = appwindow.canvas().output_file() {
+                if let Some(output_file) = appwindow.canvas_wrapper().canvas().output_file() {
                     glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                         if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                             appwindow.canvas().set_output_file(None);
 
                             log::error!("saving document failed with error `{e:?}`");
-                            appwindow.dispatch_toast_error(&gettext("Saving document failed."));
+                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
                         }
                     }));
                 }
@@ -466,6 +322,47 @@ mod imp {
             }))) {
                 removed_id.remove();
             }
+        }
+
+        fn setup_narrow_pens_toggles(&self) {
+            let inst = self.instance();
+
+            // pens narrow toggles
+            self.narrow_brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_brush_toggle| {
+                if narrow_brush_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_shaper_toggle| {
+                if narrow_shaper_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_typewriter_toggle| {
+                if narrow_typewriter_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_eraser_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_eraser_toggle| {
+                if narrow_eraser_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_selector_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_selector_toggle| {
+                if narrow_selector_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_tools_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_tools_toggle| {
+                if narrow_tools_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
+                }
+            }));
         }
 
         // Setting up the sidebar flap
@@ -638,13 +535,15 @@ mod imp {
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid()
                     .remove(&inst.narrow_pens_toggles_revealer());
-                inst.main_grid().remove(&inst.canvas_box());
+                inst.main_grid().remove(&inst.canvas_wrapper());
                 inst.main_grid().attach(&inst.sidebar_grid(), 0, 1, 1, 2);
                 inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
                 inst.main_grid()
                     .attach(&inst.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
-                inst.main_grid().attach(&inst.canvas_box(), 2, 2, 1, 1);
-                inst.canvas_quickactions_box().set_halign(Align::End);
+                inst.main_grid().attach(&inst.canvas_wrapper(), 2, 2, 1, 1);
+                inst.canvas_wrapper()
+                    .quickactions_box()
+                    .set_halign(Align::End);
                 inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
@@ -682,7 +581,8 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
-                inst.canvas_scroller()
+                inst.canvas_wrapper()
+                    .scroller()
                     .set_window_placement(CornerType::BottomRight);
                 inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopRight);
@@ -731,17 +631,19 @@ mod imp {
                     .set_property("position", PositionType::Left.to_value());
             } else {
                 inst.flap().set_flap_position(PackType::End);
-                inst.main_grid().remove(&inst.canvas_box());
+                inst.main_grid().remove(&inst.canvas_wrapper());
                 inst.main_grid()
                     .remove(&inst.narrow_pens_toggles_revealer());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid().remove(&inst.sidebar_grid());
-                inst.main_grid().attach(&inst.canvas_box(), 0, 2, 1, 1);
+                inst.main_grid().attach(&inst.canvas_wrapper(), 0, 2, 1, 1);
                 inst.main_grid()
                     .attach(&inst.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
                 inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
                 inst.main_grid().attach(&inst.sidebar_grid(), 2, 1, 1, 2);
-                inst.canvas_quickactions_box().set_halign(Align::Start);
+                inst.canvas_wrapper()
+                    .quickactions_box()
+                    .set_halign(Align::Start);
                 inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()
@@ -779,7 +681,8 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
-                inst.canvas_scroller()
+                inst.canvas_wrapper()
+                    .scroller()
                     .set_window_placement(CornerType::BottomLeft);
                 inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopLeft);
@@ -892,22 +795,6 @@ impl RnoteAppWindow {
         self.set_property("righthanded", righthanded.to_value());
     }
 
-    #[allow(unused)]
-    pub(crate) fn permanently_hide_canvas_scrollbars(&self) -> bool {
-        self.property::<bool>("permanently_hide_canvas_scrollbars")
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_permanently_hide_canvas_scrollbars(
-        &self,
-        permanently_hide_canvas_scrollbars: bool,
-    ) {
-        self.set_property(
-            "permanently_hide_canvas_scrollbars",
-            permanently_hide_canvas_scrollbars.to_value(),
-        );
-    }
-
     pub(crate) fn app(&self) -> RnoteApp {
         self.application().unwrap().downcast::<RnoteApp>().unwrap()
     }
@@ -920,44 +807,16 @@ impl RnoteAppWindow {
         self.imp().filechoosernative.clone()
     }
 
-    pub(crate) fn toast_overlay(&self) -> adw::ToastOverlay {
-        self.imp().toast_overlay.get()
-    }
-
     pub(crate) fn main_grid(&self) -> Grid {
         self.imp().main_grid.get()
     }
 
-    pub(crate) fn canvas_box(&self) -> gtk4::Box {
-        self.imp().canvas_box.get()
-    }
-
-    pub(crate) fn canvas_quickactions_box(&self) -> gtk4::Box {
-        self.imp().canvas_quickactions_box.get()
-    }
-
-    pub(crate) fn canvas_fixedsize_quickactions_revealer(&self) -> Revealer {
-        self.imp().canvas_fixedsize_quickactions_revealer.get()
-    }
-
-    pub(crate) fn undo_button(&self) -> Button {
-        self.imp().undo_button.get()
-    }
-
-    pub(crate) fn redo_button(&self) -> Button {
-        self.imp().redo_button.get()
-    }
-
-    pub(crate) fn canvas_progressbar(&self) -> ProgressBar {
-        self.imp().canvas_progressbar.get()
-    }
-
-    pub(crate) fn canvas_scroller(&self) -> ScrolledWindow {
-        self.imp().canvas_scroller.get()
+    pub(crate) fn canvas_wrapper(&self) -> RnoteCanvasWrapper {
+        self.imp().canvas_wrapper.get()
     }
 
     pub(crate) fn canvas(&self) -> RnoteCanvas {
-        self.imp().canvas.get()
+        self.imp().canvas_wrapper.get().canvas()
     }
 
     pub(crate) fn settings_panel(&self) -> SettingsPanel {
@@ -1042,25 +901,25 @@ impl RnoteAppWindow {
 
     // Must be called after application is associated with it else it fails
     pub(crate) fn init(&self) {
-        self.imp().workspacebrowser.get().init(self);
-        self.imp().settings_panel.get().init(self);
-        self.imp().mainheader.get().init(self);
-        self.imp().mainheader.get().canvasmenu().init(self);
-        self.imp().mainheader.get().appmenu().init(self);
-        self.imp().penssidebar.get().init(self);
-        self.imp().penssidebar.get().brush_page().init(self);
-        self.imp().penssidebar.get().shaper_page().init(self);
-        self.imp().penssidebar.get().typewriter_page().init(self);
-        self.imp().penssidebar.get().eraser_page().init(self);
-        self.imp().penssidebar.get().selector_page().init(self);
-        self.imp().penssidebar.get().tools_page().init(self);
-        self.imp().canvas.get().init(self);
+        let imp = self.imp();
+
+        imp.workspacebrowser.get().init(self);
+        imp.settings_panel.get().init(self);
+        imp.mainheader.get().init(self);
+        imp.mainheader.get().canvasmenu().init(self);
+        imp.mainheader.get().appmenu().init(self);
+        imp.penssidebar.get().init(self);
+        imp.penssidebar.get().brush_page().init(self);
+        imp.penssidebar.get().shaper_page().init(self);
+        imp.penssidebar.get().typewriter_page().init(self);
+        imp.penssidebar.get().eraser_page().init(self);
+        imp.penssidebar.get().selector_page().init(self);
+        imp.penssidebar.get().tools_page().init(self);
+        imp.canvas_wrapper.get().init(self);
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
         let app_icon_theme = IconTheme::for_display(&self.display());
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
-
-        self.setup_input();
 
         // actions and settings AFTER widget inits
         self.setup_actions();
@@ -1113,247 +972,6 @@ impl RnoteAppWindow {
         self.destroy();
     }
 
-    #[allow(unused)]
-    pub(crate) fn canvas_touch_drag_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_touch_drag_gesture
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_touch_drag_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn canvas_drag_empty_area_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_drag_empty_area_gesture
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_drag_empty_area_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn canvas_zoom_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::Capture);
-        } else {
-            self.imp()
-                .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn canvas_zoom_scroll_controller_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_zoom_scroll_controller
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_zoom_scroll_controller
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn canvas_mouse_drag_middle_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_mouse_drag_middle_gesture
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_mouse_drag_middle_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    pub(crate) fn setup_input(&self) {
-        // Gesture Grouping
-        self.imp()
-            .canvas_mouse_drag_middle_gesture
-            .group_with(&self.imp().canvas_touch_drag_gesture);
-        self.imp()
-            .canvas_drag_empty_area_gesture
-            .group_with(&self.imp().canvas_touch_drag_gesture);
-
-        // zoom scrolling with <ctrl> + scroll
-        {
-            self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
-                if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                    let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
-
-                    let current_doc_center = appwindow.canvas().current_center_on_doc();
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-                    appwindow.canvas().center_around_coord_on_doc(current_doc_center);
-
-                    // Stop event propagation
-                    Inhibit(true)
-                } else {
-                    Inhibit(false)
-                }
-            }));
-        }
-
-        // Drag canvas with touch gesture
-        {
-            let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-
-            self.imp().canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
-                touch_drag_start.set(na::vector![
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
-                ]);
-            }));
-            self.imp().canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
-                let new_adj_values = touch_drag_start.get() - na::vector![x,y];
-
-                appwindow.canvas().update_camera_offset(new_adj_values);
-            }));
-
-            self.imp().canvas_touch_drag_gesture.connect_drag_end(
-                clone!(@weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
-                    appwindow.canvas().update_engine_rendering();
-                }),
-            );
-        }
-
-        // Move Canvas with middle mouse button
-        {
-            let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-
-            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
-                mouse_drag_start.set(na::vector![
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
-                ]);
-            }));
-            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
-                let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
-
-                appwindow.canvas().update_camera_offset(new_adj_values);
-            }));
-
-            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_end(
-                clone!(@weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
-                    appwindow.canvas().update_engine_rendering();
-                }),
-            );
-        }
-
-        // Move Canvas by dragging in empty area
-        {
-            let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-
-            self.imp().canvas_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_, _x, _y| {
-                mouse_drag_empty_area_start.set(na::vector![
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
-                ]);
-            }));
-            self.imp().canvas_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_, x, y| {
-                let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
-
-                appwindow.canvas().update_camera_offset(new_adj_values);
-            }));
-
-            self.imp().canvas_drag_empty_area_gesture.connect_drag_end(
-                clone!(@weak self as appwindow => move |_, _x, _y| {
-                    appwindow.canvas().update_engine_rendering();
-                }),
-            );
-        }
-
-        // Canvas gesture zooming with dragging
-        {
-            let prev_scale = Rc::new(Cell::new(1_f64));
-            let zoom_begin = Rc::new(Cell::new(1_f64));
-            let new_zoom = Rc::new(Cell::new(1.0));
-            let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
-            let adjs_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-
-            self.imp().canvas_zoom_gesture.connect_begin(clone!(
-                @strong zoom_begin,
-                @strong new_zoom,
-                @strong prev_scale,
-                @strong bbcenter_begin,
-                @strong adjs_begin,
-                @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
-                    canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
-
-                    zoom_begin.set(current_zoom);
-                    new_zoom.set(current_zoom);
-                    prev_scale.set(1.0);
-
-                    bbcenter_begin.set(canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
-                    adjs_begin.set(na::vector![appwindow.canvas().hadjustment().unwrap().value(), appwindow.canvas().vadjustment().unwrap().value()]);
-            }));
-
-            self.imp().canvas_zoom_gesture.connect_scale_changed(clone!(
-                @strong zoom_begin,
-                @strong new_zoom,
-                @strong prev_scale,
-                @strong bbcenter_begin,
-                @strong adjs_begin,
-                @weak self as appwindow => move |canvas_zoom_gesture, scale| {
-                    if zoom_begin.get() * scale <= Camera::ZOOM_MAX && zoom_begin.get() * scale >= Camera::ZOOM_MIN {
-                        new_zoom.set(zoom_begin.get() * scale);
-                        prev_scale.set(scale);
-                    }
-
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
-
-                    if let Some(bbcenter_current) = canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
-                        let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get() {
-                            bbcenter_begin
-                        } else {
-                            // Set the center if not set by gesture begin handler
-                            bbcenter_begin.set(Some(bbcenter_current));
-                            bbcenter_current
-                        };
-
-                        let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
-                        let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
-
-                        appwindow.canvas().update_camera_offset(new_adj_values);
-                    }
-            }));
-
-            self.imp().canvas_zoom_gesture.connect_cancel(
-                clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    bbcenter_begin.set(None);
-
-                    appwindow.canvas().update_engine_rendering();
-
-                    canvas_zoom_gesture.set_state(EventSequenceState::Denied);
-                }),
-            );
-
-            self.imp().canvas_zoom_gesture.connect_end(
-                clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
-
-                    bbcenter_begin.set(None);
-
-                    appwindow.canvas().update_engine_rendering();
-
-                    canvas_zoom_gesture.set_state(EventSequenceState::Denied);
-                }),
-            );
-        }
-    }
-
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
         if widget_flags.redraw {
@@ -1375,10 +993,14 @@ impl RnoteAppWindow {
             self.canvas().update_camera_offset(camera_offset);
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
-            self.undo_button().set_sensitive(!hide_undo);
+            self.canvas_wrapper()
+                .undo_button()
+                .set_sensitive(!hide_undo);
         }
         if let Some(hide_redo) = widget_flags.hide_redo {
-            self.redo_button().set_sensitive(!hide_redo);
+            self.canvas_wrapper()
+                .redo_button()
+                .set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             self.canvas()
@@ -1420,48 +1042,5 @@ impl RnoteAppWindow {
 
         self.mainheader().main_title().set_title(&title);
         self.mainheader().main_title().set_subtitle(&subtitle);
-    }
-
-    pub(crate) fn start_pulsing_canvas_progressbar(&self) {
-        const PROGRESS_BAR_PULSE_INTERVAL: std::time::Duration =
-            std::time::Duration::from_millis(300);
-
-        if let Some(old_pulse_source) = self.imp().progresspulse_source_id.replace(Some(glib::source::timeout_add_local(
-            PROGRESS_BAR_PULSE_INTERVAL,
-            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
-                appwindow.canvas_progressbar().pulse();
-
-                glib::source::Continue(true)
-            })),
-        )) {
-            old_pulse_source.remove();
-        }
-    }
-
-    pub(crate) fn finish_canvas_progressbar(&self) {
-        const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
-            std::time::Duration::from_millis(300);
-
-        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
-            pulse_source.remove();
-        }
-
-        self.canvas_progressbar().set_fraction(1.0);
-
-        glib::source::timeout_add_local_once(
-            PROGRESS_BAR_TIMEOUT_TIME,
-            clone!(@weak self as appwindow => move || {
-                appwindow.canvas_progressbar().set_fraction(0.0);
-            }),
-        );
-    }
-
-    #[allow(unused)]
-    pub(crate) fn abort_canvas_progressbar(&self) {
-        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
-            pulse_source.remove();
-        }
-
-        self.canvas_progressbar().set_fraction(0.0);
     }
 }

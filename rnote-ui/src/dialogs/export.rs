@@ -59,18 +59,18 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.save_document_to_file(&file).await {
                                 appwindow.canvas().set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Saving document failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
                             } else {
-                                appwindow.dispatch_toast_text(&gettext("Saved document successfully."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Saved document successfully."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                         }));
                     }
                 }
@@ -184,21 +184,21 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
                 ResponseType::Apply => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             let file_title = file.basename().and_then(|b| Some(b.file_stem()?.to_string_lossy().to_string())).unwrap_or_else(|| appwindow::OUTPUT_FILE_NEW_TITLE.clone());
 
                             if let Err(e) = appwindow.export_doc(&file, file_title, None).await {
                                 log::error!("exporting document failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Export document failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document failed."));
                             } else {
-                                appwindow.dispatch_toast_text(&gettext("Exported document successfully."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported document successfully."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                         }));
                     } else {
-                        appwindow.dispatch_toast_error(&gettext("Export document failed, no file selected."));
+                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -459,21 +459,21 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
                 ResponseType::Apply => {
                     if let Some(dir) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
 
                             if let Err(e) = appwindow.export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Export document pages failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document pages failed."));
                             } else {
-                                appwindow.dispatch_toast_text(&gettext("Exported document pages successfully."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported document pages successfully."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                         }));
                     } else {
-                        appwindow.dispatch_toast_error(&gettext("Export document pages failed, no directory selected."));
+                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document pages failed, no directory selected."));
                     }
                 }
                 _ => {}
@@ -704,19 +704,19 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
                 ResponseType::Apply => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.export_selection(&file, None).await {
                                 log::error!("exporting selection failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Export selection failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export selection failed."));
                             } else {
-                                appwindow.dispatch_toast_text(&gettext("Exported selection successfully."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported selection successfully."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                         }));
                     } else {
-                        appwindow.dispatch_toast_error(&gettext("Export selection failed, no file selected."));
+                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export selection failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -843,16 +843,16 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.export_engine_state(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Export engine state failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export engine state failed."));
                             } else {
-                                appwindow.dispatch_toast_text(&gettext("Exported engine state successfully."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported engine state successfully."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                         }));
                     }
                 }
@@ -907,16 +907,16 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.export_engine_config(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Export engine config failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export engine config failed."));
                             } else {
-                                appwindow.dispatch_toast_text(&gettext("Exported engine config successfully."));
+                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported engine config successfully."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                         }));
                     }
                 }

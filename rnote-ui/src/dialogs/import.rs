@@ -26,7 +26,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                 if let Some(input_file) = appwindow.app().input_file().as_ref() {
                     if let Err(e) = appwindow.load_in_file(input_file, None) {
                         log::error!("failed to load in input file, {e:?}");
-                        appwindow.dispatch_toast_error(&gettext("Opening file failed."));
+                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
                     }
                 }
             };
@@ -38,16 +38,16 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                 "save" => {
                     glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                         if let Some(output_file) = appwindow.canvas().output_file() {
-                            appwindow.start_pulsing_canvas_progressbar();
+                            appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                                 appwindow.canvas().set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
-                                appwindow.dispatch_toast_error(&gettext("Saving document failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
                             }
 
-                            appwindow.finish_canvas_progressbar();
+                            appwindow.canvas_wrapper().finish_progressbar();
                             // No success toast on saving without dialog, success is already indicated in the header title
                         } else {
                             // Open a dialog to choose a save location
@@ -106,7 +106,7 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
                         if let Some(input_file) = appwindow.app().input_file().as_ref() {
                             if let Err(e) = appwindow.load_in_file(input_file, None) {
                                 log::error!("failed to load in input file, {e:?}");
-                                appwindow.dispatch_toast_error(&gettext("Opening file failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
                             }
                         }
                     } else {
@@ -313,20 +313,20 @@ pub(crate) fn dialog_import_pdf_w_prefs(
                     let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
 
                     glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
-                        appwindow.start_pulsing_canvas_progressbar();
+                        appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
-                                appwindow.dispatch_toast_error(&gettext("Opening PDF file failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening PDF file failed."));
                                 log::error!(
                                     "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
                                 );
                             }
                         }
 
-                        appwindow.finish_canvas_progressbar();
+                        appwindow.canvas_wrapper().finish_progressbar();
                     }));
                 }
                 ResponseType::Cancel => {
@@ -379,20 +379,20 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow) {
                     dialog.close();
 
                     glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
-                        appwindow.start_pulsing_canvas_progressbar();
+                        appwindow.canvas_wrapper().start_pulsing_progressbar();
 
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
-                                appwindow.dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
+                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                                 log::error!(
                                     "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
                                 );
                             }
                         }
 
-                        appwindow.finish_canvas_progressbar();
+                        appwindow.canvas_wrapper().finish_progressbar();
                     }));
                 }
                 ResponseType::Cancel => {

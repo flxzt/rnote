@@ -27,7 +27,7 @@ pub(crate) fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::S
 
     action.connect_activate(
         clone!(@weak filerow as filerow, @weak appwindow => move |_action_duplicate_file, _| {
-            let process_evaluator = create_process_evaluator(appwindow);
+            let process_evaluator = create_process_evaluator(appwindow.clone());
 
             if let Some(current_file) = filerow.current_file() {
                 if let Some(current_path) = current_file.path() {
@@ -40,6 +40,8 @@ pub(crate) fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::S
                     }
                 }
             }
+
+            appwindow.canvas_wrapper().finish_progressbar();
         }),
     );
 
@@ -57,7 +59,10 @@ fn create_process_evaluator(
             status as f64
         };
 
-        appwindow.canvas_progressbar().set_fraction(status);
+        appwindow
+            .canvas_wrapper()
+            .progressbar()
+            .set_fraction(status);
         TransitProcessResult::ContinueOrAbort
     }
 }
@@ -69,10 +74,11 @@ fn duplicate_file(source_path: PathBuf) {
         log::debug!("Duplicate source: {}", source.display());
         log::debug!("Duplicate destination: {}", destination.display());
         if let Err(e) = std::fs::copy(source, destination) {
-            log::error!("Couldn't duplicate file: {e:?}");
+            log::error!("Couldn't duplicate file, Err: {e:?}");
         }
+    } else {
+        log::warn!("Destination-file for duplication not found.");
     }
-    log::info!("Destination-file for duplication not found.");
 }
 
 fn duplicate_dir<F>(source_path: PathBuf, process_evaluator: F)
@@ -91,7 +97,7 @@ where
         if let Err(e) =
             copy_items_with_progress(&[source], destination, &options, process_evaluator)
         {
-            log::error!("Couldn't copy items: {e:?}");
+            log::error!("Couldn't copy items, Err: {e:?}");
         }
     }
 }

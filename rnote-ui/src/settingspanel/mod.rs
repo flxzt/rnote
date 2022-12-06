@@ -576,7 +576,11 @@ impl SettingsPanel {
         self.imp()
             .general_permanently_hide_scrollbars_switch
             .get()
-            .bind_property("state", appwindow, "permanently-hide-canvas-scrollbars")
+            .bind_property(
+                "state",
+                &appwindow.canvas_wrapper(),
+                "permanently-hide-scrollbars",
+            )
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
 

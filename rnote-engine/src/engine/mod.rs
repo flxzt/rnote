@@ -546,15 +546,22 @@ impl RnoteEngine {
 
     /// Fetches clipboard content from current state.
     /// Returns (the content, mime_type)
-    pub fn fetch_clipboard_content(&self) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+    #[allow(clippy::type_complexity)]
+    pub fn fetch_clipboard_content(
+        &self,
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
         let export_bytes = self.export_selection(Some(SelectionExportPrefs {
             with_background: true,
             export_format: SelectionExportFormat::Svg,
             ..Default::default()
         }));
+
         // First try exporting the selection as svg
         if let Some(selection_bytes) = futures::executor::block_on(async { export_bytes.await? })? {
-            return Ok(Some((selection_bytes, String::from("image/svg+xml"))));
+            return Ok((
+                Some((selection_bytes, String::from("image/svg+xml"))),
+                WidgetFlags::default(),
+            ));
         }
 
         // else fetch from pen
@@ -564,6 +571,37 @@ impl RnoteEngine {
             store: &self.store,
             camera: &self.camera,
             audioplayer: &self.audioplayer,
+        })
+    }
+
+    /// Cuts clipboard content from current state.
+    /// Returns (the content, mime_type)
+    #[allow(clippy::type_complexity)]
+    pub fn cut_clipboard_content(
+        &mut self,
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+        /*
+        // FIXME: Until svg import is broken, we don't want users being able to cut the selection without the possibility to insert it again.
+
+                let export_bytes = self.export_selection(Some(SelectionExportPrefs {
+                    with_background: true,
+                    export_format: SelectionExportFormat::Svg,
+                    ..Default::default()
+                }));
+
+                // First try exporting the selection as svg
+                if let Some(selection_bytes) = futures::executor::block_on(async { export_bytes.await? })? {
+                    return Ok(Some((selection_bytes, String::from("image/svg+xml"))));
+                }
+         */
+
+        // else fetch from pen
+        self.penholder.cut_clipboard_content(&mut EngineViewMut {
+            tasks_tx: self.tasks_tx(),
+            doc: &mut self.document,
+            store: &mut self.store,
+            camera: &mut self.camera,
+            audioplayer: &mut self.audioplayer,
         })
     }
 

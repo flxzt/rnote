@@ -21,8 +21,6 @@ pub struct WidgetFlags {
     /// Changes whether text preprocessing should be enabled. Meaning, instead of key events text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter
     pub enable_text_preprocessing: Option<bool>,
-    /// tells the widget to copy the content (Vec<u8>) with the mime type (String) into the clipboard.
-    pub copy_into_clipboard: Option<(String, Vec<u8>)>,
 }
 
 impl Default for WidgetFlags {
@@ -37,7 +35,6 @@ impl Default for WidgetFlags {
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
-            copy_into_clipboard: None,
         }
     }
 }
@@ -59,9 +56,6 @@ impl WidgetFlags {
         }
         if other.enable_text_preprocessing.is_some() {
             self.enable_text_preprocessing = other.enable_text_preprocessing;
-        }
-        if other.copy_into_clipboard.is_some() {
-            self.copy_into_clipboard = other.copy_into_clipboard;
         }
     }
 }

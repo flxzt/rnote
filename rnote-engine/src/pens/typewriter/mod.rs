@@ -386,13 +386,15 @@ impl PenBehaviour for Typewriter {
     fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+        let widget_flags = WidgetFlags::default();
+
         match &self.state {
             TypewriterState::Idle
             | TypewriterState::Start(_)
             | TypewriterState::Modifying { .. }
             | TypewriterState::Translating { .. }
-            | TypewriterState::AdjustTextWidth { .. } => Ok(None),
+            | TypewriterState::AdjustTextWidth { .. } => Ok((None, widget_flags)),
             TypewriterState::Selecting {
                 stroke_key,
                 cursor,
@@ -412,13 +414,93 @@ impl PenBehaviour for Typewriter {
                         .get_text_slice_for_range(selection_range)
                         .to_string();
 
-                    return Ok(Some((
-                        selection_text.into_bytes(),
-                        String::from("text/plain;charset=utf-8"),
-                    )));
+                    Ok((
+                        Some((
+                            selection_text.into_bytes(),
+                            String::from("text/plain;charset=utf-8"),
+                        )),
+                        widget_flags,
+                    ))
+                } else {
+                    Ok((None, widget_flags))
                 }
+            }
+        }
+    }
 
-                Ok(None)
+    fn cut_clipboard_content(
+        &mut self,
+        engine_view: &mut EngineViewMut,
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+        let mut widget_flags = WidgetFlags::default();
+
+        match &mut self.state {
+            TypewriterState::Idle
+            | TypewriterState::Start(_)
+            | TypewriterState::Modifying { .. }
+            | TypewriterState::Translating { .. }
+            | TypewriterState::AdjustTextWidth { .. } => Ok((None, widget_flags)),
+            TypewriterState::Selecting {
+                stroke_key,
+                cursor,
+                selection_cursor,
+                ..
+            } => {
+                widget_flags.merge_with_other(engine_view.store.record());
+
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    let selection_range = crate::utils::positive_range(
+                        cursor.cur_cursor(),
+                        selection_cursor.cur_cursor(),
+                    );
+
+                    // Current selection as clipboard text
+                    let selection_text = textstroke
+                        .get_text_slice_for_range(selection_range)
+                        .to_string();
+
+                    textstroke.replace_text_between_selection_cursors(
+                        cursor,
+                        selection_cursor,
+                        String::from("").as_str(),
+                    );
+
+                    // Update stroke
+                    engine_view.store.update_geometry_for_stroke(*stroke_key);
+                    engine_view.store.regenerate_rendering_for_stroke_threaded(
+                        engine_view.tasks_tx.clone(),
+                        *stroke_key,
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
+                    );
+
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                    widget_flags.redraw = true;
+                    widget_flags.resize = true;
+                    widget_flags.indicate_changed_store = true;
+
+                    // Back to modifying state
+                    self.state = TypewriterState::Modifying {
+                        stroke_key: *stroke_key,
+                        cursor: cursor.clone(),
+                        pen_down: false,
+                    };
+
+                    Ok((
+                        Some((
+                            selection_text.into_bytes(),
+                            String::from("text/plain;charset=utf-8"),
+                        )),
+                        widget_flags,
+                    ))
+                } else {
+                    Ok((None, widget_flags))
+                }
             }
         }
     }

@@ -641,31 +641,6 @@ impl Typewriter {
                                 *finished = true;
 
                                 false
-                            } else if keychar == 'x'
-                                && shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
-                            {
-                                let selection_range = crate::utils::positive_range(
-                                    cursor.cur_cursor(),
-                                    selection_cursor.cur_cursor(),
-                                );
-
-                                let selection_text = textstroke
-                                    .get_text_slice_for_range(selection_range)
-                                    .to_string();
-
-                                widget_flags.copy_into_clipboard = Some((
-                                    String::from("text/plain;charset=utf-8"),
-                                    selection_text.into_bytes(),
-                                ));
-
-                                textstroke.replace_text_between_selection_cursors(
-                                    cursor,
-                                    selection_cursor,
-                                    String::from("").as_str(),
-                                );
-
-                                update_stroke(engine_view.store);
-                                true
                             } else {
                                 textstroke.replace_text_between_selection_cursors(
                                     cursor,

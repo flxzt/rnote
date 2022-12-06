@@ -121,6 +121,8 @@ impl RnoteAppWindow {
         self.add_action(&action_export_selection);
         let action_clipboard_copy = gio::SimpleAction::new("clipboard-copy", None);
         self.add_action(&action_clipboard_copy);
+        let action_clipboard_cut = gio::SimpleAction::new("clipboard-cut", None);
+        self.add_action(&action_clipboard_cut);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
         self.add_action(&action_clipboard_paste);
         let action_pen_override = gio::SimpleAction::new(
@@ -769,24 +771,58 @@ impl RnoteAppWindow {
 
         // Clipboard copy
         action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-        match appwindow.canvas().engine().borrow().fetch_clipboard_content() {
-            Ok(Some((data, mime_type))) => {
-                //log::debug!("set clipboard with data: {:02x?}, mime-type: {}", data, mime_type);
+            let (content, widget_flags) = match appwindow.canvas().engine().borrow().fetch_clipboard_content() {
+                Ok((content, widget_flags)) => (content,widget_flags),
+                Err(e) => {
+                    log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err: {e:?}");
+                    return;
+                }
+            };
 
-                let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+            match content {
+                Some((data, mime_type)) => {
+                    //log::debug!("set clipboard with data: {:02x?}, mime-type: {}", data, mime_type);
 
-                if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {
-                    log::error!("clipboard set_content() failed in clipboard-copy action, Err: {e:?}");
+                    let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+
+                    if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {
+                        log::error!("clipboard set_content() failed in clipboard-copy action, Err: {e:?}");
+                    }
+                }
+                None => {
+                    log::debug!("no data available to copy into clipboard.");
                 }
             }
-            Ok(None) => {
-                log::debug!("no data available to copy into clipboard.");
+
+            appwindow.handle_widget_flags(widget_flags);
+        }));
+
+        // Clipboard cut
+        action_clipboard_cut.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let (content, widget_flags) = match appwindow.canvas().engine().borrow_mut().cut_clipboard_content() {
+
+                Ok((content, widget_flags)) => (content,widget_flags),
+                Err(e) => {
+                    log::error!("cut_clipboard_content() failed in clipboard-cut action, Err: {e:?}");
+                    return;
+                }
+            };
+
+            match content {
+                Some((data, mime_type)) => {
+                    let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+
+                    if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {
+                        log::error!("clipboard set_content() failed in clipboard-cut action, Err: {e:?}");
+                    }
+                }
+                None => {
+                    log::debug!("no data available to cut into clipboard.");
+                }
             }
-            Err(e) => {
-                log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err: {e:?}");
-            }
-        }
-    }));
+
+            appwindow.handle_widget_flags(widget_flags);
+        }));
 
         // Clipboard paste as selection
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -911,6 +947,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
+        app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
         app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1"]);
         app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2"]);

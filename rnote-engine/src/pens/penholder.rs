@@ -402,10 +402,11 @@ impl PenHolder {
     }
 
     /// fetches clipboard content from the current pen
+    #[allow(clippy::type_complexity)]
     pub fn fetch_clipboard_content(
         &self,
         engine_view: &EngineView,
-    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
         match self.current_style_w_override() {
             PenStyle::Brush => self.brush.fetch_clipboard_content(engine_view),
             PenStyle::Shaper => self.shaper.fetch_clipboard_content(engine_view),
@@ -413,6 +414,22 @@ impl PenHolder {
             PenStyle::Eraser => self.eraser.fetch_clipboard_content(engine_view),
             PenStyle::Selector => self.selector.fetch_clipboard_content(engine_view),
             PenStyle::Tools => self.tools.fetch_clipboard_content(engine_view),
+        }
+    }
+
+    /// cuts clipboard content from the current pen
+    #[allow(clippy::type_complexity)]
+    pub fn cut_clipboard_content(
+        &mut self,
+        engine_view: &mut EngineViewMut,
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+        match self.current_style_w_override() {
+            PenStyle::Brush => self.brush.cut_clipboard_content(engine_view),
+            PenStyle::Shaper => self.shaper.cut_clipboard_content(engine_view),
+            PenStyle::Typewriter => self.typewriter.cut_clipboard_content(engine_view),
+            PenStyle::Eraser => self.eraser.cut_clipboard_content(engine_view),
+            PenStyle::Selector => self.selector.cut_clipboard_content(engine_view),
+            PenStyle::Tools => self.tools.cut_clipboard_content(engine_view),
         }
     }
 

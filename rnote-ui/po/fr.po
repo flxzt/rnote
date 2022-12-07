@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-11-16 10:25+0000\n"
+"PO-Revision-Date: 2022-12-07 17:11+0000\n"
 "Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -82,20 +82,16 @@ msgid "Use _dark colors"
 msgstr "Thème _sombre"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
-msgstr "Mode _développeur"
+msgstr "Mode dé_veloppeur"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
 msgstr "_Menu développeur"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "Débogage _visuel"
+msgstr "_Débogage visuel"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -126,11 +122,8 @@ msgid "_Print"
 msgstr "Im_primer"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "Coller le presse-papiers"
+msgstr "_Coller le presse-papiers"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -153,10 +146,8 @@ msgid "Export _selection"
 msgstr "Exporter la _sélection"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Paramètres"
+msgstr "_Paramètres"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "_Keyboard shortcuts"
@@ -167,8 +158,6 @@ msgid "_Donate 💝"
 msgstr "Faire un _don 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
 msgstr "À _propos de Rnote"
 
@@ -216,7 +205,7 @@ msgstr "Outils"
 
 #: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "Afficher / masquer le rabat"
 
 #: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
@@ -255,8 +244,6 @@ msgid "Draw with _touch input"
 msgstr "Dessiner en mode _tactile"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
 msgstr "Sons du _stylo"
 
@@ -265,10 +252,8 @@ msgid "_Clear document"
 msgstr "_Effacer le document"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "Retourner à page d'origine"
+msgstr "_Retourner à la page d’origine"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
 msgid "Zoom out"
@@ -461,7 +446,7 @@ msgstr "Type de pages"
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgstr ""
-"Défini si les PDF doivent être importés en tant qu'images vectorielles ou "
+"Définir si les PDF doivent être importés en tant qu’images vectorielles ou "
 "matricielles (bitmap)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:138
@@ -479,8 +464,8 @@ msgstr "Largeur de la page (%)"
 #: rnote-ui/data/ui/dialogs/import.ui:155
 msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr ""
-"Défini la largeur des PDF importés en pourcentage de la largeur du format de "
-"la page"
+"Définir la largeur des PDF importés en pourcentage de la largeur du format "
+"de la page"
 
 #: rnote-ui/data/ui/dialogs/import.ui:175
 msgid "Page spacing"
@@ -512,7 +497,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Définir le DPI préféré pour le fichier Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
 msgid "Export document"
@@ -553,7 +538,7 @@ msgstr "Avec arrière-plan"
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
 msgid "Set whether the background should be exported"
-msgstr "Défini si l'arrière-plan doit être exporté"
+msgstr "Définit si l’arrière-plan doit être exporté"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
@@ -563,7 +548,7 @@ msgstr "Avec motif"
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
 msgid "Set whether the background pattern should be exported"
-msgstr "Défini si le motif d’arrière-plan doit être exporté"
+msgstr "Définir si le motif d’arrière-plan doit être exporté"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
@@ -598,16 +583,12 @@ msgid "Export document pages"
 msgstr "Exporter le document au format SVG"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "Créer un répertoire"
+msgstr "Répertoire d’exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "Sélectionner le fichier d’exportation"
+msgstr "Sélectionnez le répertoire d’exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy
@@ -659,11 +640,11 @@ msgstr "Le format d'exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr ""
+msgstr "Marge"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "Définir la marge autour de l’aire sélectionnée"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
 msgid "Open"
@@ -716,7 +697,7 @@ msgstr "Intervalle d'enregistrement automatique (secs)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr "Défini l'intervalle d'enregistrement automatique en secondes"
+msgstr "Définir l’intervalle d’enregistrement automatique en secondes"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Format border color"
@@ -724,7 +705,7 @@ msgstr "Couleur des bordures du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 msgid "Set the format border color"
-msgstr "Défini la couleur des bordures du format"
+msgstr "Définir la couleur des bordures du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Permanently hidden scrollbars"
@@ -802,7 +783,7 @@ msgstr "Orientation"
 
 #: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
-msgstr "Défini l'orientation du format"
+msgstr "Définir l’orientation du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Portrait"
@@ -818,7 +799,7 @@ msgstr "Largeur"
 
 #: rnote-ui/data/ui/settingspanel.ui:217
 msgid "Set the format width"
-msgstr "Défini la largeur du format"
+msgstr "Définir la largeur du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:230
 msgid "Height"
@@ -826,11 +807,11 @@ msgstr "Hauteur"
 
 #: rnote-ui/data/ui/settingspanel.ui:231
 msgid "Set the format height"
-msgstr "Défini la hauteur du format"
+msgstr "Définir la hauteur du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr "Défini le DPI (points par pouce). Par défaut à 96"
+msgstr "Définir le DPI (points par pouce). Par défaut à 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:268
 msgid "Revert"
@@ -842,7 +823,7 @@ msgstr "Arrière-plan du document"
 
 #: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
-msgstr "Défini la couleur de l'arrière-plan"
+msgstr "Définir la couleur de l'arrière-plan"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Pattern"
@@ -875,7 +856,7 @@ msgstr "Couleur du motif"
 
 #: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Set the background pattern color"
-msgstr "Défini la couleur du motif d'arrière-plan"
+msgstr "Définir la couleur du motif d’arrière-plan"
 
 #: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Pattern Width"
@@ -883,7 +864,7 @@ msgstr "Largeur du motif"
 
 #: rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background pattern width"
-msgstr "Défini la largeur du motif d'arrière-plan"
+msgstr "Définir la largeur du motif d’arrière-plan"
 
 #: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Pattern Height"
@@ -891,7 +872,7 @@ msgstr "Hauteur du motif"
 
 #: rnote-ui/data/ui/settingspanel.ui:360
 msgid "Set the background pattern height"
-msgstr "Défini la hauteur du motif d'arrière-plan"
+msgstr "Définir la hauteur du motif d’arrière-plan"
 
 #: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Button Shortcuts"
@@ -903,7 +884,7 @@ msgstr "Action du bouton principal du stylet"
 
 #: rnote-ui/data/ui/settingspanel.ui:380
 msgid "Set the action for the primary stylus button"
-msgstr "Défini l'action du bouton principal du stylet"
+msgstr "Définir l’action du bouton principal du stylet"
 
 #: rnote-ui/data/ui/settingspanel.ui:391
 msgid "Stylus secondary button action"
@@ -911,7 +892,7 @@ msgstr "Action du bouton secondaire du stylet"
 
 #: rnote-ui/data/ui/settingspanel.ui:392
 msgid "Set the action for the secondary stylus button"
-msgstr "Défini l'action du bouton secondaire du stylet"
+msgstr "Définir l’action du bouton secondaire du stylet"
 
 #: rnote-ui/data/ui/settingspanel.ui:403
 msgid "Mouse secondary button action"
@@ -919,7 +900,7 @@ msgstr "Action du bouton secondaire de la souris"
 
 #: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
-msgstr "Défini l'action du bouton secondaire de la souris"
+msgstr "Définir l’action du bouton secondaire de la souris"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"

@@ -60,22 +60,16 @@ impl ToolsPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn toolstyle_verticalspace_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_verticalspace_toggle.get()
-    }
-
-    pub(crate) fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_offsetcamera_toggle.get()
-    }
-
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        self.toolstyle_verticalspace_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
+        let imp = self.imp();
+
+        imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::VerticalSpace;
             }
         }));
 
-        self.toolstyle_offsetcamera_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
+        imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
             if toolstyle_offsetcamera_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::OffsetCamera;
             }
@@ -83,11 +77,13 @@ impl ToolsPage {
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
         let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
 
         match tools.style {
-            ToolsStyle::VerticalSpace => self.toolstyle_verticalspace_toggle().set_active(true),
-            ToolsStyle::OffsetCamera => self.toolstyle_offsetcamera_toggle().set_active(true),
+            ToolsStyle::VerticalSpace => imp.toolstyle_verticalspace_toggle.set_active(true),
+            ToolsStyle::OffsetCamera => imp.toolstyle_offsetcamera_toggle.set_active(true),
         }
     }
 }

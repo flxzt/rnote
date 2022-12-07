@@ -433,6 +433,8 @@ impl SettingsPanel {
     }
 
     fn refresh_general(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
         let format_border_color = appwindow
             .canvas()
             .engine()
@@ -441,30 +443,28 @@ impl SettingsPanel {
             .format
             .border_color;
 
-        self.imp()
-            .general_format_border_color_choosebutton
+        imp.general_format_border_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
     fn fresh_format(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
         let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
-        self.imp().format_dpi_adj.set_value(format.dpi);
+        imp.format_dpi_adj.set_value(format.dpi);
 
-        self.imp()
-            .format_width_unitentry
-            .set_unit(format::MeasureUnit::Px);
-        self.imp().format_width_unitentry.set_value(format.width);
+        imp.format_width_unitentry.set_unit(format::MeasureUnit::Px);
+        imp.format_width_unitentry.set_value(format.width);
 
-        self.imp()
-            .format_height_unitentry
+        imp.format_height_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.imp().format_height_unitentry.set_value(format.height);
+        imp.format_height_unitentry.set_value(format.height);
     }
 
     fn refresh_background(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
         let background = appwindow
             .canvas()
             .engine()
@@ -474,38 +474,29 @@ impl SettingsPanel {
             .clone();
         let format = appwindow.canvas().engine().borrow().document.format.clone();
 
-        self.imp()
-            .background_color_choosebutton
+        imp.background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
 
         self.set_background_pattern(background.pattern);
-        self.imp()
-            .background_pattern_color_choosebutton
+        imp.background_pattern_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
 
         // Background pattern Unit Entries
-        self.imp()
-            .background_pattern_width_unitentry
-            .set_dpi(format.dpi);
-        self.imp()
-            .background_pattern_width_unitentry
+        imp.background_pattern_width_unitentry.set_dpi(format.dpi);
+        imp.background_pattern_width_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.imp()
-            .background_pattern_width_unitentry
+        imp.background_pattern_width_unitentry
             .set_value(background.pattern_size[0]);
 
-        self.imp()
-            .background_pattern_height_unitentry
-            .set_dpi(format.dpi);
-        self.imp()
-            .background_pattern_height_unitentry
+        imp.background_pattern_height_unitentry.set_dpi(format.dpi);
+        imp.background_pattern_height_unitentry
             .set_unit(format::MeasureUnit::Px);
-        self.imp()
-            .background_pattern_height_unitentry
+        imp.background_pattern_height_unitentry
             .set_value(background.pattern_size[1]);
     }
 
     fn refresh_shortcuts(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
         let current_shortcuts = appwindow
             .canvas()
             .engine()
@@ -517,18 +508,14 @@ impl SettingsPanel {
             .into_iter()
             .for_each(|(key, action)| match key {
                 ShortcutKey::StylusPrimaryButton => {
-                    self.imp()
-                        .penshortcut_stylus_button_primary_row
-                        .set_action(action);
+                    imp.penshortcut_stylus_button_primary_row.set_action(action);
                 }
                 ShortcutKey::StylusSecondaryButton => {
-                    self.imp()
-                        .penshortcut_stylus_button_secondary_row
+                    imp.penshortcut_stylus_button_secondary_row
                         .set_action(action);
                 }
                 ShortcutKey::MouseSecondaryButton => {
-                    self.imp()
-                        .penshortcut_mouse_button_secondary_row
+                    imp.penshortcut_mouse_button_secondary_row
                         .set_action(action);
                 }
                 _ => {}
@@ -536,34 +523,31 @@ impl SettingsPanel {
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        let temporary_format = self.imp().temporary_format.clone();
-        let penshortcut_stylus_button_primary_row =
-            self.imp().penshortcut_stylus_button_primary_row.get();
+        let imp = self.imp();
+        let temporary_format = imp.temporary_format.clone();
+        let penshortcut_stylus_button_primary_row = imp.penshortcut_stylus_button_primary_row.get();
         let penshortcut_stylus_button_secondary_row =
-            self.imp().penshortcut_stylus_button_secondary_row.get();
+            imp.penshortcut_stylus_button_secondary_row.get();
         let penshortcut_mouse_button_secondary_row =
-            self.imp().penshortcut_mouse_button_secondary_row.get();
+            imp.penshortcut_mouse_button_secondary_row.get();
 
         // autosave enable switch
-        self.imp()
-            .general_autosave_enable_switch
+        imp.general_autosave_enable_switch
             .bind_property("state", appwindow, "autosave")
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
 
-        self.imp()
-            .general_autosave_enable_switch
+        imp.general_autosave_enable_switch
             .get()
             .bind_property(
                 "state",
-                &self.imp().general_autosave_interval_secs_row.get(),
+                &*imp.general_autosave_interval_secs_row,
                 "sensitive",
             )
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
             .build();
 
-        self.imp()
-            .general_autosave_interval_secs_spinbutton
+        imp.general_autosave_interval_secs_spinbutton
             .get()
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
@@ -572,8 +556,7 @@ impl SettingsPanel {
             .build();
 
         // permanently hide canvas scrollbars
-        self.imp()
-            .general_permanently_hide_scrollbars_switch
+        imp.general_permanently_hide_scrollbars_switch
             .get()
             .bind_property(
                 "state",
@@ -584,11 +567,10 @@ impl SettingsPanel {
             .build();
 
         // Regular cursor picker
-        self.imp()
-            .general_regular_cursor_picker
+        imp.general_regular_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        self.imp().general_regular_cursor_picker.connect_local(
+        imp.general_regular_cursor_picker.connect_local(
             "icon-picked",
             false,
             clone!(@weak appwindow => @default-return None, move |args| {
@@ -601,11 +583,10 @@ impl SettingsPanel {
         );
 
         // Drawing cursor picker
-        self.imp()
-            .general_drawing_cursor_picker
+        imp.general_drawing_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        self.imp().general_drawing_cursor_picker.connect_local(
+        imp.general_drawing_cursor_picker.connect_local(
             "icon-picked",
             false,
             clone!(@weak appwindow => @default-return None, move |args| {
@@ -618,14 +599,14 @@ impl SettingsPanel {
         );
 
         // revert format
-        self.imp().format_revert_button.get().connect_clicked(
+        imp.format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
                 settings_panel.revert_format(&appwindow);
             }),
         );
 
         // Apply format
-        self.imp().format_apply_button.get().connect_clicked(
+        imp.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 let temporary_format = temporary_format.borrow().clone();
                 appwindow.canvas().engine().borrow_mut().document.format = temporary_format;
@@ -636,14 +617,14 @@ impl SettingsPanel {
         );
 
         // Background
-        self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
+        imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
             appwindow.canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
 
             appwindow.canvas().regenerate_background_pattern();
             appwindow.canvas().update_engine_rendering();
         }));
 
-        self.imp().background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_background_patterns_row| {
+        imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_background_patterns_row| {
             let pattern = settings_panel.background_pattern();
 
             appwindow.canvas().engine().borrow_mut().document.background.pattern = pattern;
@@ -671,14 +652,14 @@ impl SettingsPanel {
             appwindow.canvas().update_engine_rendering();
         }));
 
-        self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
+        imp.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
             appwindow.canvas().engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
 
             appwindow.canvas().regenerate_background_pattern();
             appwindow.canvas().update_engine_rendering();
         }));
 
-        self.imp().general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
+        imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
             let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
             appwindow.canvas().engine().borrow_mut().document.format.border_color = format_border_color;
 
@@ -688,7 +669,7 @@ impl SettingsPanel {
             appwindow.canvas().update_engine_rendering();
         }));
 
-        self.imp().background_pattern_width_unitentry.get().connect_local(
+        imp.background_pattern_width_unitentry.get().connect_local(
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
@@ -703,7 +684,7 @@ impl SettingsPanel {
             }),
         );
 
-        self.imp().background_pattern_height_unitentry.get().connect_local(
+        imp.background_pattern_height_unitentry.get().connect_local(
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
@@ -719,28 +700,25 @@ impl SettingsPanel {
         );
 
         // Shortcuts
-        self.imp()
-            .penshortcut_stylus_button_primary_row
+        imp.penshortcut_stylus_button_primary_row
             .set_key(Some(ShortcutKey::StylusPrimaryButton));
-        self.imp().penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
+        imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
             appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
-        self.imp()
-            .penshortcut_stylus_button_secondary_row
+        imp.penshortcut_stylus_button_secondary_row
             .set_key(Some(ShortcutKey::StylusSecondaryButton));
-        self.imp().penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
+        imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
             appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
-        self.imp()
-            .penshortcut_mouse_button_secondary_row
+        imp.penshortcut_mouse_button_secondary_row
             .set_key(Some(ShortcutKey::StylusSecondaryButton));
-        self.imp().penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
+        imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
             appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
@@ -748,28 +726,23 @@ impl SettingsPanel {
     }
 
     fn revert_format(&self, appwindow: &RnoteAppWindow) {
-        *self.imp().temporary_format.borrow_mut() =
+        let imp = self.imp();
+
+        *imp.temporary_format.borrow_mut() =
             appwindow.canvas().engine().borrow().document.format.clone();
         let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
 
-        self.imp().format_dpi_adj.set_value(revert_format.dpi);
+        imp.format_dpi_adj.set_value(revert_format.dpi);
 
         // Setting the unit dropdowns to Px
-        self.imp()
-            .format_width_unitentry
-            .set_unit(format::MeasureUnit::Px);
-        self.imp()
-            .format_height_unitentry
+        imp.format_width_unitentry.set_unit(format::MeasureUnit::Px);
+        imp.format_height_unitentry
             .set_unit(format::MeasureUnit::Px);
 
         // Setting the entries, which have callbacks to update the temporary format
-        self.imp()
-            .format_width_unitentry
-            .set_value(revert_format.width);
-        self.imp()
-            .format_height_unitentry
-            .set_value(revert_format.height);
+        imp.format_width_unitentry.set_value(revert_format.width);
+        imp.format_height_unitentry.set_value(revert_format.height);
     }
 }

@@ -24,19 +24,10 @@ pub struct SmoothOptions {
 impl Default for SmoothOptions {
     fn default() -> Self {
         Self {
-            stroke_width: Self::WIDTH_DEFAULT,
+            stroke_width: 2.0,
             stroke_color: Some(Color::BLACK),
             fill_color: None,
             pressure_curve: PressureCurve::default(),
         }
     }
-}
-
-impl SmoothOptions {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 1.0;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The max width
-    pub const WIDTH_MAX: f64 = 1000.0;
 }

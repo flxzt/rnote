@@ -12,7 +12,7 @@ use rnote_engine::pens::Brush;
 
 use crate::{appwindow::RnoteAppWindow, ColorPicker};
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
-use rnote_engine::pens::brush::BrushStyle;
+use rnote_engine::pens::brush::{BrushStyle, SolidOptions};
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
@@ -150,38 +150,48 @@ impl BrushPage {
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
+        // Stroke width
         imp.width_spinbutton.set_increments(0.1, 2.0);
         imp.width_spinbutton
             .set_range(Brush::STROKE_WIDTH_MIN, Brush::STROKE_WIDTH_MAX);
-        // Must be after set_range() !
-        imp.width_spinbutton.set_value(Brush::STROKE_WIDTH_DEFAULT);
+        // set value after the range!
+        imp.width_spinbutton
+            .get()
+            .set_value(SolidOptions::default().stroke_width);
 
+        imp.width_spinbutton.connect_value_changed(
+            clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
+                let value = brush_widthscale_spinbutton.value();
+
+                let engine = appwindow.canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+                match engine.penholder.brush.style {
+                    BrushStyle::Marker => engine.penholder.brush.marker_options.stroke_width = value,
+                    BrushStyle::Solid => engine.penholder.brush.solid_options.stroke_width = value,
+                    BrushStyle::Textured => engine.penholder.brush.textured_options.stroke_width = value,
+                }
+            }),
+        );
+
+        // Stroke color
         imp.colorpicker.connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
-                let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
-                match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.marker_options.stroke_color = Some(color),
-                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.stroke_color = Some(color),
-                    BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(color),
+                let engine = appwindow.canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+                match engine.penholder.brush.style {
+                    BrushStyle::Marker => engine.penholder.brush.marker_options.stroke_color = Some(color),
+                    BrushStyle::Solid => engine.penholder.brush.solid_options.stroke_color = Some(color),
+                    BrushStyle::Textured => engine.penholder.brush.textured_options.stroke_color = Some(color),
                 }
             }),
         );
 
-        imp.width_spinbutton.connect_value_changed(
-            clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
-                let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
-
-                match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.marker_options.stroke_width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.stroke_width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_width = brush_widthscale_spinbutton.value(),
-                }
-            }),
-        );
-
+        // Style
         imp.brushstyle_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_brushstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
@@ -233,10 +243,11 @@ impl BrushPage {
             .set_increments(0.1, 2.0);
         imp.texturedstyle_density_spinbutton
             .get()
-            .set_range(0.0, f64::MAX);
+            .set_range(TexturedOptions::DENSITY_MIN, TexturedOptions::DENSITY_MAX);
+        // set value after the range!
         imp.texturedstyle_density_spinbutton
             .get()
-            .set_value(TexturedOptions::DENSITY_DEFAULT);
+            .set_value(TexturedOptions::default().density);
 
         imp.texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {

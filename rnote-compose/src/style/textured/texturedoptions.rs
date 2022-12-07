@@ -34,8 +34,8 @@ impl Default for TexturedOptions {
     fn default() -> Self {
         Self {
             seed: None,
-            stroke_width: Self::WIDTH_DEFAULT,
-            density: Self::DENSITY_DEFAULT,
+            stroke_width: 6.0,
+            density: 5.0,
             stroke_color: Some(Color::BLACK),
             distribution: TexturedDotsDistribution::default(),
             pressure_curve: PressureCurve::default(),
@@ -44,12 +44,13 @@ impl Default for TexturedOptions {
 }
 
 impl TexturedOptions {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 6.0;
-    /// Density default
-    pub const DENSITY_DEFAULT: f64 = 5.0;
     /// dots dadii default (without width weight)
-    pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
+    pub(super) const DOTS_RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
     /// The weight factor the stroke width has to the radii of the dots
-    pub const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
+    pub(super) const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
+
+    /// The minimum dots density
+    pub const DENSITY_MIN: f64 = 0.1;
+    /// The maximum dots density
+    pub const DENSITY_MAX: f64 = 100.0;
 }

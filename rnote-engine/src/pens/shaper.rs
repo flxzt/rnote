@@ -10,7 +10,9 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use rnote_compose::builders::{Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
+use rnote_compose::builders::{
+    ConstraintRatio, Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType,
+};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
@@ -88,17 +90,17 @@ impl Clone for Shaper {
 
 impl Default for Shaper {
     fn default() -> Self {
-        let mut smooth_options = SmoothOptions::default();
-        let mut rough_options = RoughOptions::default();
-        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-        rough_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        let mut constraints = Constraints::default();
+        constraints.ratios.insert(ConstraintRatio::OneToOne);
+        constraints.ratios.insert(ConstraintRatio::Horizontal);
+        constraints.ratios.insert(ConstraintRatio::Vertical);
 
         Self {
             builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
-            smooth_options,
-            rough_options,
-            constraints: Constraints::default(),
+            smooth_options: SmoothOptions::default(),
+            rough_options: RoughOptions::default(),
+            constraints,
             state: ShaperState::Idle,
         }
     }
@@ -310,11 +312,8 @@ impl DrawOnDocBehaviour for Shaper {
 }
 
 impl Shaper {
-    pub const INPUT_OVERSHOOT: f64 = 30.0;
-
-    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
-    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
     pub fn gen_style_for_current_options(&self) -> Style {
         match &self.style {

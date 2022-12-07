@@ -935,6 +935,8 @@ impl RnoteAppWindow {
         // rerender the canvas
         self.canvas().regenerate_background_pattern();
         self.canvas().update_engine_rendering();
+
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
     }
 
     /// Called to close the window

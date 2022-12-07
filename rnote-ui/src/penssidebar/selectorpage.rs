@@ -67,58 +67,41 @@ impl SelectorPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn selectorstyle_polygon_toggle(&self) -> ToggleButton {
-        self.imp().selectorstyle_polygon_toggle.get()
-    }
-
-    pub(crate) fn selectorstyle_rect_toggle(&self) -> ToggleButton {
-        self.imp().selectorstyle_rect_toggle.get()
-    }
-
-    pub(crate) fn selectorstyle_single_toggle(&self) -> ToggleButton {
-        self.imp().selectorstyle_single_toggle.get()
-    }
-
-    pub(crate) fn selectorstyle_intersectingpath_toggle(&self) -> ToggleButton {
-        self.imp().selectorstyle_intersectingpath_toggle.get()
-    }
-
-    pub(crate) fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
-        self.imp().resize_lock_aspectratio_togglebutton.get()
-    }
-
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        // selecting with Polygon / Rect toggles
-        self.selectorstyle_polygon_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
+        let imp = self.imp();
+
+        imp.selectorstyle_polygon_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
             if selectorstyle_polygon_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Polygon;
             }
         }));
 
-        self.selectorstyle_rect_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
+        imp.selectorstyle_rect_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
             if selectorstyle_rect_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Rectangle;
             }
         }));
 
-        self.selectorstyle_single_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
+        imp.selectorstyle_single_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
             if selectorstyle_single_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Single;
             }
         }));
 
-        self.selectorstyle_intersectingpath_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
+        imp.selectorstyle_intersectingpath_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
             if selectorstyle_intersectingpath_toggle.is_active() {
                 appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::IntersectingPath;
             }
         }));
 
-        self.resize_lock_aspectratio_togglebutton().connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
+        imp.resize_lock_aspectratio_togglebutton.connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
             appwindow.canvas().engine().borrow_mut().penholder.selector.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
         }));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
         let selector = appwindow
             .canvas()
             .engine()
@@ -128,14 +111,14 @@ impl SelectorPage {
             .clone();
 
         match selector.style {
-            SelectorStyle::Polygon => self.selectorstyle_polygon_toggle().set_active(true),
-            SelectorStyle::Rectangle => self.selectorstyle_rect_toggle().set_active(true),
-            SelectorStyle::Single => self.selectorstyle_single_toggle().set_active(true),
-            SelectorStyle::IntersectingPath => self
-                .selectorstyle_intersectingpath_toggle()
-                .set_active(true),
+            SelectorStyle::Polygon => imp.selectorstyle_polygon_toggle.set_active(true),
+            SelectorStyle::Rectangle => imp.selectorstyle_rect_toggle.set_active(true),
+            SelectorStyle::Single => imp.selectorstyle_single_toggle.set_active(true),
+            SelectorStyle::IntersectingPath => {
+                imp.selectorstyle_intersectingpath_toggle.set_active(true)
+            }
         }
-        self.resize_lock_aspectratio_togglebutton()
+        imp.resize_lock_aspectratio_togglebutton
             .set_active(selector.resize_lock_aspectratio);
     }
 }

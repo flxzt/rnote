@@ -32,10 +32,11 @@ impl Default for RoughOptions {
     fn default() -> Self {
         Self {
             stroke_color: Some(Color::BLACK),
-            stroke_width: Self::STROKE_WIDTH_DEFAULT,
+            stroke_width: 2.4,
             fill_color: None,
             fill_style: FillStyle::Hachure,
-            hachure_angle: Self::HACHURE_ANGLE_DEFAULT,
+            // Default hachure angle (in rad). is -41 degrees
+            hachure_angle: -0.715585,
             seed: None,
         }
     }
@@ -43,17 +44,9 @@ impl Default for RoughOptions {
 
 impl RoughOptions {
     /// The margin for the bounds of composed rough shapes
-    /// TODO: make this not a const margin, but dependent on the shape size
+    ///
+    /// TODO: make this not a fixed value, but dependent on the shape size, roughness, etc.
     pub const ROUGH_BOUNDS_MARGIN: f64 = 20.0;
-
-    /// Default stroke width
-    pub const STROKE_WIDTH_DEFAULT: f64 = 1.0;
-    /// min stroke width
-    pub const STROKE_WIDTH_MIN: f64 = 0.1;
-    /// max stroke width
-    pub const STROKE_WIDTH_MAX: f64 = 1000.0;
-    /// Default hachure angle (in rad). Defaults to -41 degrees
-    pub const HACHURE_ANGLE_DEFAULT: f64 = -0.715585;
 }
 
 /// available Fill styles

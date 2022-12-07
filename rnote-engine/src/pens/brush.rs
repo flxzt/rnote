@@ -70,6 +70,7 @@ impl Default for MarkerOptions {
     fn default() -> Self {
         let mut options = SmoothOptions::default();
         options.pressure_curve = PressureCurve::Const;
+        options.stroke_width = 12.0;
 
         Self(options)
     }
@@ -154,19 +155,12 @@ impl Clone for Brush {
 
 impl Default for Brush {
     fn default() -> Self {
-        let mut marker_options = MarkerOptions::default();
-        let mut solid_options = SolidOptions::default();
-        let mut textured_options = TexturedOptions::default();
-        marker_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-        solid_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-        textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-
         Self {
             style: BrushStyle::default(),
             builder_type: PenPathBuilderType::default(),
-            marker_options,
-            solid_options,
-            textured_options,
+            marker_options: MarkerOptions::default(),
+            solid_options: SolidOptions::default(),
+            textured_options: TexturedOptions::default(),
             state: BrushState::Idle,
         }
     }
@@ -420,9 +414,8 @@ impl DrawOnDocBehaviour for Brush {
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
 
-    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
-    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
     fn start_audio(style: BrushStyle, audioplayer: &mut Option<AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {

@@ -102,46 +102,24 @@ impl TypewriterPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn fontchooser(&self) -> FontChooserWidget {
-        self.imp().fontchooser.get()
-    }
-
     pub(crate) fn colorpicker(&self) -> ColorPicker {
         self.imp().colorpicker.get()
     }
 
-    pub(crate) fn font_size_spinbutton(&self) -> SpinButton {
-        self.imp().font_size_spinbutton.get()
-    }
-
-    pub(crate) fn text_align_start_togglebutton(&self) -> ToggleButton {
-        self.imp().text_align_start_togglebutton.get()
-    }
-
-    pub(crate) fn text_align_center_togglebutton(&self) -> ToggleButton {
-        self.imp().text_align_center_togglebutton.get()
-    }
-
-    pub(crate) fn text_align_end_togglebutton(&self) -> ToggleButton {
-        self.imp().text_align_end_togglebutton.get()
-    }
-
-    pub(crate) fn text_align_fill_togglebutton(&self) -> ToggleButton {
-        self.imp().text_align_fill_togglebutton.get()
-    }
-
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        let fontchooser = self.imp().fontchooser.get();
-        let fontchooser_popover = self.imp().fontchooser_popover.get();
+        let imp = self.imp();
+
+        let fontchooser = imp.fontchooser.get();
+        let fontchooser_popover = imp.fontchooser_popover.get();
 
         // Font chooser
-        self.imp().fontchooser_cancelbutton.connect_clicked(
+        imp.fontchooser_cancelbutton.connect_clicked(
             clone!(@weak fontchooser, @weak fontchooser_popover => move |_fontchooser_cancelbutton| {
                 fontchooser_popover.popdown();
             }),
         );
 
-        self.imp().fontchooser_selectbutton.connect_clicked(
+        imp.fontchooser_selectbutton.connect_clicked(
             clone!(@weak fontchooser, @weak fontchooser_popover => move |_fontchooser_selectbutton| {
                 if let Some(font) = fontchooser.font() {
                     fontchooser.emit_by_name::<()>("font-activated", &[&font.to_value()]);
@@ -153,7 +131,7 @@ impl TypewriterPage {
 
         // Listening to connect_font_notify would always activate at app startup. font_activated only emits when the user interactively selects a font (with double click or Enter)
         // or we activate the signal manually elsewhere in the code
-        self.fontchooser().connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
+        imp.fontchooser.connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
             if let Some(font_family) = fontchooser.font_family().map(|font_family| font_family.name().to_string()) {
                 {
                     let engine = appwindow.canvas().engine();
@@ -180,13 +158,13 @@ impl TypewriterPage {
         }));
 
         // Font size
-        self.font_size_spinbutton().set_increments(1.0, 5.0);
-        self.font_size_spinbutton()
+        imp.font_size_spinbutton.set_increments(1.0, 5.0);
+        imp.font_size_spinbutton
             .set_range(TextStyle::FONT_SIZE_MIN, TextStyle::FONT_SIZE_MAX);
-        self.font_size_spinbutton()
+        imp.font_size_spinbutton
             .set_value(TextStyle::FONT_SIZE_DEFAULT);
 
-        self.font_size_spinbutton().connect_value_changed(
+        imp.font_size_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |font_size_spinbutton| {
                 let font_size = font_size_spinbutton.value();
 
@@ -213,7 +191,7 @@ impl TypewriterPage {
         );
 
         // Update the font chooser font size, to display the preview text in the correct size
-        self.font_size_spinbutton()
+        imp.font_size_spinbutton
             .bind_property("value", &fontchooser, "font-desc")
             .transform_to(|binding, val: f64| {
                 let fontchooser = binding
@@ -231,7 +209,7 @@ impl TypewriterPage {
             .build();
 
         // Color
-        self.colorpicker().connect_notify_local(
+        imp.colorpicker.connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
@@ -259,7 +237,7 @@ impl TypewriterPage {
         );
 
         // Emojis
-        self.imp().emojichooser.connect_emoji_picked(
+        imp.emojichooser.connect_emoji_picked(
             clone!(@weak appwindow => move |_emojichooser, emoji_str| {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
@@ -279,7 +257,7 @@ impl TypewriterPage {
         );
 
         // reset
-        self.imp().text_reset_button.connect_clicked(clone!(@weak appwindow => move |_text_reset_button| {
+        imp.text_reset_button.connect_clicked(clone!(@weak appwindow => move |_text_reset_button| {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
 
@@ -295,8 +273,8 @@ impl TypewriterPage {
         }));
 
         // Bold
-        self.imp().text_bold_button.connect_clicked(
-            clone!(@weak appwindow => move |_text_bold_button| {
+        imp.text_bold_button
+            .connect_clicked(clone!(@weak appwindow => move |_text_bold_button| {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
@@ -310,11 +288,10 @@ impl TypewriterPage {
                         audioplayer: &mut engine.audioplayer
                 });
                 appwindow.handle_widget_flags(widget_flags);
-            }),
-        );
+            }));
 
         // Italic
-        self.imp().text_italic_button.connect_clicked(
+        imp.text_italic_button.connect_clicked(
             clone!(@weak appwindow => move |_text_italic_button| {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
@@ -333,7 +310,7 @@ impl TypewriterPage {
         );
 
         // Underline
-        self.imp().text_underline_button.connect_clicked(
+        imp.text_underline_button.connect_clicked(
             clone!(@weak appwindow => move |_text_underline_button| {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
@@ -352,7 +329,7 @@ impl TypewriterPage {
         );
 
         // Strikethrough
-        self.imp().text_strikethrough_button.connect_clicked(
+        imp.text_strikethrough_button.connect_clicked(
             clone!(@weak appwindow => move |_text_strikethrough_button| {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
@@ -371,7 +348,7 @@ impl TypewriterPage {
         );
 
         // Alignment
-        self.text_align_start_togglebutton().connect_active_notify(
+        imp.text_align_start_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_start_togglebutton| {
                 if text_align_start_togglebutton.is_active() {
                     {
@@ -396,7 +373,8 @@ impl TypewriterPage {
 
             }),
         );
-        self.text_align_center_togglebutton().connect_active_notify(
+
+        imp.text_align_center_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_center_togglebutton| {
                 if text_align_center_togglebutton.is_active() {
                     {
@@ -420,7 +398,8 @@ impl TypewriterPage {
                 }
             }),
         );
-        self.text_align_end_togglebutton().connect_active_notify(
+
+        imp.text_align_end_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_end_togglebutton| {
                 if text_align_end_togglebutton.is_active() {
                     {
@@ -444,7 +423,8 @@ impl TypewriterPage {
                 }
             }),
         );
-        self.text_align_fill_togglebutton().connect_active_notify(
+
+        imp.text_align_fill_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_fill_togglebutton| {
                 if text_align_fill_togglebutton.is_active() {
                     {
@@ -471,6 +451,8 @@ impl TypewriterPage {
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
         let typewriter = appwindow
             .canvas()
             .engine()
@@ -479,18 +461,18 @@ impl TypewriterPage {
             .typewriter
             .clone();
 
-        self.fontchooser()
+        imp.fontchooser
             .set_font_desc(&typewriter.text_style.extract_pango_font_desc());
-        self.font_size_spinbutton()
+        imp.font_size_spinbutton
             .set_value(typewriter.text_style.font_size);
-        self.colorpicker()
+        imp.colorpicker
             .set_current_color(gdk::RGBA::from_compose_color(typewriter.text_style.color));
 
         match typewriter.text_style.alignment {
-            TextAlignment::Start => self.text_align_start_togglebutton().set_active(true),
-            TextAlignment::Center => self.text_align_center_togglebutton().set_active(true),
-            TextAlignment::End => self.text_align_end_togglebutton().set_active(true),
-            TextAlignment::Fill => self.text_align_fill_togglebutton().set_active(true),
+            TextAlignment::Start => imp.text_align_start_togglebutton.set_active(true),
+            TextAlignment::Center => imp.text_align_center_togglebutton.set_active(true),
+            TextAlignment::End => imp.text_align_end_togglebutton.set_active(true),
+            TextAlignment::Fill => imp.text_align_fill_togglebutton.set_active(true),
         }
     }
 }

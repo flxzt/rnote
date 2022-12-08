@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
 "PO-Revision-Date: 2022-12-08 18:13+0000\n"
-"Last-Translator: Jakob Fridesjö <jakob.fridesjo@tuta.io>\n"
+"Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -1604,7 +1604,7 @@ msgstr "- ingen titel -"
 
 #: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
-msgstr ""
+msgstr "- ingen författare -"
 
 #: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"

@@ -140,6 +140,15 @@ else
     )
 endif
 
+# Also install the .ico file on windows
+if host_machine.system() == 'windows'
+    install_data(
+        'icons/' + app_name + '.ico',
+        install_dir: iconsdir,
+        rename: app_id + '.ico',
+    )
+endif
+
 # Symbolic App-Icon
 install_data(
     'icons/symbolic/apps/' + app_name + '-symbolic.svg',

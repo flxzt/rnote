@@ -1,5 +1,7 @@
 #![warn(missing_debug_implementations)]
 #![allow(clippy::single_match)]
+// Hides console window on windows
+#![windows_subsystem = "windows"]
 
 pub(crate) mod config;
 pub(crate) mod dialogs;
@@ -40,7 +42,18 @@ use gtk4::prelude::*;
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
-fn main() {
+fn main() -> anyhow::Result<()> {
+    // we need to set some environment vars on windows
+    #[cfg(target_os = "windows")]
+    {
+        std::env::set_var(
+            "GSETTINGS_SCHEMA_DIR",
+            config::DATA_DIR.to_string() + "/glib-2.0/schemas",
+        );
+    }
+
     let app = RnoteApp::new();
     app.run();
+
+    Ok(())
 }

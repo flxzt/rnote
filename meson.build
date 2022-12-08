@@ -78,6 +78,8 @@ glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
+# easier to build with a script on windows
+cargo_build_win_script = find_program('build-aux/cargo_build_win.py')
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -120,8 +122,9 @@ sources = [
     cargo_sources,
 ]
 
+cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
 cargo_target_dir = meson.project_build_root() / 'target'
-cargo_options = ['--manifest-path', meson.project_source_root() / 'Cargo.toml']
+cargo_options = ['--manifest-path', cargo_manifest_path]
 cargo_options += ['--target-dir', cargo_target_dir]
 cargo_options += ['-p', 'rnote']
 
@@ -152,27 +155,60 @@ else
     bin_output = app_name
 endif
 
-custom_target(
-    'cargo-build',
-    build_by_default: true,
-    input: sources,
-    output: bin_output,
-    console: true,
-    install: true,
-    install_dir: bindir,
-    depends: gresources,
-    command: [
-        'env',
-        cargo_env,
-        cargo,
-        'build',
-        cargo_options,
-        '&&',
-        'cp',
-        cargo_target_dir / rust_target / app_name,
-        meson.project_build_root() / '@OUTPUT@',
-    ],
-)
+
+if host_machine.system() == 'windows'
+    # the script needs one string
+    win_cargo_options = (
+        '--manifest-path ' + cargo_manifest_path + ' --target-dir ' + cargo_target_dir
+    )
+
+    if get_option('profile') == 'default'
+        win_cargo_options += ' --release'
+    endif
+
+    custom_target(
+        'cargo-build-win',
+        build_by_default: true,
+        input: sources,
+        output: bin_output,
+        console: true,
+        install: true,
+        install_dir: bindir,
+        depends: gresources,
+        command: [
+            cargo_build_win_script,
+            meson.project_build_root(),
+            meson.project_source_root(),
+            cargo_env,
+            cargo,
+            win_cargo_options,
+            cargo_target_dir / rust_target / app_name,
+            meson.project_build_root() / '@OUTPUT@',
+        ],
+    )
+else
+    custom_target(
+        'cargo-build',
+        build_by_default: true,
+        input: sources,
+        output: bin_output,
+        console: true,
+        install: true,
+        install_dir: bindir,
+        depends: gresources,
+        command: [
+            'env',
+            cargo_env,
+            cargo,
+            'build',
+            cargo_options,
+            '&&',
+            'cp',
+            cargo_target_dir / rust_target / app_name,
+            meson.project_build_root() / '@OUTPUT@',
+        ],
+    )
+endif
 
 # TODO: Install the cli
 

@@ -6,6 +6,10 @@ rust-version = "1.65"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[build-dependencies]
+anyhow = "1.0"
+winres = "0.1"
+
 [dependencies]
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-engine = {path = "../rnote-engine", version="0.1"}
@@ -29,7 +33,8 @@ parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
 gtk4 = {version = "0.5.3", features = ["xml_validation", "v4_8"]}
 adw = {version = "0.2.1", package="libadwaita", features = ["v1_2"]}
 cairo-rs = {version = "0.16.3", features = ["png", "svg", "pdf"]}
-poppler-rs = {version = "0.20.0", features = ["v21_12"] }
+# newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
+poppler-rs = {version = "0.20.0", features = ["v20_9"] }
 svg = "0.10.0"
 image = "0.23.14"
 piet = "0.6"

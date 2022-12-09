@@ -53,6 +53,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 /// we need to set some env vars on windows
+#[cfg(target_os = "windows")]
 fn setup_windows_env() {
     std::env::set_var(
         "GSETTINGS_SCHEMA_DIR",

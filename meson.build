@@ -46,8 +46,9 @@ app_idpath = '/com/github/flxzt/' + app_name + '/'
 
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')
-localedir = prefix / get_option('localedir')
 datadir = prefix / get_option('datadir')
+libdir = prefix / get_option('libdir')
+localedir = prefix / get_option('localedir')
 pkgdatadir = datadir / app_name
 iconsdir = datadir / 'icons'
 gettext_package = app_name

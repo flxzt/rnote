@@ -3374,7 +3374,7 @@ dependencies = [
  "svg",
  "unicode-segmentation",
  "url",
- "winres",
+ "winresource",
 ]
 
 [[package]]
@@ -4816,12 +4816,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f40009d85759725a34da6d89a94e63d7bdc50a862acf0dbc7c8e488f1edcb6f5"
 
 [[package]]
-name = "winres"
-version = "0.1.12"
+name = "winresource"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b68db261ef59e9e52806f688020631e987592bd83619edccda9c47d42cde4f6c"
+checksum = "dfdc76f27713e47809d5b0d749553304280deb25d610d82ed410a1a336d56969"
 dependencies = [
  "toml",
+ "version_check",
 ]
 
 [[package]]

@@ -29,7 +29,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 dir: PathBuf::from("./"),
-                icon: String::from("folder-symbolic"),
+                icon: String::from("workspacelistentryicon-folder-symbolic"),
                 color: super::WorkspaceListEntry::COLOR_DEFAULT.as_rgba_u32(),
                 name: String::from("default"),
             }

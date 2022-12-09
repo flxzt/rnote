@@ -3,12 +3,15 @@ name = "rnote"
 version = "0.5.9"
 edition = "2021"
 rust-version = "1.65"
+build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 anyhow = "1.0"
-winres = "0.1"
+
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
 
 [dependencies]
 rnote-compose = {path = "../rnote-compose", version="0.1"}

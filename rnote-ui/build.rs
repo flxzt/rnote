@@ -1,12 +1,16 @@
-#[cfg(target_os = "windows")]
-extern crate winres;
+use anyhow::Context;
 
 fn main() -> anyhow::Result<()> {
-    if cfg!(target_os = "windows") {
-        let mut res = winres::WindowsResource::new();
-        res.set_icon("./data/icons/rnote.ico");
-        res.compile()?;
-    }
+    #[cfg(windows)]
+    compile_icon_winres()?;
 
     Ok(())
+}
+
+#[cfg(windows)]
+fn compile_icon_winres() -> anyhow::Result<()> {
+    let mut res = winresource::WindowsResource::new();
+    res.set("OriginalFileName", "rnote.exe");
+    res.set_icon("./data/icons/rnote.ico");
+    res.compile().context("Failed to compile winresource resource.")
 }

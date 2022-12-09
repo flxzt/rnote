@@ -208,7 +208,7 @@ impl RnoteAppWindow {
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .load_engine_config(&engine_config, Some(PathBuf::from(config::PKG_DATA_DIR)))
+                .load_engine_config(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
             {
                 Err(e) => {
                     // On first app startup the engine config is empty, so we don't log an error

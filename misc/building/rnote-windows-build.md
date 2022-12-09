@@ -34,7 +34,7 @@ Rnote is built with meson:
 
 setup meson
 ```bash
-meson setup --prefix=C:/gnome _mesonbuild
+meson setup --prefix=C:/msys64/mingw64 _mesonbuild
 ```
 
 For reasons not yet understood, there are `libpthread.a` and `libpthread.dll.a` in `mingw64\lib\` and rustc apparently wants to link with both, resulting in "multiple definitions of pthread_..." linker errors. To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
@@ -50,4 +50,4 @@ then install:
 meson install -C _mesonbuild
 ```
 
-the installed binary can now be executed. It is located in `C:/gnome/bin/rnote.exe`. It depends on some DLL's provided by mingw64, so it is not portable.
+the installed binary can now be executed. It is located in `C:/msys64/mingw64/bin/rnote.exe`. It depends on the environment provided by mingw64, so it is not portable.

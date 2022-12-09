@@ -112,6 +112,7 @@ cargo_sources = files(
     meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
     meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
     meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
+    meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'build.rs',
 )
 
 sources = [
@@ -155,8 +156,7 @@ else
     bin_output = app_name
 endif
 
-
-if host_machine.system() == 'windows'
+if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
     # the script needs one string
     win_cargo_options = (
         '--manifest-path ' + cargo_manifest_path + ' --target-dir ' + cargo_target_dir

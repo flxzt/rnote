@@ -43,17 +43,23 @@ extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
 fn main() -> anyhow::Result<()> {
-    // we need to set some environment vars on windows
     #[cfg(target_os = "windows")]
-    {
-        std::env::set_var(
-            "GSETTINGS_SCHEMA_DIR",
-            config::DATA_DIR.to_string() + "/glib-2.0/schemas",
-        );
-    }
+    setup_windows_env();
 
     let app = RnoteApp::new();
     app.run();
 
     Ok(())
+}
+
+/// we need to set some env vars on windows
+fn setup_windows_env() {
+    std::env::set_var(
+        "GSETTINGS_SCHEMA_DIR",
+        config::DATADIR.to_string() + "/glib-2.0/schemas",
+    );
+    std::env::set_var(
+        "GDK_PIXBUF_MODULEDIR",
+        config::LIBDIR.to_string() + "/gdk-pixbuf-2.0/2.10.0/loaders",
+    );
 }

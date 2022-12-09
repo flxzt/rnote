@@ -14,7 +14,7 @@
     <child>
       <object class="GtkImage" id="folder_image">
         <property name="halign">center</property>
-        <property name="icon_name">folder-symbolic</property>
+        <property name="icon_name">workspacelistentryicon-folder-symbolic</property>
         <property name="margin-top">6</property>
         <property name="margin-bottom">3</property>
         <property name="margin-start">3</property>

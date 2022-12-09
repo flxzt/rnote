@@ -1,5 +1,3 @@
-use anyhow::Context;
-
 fn main() -> anyhow::Result<()> {
     #[cfg(windows)]
     compile_icon_winres()?;
@@ -9,6 +7,8 @@ fn main() -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn compile_icon_winres() -> anyhow::Result<()> {
+    use anyhow::Context;
+
     let mut res = winresource::WindowsResource::new();
     res.set("OriginalFileName", "rnote.exe");
     res.set_icon("./data/icons/rnote.ico");

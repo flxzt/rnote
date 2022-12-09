@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-05 11:54+0000\n"
+"PO-Revision-Date: 2022-12-10 11:17+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1618,19 +1618,19 @@ msgstr "ஏற்றுமதி தேர்வு தோல்வி, எத�
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "திறக்கப்பட்ட கோப்பு வட்டில் மாற்றப்பட்டது."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "மறுஏற்றம்"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

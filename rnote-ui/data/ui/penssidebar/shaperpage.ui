@@ -97,7 +97,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
-                <property name="icon-name">shape-line-symbolic</property>
+                <property name="icon-name">shapebuilder-line-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -310,7 +310,7 @@
                   <property name="title" translatable="yes">Line</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-line-symbolic</property>
+                      <property name="icon-name">shapebuilder-line-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -321,7 +321,18 @@
                   <property name="title" translatable="yes">Rectangle</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-rectangle-symbolic</property>
+                      <property name="icon-name">shapebuilder-rectangle-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_grid_row">
+                  <property name="title" translatable="yes">Grid</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shapebuilder-grid-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -332,7 +343,7 @@
                   <property name="title" translatable="yes">2D coordinate system</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-coordsystem2d-symbolic</property>
+                      <property name="icon-name">shapebuilder-coordsystem2d-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -343,7 +354,7 @@
                   <property name="title" translatable="yes">3D coordinate system</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-coordsystem3d-symbolic</property>
+                      <property name="icon-name">shapebuilder-coordsystem3d-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -354,7 +365,7 @@
                   <property name="title" translatable="yes">2D single quadrant coordinate system</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-quadrantcoordsystem2d-symbolic</property>
+                      <property name="icon-name">shapebuilder-quadrantcoordsystem2d-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -365,7 +376,7 @@
                   <property name="title" translatable="yes">Ellipse</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-ellipse-symbolic</property>
+                      <property name="icon-name">shapebuilder-ellipse-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -376,7 +387,7 @@
                   <property name="title" translatable="yes">Ellipse with foci</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-fociellipse-symbolic</property>
+                      <property name="icon-name">shapebuilder-fociellipse-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -387,7 +398,7 @@
                   <property name="title" translatable="yes">Quadratic bezier curve</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-quadbez-symbolic</property>
+                      <property name="icon-name">shapebuilder-quadbez-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -398,7 +409,7 @@
                   <property name="title" translatable="yes">Cubic bezier curve</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-cubbez-symbolic</property>
+                      <property name="icon-name">shapebuilder-cubbez-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>

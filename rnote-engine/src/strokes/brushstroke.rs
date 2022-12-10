@@ -150,7 +150,8 @@ impl StrokeBehaviour for BrushStroke {
                             }
                         }
 
-                        options.seed = options.seed.map(rnote_compose::utils::seed_advance);
+                        options.advance_seed();
+
                         prev = seg.end();
                     }
 
@@ -302,7 +303,7 @@ impl BrushStroke {
                 let path_len = self.path.segments.len();
 
                 (0..path_len.saturating_sub(n_last_segments)).for_each(|_| {
-                    options.seed = options.seed.map(rnote_compose::utils::seed_advance)
+                    options.advance_seed();
                 });
 
                 let start_el = self

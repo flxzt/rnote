@@ -10,6 +10,7 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use rnote_compose::builders::GridBuilder;
 use rnote_compose::builders::{
     ConstraintRatio, Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType,
 };
@@ -116,9 +117,7 @@ impl PenBehaviour for Shaper {
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
-                // A new seed for a new shape
-                let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
-                self.rough_options.seed = seed;
+                self.new_style_seeds();
 
                 match self.builder_type {
                     ShapeBuilderType::Line => {
@@ -129,6 +128,11 @@ impl PenBehaviour for Shaper {
                     ShapeBuilderType::Rectangle => {
                         self.state = ShaperState::BuildShape {
                             builder: Box::new(RectangleBuilder::start(element, Instant::now())),
+                        }
+                    }
+                    ShapeBuilderType::Grid => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(GridBuilder::start(element, Instant::now())),
                         }
                     }
                     ShapeBuilderType::CoordSystem2D => {
@@ -208,7 +212,7 @@ impl PenBehaviour for Shaper {
                         PenProgress::InProgress
                     }
                     ShapeBuilderProgress::EmitContinue(shapes) => {
-                        let drawstyle = self.gen_style_for_current_options();
+                        let mut drawstyle = self.gen_style_for_current_options();
 
                         if !shapes.is_empty() {
                             // Only record if new shapes actually were emitted
@@ -220,6 +224,9 @@ impl PenBehaviour for Shaper {
                                 Stroke::ShapeStroke(ShapeStroke::new(shape, drawstyle.clone())),
                                 None,
                             );
+
+                            drawstyle.advance_seed();
+
                             if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
@@ -235,7 +242,7 @@ impl PenBehaviour for Shaper {
                         PenProgress::InProgress
                     }
                     ShapeBuilderProgress::Finished(shapes) => {
-                        let drawstyle = self.gen_style_for_current_options();
+                        let mut drawstyle = self.gen_style_for_current_options();
 
                         if !shapes.is_empty() {
                             // Only record if new shapes actually were emitted
@@ -256,6 +263,9 @@ impl PenBehaviour for Shaper {
                                 Stroke::ShapeStroke(ShapeStroke::new(shape, drawstyle.clone())),
                                 None,
                             );
+
+                            drawstyle.advance_seed();
+
                             if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
@@ -315,7 +325,13 @@ impl Shaper {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
 
-    pub fn gen_style_for_current_options(&self) -> Style {
+    fn new_style_seeds(&mut self) {
+        // A new seed for new shapes
+        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+        self.rough_options.seed = seed;
+    }
+
+    fn gen_style_for_current_options(&self) -> Style {
         match &self.style {
             ShaperStyle::Smooth => {
                 let options = self.smooth_options.clone();

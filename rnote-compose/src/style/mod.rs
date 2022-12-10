@@ -49,6 +49,24 @@ impl Style {
             Style::Textured(options) => options.stroke_width,
         }
     }
+
+    /// The margins for bounds in which the shape fits
+    pub fn bounds_margin(&self) -> f64 {
+        match self {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width + RoughOptions::ROUGH_BOUNDS_MARGIN,
+            Style::Textured(options) => options.stroke_width,
+        }
+    }
+
+    /// Advances the seed for styles that have one
+    pub fn advance_seed(&mut self) {
+        match self {
+            Style::Smooth(_) => {}
+            Style::Rough(options) => options.advance_seed(),
+            Style::Textured(options) => options.advance_seed(),
+        }
+    }
 }
 
 impl Composer<Style> for Line {

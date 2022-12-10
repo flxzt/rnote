@@ -53,4 +53,9 @@ impl TexturedOptions {
     pub const DENSITY_MIN: f64 = 0.1;
     /// The maximum dots density
     pub const DENSITY_MAX: f64 = 100.0;
+
+    /// Advances the seed
+    pub fn advance_seed(&mut self) {
+        self.seed = self.seed.map(crate::utils::seed_advance)
+    }
 }

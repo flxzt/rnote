@@ -8,6 +8,8 @@ pub mod cubbezbuilder;
 pub mod ellipsebuilder;
 /// foci and point ellipse builder
 pub mod fociellipsebuilder;
+/// grid builder
+pub mod gridbuilder;
 /// line builder
 pub mod linebuilder;
 /// pen path builder behaviour
@@ -27,13 +29,13 @@ pub mod rectanglebuilder;
 /// shape builder behaviour
 pub mod shapebuilderbehaviour;
 
-use anyhow::Context;
 // Re-exports
 pub use coordsystem2dbuilder::CoordSystem2DBuilder;
 pub use coordsystem3dbuilder::CoordSystem3DBuilder;
 pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
+pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
 pub use penpathbuilderbehaviour::PenPathBuilderBehaviour;
 pub use penpathbuilderbehaviour::PenPathBuilderCreator;
@@ -48,6 +50,7 @@ pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
 pub use shapebuilderbehaviour::ShapeBuilderCreator;
 pub use shapebuilderbehaviour::ShapeBuilderProgress;
 
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -57,32 +60,35 @@ use std::collections::HashSet;
 #[serde(rename = "shapebuilder_type")]
 /// A choice for a shape builder type
 pub enum ShapeBuilderType {
-    #[serde(rename = "line")]
     /// A line builder
+    #[serde(rename = "line")]
     Line = 0,
-    #[serde(rename = "rectangle")]
     /// A rectangle builder
+    #[serde(rename = "rectangle")]
     Rectangle,
-    #[serde(rename = "coord_system_2d")]
+    /// A grid
+    #[serde(rename = "grid")]
+    Grid,
     /// A 2D coordinate system builder
+    #[serde(rename = "coord_system_2d")]
     CoordSystem2D,
-    #[serde(rename = "coord_system_3d")]
     /// A 3D coordinate system builder
+    #[serde(rename = "coord_system_3d")]
     CoordSystem3D,
-    #[serde(rename = "quadrant_coord_system_2d")]
     /// A 2D single quadrant coordinate system builder
+    #[serde(rename = "quadrant_coord_system_2d")]
     QuadrantCoordSystem2D,
-    #[serde(rename = "ellipse")]
     /// An ellipse builder
+    #[serde(rename = "ellipse")]
     Ellipse,
-    #[serde(rename = "foci_ellipse")]
     /// A foci ellipse builder
+    #[serde(rename = "foci_ellipse")]
     FociEllipse,
-    #[serde(rename = "quadbez")]
     /// An quadbez builder
+    #[serde(rename = "quadbez")]
     QuadBez,
-    #[serde(rename = "cubbez")]
     /// An cubic bezier builder
+    #[serde(rename = "cubbez")]
     CubBez,
 }
 

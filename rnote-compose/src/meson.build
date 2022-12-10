@@ -9,6 +9,7 @@ rnote_compose_sources = files(
     'builders/penpathsimplebuilder.rs',
     'builders/quadbezbuilder.rs',
     'builders/rectanglebuilder.rs',
+    'builders/gridbuilder.rs',
     'builders/coordsystem2dbuilder.rs',
     'builders/coordsystem3dbuilder.rs',
     'builders/quadrantcoordsystem2dbuilder.rs',

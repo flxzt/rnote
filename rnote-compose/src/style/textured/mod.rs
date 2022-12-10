@@ -154,7 +154,7 @@ impl Composer<TexturedOptions> for PenPath {
                 }
             }
 
-            options.seed = options.seed.map(crate::utils::seed_advance);
+            options.advance_seed();
         }
         cx.restore().unwrap();
     }

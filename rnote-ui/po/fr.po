@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-10 13:34+0000\n"
+"PO-Revision-Date: 2022-12-11 18:26+0000\n"
 "Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -1149,7 +1149,7 @@ msgstr "Courbe de pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:222
 msgid "Choose a pressure curve"
-msgstr "Choisissez une courbe de pression"
+msgstr "Choisir une courbe de pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
 msgid "Constant"
@@ -1300,7 +1300,7 @@ msgstr "Choisir un style de remplissage"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "Hachures"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
@@ -1312,21 +1312,19 @@ msgstr "Ligne Zig-Zag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "Hachures croisées"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr "Pointillé"
+msgstr "Tirets"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "Angle des hachures"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "Définir le curseur de dessin"
+msgstr "Définir l'angle des hachures"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"

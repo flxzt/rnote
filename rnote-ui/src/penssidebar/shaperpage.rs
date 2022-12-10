@@ -407,61 +407,61 @@ impl ShaperPage {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_line_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-line-symbolic"));
+                    .set_icon_name(Some("shapebuilder-line-symbolic"));
             }
             ShapeBuilderType::Rectangle => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_rectangle_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-rectangle-symbolic"));
+                    .set_icon_name(Some("shapebuilder-rectangle-symbolic"));
             }
             ShapeBuilderType::Grid => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_grid_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-rectangle-symbolic"));
+                    .set_icon_name(Some("shapebuilder-grid-symbolic"));
             }
             ShapeBuilderType::CoordSystem2D => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_coordsystem2d_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-coordsystem2d-symbolic"));
+                    .set_icon_name(Some("shapebuilder-coordsystem2d-symbolic"));
             }
             ShapeBuilderType::CoordSystem3D => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_coordsystem3d_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-coordsystem3d-symbolic"));
+                    .set_icon_name(Some("shapebuilder-coordsystem3d-symbolic"));
             }
             ShapeBuilderType::QuadrantCoordSystem2D => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_quadrantcoordsystem2d_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-quadrantcoordsystem2d-symbolic"));
+                    .set_icon_name(Some("shapebuilder-quadrantcoordsystem2d-symbolic"));
             }
             ShapeBuilderType::Ellipse => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_ellipse_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-ellipse-symbolic"));
+                    .set_icon_name(Some("shapebuilder-ellipse-symbolic"));
             }
             ShapeBuilderType::FociEllipse => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_fociellipse_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-fociellipse-symbolic"));
+                    .set_icon_name(Some("shapebuilder-fociellipse-symbolic"));
             }
             ShapeBuilderType::QuadBez => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_quadbez_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-quadbez-symbolic"));
+                    .set_icon_name(Some("shapebuilder-quadbez-symbolic"));
             }
             ShapeBuilderType::CubBez => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_cubbez_row));
                 imp.shapebuildertype_image
-                    .set_icon_name(Some("shape-cubbez-symbolic"));
+                    .set_icon_name(Some("shapebuilder-cubbez-symbolic"));
             }
         }
     }

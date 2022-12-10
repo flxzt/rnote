@@ -180,6 +180,12 @@
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window" translatable="yes">Cut into clipboard</property>
+                    <property name="accelerator">&lt;ctrl&gt;x</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
                     <property name="title" context="shortcut window" translatable="yes">Paste clipboard</property>
                     <property name="accelerator">&lt;ctrl&gt;v</property>
                   </object>

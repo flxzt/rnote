@@ -29,6 +29,7 @@ mod imp {
         pub(crate) canvas_zoom_gesture: GestureZoom,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
+        pub(crate) canvas_ctrl_space_drag_gesture: GestureDrag,
 
         #[template_child]
         pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -79,6 +80,12 @@ mod imp {
                 .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
+            let canvas_ctrl_space_drag_gesture = GestureDrag::builder()
+                .name("canvas_ctrl_space_drag_gesture")
+                .button(gdk::BUTTON_PRIMARY)
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
             Self {
                 permanently_hide_scrollbars: Cell::new(false),
 
@@ -88,6 +95,7 @@ mod imp {
                 canvas_zoom_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
+                canvas_ctrl_space_drag_gesture,
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 progressbar: TemplateChild::<ProgressBar>::default(),
@@ -130,6 +138,8 @@ mod imp {
                 .add_controller(&self.canvas_zoom_scroll_controller);
             self.scroller
                 .add_controller(&self.canvas_mouse_drag_middle_gesture);
+            self.scroller
+                .add_controller(&self.canvas_ctrl_space_drag_gesture);
         }
 
         fn dispose(&self) {
@@ -262,6 +272,9 @@ impl RnoteCanvasWrapper {
             .group_with(&self.imp().canvas_touch_drag_gesture);
         self.imp()
             .canvas_drag_empty_area_gesture
+            .group_with(&self.imp().canvas_touch_drag_gesture);
+        self.imp()
+            .canvas_ctrl_space_drag_gesture
             .group_with(&self.imp().canvas_touch_drag_gesture);
 
         // zoom scrolling with <ctrl> + scroll
@@ -432,6 +445,58 @@ impl RnoteCanvasWrapper {
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
+        }
+
+        // Zoom with alt + drag
+        {
+            let zoom_begin = Rc::new(Cell::new(1_f64));
+            let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+
+            self.imp()
+                .canvas_ctrl_space_drag_gesture
+                .connect_drag_begin(clone!(
+                    @strong zoom_begin,
+                    @strong prev_offset,
+                    @weak self as appwindow => move |gesture, _, _| {
+                        let modifiers = gesture.current_event_state();
+
+                        if modifiers.contains(gdk::ModifierType::ALT_MASK) {
+                            gesture.set_state(EventSequenceState::Claimed);
+                            let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+
+                            zoom_begin.set(current_zoom);
+                            prev_offset.set(na::Vector2::<f64>::zeros());
+                        } else {
+                            gesture.set_state(EventSequenceState::Denied);
+                        }
+                }));
+
+            self.imp().canvas_ctrl_space_drag_gesture.connect_drag_update(clone!(
+                @strong zoom_begin,
+                @strong prev_offset,
+                @weak appwindow => move |gesture, offset_x, offset_y| {
+                    // 0.5% zoom for every pixel in y dir
+                    const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
+                    let modifiers = gesture.current_event_state();
+
+                    if modifiers.contains(gdk::ModifierType::ALT_MASK) {
+                        let new_offset = na::vector![offset_x, offset_y];
+                        let cur_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+
+                        // Drag down zooms out, drag up zooms in
+                        let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
+
+                        //log::debug!("new_zoom: {new_zoom}");
+
+                        if new_zoom <= Camera::ZOOM_MAX && new_zoom >= Camera::ZOOM_MIN {
+                            let current_doc_center = appwindow.canvas().current_center_on_doc();
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+                            appwindow.canvas().center_around_coord_on_doc(current_doc_center);
+                        }
+
+                        prev_offset.set(new_offset);
+                    }
+            }));
         }
     }
 

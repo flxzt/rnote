@@ -130,7 +130,7 @@ pub fn draw_statistics_overlay(
             ],
             na::point![
                 surface_bounds.maxs[0] - 20.0,
-                surface_bounds.mins[1] + 100.0
+                surface_bounds.mins[1] + 120.0
             ],
         );
         let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
@@ -142,19 +142,21 @@ pub fn draw_statistics_overlay(
             .store
             .keys_unordered_intersecting_bounds(engine.camera.viewport());
         let selected_strokes = engine.store.selection_keys_unordered();
+        let trashed_strokes = engine.store.trashed_keys_unordered();
 
         let statistics_text_string = format!(
-            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}",
+            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}",
             strokes_total.len(),
             strokes_in_viewport.len(),
-            selected_strokes.len()
+            selected_strokes.len(),
+            trashed_strokes.len(),
         );
 
         let text_layout = piet_cx
             .text()
             .new_text_layout(statistics_text_string)
             .text_color(piet::Color::rgba(0.8, 1.0, 1.0, 1.0))
-            .max_width(500.0)
+            .max_width(300.0)
             .alignment(piet::TextAlignment::End)
             .font(piet::FontFamily::MONOSPACE, 10.0)
             .build()

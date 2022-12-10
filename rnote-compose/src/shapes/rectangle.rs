@@ -66,6 +66,25 @@ impl TransformBehaviour for Rectangle {
 }
 
 impl Rectangle {
+    /// From center and half extents
+    pub fn from_half_extents(center: na::Vector2<f64>, half_extents: na::Vector2<f64>) -> Self {
+        let cuboid = p2d::shape::Cuboid::new(half_extents);
+        let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
+
+        Self { cuboid, transform }
+    }
+
+    /// From corners (across from each other)
+    pub fn from_corners(first: na::Vector2<f64>, second: na::Vector2<f64>) -> Self {
+        let half_extents = (second - first).abs() * 0.5;
+        let center = first + (second - first) * 0.5;
+
+        let cuboid = p2d::shape::Cuboid::new(half_extents);
+        let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
+
+        Self { cuboid, transform }
+    }
+
     /// New from bounds
     pub fn from_p2d_aabb(mut bounds: AABB) -> Self {
         bounds.ensure_positive();

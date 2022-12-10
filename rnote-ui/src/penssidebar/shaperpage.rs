@@ -55,6 +55,8 @@ mod imp {
         #[template_child]
         pub(crate) shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
         #[template_child]
+        pub(crate) shapebuildertype_grid_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
         pub(crate) shapebuildertype_coordsystem2d_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) shapebuildertype_coordsystem3d_row: TemplateChild<adw::ActionRow>,
@@ -410,6 +412,12 @@ impl ShaperPage {
             ShapeBuilderType::Rectangle => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_rectangle_row));
+                imp.shapebuildertype_image
+                    .set_icon_name(Some("shape-rectangle-symbolic"));
+            }
+            ShapeBuilderType::Grid => {
+                imp.shapebuildertype_listbox
+                    .select_row(Some(&*imp.shapebuildertype_grid_row));
                 imp.shapebuildertype_image
                     .set_icon_name(Some("shape-rectangle-symbolic"));
             }

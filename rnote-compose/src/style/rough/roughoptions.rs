@@ -47,6 +47,11 @@ impl RoughOptions {
     ///
     /// TODO: make this not a fixed value, but dependent on the shape size, roughness, etc.
     pub const ROUGH_BOUNDS_MARGIN: f64 = 20.0;
+
+    /// Advances the seed
+    pub fn advance_seed(&mut self) {
+        self.seed = self.seed.map(crate::utils::seed_advance)
+    }
 }
 
 /// available Fill styles

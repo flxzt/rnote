@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-07 17:11+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"PO-Revision-Date: 2022-12-10 11:17+0000\n"
+"Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1292,7 +1292,7 @@ msgstr "Lisse"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:196
 msgid "Rough"
-msgstr "Approximatif (grossier)"
+msgstr "Grossier"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:233
 msgid "Rough style"

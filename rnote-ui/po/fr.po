@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-10 11:17+0000\n"
+"PO-Revision-Date: 2022-12-10 13:34+0000\n"
 "Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -577,10 +577,8 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:492
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document pages"
-msgstr "Exporter le document au format SVG"
+msgstr "Exporter les pages"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -611,7 +609,7 @@ msgstr "Jpeg"
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap scale factor"
-msgstr ""
+msgstr "Mise à l’échelle"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
@@ -619,6 +617,8 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Définir le facteur de mise à l'échelle de l’image Bitmap\n"
+"par rapport à sa taille réelle sur le document"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
@@ -1066,10 +1066,8 @@ msgid "Remove workspace"
 msgstr "Supprimer l'espace de travail"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:190
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
-msgstr "Créer un répertoire"
+msgstr "Créer un nouveau dossier"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1089,8 +1087,6 @@ msgid "Marker"
 msgstr "Marqueur"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
 msgstr "Marquer sous les autres traits"
 
@@ -1121,7 +1117,7 @@ msgstr "Simple"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Produit des segments de ligne à partir de la saisie brute.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Curved"
@@ -1145,7 +1141,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Solid style"
-msgstr "Style traits continus"
+msgstr "Style uniforme"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:221
 msgid "Pressure curve"
@@ -1181,7 +1177,7 @@ msgstr "Parabole cubique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:242
 msgid "Textured style"
-msgstr "Style traits texturés"
+msgstr "Style texturé"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:245
 msgid "Density"
@@ -1224,20 +1220,16 @@ msgid "Split strokes"
 msgstr "Diviser les traits"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
 msgstr "Sélectionner avec un polygone"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
 msgstr "Sélectionner avec un rectangle"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "Sélectionner un par un"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1296,19 +1288,15 @@ msgstr "Grossier"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:233
 msgid "Rough style"
-msgstr "Style de trait approximatif"
+msgstr "Style grossier"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "Style traits continus"
+msgstr "Style de remplissage"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "Choisissez un format"
+msgstr "Choisir un style de remplissage"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
@@ -1316,11 +1304,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Zig-Zag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Ligne Zig-Zag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
@@ -1328,7 +1316,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "Pointillé"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
@@ -1350,15 +1338,15 @@ msgstr "Rectangle"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "2D coordinate system"
-msgstr ""
+msgstr "Référentiel 2D"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "3D coordinate system"
-msgstr ""
+msgstr "Référentiel 3D"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "Référentiel 2D à quadrant unique"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "Ellipse"
@@ -1414,9 +1402,9 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
-"Sélectionneur de police\n"
+"Sélecteur de police\n"
 "(double-cliquez, cliquez sur la sélection\n"
-"ou pressez Entrée pour sélectionner une nouvelle police)"
+"ou appuyez sur Entrée pour sélectionner une nouvelle police)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:67
 msgid "Pick and insert an emoji"
@@ -1475,10 +1463,8 @@ msgid "Opening file failed."
 msgstr "L'ouverture du fichier a échoué."
 
 #: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote"
-msgstr "fichier .rnote"
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/import.rs:80
 msgid "Open file"
@@ -1486,7 +1472,7 @@ msgstr "Ouvrir fichier"
 
 #: rnote-ui/src/dialogs/import.rs:143
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:146
 msgid "Import file"
@@ -1533,10 +1519,8 @@ msgid "Opening PDF file failed."
 msgstr "L'ouverture du fichier PDF a échoué."
 
 #: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
-#, fuzzy
-#| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
-msgstr "L'ouverture du fichier .xopp a échoué."
+msgstr "L'ouverture du fichier Xournal++ a échoué."
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1559,22 +1543,18 @@ msgid "Export document failed, no file selected."
 msgstr "Échec de l’exportation du document, aucun fichier n’a été sélectionné."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Export document pages failed."
-msgstr "Échec de l'exportation du document."
+msgstr "Échec de l'exportation des pages du document."
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
-msgstr "Document exporté avec succès."
+msgstr "Pages exportés avec succès."
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
-msgstr "Échec de l’exportation du document, aucun fichier n’a été sélectionné."
+msgstr ""
+"Échec de l’exportation des pages du document, aucun répertoire n’a été "
+"sélectionné."
 
 #: rnote-ui/src/dialogs/export.rs:711
 msgid "Export selection failed."
@@ -1589,10 +1569,8 @@ msgid "Export selection failed, no file selected."
 msgstr "Échec de l’exportation de la sélection, aucun fichier sélectionné."
 
 #: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "fichier JSON"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:812
 msgid "Export engine state"
@@ -1652,29 +1630,27 @@ msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "Le fichier ouvert a été modifié sur le disque."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Recharger"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "Le fichier ouvert a été renommé sur le disque."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "Le fichier ouvert a été déplacé ou supprimé sur le disque."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "Nom du fichier :"
+msgstr "Nom du dossier"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "Nouveau dossier"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

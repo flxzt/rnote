@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-05 11:54+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
+"PO-Revision-Date: 2022-12-11 18:26+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -195,7 +195,7 @@ msgstr "Borrador"
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
 msgid "Selector"
-msgstr "Selector"
+msgstr "Seleccionador"
 
 #: rnote-ui/data/ui/appwindow.ui:106 rnote-ui/data/ui/mainheader.ui:116
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
@@ -763,11 +763,11 @@ msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "US letter"
-msgstr "Carta de EE.UU."
+msgstr "Carta de Estados Unidos"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
 msgid "US legal"
-msgstr "Legal de EE.UU."
+msgstr "Derecho estadounidense"
 
 #: rnote-ui/data/ui/settingspanel.ui:179
 msgid "Custom"
@@ -1109,7 +1109,7 @@ msgstr "Modelización de rutas"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Simple"
-msgstr "Simple"
+msgstr "Sencillo"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces line segments from the raw input.\n"
@@ -1300,7 +1300,7 @@ msgstr "Plumeado"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr "Zig-Zag"
+msgstr "Zigzag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
@@ -1397,9 +1397,9 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
-"Selector de tipografías\n"
-"(doble clic, clic en seleccionar\n"
-"o pulse Intro para seleccionar un tipo de letra nuevo)"
+"Selector de fuentes\n"
+"(doble clic, o clic en seleccionar\n"
+"o pulse Intro para seleccionar un nuevo tipo de letra)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:67
 msgid "Pick and insert an emoji"
@@ -1628,19 +1628,19 @@ msgstr "La selección de la exportación ha fallado, no se ha seleccionado nada.
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "El archivo abierto fue modificado en el disco."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Recarga"
 
 #: rnote-ui/src/canvas/mod.rs:632
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "Se cambió el nombre del archivo abierto en el disco."
 
 #: rnote-ui/src/canvas/mod.rs:639
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "El archivo abierto se ha movido o borrado del disco."
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
 msgid "Folder name"

@@ -526,6 +526,8 @@ fn update_export_doc_pages_filechooser_with_prefs(
     doc_pages_export_prefs: &DocPagesExportPrefs,
 ) {
     let filter = FileFilter::new();
+    // We always need to be able to select folders
+    filter.add_mime_type("inode/directory");
 
     match doc_pages_export_prefs.export_format {
         DocPagesExportFormat::Svg => {

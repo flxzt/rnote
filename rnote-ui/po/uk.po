@@ -3,17 +3,17 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
+"PO-Revision-Date: 2022-12-13 23:49+0000\n"
 "Last-Translator: diminDDL <dimin21590@gmail.com>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
-">\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
+"\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -63,149 +63,107 @@ msgstr "Вибір"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "_Color scheme"
-msgstr ""
+msgstr "_Кольори"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
 msgid "Use _system colors"
-msgstr "Використовувати кольори системи"
+msgstr "Використовувати кольори _системи"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
 msgid "Use _light colors"
-msgstr "Використовувати світлі кольори"
+msgstr "Використовувати _світлі кольори"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
 msgid "Use _dark colors"
-msgstr "Використовувати темні кольори"
+msgstr "Використовувати _темні кольори"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
 msgid "De_veloper mode"
-msgstr "Режим розробника"
+msgstr "Режим роз_робника"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
 msgid "Developer _menu"
-msgstr "Меню розробника"
+msgstr "_Меню розробника"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
 msgid "Visual _debugging"
-msgstr "Візуальне налагодження"
+msgstr "Графічне _налагодження"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export engine _state"
-msgstr "Експортувати стан рушія"
+msgstr "Експортувати _стан рушія"
 
 #: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export engine _config"
-msgstr "Експорт конфігурації рушія"
+msgstr "Експорт _конфігурації рушія"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "_Новий"
 
 #: rnote-ui/data/ui/appmenu.ui:72
-#, fuzzy
-#| msgid "Open"
 msgid "_Open"
-msgstr "Відкрити"
+msgstr "_Відкрити"
 
 #: rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "Save"
 msgid "_Save"
-msgstr "Зберегти"
+msgstr "_Зберегти"
 
 #: rnote-ui/data/ui/appmenu.ui:80
-#, fuzzy
-#| msgid "Save as"
 msgid "Save _as"
-msgstr "Зберегти як"
+msgstr "Зберегти _як"
 
 #: rnote-ui/data/ui/appmenu.ui:86
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "Друк"
+msgstr "_Друк"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
 msgid "Paste _clipboard"
-msgstr "Вставити буфер обміну як виділення"
+msgstr "Вставити _буфер"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import file"
-msgstr "Імпортувати файл"
+msgstr "_Імпортувати файл"
 
 #: rnote-ui/data/ui/appmenu.ui:98
-#, fuzzy
-#| msgid "Export…"
 msgid "_Export…"
-msgstr "Експортувати…"
+msgstr "_Експортувати…"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
 msgid "Export _document"
-msgstr "Новий документ"
+msgstr "Експортувати _документ"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export document _pages"
-msgstr "Експортувати документ як SVG"
+msgstr "Експортувати _сторінки"
 
 #: rnote-ui/data/ui/appmenu.ui:108
-#, fuzzy
-#| msgid "Export Selection"
 msgid "Export _selection"
-msgstr "Експортувати вибір"
+msgstr "Експортувати _вибране"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "Налаштування"
+msgstr "На_лаштування"
 
 #: rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "Keyboard shortcuts"
 msgid "_Keyboard shortcuts"
-msgstr "Комбінації клавіш"
+msgstr "_Комбінації клавіш"
 
 #: rnote-ui/data/ui/appmenu.ui:123
-#, fuzzy
-#| msgid "Donate 💝"
 msgid "_Donate 💝"
-msgstr "Підтримати 💝"
+msgstr "_Підтримати 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "About Rnote"
 msgid "A_bout Rnote"
-msgstr "Про Rnote"
+msgstr "П_ро Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
-msgstr "Бічна панель зліва"
+msgstr "Ліва панель"
 
 #: rnote-ui/data/ui/appmenu.ui:167
-#, fuzzy
 msgid "Sidebar on the right side"
-msgstr "Бічна панель з правого боку"
+msgstr "Права панель"
 
 #: rnote-ui/data/ui/appmenu.ui:177
 msgid "Toggle fullscreen"
@@ -243,12 +201,11 @@ msgstr "Інструменти"
 
 #: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
-msgstr ""
+msgstr "Показати / приховати панель"
 
 #: rnote-ui/data/ui/appwindow.ui:267
-#, fuzzy
 msgid "Close the folded flap"
-msgstr "Закрити складений клапоть"
+msgstr "Закрити складену панель"
 
 #: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
@@ -259,67 +216,50 @@ msgid "Settings"
 msgstr "Налаштування"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document layout"
 msgid "Document _layout"
-msgstr "Компонування документа"
+msgstr "_Компонування документа"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
-#, fuzzy
 msgid "_Fixed size"
-msgstr "Фіксований розмір"
+msgstr "_Фіксований розмір"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-#, fuzzy
 msgid "_Continuous vertical"
-msgstr "Безперервна вертикаль"
+msgstr "_Безперервна вертикаль"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
 msgid "_Infinite"
-msgstr "Нескінченна"
+msgstr "_Нескінченна"
 
 #: rnote-ui/data/ui/canvasmenu.ui:44
-#, fuzzy
-#| msgid "Show format borders"
 msgid "Show _format borders"
-msgstr "Показати межі формату"
+msgstr "Показати межі _формату"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Draw with touch input"
 msgid "Draw with _touch input"
-msgstr "Малюйте за допомогою сенсорного введення"
+msgstr "Малюй _дотиком"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
 msgid "_Pen sounds"
-msgstr "Звуки пера"
+msgstr "Звуки _пера"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
 msgid "_Clear document"
-msgstr "Очистити документ"
+msgstr "_Очистити документ"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "Повернутись до початкової сторінки"
+msgstr "_Повернутись до початкової сторінки"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
-#, fuzzy
 msgid "Zoom out"
-msgstr "Зменшити масштаб"
+msgstr "Віддалити"
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
-#, fuzzy
 msgid "Reset the zoom"
 msgstr "Скинути масштаб"
 
 #: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
-#, fuzzy
 msgid "Zoom in"
 msgstr "Збільшити"
 
@@ -336,12 +276,10 @@ msgid "Resize document to fit the strokes"
 msgstr "Змінити розмір відповідно до вмісту"
 
 #: rnote-ui/data/ui/canvaswrapper.ui:102
-#, fuzzy
 msgid "Undo"
 msgstr "Скасувати"
 
 #: rnote-ui/data/ui/canvaswrapper.ui:115
-#, fuzzy
 msgid "Redo"
 msgstr "Повторити"
 
@@ -353,14 +291,12 @@ msgid "Select"
 msgstr "Вибрати"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
-#, fuzzy
 msgid "Clear document"
 msgstr "Очистити документ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
-#, fuzzy
 msgid "This clears the entire document. Please confirm."
-msgstr "Це очищає весь аркуш. Будь ласка, підтвердьте."
+msgstr "Весь аркуш буде очищено, ви впевненні?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:21
@@ -384,21 +320,21 @@ msgid "Clear"
 msgstr "Очистити"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
-#, fuzzy
 msgid "New Document"
 msgstr "Новий документ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved changes. Do you want to "
 "save the current document?"
-msgstr "Створення нового документа стирає всі незбережені зміни. Ви впевнені?"
+msgstr ""
+"Створення нового документа видалить всі незбережені зміни. Зберегти поточний "
+"документ?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
 #: rnote-ui/data/ui/dialogs/dialogs.ui:34 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr ""
+msgstr "Скасувати"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:12
@@ -411,16 +347,14 @@ msgid "Quit Application"
 msgstr "Вийти з програми"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
 msgid ""
 "Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "Усі незбережені зміни буде втрачено. Ви все одно хочете вийти?"
+msgstr "Усі незбережені зміни буде втрачено. Зберегти поточний документ?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: rnote-ui/data/ui/workspacebrowser.ui:173
-#, fuzzy
 msgid "Edit workspace"
-msgstr "Робоча область"
+msgstr "Редагувати робочу область"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
@@ -428,18 +362,16 @@ msgid "Apply"
 msgstr "Застосувати"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:92
-#, fuzzy
 msgid "Workspace Name"
-msgstr "Робоча область"
+msgstr "Назва робочої області"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:97
 msgid "Icon"
 msgstr "Значок"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:98
-#, fuzzy
 msgid "Change the workspace icon"
-msgstr "Змінити каталог робочої області"
+msgstr "Змінити значок робочої області"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:117
 #: rnote-ui/data/ui/settingspanel.ui:293
@@ -447,17 +379,14 @@ msgid "Color"
 msgstr "Колір"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:118
-#, fuzzy
 msgid "Change the workspace color"
-msgstr "Змінити каталог робочої області"
+msgstr "Змінити колір робочої області"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:131
-#, fuzzy
 msgid "Directory"
-msgstr "Вектор"
+msgstr "Каталог"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:132
-#, fuzzy
 msgid "Change the workspace directory"
 msgstr "Змінити каталог робочої області"
 
@@ -476,16 +405,16 @@ msgid "Open File"
 msgstr "Відкрити файл"
 
 #: rnote-ui/data/ui/dialogs/import.ui:6
-#, fuzzy
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "Відкриття цього файлу перезаписує будь-які незбережені зміни."
+msgstr ""
+"Відкриття цього файлу перезаписує будь-які незбережені зміни. Зберегти "
+"поточний документ?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
 msgid "Import PDF"
-msgstr "Імпортувати файл"
+msgstr "Імпортувати PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
 #: rnote-ui/src/dialogs/import.rs:149
@@ -495,27 +424,23 @@ msgstr "Імпортувати"
 #: rnote-ui/data/ui/dialogs/import.ui:91
 #, fuzzy
 msgid "PDF import preferences"
-msgstr "Тип зображення імпорту PDF"
+msgstr "Параметри імпорту PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"
-msgstr ""
+msgstr "Початкова сторінка"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
 msgid "End page"
-msgstr "Додати сторінку"
+msgstr "Кінець сторінки"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
 msgid "Pages type"
 msgstr "Тип сторінок"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
 msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgstr ""
-"Встановити, чи потрібно імпортувати PDF-файли як векторні або растрові "
-"зображення"
+msgstr "Імпортувати PDF-файли як векторні чи растрові зображення"
 
 #: rnote-ui/data/ui/dialogs/import.ui:138
 msgid "Vector"
@@ -526,14 +451,12 @@ msgid "Bitmap"
 msgstr "Растр"
 
 #: rnote-ui/data/ui/dialogs/import.ui:154
-#, fuzzy
 msgid "Page width (%)"
-msgstr "Ширина імпорту PDF (%)"
+msgstr "Ширина сторінки (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:155
-#, fuzzy
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr "Встановити ширину імпортованих PDF-файлів у відсотках до ширини аркуша"
+msgstr "Встановити ширину імпортованих PDF-файлів у відсотках від ширини аркуша"
 
 #: rnote-ui/data/ui/dialogs/import.ui:175
 msgid "Page spacing"
@@ -541,27 +464,23 @@ msgstr "Інтервал сторінок"
 
 #: rnote-ui/data/ui/dialogs/import.ui:176
 msgid "How PDF pages are spaced"
-msgstr ""
+msgstr "Як розділені сторінки PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:180
 msgid "Continuous"
-msgstr ""
+msgstr "Безперервно"
 
 #: rnote-ui/data/ui/dialogs/import.ui:181
-#, fuzzy
 msgid "One per document page"
-msgstr "Новий документ"
+msgstr "Один на сторінку документа"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ file"
-msgstr "Імпортувати файл"
+msgstr "Імпортувати файл Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
 msgid "Xournal++ file import preferences"
-msgstr "Тип зображення імпорту PDF"
+msgstr "Налаштування імпорту файлів Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
@@ -569,12 +488,11 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Бажаний DPI для файлу Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
-#, fuzzy
 msgid "Export document"
-msgstr "Новий документ"
+msgstr "Експортувати документ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
@@ -583,66 +501,52 @@ msgid "Export"
 msgstr "Експортувати"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Import file"
 msgid "Export file"
-msgstr "Імпортувати файл"
+msgstr "Експортувати файл"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "Встановити ширину формату"
+msgstr "Виберіть файл експорту"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
 #: rnote-ui/src/dialogs/export.rs:122 rnote-ui/src/dialogs/export.rs:148
 #: rnote-ui/src/dialogs/export.rs:177 rnote-ui/src/dialogs/export.rs:619
 #: rnote-ui/src/dialogs/export.rs:645 rnote-ui/src/dialogs/export.rs:679
-#, fuzzy
-#| msgid "- no directory selected -"
 msgid "- no file selected -"
-msgstr "- каталог не вибрано -"
+msgstr "- файл не вибрано -"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
-#, fuzzy
 msgid "Export preferences"
-msgstr "Тип зображення імпорту PDF"
+msgstr "Параметри експорту"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
-#, fuzzy
 msgid "With background"
-msgstr "Фон аркуша"
+msgstr "З фоном"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "Встановити колір фону"
+msgstr "Чи слід експортувати фон"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "Pattern"
 msgid "With pattern"
-msgstr "Шаблон"
+msgstr "З шаблоном"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background pattern should be exported"
-msgstr "Встановити колір фону"
+msgstr "Чи слід експортувати фон"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
 #, fuzzy
 msgid "Export format"
-msgstr "Новий документ"
+msgstr "Формат експорту"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279

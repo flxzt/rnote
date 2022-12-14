@@ -13,7 +13,7 @@ fs = import('fs')
 
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
-app_cli_name = 'rnote-cli'
+cli_name = 'rnote-cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
@@ -36,10 +36,12 @@ if get_option('profile') == 'devel'
     profile = 'devel'
     version_suffix = '-devel'
     app_id = base_id + '.' + 'Devel'
+    rust_target_folder = 'debug'
 else
     profile = 'default'
     app_id = base_id
     version_suffix = patch
+    rust_target_folder = 'release'
 endif
 
 app_idpath = '/com/github/flxzt/' + app_name + '/'
@@ -79,8 +81,7 @@ glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
-# easier to build with a script on windows
-cargo_build_win_script = find_program('build-aux/cargo_build_win.py')
+cargo_build_script = find_program('build-aux/cargo_build.py')
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -100,118 +101,121 @@ if get_option('profile') == 'devel'
     )
 endif
 
-# workspaces crates
+# workspace crates
 subdir('rnote-compose')
 subdir('rnote-fileformats')
 subdir('rnote-engine')
-subdir('rnote-cli')
 subdir('rnote-ui')
 
-cargo_sources = files(
-    meson.project_source_root() + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'build.rs',
-)
+cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
+cargo_target_dir = meson.project_build_root() / 'target'
+cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
 
-sources = [
+# build / install the app
+app_sources = [
     rnote_compose_sources,
     rnote_fileformats_sources,
     rnote_engine_sources,
     rnote_ui_sources,
-    cargo_sources,
+    files(
+        meson.project_source_root() + '/Cargo.toml',
+        meson.project_source_root() + '/rnote-compose/Cargo.toml',
+        meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
+        meson.project_source_root() + '/rnote-engine/Cargo.toml',
+        meson.project_source_root() + '/rnote-ui/Cargo.toml',
+        meson.project_source_root() + '/rnote-ui/build.rs',
+    ),
 ]
 
-cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
-cargo_target_dir = meson.project_build_root() / 'target'
-cargo_options = ['--manifest-path', cargo_manifest_path]
-cargo_options += ['--target-dir', cargo_target_dir]
-cargo_options += ['-p', 'rnote']
-
-if get_option('cli') == true
-    cargo_options += ['-p', 'rnote-cli']
-
-    sources += rnote_cli_sources
-    sources += files([
-        meson.project_source_root() + '/' + 'rnote-cli' + '/' + 'Cargo.toml',
-    ])
-endif
+app_cargo_options = ['--manifest-path', cargo_manifest_path]
+app_cargo_options += ['--target-dir', cargo_target_dir]
+app_cargo_options += ['-p', 'rnote']
 
 if get_option('profile') == 'default'
-    cargo_options += ['--release']
-    rust_target = 'release'
-    message('cargo: building in release mode')
-else
-    rust_target = 'debug'
-    message('cargo: building in debug mode')
+    app_cargo_options += ['--release']
 endif
-
-cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
 
 # see https://mesonbuild.com/Reference-tables.html#operating-system-names
 if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-    bin_output = app_name + '.exe'
+    app_bin_output = app_name + '.exe'
 else
-    bin_output = app_name
+    app_bin_output = app_name
 endif
 
-if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-    # the script needs one string
-    win_cargo_options = (
-        '--manifest-path ' + cargo_manifest_path + ' --target-dir ' + cargo_target_dir
-    )
+custom_target(
+    'cargo-build-app',
+    build_by_default: true,
+    input: app_sources,
+    output: app_bin_output,
+    console: true,
+    install: true,
+    install_dir: bindir,
+    depends: gresources,
+    command: [
+        cargo_build_script,
+        meson.project_build_root(),
+        meson.project_source_root(),
+        cargo_env,
+        cargo,
+        ' '.join(app_cargo_options),
+        cargo_target_dir / rust_target_folder / app_name,
+        meson.project_build_root() / '@OUTPUT@',
+    ],
+)
+
+# build / install the cli
+if get_option('cli') == true
+    # cli crate
+    subdir('rnote-cli')
+
+    cli_cargo_options = ['--manifest-path', cargo_manifest_path]
+    cli_cargo_options += ['--target-dir', cargo_target_dir]
+    cli_cargo_options += ['-p', 'rnote-cli']
 
     if get_option('profile') == 'default'
-        win_cargo_options += ' --release'
+        cli_cargo_options += ['--release']
     endif
 
+    if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
+        cli_bin_output = cli_name + '.exe'
+    else
+        cli_bin_output = cli_name
+    endif
+
+    cli_sources = [
+        rnote_compose_sources,
+        rnote_fileformats_sources,
+        rnote_engine_sources,
+        rnote_ui_sources,
+        files(
+            meson.project_source_root() + '/Cargo.toml',
+            meson.project_source_root() + '/rnote-compose/Cargo.toml',
+            meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
+            meson.project_source_root() + '/rnote-engine/Cargo.toml',
+            meson.project_source_root() + '/rnote-cli/Cargo.toml',
+        ),
+    ]
+
     custom_target(
-        'cargo-build-win',
+        'cargo-build-cli',
         build_by_default: true,
-        input: sources,
-        output: bin_output,
+        input: cli_sources,
+        output: cli_bin_output,
         console: true,
         install: true,
         install_dir: bindir,
-        depends: gresources,
         command: [
-            cargo_build_win_script,
+            cargo_build_script,
             meson.project_build_root(),
             meson.project_source_root(),
             cargo_env,
             cargo,
-            win_cargo_options,
-            cargo_target_dir / rust_target / app_name,
-            meson.project_build_root() / '@OUTPUT@',
-        ],
-    )
-else
-    custom_target(
-        'cargo-build',
-        build_by_default: true,
-        input: sources,
-        output: bin_output,
-        console: true,
-        install: true,
-        install_dir: bindir,
-        depends: gresources,
-        command: [
-            'env',
-            cargo_env,
-            cargo,
-            'build',
-            cargo_options,
-            '&&',
-            'cp',
-            cargo_target_dir / rust_target / app_name,
+            ' '.join(cli_cargo_options),
+            cargo_target_dir / rust_target_folder / cli_name,
             meson.project_build_root() / '@OUTPUT@',
         ],
     )
 endif
-
-# TODO: Install the cli
 
 # meson >= 0.64 will include `update-mime-database` in the gnome module.
 # Then this script can be replaced by `gnome.post_install(..)`

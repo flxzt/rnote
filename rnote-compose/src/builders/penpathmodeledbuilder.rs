@@ -136,7 +136,7 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
 }
 
 impl PenPathModeledBuilder {
-    const MODELER_MIN_OUTPUT_RATE: f64 = 180.0;
+    const MODELER_MIN_OUTPUT_RATE: f64 = 120.0;
     const MODELER_MAX_OUTPUTS_PER_CALL: i32 = 100;
 
     fn try_build_segments(&mut self) -> Option<Vec<Segment>> {

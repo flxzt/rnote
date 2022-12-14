@@ -15,7 +15,7 @@ pub enum PenEvent {
     },
     /// A pen up event.
     Up {
-        /// The element for the down event
+        /// The element for the up event
         element: Element,
         /// pressed shortcut keys pressed during the up event
         shortcut_keys: Vec<ShortcutKey>,

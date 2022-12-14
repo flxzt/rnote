@@ -13,7 +13,10 @@ fs = import('fs')
 
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
+# the name of the produced binary of the cli crate
 cli_name = 'rnote-cli'
+# We need to rename the cli, because else the output file would collide with the rnote-cli folder
+cli_output_name = 'rnote_cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
@@ -177,9 +180,9 @@ if get_option('cli') == true
     endif
 
     if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-        cli_bin_output = cli_name + '.exe'
+        cli_bin_output = cli_output_name + '.exe'
     else
-        cli_bin_output = cli_name
+        cli_bin_output = cli_output_name
     endif
 
     cli_sources = [

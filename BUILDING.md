@@ -86,7 +86,8 @@ To enable the development profile, set `-Dprofile=devel` as a parameter. Else th
 
 To enable building the `rnote-cli` binary, set `-Dcli=true`.
 
-### Reconfigure
+**Reconfigure**
+
 reconfiguring the meson build options can be done with:
 
 ```bash

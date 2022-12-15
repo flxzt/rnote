@@ -7,15 +7,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"PO-Revision-Date: 2022-12-08 18:13+0000\n"
+"Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -37,14 +37,16 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote är ett enkelt vektorbaserat ritningsprogram för skissa, handskrivna "
-"anteckningar och för att kommentera dokument och bilder"
+"Rnote är ett vektorbaserat ritprogram för skissning, handskrivna "
+"anteckningar och för att annotera dokument och bilder."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:24
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"Observera: Filformatet är fortfarande instabilt. Det kan ändras och vara "
+"inkompatibelt mellan programversioner."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
@@ -133,10 +135,8 @@ msgid "Save _as"
 msgstr "Spara som"
 
 #: rnote-ui/data/ui/appmenu.ui:86
-#, fuzzy
-#| msgid "Print"
 msgid "_Print"
-msgstr "Skriv ut"
+msgstr "_Skriv ut"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
@@ -144,15 +144,12 @@ msgid "Paste _clipboard"
 msgstr "Klistra in markering från urklipp"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Import file"
 msgid "_Import file"
-msgstr "Importera Fil"
+msgstr "_Importera Fil"
 
 #: rnote-ui/data/ui/appmenu.ui:98
-#, fuzzy
 msgid "_Export…"
-msgstr "Exportera"
+msgstr "_Exportera…"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 #, fuzzy
@@ -196,15 +193,15 @@ msgstr "Om Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
-msgstr "Sidomeny på vänster sida"
+msgstr "Sidofält på vänster sida"
 
 #: rnote-ui/data/ui/appmenu.ui:167
 msgid "Sidebar on the right side"
-msgstr "Sidomeny på höger sida"
+msgstr "Sidofält på höger sida"
 
 #: rnote-ui/data/ui/appmenu.ui:177
 msgid "Toggle fullscreen"
-msgstr "Växla till fullskärm"
+msgstr "Byt till fullskärm"
 
 #: rnote-ui/data/ui/appwindow.ui:67 rnote-ui/data/ui/mainheader.ui:77
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
@@ -224,7 +221,7 @@ msgstr "Skrivmaskin"
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Eraser"
-msgstr "Suddigummi"
+msgstr "Suddgummi"
 
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
@@ -242,7 +239,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
-msgstr ""
+msgstr "Stäng den överlappande sidomenyn"
 
 #: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
@@ -349,14 +346,12 @@ msgid "Select"
 msgstr "Välj"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
-#, fuzzy
 msgid "Clear document"
-msgstr "Nytt document"
+msgstr "Rensa dokument"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
-#, fuzzy
 msgid "This clears the entire document. Please confirm."
-msgstr "Detta rensar hela bladet. Var snäll och bekräfta."
+msgstr "Detta rensar hela dokumentet. Var vänlig och bekräfta."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:21
@@ -418,9 +413,8 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 #: rnote-ui/data/ui/workspacebrowser.ui:173
-#, fuzzy
 msgid "Edit workspace"
-msgstr "Öppna arbetsyta"
+msgstr "Redigera arbetsyta"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
@@ -437,9 +431,8 @@ msgid "Icon"
 msgstr "Ikon"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:98
-#, fuzzy
 msgid "Change the workspace icon"
-msgstr "Ändra arbetsplats mappen"
+msgstr "Ändra arbetsytans ikon"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:117
 #: rnote-ui/data/ui/settingspanel.ui:293
@@ -447,14 +440,12 @@ msgid "Color"
 msgstr "Färg"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:118
-#, fuzzy
 msgid "Change the workspace color"
-msgstr "Ändra arbetsplats mappen"
+msgstr "Ändra arbetsytans färg"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:131
-#, fuzzy
 msgid "Directory"
-msgstr "Vektor"
+msgstr "Mapp"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:132
 #, fuzzy
@@ -469,7 +460,7 @@ msgstr "- ingen mapp vald -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
 msgid "Change workspace directory"
-msgstr "Ändra arbetsplats mappen"
+msgstr "Ändra arbetsplatsmappen"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -483,9 +474,8 @@ msgid ""
 msgstr "Om du öppnar denna fil skrivs osparade ändringar över"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
 msgid "Import PDF"
-msgstr "Importera"
+msgstr "Importera PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
 #: rnote-ui/src/dialogs/import.rs:149
@@ -493,9 +483,8 @@ msgid "Import"
 msgstr "Importera"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
 msgid "PDF import preferences"
-msgstr "Bildtyp för PDF-import"
+msgstr "Preferenser för PDF-import"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"
@@ -511,9 +500,8 @@ msgid "Pages type"
 msgstr "Sidtyp"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
 msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgstr "Ange wether PDF-filer ska importeras som vektor- eller bitmappsbilder"
+msgstr "Ange om PDF-filer ska importeras som vektor- eller bitmappsbilder"
 
 #: rnote-ui/data/ui/dialogs/import.ui:138
 msgid "Vector"
@@ -524,9 +512,8 @@ msgid "Bitmap"
 msgstr "Bitmap"
 
 #: rnote-ui/data/ui/dialogs/import.ui:154
-#, fuzzy
 msgid "Page width (%)"
-msgstr "PDF-importbredd (%)"
+msgstr "Sidbredd (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:155
 #, fuzzy
@@ -546,9 +533,8 @@ msgid "Continuous"
 msgstr "Kontinuerlig"
 
 #: rnote-ui/data/ui/dialogs/import.ui:181
-#, fuzzy
 msgid "One per document page"
-msgstr "Nytt document"
+msgstr "En per dokumentsida"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
 #, fuzzy
@@ -758,16 +744,15 @@ msgstr "Duplicera markering"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
-msgstr "Nytt document"
+msgstr "Nytt dokument"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
 msgid "Draft"
 msgstr "Utkast"
 
 #: rnote-ui/data/ui/mainheader.ui:37
-#, fuzzy
 msgid "Save document"
-msgstr "Nytt document"
+msgstr "Spara dokument"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -831,9 +816,8 @@ msgid "Set the drawing cursor"
 msgstr "Välj bakrundsfärgen"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
-#, fuzzy
 msgid "Page format"
-msgstr "Välj ett format"
+msgstr "Sidformat"
 
 #: rnote-ui/data/ui/settingspanel.ui:167
 msgid "Format"
@@ -916,13 +900,12 @@ msgid "Revert"
 msgstr "Återgå"
 
 #: rnote-ui/data/ui/settingspanel.ui:290
-#, fuzzy
 msgid "Document background"
-msgstr "Bakgrund till blad"
+msgstr "Bakgrund till dokument"
 
 #: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Set the background color"
-msgstr "Välj bakrundsfärgen"
+msgstr "Välj bakgrundsfärgen"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Pattern"
@@ -930,16 +913,15 @@ msgstr "Mönster"
 
 #: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Choose a background pattern"
-msgstr "Välj bakrundsmönstret"
+msgstr "Välj ett bakgrundsmönster"
 
 #: rnote-ui/data/ui/settingspanel.ui:316
 msgid "None"
 msgstr "Inget"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
-#, fuzzy
 msgid "Lines"
-msgstr "Linje"
+msgstr "Linjer"
 
 #: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Grid"
@@ -956,7 +938,7 @@ msgstr "Mönsterfärg"
 
 #: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Set the background pattern color"
-msgstr "Ange bakgrundsmönsterfärg"
+msgstr "Ange bakgrundsmönsterfärgen"
 
 #: rnote-ui/data/ui/settingspanel.ui:345
 msgid "Pattern Width"
@@ -964,7 +946,7 @@ msgstr "Mönsterbredd"
 
 #: rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background pattern width"
-msgstr "Ange bakgrundsmönsterbredd"
+msgstr "Ange bakgrundsmönsterbredden"
 
 #: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Pattern Height"
@@ -972,7 +954,7 @@ msgstr "Mönsterhöjd"
 
 #: rnote-ui/data/ui/settingspanel.ui:360
 msgid "Set the background pattern height"
-msgstr "Ange bakrundsmönsterhöjd"
+msgstr "Ange bakrundsmönsterhöjden"
 
 #: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Button Shortcuts"
@@ -1015,12 +997,12 @@ msgstr "Visa Kortkommandon"
 #: rnote-ui/data/ui/shortcuts.ui:20
 msgctxt "shortcut window"
 msgid "Close the active window"
-msgstr "Stäng active fönstret"
+msgstr "Stäng det aktiva fönstret"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Stäng Programmet"
+msgstr "Stäng programmet"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
 msgctxt "shortcut window"
@@ -1040,7 +1022,7 @@ msgstr ""
 #: rnote-ui/data/ui/shortcuts.ui:52
 msgctxt "shortcut window"
 msgid "Navigation"
-msgstr "Öppna arbetsytans meny"
+msgstr "Navigation"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
@@ -1361,7 +1343,7 @@ msgstr "Markera med en rektangel"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
-msgstr "Lås bildförhållandet när du växling av markeringen"
+msgstr "Lås bildförhållandet vid storleksändring av markeringen"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:127
 #, fuzzy
@@ -1622,7 +1604,7 @@ msgstr "- ingen titel -"
 
 #: rnote-ui/src/dialogs/import.rs:266
 msgid "- no author -"
-msgstr ""
+msgstr "- ingen författare -"
 
 #: rnote-ui/src/dialogs/import.rs:270
 msgid "- no date -"

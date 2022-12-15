@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-06 11:56+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"PO-Revision-Date: 2022-12-08 18:13+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -81,20 +81,16 @@ msgid "Use _dark colors"
 msgstr "Usa_colori scuri"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
-msgstr "_Modalità sviluppatore"
+msgstr "Mo_dalità sviluppatore"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
 msgstr "Menu_sviluppatore"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "Debug_visivo"
+msgstr "Debug _visivo"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
@@ -125,11 +121,8 @@ msgid "_Print"
 msgstr "_Stampa"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste _clipboard"
-msgstr "_Incolla gli appunti"
+msgstr "Incolla _appunti"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
@@ -164,10 +157,8 @@ msgid "_Donate 💝"
 msgstr "_Donazione 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
-msgstr "_Informazioni su Rnote"
+msgstr "I_nformazioni su Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:158
 msgid "Sidebar on the left side"
@@ -252,10 +243,8 @@ msgid "Draw with _touch input"
 msgstr "Disegna con _l'imput touch"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
-msgstr "Suoni della_penna"
+msgstr "_Suoni penna"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
 msgid "_Clear document"

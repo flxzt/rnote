@@ -596,6 +596,11 @@ impl RnoteCanvas {
                 output_file_monitor.connect_changed(
                     glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
                         let dispatch_toast_reload_modified_file = || {
+                            if canvas.output_file_expect_write() {
+                                // => file has been modified due to own save, don't do anything.
+                                return;
+                            }
+
                             appwindow.canvas().set_unsaved_changes(true);
 
                             appwindow.canvas_wrapper().dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
@@ -610,15 +615,14 @@ impl RnoteCanvas {
                         match event {
                             gio::FileMonitorEvent::Changed => {
                                 dispatch_toast_reload_modified_file();
+
+                                canvas.set_output_file_expect_write(false);
                             },
                             gio::FileMonitorEvent::Renamed => {
                                 // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
                                 if FileType::is_goutputstream_file(file) {
-                                    if !canvas.output_file_expect_write() {
-                                        // => file has been modified by external means, handle it the same as the Changed event.
-                                        dispatch_toast_reload_modified_file();
-                                    }
-                                    // else => file has been modified due to own save, don't do anything.
+                                    // => file has been modified, handle it the same as the Changed event.
+                                    dispatch_toast_reload_modified_file();
                                 } else {
                                     // => file has been renamed.
 
@@ -631,17 +635,19 @@ impl RnoteCanvas {
 
                                     appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Opened file was renamed on disk."))
                                 }
+
+                                canvas.set_output_file_expect_write(false);
                             },
                             gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
                                 canvas.set_unsaved_changes(true);
                                 canvas.set_output_file(None);
 
                                 appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
+
+                                canvas.set_output_file_expect_write(false);
                             },
                             _ => (),
                         }
-
-                        canvas.set_output_file_expect_write(false);
                     }),
                 );
 

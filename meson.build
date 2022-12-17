@@ -122,6 +122,7 @@ app_sources = [
     rnote_ui_sources,
     files(
         meson.project_source_root() + '/Cargo.toml',
+        meson.project_source_root() + '/Cargo.lock',
         meson.project_source_root() + '/rnote-compose/Cargo.toml',
         meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
         meson.project_source_root() + '/rnote-engine/Cargo.toml',
@@ -192,6 +193,7 @@ if get_option('cli') == true
         rnote_ui_sources,
         files(
             meson.project_source_root() + '/Cargo.toml',
+            meson.project_source_root() + '/Cargo.lock',
             meson.project_source_root() + '/rnote-compose/Cargo.toml',
             meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
             meson.project_source_root() + '/rnote-engine/Cargo.toml',

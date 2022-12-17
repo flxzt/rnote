@@ -76,9 +76,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.66"
+version = "1.0.67"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
+checksum = "7724808837b77f4b4de9d283820f9d98bcf496d5692934b857a2399d31ff22e6"
 
 [[package]]
 name = "approx"
@@ -2985,7 +2985,7 @@ dependencies = [
 [[package]]
 name = "points_on_curve"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3384,7 +3384,6 @@ name = "rnote-compose"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "euclid",
  "ink-stroke-modeler-rs",
  "kurbo 0.9.0",
  "log",
@@ -3392,6 +3391,7 @@ dependencies = [
  "num-derive",
  "num-traits",
  "once_cell",
+ "palette",
  "parry2d-f64",
  "piet",
  "piet-cairo",
@@ -3484,7 +3484,7 @@ dependencies = [
 [[package]]
 name = "rough_piet"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3496,7 +3496,7 @@ dependencies = [
 [[package]]
 name = "roughr"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -4039,7 +4039,7 @@ checksum = "e72d8b19ab05827afefcca66bf47040c1e66a0901eb814784c77d4ec118bd309"
 [[package]]
 name = "svg_path_ops"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "svgtypes",
 ]

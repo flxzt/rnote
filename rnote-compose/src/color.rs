@@ -156,20 +156,20 @@ impl From<Color> for u32 {
     }
 }
 
-impl From<roughr::Srgb> for Color {
-    fn from(c: roughr::Srgb) -> Self {
+impl From<roughr::Srgba> for Color {
+    fn from(c: roughr::Srgba) -> Self {
         Self {
             r: c.blue as f64,
             g: c.green as f64,
             b: c.blue as f64,
-            a: 1.0,
+            a: c.alpha as f64,
         }
     }
 }
 
-impl From<Color> for roughr::Srgb {
+impl From<Color> for roughr::Srgba {
     fn from(c: Color) -> Self {
-        roughr::Srgb::new(c.r as f32, c.g as f32, c.b as f32)
+        roughr::Srgba::new(c.r as f32, c.g as f32, c.b as f32, c.a as f32)
     }
 }
 

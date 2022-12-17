@@ -24,7 +24,6 @@ parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9.0"
-euclid = "0.22"
 svg = "0.10.0"
 roughr = "0.4.0"
 rough_piet = "0.4.0"

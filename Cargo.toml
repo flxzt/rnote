@@ -18,5 +18,5 @@ codegen-units = 1
 
 [patch.crates-io]
 # patched to include bezier curve stroke fixes. Once a new release is out (v0.5) on crates-io this can be removed
-roughr = {git = "https://github.com/orhanbalci/rough-rs", rev = "a84189d70c121e61d4c6453e57a908586321a65b" }
-rough_piet = {git = "https://github.com/orhanbalci/rough-rs", rev = "a84189d70c121e61d4c6453e57a908586321a65b" }
+roughr = {git = "https://github.com/orhanbalci/rough-rs", rev = "7cbdff4e4442af33996d8d28603ff2e19b5f5c2c" }
+rough_piet = {git = "https://github.com/orhanbalci/rough-rs", rev = "7cbdff4e4442af33996d8d28603ff2e19b5f5c2c" }

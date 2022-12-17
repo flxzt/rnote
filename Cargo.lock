@@ -76,9 +76,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.66"
+version = "1.0.67"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
+checksum = "7724808837b77f4b4de9d283820f9d98bcf496d5692934b857a2399d31ff22e6"
 
 [[package]]
 name = "approx"
@@ -809,9 +809,9 @@ checksum = "b365fabc795046672053e29c954733ec3b05e4be654ab130fe8f1f94d7051f35"
 
 [[package]]
 name = "cxx"
-version = "1.0.83"
+version = "1.0.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdf07d07d6531bfcdbe9b8b739b104610c6508dcc4d63b410585faf338241daf"
+checksum = "27874566aca772cb515af4c6e997b5fe2119820bca447689145e39bb734d19a0"
 dependencies = [
  "cc",
  "cxxbridge-flags",
@@ -821,9 +821,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.83"
+version = "1.0.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2eb5b96ecdc99f72657332953d4d9c50135af1bac34277801cc3937906ebd39"
+checksum = "e7bb951f2523a49533003656a72121306b225ec16a49a09dc6b0ba0d6f3ec3c0"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -836,9 +836,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-gen"
-version = "0.7.83"
+version = "0.7.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79ee482f08a625160786c0282ba4266e0ea649a34ea617081994ec7984aba137"
+checksum = "f1fe03f8611bb97b8403dbbedfc583185053a4f386ae0c2116ec1087dbbceecd"
 dependencies = [
  "codespan-reporting",
  "proc-macro2",
@@ -848,15 +848,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.83"
+version = "1.0.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac040a39517fd1674e0f32177648334b0f4074625b5588a64519804ba0553b12"
+checksum = "be778b6327031c1c7b61dd2e48124eee5361e6aa76b8de93692f011b08870ab4"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.83"
+version = "1.0.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1362b0ddcfc4eb0a1f57b68bd77dd99f0e826958a96abd0ae9bd092e114ffed6"
+checksum = "7b8a2b87662fe5a0a0b38507756ab66aff32638876a0866e5a5fc82ceb07ee49"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2985,7 +2985,7 @@ dependencies = [
 [[package]]
 name = "points_on_curve"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3384,7 +3384,6 @@ name = "rnote-compose"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "euclid",
  "ink-stroke-modeler-rs",
  "kurbo 0.9.0",
  "log",
@@ -3484,7 +3483,7 @@ dependencies = [
 [[package]]
 name = "rough_piet"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3496,7 +3495,7 @@ dependencies = [
 [[package]]
 name = "roughr"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -4039,7 +4038,7 @@ checksum = "e72d8b19ab05827afefcca66bf47040c1e66a0901eb814784c77d4ec118bd309"
 [[package]]
 name = "svg_path_ops"
 version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=a84189d70c121e61d4c6453e57a908586321a65b#a84189d70c121e61d4c6453e57a908586321a65b"
+source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
 dependencies = [
  "svgtypes",
 ]

@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
@@ -7,8 +9,8 @@ use once_cell::sync::Lazy;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::penhelpers::{KeyboardKey, PenState};
-use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{KeyboardKey, PenState};
+use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::drawhelpers;
@@ -135,6 +137,7 @@ impl PenBehaviour for Selector {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();

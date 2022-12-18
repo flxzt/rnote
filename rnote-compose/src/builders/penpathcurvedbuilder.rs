@@ -3,7 +3,7 @@ use std::time::Instant;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 
-use crate::penhelpers::PenEvent;
+use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
 use crate::style::Composer;

@@ -5,7 +5,7 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use std::time::Instant;
 
-use crate::penhelpers::PenEvent;
+use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
 use crate::{PenPath, Style};

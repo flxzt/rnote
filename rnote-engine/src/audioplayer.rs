@@ -5,7 +5,7 @@ use std::time::{self, Duration};
 
 use anyhow::Context;
 use rand::Rng;
-use rnote_compose::penhelpers::KeyboardKey;
+use rnote_compose::penevents::KeyboardKey;
 use rodio::source::Buffered;
 use rodio::{Decoder, Source};
 

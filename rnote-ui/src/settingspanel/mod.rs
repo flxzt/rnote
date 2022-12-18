@@ -18,7 +18,7 @@ use super::appwindow::RnoteAppWindow;
 use crate::globals;
 use crate::unitentry::UnitEntry;
 use crate::IconPicker;
-use rnote_compose::penhelpers::ShortcutKey;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::utils::GdkRGBAHelpers;

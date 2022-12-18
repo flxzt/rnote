@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::pens::Tools;
@@ -5,7 +7,7 @@ use crate::pens::Tools;
 use crate::widgetflags::WidgetFlags;
 use crate::DrawOnDocBehaviour;
 use piet::RenderContext;
-use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
 use gtk4::{glib, glib::prelude::*};
 use p2d::bounding_volume::AABB;
@@ -203,6 +205,7 @@ impl PenHolder {
     pub fn change_style(
         &mut self,
         new_style: PenStyle,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -212,6 +215,7 @@ impl PenHolder {
             widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
+                now,
                 engine_view,
             ));
 
@@ -231,6 +235,7 @@ impl PenHolder {
     pub fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -242,6 +247,7 @@ impl PenHolder {
             widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
+                now,
                 engine_view,
             ));
 
@@ -261,6 +267,7 @@ impl PenHolder {
     pub fn change_pen_mode(
         &mut self,
         pen_mode: PenMode,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -269,6 +276,7 @@ impl PenHolder {
             widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
+                now,
                 engine_view,
             ));
             self.pen_mode_state.set_pen_mode(pen_mode);
@@ -284,13 +292,14 @@ impl PenHolder {
         &mut self,
         event: PenEvent,
         pen_mode: Option<PenMode>,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         widget_flags.redraw = true;
 
         if let Some(pen_mode) = pen_mode {
-            widget_flags.merge_with_other(self.change_pen_mode(pen_mode, engine_view));
+            widget_flags.merge_with_other(self.change_pen_mode(pen_mode, now, engine_view));
         }
 
         /*
@@ -310,6 +319,7 @@ impl PenHolder {
                 if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
                     widget_flags.merge_with_other(self.handle_pressed_shortcut_key(
                         ShortcutKey::MouseSecondaryButton,
+                        now,
                         engine_view,
                     ));
                 }
@@ -321,12 +331,12 @@ impl PenHolder {
 
         // Handle the events with the current pen
         let (pen_progress, other_widget_flags) = match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.handle_event(event, engine_view),
-            PenStyle::Shaper => self.shaper.handle_event(event, engine_view),
-            PenStyle::Typewriter => self.typewriter.handle_event(event, engine_view),
-            PenStyle::Eraser => self.eraser.handle_event(event, engine_view),
-            PenStyle::Selector => self.selector.handle_event(event, engine_view),
-            PenStyle::Tools => self.tools.handle_event(event, engine_view),
+            PenStyle::Brush => self.brush.handle_event(event, now, engine_view),
+            PenStyle::Shaper => self.shaper.handle_event(event, now, engine_view),
+            PenStyle::Typewriter => self.typewriter.handle_event(event, now, engine_view),
+            PenStyle::Eraser => self.eraser.handle_event(event, now, engine_view),
+            PenStyle::Selector => self.selector.handle_event(event, now, engine_view),
+            PenStyle::Tools => self.tools.handle_event(event, now, engine_view),
         };
 
         widget_flags.merge_with_other(other_widget_flags);
@@ -377,6 +387,7 @@ impl PenHolder {
     pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -388,11 +399,17 @@ impl PenHolder {
                     permanent,
                 } => {
                     if permanent {
-                        widget_flags.merge_with_other(self.change_style(new_style, engine_view));
+                        widget_flags.merge_with_other(self.change_style(
+                            new_style,
+                            now,
+                            engine_view,
+                        ));
                     } else {
-                        widget_flags.merge_with_other(
-                            self.change_style_override(Some(new_style), engine_view),
-                        );
+                        widget_flags.merge_with_other(self.change_style_override(
+                            Some(new_style),
+                            now,
+                            engine_view,
+                        ));
                     }
                 }
             }

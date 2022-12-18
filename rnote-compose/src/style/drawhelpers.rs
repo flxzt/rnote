@@ -6,7 +6,7 @@ use piet::RenderContext;
 
 use crate::color;
 use crate::helpers::{AABBHelpers, Vector2Helpers};
-use crate::penhelpers::PenState;
+use crate::penevents::PenState;
 
 /// ## Pos indicator
 

@@ -4,7 +4,7 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use p2d::shape::Cuboid;
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
 use crate::style::{drawhelpers, Composer};

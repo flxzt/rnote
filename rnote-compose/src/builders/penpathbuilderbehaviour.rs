@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use p2d::bounding_volume::AABB;
 
-use crate::penhelpers::PenEvent;
+use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::Style;
 

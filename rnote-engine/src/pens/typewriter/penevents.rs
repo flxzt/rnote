@@ -1,4 +1,6 @@
-use rnote_compose::penhelpers::{KeyboardKey, ShortcutKey};
+use std::time::Instant;
+
+use rnote_compose::penevents::{KeyboardKey, ShortcutKey};
 use rnote_compose::penpath::Element;
 
 use crate::engine::EngineViewMut;
@@ -14,6 +16,7 @@ impl Typewriter {
         &mut self,
         element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -279,6 +282,7 @@ impl Typewriter {
         &mut self,
         _element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -367,6 +371,7 @@ impl Typewriter {
         &mut self,
         _element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
@@ -390,6 +395,7 @@ impl Typewriter {
         &mut self,
         keyboard_key: KeyboardKey,
         shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -745,6 +751,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_text(
         &mut self,
         text: String,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -874,6 +881,7 @@ impl Typewriter {
 
     pub(super) fn handle_pen_event_cancel(
         &mut self,
+        _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();

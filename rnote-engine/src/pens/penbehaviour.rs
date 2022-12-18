@@ -1,4 +1,6 @@
-use rnote_compose::penhelpers::PenEvent;
+use std::time::Instant;
+
+use rnote_compose::penevents::PenEvent;
 
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
@@ -9,6 +11,7 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags);
 

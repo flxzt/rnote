@@ -2,7 +2,7 @@ use super::penholder::PenStyle;
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
-use rnote_compose::penhelpers::ShortcutKey;
+use rnote_compose::penevents::ShortcutKey;
 
 use serde::{Deserialize, Serialize};
 

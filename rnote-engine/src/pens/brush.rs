@@ -13,7 +13,7 @@ use rnote_compose::builders::{
     PenPathModeledBuilder,
 };
 use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
-use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penevents::PenEvent;
 use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::PressureCurve;
 use rnote_compose::Style;
@@ -170,6 +170,7 @@ impl PenBehaviour for Brush {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -199,13 +200,13 @@ impl PenBehaviour for Brush {
 
                     let path_builder: Box<dyn PenPathBuilderBehaviour> = match self.builder_type {
                         PenPathBuilderType::Simple => {
-                            Box::new(PenPathSimpleBuilder::start(element, Instant::now()))
+                            Box::new(PenPathSimpleBuilder::start(element, now))
                         }
                         PenPathBuilderType::Curved => {
-                            Box::new(PenPathCurvedBuilder::start(element, Instant::now()))
+                            Box::new(PenPathCurvedBuilder::start(element, now))
                         }
                         PenPathBuilderType::Modeled => {
-                            Box::new(PenPathModeledBuilder::start(element, Instant::now()))
+                            Box::new(PenPathModeledBuilder::start(element, now))
                         }
                     };
 
@@ -268,7 +269,7 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, Instant::now(), Constraints::default()) {
+                match path_builder.handle_event(pen_event, now, Constraints::default()) {
                     PenPathBuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 

@@ -3,7 +3,7 @@ use std::time::Instant;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{drawhelpers, Composer};

@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
@@ -5,7 +7,7 @@ use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penevents::PenEvent;
 
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
@@ -232,6 +234,7 @@ impl PenBehaviour for Tools {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();

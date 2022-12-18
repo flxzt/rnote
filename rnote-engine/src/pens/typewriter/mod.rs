@@ -1,12 +1,13 @@
 mod penevents;
 
 use std::ops::Range;
+use std::time::Instant;
 
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::penhelpers::{KeyboardKey, PenEvent, PenState};
+use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::drawhelpers;
 use rnote_compose::{color, Transform};
@@ -349,6 +350,7 @@ impl PenBehaviour for Typewriter {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         /*
@@ -363,21 +365,21 @@ impl PenBehaviour for Typewriter {
             PenEvent::Down {
                 element,
                 shortcut_keys,
-            } => self.handle_pen_event_down(element, shortcut_keys, engine_view),
+            } => self.handle_pen_event_down(element, shortcut_keys, now, engine_view),
             PenEvent::Up {
                 element,
                 shortcut_keys,
-            } => self.handle_pen_event_up(element, shortcut_keys, engine_view),
+            } => self.handle_pen_event_up(element, shortcut_keys, now, engine_view),
             PenEvent::Proximity {
                 element,
                 shortcut_keys,
-            } => self.handle_pen_event_proximity(element, shortcut_keys, engine_view),
+            } => self.handle_pen_event_proximity(element, shortcut_keys, now, engine_view),
             PenEvent::KeyPressed {
                 keyboard_key,
                 shortcut_keys,
-            } => self.handle_pen_event_keypressed(keyboard_key, shortcut_keys, engine_view),
-            PenEvent::Text { text } => self.handle_pen_event_text(text, engine_view),
-            PenEvent::Cancel => self.handle_pen_event_cancel(engine_view),
+            } => self.handle_pen_event_keypressed(keyboard_key, shortcut_keys, now, engine_view),
+            PenEvent::Text { text } => self.handle_pen_event_text(text, now, engine_view),
+            PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         };
 
         (pen_progress, widget_flags)

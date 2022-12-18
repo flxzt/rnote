@@ -8,6 +8,7 @@ use self::export::{SelectionExportFormat, SelectionExportPrefs};
 pub use self::import::ImportPrefs;
 
 use std::path::PathBuf;
+use std::time::Instant;
 
 use crate::document::Layout;
 use crate::pens::penholder::PenStyle;
@@ -18,7 +19,7 @@ use crate::{AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::{prelude::*, Snapshot};
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
 use futures::channel::mpsc;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -222,17 +223,17 @@ impl RnoteEngine {
     }
 
     /// records the current store state and saves it as a history entry.
-    pub fn record(&mut self) -> WidgetFlags {
+    pub fn record(&mut self, _now: Instant) -> WidgetFlags {
         self.store.record()
     }
 
     /// Undo the latest changes
-    pub fn undo(&mut self) -> WidgetFlags {
+    pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         let current_pen_style = self.penholder.current_style_w_override();
 
         if current_pen_style != PenStyle::Selector {
-            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
+            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None, now));
         }
 
         widget_flags.merge_with_other(self.store.undo());
@@ -258,12 +259,12 @@ impl RnoteEngine {
     }
 
     /// redo the latest changes
-    pub fn redo(&mut self) -> WidgetFlags {
+    pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         let current_pen_style = self.penholder.current_style_w_override();
 
         if current_pen_style != PenStyle::Selector {
-            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
+            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None, now));
         }
 
         widget_flags.merge_with_other(self.store.redo());
@@ -343,10 +344,16 @@ impl RnoteEngine {
     }
 
     /// handle an pen event
-    pub fn handle_pen_event(&mut self, event: PenEvent, pen_mode: Option<PenMode>) -> WidgetFlags {
+    pub fn handle_pen_event(
+        &mut self,
+        event: PenEvent,
+        pen_mode: Option<PenMode>,
+        now: Instant,
+    ) -> WidgetFlags {
         self.penholder.handle_pen_event(
             event,
             pen_mode,
+            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
                 doc: &mut self.document,
@@ -358,9 +365,14 @@ impl RnoteEngine {
     }
 
     /// Handle a pressed shortcut key
-    pub fn handle_pen_pressed_shortcut_key(&mut self, shortcut_key: ShortcutKey) -> WidgetFlags {
+    pub fn handle_pen_pressed_shortcut_key(
+        &mut self,
+        shortcut_key: ShortcutKey,
+        now: Instant,
+    ) -> WidgetFlags {
         self.penholder.handle_pressed_shortcut_key(
             shortcut_key,
+            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
                 doc: &mut self.document,
@@ -372,9 +384,10 @@ impl RnoteEngine {
     }
 
     /// change the pen style
-    pub fn change_pen_style(&mut self, new_style: PenStyle) -> WidgetFlags {
+    pub fn change_pen_style(&mut self, new_style: PenStyle, now: Instant) -> WidgetFlags {
         self.penholder.change_style(
             new_style,
+            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
                 doc: &mut self.document,
@@ -389,9 +402,11 @@ impl RnoteEngine {
     pub fn change_pen_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
+        now: Instant,
     ) -> WidgetFlags {
         self.penholder.change_style_override(
             new_style_override,
+            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
                 doc: &mut self.document,
@@ -403,9 +418,10 @@ impl RnoteEngine {
     }
 
     /// change the pen mode. Relevant for stylus input
-    pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> WidgetFlags {
+    pub fn change_pen_mode(&mut self, pen_mode: PenMode, now: Instant) -> WidgetFlags {
         self.penholder.change_pen_mode(
             pen_mode,
+            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
                 doc: &mut self.document,

@@ -1,4 +1,5 @@
 use std::ops::Range;
+use std::time::Instant;
 
 use anyhow::Context;
 use futures::channel::oneshot;
@@ -389,7 +390,7 @@ impl RnoteEngine {
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
+        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector, Instant::now()));
 
         let inserted = strokes
             .into_iter()
@@ -424,7 +425,7 @@ impl RnoteEngine {
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Typewriter));
+        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Typewriter, Instant::now()));
 
         widget_flags.merge_with_other(self.penholder.typewriter.insert_text(
             text,

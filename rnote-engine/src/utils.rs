@@ -4,7 +4,7 @@ use geo::line_string;
 use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
 use p2d::bounding_volume::AABB;
 use rnote_compose::Color;
-use rnote_compose::{penhelpers::KeyboardKey, Transform};
+use rnote_compose::{penevents::KeyboardKey, Transform};
 use rnote_fileformats::xoppformat;
 
 pub trait GdkRGBAHelpers

@@ -1,11 +1,12 @@
 use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
-use rnote_compose::penhelpers::KeyboardKey;
-use rnote_compose::penhelpers::PenEvent;
-use rnote_compose::penhelpers::ShortcutKey;
+use rnote_compose::penevents::KeyboardKey;
+use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penpath::Element;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::collections::VecDeque;
+use std::time::Instant;
 
 use crate::appwindow::RnoteAppWindow;
 
@@ -201,6 +202,7 @@ pub(crate) fn process_pen_down(
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
+    now: Instant,
     appwindow: &RnoteAppWindow,
 ) {
     let mut widget_flags = WidgetFlags::default();
@@ -216,7 +218,7 @@ pub(crate) fn process_pen_down(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton, now),
         );
 
         appwindow.handle_widget_flags(widget_flags);
@@ -228,7 +230,7 @@ pub(crate) fn process_pen_down(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton, now),
         );
 
         appwindow.handle_widget_flags(widget_flags);
@@ -242,6 +244,7 @@ pub(crate) fn process_pen_down(
             shortcut_keys,
         },
         pen_mode,
+        now,
     ));
 
     appwindow.handle_widget_flags(widget_flags);
@@ -252,6 +255,7 @@ pub(crate) fn process_pen_up(
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
+    now: Instant,
     appwindow: &RnoteAppWindow,
 ) {
     let mut widget_flags = WidgetFlags::default();
@@ -267,7 +271,7 @@ pub(crate) fn process_pen_up(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton, now),
         );
 
         appwindow.handle_widget_flags(widget_flags);
@@ -279,7 +283,7 @@ pub(crate) fn process_pen_up(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton, now),
         );
 
         appwindow.handle_widget_flags(widget_flags);
@@ -293,6 +297,7 @@ pub(crate) fn process_pen_up(
             shortcut_keys,
         },
         pen_mode,
+        now,
     ));
 
     appwindow.handle_widget_flags(widget_flags);
@@ -303,6 +308,7 @@ pub(crate) fn process_pen_proximity(
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
+    now: Instant,
     appwindow: &RnoteAppWindow,
 ) {
     let mut widget_flags = WidgetFlags::default();
@@ -313,6 +319,7 @@ pub(crate) fn process_pen_proximity(
             shortcut_keys,
         },
         pen_mode,
+        now,
     ));
 
     appwindow.handle_widget_flags(widget_flags);
@@ -320,12 +327,16 @@ pub(crate) fn process_pen_proximity(
 
 /// Process shortcut key pressed
 #[allow(unused)]
-pub(crate) fn process_shortcut_key_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppWindow) {
+pub(crate) fn process_shortcut_key_pressed(
+    shortcut_key: ShortcutKey,
+    now: Instant,
+    appwindow: &RnoteAppWindow,
+) {
     let widget_flags = appwindow
         .canvas()
         .engine()
         .borrow_mut()
-        .handle_pen_pressed_shortcut_key(shortcut_key);
+        .handle_pen_pressed_shortcut_key(shortcut_key, now);
 
     appwindow.handle_widget_flags(widget_flags);
 }
@@ -334,6 +345,7 @@ pub(crate) fn process_shortcut_key_pressed(shortcut_key: ShortcutKey, appwindow:
 pub(crate) fn process_keyboard_key_pressed(
     keyboard_key: KeyboardKey,
     shortcut_keys: Vec<ShortcutKey>,
+    now: Instant,
     appwindow: &RnoteAppWindow,
 ) {
     let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
@@ -342,18 +354,19 @@ pub(crate) fn process_keyboard_key_pressed(
             shortcut_keys,
         },
         None,
+        now,
     );
 
     appwindow.handle_widget_flags(widget_flags);
 }
 
 /// Process keyboard text
-pub(crate) fn process_keyboard_text(text: String, appwindow: &RnoteAppWindow) {
-    let widget_flags = appwindow
-        .canvas()
-        .engine()
-        .borrow_mut()
-        .handle_pen_event(PenEvent::Text { text }, None);
+pub(crate) fn process_keyboard_text(text: String, now: Instant, appwindow: &RnoteAppWindow) {
+    let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
+        PenEvent::Text { text },
+        None,
+        now,
+    );
 
     appwindow.handle_widget_flags(widget_flags);
 }

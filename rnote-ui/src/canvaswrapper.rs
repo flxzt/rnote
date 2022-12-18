@@ -29,7 +29,7 @@ mod imp {
         pub(crate) canvas_zoom_gesture: GestureZoom,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
-        pub(crate) canvas_ctrl_space_drag_gesture: GestureDrag,
+        pub(crate) canvas_alt_shift_drag_gesture: GestureDrag,
 
         #[template_child]
         pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -80,8 +80,8 @@ mod imp {
                 .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
-            let canvas_ctrl_space_drag_gesture = GestureDrag::builder()
-                .name("canvas_ctrl_space_drag_gesture")
+            let canvas_alt_shift_drag_gesture = GestureDrag::builder()
+                .name("canvas_alt_shift_drag_gesture")
                 .button(gdk::BUTTON_PRIMARY)
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
@@ -95,7 +95,7 @@ mod imp {
                 canvas_zoom_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
-                canvas_ctrl_space_drag_gesture,
+                canvas_alt_shift_drag_gesture,
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 progressbar: TemplateChild::<ProgressBar>::default(),
@@ -139,7 +139,7 @@ mod imp {
             self.scroller
                 .add_controller(&self.canvas_mouse_drag_middle_gesture);
             self.scroller
-                .add_controller(&self.canvas_ctrl_space_drag_gesture);
+                .add_controller(&self.canvas_alt_shift_drag_gesture);
         }
 
         fn dispose(&self) {
@@ -274,7 +274,7 @@ impl RnoteCanvasWrapper {
             .canvas_drag_empty_area_gesture
             .group_with(&self.imp().canvas_touch_drag_gesture);
         self.imp()
-            .canvas_ctrl_space_drag_gesture
+            .canvas_alt_shift_drag_gesture
             .group_with(&self.imp().canvas_touch_drag_gesture);
 
         // zoom scrolling with <ctrl> + scroll
@@ -453,14 +453,14 @@ impl RnoteCanvasWrapper {
             let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
 
             self.imp()
-                .canvas_ctrl_space_drag_gesture
+                .canvas_alt_shift_drag_gesture
                 .connect_drag_begin(clone!(
                     @strong zoom_begin,
                     @strong prev_offset,
                     @weak self as appwindow => move |gesture, _, _| {
                         let modifiers = gesture.current_event_state();
 
-                        if modifiers.contains(gdk::ModifierType::ALT_MASK) {
+                        if modifiers.contains(gdk::ModifierType::ALT_MASK) && modifiers.contains(gdk::ModifierType::SHIFT_MASK) {
                             gesture.set_state(EventSequenceState::Claimed);
                             let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
 
@@ -471,7 +471,7 @@ impl RnoteCanvasWrapper {
                         }
                 }));
 
-            self.imp().canvas_ctrl_space_drag_gesture.connect_drag_update(clone!(
+            self.imp().canvas_alt_shift_drag_gesture.connect_drag_update(clone!(
                 @strong zoom_begin,
                 @strong prev_offset,
                 @weak appwindow => move |gesture, offset_x, offset_y| {
@@ -479,7 +479,7 @@ impl RnoteCanvasWrapper {
                     const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
                     let modifiers = gesture.current_event_state();
 
-                    if modifiers.contains(gdk::ModifierType::ALT_MASK) {
+                    if modifiers.contains(gdk::ModifierType::ALT_MASK) && modifiers.contains(gdk::ModifierType::SHIFT_MASK) {
                         let new_offset = na::vector![offset_x, offset_y];
                         let cur_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
 

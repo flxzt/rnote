@@ -3,7 +3,7 @@ use piet::RenderContext;
 use std::collections::VecDeque;
 use std::time::Instant;
 
-use crate::penhelpers::PenEvent;
+use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::style::Composer;
 use crate::{PenPath, Style};

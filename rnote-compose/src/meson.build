@@ -40,6 +40,6 @@ rnote_compose_sources = files(
     'color.rs',
     'helpers.rs',
     'lib.rs',
-    'penhelpers.rs',
+    'penevents.rs',
     'utils.rs',
 )

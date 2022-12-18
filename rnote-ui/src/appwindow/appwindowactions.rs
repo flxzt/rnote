@@ -11,6 +11,7 @@ use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
 use gtk4::{PrintStatus, Window};
 use std::path::PathBuf;
+use std::time::Instant;
 
 impl RnoteAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
@@ -308,9 +309,11 @@ impl RnoteAppWindow {
                     if new_pen_style != appwindow.canvas().engine().borrow().penholder.current_style_w_override() {
                         let mut widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(
                             new_pen_style,
+                            Instant::now(),
                         );
                         widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                             None,
+                            Instant::now(),
                         ));
 
                         appwindow.handle_widget_flags(widget_flags);
@@ -356,6 +359,7 @@ impl RnoteAppWindow {
                 if let Some(new_pen_style_override) = new_pen_style_override {
                     let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                         new_pen_style_override,
+                        Instant::now(),
                     );
                     appwindow.handle_widget_flags(widget_flags);
                 }
@@ -434,7 +438,7 @@ impl RnoteAppWindow {
         // Trash Selection
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record(Instant::now());
                 appwindow.handle_widget_flags(widget_flags);
 
                 let selection_keys = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
@@ -449,7 +453,7 @@ impl RnoteAppWindow {
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record(Instant::now());
                 appwindow.handle_widget_flags(widget_flags);
 
                 let new_selected = appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
@@ -465,13 +469,13 @@ impl RnoteAppWindow {
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record(Instant::now());
                 appwindow.handle_widget_flags(widget_flags);
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
 
-                let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
+                let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector, Instant::now());
                 appwindow.handle_widget_flags(widget_flags);
 
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
@@ -483,7 +487,7 @@ impl RnoteAppWindow {
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record(Instant::now());
                 appwindow.handle_widget_flags(widget_flags);
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
@@ -502,7 +506,7 @@ impl RnoteAppWindow {
 
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let widget_flags =appwindow.canvas().engine().borrow_mut().undo();
+            let widget_flags =appwindow.canvas().engine().borrow_mut().undo(Instant::now());
             appwindow.handle_widget_flags(widget_flags);
 
             appwindow.canvas().update_engine_rendering();
@@ -510,7 +514,7 @@ impl RnoteAppWindow {
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let widget_flags =appwindow.canvas().engine().borrow_mut().redo();
+            let widget_flags =appwindow.canvas().engine().borrow_mut().redo(Instant::now());
             appwindow.handle_widget_flags(widget_flags);
 
             appwindow.canvas().update_engine_rendering();

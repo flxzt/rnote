@@ -4,7 +4,7 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 
 use crate::helpers::AABBHelpers;
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
 use crate::style::{drawhelpers, Composer};

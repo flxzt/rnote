@@ -11,7 +11,7 @@ pub mod color;
 /// module for helper traits that extend foreign types
 pub mod helpers;
 /// module for pen helpers
-pub mod penhelpers;
+pub mod penevents;
 /// module for pen paths
 pub mod penpath;
 /// module for shapes

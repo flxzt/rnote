@@ -18,7 +18,7 @@ use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
-use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::Style;
@@ -111,6 +111,7 @@ impl PenBehaviour for Shaper {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -122,55 +123,52 @@ impl PenBehaviour for Shaper {
                 match self.builder_type {
                     ShapeBuilderType::Line => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(LineBuilder::start(element, Instant::now())),
+                            builder: Box::new(LineBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::Rectangle => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(RectangleBuilder::start(element, Instant::now())),
+                            builder: Box::new(RectangleBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::Grid => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(GridBuilder::start(element, Instant::now())),
+                            builder: Box::new(GridBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::CoordSystem2D => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CoordSystem2DBuilder::start(element, Instant::now())),
+                            builder: Box::new(CoordSystem2DBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::CoordSystem3D => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CoordSystem3DBuilder::start(element, Instant::now())),
+                            builder: Box::new(CoordSystem3DBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::QuadrantCoordSystem2D => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadrantCoordSystem2DBuilder::start(
-                                element,
-                                Instant::now(),
-                            )),
+                            builder: Box::new(QuadrantCoordSystem2DBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::Ellipse => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(EllipseBuilder::start(element, Instant::now())),
+                            builder: Box::new(EllipseBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::FociEllipse => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(FociEllipseBuilder::start(element, Instant::now())),
+                            builder: Box::new(FociEllipseBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::QuadBez => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadBezBuilder::start(element, Instant::now())),
+                            builder: Box::new(QuadBezBuilder::start(element, now)),
                         }
                     }
                     ShapeBuilderType::CubBez => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CubBezBuilder::start(element, Instant::now())),
+                            builder: Box::new(CubBezBuilder::start(element, now)),
                         }
                     }
                 }
@@ -205,7 +203,7 @@ impl PenBehaviour for Shaper {
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
 
-                match builder.handle_event(event, Instant::now(), constraints) {
+                match builder.handle_event(event, now, constraints) {
                     ShapeBuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 

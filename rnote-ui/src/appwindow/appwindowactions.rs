@@ -531,7 +531,7 @@ impl RnoteAppWindow {
 
         // Zoom fit to width
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = f64::from(appwindow.canvas_wrapper().scroller().width()) / (appwindow.canvas().engine().borrow().document.format.width as f64 + 2.0 * Document::SHADOW_WIDTH);
+            let new_zoom = f64::from(appwindow.canvas_wrapper().scroller().width()) / (appwindow.canvas().engine().borrow().document.format.width + 2.0 * Document::SHADOW_WIDTH);
 
             let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));

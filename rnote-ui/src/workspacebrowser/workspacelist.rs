@@ -114,7 +114,7 @@ impl WorkspaceList {
     }
 
     pub(crate) fn clear(&self) {
-        let amount = self.n_items() as u32;
+        let amount = self.n_items();
         self.imp().list.borrow_mut().clear();
 
         self.items_changed(0, amount, 0);

@@ -82,7 +82,7 @@ fn connect_apply_button(
 ) {
     apply_button.connect_clicked(clone!(@weak popover, @weak entry => move |_| {
         let new_path = parent_path.join(&entry.text());
-        let new_file = gio::File::for_path(&new_path);
+        let new_file = gio::File::for_path(new_path);
 
         if new_file.query_exists(None::<&gio::Cancellable>) {
             // Should have been caught earlier, but making sure

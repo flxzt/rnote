@@ -411,7 +411,7 @@ impl RnoteCanvasWrapper {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak appwindow => move |gesture, scale| {
-                    if zoom_begin.get() * scale <= Camera::ZOOM_MAX && zoom_begin.get() * scale >= Camera::ZOOM_MIN {
+                    if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&(zoom_begin.get() * scale)) {
                         new_zoom.set(zoom_begin.get() * scale);
                         prev_scale.set(scale);
                     }
@@ -519,7 +519,7 @@ impl RnoteCanvasWrapper {
                     // Drag down zooms out, drag up zooms in
                     let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
 
-                    if new_zoom <= Camera::ZOOM_MAX && new_zoom >= Camera::ZOOM_MIN {
+                    if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
                         let current_doc_center = appwindow.canvas().current_center_on_doc();
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
                         appwindow.canvas().center_around_coord_on_doc(current_doc_center);

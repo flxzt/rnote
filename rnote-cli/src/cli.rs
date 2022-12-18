@@ -137,8 +137,10 @@ pub(crate) fn create_doc_export_prefs_from_args(
         }
     };
 
-    let mut prefs = DocExportPrefs::default();
-    prefs.export_format = format;
+    let mut prefs = DocExportPrefs {
+        export_format: format,
+        ..Default::default()
+    };
 
     if let Some(with_background) = with_background {
         prefs.with_background = with_background;

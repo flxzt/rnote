@@ -29,6 +29,8 @@ mod imp {
         pub(crate) canvas_zoom_gesture: GestureZoom,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
+        pub(crate) canvas_alt_drag_gesture: GestureDrag,
+        pub(crate) canvas_alt_shift_drag_gesture: GestureDrag,
 
         #[template_child]
         pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -59,6 +61,7 @@ mod imp {
             let canvas_drag_empty_area_gesture = GestureDrag::builder()
                 .name("canvas_mouse_drag_empty_area_gesture")
                 .button(gdk::BUTTON_PRIMARY)
+                .exclusive(true)
                 .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
@@ -76,7 +79,24 @@ mod imp {
             let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
                 .name("canvas_mouse_drag_middle_gesture")
                 .button(gdk::BUTTON_MIDDLE)
+                .exclusive(true)
                 .propagation_phase(PropagationPhase::Bubble)
+                .build();
+
+            // alt + drag for panning with pointer
+            let canvas_alt_drag_gesture = GestureDrag::builder()
+                .name("canvas_alt_drag_gesture")
+                .button(gdk::BUTTON_PRIMARY)
+                .exclusive(true)
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
+            // alt + shift + drag for zooming with pointer
+            let canvas_alt_shift_drag_gesture = GestureDrag::builder()
+                .name("canvas_alt_shift_drag_gesture")
+                .button(gdk::BUTTON_PRIMARY)
+                .exclusive(true)
+                .propagation_phase(PropagationPhase::Capture)
                 .build();
 
             Self {
@@ -88,6 +108,8 @@ mod imp {
                 canvas_zoom_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
+                canvas_alt_drag_gesture,
+                canvas_alt_shift_drag_gesture,
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 progressbar: TemplateChild::<ProgressBar>::default(),
@@ -130,6 +152,9 @@ mod imp {
                 .add_controller(&self.canvas_zoom_scroll_controller);
             self.scroller
                 .add_controller(&self.canvas_mouse_drag_middle_gesture);
+            self.scroller.add_controller(&self.canvas_alt_drag_gesture);
+            self.scroller
+                .add_controller(&self.canvas_alt_shift_drag_gesture);
         }
 
         fn dispose(&self) {
@@ -256,18 +281,10 @@ impl RnoteCanvasWrapper {
     }
 
     pub(crate) fn setup_input(&self, appwindow: &RnoteAppWindow) {
-        // Gesture Grouping
-        self.imp()
-            .canvas_mouse_drag_middle_gesture
-            .group_with(&self.imp().canvas_touch_drag_gesture);
-        self.imp()
-            .canvas_drag_empty_area_gesture
-            .group_with(&self.imp().canvas_touch_drag_gesture);
-
         // zoom scrolling with <ctrl> + scroll
         {
-            self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
-                if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
+            self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak appwindow => @default-return Inhibit(false), move |controller, _, dy| {
+                if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
                     let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
                     let current_doc_center = appwindow.canvas().current_center_on_doc();
@@ -286,21 +303,21 @@ impl RnoteCanvasWrapper {
         {
             let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            self.imp().canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start, @weak appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
-                touch_drag_start.set(na::vector![
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
-                ]);
-            }));
-            self.imp().canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak appwindow => move |_canvas_touch_drag_gesture, x, y| {
-                let new_adj_values = touch_drag_start.get() - na::vector![x,y];
+            self.imp().canvas_touch_drag_gesture.connect_drag_begin(
+                clone!(@strong touch_drag_start, @weak appwindow => move |_, _, _| {
+                    // We don't claim the sequence, because we we want to allow touch zooming. When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
-                appwindow.canvas().update_camera_offset(new_adj_values);
-            }));
+                    touch_drag_start.set(na::vector![
+                        appwindow.canvas().hadjustment().unwrap().value(),
+                        appwindow.canvas().vadjustment().unwrap().value()
+                    ]);
+                }),
+            );
+            self.imp().canvas_touch_drag_gesture.connect_drag_update(
+                clone!(@strong touch_drag_start, @weak appwindow => move |_, x, y| {
+                    let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
-            self.imp().canvas_touch_drag_gesture.connect_drag_end(
-                clone!(@weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
-                    appwindow.canvas().update_engine_rendering();
+                    appwindow.canvas().update_camera_offset(new_adj_values);
                 }),
             );
         }
@@ -309,26 +326,34 @@ impl RnoteCanvasWrapper {
         {
             let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
-                mouse_drag_start.set(na::vector![
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
-                ]);
-            }));
-            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak appwindow => move |_canvas_mouse_drag_gesture, x, y| {
-                let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
+            self.imp()
+                .canvas_mouse_drag_middle_gesture
+                .connect_drag_begin(
+                    clone!(@strong mouse_drag_start, @weak appwindow => move |_, _, _| {
+                        mouse_drag_start.set(na::vector![
+                            appwindow.canvas().hadjustment().unwrap().value(),
+                            appwindow.canvas().vadjustment().unwrap().value()
+                        ]);
+                    }),
+                );
+            self.imp()
+                .canvas_mouse_drag_middle_gesture
+                .connect_drag_update(
+                    clone!(@strong mouse_drag_start, @weak appwindow => move |_, x, y| {
+                        let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_camera_offset(new_adj_values);
-            }));
+                        appwindow.canvas().update_camera_offset(new_adj_values);
+                    }),
+                );
 
-            self.imp().canvas_mouse_drag_middle_gesture.connect_drag_end(
-                clone!(@weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
+            self.imp()
+                .canvas_mouse_drag_middle_gesture
+                .connect_drag_end(clone!(@weak self as appwindow => move |_, _, _| {
                     appwindow.canvas().update_engine_rendering();
-                }),
-            );
+                }));
         }
 
-        // Move Canvas by dragging in empty area
+        // Move Canvas by dragging in the empty area around the canvas
         {
             let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
@@ -347,12 +372,6 @@ impl RnoteCanvasWrapper {
                         appwindow.canvas().update_camera_offset(new_adj_values);
                     }),
                 );
-
-            self.imp().canvas_drag_empty_area_gesture.connect_drag_end(
-                clone!(@weak self as appwindow => move |_, _x, _y| {
-                    appwindow.canvas().update_engine_rendering();
-                }),
-            );
         }
 
         // Canvas gesture zooming with dragging
@@ -369,16 +388,20 @@ impl RnoteCanvasWrapper {
                 @strong prev_scale,
                 @strong bbcenter_begin,
                 @strong adjs_begin,
-                @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
+                @weak self as appwindow => move |gesture, _| {
+                    gesture.set_state(EventSequenceState::Claimed);
+
                     let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
-                    canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
                     zoom_begin.set(current_zoom);
                     new_zoom.set(current_zoom);
                     prev_scale.set(1.0);
 
-                    bbcenter_begin.set(canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
-                    adjs_begin.set(na::vector![appwindow.canvas().hadjustment().unwrap().value(), appwindow.canvas().vadjustment().unwrap().value()]);
+                    bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
+                    adjs_begin.set(na::vector![
+                        appwindow.canvas().hadjustment().unwrap().value(),
+                        appwindow.canvas().vadjustment().unwrap().value()
+                        ]);
             }));
 
             self.imp().canvas_zoom_gesture.connect_scale_changed(clone!(
@@ -387,7 +410,7 @@ impl RnoteCanvasWrapper {
                 @strong prev_scale,
                 @strong bbcenter_begin,
                 @strong adjs_begin,
-                @weak appwindow => move |canvas_zoom_gesture, scale| {
+                @weak appwindow => move |gesture, scale| {
                     if zoom_begin.get() * scale <= Camera::ZOOM_MAX && zoom_begin.get() * scale >= Camera::ZOOM_MIN {
                         new_zoom.set(zoom_begin.get() * scale);
                         prev_scale.set(scale);
@@ -395,7 +418,7 @@ impl RnoteCanvasWrapper {
 
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
 
-                    if let Some(bbcenter_current) = canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
+                    if let Some(bbcenter_current) = gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
                         let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get() {
                             bbcenter_begin
                         } else {
@@ -412,30 +435,101 @@ impl RnoteCanvasWrapper {
             }));
 
             self.imp().canvas_zoom_gesture.connect_cancel(
-                clone!(@strong new_zoom, @strong bbcenter_begin, @weak appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    bbcenter_begin.set(None);
-
-                    appwindow.canvas().update_engine_rendering();
-
+                clone!(@weak appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
 
             self.imp().canvas_zoom_gesture.connect_end(
-                clone!(@strong new_zoom, @strong bbcenter_begin, @weak appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
-
-                    bbcenter_begin.set(None);
-
-                    appwindow.canvas().update_engine_rendering();
-
+                clone!(@weak appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
         }
+
+        // Pan with alt + drag
+        {
+            let adj_start = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+
+            self.imp()
+                .canvas_alt_drag_gesture
+                .connect_drag_begin(clone!(
+                    @strong adj_start,
+                    @weak self as appwindow => move |gesture, _, _| {
+                        let modifiers = gesture.current_event_state();
+
+                        // At the start BUTTON1_MASK is not included
+                        if modifiers == gdk::ModifierType::ALT_MASK {
+                            gesture.set_state(EventSequenceState::Claimed);
+
+                            adj_start.set(na::vector![
+                                appwindow.canvas().hadjustment().unwrap().value(),
+                                appwindow.canvas().vadjustment().unwrap().value()
+                            ]);
+                        } else {
+                            gesture.set_state(EventSequenceState::Denied);
+                        }
+                }));
+
+            self.imp()
+                .canvas_alt_drag_gesture
+                .connect_drag_update(clone!(
+                    @strong adj_start,
+                    @weak appwindow => move |_, offset_x, offset_y| {
+                        let new_adj_values = adj_start.get() - na::vector![offset_x, offset_y];
+                        appwindow.canvas().update_camera_offset(new_adj_values);
+                }));
+        }
+
+        // Zoom with alt + shift + drag
+        {
+            let zoom_begin = Rc::new(Cell::new(1_f64));
+            let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+
+            self.imp()
+                .canvas_alt_shift_drag_gesture
+                .connect_drag_begin(clone!(
+                @strong zoom_begin,
+                @strong prev_offset,
+                @weak self as appwindow => move |gesture, _, _| {
+                    let modifiers = gesture.current_event_state();
+
+                    // At the start BUTTON1_MASK is not included
+                    if modifiers == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK) {
+                        gesture.set_state(EventSequenceState::Claimed);
+                        let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+
+                        zoom_begin.set(current_zoom);
+                        prev_offset.set(na::Vector2::<f64>::zeros());
+                    } else {
+                        gesture.set_state(EventSequenceState::Denied);
+                    }
+                }));
+
+            self.imp().canvas_alt_shift_drag_gesture.connect_drag_update(clone!(
+                @strong zoom_begin,
+                @strong prev_offset,
+                @weak appwindow => move |_, offset_x, offset_y| {
+                    // 0.5% zoom for every pixel in y dir
+                    const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
+
+                    let new_offset = na::vector![offset_x, offset_y];
+                    let cur_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+
+                    // Drag down zooms out, drag up zooms in
+                    let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
+
+                    if new_zoom <= Camera::ZOOM_MAX && new_zoom >= Camera::ZOOM_MIN {
+                        let current_doc_center = appwindow.canvas().current_center_on_doc();
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+                        appwindow.canvas().center_around_coord_on_doc(current_doc_center);
+                    }
+
+                    prev_offset.set(new_offset);
+            }));
+        }
     }
 
-    #[allow(unused)]
     pub(crate) fn canvas_touch_drag_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
@@ -448,7 +542,6 @@ impl RnoteCanvasWrapper {
         }
     }
 
-    #[allow(unused)]
     pub(crate) fn canvas_drag_empty_area_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
@@ -461,7 +554,6 @@ impl RnoteCanvasWrapper {
         }
     }
 
-    #[allow(unused)]
     pub(crate) fn canvas_zoom_gesture_enable(&self, enable: bool) {
         if enable {
             self.imp()
@@ -470,32 +562,6 @@ impl RnoteCanvasWrapper {
         } else {
             self.imp()
                 .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn canvas_zoom_scroll_controller_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_zoom_scroll_controller
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_zoom_scroll_controller
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    #[allow(unused)]
-    pub(crate) fn canvas_mouse_drag_middle_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_mouse_drag_middle_gesture
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_mouse_drag_middle_gesture
                 .set_propagation_phase(PropagationPhase::None);
         }
     }

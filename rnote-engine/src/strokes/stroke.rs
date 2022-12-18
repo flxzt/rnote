@@ -393,7 +393,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }
@@ -458,7 +458,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }
@@ -497,7 +497,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }
@@ -537,7 +537,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }

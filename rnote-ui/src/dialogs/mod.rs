@@ -248,7 +248,7 @@ pub(crate) fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         .current_selected_workspace_row()
     {
         if let Err(e) =
-            filechooser_change_workspace_dir.set_file(&gio::File::for_path(&row.entry().dir()))
+            filechooser_change_workspace_dir.set_file(&gio::File::for_path(row.entry().dir()))
         {
             log::error!("set file in change workspace dialog failed with Err: {e:?}");
         }

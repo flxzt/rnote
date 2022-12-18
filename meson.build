@@ -2,7 +2,7 @@ project(
     'rnote',
     ['cpp', 'rust'],
     version: '0.5.9',
-    meson_version: '>= 0.56',
+    meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
 patch = ''
@@ -146,8 +146,18 @@ else
     app_bin_output = app_name
 endif
 
+run_target(
+    'app-cargo-check',
+    command: [
+        cargo,
+        'check',
+        app_cargo_options,
+    ],
+    env: cargo_env,
+)
+
 custom_target(
-    'cargo-build-app',
+    'app-cargo-build',
     build_by_default: true,
     input: app_sources,
     output: app_bin_output,
@@ -201,8 +211,18 @@ if get_option('cli') == true
         ),
     ]
 
+    run_target(
+        'cli-cargo-check',
+        command: [
+            cargo,
+            'check',
+            cli_cargo_options,
+        ],
+        env: cargo_env,
+    )
+
     custom_target(
-        'cargo-build-cli',
+        'cli-cargo-build',
         build_by_default: true,
         input: cli_sources,
         output: cli_bin_output,

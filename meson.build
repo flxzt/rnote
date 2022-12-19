@@ -114,6 +114,23 @@ cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
 cargo_target_dir = meson.project_build_root() / 'target'
 cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
 
+# cargo fmt check
+run_target(
+    'cargo-fmt-check',
+    command: [
+        cargo,
+        [
+            'fmt',
+            '--all',
+            '--check',
+            '--manifest-path',
+            cargo_manifest_path,
+        ],
+    ],
+    env: cargo_env,
+)
+
+
 # build / install the app
 app_sources = [
     rnote_compose_sources,

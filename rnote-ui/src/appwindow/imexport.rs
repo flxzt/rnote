@@ -4,6 +4,7 @@ use std::path::Path;
 use gettextrs::gettext;
 use gtk4::{gio, glib, glib::clone, prelude::*};
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
+use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::strokes::Stroke;
 
 use crate::dialogs;
@@ -118,7 +119,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
+                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()).await {
                             appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err: {e:?}"
@@ -170,18 +171,12 @@ impl RnoteAppWindow {
     where
         P: AsRef<Path>,
     {
-        let store_snapshot_receiver = self
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .open_from_rnote_bytes_p1(bytes)?;
-
-        let store_snapshot = store_snapshot_receiver.await??;
+        let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
 
         self.canvas()
             .engine()
             .borrow_mut()
-            .open_from_store_snapshot_p2(&store_snapshot)?;
+            .load_snapshot(engine_snapshot);
 
         if let Some(path) = path {
             let file = gio::File::for_path(path);
@@ -263,11 +258,21 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub(crate) fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
+    pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
+        let xopp_import_prefs = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .import_prefs
+            .xopp_import_prefs;
+
+        let engine_snapshot =
+            EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;
+
         self.canvas()
             .engine()
             .borrow_mut()
-            .open_from_xopp_bytes(bytes)?;
+            .load_snapshot(engine_snapshot);
 
         self.canvas().set_output_file(None);
         self.canvas().set_unsaved_changes(true);

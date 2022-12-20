@@ -373,7 +373,7 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow, input_file:
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
-                            if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()) {
+                            if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()).await {
                                 appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                                 log::error!(
                                     "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"

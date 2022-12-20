@@ -9,8 +9,9 @@ use crate::utils::GrapheneRectHelpers;
 /// Trait for types that can draw themselves on the document.
 /// In the coordinate space of the document
 pub trait DrawOnDocBehaviour {
+    /// The current bounds on the document
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB>;
-    /// draws itself on the document. the implementors are expected save / restore context
+    /// draws itself on the document. the implementors are expected to save / restore context
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
@@ -18,7 +19,7 @@ pub trait DrawOnDocBehaviour {
     ) -> anyhow::Result<()>;
 
     /// Expects snapshot untransformed in surface coordinate space.
-    fn draw_on_doc_snapshot(
+    fn draw_on_doc_to_gtk_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
         engine_view: &EngineView,

@@ -1,4 +1,5 @@
 use rnote_engine::engine::export::{DocExportFormat, DocExportPrefs};
+use rnote_engine::engine::EngineSnapshot;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::{Path, PathBuf};
@@ -101,7 +102,11 @@ pub(crate) async fn import_file(
     let mut ifh = File::open(input_file).await?;
     ifh.read_to_end(&mut input_bytes).await?;
 
-    engine.open_from_xopp_bytes(input_bytes)?;
+    let snapshot =
+        EngineSnapshot::load_from_xopp_bytes(input_bytes, engine.import_prefs.xopp_import_prefs)
+            .await?;
+
+    engine.load_snapshot(snapshot);
 
     let rnote_bytes = engine.save_as_rnote_bytes(rnote_file_name)?.await??;
 
@@ -167,8 +172,8 @@ pub(crate) async fn export_to_file(
         .read_to_end(&mut rnote_bytes)
         .await?;
 
-    let store_snapshot = engine.open_from_rnote_bytes_p1(rnote_bytes)?.await??;
-    engine.open_from_store_snapshot_p2(&store_snapshot)?;
+    let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
+    engine.load_snapshot(engine_snapshot);
 
     // We applied the prefs previously to the engine
     let export_bytes = engine.export_doc(export_file_name, None).await??;

@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use super::Rnotefile;
+use super::maj0min5patch9::RnoteFileMaj0Min5Patch9;
 
-impl TryFrom<RnoteFileMaj0Min5Patch8> for Rnotefile {
+impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
     type Error = anyhow::Error;
 
-    fn try_from(mut file: RnoteFileMaj0Min5Patch8) -> Result<Self, Self::Error> {
+    fn try_from(mut file: RnoteFileMaj0Min5Patch8) -> Result<RnoteFileMaj0Min5Patch9, Self::Error> {
         for value in file.store_snapshot["stroke_components"]
             .as_array_mut()
             .ok_or_else(|| anyhow::anyhow!("failure"))?
@@ -95,7 +95,6 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for Rnotefile {
                 brushstroke.insert(String::from("path"), path_upgraded.into());
             }
         }
-
         Ok(Self {
             store_snapshot: file.store_snapshot,
             document: file.document,

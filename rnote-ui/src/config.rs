@@ -7,7 +7,7 @@ pub(crate) const APP_ID: &str = "com.github.flxzt.rnote.Devel";
 #[allow(unused)]
 pub(crate) const APP_IDPATH: &str = "/com/github/flxzt/rnote/";
 #[allow(unused)]
-pub(crate) const APP_VERSION: &str = "0.5.9";
+pub(crate) const APP_VERSION: &str = "0.5.10";
 #[allow(unused)]
 pub(crate) const APP_VERSION_SUFFIX: &str = "-devel";
 #[allow(unused)]

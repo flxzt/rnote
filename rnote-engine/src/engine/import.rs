@@ -1,19 +1,17 @@
 use std::ops::Range;
+use std::path::PathBuf;
 use std::time::Instant;
 
-use anyhow::Context;
 use futures::channel::oneshot;
-use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 
-use crate::document::{background, Background, Format};
 use crate::pens::penholder::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
-use crate::store::{StoreSnapshot, StrokeKey};
+use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
+use crate::{RnoteEngine, WidgetFlags};
 
-use super::EngineViewMut;
+use super::{EngineConfig, EngineViewMut};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -123,162 +121,31 @@ pub struct ImportPrefs {
 }
 
 impl RnoteEngine {
-    /// opens a .rnote file. We need to split this into two methods,
-    /// because we can't have it as a async function and await when the engine is wrapped in a refcell without causing panics :/
-    pub fn open_from_rnote_bytes_p1(
+    /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
+    /// NOT for opening files
+    pub fn load_engine_config(
         &mut self,
-        bytes: Vec<u8>,
-    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<StoreSnapshot>>> {
-        let rnote_file = rnoteformat::Rnotefile::load_from_bytes(&bytes)
-            .context("RnoteFile load_from_bytes() failed.")?;
+        serialized_config: &str,
+        data_dir: Option<PathBuf>,
+    ) -> anyhow::Result<WidgetFlags> {
+        let mut widget_flags = WidgetFlags::default();
+        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
-        self.document = serde_json::from_value(rnote_file.document)
-            .context("serde_json::from_value() for rnote_file.document failed.")?;
+        self.document = serde_json::from_value(engine_config.document)?;
+        self.penholder = serde_json::from_value(engine_config.penholder)?;
+        self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
+        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
+        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
 
-        let (store_snapshot_sender, store_snapshot_receiver) =
-            oneshot::channel::<anyhow::Result<StoreSnapshot>>();
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(self.pen_sounds, data_dir);
 
-        rayon::spawn(move || {
-            let result = || -> anyhow::Result<StoreSnapshot> {
-                serde_json::from_value(rnote_file.store_snapshot)
-                    .context("serde_json::from_value() for rnote_file.store_snapshot failed")
-            };
+        widget_flags.merge_with_other(self.penholder.handle_changed_pen_style());
 
-            if let Err(_data) = store_snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
-            }
-        });
+        widget_flags.redraw = true;
+        widget_flags.refresh_ui = true;
 
-        Ok(store_snapshot_receiver)
-    }
-
-    // Part two for opening a file. imports the store snapshot.
-    pub fn open_from_store_snapshot_p2(
-        &mut self,
-        store_snapshot: &StoreSnapshot,
-    ) -> anyhow::Result<()> {
-        self.store.import_snapshot(store_snapshot);
-
-        self.update_pens_states();
-
-        Ok(())
-    }
-
-    /// Opens a  Xournal++ .xopp file, and replaces the current state with it.
-    pub fn open_from_xopp_bytes(&mut self, bytes: Vec<u8>) -> anyhow::Result<()> {
-        let xopp_import_prefs = self.import_prefs.xopp_import_prefs;
-
-        let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
-
-        // Extract the largest width of all pages, add together all heights
-        let (doc_width, doc_height) = xopp_file
-            .xopp_root
-            .pages
-            .iter()
-            .map(|page| (page.width, page.height))
-            .fold((0_f64, 0_f64), |prev, next| {
-                // Max of width, sum heights
-                (prev.0.max(next.0), prev.1 + next.1)
-            });
-        let no_pages = xopp_file.xopp_root.pages.len() as u32;
-
-        let mut doc = Document::default();
-        let mut format = Format::default();
-        let mut background = Background::default();
-        let mut store = StrokeStore::default();
-
-        // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-        format.dpi = xopp_import_prefs.dpi;
-
-        doc.x = 0.0;
-        doc.y = 0.0;
-        doc.width = crate::utils::convert_value_dpi(
-            doc_width,
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-        doc.height = crate::utils::convert_value_dpi(
-            doc_height,
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-
-        format.width = crate::utils::convert_value_dpi(
-            doc_width,
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-        format.height = crate::utils::convert_value_dpi(
-            doc_height / (no_pages as f64),
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-
-        if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
-            if let xoppformat::XoppBackgroundType::Solid {
-                color: _color,
-                style: _style,
-            } = &first_page.background.bg_type
-            {
-                // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                background.pattern = background::PatternStyle::None;
-            }
-        }
-
-        // Offsetting as rnote has one global coordinate space
-        let mut offset = na::Vector2::<f64>::zeros();
-
-        for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
-            for layers in page.layers.into_iter() {
-                // import strokes
-                for new_xoppstroke in layers.strokes.into_iter() {
-                    match Stroke::from_xoppstroke(new_xoppstroke, offset, xopp_import_prefs.dpi) {
-                        Ok((new_stroke, layer)) => {
-                            store.insert_stroke(new_stroke, Some(layer));
-                        }
-                        Err(e) => {
-                            log::error!(
-                                "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
-                                e
-                            );
-                        }
-                    }
-                }
-
-                // import images
-                for new_xoppimage in layers.images.into_iter() {
-                    match Stroke::from_xoppimage(new_xoppimage, offset, xopp_import_prefs.dpi) {
-                        Ok(new_image) => {
-                            store.insert_stroke(new_image, None);
-                        }
-                        Err(e) => {
-                            log::error!(
-                                "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
-                                e
-                            );
-                        }
-                    }
-                }
-            }
-
-            // Only add to y offset, results in vertical pages
-            offset[1] += crate::utils::convert_value_dpi(
-                page.height,
-                xoppformat::XoppFile::DPI,
-                xopp_import_prefs.dpi,
-            );
-        }
-
-        doc.background = background;
-        doc.format = format;
-
-        // Import into engine
-        self.document = doc;
-        self.store.import_snapshot(&store.take_store_snapshot());
-
-        self.update_pens_states();
-
-        Ok(())
+        Ok(widget_flags)
     }
 
     /// generates a vectorimage for the bytes ( from a SVG file )
@@ -403,7 +270,9 @@ impl RnoteEngine {
         self.store.set_selected_keys(&inserted, true);
 
         self.update_pens_states();
-        self.update_rendering_current_viewport();
+        if let Err(e) = self.update_rendering_current_viewport() {
+            log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
+        }
 
         widget_flags.redraw = true;
         widget_flags.resize = true;

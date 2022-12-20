@@ -1,29 +1,37 @@
 pub mod export;
 pub mod import;
+pub mod rendering;
 pub mod visual_debug;
 
 // Re-Exports
 pub use self::export::ExportPrefs;
-use self::export::{SelectionExportFormat, SelectionExportPrefs};
 pub use self::import::ImportPrefs;
 
+// Imports
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Instant;
 
-use crate::document::Layout;
+use self::export::{SelectionExportFormat, SelectionExportPrefs};
+use self::import::XoppImportPrefs;
+use crate::document::{background, Layout};
 use crate::pens::penholder::PenStyle;
 use crate::pens::PenMode;
-use crate::store::StrokeKey;
+use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
-use crate::{AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
+use crate::strokes::Stroke;
+use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
-use gtk4::{prelude::*, Snapshot};
+use anyhow::Context;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
-use futures::channel::mpsc;
+use futures::channel::{mpsc, oneshot};
+use gtk4::gsk;
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
+use slotmap::{HopSlotMap, SecondaryMap};
 
 /// A view into the rest of the engine, excluding the penholder
 #[allow(missing_debug_implementations)]
@@ -110,6 +118,183 @@ impl Default for EngineConfig {
     }
 }
 
+// the engine snapshot, used when saving and loading to and from a file.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(default, rename = "engine_snapshot")]
+pub struct EngineSnapshot {
+    #[serde(rename = "document")]
+    pub document: Document,
+    #[serde(rename = "stroke_components")]
+    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    #[serde(rename = "chrono_components")]
+    pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    #[serde(rename = "chrono_counter")]
+    pub chrono_counter: u32,
+}
+
+impl Default for EngineSnapshot {
+    fn default() -> Self {
+        Self {
+            document: Document::default(),
+            stroke_components: Arc::new(HopSlotMap::with_key()),
+            chrono_components: Arc::new(SecondaryMap::new()),
+            chrono_counter: 0,
+        }
+    }
+}
+
+impl EngineSnapshot {
+    /// loads a snapshot from the bytes of a .rnote file.
+    ///
+    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
+        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Self> {
+                let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
+                    .context("RnoteFile load_from_bytes() failed.")?;
+
+                serde_json::from_value(rnote_file.engine_snapshot)
+                    .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
+            };
+
+            if let Err(_data) = snapshot_sender.send(result()) {
+                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        snapshot_receiver.await?
+    }
+    /// Loads from the bytes of a Xournal++ .xopp file.
+    ///
+    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    pub async fn load_from_xopp_bytes(
+        bytes: Vec<u8>,
+        xopp_import_prefs: XoppImportPrefs,
+    ) -> anyhow::Result<Self> {
+        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Self> {
+                let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
+
+                // Extract the largest width of all pages, add together all heights
+                let (doc_width, doc_height) = xopp_file
+                    .xopp_root
+                    .pages
+                    .iter()
+                    .map(|page| (page.width, page.height))
+                    .fold((0_f64, 0_f64), |prev, next| {
+                        // Max of width, sum heights
+                        (prev.0.max(next.0), prev.1 + next.1)
+                    });
+                let no_pages = xopp_file.xopp_root.pages.len() as u32;
+
+                let mut engine = RnoteEngine::default();
+
+                // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
+                engine.document.format.dpi = xopp_import_prefs.dpi;
+
+                engine.document.x = 0.0;
+                engine.document.y = 0.0;
+                engine.document.width = crate::utils::convert_value_dpi(
+                    doc_width,
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+                engine.document.height = crate::utils::convert_value_dpi(
+                    doc_height,
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+
+                engine.document.format.width = crate::utils::convert_value_dpi(
+                    doc_width,
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+                engine.document.format.height = crate::utils::convert_value_dpi(
+                    doc_height / (no_pages as f64),
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+
+                if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
+                    if let xoppformat::XoppBackgroundType::Solid {
+                        color: _color,
+                        style: _style,
+                    } = &first_page.background.bg_type
+                    {
+                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
+                        engine.document.background.pattern = background::PatternStyle::None;
+                    }
+                }
+
+                // Offsetting as rnote has one global coordinate space
+                let mut offset = na::Vector2::<f64>::zeros();
+
+                for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
+                    for layers in page.layers.into_iter() {
+                        // import strokes
+                        for new_xoppstroke in layers.strokes.into_iter() {
+                            match Stroke::from_xoppstroke(
+                                new_xoppstroke,
+                                offset,
+                                xopp_import_prefs.dpi,
+                            ) {
+                                Ok((new_stroke, layer)) => {
+                                    engine.store.insert_stroke(new_stroke, Some(layer));
+                                }
+                                Err(e) => {
+                                    log::error!(
+                                        "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
+                                        e
+                                    );
+                                }
+                            }
+                        }
+
+                        // import images
+                        for new_xoppimage in layers.images.into_iter() {
+                            match Stroke::from_xoppimage(
+                                new_xoppimage,
+                                offset,
+                                xopp_import_prefs.dpi,
+                            ) {
+                                Ok(new_image) => {
+                                    engine.store.insert_stroke(new_image, None);
+                                }
+                                Err(e) => {
+                                    log::error!(
+                                        "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
+                                        e
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    // Only add to y offset, results in vertical pages
+                    offset[1] += crate::utils::convert_value_dpi(
+                        page.height,
+                        xoppformat::XoppFile::DPI,
+                        xopp_import_prefs.dpi,
+                    );
+                }
+
+                Ok(engine.take_snapshot())
+            };
+
+            if let Err(_data) = snapshot_sender.send(result()) {
+                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        snapshot_receiver.await?
+    }
+}
+
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
 pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
 
@@ -143,6 +328,11 @@ pub struct RnoteEngine {
     /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
     #[serde(skip)]
     pub tasks_rx: Option<EngineTaskReceiver>,
+    // Background rendering
+    #[serde(skip)]
+    pub background_tile_image: Option<render::Image>,
+    #[serde(skip)]
+    background_rendernodes: Vec<gsk::RenderNode>,
 }
 
 impl Default for RnoteEngine {
@@ -163,6 +353,8 @@ impl Default for RnoteEngine {
             visual_debug: false,
             tasks_tx,
             tasks_rx: Some(tasks_rx),
+            background_tile_image: None,
+            background_rendernodes: Vec::default(),
         }
     }
 }
@@ -222,6 +414,39 @@ impl RnoteEngine {
         }
     }
 
+    /// Takes a snapshot of the current state
+    pub fn take_snapshot(&self) -> EngineSnapshot {
+        let mut store_history_entry = self.store.history_entry_from_current_state();
+
+        // Remove all trashed strokes
+        let trashed_keys = store_history_entry
+            .trash_components
+            .iter()
+            .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
+            .collect::<Vec<StrokeKey>>();
+
+        for key in trashed_keys {
+            Arc::make_mut(&mut Arc::make_mut(&mut store_history_entry).stroke_components)
+                .remove(key);
+        }
+
+        EngineSnapshot {
+            document: self.document.clone(),
+            stroke_components: Arc::clone(&store_history_entry.stroke_components),
+            chrono_components: Arc::clone(&store_history_entry.chrono_components),
+            chrono_counter: store_history_entry.chrono_counter,
+        }
+    }
+
+    /// imports a engine snapshot. A save file should always be loaded with this method.
+    /// the store then needs to update its rendering
+    pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) {
+        self.document = snapshot.document.clone();
+        self.store.import_from_snapshot(&snapshot);
+
+        self.update_pens_states();
+    }
+
     /// records the current store state and saves it as a history entry.
     pub fn record(&mut self, _now: Instant) -> WidgetFlags {
         self.store.record()
@@ -251,7 +476,9 @@ impl RnoteEngine {
 
         self.resize_autoexpand();
         self.update_pens_states();
-        self.update_rendering_current_viewport();
+        if let Err(e) = self.update_rendering_current_viewport() {
+            log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
+        }
 
         widget_flags.redraw = true;
 
@@ -282,7 +509,9 @@ impl RnoteEngine {
 
         self.resize_autoexpand();
         self.update_pens_states();
-        self.update_rendering_current_viewport();
+        if let Err(e) = self.update_rendering_current_viewport() {
+            log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
+        }
 
         widget_flags.redraw = true;
 
@@ -430,32 +659,6 @@ impl RnoteEngine {
                 audioplayer: &mut self.audioplayer,
             },
         )
-    }
-
-    /// updates the background rendering for the current viewport.
-    /// if the background pattern or zoom has changed, background.regenerate_pattern() needs to be called first.
-    pub fn update_background_rendering_current_viewport(&mut self) {
-        let viewport = self.camera.viewport();
-
-        // Update background and strokes for the new viewport
-        if let Err(e) = self.document.background.update_rendernodes(viewport) {
-            log::error!("failed to update background rendernodes on canvas resize with Err: {e:?}");
-        }
-    }
-
-    /// updates the content rendering for the current viewport. including the background rendering.
-    pub fn update_rendering_current_viewport(&mut self) {
-        let viewport = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
-
-        self.update_background_rendering_current_viewport();
-
-        self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
-            false,
-            viewport,
-            image_scale,
-        );
     }
 
     // Generates bounds for each page on the document which contains content
@@ -619,115 +822,5 @@ impl RnoteEngine {
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
         })
-    }
-
-    /// Draws the entire engine (doc, pens, strokes, selection, ..) on a GTK snapshot.
-    pub fn draw_on_snapshot(
-        &self,
-        snapshot: &Snapshot,
-        surface_bounds: AABB,
-    ) -> anyhow::Result<()> {
-        let doc_bounds = self.document.bounds();
-        let viewport = self.camera.viewport();
-
-        snapshot.save();
-        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
-
-        self.document.draw_shadow(snapshot);
-
-        self.document
-            .background
-            .draw(snapshot, doc_bounds, &self.camera)?;
-
-        self.document
-            .format
-            .draw(snapshot, doc_bounds, &self.camera)?;
-
-        self.store
-            .draw_strokes_to_snapshot(snapshot, doc_bounds, viewport);
-
-        snapshot.restore();
-
-        self.penholder.draw_on_doc_snapshot(
-            snapshot,
-            &EngineView {
-                tasks_tx: self.tasks_tx(),
-                doc: &self.document,
-                store: &self.store,
-                camera: &self.camera,
-                audioplayer: &self.audioplayer,
-            },
-        )?;
-        /*
-               {
-                   use crate::utils::GrapheneRectHelpers;
-                   use gtk4::graphene;
-                   use piet::RenderContext;
-                   use rnote_compose::helpers::Affine2Helpers;
-
-                   let zoom = self.camera.zoom();
-
-                   let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
-                   let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-                   // Transform to doc coordinate space
-                   piet_cx.transform(self.camera.transform().to_kurbo());
-
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                   self.store
-                       .draw_strokes_immediate_w_piet(&mut piet_cx, doc_bounds, viewport, zoom)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   self.penholder
-                       .draw_on_doc(&mut piet_cx, doc_bounds, &self.camera)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-               }
-        */
-        snapshot.save();
-        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
-
-        // visual debugging
-        if self.visual_debug {
-            visual_debug::draw_debug(snapshot, self, surface_bounds)?;
-        }
-
-        snapshot.restore();
-
-        if self.visual_debug {
-            visual_debug::draw_statistics_overlay(snapshot, self, surface_bounds)?;
-        }
-
-        Ok(())
-    }
-
-    /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
-    /// NOT for opening files
-    pub fn load_engine_config(
-        &mut self,
-        serialized_config: &str,
-        data_dir: Option<PathBuf>,
-    ) -> anyhow::Result<WidgetFlags> {
-        let mut widget_flags = WidgetFlags::default();
-        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
-
-        self.document = serde_json::from_value(engine_config.document)?;
-        self.penholder = serde_json::from_value(engine_config.penholder)?;
-        self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
-        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
-        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
-
-        // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(self.pen_sounds, data_dir);
-
-        widget_flags.merge_with_other(self.penholder.handle_changed_pen_style());
-
-        widget_flags.redraw = true;
-        widget_flags.refresh_ui = true;
-
-        Ok(widget_flags)
     }
 }

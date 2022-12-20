@@ -287,7 +287,7 @@ impl EngineSnapshot {
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped.");
             }
         });
 

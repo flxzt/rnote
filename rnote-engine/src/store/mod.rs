@@ -15,6 +15,7 @@ pub use trash_comp::TrashComponent;
 use std::collections::VecDeque;
 use std::sync::Arc;
 
+use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use crate::WidgetFlags;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -40,7 +41,7 @@ pub struct HistoryEntry {
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
 
     #[serde(rename = "chrono_counter")]
-    chrono_counter: u32,
+    pub chrono_counter: u32,
 }
 
 impl Default for HistoryEntry {
@@ -53,31 +54,6 @@ impl Default for HistoryEntry {
 
             chrono_counter: 0,
         }
-    }
-}
-
-// the store snapshot, used when saving the store to a file.
-pub type StoreSnapshot = HistoryEntry;
-
-impl StoreSnapshot {
-    /// Processes the snapshot before it is used to save to a file
-    pub fn process_before_saving(&mut self) {
-        // Remove all trashed strokes
-        let trashed_keys = self
-            .trash_components
-            .iter()
-            .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
-            .collect::<Vec<StrokeKey>>();
-
-        for key in trashed_keys {
-            Arc::make_mut(&mut self.stroke_components).remove(key);
-            Arc::make_mut(&mut self.trash_components).remove(key);
-            Arc::make_mut(&mut self.chrono_components).remove(key);
-        }
-
-        // clear the components that will get rebuild on import.
-        Arc::make_mut(&mut self.trash_components).clear();
-        Arc::make_mut(&mut self.selection_components).clear();
     }
 }
 
@@ -148,16 +124,14 @@ impl StrokeStore {
     /// The max length of the history
     pub(crate) const HISTORY_MAX_LEN: usize = 100;
 
-    /// imports a store snapshot. A loaded strokes store should always be imported with this method.
+    /// imports from a engine snapshot. A loaded strokes store should always be imported with this method.
     /// the store then needs to update its rendering
-    pub fn import_snapshot(&mut self, store_snapshot: &StoreSnapshot) {
+    pub fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
         self.clear();
-        self.stroke_components = Arc::clone(&store_snapshot.stroke_components);
-        self.trash_components = Arc::clone(&store_snapshot.trash_components);
-        self.selection_components = Arc::clone(&store_snapshot.selection_components);
-        self.chrono_components = Arc::clone(&store_snapshot.chrono_components);
+        self.stroke_components = Arc::clone(&snapshot.stroke_components);
+        self.chrono_components = Arc::clone(&snapshot.chrono_components);
 
-        self.chrono_counter = store_snapshot.chrono_counter;
+        self.chrono_counter = snapshot.chrono_counter;
 
         self.update_geometry_for_strokes(&self.keys_unordered());
 
@@ -197,11 +171,6 @@ impl StrokeStore {
             chrono_components: Arc::clone(&self.chrono_components),
             chrono_counter: self.chrono_counter,
         })
-    }
-
-    /// Takes a snapshot of the current state
-    pub fn take_store_snapshot(&self) -> Arc<StoreSnapshot> {
-        self.history_entry_from_current_state()
     }
 
     /// Imports a given history entry and replaces the current state with it.

@@ -8,13 +8,15 @@ use self::export::{SelectionExportFormat, SelectionExportPrefs};
 pub use self::import::ImportPrefs;
 
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Instant;
 
 use crate::document::Layout;
 use crate::pens::penholder::PenStyle;
 use crate::pens::PenMode;
-use crate::store::StrokeKey;
+use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
+use crate::strokes::Stroke;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
@@ -27,6 +29,7 @@ use futures::channel::mpsc;
 use gtk4::gsk;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
+use slotmap::{HopSlotMap, SecondaryMap};
 
 /// A view into the rest of the engine, excluding the penholder
 #[allow(missing_debug_implementations)]
@@ -109,6 +112,31 @@ impl Default for EngineConfig {
             import_prefs: serde_json::to_value(engine.import_prefs).unwrap(),
             export_prefs: serde_json::to_value(engine.export_prefs).unwrap(),
             pen_sounds: serde_json::to_value(engine.pen_sounds).unwrap(),
+        }
+    }
+}
+
+// the engine snapshot, used when saving and loading to and from a file.
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(default, rename = "engine_snapshot")]
+pub struct EngineSnapshot {
+    #[serde(rename = "document")]
+    pub document: Document,
+    #[serde(rename = "stroke_components")]
+    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    #[serde(rename = "chrono_components")]
+    pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    #[serde(rename = "chrono_counter")]
+    pub chrono_counter: u32,
+}
+
+impl Default for EngineSnapshot {
+    fn default() -> Self {
+        Self {
+            document: Document::default(),
+            stroke_components: Arc::new(HopSlotMap::with_key()),
+            chrono_components: Arc::new(SecondaryMap::new()),
+            chrono_counter: 0,
         }
     }
 }
@@ -230,6 +258,41 @@ impl RnoteEngine {
         } else {
             self.audioplayer.take();
         }
+    }
+
+    /// Takes a snapshot of the current state
+    pub fn take_snapshot(&self) -> EngineSnapshot {
+        let mut store_history_entry = self.store.history_entry_from_current_state();
+
+        // Remove all trashed strokes
+        let trashed_keys = store_history_entry
+            .trash_components
+            .iter()
+            .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
+            .collect::<Vec<StrokeKey>>();
+
+        for key in trashed_keys {
+            Arc::make_mut(&mut Arc::make_mut(&mut store_history_entry).stroke_components)
+                .remove(key);
+        }
+
+        let snapshot = EngineSnapshot {
+            document: self.document.clone(),
+            stroke_components: Arc::clone(&store_history_entry.stroke_components),
+            chrono_components: Arc::clone(&store_history_entry.chrono_components),
+            chrono_counter: store_history_entry.chrono_counter,
+        };
+
+        snapshot
+    }
+
+    /// imports a engine snapshot. A loaded strokes store should always be imported with this method.
+    /// the store then needs to update its rendering
+    pub fn import_snapshot(&mut self, snapshot: &EngineSnapshot) {
+        self.document = snapshot.document.clone();
+        self.store.import_from_snapshot(&snapshot);
+
+        self.update_pens_states();
     }
 
     /// records the current store state and saves it as a history entry.

@@ -418,6 +418,7 @@ impl StrokeStore {
                 stroke.draw(piet_cx, image_scale)?;
             }
         }
+
         Ok(())
     }
 

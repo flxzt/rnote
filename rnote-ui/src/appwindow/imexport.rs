@@ -170,18 +170,18 @@ impl RnoteAppWindow {
     where
         P: AsRef<Path>,
     {
-        let store_snapshot_receiver = self
+        let snapshot_receiver = self
             .canvas()
             .engine()
             .borrow_mut()
             .open_from_rnote_bytes_p1(bytes)?;
 
-        let store_snapshot = store_snapshot_receiver.await??;
+        let engine_snapshot = snapshot_receiver.await??;
 
         self.canvas()
             .engine()
             .borrow_mut()
-            .open_from_store_snapshot_p2(&store_snapshot)?;
+            .import_snapshot(&engine_snapshot);
 
         if let Some(path) = path {
             let file = gio::File::for_path(path);

@@ -167,8 +167,8 @@ pub(crate) async fn export_to_file(
         .read_to_end(&mut rnote_bytes)
         .await?;
 
-    let store_snapshot = engine.open_from_rnote_bytes_p1(rnote_bytes)?.await??;
-    engine.open_from_store_snapshot_p2(&store_snapshot)?;
+    let engine_snapshot = engine.open_from_rnote_bytes_p1(rnote_bytes)?.await??;
+    engine.import_snapshot(&engine_snapshot);
 
     // We applied the prefs previously to the engine
     let export_bytes = engine.export_doc(export_file_name, None).await??;

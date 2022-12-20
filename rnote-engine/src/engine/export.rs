@@ -3,11 +3,10 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_fileformats::rnoteformat::Rnotefile;
+use rnote_fileformats::rnoteformat::RnoteFile;
 use rnote_fileformats::{xoppformat, FileFormatSaver};
 
 use crate::store::StrokeKey;
@@ -271,17 +270,12 @@ impl RnoteEngine {
     ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<Vec<u8>>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
-        let mut store_snapshot = self.store.take_store_snapshot();
-        Arc::make_mut(&mut store_snapshot).process_before_saving();
-
-        // the doc is currently not thread safe, so we have to serialize it in the same thread that holds the engine
-        let doc = serde_json::to_value(&self.document)?;
+        let engine_snapshot = self.take_snapshot();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let rnote_file = Rnotefile {
-                    document: doc,
-                    store_snapshot: serde_json::to_value(&*store_snapshot)?,
+                let rnote_file = RnoteFile {
+                    engine_snapshot: serde_json::to_value(engine_snapshot)?,
                 };
 
                 rnote_file.save_as_bytes(&file_name)
@@ -370,24 +364,7 @@ impl RnoteEngine {
 
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
-        let doc_bounds = self.document.bounds();
-        let format_size = na::vector![self.document.format.width, self.document.format.height];
-        let store_snapshot = self.store.take_store_snapshot();
-
-        let background_svg = if doc_export_prefs.with_background {
-            self.document
-                .background
-                .gen_svg(doc_bounds, doc_export_prefs.with_pattern)
-                .map_err(|e| {
-                    log::error!(
-                        "background.gen_svg() failed in export_doc_as_pdf_bytes() with Err {:?}",
-                        e
-                    )
-                })
-                .ok()
-        } else {
-            None
-        };
+        let snapshot = self.take_snapshot();
 
         let pages_strokes = self
             .pages_bounds_w_content()
@@ -401,9 +378,25 @@ impl RnoteEngine {
             })
             .collect::<Vec<(AABB, Vec<StrokeKey>)>>();
 
-        // Fill the pdf surface on a new thread to avoid blocking
+        // Fill the pdf surface on a separate thread to avoid blocking the UI
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
+                let format_size = na::vector![
+                    snapshot.document.format.width,
+                    snapshot.document.format.height
+                ];
+
+                let background_svg = if doc_export_prefs.with_background {
+                    Some(
+                        snapshot
+                            .document
+                            .background
+                            .gen_svg(snapshot.document.bounds(), doc_export_prefs.with_pattern)?,
+                    )
+                } else {
+                    None
+                };
+
                 let surface =
                     cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
                         .context("pdfsurface creation failed")?;
@@ -443,7 +436,7 @@ impl RnoteEngine {
                         ));
 
                         for stroke in page_strokes.into_iter() {
-                            if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
+                            if let Some(stroke) = snapshot.stroke_components.get(stroke) {
                                 stroke
                                     .draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                             }

@@ -6,14 +6,14 @@ use futures::channel::oneshot;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 
-use crate::document::{background, Background, Format};
+use crate::document::background;
 use crate::pens::penholder::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
-use crate::store::{StoreSnapshot, StrokeKey};
+use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
+use crate::{RnoteEngine, WidgetFlags};
 
-use super::EngineViewMut;
+use super::{EngineSnapshot, EngineViewMut};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -128,19 +128,16 @@ impl RnoteEngine {
     pub fn open_from_rnote_bytes_p1(
         &mut self,
         bytes: Vec<u8>,
-    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<StoreSnapshot>>> {
-        let rnote_file = rnoteformat::Rnotefile::load_from_bytes(&bytes)
+    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<EngineSnapshot>>> {
+        let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
             .context("RnoteFile load_from_bytes() failed.")?;
 
-        self.document = serde_json::from_value(rnote_file.document)
-            .context("serde_json::from_value() for rnote_file.document failed.")?;
-
         let (store_snapshot_sender, store_snapshot_receiver) =
-            oneshot::channel::<anyhow::Result<StoreSnapshot>>();
+            oneshot::channel::<anyhow::Result<EngineSnapshot>>();
 
         rayon::spawn(move || {
-            let result = || -> anyhow::Result<StoreSnapshot> {
-                serde_json::from_value(rnote_file.store_snapshot)
+            let result = || -> anyhow::Result<EngineSnapshot> {
+                serde_json::from_value(rnote_file.engine_snapshot)
                     .context("serde_json::from_value() for rnote_file.store_snapshot failed")
             };
 
@@ -150,18 +147,6 @@ impl RnoteEngine {
         });
 
         Ok(store_snapshot_receiver)
-    }
-
-    // Part two for opening a file. imports the store snapshot.
-    pub fn open_from_store_snapshot_p2(
-        &mut self,
-        store_snapshot: &StoreSnapshot,
-    ) -> anyhow::Result<()> {
-        self.store.import_snapshot(store_snapshot);
-
-        self.update_pens_states();
-
-        Ok(())
     }
 
     /// Opens a  Xournal++ .xopp file, and replaces the current state with it.
@@ -182,33 +167,30 @@ impl RnoteEngine {
             });
         let no_pages = xopp_file.xopp_root.pages.len() as u32;
 
-        let mut doc = Document::default();
-        let mut format = Format::default();
-        let mut background = Background::default();
-        let mut store = StrokeStore::default();
+        let mut engine = RnoteEngine::default();
 
         // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-        format.dpi = xopp_import_prefs.dpi;
+        engine.document.format.dpi = xopp_import_prefs.dpi;
 
-        doc.x = 0.0;
-        doc.y = 0.0;
-        doc.width = crate::utils::convert_value_dpi(
+        engine.document.x = 0.0;
+        engine.document.y = 0.0;
+        engine.document.width = crate::utils::convert_value_dpi(
             doc_width,
             xoppformat::XoppFile::DPI,
             xopp_import_prefs.dpi,
         );
-        doc.height = crate::utils::convert_value_dpi(
+        engine.document.height = crate::utils::convert_value_dpi(
             doc_height,
             xoppformat::XoppFile::DPI,
             xopp_import_prefs.dpi,
         );
 
-        format.width = crate::utils::convert_value_dpi(
+        engine.document.format.width = crate::utils::convert_value_dpi(
             doc_width,
             xoppformat::XoppFile::DPI,
             xopp_import_prefs.dpi,
         );
-        format.height = crate::utils::convert_value_dpi(
+        engine.document.format.height = crate::utils::convert_value_dpi(
             doc_height / (no_pages as f64),
             xoppformat::XoppFile::DPI,
             xopp_import_prefs.dpi,
@@ -221,7 +203,7 @@ impl RnoteEngine {
             } = &first_page.background.bg_type
             {
                 // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                background.pattern = background::PatternStyle::None;
+                engine.document.background.pattern = background::PatternStyle::None;
             }
         }
 
@@ -234,7 +216,7 @@ impl RnoteEngine {
                 for new_xoppstroke in layers.strokes.into_iter() {
                     match Stroke::from_xoppstroke(new_xoppstroke, offset, xopp_import_prefs.dpi) {
                         Ok((new_stroke, layer)) => {
-                            store.insert_stroke(new_stroke, Some(layer));
+                            engine.store.insert_stroke(new_stroke, Some(layer));
                         }
                         Err(e) => {
                             log::error!(
@@ -249,7 +231,7 @@ impl RnoteEngine {
                 for new_xoppimage in layers.images.into_iter() {
                     match Stroke::from_xoppimage(new_xoppimage, offset, xopp_import_prefs.dpi) {
                         Ok(new_image) => {
-                            store.insert_stroke(new_image, None);
+                            engine.store.insert_stroke(new_image, None);
                         }
                         Err(e) => {
                             log::error!(
@@ -269,14 +251,8 @@ impl RnoteEngine {
             );
         }
 
-        doc.background = background;
-        doc.format = format;
-
         // Import into engine
-        self.document = doc;
-        self.store.import_snapshot(&store.take_store_snapshot());
-
-        self.update_pens_states();
+        self.import_snapshot(&engine.take_snapshot());
 
         Ok(())
     }

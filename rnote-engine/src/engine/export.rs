@@ -792,12 +792,12 @@ impl RnoteEngine {
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
                 let Some(selection_bounds) = selection_bounds else {
-            return Ok(None);
-        };
+                    return Ok(None);
+                };
 
                 let Some(selection_svg) = gen_selection_svg(selection_keys, selection_bounds, &snapshot, selection_export_prefs)? else {
-                return Ok(None);
-            };
+                    return Ok(None);
+                };
 
                 Ok(Some(
                     rnote_compose::utils::add_xml_header(
@@ -840,8 +840,8 @@ impl RnoteEngine {
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
                 let Some(selection_bounds) = selection_bounds else {
-            return Ok(None);
-        };
+                    return Ok(None);
+                };
 
                 let Some(selection_svg) = gen_selection_svg(selection_keys, selection_bounds, &snapshot, selection_export_prefs)? else {
                 return Ok(None);

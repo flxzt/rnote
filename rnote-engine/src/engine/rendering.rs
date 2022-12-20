@@ -12,7 +12,7 @@ use super::{visual_debug, EngineView};
 
 impl RnoteEngine {
     /// updates the background rendering for the current viewport.
-    /// if the background pattern or zoom has changed, background.regenerate_pattern() needs to be called first.
+    /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
     pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
         let viewport = self.camera.viewport();
 

@@ -124,7 +124,7 @@ pub struct ImportPrefs {
 }
 
 impl RnoteEngine {
-    /// opens a .rnote file. We need to split this into two methods,
+    /// opens a .rnote file. We need to split this into two methods, this one and `import_snapshot()`,
     /// because we can't have it as a async function and await when the engine is wrapped in a refcell without causing panics :/
     pub fn open_from_rnote_bytes_p1(
         &mut self,

@@ -1,7 +1,7 @@
 use ink_stroke_modeler_rs::{
     ModelerInput, ModelerInputEventType, PredictionParams, StrokeModeler, StrokeModelerParams,
 };
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -94,7 +94,7 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
         }
     }
 
-    fn bounds(&self, style: &Style, _zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, _zoom: f64) -> Option<Aabb> {
         PenPath::try_from_elements(
             self.buffer
                 .iter()

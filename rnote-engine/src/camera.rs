@@ -1,6 +1,6 @@
 use gtk4::{graphene, gsk};
-use p2d::bounding_volume::AABB;
-use rnote_compose::helpers::AABBHelpers;
+use p2d::bounding_volume::Aabb;
+use rnote_compose::helpers::AabbHelpers;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -87,22 +87,22 @@ impl Camera {
     }
 
     /// the viewport in document coordinate space
-    pub fn viewport(&self) -> AABB {
+    pub fn viewport(&self) -> Aabb {
         let inv_zoom = 1.0 / self.total_zoom();
 
-        AABB::new_positive(
+        Aabb::new_positive(
             na::Point2::from(self.offset * inv_zoom),
             na::Point2::from((self.offset + self.size) * inv_zoom),
         )
     }
 
     /// from document coords -> surface coords
-    pub fn transform_bounds(&self, bounds: AABB) -> AABB {
+    pub fn transform_bounds(&self, bounds: Aabb) -> Aabb {
         bounds.scale(self.total_zoom()).translate(-self.offset)
     }
 
     /// from surface coords -> document coords
-    pub fn transform_inv_bounds(&self, bounds: AABB) -> AABB {
+    pub fn transform_inv_bounds(&self, bounds: Aabb) -> Aabb {
         bounds.translate(self.offset).scale(1.0 / self.total_zoom())
     }
 

@@ -1,6 +1,6 @@
 use anyhow::Context;
 use futures::channel::oneshot;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 
@@ -388,7 +388,7 @@ impl RnoteEngine {
 
                 (page_bounds, strokes_in_viewport)
             })
-            .collect::<Vec<(AABB, Vec<StrokeKey>)>>();
+            .collect::<Vec<(Aabb, Vec<StrokeKey>)>>();
 
         // Fill the pdf surface on a separate thread to avoid blocking the UI
         rayon::spawn(move || {
@@ -498,7 +498,7 @@ impl RnoteEngine {
 
         let snapshot = self.take_snapshot();
 
-        let pages_strokes: Vec<(AABB, Vec<Stroke>)> = self
+        let pages_strokes: Vec<(Aabb, Vec<Stroke>)> = self
             .pages_bounds_w_content()
             .into_iter()
             .map(|page_bounds| {
@@ -656,7 +656,7 @@ impl RnoteEngine {
 
         let snapshot = self.take_snapshot();
 
-        let pages_strokes: Vec<(AABB, Vec<StrokeKey>)> = self
+        let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
             .pages_bounds_w_content()
             .into_iter()
             .map(|page_bounds| {
@@ -718,7 +718,7 @@ impl RnoteEngine {
 
         let snapshot = self.take_snapshot();
 
-        let pages_strokes: Vec<(AABB, Vec<StrokeKey>)> = self
+        let pages_strokes: Vec<(Aabb, Vec<StrokeKey>)> = self
             .pages_bounds_w_content()
             .into_iter()
             .map(|page_bounds| {
@@ -878,7 +878,7 @@ impl RnoteEngine {
 /// generates the doc svg.
 /// without root or xml header.
 fn gen_doc_svg(
-    doc_w_content_bounds: AABB,
+    doc_w_content_bounds: Aabb,
     stroke_keys: Vec<StrokeKey>,
     snapshot: &EngineSnapshot,
     doc_export_prefs: DocExportPrefs,
@@ -914,7 +914,7 @@ fn gen_doc_svg(
 /// generates the doc pages svgs.
 /// without root or xml header.
 fn gen_doc_pages_svgs(
-    pages_strokes: Vec<(AABB, Vec<StrokeKey>)>,
+    pages_strokes: Vec<(Aabb, Vec<StrokeKey>)>,
     snapshot: &EngineSnapshot,
     doc_pages_export_prefs: DocPagesExportPrefs,
 ) -> Result<Vec<render::Svg>, anyhow::Error> {
@@ -955,7 +955,7 @@ fn gen_doc_pages_svgs(
 /// without root or xml header.
 fn gen_selection_svg(
     selection_keys: Vec<StrokeKey>,
-    selection_bounds: AABB,
+    selection_bounds: Aabb,
     snapshot: &EngineSnapshot,
     selection_export_prefs: SelectionExportPrefs,
 ) -> Result<Option<render::Svg>, anyhow::Error> {

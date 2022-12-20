@@ -8,7 +8,7 @@ use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::query::PointQuery;
 use piet::RenderContext;
-use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::penpath::Element;
@@ -16,7 +16,7 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::drawhelpers;
 use rnote_compose::{color, Color};
 
-use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -41,7 +41,7 @@ pub(super) enum ModifyState {
     },
     Resize {
         from_corner: ResizeCorner,
-        start_bounds: AABB,
+        start_bounds: Aabb,
         start_pos: na::Vector2<f64>,
     },
 }
@@ -61,7 +61,7 @@ pub(super) enum SelectorState {
     ModifySelection {
         modify_state: ModifyState,
         selection: Vec<StrokeKey>,
-        selection_bounds: AABB,
+        selection_bounds: Aabb,
     },
 }
 
@@ -233,7 +233,7 @@ impl PenBehaviour for Selector {
                     }
                     SelectorStyle::Rectangle => {
                         if let (Some(first), Some(last)) = (path.first(), path.last()) {
-                            let aabb = AABB::new_positive(
+                            let aabb = Aabb::new_positive(
                                 na::Point2::from(first.pos),
                                 na::Point2::from(last.pos),
                             );
@@ -750,7 +750,7 @@ impl PenBehaviour for Selector {
 }
 
 impl DrawOnDocBehaviour for Selector {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
@@ -759,13 +759,13 @@ impl DrawOnDocBehaviour for Selector {
                 // Making sure bounds are always outside of coord + width
                 let mut path_iter = path.iter();
                 if let Some(first) = path_iter.next() {
-                    let mut new_bounds = AABB::from_half_extents(
+                    let mut new_bounds = Aabb::from_half_extents(
                         na::Point2::from(first.pos),
                         na::Vector2::repeat(Self::SELECTION_OUTLINE_WIDTH / total_zoom),
                     );
 
                     path_iter.for_each(|element| {
-                        let pos_bounds = AABB::from_half_extents(
+                        let pos_bounds = Aabb::from_half_extents(
                             na::Point2::from(element.pos),
                             na::Vector2::repeat(Self::SELECTION_OUTLINE_WIDTH / total_zoom),
                         );
@@ -973,29 +973,29 @@ impl Selector {
         }
     }
 
-    fn resize_node_bounds(position: ResizeCorner, selection_bounds: AABB, camera: &Camera) -> AABB {
+    fn resize_node_bounds(position: ResizeCorner, selection_bounds: Aabb, camera: &Camera) -> Aabb {
         let total_zoom = camera.total_zoom();
         match position {
-            ResizeCorner::TopLeft => AABB::from_half_extents(
+            ResizeCorner::TopLeft => Aabb::from_half_extents(
                 na::point![selection_bounds.mins[0], selection_bounds.mins[1]],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
-            ResizeCorner::TopRight => AABB::from_half_extents(
+            ResizeCorner::TopRight => Aabb::from_half_extents(
                 na::point![selection_bounds.maxs[0], selection_bounds.mins[1]],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
-            ResizeCorner::BottomLeft => AABB::from_half_extents(
+            ResizeCorner::BottomLeft => Aabb::from_half_extents(
                 na::point![selection_bounds.mins[0], selection_bounds.maxs[1]],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
-            ResizeCorner::BottomRight => AABB::from_half_extents(
+            ResizeCorner::BottomRight => Aabb::from_half_extents(
                 na::point![selection_bounds.maxs[0], selection_bounds.maxs[1]],
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
         }
     }
 
-    fn rotate_node_sphere(selection_bounds: AABB, camera: &Camera) -> BoundingSphere {
+    fn rotate_node_sphere(selection_bounds: Aabb, camera: &Camera) -> BoundingSphere {
         let total_zoom = camera.total_zoom();
         let pos = na::point![
             selection_bounds.maxs[0],
@@ -1006,7 +1006,7 @@ impl Selector {
 
     fn draw_selection_overlay(
         piet_cx: &mut impl RenderContext,
-        selection_bounds: AABB,
+        selection_bounds: Aabb,
         modify_state: &ModifyState,
         camera: &Camera,
     ) -> anyhow::Result<()> {

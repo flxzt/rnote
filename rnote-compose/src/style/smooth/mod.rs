@@ -15,7 +15,7 @@ use crate::shapes::ShapeBehaviour;
 use crate::PenPath;
 
 use kurbo::Shape;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 
 // Composes lines with variable width. Must be drawn with only a fill
 fn compose_lines_variable_width(
@@ -118,7 +118,7 @@ fn compose_lines_variable_width(
 }
 
 impl Composer<SmoothOptions> for Line {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -135,7 +135,7 @@ impl Composer<SmoothOptions> for Line {
 }
 
 impl Composer<SmoothOptions> for Rectangle {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -157,7 +157,7 @@ impl Composer<SmoothOptions> for Rectangle {
 }
 
 impl Composer<SmoothOptions> for Ellipse {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -179,7 +179,7 @@ impl Composer<SmoothOptions> for Ellipse {
 }
 
 impl Composer<SmoothOptions> for QuadraticBezier {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -201,7 +201,7 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 }
 
 impl Composer<SmoothOptions> for CubicBezier {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -223,7 +223,7 @@ impl Composer<SmoothOptions> for CubicBezier {
 }
 
 impl Composer<SmoothOptions> for PenPath {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -327,7 +327,7 @@ impl Composer<SmoothOptions> for PenPath {
 }
 
 impl Composer<SmoothOptions> for crate::Shape {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         match self {
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),

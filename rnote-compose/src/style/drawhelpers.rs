@@ -1,11 +1,11 @@
 //! Helpers for drawing edit nodes, guides, etc.
 
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use piet::RenderContext;
 
 use crate::color;
-use crate::helpers::{AABBHelpers, Vector2Helpers};
+use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::penevents::PenState;
 
 /// ## Pos indicator
@@ -95,7 +95,7 @@ pub const RECTANGULAR_NODE_OUTLINE_WIDTH: f64 = 1.5;
 /// Return the rectangular node shape
 pub fn rectangular_node_shape(
     _node_state: PenState,
-    bounds: AABB,
+    bounds: Aabb,
     zoom: f64,
 ) -> kurbo::RoundedRect {
     const CORNER_RADIUS: f64 = 2.0;
@@ -112,7 +112,7 @@ pub fn rectangular_node_shape(
 pub fn draw_rectangular_node(
     cx: &mut impl RenderContext,
     node_state: PenState,
-    bounds: AABB,
+    bounds: Aabb,
     zoom: f64,
 ) {
     static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);

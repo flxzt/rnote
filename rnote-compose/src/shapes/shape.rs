@@ -1,4 +1,4 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
@@ -95,7 +95,7 @@ impl TransformBehaviour for Shape {
 }
 
 impl ShapeBehaviour for Shape {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match self {
             Self::Line(line) => line.bounds(),
             Self::Rectangle(rectangle) => rectangle.bounds(),
@@ -104,7 +104,7 @@ impl ShapeBehaviour for Shape {
             Self::CubicBezier(cubbez) => cubbez.bounds(),
         }
     }
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         match self {
             Self::Line(line) => line.hitboxes(),
             Self::Rectangle(rectangle) => rectangle.hitboxes(),

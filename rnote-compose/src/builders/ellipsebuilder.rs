@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
 use crate::penevents::{PenEvent, PenState};
@@ -52,7 +52,7 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
         ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_ellipse()
                 .composed_bounds(style)

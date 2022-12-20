@@ -1,4 +1,4 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 
 /// Helpers that extend the Vector2 type
 pub trait Vector2Helpers
@@ -103,18 +103,18 @@ impl Vector2Helpers for na::Vector2<f64> {
     }
 }
 
-/// Helpers that extend the AABB type
-pub trait AABBHelpers
+/// Helpers that extend the Aabb type
+pub trait AabbHelpers
 where
     Self: Sized,
 {
-    /// New AABB at position zero, with size zero
+    /// New Aabb at position zero, with size zero
     fn new_zero() -> Self;
-    /// New AABB, ensuring its mins, maxs are valid (maxs >= mins)
+    /// New Aabb, ensuring its mins, maxs are valid (maxs >= mins)
     fn new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> Self;
-    /// Asserts the AABB is valid
+    /// Asserts the Aabb is valid
     fn assert_valid(&self) -> anyhow::Result<()>;
-    /// Translates the AABB by a offset
+    /// Translates the Aabb by a offset
     fn translate(&self, offset: na::Vector2<f64>) -> Self;
     /// Shrinks the aabb to the nearest integer of its vertices
     fn floor(&self) -> Self;
@@ -132,15 +132,15 @@ where
     fn extend_top_by(&self, extend: f64) -> Self;
     /// extends on bottom side by the given size
     fn extend_bottom_by(&self, extend: f64) -> Self;
-    /// Scales the AABB by the scalefactor
+    /// Scales the Aabb by the scalefactor
     fn scale(&self, scale: f64) -> Self;
-    /// Scales the AABB by the scale vector
+    /// Scales the Aabb by the scale vector
     fn scale_non_uniform(&self, scale: na::Vector2<f64>) -> Self;
-    /// Ensures the AABB is positive (maxs >= mins)
+    /// Ensures the Aabb is positive (maxs >= mins)
     fn ensure_positive(&mut self);
-    /// Splits the AABB horizontally in the center
+    /// Splits the Aabb horizontally in the center
     fn hsplit(&self) -> [Self; 2];
-    /// Splits the AABB vertically in the center
+    /// Splits the Aabb vertically in the center
     fn vsplit(&self) -> [Self; 2];
     /// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
     /// the splitted bounds are exactly fitted to not overlap, or extend the given bounds
@@ -152,26 +152,26 @@ where
     /// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
     /// The boxes on the edges most likely extend beyond the given aabb.
     fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
-    /// Converts a AABB to a kurbo Rectangle
+    /// Converts a Aabb to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
-    /// Converts a kurbo Rectangle to AABB
+    /// Converts a kurbo Rectangle to Aabb
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self;
 }
 
-impl AABBHelpers for AABB {
+impl AabbHelpers for Aabb {
     fn new_zero() -> Self {
-        AABB::new(na::point![0.0, 0.0], na::point![0.0, 0.0])
+        Aabb::new(na::point![0.0, 0.0], na::point![0.0, 0.0])
     }
 
     fn new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> Self {
         if start[0] <= end[0] && start[1] <= end[1] {
-            AABB::new(na::point![start[0], start[1]], na::point![end[0], end[1]])
+            Aabb::new(na::point![start[0], start[1]], na::point![end[0], end[1]])
         } else if start[0] > end[0] && start[1] <= end[1] {
-            AABB::new(na::point![end[0], start[1]], na::point![start[0], end[1]])
+            Aabb::new(na::point![end[0], start[1]], na::point![start[0], end[1]])
         } else if start[0] <= end[0] && start[1] > end[1] {
-            AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
+            Aabb::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
         } else {
-            AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
+            Aabb::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
         }
     }
 
@@ -190,19 +190,19 @@ impl AABBHelpers for AABB {
         }
     }
 
-    fn translate(&self, offset: na::Vector2<f64>) -> AABB {
+    fn translate(&self, offset: na::Vector2<f64>) -> Aabb {
         self.transform_by(&na::convert(na::Translation2::from(offset)))
     }
 
-    fn floor(&self) -> AABB {
-        AABB::new(
+    fn floor(&self) -> Aabb {
+        Aabb::new(
             na::point![self.mins[0].ceil(), self.mins[1].ceil()],
             na::point![self.maxs[0].floor(), self.maxs[1].floor()],
         )
     }
 
-    fn ceil(&self) -> AABB {
-        AABB::new(
+    fn ceil(&self) -> Aabb {
+        Aabb::new(
             na::point![self.mins[0].floor(), self.mins[1].floor()],
             na::point![self.maxs[0].ceil(), self.maxs[1].ceil()],
         )
@@ -227,56 +227,56 @@ impl AABBHelpers for AABB {
             aabb_maxs_y = self.maxs[1].min(max.maxs[1]);
         }
 
-        AABB::new(
+        Aabb::new(
             na::point![aabb_mins_x, aabb_mins_y],
             na::point![aabb_maxs_x, aabb_maxs_y],
         )
     }
 
-    fn extend_by(&self, extend_by: nalgebra::Vector2<f64>) -> AABB {
-        AABB::new(
+    fn extend_by(&self, extend_by: nalgebra::Vector2<f64>) -> Aabb {
+        Aabb::new(
             na::Point2::from(self.mins.coords - extend_by),
             na::Point2::from(self.maxs.coords + extend_by),
         )
     }
 
-    fn extend_left_by(&self, extend: f64) -> AABB {
-        AABB::new(
+    fn extend_left_by(&self, extend: f64) -> Aabb {
+        Aabb::new(
             na::point![self.mins.coords[0] - extend, self.mins.coords[1]],
             na::Point2::from(self.maxs.coords),
         )
     }
 
-    fn extend_right_by(&self, extend: f64) -> AABB {
-        AABB::new(
+    fn extend_right_by(&self, extend: f64) -> Aabb {
+        Aabb::new(
             na::Point2::from(self.mins.coords),
             na::point![self.maxs.coords[0] + extend, self.maxs.coords[1]],
         )
     }
 
-    fn extend_top_by(&self, extend: f64) -> AABB {
-        AABB::new(
+    fn extend_top_by(&self, extend: f64) -> Aabb {
+        Aabb::new(
             na::point![self.mins.coords[0], self.mins.coords[1] - extend],
             na::Point2::from(self.maxs.coords),
         )
     }
 
-    fn extend_bottom_by(&self, extend: f64) -> AABB {
-        AABB::new(
+    fn extend_bottom_by(&self, extend: f64) -> Aabb {
+        Aabb::new(
             na::Point2::from(self.mins.coords),
             na::point![self.maxs.coords[0], self.maxs.coords[1] + extend],
         )
     }
 
-    fn scale(&self, scale: f64) -> AABB {
-        AABB::new(
+    fn scale(&self, scale: f64) -> Aabb {
+        Aabb::new(
             na::Point2::from(self.mins.coords.scale(scale)),
             na::Point2::from(self.maxs.coords.scale(scale)),
         )
     }
 
-    fn scale_non_uniform(&self, scale: nalgebra::Vector2<f64>) -> AABB {
-        AABB::new(
+    fn scale_non_uniform(&self, scale: nalgebra::Vector2<f64>) -> Aabb {
+        Aabb::new(
             na::Point2::from(self.mins.coords.component_mul(&scale)),
             na::Point2::from(self.maxs.coords.component_mul(&scale)),
         )
@@ -293,15 +293,15 @@ impl AABBHelpers for AABB {
 
     fn hsplit(&self) -> [Self; 2] {
         [
-            AABB::new(self.mins, na::point![self.center()[0], self.maxs[1]]),
-            AABB::new(na::point![self.center()[0], self.mins[1]], self.maxs),
+            Aabb::new(self.mins, na::point![self.center()[0], self.maxs[1]]),
+            Aabb::new(na::point![self.center()[0], self.mins[1]], self.maxs),
         ]
     }
 
     fn vsplit(&self) -> [Self; 2] {
         [
-            AABB::new(self.mins, na::point![self.maxs[0], self.center()[1]]),
-            AABB::new(na::point![self.mins[0], self.center()[1]], self.maxs),
+            Aabb::new(self.mins, na::point![self.maxs[0], self.center()[1]]),
+            Aabb::new(na::point![self.mins[0], self.center()[1]], self.maxs),
         ]
     }
 
@@ -348,7 +348,7 @@ impl AABBHelpers for AABB {
 
         while offset_y < height {
             while offset_x < width {
-                splitted_aabbs.push(AABB::new(
+                splitted_aabbs.push(Aabb::new(
                     na::point![offset_x, offset_y],
                     na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
                 ));
@@ -377,7 +377,7 @@ impl AABBHelpers for AABB {
 
             while offset_x < self.maxs[0] {
                 let mins = na::point![offset_x, offset_y];
-                splitted_aabbs.push(AABB::new(mins, mins + splitted_size));
+                splitted_aabbs.push(Aabb::new(mins, mins + splitted_size));
 
                 offset_x += splitted_size[0];
             }
@@ -396,7 +396,7 @@ impl AABBHelpers for AABB {
     }
 
     fn from_kurbo_rect(rect: kurbo::Rect) -> Self {
-        AABB::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
+        Aabb::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
     }
 }
 
@@ -446,10 +446,10 @@ pub fn scale_w_locked_aspectratio(
 
 /// Scales inner bounds in context to new outer bounds
 pub fn scale_inner_bounds_in_context_new_outer_bounds(
-    old_inner_bounds: AABB,
-    old_outer_bounds: AABB,
-    new_outer_bounds: AABB,
-) -> AABB {
+    old_inner_bounds: Aabb,
+    old_outer_bounds: Aabb,
+    new_outer_bounds: Aabb,
+) -> Aabb {
     let offset = na::vector![
         new_outer_bounds.mins[0] - old_outer_bounds.mins[0],
         new_outer_bounds.mins[1] - old_outer_bounds.mins[1]
@@ -460,7 +460,7 @@ pub fn scale_inner_bounds_in_context_new_outer_bounds(
         (new_outer_bounds.extents()[1]) / (old_outer_bounds.extents()[1])
     ];
 
-    AABB::new(
+    Aabb::new(
         na::point![
             (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
                 + old_outer_bounds.mins[0]
@@ -488,9 +488,9 @@ where
     Self: Sized + kurbo::Shape,
 {
     /// Converting the bounds to parry2d aabb bounds
-    fn bounds_as_p2d_aabb(&self) -> AABB {
+    fn bounds_as_p2d_aabb(&self) -> Aabb {
         let rect = self.bounding_box();
-        AABB::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
+        Aabb::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
     }
 }
 

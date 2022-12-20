@@ -1,4 +1,4 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::collections::VecDeque;
 use std::time::Instant;
@@ -66,7 +66,7 @@ impl PenPathBuilderBehaviour for PenPathSimpleBuilder {
         }
     }
 
-    fn bounds(&self, style: &Style, _zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, _zoom: f64) -> Option<Aabb> {
         let pen_path = PenPath::try_from_elements(self.buffer.iter().copied())?;
 
         Some(pen_path.composed_bounds(style))

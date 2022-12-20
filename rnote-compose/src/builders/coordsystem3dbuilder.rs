@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
 use crate::penevents::{PenEvent, PenState};
@@ -55,12 +55,12 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
         ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_lines()
                 .iter()
                 .map(|line| line.composed_bounds(style))
-                .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
                 .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
         )
     }

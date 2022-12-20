@@ -9,7 +9,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -21,7 +21,7 @@ pub struct ShapeStroke {
     pub style: Style,
     #[serde(skip)]
     // since the shape can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
-    hitboxes: Vec<AABB>,
+    hitboxes: Vec<Aabb>,
 }
 
 impl StrokeBehaviour for ShapeStroke {
@@ -39,7 +39,7 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -82,7 +82,7 @@ impl DrawBehaviour for ShapeStroke {
 }
 
 impl ShapeBehaviour for ShapeStroke {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match &self.style {
             Style::Smooth(options) => self.shape.composed_bounds(options),
             Style::Rough(options) => self.shape.composed_bounds(options),
@@ -90,7 +90,7 @@ impl ShapeBehaviour for ShapeStroke {
         }
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
     }
 }
@@ -123,7 +123,7 @@ impl ShapeStroke {
         self.hitboxes = self.gen_hitboxes();
     }
 
-    fn gen_hitboxes(&self) -> Vec<AABB> {
+    fn gen_hitboxes(&self) -> Vec<Aabb> {
         let width = self.style.stroke_width();
 
         self.shape

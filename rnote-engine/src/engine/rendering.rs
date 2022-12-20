@@ -1,9 +1,9 @@
 use anyhow::Context;
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{Document, DrawOnDocBehaviour, RnoteEngine};
@@ -74,7 +74,7 @@ impl RnoteEngine {
     pub fn draw_on_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
-        surface_bounds: AABB,
+        surface_bounds: Aabb,
     ) -> anyhow::Result<()> {
         let doc_bounds = self.document.bounds();
         let viewport = self.camera.viewport();
@@ -253,7 +253,7 @@ impl RnoteEngine {
         const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
         let path_width: f64 = 1.0 / self.camera.total_zoom();
 
-        let indicator_bounds = AABB::from_half_extents(
+        let indicator_bounds = Aabb::from_half_extents(
             na::point![0.0, 0.0],
             na::Vector2::repeat(6.0 / self.camera.total_zoom()),
         );

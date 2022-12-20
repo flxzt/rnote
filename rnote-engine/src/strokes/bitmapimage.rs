@@ -9,7 +9,7 @@ use crate::DrawBehaviour;
 use piet::RenderContext;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
@@ -17,7 +17,7 @@ use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::{cairo, glib};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,7 +54,7 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -111,11 +111,11 @@ impl DrawBehaviour for BitmapImage {
 }
 
 impl ShapeBehaviour for BitmapImage {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         vec![self.bounds()]
     }
 }

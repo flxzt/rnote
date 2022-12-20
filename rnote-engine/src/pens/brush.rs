@@ -18,7 +18,7 @@ use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::PressureCurve;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::PenPathBuilderType;
@@ -359,7 +359,7 @@ impl PenBehaviour for Brush {
 }
 
 impl DrawOnDocBehaviour for Brush {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = self.style_for_current_options();
 
         match &self.state {

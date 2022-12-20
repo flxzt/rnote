@@ -1,12 +1,12 @@
 mod transformbehaviour;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 // Re-exports
 pub use transformbehaviour::TransformBehaviour;
 
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AABBHelpers, Affine2Helpers};
+use crate::helpers::{AabbHelpers, Affine2Helpers};
 
 /// A (affine) transform
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -83,7 +83,7 @@ impl Transform {
     }
 
     /// Transforms the aabbs vertices and calculates a new that contains them
-    pub fn transform_aabb(&self, aabb: AABB) -> AABB {
+    pub fn transform_aabb(&self, aabb: Aabb) -> Aabb {
         let p0 = self.affine * na::point![aabb.mins[0], aabb.mins[1]];
         let p1 = self.affine * na::point![aabb.mins[0], aabb.maxs[1]];
         let p2 = self.affine * na::point![aabb.maxs[0], aabb.maxs[1]];
@@ -94,7 +94,7 @@ impl Transform {
         let max_x = p0[0].max(p1[0]).max(p2[0]).max(p3[0]);
         let max_y = p0[1].max(p1[1]).max(p2[1]).max(p3[1]);
 
-        AABB::new_positive(na::point![min_x, min_y], na::point![max_x, max_y])
+        Aabb::new_positive(na::point![min_x, min_y], na::point![max_x, max_y])
     }
 
     /// appends a translation to the transform

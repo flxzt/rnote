@@ -6,7 +6,7 @@ pub use element::Element;
 use kurbo::Shape;
 pub use segment::Segment;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::KurboHelpers;
@@ -26,8 +26,8 @@ pub struct PenPath {
 }
 
 impl ShapeBehaviour for PenPath {
-    fn bounds(&self) -> AABB {
-        let mut bounds = AABB::from_points(&[na::Point2::from(self.start.pos)]);
+    fn bounds(&self) -> Aabb {
+        let mut bounds = Aabb::from_points(&[na::Point2::from(self.start.pos)]);
 
         let mut prev = self.start;
         for seg in self.segments.iter() {
@@ -64,7 +64,7 @@ impl ShapeBehaviour for PenPath {
         bounds
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes_priv()
             .into_iter()
             .flat_map(|(_, hb)| hb)
@@ -143,7 +143,7 @@ impl PenPath {
     }
 
     /// Checks whether a bounds collides with the path. If it does, it returns the index of the colliding segment
-    pub fn hittest(&self, hit: &AABB, loosened: f64) -> Option<usize> {
+    pub fn hittest(&self, hit: &Aabb, loosened: f64) -> Option<usize> {
         for (i, seg_hitboxes) in self.hitboxes_priv() {
             if seg_hitboxes
                 .into_iter()
@@ -156,7 +156,7 @@ impl PenPath {
         None
     }
 
-    fn hitboxes_priv(&self) -> Vec<(usize, Vec<AABB>)> {
+    fn hitboxes_priv(&self) -> Vec<(usize, Vec<Aabb>)> {
         let mut hitboxes = Vec::with_capacity(self.segments.len());
 
         let mut prev = self.start;

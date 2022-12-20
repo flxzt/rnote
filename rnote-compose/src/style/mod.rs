@@ -70,7 +70,7 @@ impl Style {
 }
 
 impl Composer<Style> for Line {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -88,7 +88,7 @@ impl Composer<Style> for Line {
 }
 
 impl Composer<Style> for Rectangle {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -106,7 +106,7 @@ impl Composer<Style> for Rectangle {
 }
 
 impl Composer<Style> for Ellipse {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -124,7 +124,7 @@ impl Composer<Style> for Ellipse {
 }
 
 impl Composer<Style> for QuadraticBezier {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -142,7 +142,7 @@ impl Composer<Style> for QuadraticBezier {
 }
 
 impl Composer<Style> for CubicBezier {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -160,7 +160,7 @@ impl Composer<Style> for CubicBezier {
 }
 
 impl Composer<Style> for PenPath {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(_) => unimplemented!(),
@@ -178,7 +178,7 @@ impl Composer<Style> for PenPath {
 }
 
 impl Composer<Style> for Shape {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match self {
             Shape::Line(line) => line.composed_bounds(options),
             Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),

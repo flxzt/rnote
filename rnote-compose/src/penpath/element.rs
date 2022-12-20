@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::transform::TransformBehaviour;
@@ -58,7 +58,7 @@ impl Element {
     }
 
     /// indicates if a element is out of valid bounds and should be filtered out. Returns true if element pos is not inside the bounds
-    pub fn filter_by_bounds(&self, filter_bounds: AABB) -> bool {
+    pub fn filter_by_bounds(&self, filter_bounds: Aabb) -> bool {
         !filter_bounds.contains_local_point(&na::Point2::from(self.pos))
     }
 

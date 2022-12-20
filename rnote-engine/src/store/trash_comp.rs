@@ -2,7 +2,7 @@ use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
 use crate::WidgetFlags;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::PenPath;
 use serde::{Deserialize, Serialize};
@@ -86,7 +86,7 @@ impl StrokeStore {
     }
 
     /// trash strokes that collide with the given bounds
-    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) -> WidgetFlags {
+    pub fn trash_colliding_strokes(&mut self, eraser_bounds: Aabb, viewport: Aabb) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
@@ -128,8 +128,8 @@ impl StrokeStore {
     /// returned strokes need to update their rendering.
     pub fn split_colliding_strokes(
         &mut self,
-        eraser_bounds: AABB,
-        viewport: AABB,
+        eraser_bounds: Aabb,
+        viewport: Aabb,
     ) -> Vec<StrokeKey> {
         let mut modified_keys = vec![];
 

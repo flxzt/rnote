@@ -4,9 +4,9 @@ use std::ops::Range;
 use std::time::Instant;
 
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::drawhelpers;
@@ -86,12 +86,12 @@ impl Default for Typewriter {
 }
 
 impl DrawOnDocBehaviour for Typewriter {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
             TypewriterState::Idle => None,
-            TypewriterState::Start(pos) => Some(AABB::new(
+            TypewriterState::Start(pos) => Some(Aabb::new(
                 na::Point2::from(*pos),
                 na::Point2::from(pos + na::vector![self.text_width, self.text_style.font_size]),
             )),
@@ -590,10 +590,10 @@ impl Typewriter {
     }
 
     /// the bounds of the text rect enclosing the textstroke
-    fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> AABB {
+    fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> Aabb {
         let origin = textstroke.transform.translation_part();
 
-        AABB::new(
+        Aabb::new(
             na::Point2::from(origin),
             na::point![origin[0] + text_width, origin[1]],
         )
@@ -601,10 +601,10 @@ impl Typewriter {
     }
 
     /// the bounds of the translate node
-    fn translate_node_bounds(typewriter_bounds: AABB, camera: &Camera) -> AABB {
+    fn translate_node_bounds(typewriter_bounds: Aabb, camera: &Camera) -> Aabb {
         let total_zoom = camera.total_zoom();
 
-        AABB::from_half_extents(
+        Aabb::from_half_extents(
             na::Point2::from(
                 typewriter_bounds.mins.coords + Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom,
             ),
@@ -631,11 +631,11 @@ impl Typewriter {
         text_rect_origin: na::Vector2<f64>,
         text_width: f64,
         camera: &Camera,
-    ) -> AABB {
+    ) -> Aabb {
         let total_zoom = camera.total_zoom();
         let center = Self::adjust_text_width_node_center(text_rect_origin, text_width, camera);
 
-        AABB::from_half_extents(
+        Aabb::from_half_extents(
             na::Point2::from(center),
             Self::ADJUST_TEXT_WIDTH_NODE_SIZE * 0.5 / total_zoom,
         )

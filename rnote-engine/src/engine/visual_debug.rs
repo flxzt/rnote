@@ -1,5 +1,5 @@
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, Text, TextLayoutBuilder};
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::shapes::Rectangle;
@@ -67,7 +67,7 @@ pub const COLOR_DOC_BOUNDS: Color = Color {
     a: 1.0,
 };
 
-pub fn draw_bounds(bounds: AABB, color: Color, snapshot: &Snapshot, width: f64) {
+pub fn draw_bounds(bounds: Aabb, color: Color, snapshot: &Snapshot, width: f64) {
     let bounds = graphene::Rect::new(
         bounds.mins[0] as f32,
         bounds.mins[1] as f32,
@@ -107,7 +107,7 @@ pub fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width:
     );
 }
 
-pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
+pub fn draw_fill(rect: Aabb, color: Color, snapshot: &Snapshot) {
     snapshot.append_color(
         &gdk::RGBA::from_compose_color(color),
         &graphene::Rect::from_p2d_aabb(rect),
@@ -119,11 +119,11 @@ pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
 pub fn draw_statistics_overlay(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
-    surface_bounds: AABB,
+    surface_bounds: Aabb,
 ) -> anyhow::Result<()> {
     // A statistics overlay
     {
-        let text_bounds = AABB::new(
+        let text_bounds = Aabb::new(
             na::point![
                 surface_bounds.maxs[0] - 320.0,
                 surface_bounds.mins[1] + 20.0
@@ -180,7 +180,7 @@ pub fn draw_statistics_overlay(
 pub fn draw_debug(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
-    surface_bounds: AABB,
+    surface_bounds: Aabb,
 ) -> anyhow::Result<()> {
     let viewport = engine.camera.viewport();
     let total_zoom = engine.camera.total_zoom();

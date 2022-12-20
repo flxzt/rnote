@@ -7,9 +7,9 @@ pub use format::Format;
 use rnote_compose::Color;
 
 use crate::{Camera, StrokeStore};
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -82,15 +82,15 @@ impl Document {
         self.resize_to_fit_strokes(store, camera);
     }
 
-    pub fn bounds(&self) -> AABB {
-        AABB::new(
+    pub fn bounds(&self) -> Aabb {
+        Aabb::new(
             na::point![self.x, self.y],
             na::point![self.x + self.width, self.y + self.height],
         )
     }
 
     // Generates bounds for each page for the doc bounds, extended to fit the format. May contain many empty pages (in infinite mode)
-    pub fn pages_bounds(&self) -> Vec<AABB> {
+    pub fn pages_bounds(&self) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
@@ -165,7 +165,7 @@ impl Document {
         self.height = new_height;
     }
 
-    pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: AABB) {
+    pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -189,7 +189,7 @@ impl Document {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If doc is empty, resize to one page with the format size
-            AABB::new(
+            Aabb::new(
                 na::point![0.0, 0.0],
                 na::point![self.format.width, self.format.height],
             )

@@ -6,10 +6,10 @@ use crate::{DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::PenEvent;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
@@ -48,14 +48,14 @@ impl VerticalSpaceTool {
 }
 
 impl DrawOnDocBehaviour for VerticalSpaceTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let viewport = engine_view.camera.viewport();
 
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
         let height = self.current_pos_y - self.start_pos_y;
-        let tool_bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         Some(tool_bounds)
     }
@@ -72,7 +72,7 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
         let height = self.current_pos_y - self.start_pos_y;
-        let tool_bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         let tool_bounds_rect = kurbo::Rect::from_points(
             tool_bounds.mins.coords.to_kurbo_point(),
@@ -133,8 +133,8 @@ impl OffsetCameraTool {
 }
 
 impl DrawOnDocBehaviour for OffsetCameraTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
-        Some(AABB::from_half_extents(
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        Some(Aabb::from_half_extents(
             na::Point2::from(self.start),
             ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5)
                 / engine_view.camera.total_zoom(),
@@ -387,7 +387,7 @@ impl PenBehaviour for Tools {
 }
 
 impl DrawOnDocBehaviour for Tools {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         match self.state {
             ToolsState::Active => match self.style {
                 ToolsStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),

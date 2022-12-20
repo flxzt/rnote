@@ -7,7 +7,7 @@ use super::{StrokeBehaviour, TextStroke};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, RnoteEngine};
 use crate::{utils, DrawBehaviour};
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::style::smooth::SmoothOptions;
@@ -15,7 +15,7 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{Color, PenPath, Style};
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use rnote_fileformats::xoppformat::{self, XoppColor};
 use serde::{Deserialize, Serialize};
 
@@ -47,7 +47,7 @@ impl StrokeBehaviour for Stroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         match self {
@@ -73,7 +73,7 @@ impl DrawBehaviour for Stroke {
 }
 
 impl ShapeBehaviour for Stroke {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.bounds(),
             Self::ShapeStroke(shapestroke) => shapestroke.bounds(),
@@ -83,7 +83,7 @@ impl ShapeBehaviour for Stroke {
         }
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.hitboxes(),
             Self::ShapeStroke(shapestroke) => shapestroke.hitboxes(),
@@ -256,7 +256,7 @@ impl Stroke {
         offset: na::Vector2<f64>,
         target_dpi: f64,
     ) -> Result<Self, anyhow::Error> {
-        let bounds = AABB::new(
+        let bounds = Aabb::new(
             na::point![
                 crate::utils::convert_value_dpi(
                     xopp_image.left,

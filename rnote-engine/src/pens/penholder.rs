@@ -10,7 +10,7 @@ use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
 use gtk4::{glib, glib::prelude::*};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
@@ -462,7 +462,7 @@ impl PenHolder {
 }
 
 impl DrawOnDocBehaviour for PenHolder {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         match self.current_style_w_override() {
             PenStyle::Brush => self.brush.bounds_on_doc(engine_view),
             PenStyle::Shaper => self.shaper.bounds_on_doc(engine_view),

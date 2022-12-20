@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
 use crate::penevents::PenEvent;
@@ -90,7 +90,7 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
         }
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         let stroke_width = style.stroke_width();
 
         if self.buffer.len().saturating_sub(1) < self.i {
@@ -100,7 +100,7 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
         Some(
             self.buffer[self.i..]
                 .iter()
-                .fold(AABB::new_invalid(), |mut acc, x| {
+                .fold(Aabb::new_invalid(), |mut acc, x| {
                     acc.take_point(na::Point2::from(x.pos));
                     acc.loosened(stroke_width / zoom)
                 }),

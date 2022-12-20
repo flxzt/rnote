@@ -1,7 +1,7 @@
 /// The module for the rough style.
 pub mod roughoptions;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 // Re-exports
 pub use roughoptions::RoughOptions;
 
@@ -42,7 +42,7 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
 // Composer implementations
 
 impl Composer<RoughOptions> for Line {
-    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
         self.bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
@@ -64,7 +64,7 @@ impl Composer<RoughOptions> for Line {
 }
 
 impl Composer<RoughOptions> for Rectangle {
-    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
         self.bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
@@ -90,7 +90,7 @@ impl Composer<RoughOptions> for Rectangle {
 }
 
 impl Composer<RoughOptions> for Ellipse {
-    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
         self.bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
@@ -111,7 +111,7 @@ impl Composer<RoughOptions> for Ellipse {
 }
 
 impl Composer<RoughOptions> for QuadraticBezier {
-    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
         self.bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
@@ -133,7 +133,7 @@ impl Composer<RoughOptions> for QuadraticBezier {
 }
 
 impl Composer<RoughOptions> for CubicBezier {
-    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
         self.bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
@@ -156,7 +156,7 @@ impl Composer<RoughOptions> for CubicBezier {
 }
 
 impl Composer<RoughOptions> for crate::Shape {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+    fn composed_bounds(&self, options: &RoughOptions) -> Aabb {
         match self {
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),

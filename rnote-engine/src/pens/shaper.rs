@@ -6,7 +6,7 @@ use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
@@ -288,7 +288,7 @@ impl PenBehaviour for Shaper {
 }
 
 impl DrawOnDocBehaviour for Shaper {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {

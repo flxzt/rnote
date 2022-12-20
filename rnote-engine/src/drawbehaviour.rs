@@ -1,7 +1,7 @@
 use gtk4::{graphene, prelude::*};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Affine2Helpers};
 
 use crate::engine::EngineView;
 use crate::utils::GrapheneRectHelpers;
@@ -10,7 +10,7 @@ use crate::utils::GrapheneRectHelpers;
 /// In the coordinate space of the document
 pub trait DrawOnDocBehaviour {
     /// The current bounds on the document
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB>;
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb>;
     /// draws itself on the document. the implementors are expected to save / restore context
     fn draw_on_doc(
         &self,

@@ -8,14 +8,14 @@ use crate::{render, DrawBehaviour, RnoteEngine};
 
 use anyhow::Context;
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::color;
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
     Complete,
-    ForViewport(AABB),
+    ForViewport(Aabb),
     BusyRenderingInTask,
     Dirty,
 }
@@ -78,7 +78,7 @@ impl StrokeStore {
         self.set_rendering_dirty_for_strokes(&self.keys_unordered());
     }
 
-    pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<AABB> {
+    pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<Aabb> {
         if let Some(render_comp) = self.render_components.get(key) {
             if render_comp.images.is_empty() {
                 return None;
@@ -88,17 +88,17 @@ impl StrokeStore {
                     .images
                     .iter()
                     .map(|image| image.rect.bounds())
-                    .fold(AABB::new_invalid(), |acc, x| acc.merged(&x)),
+                    .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
             );
         }
         None
     }
 
-    pub fn gen_bounds_for_strokes_images(&self, keys: &[StrokeKey]) -> Option<AABB> {
+    pub fn gen_bounds_for_strokes_images(&self, keys: &[StrokeKey]) -> Option<Aabb> {
         let images_bounds = keys
             .iter()
             .filter_map(|&key| self.gen_bounds_for_stroke_images(key))
-            .collect::<Vec<AABB>>();
+            .collect::<Vec<Aabb>>();
         if images_bounds.is_empty() {
             return None;
         }
@@ -106,14 +106,14 @@ impl StrokeStore {
         Some(
             images_bounds
                 .into_iter()
-                .fold(AABB::new_invalid(), |acc, x| acc.merged(&x)),
+                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
         )
     }
 
     pub fn regenerate_rendering_for_stroke(
         &mut self,
         key: StrokeKey,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) = (
@@ -160,7 +160,7 @@ impl StrokeStore {
     pub fn regenerate_rendering_for_strokes(
         &mut self,
         keys: &[StrokeKey],
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         for &key in keys {
@@ -173,7 +173,7 @@ impl StrokeStore {
         &mut self,
         tasks_tx: EngineTaskSender,
         key: StrokeKey,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) {
         if let (Some(render_comp), Some(stroke)) = (
@@ -216,7 +216,7 @@ impl StrokeStore {
         &mut self,
         tasks_tx: EngineTaskSender,
         force_regenerate: bool,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
@@ -295,7 +295,7 @@ impl StrokeStore {
         tasks_tx: EngineTaskSender,
         key: StrokeKey,
         n_last_segments: usize,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) = (
@@ -386,8 +386,8 @@ impl StrokeStore {
     pub fn draw_strokes_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
-        doc_bounds: AABB,
-        viewport: AABB,
+        doc_bounds: Aabb,
+        viewport: Aabb,
     ) {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
@@ -435,8 +435,8 @@ impl StrokeStore {
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
-        _doc_bounds: AABB,
-        viewport: AABB,
+        _doc_bounds: Aabb,
+        viewport: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
@@ -465,8 +465,8 @@ impl StrokeStore {
     pub fn draw_selection_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
-        _doc_bounds: AABB,
-        viewport: AABB,
+        _doc_bounds: Aabb,
+        viewport: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
@@ -496,7 +496,7 @@ impl StrokeStore {
         &self,
         snapshot: &Snapshot,
         engine: &RnoteEngine,
-        _surface_bounds: AABB,
+        _surface_bounds: Aabb,
     ) -> anyhow::Result<()> {
         let border_widths = 1.0 / engine.camera.total_zoom();
 

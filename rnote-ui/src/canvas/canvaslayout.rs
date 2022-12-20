@@ -3,8 +3,8 @@ use std::cell::Cell;
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
 };
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use rnote_compose::helpers::AABBHelpers;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::helpers::AabbHelpers;
 
 use crate::canvas::RnoteCanvas;
 use rnote_engine::document::Layout;
@@ -15,13 +15,13 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct CanvasLayout {
-        pub(crate) old_viewport: Cell<AABB>,
+        pub(crate) old_viewport: Cell<Aabb>,
     }
 
     impl Default for CanvasLayout {
         fn default() -> Self {
             Self {
-                old_viewport: Cell::new(AABB::new_zero()),
+                old_viewport: Cell::new(Aabb::new_zero()),
             }
         }
     }

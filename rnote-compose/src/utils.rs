@@ -1,4 +1,4 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use rand::{Rng, SeedableRng};
 
 const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
@@ -28,8 +28,8 @@ pub fn remove_xml_header(svg: &str) -> String {
 /// Wraps a svg str in a svg root element
 pub fn wrap_svg_root(
     svg_data: &str,
-    bounds: Option<AABB>,
-    viewbox: Option<AABB>,
+    bounds: Option<Aabb>,
+    viewbox: Option<Aabb>,
     preserve_aspectratio: bool,
 ) -> String {
     let (x, y, width, height) = if let Some(bounds) = bounds {

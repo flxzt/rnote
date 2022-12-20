@@ -1,5 +1,5 @@
 use gtk4::{gio, glib, prelude::*, Widget};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 
 #[derive(Debug)]
 pub(crate) enum FileType {
@@ -87,13 +87,13 @@ impl FileType {
     }
 }
 
-/// Translates a AABB to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
+/// Translates a Aabb to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
 #[allow(unused)]
 pub(crate) fn translate_aabb_to_widget(
-    aabb: AABB,
+    aabb: Aabb,
     widget: &impl IsA<Widget>,
     dest_widget: &impl IsA<Widget>,
-) -> Option<AABB> {
+) -> Option<Aabb> {
     let mins = {
         let coords = widget.translate_coordinates(dest_widget, aabb.mins[0], aabb.mins[1])?;
         na::point![coords.0, coords.1]
@@ -102,7 +102,7 @@ pub(crate) fn translate_aabb_to_widget(
         let coords = widget.translate_coordinates(dest_widget, aabb.maxs[0], aabb.maxs[1])?;
         na::point![coords.0, coords.1]
     };
-    Some(AABB::new(mins, maxs))
+    Some(Aabb::new(mins, maxs))
 }
 
 /// Create a new file or replace if it already exists, asynchronously

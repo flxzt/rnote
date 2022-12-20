@@ -1,9 +1,9 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
-use crate::helpers::AABBHelpers;
+use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::{Line, Rectangle};
@@ -84,17 +84,17 @@ impl ShapeBuilderBehaviour for GridBuilder {
         ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         let bounds_margin = style.bounds_margin().max(drawhelpers::POS_INDICATOR_RADIUS) / zoom;
 
         match &self.state {
-            GridBuilderState::Start(start) => Some(AABB::from_half_extents(
+            GridBuilderState::Start(start) => Some(Aabb::from_half_extents(
                 na::Point2::from(*start),
                 na::Vector2::repeat(bounds_margin),
             )),
             GridBuilderState::FirstCell { start, current }
             | GridBuilderState::Grids { start, current, .. } => Some(
-                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*current))
+                Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*current))
                     .loosened(bounds_margin),
             ),
         }

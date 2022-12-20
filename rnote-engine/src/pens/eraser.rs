@@ -6,11 +6,11 @@ use crate::{DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::PenEvent;
 use rnote_compose::penpath::Element;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy)]
@@ -230,8 +230,8 @@ impl Eraser {
         }
     }
 
-    fn eraser_bounds(eraser_width: f64, element: Element) -> AABB {
-        AABB::from_half_extents(
+    fn eraser_bounds(eraser_width: f64, element: Element) -> Aabb {
+        Aabb::from_half_extents(
             na::Point2::from(element.pos),
             na::Vector2::repeat(eraser_width * 0.5),
         )
@@ -239,7 +239,7 @@ impl Eraser {
 }
 
 impl DrawOnDocBehaviour for Eraser {
-    fn bounds_on_doc(&self, _engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, _engine_view: &EngineView) -> Option<Aabb> {
         match &self.state {
             EraserState::Up => None,
             EraserState::Proximity(current_element) | EraserState::Down(current_element) => {

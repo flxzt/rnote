@@ -6,7 +6,7 @@ use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
 use image::GenericImageView;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::transform::TransformBehaviour;
@@ -15,7 +15,7 @@ use svg::Node;
 
 use crate::utils::{base64, GrapheneRectHelpers};
 use crate::DrawBehaviour;
-use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
 pub static USVG_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
     let mut usvg_options = usvg::Options::default();
@@ -130,7 +130,7 @@ impl From<image::DynamicImage> for Image {
         let memory_format = ImageMemoryFormat::R8g8b8a8Premultiplied;
         let data = dynamic_image.into_rgba8().to_vec();
 
-        let bounds = AABB::new(
+        let bounds = Aabb::new(
             na::point![0.0, 0.0],
             na::point![f64::from(pixel_width), f64::from(pixel_height)],
         );
@@ -373,7 +373,7 @@ impl Image {
         let mut bounds = images
             .iter()
             .map(|image| image.rect.bounds())
-            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+            .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
             .ceil();
         bounds.ensure_positive();
         bounds = bounds.ceil();
@@ -431,7 +431,7 @@ impl Image {
     // create an image from an svg (using librsvg )
     pub fn gen_image_from_svg(
         svg: Svg,
-        mut bounds: AABB,
+        mut bounds: Aabb,
         image_scale: f64,
     ) -> Result<Self, anyhow::Error> {
         let svg_data = rnote_compose::utils::wrap_svg_root(
@@ -515,7 +515,7 @@ impl Image {
     /// Renders an image with a function that draws onto a piet CairoRenderContext
     pub fn gen_with_piet<F>(
         draw_func: F,
-        mut bounds: AABB,
+        mut bounds: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<Self>
     where
@@ -584,7 +584,7 @@ pub struct Svg {
     /// the svg data as String
     pub svg_data: String,
     /// the bounds of the svg
-    pub bounds: AABB,
+    pub bounds: Aabb,
 }
 
 impl Svg {
@@ -600,8 +600,8 @@ impl Svg {
 
     pub fn wrap_svg_root(
         &mut self,
-        bounds: Option<AABB>,
-        viewbox: Option<AABB>,
+        bounds: Option<Aabb>,
+        viewbox: Option<Aabb>,
         preserve_aspectratio: bool,
     ) {
         self.svg_data = rnote_compose::utils::wrap_svg_root(
@@ -617,7 +617,7 @@ impl Svg {
 
     /// Generates an svg with piet, using the piet_cairo backend and a SvgSurface.
     /// This might be preferable to the piet_svg backend, because especially text alignment and sizes can be different with it.
-    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
+    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: Aabb) -> anyhow::Result<Self>
     where
         F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
     {

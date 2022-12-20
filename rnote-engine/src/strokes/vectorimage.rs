@@ -7,14 +7,14 @@ use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{render, DrawBehaviour};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 
 use gtk4::glib;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,7 +73,7 @@ impl StrokeBehaviour for VectorImage {
 
     fn gen_images(
         &self,
-        _viewport: AABB,
+        _viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -109,11 +109,11 @@ impl DrawBehaviour for VectorImage {
 }
 
 impl ShapeBehaviour for VectorImage {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         vec![self.bounds()]
     }
 }
@@ -147,11 +147,9 @@ impl VectorImage {
             },
         };
 
-        let rtree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
-        let svg_data = rtree.to_string(&xml_options);
-
-        let svg_node = rtree.svg_node();
-        let intrinsic_size = na::vector![svg_node.size.width(), svg_node.size.height()];
+        let svg_tree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
+        let svg_data = svg_tree.to_string(&xml_options);
+        let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
 
         let rectangle = if let Some(size) = size {
             Rectangle {
@@ -271,7 +269,7 @@ impl VectorImage {
             match res() {
                 Ok(svg_data) => Some(render::Svg {
                     svg_data,
-                    bounds: AABB::new(na::point![x, y], na::point![x + width, y + height])
+                    bounds: Aabb::new(na::point![x, y], na::point![x + width, y + height])
                 }),
                 Err(e) => {
                     log::error!("importing page {page} from pdf failed with Err: {e:?}");

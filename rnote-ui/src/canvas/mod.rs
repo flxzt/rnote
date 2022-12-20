@@ -23,8 +23,8 @@ use gtk4::{
 use crate::appwindow::RnoteAppWindow;
 use futures::StreamExt;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::AABB;
-use rnote_compose::helpers::AABBHelpers;
+use p2d::bounding_volume::Aabb;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
@@ -383,7 +383,7 @@ mod imp {
                 let clip_bounds = if let Some(parent) = inst.parent() {
                     // unwrapping is fine, because its the parent
                     let (clip_x, clip_y) = parent.translate_coordinates(&*inst, 0.0, 0.0).unwrap();
-                    AABB::new_positive(
+                    Aabb::new_positive(
                         na::point![clip_x, clip_y],
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
@@ -1044,8 +1044,8 @@ impl RnoteCanvas {
         );
     }
 
-    pub(crate) fn bounds(&self) -> AABB {
-        AABB::new_positive(
+    pub(crate) fn bounds(&self) -> Aabb {
+        Aabb::new_positive(
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )

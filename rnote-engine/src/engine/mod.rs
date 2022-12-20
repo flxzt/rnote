@@ -23,12 +23,12 @@ use crate::strokes::Stroke;
 use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use anyhow::Context;
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -662,7 +662,7 @@ impl RnoteEngine {
     }
 
     // Generates bounds for each page on the document which contains content
-    pub fn pages_bounds_w_content(&self) -> Vec<AABB> {
+    pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();
 
@@ -680,11 +680,11 @@ impl RnoteEngine {
                     .iter()
                     .any(|stroke_bounds| stroke_bounds.intersects(page_bounds))
             })
-            .collect::<Vec<AABB>>();
+            .collect::<Vec<Aabb>>();
 
         if pages_bounds.is_empty() {
             // If no page has content, return the origin page
-            vec![AABB::new(
+            vec![Aabb::new(
                 na::point![0.0, 0.0],
                 na::point![self.document.format.width, self.document.format.height],
             )]
@@ -694,7 +694,7 @@ impl RnoteEngine {
     }
 
     /// Generates bounds which contain all pages on the doc with content extended to fit the format.
-    pub fn bounds_w_content_extended(&self) -> Option<AABB> {
+    pub fn bounds_w_content_extended(&self) -> Option<Aabb> {
         let pages_bounds = self.pages_bounds_w_content();
 
         if pages_bounds.is_empty() {
@@ -704,7 +704,7 @@ impl RnoteEngine {
         Some(
             pages_bounds
                 .into_iter()
-                .fold(AABB::new_invalid(), |prev, next| prev.merged(&next)),
+                .fold(Aabb::new_invalid(), |prev, next| prev.merged(&next)),
         )
     }
 

@@ -1,7 +1,7 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AABBHelpers, Vector2Helpers};
+use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
@@ -30,7 +30,7 @@ impl Default for Rectangle {
 }
 
 impl ShapeBehaviour for Rectangle {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
         let half_extents = na::Vector2::from_homogeneous(
@@ -40,10 +40,10 @@ impl ShapeBehaviour for Rectangle {
         .unwrap()
         .abs();
 
-        AABB::from_half_extents(center, half_extents)
+        Aabb::from_half_extents(center, half_extents)
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.outline_lines()
             .into_iter()
             .flat_map(|line| line.hitboxes())
@@ -86,7 +86,7 @@ impl Rectangle {
     }
 
     /// New from bounds
-    pub fn from_p2d_aabb(mut bounds: AABB) -> Self {
+    pub fn from_p2d_aabb(mut bounds: Aabb) -> Self {
         bounds.ensure_positive();
         let cuboid = p2d::shape::Cuboid::new(bounds.half_extents());
         let transform = Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0));

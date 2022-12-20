@@ -10,14 +10,14 @@ use crate::penpath::Segment;
 use crate::shapes::{Line, ShapeBehaviour};
 use crate::PenPath;
 use kurbo::Shape;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 
 use rand_distr::{Distribution, Uniform};
 
 use super::Composer;
 
 impl Composer<TexturedOptions> for Line {
-    fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
+    fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -96,7 +96,7 @@ impl Composer<TexturedOptions> for Line {
 }
 
 impl Composer<TexturedOptions> for PenPath {
-    fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
+    fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width)
     }
 

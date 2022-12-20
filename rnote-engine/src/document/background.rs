@@ -1,5 +1,5 @@
 use anyhow::Context;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 use svg::Node;
@@ -47,7 +47,7 @@ impl TryFrom<u32> for PatternStyle {
 }
 
 pub fn gen_hline_pattern(
-    bounds: AABB,
+    bounds: Aabb,
     spacing: f64,
     color: Color,
     line_width: f64,
@@ -88,7 +88,7 @@ pub fn gen_hline_pattern(
 }
 
 pub fn gen_grid_pattern(
-    bounds: AABB,
+    bounds: Aabb,
     row_spacing: f64,
     column_spacing: f64,
     color: Color,
@@ -139,7 +139,7 @@ pub fn gen_grid_pattern(
 }
 
 pub fn gen_dots_pattern(
-    bounds: AABB,
+    bounds: Aabb,
     row_spacing: f64,
     column_spacing: f64,
     color: Color,
@@ -234,7 +234,7 @@ impl Background {
     }
 
     /// Generates the background svg, without xml header or svg root
-    pub fn gen_svg(&self, bounds: AABB, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
+    pub fn gen_svg(&self, bounds: Aabb, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
         let mut svg_group = element::Group::new();
 
         // background color
@@ -287,7 +287,7 @@ impl Background {
 
     pub fn gen_tile_image(&self, image_scale: f64) -> Result<Option<render::Image>, anyhow::Error> {
         let tile_size = self.tile_size();
-        let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
+        let tile_bounds = Aabb::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
         let svg = self.gen_svg(tile_bounds, true)?;
 
         Ok(Some(render::Image::gen_image_from_svg(

@@ -1,5 +1,5 @@
 use kurbo::Shape;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{KurboHelpers, Vector2Helpers};
@@ -54,11 +54,11 @@ impl TransformBehaviour for CubicBezier {
 }
 
 impl ShapeBehaviour for CubicBezier {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> p2d::bounding_volume::Aabb {
         self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         // TODO: should be depending on the actual curve length
         let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
 

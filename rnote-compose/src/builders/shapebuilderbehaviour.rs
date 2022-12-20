@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 
 use crate::penevents::PenEvent;
 use crate::penpath::Element;
@@ -38,7 +38,7 @@ pub trait ShapeBuilderBehaviour: std::fmt::Debug {
     ) -> ShapeBuilderProgress;
 
     /// the bounds
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB>;
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb>;
 
     /// draw with a style
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64);

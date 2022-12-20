@@ -11,8 +11,8 @@ rnote-engine = {path = "../rnote-engine", version="0.1"}
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-log = "0.4.16"
-anyhow = "1.0"
-smol = "1.2"
-clap = {version = "4.0", features = ["derive"] }
-#indicatif = "0.17.2"
+log = "0.4"
+anyhow = "1"
+smol = "1"
+clap = {version = "4", features = ["derive"] }
+#indicatif = "0.17"

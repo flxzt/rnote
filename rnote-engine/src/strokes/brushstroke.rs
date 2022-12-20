@@ -10,7 +10,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{PenPath, Style};
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,7 +22,7 @@ pub struct BrushStroke {
     pub style: Style,
     #[serde(skip)]
     // since the path can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
-    hitboxes: Vec<AABB>,
+    hitboxes: Vec<Aabb>,
 }
 
 impl StrokeBehaviour for BrushStroke {
@@ -40,7 +40,7 @@ impl StrokeBehaviour for BrushStroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -186,7 +186,7 @@ impl DrawBehaviour for BrushStroke {
 }
 
 impl ShapeBehaviour for BrushStroke {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match &self.style {
             Style::Smooth(options) => self.path.composed_bounds(options),
             // TODO: Needs fixing
@@ -195,7 +195,7 @@ impl ShapeBehaviour for BrushStroke {
         }
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
     }
 }
@@ -253,7 +253,7 @@ impl BrushStroke {
     }
 
     // internal method generating the current hitboxes.
-    fn gen_hitboxes(&self) -> Vec<AABB> {
+    fn gen_hitboxes(&self) -> Vec<Aabb> {
         let stroke_width = self.style.stroke_width();
 
         self.path

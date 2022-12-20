@@ -8,7 +8,7 @@ mod typewriterpage;
 // Re-exports
 pub(crate) use brushpage::BrushPage;
 pub(crate) use eraserpage::EraserPage;
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
 pub(crate) use selectorpage::SelectorPage;
 pub(crate) use shaperpage::ShaperPage;
 pub(crate) use toolspage::ToolsPage;

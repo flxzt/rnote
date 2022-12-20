@@ -1,4 +1,4 @@
-use super::penholder::PenStyle;
+use super::PenStyle;
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 

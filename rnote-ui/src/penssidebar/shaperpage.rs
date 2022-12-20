@@ -10,8 +10,8 @@ use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
 use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::Color;
-use rnote_engine::pens::shaper::ShaperStyle;
-use rnote_engine::pens::Shaper;
+use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
+use rnote_engine::pens::pensconfig::ShaperConfig;
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
@@ -170,8 +170,10 @@ impl ShaperPage {
 
         // Stroke width
         imp.width_spinbutton.set_increments(0.1, 2.0);
-        imp.width_spinbutton
-            .set_range(Shaper::STROKE_WIDTH_MIN, Shaper::STROKE_WIDTH_MAX);
+        imp.width_spinbutton.set_range(
+            ShaperConfig::STROKE_WIDTH_MIN,
+            ShaperConfig::STROKE_WIDTH_MAX,
+        );
         // set value after the range!
         imp.width_spinbutton
             .get()
@@ -182,9 +184,9 @@ impl ShaperPage {
                 let engine = appwindow.canvas().engine();
                 let mut engine = engine.borrow_mut();
 
-                match engine.penholder.shaper.style {
-                    ShaperStyle::Smooth => engine.penholder.shaper.smooth_options.stroke_width = width_spinbutton.value(),
-                    ShaperStyle::Rough => engine.penholder.shaper.rough_options.stroke_width = width_spinbutton.value(),
+                match engine.pens_config.shaper_config.style {
+                    ShaperStyle::Smooth => engine.pens_config.shaper_config.smooth_options.stroke_width = width_spinbutton.value(),
+                    ShaperStyle::Rough => engine.pens_config.shaper_config.rough_options.stroke_width = width_spinbutton.value(),
                 }
             }),
         );
@@ -194,11 +196,11 @@ impl ShaperPage {
             Some("current-color"),
             clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
                 let color = stroke_colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
-                let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
+                let shaper_style = appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.style;
 
                 match shaper_style {
-                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(color),
-                    ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color= Some(color),
+                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(color),
+                    ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_color= Some(color),
                 }
             }),
         );
@@ -212,9 +214,9 @@ impl ShaperPage {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                match engine.penholder.shaper.style {
-                    ShaperStyle::Smooth => engine.penholder.shaper.smooth_options.fill_color = Some(color),
-                    ShaperStyle::Rough => engine.penholder.shaper.rough_options.fill_color= Some(color),
+                match engine.pens_config.shaper_config.style {
+                    ShaperStyle::Smooth => engine.pens_config.shaper_config.smooth_options.fill_color = Some(color),
+                    ShaperStyle::Rough => engine.pens_config.shaper_config.rough_options.fill_color= Some(color),
                 }
             }),
         );
@@ -227,17 +229,17 @@ impl ShaperPage {
                         let engine = appwindow.canvas().engine();
                         let engine = &mut *engine.borrow_mut();
 
-                        engine.penholder.shaper.style = ShaperStyle::try_from(selected_row.index() as u32).unwrap_or_default();
+                        engine.pens_config.shaper_config.style = ShaperStyle::try_from(selected_row.index() as u32).unwrap_or_default();
 
                         // Overwrite the colors, but not the width
-                        match engine.penholder.shaper.style {
+                        match engine.pens_config.shaper_config.style {
                             ShaperStyle::Smooth => {
-                                engine.penholder.shaper.smooth_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color().into_compose_color());
-                                engine.penholder.shaper.smooth_options.fill_color = Some(shaperpage.fill_colorpicker().current_color().into_compose_color());
+                                engine.pens_config.shaper_config.smooth_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color().into_compose_color());
+                                engine.pens_config.shaper_config.smooth_options.fill_color = Some(shaperpage.fill_colorpicker().current_color().into_compose_color());
                             },
                             ShaperStyle::Rough => {
-                                engine.penholder.shaper.rough_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color().into_compose_color());
-                                engine.penholder.shaper.rough_options.fill_color = Some(shaperpage.fill_colorpicker().current_color().into_compose_color());
+                                engine.pens_config.shaper_config.rough_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color().into_compose_color());
+                                engine.pens_config.shaper_config.rough_options.fill_color = Some(shaperpage.fill_colorpicker().current_color().into_compose_color());
                             },
                         }
                     }
@@ -251,12 +253,12 @@ impl ShaperPage {
         // Rough style
         // Fill style
         imp.roughstyle_fillstyle_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_roughstyle_fillstyle_row| {
-            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
+            appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
         }));
 
         // Hachure angle
         imp.roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
-            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+            appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
         }));
 
         // Constraints
@@ -264,7 +266,7 @@ impl ShaperPage {
             .constraint_enabled_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.enabled = switch.state();
+                appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.enabled = switch.state();
             }));
 
         imp
@@ -272,9 +274,9 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::OneToOne);
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::OneToOne);
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
                 }
             }));
 
@@ -283,9 +285,9 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
                 } else {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
                 }
             }));
 
@@ -294,9 +296,9 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Golden);
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
                 } else {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::Golden);
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
                 }
             }));
 
@@ -304,7 +306,7 @@ impl ShaperPage {
         imp.shapebuildertype_listbox.connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shapetype_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = ShapeBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
 
                     // Need to refresh the whole page, because changing the builder type affects multiple widgets
                     shaperpage.refresh_ui(&appwindow);
@@ -316,30 +318,30 @@ impl ShaperPage {
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
-        let shaper = appwindow
+        let shaper_config = appwindow
             .canvas()
             .engine()
             .borrow()
-            .penholder
-            .shaper
+            .pens_config
+            .shaper_config
             .clone();
 
-        match shaper.style {
+        match shaper_config.style {
             ShaperStyle::Smooth => {
                 imp.shaperstyle_listbox
                     .select_row(Some(&*imp.shaperstyle_smooth_row));
                 imp.width_spinbutton
-                    .set_value(shaper.smooth_options.stroke_width);
+                    .set_value(shaper_config.smooth_options.stroke_width);
                 imp.stroke_colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        shaper
+                        shaper_config
                             .smooth_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT),
                     ));
                 imp.fill_colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        shaper
+                        shaper_config
                             .smooth_options
                             .fill_color
                             .unwrap_or(Color::TRANSPARENT),
@@ -351,17 +353,17 @@ impl ShaperPage {
                 imp.shaperstyle_listbox
                     .select_row(Some(&*imp.shaperstyle_rough_row));
                 imp.width_spinbutton
-                    .set_value(shaper.rough_options.stroke_width);
+                    .set_value(shaper_config.rough_options.stroke_width);
                 imp.stroke_colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        shaper
+                        shaper_config
                             .rough_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT),
                     ));
                 imp.fill_colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        shaper
+                        shaper_config
                             .rough_options
                             .fill_color
                             .unwrap_or(Color::TRANSPARENT),
@@ -372,29 +374,29 @@ impl ShaperPage {
         }
 
         // Rough style
-        self.set_roughstyle_fillstyle(shaper.rough_options.fill_style);
+        self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);
         imp.roughstyle_hachure_angle_spinbutton
-            .set_value(shaper.rough_options.hachure_angle.to_degrees());
+            .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
         // constraints
         imp.constraint_enabled_switch
-            .set_state(shaper.constraints.enabled);
+            .set_state(shaper_config.constraints.enabled);
         imp.constraint_one_to_one_switch.set_state(
-            shaper
+            shaper_config
                 .constraints
                 .ratios
                 .get(&ConstraintRatio::OneToOne)
                 .is_some(),
         );
         imp.constraint_three_to_two_switch.set_state(
-            shaper
+            shaper_config
                 .constraints
                 .ratios
                 .get(&ConstraintRatio::ThreeToTwo)
                 .is_some(),
         );
         imp.constraint_golden_switch.set_state(
-            shaper
+            shaper_config
                 .constraints
                 .ratios
                 .get(&ConstraintRatio::Golden)
@@ -402,7 +404,7 @@ impl ShaperPage {
         );
 
         // builder type
-        match shaper.builder_type {
+        match shaper_config.builder_type {
             ShapeBuilderType::Line => {
                 imp.shapebuildertype_listbox
                     .select_row(Some(&*imp.shapebuildertype_line_row));

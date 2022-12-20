@@ -3,7 +3,7 @@ use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Label, ToggleButton,
     Widget,
 };
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
 
 mod imp {
     use super::*;

@@ -213,7 +213,7 @@ pub(crate) fn process_pen_down(
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        widget_flags.merge_with_other(
+        widget_flags.merge(
             appwindow
                 .canvas()
                 .engine()
@@ -225,7 +225,7 @@ pub(crate) fn process_pen_down(
         return;
     }
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        widget_flags.merge_with_other(
+        widget_flags.merge(
             appwindow
                 .canvas()
                 .engine()
@@ -238,7 +238,7 @@ pub(crate) fn process_pen_down(
     }
 
     // Handle all other events as pen down
-    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge(appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::Down {
             element,
             shortcut_keys,
@@ -266,7 +266,7 @@ pub(crate) fn process_pen_up(
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        widget_flags.merge_with_other(
+        widget_flags.merge(
             appwindow
                 .canvas()
                 .engine()
@@ -278,7 +278,7 @@ pub(crate) fn process_pen_up(
         return;
     }
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        widget_flags.merge_with_other(
+        widget_flags.merge(
             appwindow
                 .canvas()
                 .engine()
@@ -291,7 +291,7 @@ pub(crate) fn process_pen_up(
     }
 
     // Handle all other events as pen up
-    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge(appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::Up {
             element,
             shortcut_keys,
@@ -313,7 +313,7 @@ pub(crate) fn process_pen_proximity(
 ) {
     let mut widget_flags = WidgetFlags::default();
 
-    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge(appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::Proximity {
             element,
             shortcut_keys,

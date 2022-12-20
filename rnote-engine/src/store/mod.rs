@@ -14,6 +14,7 @@ pub use trash_comp::TrashComponent;
 
 use std::collections::VecDeque;
 use std::sync::Arc;
+use std::time::Instant;
 
 use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
@@ -193,7 +194,7 @@ impl StrokeStore {
     }
 
     /// records the current state and saves it in the history
-    pub fn record(&mut self) -> WidgetFlags {
+    pub fn record(&mut self, _now: Instant) -> WidgetFlags {
         /*
                log::debug!(
                    "before record - history len: {}, pos: {:?}",
@@ -213,7 +214,7 @@ impl StrokeStore {
 
     /// Undo the latest changes
     /// Should only be called inside the engine undo wrapper function
-    pub(super) fn undo(&mut self) -> WidgetFlags {
+    pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
         /*
                log::debug!(
                    "before undo - history len: {}, pos: {:?}",
@@ -233,7 +234,7 @@ impl StrokeStore {
 
     /// Redo the latest changes. The actual behaviour might differ depending on the history mode (simple style, emacs style, ..)
     /// Should only be called inside the engine redo wrapper function
-    pub(super) fn redo(&mut self) -> WidgetFlags {
+    pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
         /*
                log::debug!(
                    "before redo - history len: {}, pos: {:?}",

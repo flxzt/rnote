@@ -2,7 +2,7 @@ use gtk4::Align;
 use gtk4::{
     glib::prelude::*, prelude::*, Image, Label, ListItem, Orientation, SignalListItemFactory,
 };
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Debug, Clone)]

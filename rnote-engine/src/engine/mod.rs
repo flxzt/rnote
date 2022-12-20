@@ -5,14 +5,16 @@ pub mod visual_debug;
 
 // Re-Exports
 pub use self::export::ExportPrefs;
-use self::export::{SelectionExportFormat, SelectionExportPrefs};
 pub use self::import::ImportPrefs;
 
+// Imports
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
-use crate::document::Layout;
+use self::export::{SelectionExportFormat, SelectionExportPrefs};
+use self::import::XoppImportPrefs;
+use crate::document::{background, Layout};
 use crate::pens::penholder::PenStyle;
 use crate::pens::PenMode;
 use crate::store::{ChronoComponent, StrokeKey};
@@ -20,12 +22,14 @@ use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
 use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
+use anyhow::Context;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
-use futures::channel::mpsc;
+use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
@@ -136,6 +140,158 @@ impl Default for EngineSnapshot {
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
         }
+    }
+}
+
+impl EngineSnapshot {
+    /// loads a snapshot from the bytes of a .rnote file.
+    ///
+    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
+        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Self> {
+                let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
+                    .context("RnoteFile load_from_bytes() failed.")?;
+
+                serde_json::from_value(rnote_file.engine_snapshot)
+                    .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
+            };
+
+            if let Err(_data) = snapshot_sender.send(result()) {
+                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        snapshot_receiver.await?
+    }
+    /// Loads from the bytes of a Xournal++ .xopp file.
+    ///
+    /// To import this snapshot into the current engine, use `import_snapshot()`.
+    pub async fn load_from_xopp_bytes(
+        bytes: Vec<u8>,
+        xopp_import_prefs: XoppImportPrefs,
+    ) -> anyhow::Result<Self> {
+        let (snapshot_sender, snapshot_receiver) = oneshot::channel::<anyhow::Result<Self>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Self> {
+                let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
+
+                // Extract the largest width of all pages, add together all heights
+                let (doc_width, doc_height) = xopp_file
+                    .xopp_root
+                    .pages
+                    .iter()
+                    .map(|page| (page.width, page.height))
+                    .fold((0_f64, 0_f64), |prev, next| {
+                        // Max of width, sum heights
+                        (prev.0.max(next.0), prev.1 + next.1)
+                    });
+                let no_pages = xopp_file.xopp_root.pages.len() as u32;
+
+                let mut engine = RnoteEngine::default();
+
+                // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
+                engine.document.format.dpi = xopp_import_prefs.dpi;
+
+                engine.document.x = 0.0;
+                engine.document.y = 0.0;
+                engine.document.width = crate::utils::convert_value_dpi(
+                    doc_width,
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+                engine.document.height = crate::utils::convert_value_dpi(
+                    doc_height,
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+
+                engine.document.format.width = crate::utils::convert_value_dpi(
+                    doc_width,
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+                engine.document.format.height = crate::utils::convert_value_dpi(
+                    doc_height / (no_pages as f64),
+                    xoppformat::XoppFile::DPI,
+                    xopp_import_prefs.dpi,
+                );
+
+                if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
+                    if let xoppformat::XoppBackgroundType::Solid {
+                        color: _color,
+                        style: _style,
+                    } = &first_page.background.bg_type
+                    {
+                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
+                        engine.document.background.pattern = background::PatternStyle::None;
+                    }
+                }
+
+                // Offsetting as rnote has one global coordinate space
+                let mut offset = na::Vector2::<f64>::zeros();
+
+                for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
+                    for layers in page.layers.into_iter() {
+                        // import strokes
+                        for new_xoppstroke in layers.strokes.into_iter() {
+                            match Stroke::from_xoppstroke(
+                                new_xoppstroke,
+                                offset,
+                                xopp_import_prefs.dpi,
+                            ) {
+                                Ok((new_stroke, layer)) => {
+                                    engine.store.insert_stroke(new_stroke, Some(layer));
+                                }
+                                Err(e) => {
+                                    log::error!(
+                                        "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
+                                        e
+                                    );
+                                }
+                            }
+                        }
+
+                        // import images
+                        for new_xoppimage in layers.images.into_iter() {
+                            match Stroke::from_xoppimage(
+                                new_xoppimage,
+                                offset,
+                                xopp_import_prefs.dpi,
+                            ) {
+                                Ok(new_image) => {
+                                    engine.store.insert_stroke(new_image, None);
+                                }
+                                Err(e) => {
+                                    log::error!(
+                                        "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
+                                        e
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    // Only add to y offset, results in vertical pages
+                    offset[1] += crate::utils::convert_value_dpi(
+                        page.height,
+                        xoppformat::XoppFile::DPI,
+                        xopp_import_prefs.dpi,
+                    );
+                }
+
+                Ok(engine.take_snapshot())
+            };
+
+            if let Err(_data) = snapshot_sender.send(result()) {
+                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        snapshot_receiver.await?
     }
 }
 
@@ -284,9 +440,9 @@ impl RnoteEngine {
         snapshot
     }
 
-    /// imports a engine snapshot. A loaded strokes store should always be imported with this method.
+    /// imports a engine snapshot. A save file should always be loaded with this method.
     /// the store then needs to update its rendering
-    pub fn import_snapshot(&mut self, snapshot: &EngineSnapshot) {
+    pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) {
         self.document = snapshot.document.clone();
         self.store.import_from_snapshot(&snapshot);
 

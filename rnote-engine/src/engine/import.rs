@@ -2,19 +2,16 @@ use std::ops::Range;
 use std::path::PathBuf;
 use std::time::Instant;
 
-use anyhow::Context;
 use futures::channel::oneshot;
-use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 
-use crate::document::background;
 use crate::pens::penholder::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{RnoteEngine, WidgetFlags};
 
-use super::{EngineConfig, EngineSnapshot, EngineViewMut};
+use super::{EngineConfig, EngineViewMut};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -124,140 +121,6 @@ pub struct ImportPrefs {
 }
 
 impl RnoteEngine {
-    /// opens a .rnote file. We need to split this into two methods, this one and `import_snapshot()`,
-    /// because we can't have it as a async function and await when the engine is wrapped in a refcell without causing panics :/
-    pub fn open_from_rnote_bytes_p1(
-        &mut self,
-        bytes: Vec<u8>,
-    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<EngineSnapshot>>> {
-        let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-            .context("RnoteFile load_from_bytes() failed.")?;
-
-        let (store_snapshot_sender, store_snapshot_receiver) =
-            oneshot::channel::<anyhow::Result<EngineSnapshot>>();
-
-        rayon::spawn(move || {
-            let result = || -> anyhow::Result<EngineSnapshot> {
-                serde_json::from_value(rnote_file.engine_snapshot)
-                    .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
-            };
-
-            if let Err(_data) = store_snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
-            }
-        });
-
-        Ok(store_snapshot_receiver)
-    }
-
-    /// Opens a  Xournal++ .xopp file, and replaces the current state with it.
-    pub fn open_from_xopp_bytes(&mut self, bytes: Vec<u8>) -> anyhow::Result<()> {
-        let xopp_import_prefs = self.import_prefs.xopp_import_prefs;
-
-        let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
-
-        // Extract the largest width of all pages, add together all heights
-        let (doc_width, doc_height) = xopp_file
-            .xopp_root
-            .pages
-            .iter()
-            .map(|page| (page.width, page.height))
-            .fold((0_f64, 0_f64), |prev, next| {
-                // Max of width, sum heights
-                (prev.0.max(next.0), prev.1 + next.1)
-            });
-        let no_pages = xopp_file.xopp_root.pages.len() as u32;
-
-        let mut engine = RnoteEngine::default();
-
-        // We convert all values from the hardcoded 72 DPI of Xopp files to the preferred dpi
-        engine.document.format.dpi = xopp_import_prefs.dpi;
-
-        engine.document.x = 0.0;
-        engine.document.y = 0.0;
-        engine.document.width = crate::utils::convert_value_dpi(
-            doc_width,
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-        engine.document.height = crate::utils::convert_value_dpi(
-            doc_height,
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-
-        engine.document.format.width = crate::utils::convert_value_dpi(
-            doc_width,
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-        engine.document.format.height = crate::utils::convert_value_dpi(
-            doc_height / (no_pages as f64),
-            xoppformat::XoppFile::DPI,
-            xopp_import_prefs.dpi,
-        );
-
-        if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
-            if let xoppformat::XoppBackgroundType::Solid {
-                color: _color,
-                style: _style,
-            } = &first_page.background.bg_type
-            {
-                // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                engine.document.background.pattern = background::PatternStyle::None;
-            }
-        }
-
-        // Offsetting as rnote has one global coordinate space
-        let mut offset = na::Vector2::<f64>::zeros();
-
-        for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
-            for layers in page.layers.into_iter() {
-                // import strokes
-                for new_xoppstroke in layers.strokes.into_iter() {
-                    match Stroke::from_xoppstroke(new_xoppstroke, offset, xopp_import_prefs.dpi) {
-                        Ok((new_stroke, layer)) => {
-                            engine.store.insert_stroke(new_stroke, Some(layer));
-                        }
-                        Err(e) => {
-                            log::error!(
-                                "from_xoppstroke() failed in open_from_xopp_bytes() with Err {:?}",
-                                e
-                            );
-                        }
-                    }
-                }
-
-                // import images
-                for new_xoppimage in layers.images.into_iter() {
-                    match Stroke::from_xoppimage(new_xoppimage, offset, xopp_import_prefs.dpi) {
-                        Ok(new_image) => {
-                            engine.store.insert_stroke(new_image, None);
-                        }
-                        Err(e) => {
-                            log::error!(
-                                "from_xoppimage() failed in open_from_xopp_bytes() with Err {:?}",
-                                e
-                            );
-                        }
-                    }
-                }
-            }
-
-            // Only add to y offset, results in vertical pages
-            offset[1] += crate::utils::convert_value_dpi(
-                page.height,
-                xoppformat::XoppFile::DPI,
-                xopp_import_prefs.dpi,
-            );
-        }
-
-        // Import into engine
-        self.import_snapshot(&engine.take_snapshot());
-
-        Ok(())
-    }
-
     /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
     /// NOT for opening files
     pub fn load_engine_config(

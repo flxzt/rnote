@@ -727,9 +727,8 @@ impl RnoteEngine {
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
 
         let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
-                Some(selection_svg) => selection_svg,
-                None => return Ok(None),
+            let Some(selection_svg) = self.gen_selection_svg(selection_export_prefs_override)? else {
+                return Ok(None);
             };
 
             Ok(Some(
@@ -752,7 +751,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Exports the selection a bitmap bytes. Panics if the format pref is not set to a bitmap format
+    /// Exports the selection a bitmap bytes. Returns an error if the format pref is not set to a bitmap format
     pub fn export_selection_as_bitmap_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
@@ -764,14 +763,14 @@ impl RnoteEngine {
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
 
         let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            let selection_svg = match self.gen_selection_svg(selection_export_prefs_override)? {
-                Some(selection_svg) => selection_svg,
-                None => return Ok(None),
+            let Some(selection_svg) = self.gen_selection_svg(selection_export_prefs_override)? else {
+                return Ok(None);
             };
+
             let selection_svg_bounds = selection_svg.bounds;
 
             let bitmapimage_format = match selection_export_prefs.export_format {
-                SelectionExportFormat::Svg => unreachable!(),
+                SelectionExportFormat::Svg => return Err(anyhow::anyhow!("export_selection_as_bitmap_bytes() failed, export preferences have Svg as export format.")),
                 SelectionExportFormat::Png => image::ImageOutputFormat::Png,
                 SelectionExportFormat::Jpeg => {
                     image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
@@ -893,9 +892,7 @@ impl RnoteEngine {
             return Ok(None);
         }
 
-        let selection_bounds = if let Some(b) = self.store.bounds_for_strokes(&selection_keys) {
-            b.loosened(selection_export_prefs.margin)
-        } else {
+        let Some(selection_bounds) = self.store.bounds_for_strokes(&selection_keys).map(|b| b.loosened(selection_export_prefs.margin)) else {
             return Ok(None);
         };
 

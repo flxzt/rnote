@@ -12,7 +12,7 @@ use rnote_fileformats::{xoppformat, FileFormatSaver};
 use crate::store::StrokeKey;
 use crate::{render, DrawBehaviour};
 
-use super::{EngineConfig, RnoteEngine};
+use super::{EngineConfig, EngineSnapshot, RnoteEngine};
 
 #[derive(
     Debug,
@@ -333,23 +333,34 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
-        let result = || -> anyhow::Result<Vec<u8>> {
-            let doc_svg = self.gen_doc_svg(doc_export_prefs_override)?;
-            Ok(rnote_compose::utils::add_xml_header(
-                rnote_compose::utils::wrap_svg_root(
-                    doc_svg.svg_data.as_str(),
-                    Some(doc_svg.bounds),
-                    Some(doc_svg.bounds),
-                    false,
-                )
-                .as_str(),
-            )
-            .into_bytes())
-        };
+        let doc_export_prefs =
+            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
+        let stroke_keys = self.store.stroke_keys_as_rendered();
+        let snapshot = self.take_snapshot();
+        let content_bounds = self
+            .bounds_w_content_extended()
+            .unwrap_or(snapshot.document.bounds());
 
-        if let Err(_data) = oneshot_sender.send(result()) {
-            log::error!("sending result to receiver in export_doc_as_svg_bytes() failed. Receiver already dropped.");
-        }
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Vec<u8>> {
+                let doc_svg =
+                    gen_doc_svg(content_bounds, &stroke_keys, &snapshot, doc_export_prefs)?;
+                Ok(rnote_compose::utils::add_xml_header(
+                    rnote_compose::utils::wrap_svg_root(
+                        doc_svg.svg_data.as_str(),
+                        Some(doc_svg.bounds),
+                        Some(doc_svg.bounds),
+                        false,
+                    )
+                    .as_str(),
+                )
+                .into_bytes())
+            };
+
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in export_doc_as_svg_bytes() failed. Receiver already dropped.");
+            }
+        });
 
         oneshot_receiver
     }
@@ -483,117 +494,120 @@ impl RnoteEngine {
         _doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<Result<Vec<u8>, anyhow::Error>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
-        let current_dpi = self.document.format.dpi;
 
-        // Only one background for all pages
-        let background = xoppformat::XoppBackground {
-            name: None,
-            bg_type: xoppformat::XoppBackgroundType::Solid {
-                color: crate::utils::xoppcolor_from_color(self.document.background.color),
-                style: xoppformat::XoppBackgroundSolidStyle::Plain,
-            },
+        let result = || -> anyhow::Result<Vec<u8>> {
+            let current_dpi = self.document.format.dpi;
+
+            // Only one background for all pages
+            let background = xoppformat::XoppBackground {
+                name: None,
+                bg_type: xoppformat::XoppBackgroundType::Solid {
+                    color: crate::utils::xoppcolor_from_color(self.document.background.color),
+                    style: xoppformat::XoppBackgroundSolidStyle::Plain,
+                },
+            };
+
+            // xopp spec needs at least one page in vec, but its fine because pages_bounds_w_content() always produces at least one
+            let pages = self
+                .pages_bounds_w_content()
+                .into_iter()
+                .map(|page_bounds| {
+                    let page_keys = self
+                        .store
+                        .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+
+                    let strokes = self.store.clone_strokes(&page_keys);
+
+                    // Translate strokes to to page mins and convert to XoppStrokStyle
+                    let xopp_strokestyles = strokes
+                        .into_iter()
+                        .filter_map(|mut stroke| {
+                            stroke.translate(-page_bounds.mins.coords);
+
+                            stroke.into_xopp(current_dpi)
+                        })
+                        .collect::<Vec<xoppformat::XoppStrokeType>>();
+
+                    // Extract the strokes
+                    let xopp_strokes = xopp_strokestyles
+                        .iter()
+                        .filter_map(|stroke| {
+                            if let xoppformat::XoppStrokeType::XoppStroke(xoppstroke) = stroke {
+                                Some(xoppstroke.clone())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<xoppformat::XoppStroke>>();
+
+                    // Extract the texts
+                    let xopp_texts = xopp_strokestyles
+                        .iter()
+                        .filter_map(|stroke| {
+                            if let xoppformat::XoppStrokeType::XoppText(xopptext) = stroke {
+                                Some(xopptext.clone())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<xoppformat::XoppText>>();
+
+                    // Extract the images
+                    let xopp_images = xopp_strokestyles
+                        .iter()
+                        .filter_map(|stroke| {
+                            if let xoppformat::XoppStrokeType::XoppImage(xoppstroke) = stroke {
+                                Some(xoppstroke.clone())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<xoppformat::XoppImage>>();
+
+                    // In Rnote, images are always rendered below strokes and text. To accurately reflect this behaviour, images are separated into another layer.
+                    let image_layer = xoppformat::XoppLayer {
+                        name: None,
+                        strokes: vec![],
+                        texts: vec![],
+                        images: xopp_images,
+                    };
+
+                    let strokes_layer = xoppformat::XoppLayer {
+                        name: None,
+                        strokes: xopp_strokes,
+                        texts: xopp_texts,
+                        images: vec![],
+                    };
+
+                    let page_dimensions = crate::utils::convert_coord_dpi(
+                        page_bounds.extents(),
+                        current_dpi,
+                        xoppformat::XoppFile::DPI,
+                    );
+
+                    xoppformat::XoppPage {
+                        width: page_dimensions[0],
+                        height: page_dimensions[1],
+                        background: background.clone(),
+                        layers: vec![image_layer, strokes_layer],
+                    }
+                })
+                .collect::<Vec<xoppformat::XoppPage>>();
+
+            let xopp_title = String::from("Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)");
+
+            let xopp_root = xoppformat::XoppRoot {
+                title: xopp_title,
+                fileversion: String::from("4"),
+                preview: String::from(""),
+                pages,
+            };
+            let xopp_file = xoppformat::XoppFile { xopp_root };
+
+            xopp_file.save_as_bytes(&title)
         };
 
-        // xopp spec needs at least one page in vec, but its fine because pages_bounds_w_content() always produces at least one
-        let pages = self
-            .pages_bounds_w_content()
-            .into_iter()
-            .map(|page_bounds| {
-                let page_keys = self
-                    .store
-                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
-
-                let strokes = self.store.clone_strokes(&page_keys);
-
-                // Translate strokes to to page mins and convert to XoppStrokStyle
-                let xopp_strokestyles = strokes
-                    .into_iter()
-                    .filter_map(|mut stroke| {
-                        stroke.translate(-page_bounds.mins.coords);
-
-                        stroke.into_xopp(current_dpi)
-                    })
-                    .collect::<Vec<xoppformat::XoppStrokeType>>();
-
-                // Extract the strokes
-                let xopp_strokes = xopp_strokestyles
-                    .iter()
-                    .filter_map(|stroke| {
-                        if let xoppformat::XoppStrokeType::XoppStroke(xoppstroke) = stroke {
-                            Some(xoppstroke.clone())
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<xoppformat::XoppStroke>>();
-
-                // Extract the texts
-                let xopp_texts = xopp_strokestyles
-                    .iter()
-                    .filter_map(|stroke| {
-                        if let xoppformat::XoppStrokeType::XoppText(xopptext) = stroke {
-                            Some(xopptext.clone())
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<xoppformat::XoppText>>();
-
-                // Extract the images
-                let xopp_images = xopp_strokestyles
-                    .iter()
-                    .filter_map(|stroke| {
-                        if let xoppformat::XoppStrokeType::XoppImage(xoppstroke) = stroke {
-                            Some(xoppstroke.clone())
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<xoppformat::XoppImage>>();
-
-                // In Rnote, images are always rendered below strokes and text. To accurately reflect this behaviour, images are separated into another layer.
-                let image_layer = xoppformat::XoppLayer {
-                    name: None,
-                    strokes: vec![],
-                    texts: vec![],
-                    images: xopp_images,
-                };
-
-                let strokes_layer = xoppformat::XoppLayer {
-                    name: None,
-                    strokes: xopp_strokes,
-                    texts: xopp_texts,
-                    images: vec![],
-                };
-
-                let page_dimensions = crate::utils::convert_coord_dpi(
-                    page_bounds.extents(),
-                    current_dpi,
-                    xoppformat::XoppFile::DPI,
-                );
-
-                xoppformat::XoppPage {
-                    width: page_dimensions[0],
-                    height: page_dimensions[1],
-                    background: background.clone(),
-                    layers: vec![image_layer, strokes_layer],
-                }
-            })
-            .collect::<Vec<xoppformat::XoppPage>>();
-
-        let xopp_title = String::from("Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)");
-
-        let xopp_root = xoppformat::XoppRoot {
-            title: xopp_title,
-            fileversion: String::from("4"),
-            preview: String::from(""),
-            pages,
-        };
-        let xopp_file = xoppformat::XoppFile { xopp_root };
-
-        let result = xopp_file.save_as_bytes(&title);
-
-        if let Err(_data) = oneshot_sender.send(result) {
+        if let Err(_data) = oneshot_sender.send(result()) {
             log::error!("sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped.");
         }
 
@@ -786,46 +800,6 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// generates the doc svg.
-    /// without root or xml header.
-    fn gen_doc_svg(
-        &self,
-        doc_export_prefs_override: Option<DocExportPrefs>,
-    ) -> Result<render::Svg, anyhow::Error> {
-        let doc_export_prefs =
-            doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
-
-        let content_bounds = self
-            .bounds_w_content_extended()
-            .ok_or_else(|| anyhow::anyhow!("tried to generate document svg without any content"))?;
-
-        let strokes = self.store.stroke_keys_as_rendered();
-
-        let mut doc_svg = if doc_export_prefs.with_background {
-            self.document
-                .background
-                .gen_svg(content_bounds, doc_export_prefs.with_pattern)?
-        } else {
-            render::Svg {
-                svg_data: String::new(),
-                bounds: content_bounds,
-            }
-        };
-
-        doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-            |piet_cx| {
-                self.store.draw_stroke_keys_to_piet(
-                    &strokes,
-                    piet_cx,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
-                )
-            },
-            content_bounds,
-        )?]);
-
-        Ok(doc_svg)
-    }
-
     /// generates the doc pages svgs.
     /// without root or xml header.
     fn gen_doc_pages_svgs(
@@ -913,4 +887,40 @@ impl RnoteEngine {
 
         Ok(Some(selection_svg))
     }
+}
+
+/// generates the doc svg.
+/// without root or xml header.
+fn gen_doc_svg(
+    content_bounds: AABB,
+    stroke_keys: &[StrokeKey],
+    snapshot: &EngineSnapshot,
+    doc_export_prefs: DocExportPrefs,
+) -> Result<render::Svg, anyhow::Error> {
+    let mut doc_svg = if doc_export_prefs.with_background {
+        snapshot
+            .document
+            .background
+            .gen_svg(content_bounds, doc_export_prefs.with_pattern)?
+    } else {
+        render::Svg {
+            svg_data: String::new(),
+            bounds: content_bounds,
+        }
+    };
+
+    doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+        |piet_cx| {
+            for &key in stroke_keys {
+                if let Some(stroke) = snapshot.stroke_components.get(key) {
+                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                }
+            }
+
+            Ok(())
+        },
+        content_bounds,
+    )?]);
+
+    Ok(doc_svg)
 }

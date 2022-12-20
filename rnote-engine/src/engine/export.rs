@@ -345,7 +345,7 @@ impl RnoteEngine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
                 let doc_svg =
-                    gen_doc_svg(content_bounds, &stroke_keys, &snapshot, doc_export_prefs)?;
+                    gen_doc_svg(content_bounds, stroke_keys, &snapshot, doc_export_prefs)?;
                 Ok(rnote_compose::utils::add_xml_header(
                     rnote_compose::utils::wrap_svg_root(
                         doc_svg.svg_data.as_str(),
@@ -780,27 +780,42 @@ impl RnoteEngine {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
 
-        let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            let Some(selection_svg) = self.gen_selection_svg(selection_export_prefs_override)? else {
+        let selection_export_prefs =
+            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let snapshot = self.take_snapshot();
+        let selection_keys = self.store.selection_keys_as_rendered();
+        let selection_bounds = self
+            .store
+            .bounds_for_strokes(&selection_keys)
+            .map(|b| b.loosened(selection_export_prefs.margin));
+
+        rayon::spawn(move || {
+            let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
+                let Some(selection_bounds) = selection_bounds else {
+            return Ok(None);
+        };
+
+                let Some(selection_svg) = gen_selection_svg(selection_keys, selection_bounds, &snapshot, selection_export_prefs)? else {
                 return Ok(None);
             };
 
-            Ok(Some(
-                rnote_compose::utils::add_xml_header(
-                    rnote_compose::utils::wrap_svg_root(
-                        selection_svg.svg_data.as_str(),
-                        Some(selection_svg.bounds),
-                        Some(selection_svg.bounds),
-                        false,
+                Ok(Some(
+                    rnote_compose::utils::add_xml_header(
+                        rnote_compose::utils::wrap_svg_root(
+                            selection_svg.svg_data.as_str(),
+                            Some(selection_svg.bounds),
+                            Some(selection_svg.bounds),
+                            false,
+                        )
+                        .as_str(),
                     )
-                    .as_str(),
-                )
-                .into_bytes(),
-            ))
-        };
-        if let Err(_data) = oneshot_sender.send(result()) {
-            log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
-        }
+                    .into_bytes(),
+                ))
+            };
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
+            }
+        });
 
         oneshot_receiver
     }
@@ -815,15 +830,26 @@ impl RnoteEngine {
 
         let selection_export_prefs =
             selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
+        let snapshot = self.take_snapshot();
+        let selection_keys = self.store.selection_keys_as_rendered();
+        let selection_bounds = self
+            .store
+            .bounds_for_strokes(&selection_keys)
+            .map(|b| b.loosened(selection_export_prefs.margin));
 
-        let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
-            let Some(selection_svg) = self.gen_selection_svg(selection_export_prefs_override)? else {
+        rayon::spawn(move || {
+            let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
+                let Some(selection_bounds) = selection_bounds else {
+            return Ok(None);
+        };
+
+                let Some(selection_svg) = gen_selection_svg(selection_keys, selection_bounds, &snapshot, selection_export_prefs)? else {
                 return Ok(None);
             };
 
-            let selection_svg_bounds = selection_svg.bounds;
+                let selection_svg_bounds = selection_svg.bounds;
 
-            let bitmapimage_format = match selection_export_prefs.export_format {
+                let bitmapimage_format = match selection_export_prefs.export_format {
                 SelectionExportFormat::Svg => return Err(anyhow::anyhow!("export_selection_as_bitmap_bytes() failed, export preferences have Svg as export format.")),
                 SelectionExportFormat::Png => image::ImageOutputFormat::Png,
                 SelectionExportFormat::Jpeg => {
@@ -831,64 +857,21 @@ impl RnoteEngine {
                 }
             };
 
-            Ok(Some(
-                render::Image::gen_image_from_svg(
-                    selection_svg,
-                    selection_svg_bounds,
-                    selection_export_prefs.bitmap_scalefactor,
-                )?
-                .into_encoded_bytes(bitmapimage_format)?,
-            ))
-        };
-        if let Err(_data) = oneshot_sender.send(result()) {
-            log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped.");
-        }
+                Ok(Some(
+                    render::Image::gen_image_from_svg(
+                        selection_svg,
+                        selection_svg_bounds,
+                        selection_export_prefs.bitmap_scalefactor,
+                    )?
+                    .into_encoded_bytes(bitmapimage_format)?,
+                ))
+            };
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped.");
+            }
+        });
 
         oneshot_receiver
-    }
-
-    /// generates the selection svg.
-    /// without root or xml header.
-    fn gen_selection_svg(
-        &self,
-        selection_export_prefs_override: Option<SelectionExportPrefs>,
-    ) -> Result<Option<render::Svg>, anyhow::Error> {
-        let selection_export_prefs =
-            selection_export_prefs_override.unwrap_or(self.export_prefs.selection_export_prefs);
-
-        let selection_keys = self.store.selection_keys_as_rendered();
-
-        if selection_keys.is_empty() {
-            return Ok(None);
-        }
-
-        let Some(selection_bounds) = self.store.bounds_for_strokes(&selection_keys).map(|b| b.loosened(selection_export_prefs.margin)) else {
-            return Ok(None);
-        };
-
-        let mut selection_svg = if selection_export_prefs.with_background {
-            self.document
-                .background
-                .gen_svg(selection_bounds, selection_export_prefs.with_pattern)?
-        } else {
-            render::Svg {
-                svg_data: String::new(),
-                bounds: selection_bounds,
-            }
-        };
-
-        selection_svg.merge([render::Svg::gen_with_piet_cairo_backend(
-            |piet_cx| {
-                self.store.draw_stroke_keys_to_piet(
-                    &selection_keys,
-                    piet_cx,
-                    RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,
-                )
-            },
-            selection_bounds,
-        )?]);
-
-        Ok(Some(selection_svg))
     }
 }
 
@@ -896,7 +879,7 @@ impl RnoteEngine {
 /// without root or xml header.
 fn gen_doc_svg(
     doc_w_content_bounds: AABB,
-    stroke_keys: &[StrokeKey],
+    stroke_keys: Vec<StrokeKey>,
     snapshot: &EngineSnapshot,
     doc_export_prefs: DocExportPrefs,
 ) -> Result<render::Svg, anyhow::Error> {
@@ -914,7 +897,7 @@ fn gen_doc_svg(
 
     doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
         |piet_cx| {
-            for &key in stroke_keys {
+            for key in stroke_keys {
                 if let Some(stroke) = snapshot.stroke_components.get(key) {
                     stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                 }
@@ -966,4 +949,43 @@ fn gen_doc_pages_svgs(
     }
 
     Ok(pages_svgs)
+}
+
+/// generates the selection svg.
+/// without root or xml header.
+fn gen_selection_svg(
+    selection_keys: Vec<StrokeKey>,
+    selection_bounds: AABB,
+    snapshot: &EngineSnapshot,
+    selection_export_prefs: SelectionExportPrefs,
+) -> Result<Option<render::Svg>, anyhow::Error> {
+    if selection_keys.is_empty() {
+        return Ok(None);
+    }
+
+    let mut selection_svg = if selection_export_prefs.with_background {
+        snapshot
+            .document
+            .background
+            .gen_svg(selection_bounds, selection_export_prefs.with_pattern)?
+    } else {
+        render::Svg {
+            svg_data: String::new(),
+            bounds: selection_bounds,
+        }
+    };
+
+    selection_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+        |piet_cx| {
+            for key in selection_keys {
+                if let Some(stroke) = snapshot.stroke_components.get(key) {
+                    stroke.draw(piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
+                }
+            }
+            Ok(())
+        },
+        selection_bounds,
+    )?]);
+
+    Ok(Some(selection_svg))
 }

@@ -264,8 +264,7 @@ impl RnoteAppWindow {
             .engine()
             .borrow_mut()
             .import_prefs
-            .xopp_import_prefs
-            .clone();
+            .xopp_import_prefs;
 
         let engine_snapshot =
             EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;

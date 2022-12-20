@@ -340,7 +340,7 @@ impl RnoteEngine {
         let snapshot = self.take_snapshot();
         let content_bounds = self
             .bounds_w_content_extended()
-            .unwrap_or(snapshot.document.bounds());
+            .unwrap_or_else(|| snapshot.document.bounds());
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {

@@ -201,7 +201,7 @@ impl RnoteEngine {
         Ok(())
     }
 
-    pub fn draw_format_borders_to_gtk4_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    fn draw_format_borders_to_gtk4_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
         if self.document.format.show_borders {
             let total_zoom = self.camera.total_zoom();
             let border_width = 1.0 / total_zoom;

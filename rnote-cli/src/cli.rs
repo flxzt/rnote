@@ -102,11 +102,9 @@ pub(crate) async fn import_file(
     let mut ifh = File::open(input_file).await?;
     ifh.read_to_end(&mut input_bytes).await?;
 
-    let snapshot = EngineSnapshot::load_from_xopp_bytes(
-        input_bytes,
-        engine.import_prefs.xopp_import_prefs.clone(),
-    )
-    .await?;
+    let snapshot =
+        EngineSnapshot::load_from_xopp_bytes(input_bytes, engine.import_prefs.xopp_import_prefs)
+            .await?;
 
     engine.load_snapshot(snapshot);
 

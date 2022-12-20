@@ -91,7 +91,7 @@ impl FileFormatLoader for RnoteFile {
                 serde_json::from_value::<RnoteFileMaj0Min5Patch8>(wrapped_rnote_file.data)
                     .context("from_value() for RnoteFileMaj0Min5Patch8 failed.")?,
             )
-            .and_then(|r| Self::try_from(r))
+            .and_then(Self::try_from)
             .context("converting RnoteFileMaj0Min5Patch8 to newest file version failed.")
         } else {
             Err(anyhow::anyhow!(

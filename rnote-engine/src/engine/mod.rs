@@ -430,14 +430,12 @@ impl RnoteEngine {
                 .remove(key);
         }
 
-        let snapshot = EngineSnapshot {
+        EngineSnapshot {
             document: self.document.clone(),
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
-        };
-
-        snapshot
+        }
     }
 
     /// imports a engine snapshot. A save file should always be loaded with this method.

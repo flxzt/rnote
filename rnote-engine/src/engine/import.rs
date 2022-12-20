@@ -403,7 +403,9 @@ impl RnoteEngine {
         self.store.set_selected_keys(&inserted, true);
 
         self.update_pens_states();
-        self.update_rendering_current_viewport();
+        if let Err(e) = self.update_rendering_current_viewport() {
+            log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
+        }
 
         widget_flags.redraw = true;
         widget_flags.resize = true;

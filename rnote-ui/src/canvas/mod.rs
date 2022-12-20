@@ -1195,9 +1195,13 @@ impl RnoteCanvas {
         self.queue_resize();
 
         // Update engine rendering for the new viewport
-        self.engine()
+        if let Err(e) = self
+            .engine()
             .borrow_mut()
-            .update_rendering_current_viewport();
+            .update_rendering_current_viewport()
+        {
+            log::error!("failed to update engine rendering for current viewport, Err: {e:?}");
+        }
 
         self.queue_draw();
     }
@@ -1205,16 +1209,7 @@ impl RnoteCanvas {
     /// updates the background pattern and rendering for the current viewport.
     /// to be called for example when changing the background pattern or zoom.
     pub(crate) fn regenerate_background_pattern(&self) {
-        let viewport = self.engine().borrow().camera.viewport();
-        let image_scale = self.engine().borrow().camera.image_scale();
-
-        if let Err(e) = self
-            .engine()
-            .borrow_mut()
-            .document
-            .background
-            .regenerate_pattern(viewport, image_scale)
-        {
+        if let Err(e) = self.engine().borrow_mut().background_regenerate_pattern() {
             log::error!("failed to regenerate background, {e:?}")
         };
 

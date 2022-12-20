@@ -15,13 +15,16 @@ use crate::pens::penholder::PenStyle;
 use crate::pens::PenMode;
 use crate::store::StrokeKey;
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
-use crate::{AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
+use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
+use crate::{render, AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
-use gtk4::{prelude::*, Snapshot};
+use anyhow::Context;
+use gtk4::{gdk, graphene, prelude::*, Snapshot};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
 use futures::channel::mpsc;
+use gtk4::gsk;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -143,6 +146,11 @@ pub struct RnoteEngine {
     /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
     #[serde(skip)]
     pub tasks_rx: Option<EngineTaskReceiver>,
+    // Background rendering
+    #[serde(skip)]
+    pub background_tile_image: Option<render::Image>,
+    #[serde(skip)]
+    background_rendernodes: Vec<gsk::RenderNode>,
 }
 
 impl Default for RnoteEngine {
@@ -163,6 +171,8 @@ impl Default for RnoteEngine {
             visual_debug: false,
             tasks_tx,
             tasks_rx: Some(tasks_rx),
+            background_tile_image: None,
+            background_rendernodes: Vec::default(),
         }
     }
 }
@@ -251,7 +261,9 @@ impl RnoteEngine {
 
         self.resize_autoexpand();
         self.update_pens_states();
-        self.update_rendering_current_viewport();
+        if let Err(e) = self.update_rendering_current_viewport() {
+            log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
+        }
 
         widget_flags.redraw = true;
 
@@ -282,7 +294,9 @@ impl RnoteEngine {
 
         self.resize_autoexpand();
         self.update_pens_states();
-        self.update_rendering_current_viewport();
+        if let Err(e) = self.update_rendering_current_viewport() {
+            log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
+        }
 
         widget_flags.redraw = true;
 
@@ -434,21 +448,44 @@ impl RnoteEngine {
 
     /// updates the background rendering for the current viewport.
     /// if the background pattern or zoom has changed, background.regenerate_pattern() needs to be called first.
-    pub fn update_background_rendering_current_viewport(&mut self) {
+    pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
         let viewport = self.camera.viewport();
 
         // Update background and strokes for the new viewport
-        if let Err(e) = self.document.background.update_rendernodes(viewport) {
-            log::error!("failed to update background rendernodes on canvas resize with Err: {e:?}");
+        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
+
+        if let Some(image) = &self.background_tile_image {
+            // Only create the texture once, it is expensive
+            let new_texture = image
+                .to_memtexture()
+                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
+
+            for splitted_bounds in
+                viewport.split_extended_origin_aligned(self.document.background.tile_size())
+            {
+                //log::debug!("splitted_bounds: {splitted_bounds:?}");
+
+                rendernodes.push(
+                    gsk::TextureNode::new(
+                        &new_texture,
+                        &graphene::Rect::from_p2d_aabb(splitted_bounds),
+                    )
+                    .upcast(),
+                );
+            }
         }
+
+        self.background_rendernodes = rendernodes;
+
+        Ok(())
     }
 
     /// updates the content rendering for the current viewport. including the background rendering.
-    pub fn update_rendering_current_viewport(&mut self) {
+    pub fn update_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
         let viewport = self.camera.viewport();
         let image_scale = self.camera.image_scale();
 
-        self.update_background_rendering_current_viewport();
+        self.update_background_rendering_current_viewport()?;
 
         self.store.regenerate_rendering_in_viewport_threaded(
             self.tasks_tx(),
@@ -456,6 +493,17 @@ impl RnoteEngine {
             viewport,
             image_scale,
         );
+
+        Ok(())
+    }
+
+    /// regenerates the background tile image and updates the rendering.
+    pub fn background_regenerate_pattern(&mut self) -> anyhow::Result<()> {
+        let image_scale = self.camera.image_scale();
+        self.background_tile_image = self.document.background.gen_tile_image(image_scale)?;
+
+        self.update_background_rendering_current_viewport()?;
+        Ok(())
     }
 
     // Generates bounds for each page on the document which contains content
@@ -635,9 +683,7 @@ impl RnoteEngine {
 
         self.document.draw_shadow(snapshot);
 
-        self.document
-            .background
-            .draw(snapshot, doc_bounds, &self.camera)?;
+        self.draw_background(snapshot, doc_bounds, &self.camera)?;
 
         self.document
             .format
@@ -701,6 +747,31 @@ impl RnoteEngine {
             visual_debug::draw_statistics_overlay(snapshot, self, surface_bounds)?;
         }
 
+        Ok(())
+    }
+
+    fn draw_background(
+        &self,
+        snapshot: &Snapshot,
+        doc_bounds: AABB,
+        _camera: &Camera,
+    ) -> anyhow::Result<()> {
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
+
+        // Fill with background color just in case there is any space left between the tiles
+        snapshot.append_node(
+            &gsk::ColorNode::new(
+                &gdk::RGBA::from_compose_color(self.document.background.color),
+                &graphene::Rect::from_p2d_aabb(doc_bounds),
+            )
+            .upcast(),
+        );
+
+        for r in self.background_rendernodes.iter() {
+            snapshot.append_node(r);
+        }
+
+        snapshot.pop();
         Ok(())
     }
 

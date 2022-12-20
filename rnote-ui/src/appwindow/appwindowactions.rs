@@ -639,7 +639,7 @@ impl RnoteAppWindow {
         action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let doc_bounds = appwindow.canvas().engine().borrow().document.bounds();
             let format_size = na::vector![appwindow.canvas().engine().borrow().document.format.width, appwindow.canvas().engine().borrow().document.format.height];
-            let store_snapshot = appwindow.canvas().engine().borrow().store.take_store_snapshot();
+            let engine_snapshot = appwindow.canvas().engine().borrow().take_snapshot();
             let pages_bounds = appwindow.canvas().engine().borrow().pages_bounds_w_content();
             let n_pages = pages_bounds.len();
 
@@ -719,7 +719,7 @@ impl RnoteAppWindow {
                     ));
 
                     for stroke in page_strokes.into_iter() {
-                        if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
+                        if let Some(stroke) = engine_snapshot.stroke_components.get(stroke) {
                             stroke.draw(&mut piet_cx, RnoteEngine::STROKE_EXPORT_IMAGE_SCALE)?;
                         }
                     }

@@ -6,11 +6,9 @@ pub use background::Background;
 pub use format::Format;
 use rnote_compose::Color;
 
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{Camera, StrokeStore};
 use rnote_compose::helpers::AABBHelpers;
 
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -201,31 +199,5 @@ impl Document {
         self.y = new_bounds.mins[1];
         self.width = new_bounds.extents()[0];
         self.height = new_bounds.extents()[1];
-    }
-
-    pub fn draw_shadow(&self, snapshot: &Snapshot) {
-        let shadow_width = Self::SHADOW_WIDTH;
-        let shadow_offset = Self::SHADOW_OFFSET;
-        let bounds = self.bounds();
-
-        let corner_radius =
-            graphene::Size::new(shadow_width as f32 * 0.25, shadow_width as f32 * 0.25);
-
-        let rounded_rect = gsk::RoundedRect::new(
-            graphene::Rect::from_p2d_aabb(bounds),
-            corner_radius,
-            corner_radius,
-            corner_radius,
-            corner_radius,
-        );
-
-        snapshot.append_outset_shadow(
-            &rounded_rect,
-            &gdk::RGBA::from_compose_color(Self::SHADOW_COLOR),
-            shadow_offset[0] as f32,
-            shadow_offset[1] as f32,
-            0.0,
-            (shadow_width) as f32,
-        );
     }
 }

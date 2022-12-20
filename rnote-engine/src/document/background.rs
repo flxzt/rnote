@@ -1,13 +1,10 @@
 use anyhow::Context;
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 use svg::Node;
 
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{render, Camera};
-use rnote_compose::helpers::AABBHelpers;
+use crate::render;
 use rnote_compose::Color;
 
 #[derive(
@@ -193,10 +190,6 @@ pub struct Background {
     pub pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
     pub pattern_color: Color,
-    #[serde(skip)]
-    pub image: Option<render::Image>,
-    #[serde(skip)]
-    rendernodes: Vec<gsk::RenderNode>,
 }
 
 impl Default for Background {
@@ -206,8 +199,6 @@ impl Default for Background {
             pattern: PatternStyle::default(),
             pattern_size: Self::PATTERN_SIZE_DEFAULT,
             pattern_color: Self::PATTERN_COLOR_DEFAULT,
-            image: None,
-            rendernodes: vec![],
         }
     }
 }
@@ -224,7 +215,7 @@ impl Background {
     };
 
     /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
-    fn tile_size(&self) -> na::Vector2<f64> {
+    pub fn tile_size(&self) -> na::Vector2<f64> {
         let tile_factor =
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
@@ -294,92 +285,15 @@ impl Background {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_image(
-        &self,
-        bounds: AABB,
-        image_scale: f64,
-    ) -> Result<Option<render::Image>, anyhow::Error> {
-        let svg = self.gen_svg(bounds, true)?;
-        Ok(Some(render::Image::gen_image_from_svg(
-            svg,
-            bounds,
-            image_scale,
-        )?))
-    }
-
-    fn gen_rendernodes(&mut self, viewport: AABB) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
-
-        if let Some(image) = &self.image {
-            // Only create the texture once, it is expensive
-            let new_texture = image
-                .to_memtexture()
-                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
-
-            for splitted_bounds in viewport.split_extended_origin_aligned(self.tile_size()) {
-                //log::debug!("splitted_bounds: {splitted_bounds:?}");
-
-                rendernodes.push(
-                    gsk::TextureNode::new(
-                        &new_texture,
-                        &graphene::Rect::from_p2d_aabb(splitted_bounds),
-                    )
-                    .upcast(),
-                );
-            }
-        }
-
-        Ok(rendernodes)
-    }
-
-    pub fn update_rendernodes(&mut self, viewport: AABB) -> anyhow::Result<()> {
-        match self.gen_rendernodes(viewport) {
-            Ok(rendernodes) => {
-                self.rendernodes = rendernodes;
-            }
-            Err(e) => {
-                log::error!(
-                    "gen_rendernode() failed in update_rendernode() of background with Err: {:?}",
-                    e
-                );
-            }
-        }
-
-        Ok(())
-    }
-
-    pub fn regenerate_pattern(&mut self, viewport: AABB, image_scale: f64) -> anyhow::Result<()> {
+    pub fn gen_tile_image(&self, image_scale: f64) -> Result<Option<render::Image>, anyhow::Error> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
+        let svg = self.gen_svg(tile_bounds, true)?;
 
-        self.image = self.gen_image(tile_bounds, image_scale)?;
-
-        self.update_rendernodes(viewport)?;
-        Ok(())
-    }
-
-    pub fn draw(
-        &self,
-        snapshot: &Snapshot,
-        doc_bounds: AABB,
-        _camera: &Camera,
-    ) -> anyhow::Result<()> {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
-
-        // Fill with background color just in case there is any space left between the tiles
-        snapshot.append_node(
-            &gsk::ColorNode::new(
-                &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_p2d_aabb(doc_bounds),
-            )
-            .upcast(),
-        );
-
-        self.rendernodes.iter().for_each(|rendernode| {
-            snapshot.append_node(rendernode);
-        });
-
-        snapshot.pop();
-        Ok(())
+        Ok(Some(render::Image::gen_image_from_svg(
+            svg,
+            tile_bounds,
+            image_scale,
+        )?))
     }
 }

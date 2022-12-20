@@ -1,5 +1,6 @@
 pub mod export;
 pub mod import;
+pub mod rendering;
 pub mod visual_debug;
 
 // Re-Exports
@@ -17,11 +18,8 @@ use crate::pens::PenMode;
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{render, AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
+use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
-use anyhow::Context;
-use gtk4::{gdk, graphene, prelude::*, Snapshot};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
@@ -509,66 +507,6 @@ impl RnoteEngine {
         )
     }
 
-    /// updates the background rendering for the current viewport.
-    /// if the background pattern or zoom has changed, background.regenerate_pattern() needs to be called first.
-    pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
-        let viewport = self.camera.viewport();
-
-        // Update background and strokes for the new viewport
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
-
-        if let Some(image) = &self.background_tile_image {
-            // Only create the texture once, it is expensive
-            let new_texture = image
-                .to_memtexture()
-                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
-
-            for splitted_bounds in
-                viewport.split_extended_origin_aligned(self.document.background.tile_size())
-            {
-                //log::debug!("splitted_bounds: {splitted_bounds:?}");
-
-                rendernodes.push(
-                    gsk::TextureNode::new(
-                        &new_texture,
-                        &graphene::Rect::from_p2d_aabb(splitted_bounds),
-                    )
-                    .upcast(),
-                );
-            }
-        }
-
-        self.background_rendernodes = rendernodes;
-
-        Ok(())
-    }
-
-    /// updates the content rendering for the current viewport. including the background rendering.
-    pub fn update_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
-        let viewport = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
-
-        self.update_background_rendering_current_viewport()?;
-
-        self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
-            false,
-            viewport,
-            image_scale,
-        );
-
-        Ok(())
-    }
-
-    /// regenerates the background tile image and updates the rendering.
-    pub fn background_regenerate_pattern(&mut self) -> anyhow::Result<()> {
-        let image_scale = self.camera.image_scale();
-        self.background_tile_image = self.document.background.gen_tile_image(image_scale)?;
-
-        self.update_background_rendering_current_viewport()?;
-        Ok(())
-    }
-
     // Generates bounds for each page on the document which contains content
     pub fn pages_bounds_w_content(&self) -> Vec<AABB> {
         let doc_bounds = self.document.bounds();
@@ -730,138 +668,5 @@ impl RnoteEngine {
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
         })
-    }
-
-    /// Draws the entire engine (doc, pens, strokes, selection, ..) on a GTK snapshot.
-    pub fn draw_on_snapshot(
-        &self,
-        snapshot: &Snapshot,
-        surface_bounds: AABB,
-    ) -> anyhow::Result<()> {
-        let doc_bounds = self.document.bounds();
-        let viewport = self.camera.viewport();
-
-        snapshot.save();
-        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
-
-        self.document.draw_shadow(snapshot);
-
-        self.draw_background(snapshot, doc_bounds, &self.camera)?;
-
-        self.document
-            .format
-            .draw(snapshot, doc_bounds, &self.camera)?;
-
-        self.store
-            .draw_strokes_to_snapshot(snapshot, doc_bounds, viewport);
-
-        snapshot.restore();
-
-        self.penholder.draw_on_doc_snapshot(
-            snapshot,
-            &EngineView {
-                tasks_tx: self.tasks_tx(),
-                doc: &self.document,
-                store: &self.store,
-                camera: &self.camera,
-                audioplayer: &self.audioplayer,
-            },
-        )?;
-        /*
-               {
-                   use crate::utils::GrapheneRectHelpers;
-                   use gtk4::graphene;
-                   use piet::RenderContext;
-                   use rnote_compose::helpers::Affine2Helpers;
-
-                   let zoom = self.camera.zoom();
-
-                   let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
-                   let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-                   // Transform to doc coordinate space
-                   piet_cx.transform(self.camera.transform().to_kurbo());
-
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                   self.store
-                       .draw_strokes_immediate_w_piet(&mut piet_cx, doc_bounds, viewport, zoom)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   self.penholder
-                       .draw_on_doc(&mut piet_cx, doc_bounds, &self.camera)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-               }
-        */
-        snapshot.save();
-        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
-
-        // visual debugging
-        if self.visual_debug {
-            visual_debug::draw_debug(snapshot, self, surface_bounds)?;
-        }
-
-        snapshot.restore();
-
-        if self.visual_debug {
-            visual_debug::draw_statistics_overlay(snapshot, self, surface_bounds)?;
-        }
-
-        Ok(())
-    }
-
-    fn draw_background(
-        &self,
-        snapshot: &Snapshot,
-        doc_bounds: AABB,
-        _camera: &Camera,
-    ) -> anyhow::Result<()> {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
-
-        // Fill with background color just in case there is any space left between the tiles
-        snapshot.append_node(
-            &gsk::ColorNode::new(
-                &gdk::RGBA::from_compose_color(self.document.background.color),
-                &graphene::Rect::from_p2d_aabb(doc_bounds),
-            )
-            .upcast(),
-        );
-
-        for r in self.background_rendernodes.iter() {
-            snapshot.append_node(r);
-        }
-
-        snapshot.pop();
-        Ok(())
-    }
-
-    /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
-    /// NOT for opening files
-    pub fn load_engine_config(
-        &mut self,
-        serialized_config: &str,
-        data_dir: Option<PathBuf>,
-    ) -> anyhow::Result<WidgetFlags> {
-        let mut widget_flags = WidgetFlags::default();
-        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
-
-        self.document = serde_json::from_value(engine_config.document)?;
-        self.penholder = serde_json::from_value(engine_config.penholder)?;
-        self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
-        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
-        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
-
-        // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(self.pen_sounds, data_dir);
-
-        widget_flags.merge_with_other(self.penholder.handle_changed_pen_style());
-
-        widget_flags.redraw = true;
-        widget_flags.refresh_ui = true;
-
-        Ok(widget_flags)
     }
 }

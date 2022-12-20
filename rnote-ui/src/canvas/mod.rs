@@ -399,7 +399,7 @@ mod imp {
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_on_snapshot(snapshot, inst.bounds())?;
+                    .draw_on_gtk_snapshot(snapshot, inst.bounds())?;
 
                 // Restore original coordinate space
                 snapshot.restore();

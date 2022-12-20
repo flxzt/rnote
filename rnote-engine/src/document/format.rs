@@ -1,13 +1,7 @@
-use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use piet::RenderContext;
+use gtk4::glib;
 use serde::{Deserialize, Serialize};
 
-use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::{color, Color};
-
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::Camera;
 
 #[derive(
     Debug,
@@ -183,96 +177,4 @@ impl Format {
     pub const DPI_DEFAULT: f64 = 96.0;
 
     pub const BORDER_COLOR_DEFAULT: piet::Color = color::GNOME_BRIGHTS[2];
-
-    fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
-        const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
-        let path_width: f64 = 1.0 / camera.total_zoom();
-
-        let indicator_bounds = AABB::from_half_extents(
-            na::point![0.0, 0.0],
-            na::Vector2::repeat(6.0 / camera.total_zoom()),
-        );
-
-        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_bounds));
-        let cairo_cx = cairo_node.draw_context();
-        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-        let mut indicator_path = kurbo::BezPath::new();
-        indicator_path.move_to(kurbo::Point::new(
-            indicator_bounds.mins[0],
-            indicator_bounds.mins[1],
-        ));
-        indicator_path.line_to(kurbo::Point::new(
-            indicator_bounds.maxs[0],
-            indicator_bounds.maxs[1],
-        ));
-        indicator_path.move_to(kurbo::Point::new(
-            indicator_bounds.mins[0],
-            indicator_bounds.maxs[1],
-        ));
-        indicator_path.line_to(kurbo::Point::new(
-            indicator_bounds.maxs[0],
-            indicator_bounds.mins[1],
-        ));
-
-        piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
-
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        Ok(cairo_node.upcast())
-    }
-
-    pub fn draw(
-        &self,
-        snapshot: &Snapshot,
-        doc_bounds: AABB,
-        camera: &Camera,
-    ) -> anyhow::Result<()> {
-        if self.show_borders {
-            let total_zoom = camera.total_zoom();
-            let border_width = 1.0 / total_zoom;
-            let viewport = camera.viewport();
-
-            snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds.loosened(2.0)));
-
-            for page_bounds in
-                doc_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
-            {
-                if !page_bounds.intersects(&viewport) {
-                    continue;
-                }
-
-                let rounded_rect = gsk::RoundedRect::new(
-                    graphene::Rect::from_p2d_aabb(page_bounds),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                );
-
-                snapshot.append_border(
-                    &rounded_rect,
-                    &[
-                        border_width as f32,
-                        border_width as f32,
-                        border_width as f32,
-                        border_width as f32,
-                    ],
-                    &[
-                        gdk::RGBA::from_compose_color(self.border_color),
-                        gdk::RGBA::from_compose_color(self.border_color),
-                        gdk::RGBA::from_compose_color(self.border_color),
-                        gdk::RGBA::from_compose_color(self.border_color),
-                    ],
-                )
-            }
-
-            snapshot.pop();
-        }
-
-        // Draw an indicator at the origin
-        snapshot.append_node(&Self::draw_origin_indicator(camera)?);
-
-        Ok(())
-    }
 }

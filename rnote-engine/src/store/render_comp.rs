@@ -383,7 +383,12 @@ impl StrokeStore {
     }
 
     /// Draws all strokes on the snapshot
-    pub fn draw_strokes_to_snapshot(&self, snapshot: &Snapshot, doc_bounds: AABB, viewport: AABB) {
+    pub fn draw_strokes_to_gtk_snapshot(
+        &self,
+        snapshot: &Snapshot,
+        doc_bounds: AABB,
+        viewport: AABB,
+    ) {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
@@ -393,8 +398,12 @@ impl StrokeStore {
                     self.stroke_components.get(key),
                     self.render_components.get(key),
                 ) {
+                    // Draws a placeholder for the given stroke bounds
                     if render_comp.rendernodes.is_empty() {
-                        Self::draw_stroke_placeholder(snapshot, stroke.bounds())
+                        snapshot.append_color(
+                            &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.564)),
+                            &graphene::Rect::from_p2d_aabb(stroke.bounds()),
+                        );
                     }
 
                     for rendernode in render_comp.rendernodes.iter() {
@@ -420,14 +429,6 @@ impl StrokeStore {
         }
 
         Ok(())
-    }
-
-    /// Draws a placeholder for the given stroke bounds
-    fn draw_stroke_placeholder(snapshot: &Snapshot, stroke_bounds: AABB) {
-        snapshot.append_color(
-            &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.564)),
-            &graphene::Rect::from_p2d_aabb(stroke_bounds),
-        );
     }
 
     /// Draws all strokes on the piet context. In immediate mode, without the image cache.

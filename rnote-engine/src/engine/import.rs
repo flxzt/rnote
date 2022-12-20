@@ -1,4 +1,5 @@
 use std::ops::Range;
+use std::path::PathBuf;
 use std::time::Instant;
 
 use anyhow::Context;
@@ -13,7 +14,7 @@ use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{RnoteEngine, WidgetFlags};
 
-use super::{EngineSnapshot, EngineViewMut};
+use super::{EngineConfig, EngineSnapshot, EngineViewMut};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -138,7 +139,7 @@ impl RnoteEngine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<EngineSnapshot> {
                 serde_json::from_value(rnote_file.engine_snapshot)
-                    .context("serde_json::from_value() for rnote_file.store_snapshot failed")
+                    .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
             };
 
             if let Err(_data) = store_snapshot_sender.send(result()) {
@@ -255,6 +256,33 @@ impl RnoteEngine {
         self.import_snapshot(&engine.take_snapshot());
 
         Ok(())
+    }
+
+    /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
+    /// NOT for opening files
+    pub fn load_engine_config(
+        &mut self,
+        serialized_config: &str,
+        data_dir: Option<PathBuf>,
+    ) -> anyhow::Result<WidgetFlags> {
+        let mut widget_flags = WidgetFlags::default();
+        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
+
+        self.document = serde_json::from_value(engine_config.document)?;
+        self.penholder = serde_json::from_value(engine_config.penholder)?;
+        self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
+        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
+        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
+
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(self.pen_sounds, data_dir);
+
+        widget_flags.merge_with_other(self.penholder.handle_changed_pen_style());
+
+        widget_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+
+        Ok(widget_flags)
     }
 
     /// generates a vectorimage for the bytes ( from a SVG file )

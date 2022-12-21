@@ -21,7 +21,7 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">Document _layout</attribute>
+            <attribute name="label" translatable="yes">_Document layout</attribute>
             <section>
               <item>
                 <attribute name="label" translatable="yes">_Fixed size</attribute>
@@ -58,7 +58,7 @@
         </section>
         <section>
           <item>
-            <attribute name="label" translatable="yes">_Clear document</attribute>
+            <attribute name="label" translatable="yes">C_lear document</attribute>
             <attribute name="action">win.clear-doc</attribute>
           </item>
           <item>

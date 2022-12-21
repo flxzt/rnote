@@ -21,7 +21,7 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">_Color scheme</attribute>
+            <attribute name="label" translatable="yes">Co_lor scheme</attribute>
             <item>
               <attribute name="label" translatable="yes">Use _system colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
@@ -87,13 +87,24 @@
             <attribute name="action">win.print-doc</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Paste _clipboard</attribute>
-            <attribute name="action">win.clipboard-paste</attribute>
-          </item>
-          <item>
             <attribute name="label" translatable="yes">_Import file</attribute>
             <attribute name="action">win.import-file</attribute>
           </item>
+          <submenu>
+            <attribute name="label" translatable="yes">_Clipboard</attribute>
+            <item>
+              <attribute name="label" translatable="yes">_Copy to clipboard</attribute>
+              <attribute name="action">win.clipboard-copy</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">C_ut to clipboard</attribute>
+              <attribute name="action">win.clipboard-cut</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">_Paste clipboard</attribute>
+              <attribute name="action">win.clipboard-paste</attribute>
+            </item>
+          </submenu>
           <submenu>
             <attribute name="label" translatable="yes">_Export…</attribute>
             <item>

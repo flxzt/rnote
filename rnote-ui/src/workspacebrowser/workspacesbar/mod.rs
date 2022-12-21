@@ -32,6 +32,10 @@ mod imp {
         #[template_child]
         pub(crate) workspaces_listbox: TemplateChild<ListBox>,
         #[template_child]
+        pub(crate) move_selected_workspace_up_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) move_selected_workspace_down_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) add_workspace_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) remove_selected_workspace_button: TemplateChild<Button>,
@@ -47,6 +51,8 @@ mod imp {
 
                 workspaces_scroller: Default::default(),
                 workspaces_listbox: Default::default(),
+                move_selected_workspace_up_button: Default::default(),
+                move_selected_workspace_down_button: Default::default(),
                 add_workspace_button: Default::default(),
                 remove_selected_workspace_button: Default::default(),
                 edit_selected_workspace_button: Default::default(),
@@ -118,6 +124,12 @@ impl WorkspacesBar {
         self.select_workspace_by_index(n_items.saturating_sub(1));
     }
 
+    pub(crate) fn insert_workspace(&self, i: u32, entry: WorkspaceListEntry) {
+        self.imp().workspace_list.insert(i as usize, entry);
+
+        self.select_workspace_by_index(i);
+    }
+
     pub(crate) fn remove_selected_workspace(&self) {
         let n_items = self.imp().workspace_list.n_items();
 
@@ -130,6 +142,36 @@ impl WorkspacesBar {
             self.imp().workspace_list.remove(i as usize);
 
             self.select_workspace_by_index(i);
+        }
+    }
+
+    pub(crate) fn move_selected_workspace_up(&self) {
+        let n_items = self.imp().workspace_list.n_items();
+
+        if n_items > 1 {
+            let i = self
+                .selected_workspace_index()
+                .unwrap_or_else(|| n_items.saturating_sub(1));
+
+            let entry = self.imp().workspace_list.remove(i as usize);
+
+            self.insert_workspace(i.saturating_sub(1), entry);
+            self.select_workspace_by_index(i.saturating_sub(1));
+        }
+    }
+
+    pub(crate) fn move_selected_workspace_down(&self) {
+        let n_items = self.imp().workspace_list.n_items();
+        let i_max = n_items.saturating_sub(1);
+
+        if n_items > 1 {
+            let i = self.selected_workspace_index().unwrap_or(i_max);
+
+            let entry = self.imp().workspace_list.remove(i as usize);
+
+            let insert_i = (i + 1).min(i_max);
+            self.insert_workspace(insert_i, entry);
+            self.select_workspace_by_index(insert_i);
         }
     }
 
@@ -273,6 +315,16 @@ impl WorkspacesBar {
             }),
         );
 
+        self.imp().move_selected_workspace_up_button.get().connect_clicked(
+            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
+                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "move-selected-workspace-up", None);
+            }));
+
+        self.imp().move_selected_workspace_down_button.get().connect_clicked(
+            clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
+                adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "move-selected-workspace-down", None);
+            }));
+
         self.imp().add_workspace_button.get().connect_clicked(
             clone!(@weak self as workspacesbar, @weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&workspacesbar.action_group(), "add-workspace", None);
@@ -292,6 +344,14 @@ impl WorkspacesBar {
     fn setup_actions(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
+        let action_move_selected_workspace_up =
+            gio::SimpleAction::new("move-selected-workspace-up", None);
+        imp.action_group
+            .add_action(&action_move_selected_workspace_up);
+        let action_move_selected_workspace_down =
+            gio::SimpleAction::new("move-selected-workspace-down", None);
+        imp.action_group
+            .add_action(&action_move_selected_workspace_down);
         let action_add_workspace = gio::SimpleAction::new("add-workspace", None);
         imp.action_group.add_action(&action_add_workspace);
         let action_remove_selected_workspace =
@@ -302,14 +362,30 @@ impl WorkspacesBar {
             gio::SimpleAction::new("edit-selected-workspace", None);
         imp.action_group.add_action(&action_edit_selected_workspace);
 
-        // Add workspace
-        action_add_workspace.connect_activate(clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
-                let entry = workspacesbar.selected_workspacelistentry().unwrap_or_else(|| WorkspaceListEntry::default());
-                workspacesbar.push_workspace(entry);
+        // Move selected workspace up
+        action_move_selected_workspace_up.connect_activate(
+            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
+                workspacesbar.move_selected_workspace_up();
+            }),
+        );
 
-                // Popup the edit dialog after creation
-                dialogs::dialog_edit_selected_workspace(&appwindow);
-        }));
+        // Move selected workspace down
+        action_move_selected_workspace_down.connect_activate(
+            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
+                workspacesbar.move_selected_workspace_down();
+            }),
+        );
+
+        // Add workspace
+        action_add_workspace.connect_activate(
+            clone!(@weak self as workspacesbar, @weak appwindow => move |_, _| {
+                    let entry = workspacesbar.selected_workspacelistentry().unwrap_or_default();
+                    workspacesbar.push_workspace(entry);
+
+                    // Popup the edit dialog after creation
+                    dialogs::dialog_edit_selected_workspace(&appwindow);
+            }),
+        );
 
         // Remove selected workspace
         action_remove_selected_workspace.connect_activate(

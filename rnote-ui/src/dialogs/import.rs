@@ -87,7 +87,7 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
 
     filechooser.set_filter(&filter);
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
@@ -149,7 +149,7 @@ pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
 
     filechooser.set_filter(&filter);
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {

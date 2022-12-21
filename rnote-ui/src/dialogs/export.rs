@@ -36,7 +36,7 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
             log::error!("set_file() for dialog_save_doc_as failed with Err: {e:?}");
         }
     } else {
-        if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+        if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
             if let Err(e) =
                 filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
             {
@@ -223,7 +223,7 @@ fn create_filechooser_export_doc(appwindow: &RnoteAppWindow) -> FileChooserNativ
         .select_multiple(false)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
@@ -498,7 +498,7 @@ fn create_filechooser_export_doc_pages(appwindow: &RnoteAppWindow) -> FileChoose
         .select_multiple(false)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
@@ -743,7 +743,7 @@ fn create_filechooser_export_selection(appwindow: &RnoteAppWindow) -> FileChoose
         .select_multiple(false)
         .build();
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
@@ -821,7 +821,7 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
         .build();
     filechooser.set_filter(&filter);
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {
@@ -885,7 +885,7 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
         .build();
     filechooser.set_filter(&filter);
 
-    if let Some(current_workspace_dir) = appwindow.workspacebrowser().selected_workspace_dir() {
+    if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
         if let Err(e) =
             filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
         {

@@ -139,8 +139,9 @@ impl RnoteAppWindow {
             .activate_action("color-scheme", Some(&color_scheme.to_variant()));
 
         {
-            // Workspacebrowser
+            // Workspaces bar
             self.workspacebrowser()
+                .workspacesbar()
                 .load_from_settings(&self.app_settings());
         }
 

@@ -5,6 +5,7 @@ use gtk4::{
     gio, glib,
     glib::clone,
     pango,
+    prelude::*,
     traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt},
     Align, Button, Entry, Label, Popover,
 };
@@ -16,7 +17,7 @@ pub(crate) fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleA
     let new_folder_action = gio::SimpleAction::new("create-folder", None);
 
     new_folder_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {
-        if let Some(parent_path) = workspacebrowser.selected_workspace_dir() {
+        if let Some(parent_path) = workspacebrowser.dirlist_file().and_then(|f| f.path()) {
             let folder_name_entry = create_folder_name_entry();
             let dialog_title_label = create_dialog_title_label();
             let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&folder_name_entry, &dialog_title_label);

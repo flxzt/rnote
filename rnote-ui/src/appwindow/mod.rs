@@ -539,12 +539,12 @@ mod imp {
                     .pack_start(&inst.mainheader().pens_toggles_squeezer());
                 inst.workspacebrowser()
                     .grid()
-                    .remove(&inst.workspacebrowser().workspaces_bar());
+                    .remove(&inst.workspacebrowser().workspacesbar());
                 inst.workspacebrowser()
                     .grid()
                     .remove(&inst.workspacebrowser().files_scroller());
                 inst.workspacebrowser().grid().attach(
-                    &inst.workspacebrowser().workspaces_bar(),
+                    &inst.workspacebrowser().workspacesbar(),
                     0,
                     0,
                     1,
@@ -561,6 +561,7 @@ mod imp {
                     .files_scroller()
                     .set_window_placement(CornerType::TopRight);
                 inst.workspacebrowser()
+                    .workspacesbar()
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
@@ -642,7 +643,7 @@ mod imp {
                     .remove(&inst.workspacebrowser().files_scroller());
                 inst.workspacebrowser()
                     .grid()
-                    .remove(&inst.workspacebrowser().workspaces_bar());
+                    .remove(&inst.workspacebrowser().workspacesbar());
                 inst.workspacebrowser().grid().attach(
                     &inst.workspacebrowser().files_scroller(),
                     0,
@@ -651,7 +652,7 @@ mod imp {
                     1,
                 );
                 inst.workspacebrowser().grid().attach(
-                    &inst.workspacebrowser().workspaces_bar(),
+                    &inst.workspacebrowser().workspacesbar(),
                     2,
                     0,
                     1,
@@ -661,6 +662,7 @@ mod imp {
                     .files_scroller()
                     .set_window_placement(CornerType::TopLeft);
                 inst.workspacebrowser()
+                    .workspacesbar()
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 

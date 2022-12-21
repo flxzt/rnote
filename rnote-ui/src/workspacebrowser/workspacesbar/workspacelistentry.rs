@@ -164,16 +164,6 @@ impl WorkspaceListEntry {
         self.set_dir(entry.dir());
     }
 
-    /// Expects a path to a directory
-    pub(crate) fn from_path(dir: PathBuf) -> Self {
-        let inner = WorkspaceListEntryInner {
-            dir,
-            ..Default::default()
-        };
-
-        Self::new(inner)
-    }
-
     pub(crate) fn dir(&self) -> String {
         self.property::<String>("dir")
     }

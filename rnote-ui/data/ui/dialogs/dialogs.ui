@@ -36,17 +36,17 @@
     </responses>
   </object>
 
-  <object class="GtkDialog" id="dialog_edit_workspace">
+  <object class="GtkDialog" id="dialog_edit_selected_workspace">
     <property name="use-header-bar">1</property>
     <property name="modal">true</property>
     <property name="title" translatable="yes">Edit workspace</property>
     <child type="action">
-      <object class="GtkButton" id="edit_workspace_button_cancel">
+      <object class="GtkButton" id="edit_selected_workspace_button_cancel">
         <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
-      <object class="GtkButton" id="edit_workspace_button_apply">
+      <object class="GtkButton" id="edit_selected_workspace_button_apply">
         <property name="label" translatable="yes">Apply</property>
         <style>
           <class name="suggested-action" />
@@ -54,8 +54,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="cancel">edit_workspace_button_cancel</action-widget>
-      <action-widget response="apply" default="true">edit_workspace_button_apply</action-widget>
+      <action-widget response="cancel">edit_selected_workspace_button_cancel</action-widget>
+      <action-widget response="apply" default="true">edit_selected_workspace_button_apply</action-widget>
     </action-widgets>
     <child>
       <object class="AdwClamp">
@@ -77,7 +77,7 @@
               <class name="background" />
             </style>
             <child>
-              <object class="WorkspaceRow" id="edit_workspace_preview_row">
+              <object class="WorkspaceRow" id="edit_selected_workspace_preview_row">
                 <property name="halign">center</property>
                 <style>
                   <class name="preview" />
@@ -88,7 +88,7 @@
               <object class="AdwPreferencesGroup">
                 <property name="halign">fill</property>
                 <child>
-                  <object class="AdwEntryRow" id="change_workspace_name_entryrow">
+                  <object class="AdwEntryRow" id="edit_selected_workspace_name_entryrow">
                     <property name="title" translatable="yes">Workspace Name</property>
                   </object>
                 </child>
@@ -99,13 +99,13 @@
                     <child type="suffix">
                       <object class="GtkBox">
                         <child>
-                          <object class="GtkMenuButton" id="change_workspace_icon_menubutton">
+                          <object class="GtkMenuButton" id="edit_selected_workspace_icon_menubutton">
                             <property name="hexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="valign">center</property>
                             <property name="halign">end</property>
                             <property name="icon-name">folder-symbolic</property>
-                            <property name="popover">change_workspace_icon_popover</property>
+                            <property name="popover">edit_selected_workspace_icon_popover</property>
                           </object>
                         </child>
                       </object>
@@ -117,7 +117,7 @@
                     <property name="title" translatable="yes">Color</property>
                     <property name="subtitle" translatable="yes">Change the workspace color</property>
                     <child type="suffix">
-                      <object class="GtkColorButton" id="change_workspace_color_button">
+                      <object class="GtkColorButton" id="edit_selected_workspace_color_button">
                         <property name="hexpand">false</property>
                         <property name="hexpand">false</property>
                         <property name="valign">center</property>
@@ -137,7 +137,7 @@
                         <property name="orientation">horizontal</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkLabel" id="change_workspace_dir_label">
+                          <object class="GtkLabel" id="edit_selected_workspace_dir_label">
                             <property name="label" translatable="yes">- no directory selected -</property>
                             <property name="ellipsize">start</property>
                             <style>
@@ -146,7 +146,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="change_workspace_dir_button">
+                          <object class="GtkButton" id="edit_selected_workspace_dir_button">
                             <layout>
                               <property name="column">1</property>
                               <property name="row">1</property>
@@ -166,9 +166,9 @@
       </object>
     </child>
   </object>
-  <object class="GtkPopover" id="change_workspace_icon_popover">
+  <object class="GtkPopover" id="edit_selected_workspace_icon_popover">
     <child>
-      <object class="IconPicker" id="change_workspace_icon_picker"></object>
+      <object class="IconPicker" id="edit_selected_workspace_icon_picker"></object>
     </child>
   </object>
 </interface>

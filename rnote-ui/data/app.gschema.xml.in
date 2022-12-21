@@ -29,9 +29,9 @@
         Use the color scheme in the application's UI and in the text area.
       </description>
     </key>
-    <key name="current-workspace-index" type="u">
+    <key name="selected-workspace-index" type="u">
       <default>0</default>
-      <summary>the current workspace index</summary>
+      <summary>the selected workspace index</summary>
     </key>
     <key name="workspace-list" type="a(aysus)">
       <default>[(b'./', 'folder-symbolic', 442479871, 'default')]</default>

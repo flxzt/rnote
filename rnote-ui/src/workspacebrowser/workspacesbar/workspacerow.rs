@@ -189,7 +189,7 @@ glib::wrapper! {
 
 impl Default for WorkspaceRow {
     fn default() -> Self {
-        Self::new(WorkspaceListEntry::default())
+        Self::new(&WorkspaceListEntry::default())
     }
 }
 
@@ -197,7 +197,7 @@ impl WorkspaceRow {
     /// The threshold of the luminance of the workspacerow color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
     pub(crate) const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 
-    pub(crate) fn new(entry: WorkspaceListEntry) -> Self {
+    pub(crate) fn new(entry: &WorkspaceListEntry) -> Self {
         glib::Object::new(&[("entry", &entry.to_value())])
     }
 
@@ -219,7 +219,7 @@ impl WorkspaceRow {
         self.add_controller(&rightclick_gesture);
         rightclick_gesture.connect_pressed(
             clone!(@weak appwindow => move |_rightclick_gesture, _n_press, _x, _y| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow.workspacebrowser().workspacesbar().action_group(), "edit-selected-workspace", None);
             }),
         );
 
@@ -232,7 +232,7 @@ impl WorkspaceRow {
 
         longpress_gesture.connect_pressed(
             clone!(@weak appwindow => move |_rightclick_gesture, _x, _y| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow.workspacebrowser().workspacesbar().action_group(), "edit-selected-workspace", None);
             }),
         );
     }

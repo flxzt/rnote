@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="WorkspacesBar" parent="GtkWidget">
+    <property name="hexpand">false</property>
+    <property name="vexpand">true</property>
+    <property name="valign">fill</property>
+    <property name="halign">fill</property>
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="orientation">vertical</property>
+      </object>
+    </property>
+    <child>
+      <object class="GtkScrolledWindow" id="workspaces_scroller">
+        <property name="propagate-natural-width">false</property>
+        <property name="propagate-natural-height">false</property>
+        <property name="vexpand">true</property>
+        <property name="valign">fill</property>
+        <property name="halign">fill</property>
+        <property name="hscrollbar-policy">never</property>
+        <child>
+          <object class="GtkListBox" id="workspaces_listbox">
+            <property name="vexpand">true</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
+            <property name="show-separators">true</property>
+            <property name="selection-mode">single</property>
+            <style>
+              <class name="background" />
+              <class name="workspaces-listbox" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <property name="margin-bottom">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="halign">fill</property>
+        <property name="valign">end</property>
+        <child>
+          <object class="GtkButton" id="move_selected_workspace_up_button">
+            <property name="icon_name">up-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Move selected workspace up</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="move_selected_workspace_down_button">
+            <property name="icon_name">down-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Move selected workspace down</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="add_workspace_button">
+            <property name="icon_name">plus-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Add workspace</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="remove_selected_workspace_button">
+            <property name="icon_name">trash-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Remove selected workspace</property>
+            <style>
+              <class name="flat" />
+              <class name="flat-destructive-action" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="edit_selected_workspace_button">
+            <property name="icon-name">edit-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Edit selected workspace</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

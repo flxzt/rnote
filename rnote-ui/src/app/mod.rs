@@ -9,15 +9,16 @@ use std::path::Path;
 use crate::{
     colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
     penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-    penssidebar::TypewriterPage, settingspanel::PenShortcutRow, workspacebrowser::FileRow,
-    workspacebrowser::WorkspaceRow, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
+    penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
+    workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::FileRow,
+    workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
     PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, SettingsPanel, UnitEntry,
     WorkspaceBrowser,
 };
 
 mod imp {
-
     use super::*;
+
     #[allow(missing_debug_implementations)]
     #[derive(Default)]
     pub(crate) struct RnoteApp {}
@@ -109,6 +110,7 @@ mod imp {
             ToolsPage::static_type();
             PenStyle::static_type();
             WorkspaceBrowser::static_type();
+            WorkspacesBar::static_type();
             FileRow::static_type();
             WorkspaceRow::static_type();
             MeasureUnit::static_type();

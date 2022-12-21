@@ -2,7 +2,7 @@ use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
 use std::cell::{Cell, RefCell};
 
-use crate::workspacebrowser::WorkspaceListEntry;
+use super::WorkspaceListEntry;
 
 mod imp {
     use super::*;
@@ -100,6 +100,13 @@ impl WorkspaceList {
 
         self.items_changed(i as u32, 1, 0);
         removed
+    }
+
+    /// Replaces entry at position i. Panics if i is OOB
+    pub(crate) fn replace(&self, i: usize, entry: WorkspaceListEntry) {
+        self.imp().list.borrow_mut()[i] = entry;
+
+        self.items_changed(i as u32, 1, 1);
     }
 
     pub(crate) fn append(&self, mut items: Vec<WorkspaceListEntry>) {

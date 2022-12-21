@@ -40,7 +40,9 @@ impl RnoteAppWindow {
             }
             crate::utils::FileType::Folder => {
                 if let Some(dir) = input_file.path() {
-                    self.workspacebrowser().set_current_workspace_dir(dir);
+                    self.workspacebrowser()
+                        .workspacesbar()
+                        .set_selected_workspace_dir(dir);
                 }
             }
             crate::utils::FileType::Unsupported => {

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-21 14:27+0100\n"
-"PO-Revision-Date: 2022-12-11 18:26+0000\n"
+"PO-Revision-Date: 2022-12-21 22:56+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -65,10 +65,8 @@ msgid "A selection"
 msgstr "Una selección"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
-msgstr "_Esquema de colores"
+msgstr "Esquema de co_lor"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
@@ -127,24 +125,16 @@ msgid "_Import file"
 msgstr "_Importar archivo"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "Pegar _portapapeles"
+msgstr "_Portapapeles"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "_Copy to clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "_Copiar al portapapeles"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "C_ut to clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "C_ut al portapapeles"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste clipboard"
@@ -241,8 +231,6 @@ msgid "Settings"
 msgstr "Configuración"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
 msgstr "_Disposición del documento"
 
@@ -1058,12 +1046,9 @@ msgid "Copy into clipboard"
 msgstr "Copiar al portapapeles"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "Copiar al portapapeles"
+msgstr "Cortar al portapapeles"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"

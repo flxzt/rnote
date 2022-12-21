@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-21 14:27+0100\n"
-"PO-Revision-Date: 2022-12-10 11:17+0000\n"
-"Last-Translator: WhiredPlanck <whiredplanck@outlook.com>\n"
+"PO-Revision-Date: 2022-12-21 22:56+0000\n"
+"Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -27,7 +27,7 @@ msgstr "素描与手写笔记"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome；GTK；Office；图形；笔记；"
+msgstr "Gnome;GTK;Office;图形;笔记;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -65,8 +65,6 @@ msgid "A selection"
 msgstr "选项"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
 msgstr "配色方案"
 
@@ -127,29 +125,18 @@ msgid "_Import file"
 msgstr "导入文件"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "粘贴剪切板(C)"
+msgstr "剪切板(C)"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "_Copy to clipboard"
 msgstr "复制到剪切板"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "C_ut to clipboard"
-msgstr "复制到剪切板"
+msgstr "剪切到剪切板"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Paste clipboard"
 msgstr "粘贴剪切板"
 
@@ -244,8 +231,6 @@ msgid "Settings"
 msgstr "设置"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
 msgstr "文档布局(L)"
 
@@ -274,8 +259,6 @@ msgid "_Pen sounds"
 msgstr "手写笔音效(P)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
 msgstr "清空文档"
 
@@ -607,8 +590,6 @@ msgid "Select the export directory"
 msgstr "选择导出时的目录"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
 msgstr "导出文件主名称"
 
@@ -1052,12 +1033,9 @@ msgid "Copy into clipboard"
 msgstr "复制到剪切板"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "复制到剪切板"
+msgstr "剪切到剪切板"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1142,25 +1120,27 @@ msgstr "简单"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "按照原始输入生成线段。\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Curved"
-msgstr ""
+msgstr "曲线"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "生成光滑、弯曲的线段。\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:208
 msgid "Modeled"
-msgstr ""
+msgstr "建模"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:209
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"使用模拟物理的算法生成建模后的轨迹。\n"
+"结果是所有方法中最好看的（译者注：对于中文用户不一定如此）。"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Solid style"
@@ -1243,20 +1223,16 @@ msgid "Split strokes"
 msgstr "分割画笔"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
-msgstr "选择多边形"
+msgstr "选择一个多边形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
-msgstr "选择矩形"
+msgstr "选择一个矩形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "逐个选择"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1318,46 +1294,40 @@ msgid "Rough style"
 msgstr "粗糙样式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "硬笔样式"
+msgstr "填充样式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "选择格式"
+msgstr "选择填充样式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "阴影线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "锯齿"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "锯齿线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "交叉阴影线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "虚线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "带角度的阴影线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "设置画笔的光标"
+msgstr "设置阴影线的角度"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
@@ -1369,15 +1339,15 @@ msgstr "矩形"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "2D coordinate system"
-msgstr ""
+msgstr "2维坐标系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "3D coordinate system"
-msgstr ""
+msgstr "3维坐标系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "2维单象限坐标系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse"
@@ -1503,7 +1473,7 @@ msgstr "打开文件"
 
 #: rnote-ui/src/dialogs/import.rs:138
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:141
 msgid "Import file"
@@ -1562,64 +1532,44 @@ msgid "Saved document successfully."
 msgstr "文档保存成功。"
 
 #: rnote-ui/src/dialogs/export.rs:193
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文档失败。"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "导出文档为 SVG 成功。"
+msgstr "导出文档成功。"
 
 #: rnote-ui/src/dialogs/export.rs:201
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文件失败，没有选择文件。"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document pages failed."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文档页面失败。"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document pages successfully."
-msgstr "导出文档为 SVG 成功。"
+msgstr "导出文档页面成功。"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document pages failed, no directory selected."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文档页面失败，没有选择目录。"
 
 #: rnote-ui/src/dialogs/export.rs:713
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "导出所选为 SVG 失败。"
+msgstr "导出选择内容失败。"
 
 #: rnote-ui/src/dialogs/export.rs:715
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "导出所选为 SVG 成功。"
+msgstr "导出选择内容成功。"
 
 #: rnote-ui/src/dialogs/export.rs:721
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "导出所选为 SVG 失败。"
+msgstr "导出选择内容失败，没有选择文件。"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "JSON 文件"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:814
 msgid "Export engine state"
@@ -1662,7 +1612,6 @@ msgid "Error: Tried opening folder as file"
 msgstr "错误：将文件夹作为文件打开"
 
 #: rnote-ui/src/appwindow/imexport.rs:159
-#, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "打开文件失败：不支持的文件类型。"
 
@@ -1675,36 +1624,32 @@ msgid "Printing document failed"
 msgstr "打印失败"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:775
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
-msgstr "导出所选为 SVG 失败。"
+msgstr "导出选择内容失败，没有选择内容。"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "打开的文件已在磁盘上被修改过。"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "重新加载"
 
 #: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "打开的文件已在磁盘上被重命名。"
 
 #: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "打开的文件已在磁盘上被移动或者删除。"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "文件名："
+msgstr "文件夹名称"
 
 #: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
 msgid "New folder"
-msgstr ""
+msgstr "新建文件夹"
 
 #~ msgid "_Clear document"
 #~ msgstr "清空文档"

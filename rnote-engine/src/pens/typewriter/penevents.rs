@@ -457,8 +457,7 @@ impl Typewriter {
                 {
                     let mut update_stroke = |store: &mut StrokeStore| {
                         store.update_geometry_for_stroke(*stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            engine_view.tasks_tx.clone(),
+                        store.regenerate_rendering_for_stroke(
                             *stroke_key,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
@@ -618,8 +617,7 @@ impl Typewriter {
                 {
                     let mut update_stroke = |store: &mut StrokeStore| {
                         store.update_geometry_for_stroke(*stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            engine_view.tasks_tx.clone(),
+                        store.regenerate_rendering_for_stroke(
                             *stroke_key,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
@@ -806,8 +804,7 @@ impl Typewriter {
                     textstroke.insert_text_after_cursor(&text, cursor);
 
                     engine_view.store.update_geometry_for_stroke(*stroke_key);
-                    engine_view.store.regenerate_rendering_for_stroke_threaded(
-                        engine_view.tasks_tx.clone(),
+                    engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
@@ -847,8 +844,7 @@ impl Typewriter {
                     );
 
                     engine_view.store.update_geometry_for_stroke(*stroke_key);
-                    engine_view.store.regenerate_rendering_for_stroke_threaded(
-                        engine_view.tasks_tx.clone(),
+                    engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),

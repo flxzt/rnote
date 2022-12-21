@@ -17,7 +17,7 @@ use rnote_engine::RnoteEngine;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
     Adjustment, DropTarget, EventControllerKey, EventSequenceState, GestureDrag, GestureStylus,
-    IMContextSimple, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    IMMulticontext, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
 
 use crate::appwindow::RnoteAppWindow;
@@ -52,7 +52,7 @@ mod imp {
         pub(crate) mouse_drawing_gesture: GestureDrag,
         pub(crate) touch_drawing_gesture: GestureDrag,
         pub(crate) key_controller: EventControllerKey,
-        pub(crate) key_controller_im_context: IMContextSimple,
+        pub(crate) key_controller_im_context: IMMulticontext,
 
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
@@ -94,7 +94,7 @@ mod imp {
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
-            let key_controller_im_context = IMContextSimple::new();
+            let key_controller_im_context = IMMulticontext::new();
 
             // Gesture grouping
             mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
@@ -577,7 +577,7 @@ impl RnoteCanvas {
         } else {
             self.imp()
                 .key_controller
-                .set_im_context(None::<&IMContextSimple>);
+                .set_im_context(None::<&IMMulticontext>);
         }
     }
 

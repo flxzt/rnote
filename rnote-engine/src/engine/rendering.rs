@@ -97,6 +97,7 @@ impl RnoteEngine {
             snapshot,
             &EngineView {
                 tasks_tx: self.tasks_tx(),
+                pens_config: &self.pens_config,
                 doc: &self.document,
                 store: &self.store,
                 camera: &self.camera,

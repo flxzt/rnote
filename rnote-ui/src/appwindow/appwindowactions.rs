@@ -4,7 +4,7 @@ use crate::{dialogs, RnoteCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, Document, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
@@ -309,11 +309,9 @@ impl RnoteAppWindow {
                     if new_pen_style != appwindow.canvas().engine().borrow().penholder.current_style_w_override() {
                         let mut widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(
                             new_pen_style,
-                            Instant::now(),
                         );
-                        widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
+                        widget_flags.merge(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                             None,
-                            Instant::now(),
                         ));
 
                         appwindow.handle_widget_flags(widget_flags);
@@ -359,7 +357,6 @@ impl RnoteAppWindow {
                 if let Some(new_pen_style_override) = new_pen_style_override {
                     let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                         new_pen_style_override,
-                        Instant::now(),
                     );
                     appwindow.handle_widget_flags(widget_flags);
                 }
@@ -377,7 +374,7 @@ impl RnoteAppWindow {
             let format = appwindow.canvas().engine().borrow().document.format.clone();
             let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
             let pen_sounds = appwindow.canvas().engine().borrow().pen_sounds();
-            let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
+            let current_pen_style_w_override = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
 
             {
                 // Engine
@@ -393,7 +390,7 @@ impl RnoteAppWindow {
             }
 
             // Current pen
-            match pen_style {
+            match current_pen_style_w_override {
                 PenStyle::Brush => {
                     appwindow.mainheader().brush_toggle().set_active(true);
                     appwindow.narrow_brush_toggle().set_active(true);
@@ -444,8 +441,10 @@ impl RnoteAppWindow {
                 let selection_keys = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
 
+                let widget_flags = appwindow.canvas().engine().borrow_mut().update_state_current_pen();
+                appwindow.handle_widget_flags(widget_flags);
+
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -459,9 +458,10 @@ impl RnoteAppWindow {
                 let new_selected = appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
                 appwindow.canvas().engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
 
+                let widget_flags = appwindow.canvas().engine().borrow_mut().update_state_current_pen();
+                appwindow.handle_widget_flags(widget_flags);
 
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -475,11 +475,11 @@ impl RnoteAppWindow {
                 let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
 
-                let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector, Instant::now());
+                let mut widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
+                widget_flags.merge(appwindow.canvas().engine().borrow_mut().update_state_current_pen());
                 appwindow.handle_widget_flags(widget_flags);
 
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -493,8 +493,11 @@ impl RnoteAppWindow {
                 let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
 
+                let mut widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
+                widget_flags.merge(appwindow.canvas().engine().borrow_mut().update_state_current_pen());
+                appwindow.handle_widget_flags(widget_flags);
+
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );

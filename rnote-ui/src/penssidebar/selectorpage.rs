@@ -1,5 +1,5 @@
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
-use rnote_engine::pens::selector::SelectorStyle;
+use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
 use crate::appwindow::RnoteAppWindow;
 
@@ -72,45 +72,45 @@ impl SelectorPage {
 
         imp.selectorstyle_polygon_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
             if selectorstyle_polygon_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Polygon;
+                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Polygon;
             }
         }));
 
         imp.selectorstyle_rect_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
             if selectorstyle_rect_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Rectangle;
+                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Rectangle;
             }
         }));
 
         imp.selectorstyle_single_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
             if selectorstyle_single_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::Single;
+                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Single;
             }
         }));
 
         imp.selectorstyle_intersectingpath_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
             if selectorstyle_intersectingpath_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.selector.style = SelectorStyle::IntersectingPath;
+                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::IntersectingPath;
             }
         }));
 
         imp.resize_lock_aspectratio_togglebutton.connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
-            appwindow.canvas().engine().borrow_mut().penholder.selector.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
+            appwindow.canvas().engine().borrow_mut().pens_config.selector_config.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
         }));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
-        let selector = appwindow
+        let selector_config = appwindow
             .canvas()
             .engine()
             .borrow()
-            .penholder
-            .selector
+            .pens_config
+            .selector_config
             .clone();
 
-        match selector.style {
+        match selector_config.style {
             SelectorStyle::Polygon => imp.selectorstyle_polygon_toggle.set_active(true),
             SelectorStyle::Rectangle => imp.selectorstyle_rect_toggle.set_active(true),
             SelectorStyle::Single => imp.selectorstyle_single_toggle.set_active(true),
@@ -119,6 +119,6 @@ impl SelectorPage {
             }
         }
         imp.resize_lock_aspectratio_togglebutton
-            .set_active(selector.resize_lock_aspectratio);
+            .set_active(selector_config.resize_lock_aspectratio);
     }
 }

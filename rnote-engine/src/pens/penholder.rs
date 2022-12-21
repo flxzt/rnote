@@ -2,125 +2,34 @@ use std::time::Instant;
 
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
-use crate::pens::Tools;
 
 use crate::widgetflags::WidgetFlags;
 use crate::DrawOnDocBehaviour;
 use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
-use gtk4::{glib, glib::prelude::*};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
-use super::{Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts, Typewriter};
-
-#[derive(
-    Eq,
-    PartialEq,
-    Clone,
-    Copy,
-    Debug,
-    glib::Enum,
-    Serialize,
-    Deserialize,
-    PartialOrd,
-    Ord,
-    Hash,
-    num_derive::FromPrimitive,
-)]
-#[repr(u32)]
-#[enum_type(name = "PenStyle")]
-#[serde(rename = "pen_style")]
-pub enum PenStyle {
-    #[enum_value(name = "Brush", nick = "brush")]
-    #[serde(rename = "brush")]
-    Brush = 0,
-    #[enum_value(name = "Shaper", nick = "shaper")]
-    #[serde(rename = "shaper")]
-    Shaper,
-    #[enum_value(name = "Typewriter", nick = "typewriter")]
-    #[serde(rename = "typewriter")]
+use super::{
+    Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
     Typewriter,
-    #[enum_value(name = "Eraser", nick = "eraser")]
-    #[serde(rename = "eraser")]
-    Eraser,
-    #[enum_value(name = "Selector", nick = "selector")]
-    #[serde(rename = "selector")]
-    Selector,
-    #[enum_value(name = "Tools", nick = "tools")]
-    #[serde(rename = "tools")]
-    Tools,
-}
-
-impl Default for PenStyle {
-    fn default() -> Self {
-        Self::Brush
-    }
-}
-
-impl TryFrom<u32> for PenStyle {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value)
-            .ok_or_else(|| anyhow::anyhow!("PenStyle try_from::<u32>() for value {} failed", value))
-    }
-}
-
-impl PenStyle {
-    pub fn name(self) -> String {
-        glib::EnumValue::from_value(&self.to_value())
-            .unwrap()
-            .1
-            .name()
-            .to_string()
-    }
-
-    pub fn nick(self) -> String {
-        glib::EnumValue::from_value(&self.to_value())
-            .unwrap()
-            .1
-            .nick()
-            .to_string()
-    }
-
-    pub fn icon_name(self) -> String {
-        match self {
-            Self::Brush => String::from("pen-brush-symbolic"),
-            Self::Shaper => String::from("pen-shaper-symbolic"),
-            Self::Typewriter => String::from("pen-typewriter-symbolic"),
-            Self::Eraser => String::from("pen-eraser-symbolic"),
-            Self::Selector => String::from("pen-selector-symbolic"),
-            Self::Tools => String::from("pen-tools-symbolic"),
-        }
-    }
-}
+};
 
 /// This holds the pens and related state and handles pen events.
 #[allow(missing_debug_implementations)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
-    #[serde(rename = "brush")]
-    pub brush: Brush,
-    #[serde(rename = "shaper")]
-    pub shaper: Shaper,
-    #[serde(rename = "typewriter")]
-    pub typewriter: Typewriter,
-    #[serde(rename = "eraser")]
-    pub eraser: Eraser,
-    #[serde(rename = "selector")]
-    pub selector: Selector,
-    #[serde(rename = "tools")]
-    pub tools: Tools,
-    #[serde(rename = "pen_mode_state")]
-    pen_mode_state: PenModeState,
     #[serde(rename = "shortcuts")]
     shortcuts: Shortcuts,
+    #[serde(rename = "pen_mode_state")]
+    pen_mode_state: PenModeState,
 
+    #[serde(skip)]
+    pub(super) current_pen: Pen,
     #[serde(skip)]
     pen_progress: PenProgress,
 }
@@ -128,15 +37,10 @@ pub struct PenHolder {
 impl Default for PenHolder {
     fn default() -> Self {
         Self {
-            brush: Brush::default(),
-            shaper: Shaper::default(),
-            eraser: Eraser::default(),
-            selector: Selector::default(),
-            typewriter: Typewriter::default(),
-            tools: Tools::default(),
-            pen_mode_state: PenModeState::default(),
             shortcuts: Shortcuts::default(),
+            pen_mode_state: PenModeState::default(),
 
+            current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
         }
     }
@@ -171,61 +75,35 @@ impl PenHolder {
         self.pen_mode_state.current_style_w_override()
     }
 
-    /// forces a new style without triggering any side effects
-    pub fn force_style_without_sideeffects(&mut self, style: PenStyle) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        self.pen_mode_state.set_style_all_modes(style);
-
-        widget_flags.merge_with_other(self.handle_changed_pen_style());
-
-        widget_flags
-    }
-
-    /// forces a new style override without triggering any side effects
-    pub fn force_style_override_without_sideeffects(
-        &mut self,
-        style_override: Option<PenStyle>,
-    ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        self.pen_mode_state.set_style_override(style_override);
-
-        widget_flags.merge_with_other(self.handle_changed_pen_style());
-
-        widget_flags
-    }
-
     /// the current pen progress
     pub fn current_pen_progress(&self) -> PenProgress {
         self.pen_progress
+    }
+
+    pub fn current_pen_ref(&mut self) -> &Pen {
+        &self.current_pen
+    }
+
+    pub fn current_pen_mut(&mut self) -> &mut Pen {
+        &mut self.current_pen
     }
 
     /// change the pen style
     pub fn change_style(
         &mut self,
         new_style: PenStyle,
-        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         if self.pen_mode_state.style() != new_style {
-            // Cancel current pen
-            widget_flags.merge_with_other(self.handle_pen_event(
-                PenEvent::Cancel,
-                None,
-                now,
-                engine_view,
-            ));
-
             // Deselecting when changing the style
             let all_strokes = engine_view.store.selection_keys_as_rendered();
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style(new_style);
 
-            widget_flags.merge_with_other(self.handle_changed_pen_style());
+            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
         }
 
         widget_flags
@@ -235,7 +113,6 @@ impl PenHolder {
     pub fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
-        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -243,21 +120,13 @@ impl PenHolder {
         //log::debug!("current_style_override: {:?}, new_style_override: {:?}", self.style_override, new_style_override);
 
         if self.pen_mode_state.style_override() != new_style_override {
-            // Cancel current pen
-            widget_flags.merge_with_other(self.handle_pen_event(
-                PenEvent::Cancel,
-                None,
-                now,
-                engine_view,
-            ));
-
             // Deselecting when changing the style override
             let all_strokes = engine_view.store.selection_keys_as_rendered();
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style_override(new_style_override);
 
-            widget_flags.merge_with_other(self.handle_changed_pen_style());
+            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
         }
 
         widget_flags
@@ -266,23 +135,31 @@ impl PenHolder {
     /// change the pen mode (pen, eraser, etc.). Relevant for stylus input
     pub fn change_pen_mode(
         &mut self,
-        pen_mode: PenMode,
-        now: Instant,
+        new_pen_mode: PenMode,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self.pen_mode_state.pen_mode() != pen_mode {
-            widget_flags.merge_with_other(self.handle_pen_event(
-                PenEvent::Cancel,
-                None,
-                now,
-                engine_view,
-            ));
-            self.pen_mode_state.set_pen_mode(pen_mode);
+        if self.pen_mode_state.pen_mode() != new_pen_mode {
+            self.pen_mode_state.set_pen_mode(new_pen_mode);
 
-            widget_flags.merge_with_other(self.handle_changed_pen_style());
+            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
         }
+
+        widget_flags
+    }
+
+    pub fn update_state_current_pen(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
+        self.current_pen.update_state(engine_view)
+    }
+
+    /// Installs the pen for the current style
+    pub fn reinstall_pen_current_style(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
+        let (new_pen, mut widget_flags) =
+            new_pen_for_style(self.current_style_w_override(), engine_view);
+        self.current_pen = new_pen;
+        widget_flags.merge(self.current_pen.update_state(engine_view));
+        widget_flags.merge(self.handle_changed_pen_style());
 
         widget_flags
     }
@@ -299,7 +176,7 @@ impl PenHolder {
         widget_flags.redraw = true;
 
         if let Some(pen_mode) = pen_mode {
-            widget_flags.merge_with_other(self.change_pen_mode(pen_mode, now, engine_view));
+            widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));
         }
 
         /*
@@ -317,7 +194,7 @@ impl PenHolder {
             | PenEvent::Up { shortcut_keys, .. }
             | PenEvent::Proximity { shortcut_keys, .. } => {
                 if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
-                    widget_flags.merge_with_other(self.handle_pressed_shortcut_key(
+                    widget_flags.merge(self.handle_pressed_shortcut_key(
                         ShortcutKey::MouseSecondaryButton,
                         now,
                         engine_view,
@@ -330,23 +207,21 @@ impl PenHolder {
         }
 
         // Handle the events with the current pen
-        let (pen_progress, other_widget_flags) = match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.handle_event(event, now, engine_view),
-            PenStyle::Shaper => self.shaper.handle_event(event, now, engine_view),
-            PenStyle::Typewriter => self.typewriter.handle_event(event, now, engine_view),
-            PenStyle::Eraser => self.eraser.handle_event(event, now, engine_view),
-            PenStyle::Selector => self.selector.handle_event(event, now, engine_view),
-            PenStyle::Tools => self.tools.handle_event(event, now, engine_view),
-        };
+        let (pen_progress, other_widget_flags) =
+            self.current_pen.handle_event(event, now, engine_view);
 
-        widget_flags.merge_with_other(other_widget_flags);
+        widget_flags.merge(other_widget_flags);
 
-        widget_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+        widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));
 
         widget_flags
     }
 
-    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> WidgetFlags {
+    fn handle_pen_progress(
+        &mut self,
+        pen_progress: PenProgress,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         match pen_progress {
@@ -357,6 +232,8 @@ impl PenHolder {
                 if self.pen_mode_state.take_style_override().is_some() {
                     widget_flags.refresh_ui = true;
                 }
+
+                widget_flags.merge(self.reinstall_pen_current_style(engine_view));
             }
         }
 
@@ -365,7 +242,7 @@ impl PenHolder {
         widget_flags
     }
 
-    pub fn handle_changed_pen_style(&mut self) -> WidgetFlags {
+    fn handle_changed_pen_style(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         match self.pen_mode_state.current_style_w_override() {
@@ -374,7 +251,7 @@ impl PenHolder {
                 widget_flags.enable_text_preprocessing = Some(true);
             }
             _ => {
-                widget_flags.enable_text_preprocessing = Some(true);
+                widget_flags.enable_text_preprocessing = Some(false);
             }
         }
         widget_flags.redraw = true;
@@ -387,7 +264,7 @@ impl PenHolder {
     pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
-        now: Instant,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -399,17 +276,10 @@ impl PenHolder {
                     permanent,
                 } => {
                     if permanent {
-                        widget_flags.merge_with_other(self.change_style(
-                            new_style,
-                            now,
-                            engine_view,
-                        ));
+                        widget_flags.merge(self.change_style(new_style, engine_view));
                     } else {
-                        widget_flags.merge_with_other(self.change_style_override(
-                            Some(new_style),
-                            now,
-                            engine_view,
-                        ));
+                        widget_flags
+                            .merge(self.change_style_override(Some(new_style), engine_view));
                     }
                 }
             }
@@ -424,14 +294,7 @@ impl PenHolder {
         &self,
         engine_view: &EngineView,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
-        match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.fetch_clipboard_content(engine_view),
-            PenStyle::Shaper => self.shaper.fetch_clipboard_content(engine_view),
-            PenStyle::Typewriter => self.typewriter.fetch_clipboard_content(engine_view),
-            PenStyle::Eraser => self.eraser.fetch_clipboard_content(engine_view),
-            PenStyle::Selector => self.selector.fetch_clipboard_content(engine_view),
-            PenStyle::Tools => self.tools.fetch_clipboard_content(engine_view),
-        }
+        self.current_pen.fetch_clipboard_content(engine_view)
     }
 
     /// cuts clipboard content from the current pen
@@ -440,37 +303,13 @@ impl PenHolder {
         &mut self,
         engine_view: &mut EngineViewMut,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
-        match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.cut_clipboard_content(engine_view),
-            PenStyle::Shaper => self.shaper.cut_clipboard_content(engine_view),
-            PenStyle::Typewriter => self.typewriter.cut_clipboard_content(engine_view),
-            PenStyle::Eraser => self.eraser.cut_clipboard_content(engine_view),
-            PenStyle::Selector => self.selector.cut_clipboard_content(engine_view),
-            PenStyle::Tools => self.tools.cut_clipboard_content(engine_view),
-        }
-    }
-
-    // Updates the penholder and pens internal state
-    pub fn update_internal_state(&mut self, engine_view: &EngineView) {
-        self.brush.update_internal_state(engine_view);
-        self.shaper.update_internal_state(engine_view);
-        self.typewriter.update_internal_state(engine_view);
-        self.eraser.update_internal_state(engine_view);
-        self.selector.update_internal_state(engine_view);
-        self.tools.update_internal_state(engine_view);
+        self.current_pen.cut_clipboard_content(engine_view)
     }
 }
 
 impl DrawOnDocBehaviour for PenHolder {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
-        match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.bounds_on_doc(engine_view),
-            PenStyle::Shaper => self.shaper.bounds_on_doc(engine_view),
-            PenStyle::Typewriter => self.typewriter.bounds_on_doc(engine_view),
-            PenStyle::Eraser => self.eraser.bounds_on_doc(engine_view),
-            PenStyle::Selector => self.selector.bounds_on_doc(engine_view),
-            PenStyle::Tools => self.tools.bounds_on_doc(engine_view),
-        }
+        self.current_pen.bounds_on_doc(engine_view)
     }
     fn draw_on_doc(
         &self,
@@ -479,16 +318,24 @@ impl DrawOnDocBehaviour for PenHolder {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.draw_on_doc(cx, engine_view),
-            PenStyle::Shaper => self.shaper.draw_on_doc(cx, engine_view),
-            PenStyle::Typewriter => self.typewriter.draw_on_doc(cx, engine_view),
-            PenStyle::Eraser => self.eraser.draw_on_doc(cx, engine_view),
-            PenStyle::Selector => self.selector.draw_on_doc(cx, engine_view),
-            PenStyle::Tools => self.tools.draw_on_doc(cx, engine_view),
-        }?;
+        self.current_pen.draw_on_doc(cx, engine_view)?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
+}
+
+fn new_pen_for_style(pen_style: PenStyle, engine_view: &mut EngineViewMut) -> (Pen, WidgetFlags) {
+    let mut pen = match pen_style {
+        PenStyle::Brush => Pen::Brush(Brush::default()),
+        PenStyle::Shaper => Pen::Shaper(Shaper::default()),
+        PenStyle::Typewriter => Pen::Typewriter(Typewriter::default()),
+        PenStyle::Eraser => Pen::Eraser(Eraser::default()),
+        PenStyle::Selector => Pen::Selector(Selector::default()),
+        PenStyle::Tools => Pen::Tools(Tools::default()),
+    };
+
+    let widget_flags = pen.update_state(engine_view);
+
+    (pen, widget_flags)
 }

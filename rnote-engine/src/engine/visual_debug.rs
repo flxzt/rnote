@@ -4,8 +4,6 @@ use piet::{RenderContext, Text, TextLayoutBuilder};
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::shapes::Rectangle;
 
-use crate::pens::eraser::EraserState;
-use crate::pens::penholder::PenStyle;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{DrawOnDocBehaviour, RnoteEngine};
 use rnote_compose::Color;
@@ -200,32 +198,16 @@ pub fn draw_debug(
     // Draw the strokes and selection
     engine.store.draw_debug(snapshot, engine, surface_bounds)?;
 
-    // Draw the pens
-    let current_pen_style = engine.penholder.current_style_w_override();
-
-    match current_pen_style {
-        PenStyle::Eraser => {
-            if let EraserState::Down(current_element) = engine.penholder.eraser.state {
-                draw_pos(
-                    current_element.pos,
-                    COLOR_POS_ALT,
-                    snapshot,
-                    border_widths * 4.0,
-                );
-            }
-        }
-        PenStyle::Selector => {
-            if let Some(bounds) = engine.penholder.selector.bounds_on_doc(&EngineView {
-                tasks_tx: engine.tasks_tx(),
-                doc: &engine.document,
-                store: &engine.store,
-                camera: &engine.camera,
-                audioplayer: &engine.audioplayer,
-            }) {
-                draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
-            }
-        }
-        PenStyle::Brush | PenStyle::Shaper | PenStyle::Typewriter | PenStyle::Tools => {}
+    // Draw the pens bounds
+    if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
+        tasks_tx: engine.tasks_tx(),
+        pens_config: &engine.pens_config,
+        doc: &engine.document,
+        store: &engine.store,
+        camera: &engine.camera,
+        audioplayer: &engine.audioplayer,
+    }) {
+        draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
     }
 
     Ok(())

@@ -1,6 +1,7 @@
 use std::time::Instant;
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
@@ -8,48 +9,14 @@ use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use rnote_compose::builders::GridBuilder;
-use rnote_compose::builders::{
-    ConstraintRatio, Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType,
-};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
+use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
-use rnote_compose::style::rough::RoughOptions;
-use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::Style;
-use serde::{Deserialize, Serialize};
-
-#[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
-)]
-#[serde(rename = "shaper_style")]
-pub enum ShaperStyle {
-    #[serde(rename = "smooth")]
-    Smooth = 0,
-    #[serde(rename = "rough")]
-    Rough,
-}
-
-impl Default for ShaperStyle {
-    fn default() -> Self {
-        Self::Smooth
-    }
-}
-
-impl TryFrom<u32> for ShaperStyle {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("ShaperStyle try_from::<u32>() for value {} failed", value)
-        })
-    }
-}
 
 #[derive(Debug)]
 enum ShaperState {
@@ -59,55 +26,28 @@ enum ShaperState {
     },
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(default, rename = "shaper")]
+#[derive(Debug)]
 pub struct Shaper {
-    #[serde(rename = "builder_type")]
-    pub builder_type: ShapeBuilderType,
-    #[serde(rename = "style")]
-    pub style: ShaperStyle,
-    #[serde(rename = "smooth_options")]
-    pub smooth_options: SmoothOptions,
-    #[serde(rename = "rough_options")]
-    pub rough_options: RoughOptions,
-    #[serde(rename = "constraints")]
-    pub constraints: Constraints,
-    #[serde(skip)]
     state: ShaperState,
-}
-
-impl Clone for Shaper {
-    fn clone(&self) -> Self {
-        Self {
-            builder_type: self.builder_type,
-            style: self.style,
-            smooth_options: self.smooth_options.clone(),
-            rough_options: self.rough_options.clone(),
-            constraints: self.constraints.clone(),
-            state: ShaperState::Idle,
-        }
-    }
 }
 
 impl Default for Shaper {
     fn default() -> Self {
-        let mut constraints = Constraints::default();
-        constraints.ratios.insert(ConstraintRatio::OneToOne);
-        constraints.ratios.insert(ConstraintRatio::Horizontal);
-        constraints.ratios.insert(ConstraintRatio::Vertical);
-
         Self {
-            builder_type: ShapeBuilderType::default(),
-            style: ShaperStyle::default(),
-            smooth_options: SmoothOptions::default(),
-            rough_options: RoughOptions::default(),
-            constraints,
             state: ShaperState::Idle,
         }
     }
 }
 
 impl PenBehaviour for Shaper {
+    fn style(&self) -> PenStyle {
+        PenStyle::Shaper
+    }
+
+    fn update_state(&mut self, _engine_view: &mut EngineViewMut) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
     fn handle_event(
         &mut self,
         event: PenEvent,
@@ -118,9 +58,9 @@ impl PenBehaviour for Shaper {
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
-                self.new_style_seeds();
+                engine_view.pens_config.shaper_config.new_style_seeds();
 
-                match self.builder_type {
+                match engine_view.pens_config.shaper_config.builder_type {
                     ShapeBuilderType::Line => {
                         self.state = ShaperState::BuildShape {
                             builder: Box::new(LineBuilder::start(element, now)),
@@ -186,7 +126,7 @@ impl PenBehaviour for Shaper {
             }
             (ShaperState::BuildShape { builder }, event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
-                let mut constraints = self.constraints.clone();
+                let mut constraints = engine_view.pens_config.shaper_config.constraints.clone();
                 constraints.enabled = match event {
                     PenEvent::Down {
                         ref shortcut_keys, ..
@@ -210,11 +150,14 @@ impl PenBehaviour for Shaper {
                         PenProgress::InProgress
                     }
                     ShapeBuilderProgress::EmitContinue(shapes) => {
-                        let mut drawstyle = self.gen_style_for_current_options();
+                        let mut drawstyle = engine_view
+                            .pens_config
+                            .shaper_config
+                            .gen_style_for_current_options();
 
                         if !shapes.is_empty() {
                             // Only record if new shapes actually were emitted
-                            widget_flags.merge_with_other(engine_view.store.record());
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
                         }
 
                         for shape in shapes {
@@ -225,13 +168,11 @@ impl PenBehaviour for Shaper {
 
                             drawstyle.advance_seed();
 
-                            if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                            engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
-                            ) {
-                                log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err: {e:?}");
-                            }
+                            );
                         }
 
                         widget_flags.redraw = true;
@@ -240,11 +181,14 @@ impl PenBehaviour for Shaper {
                         PenProgress::InProgress
                     }
                     ShapeBuilderProgress::Finished(shapes) => {
-                        let mut drawstyle = self.gen_style_for_current_options();
+                        let mut drawstyle = engine_view
+                            .pens_config
+                            .shaper_config
+                            .gen_style_for_current_options();
 
                         if !shapes.is_empty() {
                             // Only record if new shapes actually were emitted
-                            widget_flags.merge_with_other(engine_view.store.record());
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
                         }
 
                         if !shapes.is_empty() {
@@ -264,13 +208,11 @@ impl PenBehaviour for Shaper {
 
                             drawstyle.advance_seed();
 
-                            if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                            engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
-                            ) {
-                                log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err: {e:?}");
-                            }
+                            );
                         }
 
                         self.state = ShaperState::Idle;
@@ -289,7 +231,10 @@ impl PenBehaviour for Shaper {
 
 impl DrawOnDocBehaviour for Shaper {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
-        let style = self.gen_style_for_current_options();
+        let style = engine_view
+            .pens_config
+            .shaper_config
+            .gen_style_for_current_options();
 
         match &self.state {
             ShaperState::Idle => None,
@@ -305,7 +250,10 @@ impl DrawOnDocBehaviour for Shaper {
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        let style = self.gen_style_for_current_options();
+        let style = engine_view
+            .pens_config
+            .shaper_config
+            .gen_style_for_current_options();
 
         match &self.state {
             ShaperState::Idle => {}
@@ -316,31 +264,5 @@ impl DrawOnDocBehaviour for Shaper {
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
-    }
-}
-
-impl Shaper {
-    pub const STROKE_WIDTH_MIN: f64 = 0.1;
-    pub const STROKE_WIDTH_MAX: f64 = 500.0;
-
-    fn new_style_seeds(&mut self) {
-        // A new seed for new shapes
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
-        self.rough_options.seed = seed;
-    }
-
-    fn gen_style_for_current_options(&self) -> Style {
-        match &self.style {
-            ShaperStyle::Smooth => {
-                let options = self.smooth_options.clone();
-
-                Style::Smooth(options)
-            }
-            ShaperStyle::Rough => {
-                let options = self.rough_options.clone();
-
-                Style::Rough(options)
-            }
-        }
     }
 }

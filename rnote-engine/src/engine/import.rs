@@ -5,7 +5,8 @@ use std::time::Instant;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
 
-use crate::pens::penholder::PenStyle;
+use crate::pens::Pen;
+use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
@@ -132,6 +133,7 @@ impl RnoteEngine {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.document = serde_json::from_value(engine_config.document)?;
+        self.pens_config = serde_json::from_value(engine_config.pens_config)?;
         self.penholder = serde_json::from_value(engine_config.penholder)?;
         self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
         self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
@@ -140,7 +142,18 @@ impl RnoteEngine {
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(self.pen_sounds, data_dir);
 
-        widget_flags.merge_with_other(self.penholder.handle_changed_pen_style());
+        // Reinstall the pen
+        widget_flags.merge(
+            self.penholder
+                .reinstall_pen_current_style(&mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                }),
+        );
 
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
@@ -251,13 +264,13 @@ impl RnoteEngine {
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
     ) -> WidgetFlags {
-        let mut widget_flags = self.store.record();
+        let mut widget_flags = self.store.record(Instant::now());
 
         // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector, Instant::now()));
+        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
 
         let inserted = strokes
             .into_iter()
@@ -269,7 +282,6 @@ impl RnoteEngine {
 
         self.store.set_selected_keys(&inserted, true);
 
-        self.update_pens_states();
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
         }
@@ -288,25 +300,28 @@ impl RnoteEngine {
         text: String,
         pos: na::Vector2<f64>,
     ) -> anyhow::Result<WidgetFlags> {
-        let mut widget_flags = self.store.record();
+        let mut widget_flags = self.store.record(Instant::now());
 
         // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Typewriter, Instant::now()));
+        widget_flags.merge(self.change_pen_style(PenStyle::Typewriter));
 
-        widget_flags.merge_with_other(self.penholder.typewriter.insert_text(
-            text,
-            Some(pos),
-            &mut EngineViewMut {
-                tasks_tx: self.tasks_tx(),
-                doc: &mut self.document,
-                store: &mut self.store,
-                camera: &mut self.camera,
-                audioplayer: &mut self.audioplayer,
-            },
-        ));
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags.merge(typewriter.insert_text(
+                text,
+                Some(pos),
+                &mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                },
+            ));
+        }
 
         Ok(widget_flags)
     }

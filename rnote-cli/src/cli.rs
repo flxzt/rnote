@@ -106,7 +106,7 @@ pub(crate) async fn import_file(
         EngineSnapshot::load_from_xopp_bytes(input_bytes, engine.import_prefs.xopp_import_prefs)
             .await?;
 
-    engine.load_snapshot(snapshot);
+    let _ = engine.load_snapshot(snapshot);
 
     let rnote_bytes = engine.save_as_rnote_bytes(rnote_file_name)?.await??;
 
@@ -173,7 +173,7 @@ pub(crate) async fn export_to_file(
         .await?;
 
     let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
-    engine.load_snapshot(engine_snapshot);
+    let _ = engine.load_snapshot(engine_snapshot);
 
     // We applied the prefs previously to the engine
     let export_bytes = engine.export_doc(export_file_name, None).await??;

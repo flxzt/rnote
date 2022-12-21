@@ -5,8 +5,8 @@ use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{glib, glib::clone, glib::subclass::*, CheckButton, CompositeTemplate};
 use once_cell::sync::Lazy;
 use rnote_compose::penevents::ShortcutKey;
-use rnote_engine::pens::penholder::PenStyle;
 use rnote_engine::pens::shortcuts::ShortcutAction;
+use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
 mod imp {

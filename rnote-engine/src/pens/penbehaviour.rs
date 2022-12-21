@@ -5,8 +5,16 @@ use rnote_compose::penevents::PenEvent;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 
+use super::PenStyle;
+
 /// types that are pens and can handle pen events
 pub trait PenBehaviour: DrawOnDocBehaviour {
+    // gives what pen style it is
+    fn style(&self) -> PenStyle;
+
+    /// init the pen with initial state with the engine view
+    fn update_state(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags;
+
     /// Handles a pen event
     fn handle_event(
         &mut self,
@@ -32,9 +40,6 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
         Ok((None, WidgetFlags::default()))
     }
-
-    /// Updates the internal state of the pen ( called for example when the engine state has changed outside of the pen )
-    fn update_internal_state(&mut self, _engine_view: &EngineView) {}
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

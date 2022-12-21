@@ -72,7 +72,8 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
                 "clear" => {
                     let prev_empty = appwindow.canvas().empty();
 
-                    appwindow.canvas().engine().borrow_mut().clear();
+                    let widget_flags = appwindow.canvas().engine().borrow_mut().clear();
+                    appwindow.handle_widget_flags(widget_flags);
 
                     appwindow.canvas().return_to_origin_page();
                     appwindow.canvas().engine().borrow_mut().resize_autoexpand();
@@ -95,7 +96,8 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnoteAppWindow) {
 
 pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
     let new_doc = |appwindow: &RnoteAppWindow| {
-        appwindow.canvas().engine().borrow_mut().clear();
+        let widget_flags = appwindow.canvas().engine().borrow_mut().clear();
+        appwindow.handle_widget_flags(widget_flags);
 
         appwindow.canvas().return_to_origin_page();
         appwindow.canvas().engine().borrow_mut().resize_autoexpand();

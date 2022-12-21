@@ -8,11 +8,11 @@ use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
 use rnote_compose::Color;
-use rnote_engine::pens::Brush;
+use rnote_engine::pens::pensconfig::BrushConfig;
 
 use crate::{appwindow::RnoteAppWindow, ColorPicker};
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
-use rnote_engine::pens::brush::{BrushStyle, SolidOptions};
+use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
@@ -153,7 +153,7 @@ impl BrushPage {
         // Stroke width
         imp.width_spinbutton.set_increments(0.1, 2.0);
         imp.width_spinbutton
-            .set_range(Brush::STROKE_WIDTH_MIN, Brush::STROKE_WIDTH_MAX);
+            .set_range(BrushConfig::STROKE_WIDTH_MIN, BrushConfig::STROKE_WIDTH_MAX);
         // set value after the range!
         imp.width_spinbutton
             .get()
@@ -166,10 +166,10 @@ impl BrushPage {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                match engine.penholder.brush.style {
-                    BrushStyle::Marker => engine.penholder.brush.marker_options.stroke_width = value,
-                    BrushStyle::Solid => engine.penholder.brush.solid_options.stroke_width = value,
-                    BrushStyle::Textured => engine.penholder.brush.textured_options.stroke_width = value,
+                match engine.pens_config.brush_config.style {
+                    BrushStyle::Marker => engine.pens_config.brush_config.marker_options.stroke_width = value,
+                    BrushStyle::Solid => engine.pens_config.brush_config.solid_options.stroke_width = value,
+                    BrushStyle::Textured => engine.pens_config.brush_config.textured_options.stroke_width = value,
                 }
             }),
         );
@@ -183,10 +183,10 @@ impl BrushPage {
                 let engine = appwindow.canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                match engine.penholder.brush.style {
-                    BrushStyle::Marker => engine.penholder.brush.marker_options.stroke_color = Some(color),
-                    BrushStyle::Solid => engine.penholder.brush.solid_options.stroke_color = Some(color),
-                    BrushStyle::Textured => engine.penholder.brush.textured_options.stroke_color = Some(color),
+                match engine.pens_config.brush_config.style {
+                    BrushStyle::Marker => engine.pens_config.brush_config.marker_options.stroke_color = Some(color),
+                    BrushStyle::Solid => engine.pens_config.brush_config.solid_options.stroke_color = Some(color),
+                    BrushStyle::Textured => engine.pens_config.brush_config.textured_options.stroke_color = Some(color),
                 }
             }),
         );
@@ -199,18 +199,18 @@ impl BrushPage {
                         let engine = appwindow.canvas().engine();
                         let engine = &mut *engine.borrow_mut();
 
-                        engine.penholder.brush.style = BrushStyle::try_from(selected_row.index() as u32).unwrap_or_default();
+                        engine.pens_config.brush_config.style = BrushStyle::try_from(selected_row.index() as u32).unwrap_or_default();
 
                         // Overwrite the color, but not the width
-                        match engine.penholder.brush.style {
+                        match engine.pens_config.brush_config.style {
                             BrushStyle::Marker => {
-                                engine.penholder.brush.marker_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
+                                engine.pens_config.brush_config.marker_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
                             },
                             BrushStyle::Solid => {
-                                engine.penholder.brush.solid_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
+                                engine.pens_config.brush_config.solid_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
                             },
                             BrushStyle::Textured => {
-                                engine.penholder.brush.textured_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
+                                engine.pens_config.brush_config.textured_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
                             },
                         }
                     }
@@ -225,7 +225,7 @@ impl BrushPage {
         imp.brush_buildertype_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+                    appwindow.canvas().engine().borrow_mut().pens_config.brush_config.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
                 }
             }),
         );
@@ -233,7 +233,7 @@ impl BrushPage {
         // Solid style
         // Pressure curve
         imp.solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
-            appwindow.canvas().engine().borrow_mut().penholder.brush.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
+            appwindow.canvas().engine().borrow_mut().pens_config.brush_config.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
         }));
 
         // Textured style
@@ -251,26 +251,32 @@ impl BrushPage {
 
         imp.texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
-                appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.density = texturedstyle_density_adj.value();
+                appwindow.canvas().engine().borrow_mut().pens_config.brush_config.textured_options.density = texturedstyle_density_adj.value();
             }),
         );
 
         // dots distribution
         imp.texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
-            appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
+            appwindow.canvas().engine().borrow_mut().pens_config.brush_config.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
         }));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
+        let brush_config = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .pens_config
+            .brush_config
+            .clone();
 
-        self.set_solidstyle_pressure_curve(brush.solid_options.pressure_curve);
+        self.set_solidstyle_pressure_curve(brush_config.solid_options.pressure_curve);
         imp.texturedstyle_density_spinbutton
-            .set_value(brush.textured_options.density);
-        self.set_texturedstyle_distribution_variant(brush.textured_options.distribution);
+            .set_value(brush_config.textured_options.density);
+        self.set_texturedstyle_distribution_variant(brush_config.textured_options.distribution);
 
-        match brush.builder_type {
+        match brush_config.builder_type {
             PenPathBuilderType::Simple => {
                 imp.brush_buildertype_listbox
                     .select_row(Some(&*imp.brush_buildertype_simple));
@@ -285,15 +291,15 @@ impl BrushPage {
             }
         }
 
-        match brush.style {
+        match brush_config.style {
             BrushStyle::Marker => {
                 imp.brushstyle_listbox
                     .select_row(Some(&*imp.brushstyle_marker_row));
                 imp.width_spinbutton
-                    .set_value(brush.marker_options.stroke_width);
+                    .set_value(brush_config.marker_options.stroke_width);
                 imp.colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        brush
+                        brush_config
                             .marker_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT),
@@ -305,10 +311,10 @@ impl BrushPage {
                 imp.brushstyle_listbox
                     .select_row(Some(&*imp.brushstyle_solid_row));
                 imp.width_spinbutton
-                    .set_value(brush.solid_options.stroke_width);
+                    .set_value(brush_config.solid_options.stroke_width);
                 imp.colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        brush
+                        brush_config
                             .solid_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT),
@@ -320,10 +326,10 @@ impl BrushPage {
                 imp.brushstyle_listbox
                     .select_row(Some(&*imp.brushstyle_textured_row));
                 imp.width_spinbutton
-                    .set_value(brush.textured_options.stroke_width);
+                    .set_value(brush_config.textured_options.stroke_width);
                 imp.colorpicker
                     .set_current_color(gdk::RGBA::from_compose_color(
-                        brush
+                        brush_config
                             .textured_options
                             .stroke_color
                             .unwrap_or(Color::TRANSPARENT),

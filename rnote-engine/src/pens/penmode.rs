@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::penholder::PenStyle;
+use super::PenStyle;
 
 /// The pen mode
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -15,18 +15,18 @@ pub enum PenMode {
 }
 
 /// the pen mode state, holding the current mode and pen styles for all pen modes
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "pen_mode_state")]
 pub struct PenModeState {
     #[serde(rename = "pen_mode")]
     pen_mode: PenMode,
-
     #[serde(rename = "penmode_pen_style")]
     penmode_pen_style: PenStyle,
-    #[serde(skip)]
-    penmode_pen_style_override: Option<PenStyle>,
     #[serde(rename = "penmode_eraser_style")]
     penmode_eraser_style: PenStyle,
+
+    #[serde(skip)]
+    penmode_pen_style_override: Option<PenStyle>,
     #[serde(skip)]
     penmode_eraser_style_override: Option<PenStyle>,
 }
@@ -35,10 +35,10 @@ impl Default for PenModeState {
     fn default() -> Self {
         Self {
             pen_mode: PenMode::Pen,
-
             penmode_pen_style: PenStyle::Brush,
-            penmode_pen_style_override: None,
             penmode_eraser_style: PenStyle::Eraser,
+
+            penmode_pen_style_override: None,
             penmode_eraser_style_override: None,
         }
     }

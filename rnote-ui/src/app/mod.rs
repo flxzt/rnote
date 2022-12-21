@@ -3,7 +3,7 @@ mod appactions;
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::document::format::MeasureUnit;
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
 use std::path::Path;
 
 use crate::{

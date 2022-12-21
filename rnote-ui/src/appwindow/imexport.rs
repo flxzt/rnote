@@ -173,10 +173,12 @@ impl RnoteAppWindow {
     {
         let engine_snapshot = EngineSnapshot::load_from_rnote_bytes(bytes).await?;
 
-        self.canvas()
+        let widget_flags = self
+            .canvas()
             .engine()
             .borrow_mut()
             .load_snapshot(engine_snapshot);
+        self.handle_widget_flags(widget_flags);
 
         if let Some(path) = path {
             let file = gio::File::for_path(path);
@@ -269,10 +271,12 @@ impl RnoteAppWindow {
         let engine_snapshot =
             EngineSnapshot::load_from_xopp_bytes(bytes, xopp_import_prefs).await?;
 
-        self.canvas()
+        let widget_flags = self
+            .canvas()
             .engine()
             .borrow_mut()
             .load_snapshot(engine_snapshot);
+        self.handle_widget_flags(widget_flags);
 
         self.canvas().set_output_file(None);
         self.canvas().set_unsaved_changes(true);

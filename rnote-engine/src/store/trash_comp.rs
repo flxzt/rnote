@@ -7,6 +7,7 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::PenPath;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::time::Instant;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "trash_component")]
@@ -115,7 +116,7 @@ impl StrokeStore {
                 }
 
                 if trash_current_stroke {
-                    widget_flags.merge_with_other(self.record());
+                    widget_flags.merge(self.record(Instant::now()));
                     self.set_trashed(key, true);
                 }
             });

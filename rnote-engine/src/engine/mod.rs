@@ -15,8 +15,8 @@ use std::time::Instant;
 use self::export::{SelectionExportFormat, SelectionExportPrefs};
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
-use crate::pens::penholder::PenStyle;
-use crate::pens::PenMode;
+use crate::pens::PenStyle;
+use crate::pens::{PenMode, PensConfig};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
@@ -37,6 +37,7 @@ use slotmap::{HopSlotMap, SecondaryMap};
 #[allow(missing_debug_implementations)]
 pub struct EngineView<'a> {
     pub tasks_tx: EngineTaskSender,
+    pub pens_config: &'a PensConfig,
     pub doc: &'a Document,
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
@@ -47,6 +48,7 @@ pub struct EngineView<'a> {
 #[allow(missing_debug_implementations)]
 pub struct EngineViewMut<'a> {
     pub tasks_tx: EngineTaskSender,
+    pub pens_config: &'a mut PensConfig,
     pub doc: &'a mut Document,
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
@@ -58,6 +60,7 @@ impl<'a> EngineViewMut<'a> {
     pub fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
             tasks_tx: self.tasks_tx.clone(),
+            pens_config: self.pens_config,
             doc: self.doc,
             store: self.store,
             camera: self.camera,
@@ -93,6 +96,8 @@ pub enum EngineTask {
 struct EngineConfig {
     #[serde(rename = "document")]
     document: serde_json::Value,
+    #[serde(rename = "pens_config")]
+    pens_config: serde_json::Value,
     #[serde(rename = "penholder")]
     penholder: serde_json::Value,
     #[serde(rename = "import_prefs")]
@@ -109,6 +114,7 @@ impl Default for EngineConfig {
 
         Self {
             document: serde_json::to_value(&engine.document).unwrap(),
+            pens_config: serde_json::to_value(&engine.pens_config).unwrap(),
             penholder: serde_json::to_value(&engine.penholder).unwrap(),
 
             import_prefs: serde_json::to_value(engine.import_prefs).unwrap(),
@@ -305,12 +311,14 @@ pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
 pub struct RnoteEngine {
     #[serde(rename = "document")]
     pub document: Document,
-    #[serde(rename = "penholder")]
-    pub penholder: PenHolder,
     #[serde(rename = "store")]
     pub store: StrokeStore,
+    #[serde(rename = "pens_config")]
+    pub pens_config: PensConfig,
     #[serde(rename = "camera")]
     pub camera: Camera,
+    #[serde(rename = "penholder")]
+    pub penholder: PenHolder,
 
     #[serde(rename = "import_prefs")]
     pub import_prefs: ImportPrefs,
@@ -341,9 +349,10 @@ impl Default for RnoteEngine {
 
         Self {
             document: Document::default(),
-            penholder: PenHolder::default(),
             store: StrokeStore::default(),
+            pens_config: PensConfig::default(),
             camera: Camera::default(),
+            penholder: PenHolder::default(),
 
             import_prefs: ImportPrefs::default(),
             export_prefs: ExportPrefs::default(),
@@ -368,6 +377,7 @@ impl RnoteEngine {
     pub fn view(&self) -> EngineView {
         EngineView {
             tasks_tx: self.tasks_tx.clone(),
+            pens_config: &self.pens_config,
             doc: &self.document,
             store: &self.store,
             camera: &self.camera,
@@ -379,6 +389,7 @@ impl RnoteEngine {
     pub fn view_mut(&mut self) -> EngineViewMut {
         EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
+            pens_config: &mut self.pens_config,
             doc: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
@@ -440,42 +451,39 @@ impl RnoteEngine {
 
     /// imports a engine snapshot. A save file should always be loaded with this method.
     /// the store then needs to update its rendering
-    pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) {
+    pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
         self.document = snapshot.document.clone();
         self.store.import_from_snapshot(&snapshot);
 
-        self.update_pens_states();
+        self.update_state_current_pen()
     }
 
     /// records the current store state and saves it as a history entry.
-    pub fn record(&mut self, _now: Instant) -> WidgetFlags {
-        self.store.record()
+    pub fn record(&mut self, now: Instant) -> WidgetFlags {
+        self.store.record(now)
     }
 
     /// Undo the latest changes
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        let current_pen_style = self.penholder.current_style_w_override();
 
-        if current_pen_style != PenStyle::Selector {
-            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None, now));
-        }
+        widget_flags.merge(
+            self.penholder
+                .reinstall_pen_current_style(&mut EngineViewMut {
+                    tasks_tx: self.tasks_tx(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                }),
+        );
 
-        widget_flags.merge_with_other(self.store.undo());
+        widget_flags.merge(self.store.undo(now));
 
-        if !self.store.selection_keys_unordered().is_empty() {
-            widget_flags.merge_with_other(
-                self.penholder
-                    .force_style_override_without_sideeffects(None),
-            );
-            widget_flags.merge_with_other(
-                self.penholder
-                    .force_style_without_sideeffects(PenStyle::Selector),
-            );
-        }
+        widget_flags.merge(self.update_state_current_pen());
 
         self.resize_autoexpand();
-        self.update_pens_states();
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
         }
@@ -488,27 +496,24 @@ impl RnoteEngine {
     /// redo the latest changes
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        let current_pen_style = self.penholder.current_style_w_override();
 
-        if current_pen_style != PenStyle::Selector {
-            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None, now));
-        }
+        widget_flags.merge(
+            self.penholder
+                .reinstall_pen_current_style(&mut EngineViewMut {
+                    tasks_tx: self.tasks_tx(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                }),
+        );
 
-        widget_flags.merge_with_other(self.store.redo());
+        widget_flags.merge(self.store.redo(now));
 
-        if !self.store.selection_keys_unordered().is_empty() {
-            widget_flags.merge_with_other(
-                self.penholder
-                    .force_style_override_without_sideeffects(None),
-            );
-            widget_flags.merge_with_other(
-                self.penholder
-                    .force_style_without_sideeffects(PenStyle::Selector),
-            );
-        }
+        widget_flags.merge(self.update_state_current_pen());
 
         self.resize_autoexpand();
-        self.update_pens_states();
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
         }
@@ -519,9 +524,10 @@ impl RnoteEngine {
     }
 
     // Clears the store
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> WidgetFlags {
         self.store.clear();
-        self.update_pens_states();
+
+        self.update_state_current_pen()
     }
 
     /// processes the received task from tasks_rx.
@@ -549,18 +555,12 @@ impl RnoteEngine {
 
         match task {
             EngineTask::UpdateStrokeWithImages { key, images } => {
-                if let Err(e) = self.store.replace_rendering_with_images(key, images) {
-                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err: {e:?}");
-                }
+                self.store.replace_rendering_with_images(key, images);
 
                 widget_flags.redraw = true;
             }
             EngineTask::AppendImagesToStroke { key, images } => {
-                if let Err(e) = self.store.append_rendering_images(key, images) {
-                    log::error!(
-                        "append_rendering_images() in process_received_task() failed with Err: {e:?}"
-                    );
-                }
+                self.store.append_rendering_images(key, images);
 
                 widget_flags.redraw = true;
             }
@@ -585,6 +585,7 @@ impl RnoteEngine {
             now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
@@ -604,6 +605,7 @@ impl RnoteEngine {
             now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
@@ -613,12 +615,12 @@ impl RnoteEngine {
     }
 
     /// change the pen style
-    pub fn change_pen_style(&mut self, new_style: PenStyle, now: Instant) -> WidgetFlags {
+    pub fn change_pen_style(&mut self, new_style: PenStyle) -> WidgetFlags {
         self.penholder.change_style(
             new_style,
-            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
@@ -631,13 +633,12 @@ impl RnoteEngine {
     pub fn change_pen_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
-        now: Instant,
     ) -> WidgetFlags {
         self.penholder.change_style_override(
             new_style_override,
-            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
@@ -647,12 +648,12 @@ impl RnoteEngine {
     }
 
     /// change the pen mode. Relevant for stylus input
-    pub fn change_pen_mode(&mut self, pen_mode: PenMode, now: Instant) -> WidgetFlags {
+    pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> WidgetFlags {
         self.penholder.change_pen_mode(
             pen_mode,
-            now,
             &mut EngineViewMut {
                 tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
                 doc: &mut self.document,
                 store: &mut self.store,
                 camera: &mut self.camera,
@@ -751,19 +752,20 @@ impl RnoteEngine {
         }
     }
 
-    /// Updates pens state with the current engine state.
+    /// Updates the current pen with the current engine state.
     /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
-    pub fn update_pens_states(&mut self) {
-        self.penholder.update_internal_state(&EngineView {
-            tasks_tx: self.tasks_tx(),
-            doc: &self.document,
-            store: &self.store,
-            camera: &self.camera,
-            audioplayer: &self.audioplayer,
-        });
+    pub fn update_state_current_pen(&mut self) -> WidgetFlags {
+        self.penholder.update_state_current_pen(&mut EngineViewMut {
+            tasks_tx: self.tasks_tx.clone(),
+            pens_config: &mut self.pens_config,
+            doc: &mut self.document,
+            store: &mut self.store,
+            camera: &mut self.camera,
+            audioplayer: &mut self.audioplayer,
+        })
     }
 
-    /// Fetches clipboard content from current state.
+    /// clipboard content from current state.
     /// Returns (the content, mime_type)
     #[allow(clippy::type_complexity)]
     pub fn fetch_clipboard_content(
@@ -786,6 +788,7 @@ impl RnoteEngine {
         // else fetch from pen
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
+            pens_config: &self.pens_config,
             doc: &self.document,
             store: &self.store,
             camera: &self.camera,
@@ -817,6 +820,7 @@ impl RnoteEngine {
         // else fetch from pen
         self.penholder.cut_clipboard_content(&mut EngineViewMut {
             tasks_tx: self.tasks_tx(),
+            pens_config: &mut self.pens_config,
             doc: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,

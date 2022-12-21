@@ -757,11 +757,12 @@ impl RnoteCanvas {
             let scale_factor = f64::from(canvas.scale_factor());
             canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
 
+            let all_strokes = canvas.engine().borrow_mut().store.stroke_keys_unordered();
             canvas
                 .engine()
                 .borrow_mut()
                 .store
-                .set_rendering_dirty_all_keys();
+                .set_rendering_dirty_for_strokes(&all_strokes);
 
             canvas.regenerate_background_pattern();
             canvas.update_engine_rendering();
@@ -1124,10 +1125,11 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
+        let all_strokes = self.engine().borrow_mut().store.stroke_keys_unordered();
         self.engine()
             .borrow_mut()
             .store
-            .set_rendering_dirty_all_keys();
+            .set_rendering_dirty_for_strokes(&all_strokes);
 
         self.regenerate_background_pattern();
         self.update_engine_rendering();

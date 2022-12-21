@@ -1,6 +1,6 @@
 use crate::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
-use rnote_engine::pens::tools::ToolsStyle;
+use rnote_engine::pens::pensconfig::toolsconfig::ToolsStyle;
 
 mod imp {
     use super::*;
@@ -65,13 +65,13 @@ impl ToolsPage {
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::VerticalSpace;
+                appwindow.canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::VerticalSpace;
             }
         }));
 
         imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
             if toolstyle_offsetcamera_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::OffsetCamera;
+                appwindow.canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::OffsetCamera;
             }
         }));
     }
@@ -79,9 +79,15 @@ impl ToolsPage {
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
-        let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
+        let tools_config = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .pens_config
+            .tools_config
+            .clone();
 
-        match tools.style {
+        match tools_config.style {
             ToolsStyle::VerticalSpace => imp.toolstyle_verticalspace_toggle.set_active(true),
             ToolsStyle::OffsetCamera => imp.toolstyle_offsetcamera_toggle.set_active(true),
         }

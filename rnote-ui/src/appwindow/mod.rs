@@ -26,7 +26,7 @@ use crate::{
     RnoteApp, RnoteCanvasWrapper,
     {dialogs, mainheader::MainHeader},
 };
-use rnote_engine::{engine::EngineTask, pens::penholder::PenStyle, WidgetFlags};
+use rnote_engine::{engine::EngineTask, pens::PenStyle, WidgetFlags};
 
 mod imp {
     use super::*;

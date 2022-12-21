@@ -1,6 +1,8 @@
 use std::time::Instant;
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::pensconfig::selectorconfig::SelectorStyle;
+use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
@@ -17,7 +19,6 @@ use rnote_compose::style::drawhelpers;
 use rnote_compose::{color, Color};
 
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ResizeCorner {
@@ -71,69 +72,46 @@ impl Default for SelectorState {
     }
 }
 
-#[derive(
-    Copy,
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    num_derive::FromPrimitive,
-    num_derive::ToPrimitive,
-)]
-#[serde(rename = "selector_style")]
-pub enum SelectorStyle {
-    #[serde(rename = "polygon")]
-    Polygon = 0,
-    #[serde(rename = "rectangle")]
-    Rectangle,
-    #[serde(rename = "single", alias = "apiece")]
-    Single,
-    #[serde(rename = "intersectingpath")]
-    IntersectingPath,
-}
-
-impl Default for SelectorStyle {
-    fn default() -> Self {
-        Self::Rectangle
-    }
-}
-
-impl TryFrom<u32> for SelectorStyle {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("SelectorStyle try_from::<u32>() for value {} failed", value)
-        })
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default, rename = "selector")]
+#[derive(Clone, Debug)]
 pub struct Selector {
-    #[serde(rename = "style")]
-    pub style: SelectorStyle,
-    #[serde(rename = "resize_lock_aspectratio")]
-    pub resize_lock_aspectratio: bool,
-    #[serde(skip)]
     pub(super) state: SelectorState,
 }
 
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            style: SelectorStyle::default(),
-            resize_lock_aspectratio: false,
             state: SelectorState::default(),
         }
     }
 }
 
 impl PenBehaviour for Selector {
+    fn style(&self) -> PenStyle {
+        PenStyle::Selector
+    }
+
+    fn update_state(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        let selection = engine_view.store.selection_keys_as_rendered();
+
+        if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection) {
+            self.state = SelectorState::ModifySelection {
+                modify_state: ModifyState::default(),
+                selection,
+                selection_bounds,
+            };
+
+            widget_flags.redraw = true;
+        } else {
+            self.state = SelectorState::Idle;
+
+            widget_flags.redraw = true;
+        }
+
+        widget_flags
+    }
+
     fn handle_event(
         &mut self,
         event: PenEvent,
@@ -146,7 +124,7 @@ impl PenBehaviour for Selector {
 
         let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                widget_flags.merge_with_other(engine_view.store.record());
+                widget_flags.merge(engine_view.store.record(Instant::now()));
 
                 // Deselect on start
                 let selection_keys = engine_view.store.selection_keys_as_rendered();
@@ -171,16 +149,16 @@ impl PenBehaviour for Selector {
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                        let all_keys = engine_view.store.keys_sorted_chrono();
+                        let all_strokes = engine_view.store.keys_sorted_chrono();
 
                         if let Some(new_selection_bounds) =
-                            engine_view.store.bounds_for_strokes(&all_keys)
+                            engine_view.store.bounds_for_strokes(&all_strokes)
                         {
-                            engine_view.store.set_selected_keys(&all_keys, true);
+                            engine_view.store.set_selected_keys(&all_strokes, true);
 
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
-                                selection: all_keys,
+                                selection: all_strokes,
                                 selection_bounds: new_selection_bounds,
                             };
 
@@ -202,7 +180,11 @@ impl PenBehaviour for Selector {
             },
             (SelectorState::Idle, _) => PenProgress::Idle,
             (SelectorState::Selecting { path }, PenEvent::Down { element, .. }) => {
-                Self::add_to_select_path(self.style, path, element);
+                Self::add_to_select_path(
+                    engine_view.pens_config.selector_config.style,
+                    path,
+                    element,
+                );
 
                 widget_flags.redraw = true;
 
@@ -212,7 +194,7 @@ impl PenBehaviour for Selector {
                 let mut state = SelectorState::Idle;
                 let mut pen_progress = PenProgress::Finished;
 
-                if let Some(selection) = match self.style {
+                if let Some(selection) = match engine_view.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
                         if path.len() < 3 {
                             None
@@ -323,16 +305,16 @@ impl PenBehaviour for Selector {
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                        let all_keys = engine_view.store.keys_sorted_chrono();
+                        let all_strokes = engine_view.store.keys_sorted_chrono();
 
                         if let Some(new_selection_bounds) =
-                            engine_view.store.bounds_for_strokes(&all_keys)
+                            engine_view.store.bounds_for_strokes(&all_strokes)
                         {
-                            engine_view.store.set_selected_keys(&all_keys, true);
+                            engine_view.store.set_selected_keys(&all_strokes, true);
 
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
-                                selection: all_keys,
+                                selection: all_strokes,
                                 selection_bounds: new_selection_bounds,
                             };
 
@@ -379,7 +361,7 @@ impl PenBehaviour for Selector {
 
                 match modify_state {
                     ModifyState::Up => {
-                        widget_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
 
                         // If we click on another, not-already selected stroke while in separate style or while pressing Shift, we add it to the selection
                         let keys = engine_view.store.stroke_hitboxes_contain_coord(
@@ -388,7 +370,7 @@ impl PenBehaviour for Selector {
                         );
                         let key_to_add = keys.last();
 
-                        if (self.style == SelectorStyle::Single
+                        if (engine_view.pens_config.selector_config.style == SelectorStyle::Single
                             || shortcut_keys.contains(&ShortcutKey::KeyboardShift))
                             && key_to_add
                                 .and_then(|&key| engine_view.store.selected(key).map(|s| !s))
@@ -568,7 +550,10 @@ impl PenBehaviour for Selector {
                             }
                         };
 
-                        let new_extents = if self.resize_lock_aspectratio
+                        let new_extents = if engine_view
+                            .pens_config
+                            .selector_config
+                            .resize_lock_aspectratio
                             || shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
                         {
                             // Lock aspectratio
@@ -647,16 +632,16 @@ impl PenBehaviour for Selector {
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                        let all_keys = engine_view.store.keys_sorted_chrono();
+                        let all_strokes = engine_view.store.keys_sorted_chrono();
 
                         if let Some(new_selection_bounds) =
-                            engine_view.store.bounds_for_strokes(&all_keys)
+                            engine_view.store.bounds_for_strokes(&all_strokes)
                         {
-                            engine_view.store.set_selected_keys(&all_keys, true);
+                            engine_view.store.set_selected_keys(&all_strokes, true);
 
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
-                                selection: all_keys,
+                                selection: all_strokes,
                                 selection_bounds: new_selection_bounds,
                             };
 
@@ -733,20 +718,6 @@ impl PenBehaviour for Selector {
 
         (pen_progress, widget_flags)
     }
-
-    fn update_internal_state(&mut self, engine_view: &EngineView) {
-        let selection = engine_view.store.selection_keys_as_rendered();
-
-        if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection) {
-            self.state = SelectorState::ModifySelection {
-                modify_state: ModifyState::default(),
-                selection,
-                selection_bounds,
-            };
-        } else {
-            self.state = SelectorState::Idle;
-        }
-    }
 }
 
 impl DrawOnDocBehaviour for Selector {
@@ -793,101 +764,103 @@ impl DrawOnDocBehaviour for Selector {
 
         match &self.state {
             SelectorState::Idle => {}
-            SelectorState::Selecting { path } => match self.style {
-                SelectorStyle::Polygon => {
-                    let mut bez_path = kurbo::BezPath::new();
-                    let mut path_iter = path.iter();
+            SelectorState::Selecting { path } => {
+                match engine_view.pens_config.selector_config.style {
+                    SelectorStyle::Polygon => {
+                        let mut bez_path = kurbo::BezPath::new();
+                        let mut path_iter = path.iter();
 
-                    if let Some(first) = path_iter.next() {
-                        bez_path.move_to(first.pos.to_kurbo_point());
+                        if let Some(first) = path_iter.next() {
+                            bez_path.move_to(first.pos.to_kurbo_point());
 
-                        for element in path_iter {
-                            bez_path.line_to(element.pos.to_kurbo_point());
+                            for element in path_iter {
+                                bez_path.line_to(element.pos.to_kurbo_point());
+                            }
+
+                            bez_path.close_path();
+
+                            let mut stroke_style = piet::StrokeStyle::new();
+                            stroke_style.set_dash_pattern(
+                                Self::SELECTING_DASH_PATTERN
+                                    .into_iter()
+                                    .map(|x| x / total_zoom)
+                                    .collect::<Vec<f64>>(),
+                            );
+
+                            cx.fill(bez_path.clone(), &*SELECTION_FILL_COLOR);
+                            cx.stroke_styled(
+                                bez_path,
+                                &*OUTLINE_COLOR,
+                                Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                                &stroke_style,
+                            );
                         }
-
-                        bez_path.close_path();
-
-                        let mut stroke_style = piet::StrokeStyle::new();
-                        stroke_style.set_dash_pattern(
-                            Self::SELECTING_DASH_PATTERN
-                                .into_iter()
-                                .map(|x| x / total_zoom)
-                                .collect::<Vec<f64>>(),
-                        );
-
-                        cx.fill(bez_path.clone(), &*SELECTION_FILL_COLOR);
-                        cx.stroke_styled(
-                            bez_path,
-                            &*OUTLINE_COLOR,
-                            Self::SELECTION_OUTLINE_WIDTH / total_zoom,
-                            &stroke_style,
-                        );
                     }
-                }
-                SelectorStyle::Rectangle => {
-                    if let (Some(first), Some(last)) = (path.first(), path.last()) {
-                        let select_rect = kurbo::Rect::from_points(
-                            first.pos.to_kurbo_point(),
-                            last.pos.to_kurbo_point(),
-                        );
-
-                        let mut stroke_style = piet::StrokeStyle::new();
-                        stroke_style.set_dash_pattern(
-                            Self::SELECTING_DASH_PATTERN
-                                .into_iter()
-                                .map(|x| x / total_zoom)
-                                .collect::<Vec<f64>>(),
-                        );
-
-                        cx.fill(select_rect, &*SELECTION_FILL_COLOR);
-                        cx.stroke_styled(
-                            select_rect,
-                            &*OUTLINE_COLOR,
-                            Self::SELECTION_OUTLINE_WIDTH / total_zoom,
-                            &stroke_style,
-                        );
-                    }
-                }
-                SelectorStyle::Single => {
-                    if let Some(last) = path.last() {
-                        cx.stroke(
-                            kurbo::Circle::new(
+                    SelectorStyle::Rectangle => {
+                        if let (Some(first), Some(last)) = (path.first(), path.last()) {
+                            let select_rect = kurbo::Rect::from_points(
+                                first.pos.to_kurbo_point(),
                                 last.pos.to_kurbo_point(),
-                                Self::SINGLE_SELECTING_CIRCLE_RADIUS / total_zoom,
-                            ),
-                            &*OUTLINE_COLOR,
-                            Self::SELECTION_OUTLINE_WIDTH / total_zoom,
-                        );
-                    }
-                }
-                SelectorStyle::IntersectingPath => {
-                    let mut bez_path = kurbo::BezPath::new();
-                    let mut path_iter = path.iter();
+                            );
 
-                    if let Some(first) = path_iter.next() {
-                        bez_path.move_to(first.pos.to_kurbo_point());
+                            let mut stroke_style = piet::StrokeStyle::new();
+                            stroke_style.set_dash_pattern(
+                                Self::SELECTING_DASH_PATTERN
+                                    .into_iter()
+                                    .map(|x| x / total_zoom)
+                                    .collect::<Vec<f64>>(),
+                            );
 
-                        for element in path_iter {
-                            bez_path.line_to(element.pos.to_kurbo_point());
+                            cx.fill(select_rect, &*SELECTION_FILL_COLOR);
+                            cx.stroke_styled(
+                                select_rect,
+                                &*OUTLINE_COLOR,
+                                Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                                &stroke_style,
+                            );
                         }
+                    }
+                    SelectorStyle::Single => {
+                        if let Some(last) = path.last() {
+                            cx.stroke(
+                                kurbo::Circle::new(
+                                    last.pos.to_kurbo_point(),
+                                    Self::SINGLE_SELECTING_CIRCLE_RADIUS / total_zoom,
+                                ),
+                                &*OUTLINE_COLOR,
+                                Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                            );
+                        }
+                    }
+                    SelectorStyle::IntersectingPath => {
+                        let mut bez_path = kurbo::BezPath::new();
+                        let mut path_iter = path.iter();
 
-                        let mut stroke_style = piet::StrokeStyle::new();
-                        stroke_style.set_dash_pattern(
-                            Self::SELECTING_DASH_PATTERN
-                                .into_iter()
-                                .map(|x| x / total_zoom)
-                                .collect::<Vec<f64>>(),
-                        );
+                        if let Some(first) = path_iter.next() {
+                            bez_path.move_to(first.pos.to_kurbo_point());
 
-                        cx.stroke_styled(
-                            bez_path,
-                            &*OUTLINE_COLOR,
-                            Self::SELECTION_OUTLINE_WIDTH / total_zoom,
-                            &stroke_style,
-                        );
+                            for element in path_iter {
+                                bez_path.line_to(element.pos.to_kurbo_point());
+                            }
+
+                            let mut stroke_style = piet::StrokeStyle::new();
+                            stroke_style.set_dash_pattern(
+                                Self::SELECTING_DASH_PATTERN
+                                    .into_iter()
+                                    .map(|x| x / total_zoom)
+                                    .collect::<Vec<f64>>(),
+                            );
+
+                            cx.stroke_styled(
+                                bez_path,
+                                &*OUTLINE_COLOR,
+                                Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                                &stroke_style,
+                            );
+                        }
                     }
                 }
-            },
+            }
             SelectorState::ModifySelection {
                 modify_state,
                 selection,

@@ -41,7 +41,7 @@ impl Default for WidgetFlags {
 
 impl WidgetFlags {
     /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
-    pub fn merge_with_other(&mut self, other: Self) {
+    pub fn merge(&mut self, other: Self) {
         self.quit |= other.quit;
         self.redraw |= other.redraw;
         self.resize |= other.resize;

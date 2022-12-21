@@ -155,7 +155,8 @@ impl StrokeStore {
     }
 
     /// Translate the strokes with the offset.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their geometry and rendering
     pub fn translate_strokes(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -171,6 +172,9 @@ impl StrokeStore {
         });
     }
 
+    /// Translate the stroke renderin images
+    ///
+    /// Strokes then need to update their rendering
     pub fn translate_strokes_images(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -191,7 +195,8 @@ impl StrokeStore {
     }
 
     /// Rotates the stroke with angle (rad) around the center.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn rotate_strokes(&mut self, keys: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -207,6 +212,9 @@ impl StrokeStore {
         });
     }
 
+    /// Rotates the stroke rendering images
+    ///
+    /// Strokes then need to update their rendering
     pub fn rotate_strokes_images(
         &mut self,
         keys: &[StrokeKey],
@@ -234,7 +242,8 @@ impl StrokeStore {
     }
 
     /// Scales the strokes with the factor.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -250,6 +259,9 @@ impl StrokeStore {
         });
     }
 
+    /// Scales the stroke rendering images
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes_images(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -272,7 +284,8 @@ impl StrokeStore {
     }
 
     /// Scales the strokes with a pivot as the scaling origin
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes_with_pivot(
         &mut self,
         keys: &[StrokeKey],
@@ -284,6 +297,9 @@ impl StrokeStore {
         self.translate_strokes(keys, pivot);
     }
 
+    /// Scales the stroke rendering images with a pivot
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes_images_with_pivot(
         &mut self,
         strokes: &[StrokeKey],
@@ -296,7 +312,8 @@ impl StrokeStore {
     }
 
     /// Resizes the strokes to new bounds.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn resize_strokes(&mut self, keys: &[StrokeKey], new_bounds: Aabb) {
         let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
@@ -332,6 +349,9 @@ impl StrokeStore {
         });
     }
 
+    /// Resizes the strokes rendering images to new bounds.
+    ///
+    /// Strokes then need to update their rendering
     pub fn resize_strokes_images(&mut self, keys: &[StrokeKey], new_bounds: Aabb) {
         let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,

@@ -190,7 +190,8 @@ impl StrokeStore {
         // and can't display anything until the asynchronous rendering is finished
         // self.reload_render_components_slotmap();
 
-        self.set_rendering_dirty_all_keys();
+        let all_strokes = self.stroke_keys_unordered();
+        self.set_rendering_dirty_for_strokes(&all_strokes);
     }
 
     /// records the current state and saves it in the history

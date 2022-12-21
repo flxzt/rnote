@@ -149,16 +149,16 @@ impl PenBehaviour for Selector {
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                        let all_keys = engine_view.store.keys_sorted_chrono();
+                        let all_strokes = engine_view.store.keys_sorted_chrono();
 
                         if let Some(new_selection_bounds) =
-                            engine_view.store.bounds_for_strokes(&all_keys)
+                            engine_view.store.bounds_for_strokes(&all_strokes)
                         {
-                            engine_view.store.set_selected_keys(&all_keys, true);
+                            engine_view.store.set_selected_keys(&all_strokes, true);
 
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
-                                selection: all_keys,
+                                selection: all_strokes,
                                 selection_bounds: new_selection_bounds,
                             };
 
@@ -305,16 +305,16 @@ impl PenBehaviour for Selector {
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                        let all_keys = engine_view.store.keys_sorted_chrono();
+                        let all_strokes = engine_view.store.keys_sorted_chrono();
 
                         if let Some(new_selection_bounds) =
-                            engine_view.store.bounds_for_strokes(&all_keys)
+                            engine_view.store.bounds_for_strokes(&all_strokes)
                         {
-                            engine_view.store.set_selected_keys(&all_keys, true);
+                            engine_view.store.set_selected_keys(&all_strokes, true);
 
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
-                                selection: all_keys,
+                                selection: all_strokes,
                                 selection_bounds: new_selection_bounds,
                             };
 
@@ -632,16 +632,16 @@ impl PenBehaviour for Selector {
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                        let all_keys = engine_view.store.keys_sorted_chrono();
+                        let all_strokes = engine_view.store.keys_sorted_chrono();
 
                         if let Some(new_selection_bounds) =
-                            engine_view.store.bounds_for_strokes(&all_keys)
+                            engine_view.store.bounds_for_strokes(&all_strokes)
                         {
-                            engine_view.store.set_selected_keys(&all_keys, true);
+                            engine_view.store.set_selected_keys(&all_strokes, true);
 
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
-                                selection: all_keys,
+                                selection: all_strokes,
                                 selection_bounds: new_selection_bounds,
                             };
 

@@ -142,7 +142,18 @@ impl RnoteEngine {
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(self.pen_sounds, data_dir);
 
-        widget_flags.merge(self.penholder.handle_changed_pen_style());
+        // Reinstall the pen
+        widget_flags.merge(
+            self.penholder
+                .reinstall_pen_current_style(&mut EngineViewMut {
+                    tasks_tx: self.tasks_tx.clone(),
+                    pens_config: &mut self.pens_config,
+                    doc: &mut self.document,
+                    store: &mut self.store,
+                    camera: &mut self.camera,
+                    audioplayer: &mut self.audioplayer,
+                }),
+        );
 
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;

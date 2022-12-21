@@ -104,8 +104,6 @@ impl PenHolder {
             self.pen_mode_state.set_style(new_style);
 
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
-
-            widget_flags.merge(self.handle_changed_pen_style());
         }
 
         widget_flags
@@ -129,8 +127,6 @@ impl PenHolder {
             self.pen_mode_state.set_style_override(new_style_override);
 
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
-
-            widget_flags.merge(self.handle_changed_pen_style());
         }
 
         widget_flags
@@ -148,8 +144,6 @@ impl PenHolder {
             self.pen_mode_state.set_pen_mode(new_pen_mode);
 
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
-
-            widget_flags.merge(self.handle_changed_pen_style());
         }
 
         widget_flags
@@ -165,6 +159,7 @@ impl PenHolder {
             new_pen_for_style(self.current_style_w_override(), engine_view);
         self.current_pen = new_pen;
         widget_flags.merge(self.current_pen.update_state(engine_view));
+        widget_flags.merge(self.handle_changed_pen_style());
 
         widget_flags
     }
@@ -247,7 +242,7 @@ impl PenHolder {
         widget_flags
     }
 
-    pub fn handle_changed_pen_style(&mut self) -> WidgetFlags {
+    fn handle_changed_pen_style(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         match self.pen_mode_state.current_style_w_override() {

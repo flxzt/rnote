@@ -74,13 +74,11 @@ impl PenBehaviour for Eraser {
                             engine_view.camera.viewport(),
                         );
 
-                        if let Err(e) = engine_view.store.regenerate_rendering_for_strokes(
+                        engine_view.store.regenerate_rendering_for_strokes(
                             &new_strokes,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err: {e:?}");
-                        }
+                        );
                     }
                 }
 
@@ -115,13 +113,11 @@ impl PenBehaviour for Eraser {
                             engine_view.camera.viewport(),
                         );
 
-                        if let Err(e) = engine_view.store.regenerate_rendering_for_strokes(
+                        engine_view.store.regenerate_rendering_for_strokes(
                             &new_strokes,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err: {e:?}");
-                        }
+                        );
                     }
                 }
 
@@ -146,13 +142,11 @@ impl PenBehaviour for Eraser {
                             engine_view.camera.viewport(),
                         );
 
-                        if let Err(e) = engine_view.store.regenerate_rendering_for_strokes(
+                        engine_view.store.regenerate_rendering_for_strokes(
                             &new_strokes,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err: {e:?}");
-                        }
+                        );
                     }
                 }
 

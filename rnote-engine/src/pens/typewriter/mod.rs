@@ -716,13 +716,11 @@ impl Typewriter {
                     .store
                     .insert_stroke(Stroke::TextStroke(textstroke), None);
 
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err: {e:?}");
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key,
@@ -755,13 +753,11 @@ impl Typewriter {
                     .store
                     .insert_stroke(Stroke::TextStroke(textstroke), None);
 
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err: {e:?}");
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key,
@@ -867,13 +863,11 @@ impl Typewriter {
                 modify_func(&mut textstroke.text_style);
 
                 engine_view.store.update_geometry_for_stroke(*stroke_key);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err: {e:?}");
-                }
+                );
 
                 widget_flags.redraw = true;
                 widget_flags.indicate_changed_store = true;
@@ -898,13 +892,11 @@ impl Typewriter {
                 textstroke.remove_attrs_for_range(selection_range);
 
                 engine_view.store.update_geometry_for_stroke(stroke_key);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err: {e:?}");
-                }
+                );
 
                 widget_flags.redraw = true;
                 widget_flags.indicate_changed_store = true;
@@ -936,13 +928,11 @@ impl Typewriter {
                     });
 
                 engine_view.store.update_geometry_for_stroke(stroke_key);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err: {e:?}");
-                }
+                );
 
                 widget_flags.redraw = true;
                 widget_flags.indicate_changed_store = true;

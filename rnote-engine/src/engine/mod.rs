@@ -555,18 +555,12 @@ impl RnoteEngine {
 
         match task {
             EngineTask::UpdateStrokeWithImages { key, images } => {
-                if let Err(e) = self.store.replace_rendering_with_images(key, images) {
-                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err: {e:?}");
-                }
+                self.store.replace_rendering_with_images(key, images);
 
                 widget_flags.redraw = true;
             }
             EngineTask::AppendImagesToStroke { key, images } => {
-                if let Err(e) = self.store.append_rendering_images(key, images) {
-                    log::error!(
-                        "append_rendering_images() in process_received_task() failed with Err: {e:?}"
-                    );
-                }
+                self.store.append_rendering_images(key, images);
 
                 widget_flags.redraw = true;
             }

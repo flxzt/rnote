@@ -103,13 +103,11 @@ impl PenBehaviour for Brush {
                             }
                         };
 
-                    if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                    engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
-                    ) {
-                        log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err: {e:?}");
-                    }
+                    );
 
                     self.state = BrushState::Drawing {
                         path_builder,
@@ -179,15 +177,13 @@ impl PenBehaviour for Brush {
                                 widget_flags.indicate_changed_store = true;
                             }
 
-                            if let Err(e) = engine_view.store.append_rendering_last_segments(
+                            engine_view.store.append_rendering_last_segments(
                                 engine_view.tasks_tx.clone(),
                                 *current_stroke_key,
                                 n_segments,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
-                            ) {
-                                log::error!("append_rendering_last_segments() for penevent down in brush failed with Err: {e:?}");
-                            }
+                            );
                         }
 
                         widget_flags.redraw = true;
@@ -206,15 +202,13 @@ impl PenBehaviour for Brush {
                             }
 
                             // First we draw the last segments immediately,
-                            if let Err(e) = engine_view.store.append_rendering_last_segments(
+                            engine_view.store.append_rendering_last_segments(
                                 engine_view.tasks_tx.clone(),
                                 *current_stroke_key,
                                 n_segments,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
-                            ) {
-                                log::error!("append_rendering_last_segments() for penevent down in brush failed with Err: {e:?}");
-                            }
+                            );
                         }
 
                         // but then regenerate the entire stroke rendering because it gets rid of some artifacts

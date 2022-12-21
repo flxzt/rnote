@@ -223,13 +223,11 @@ impl Typewriter {
                         .store
                         .translate_strokes_images(&[*stroke_key], offset);
 
-                    if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                    engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
-                    ) {
-                        log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err: {e:?}");
-                    }
+                    );
 
                     *current_pos = element.pos;
 
@@ -259,13 +257,11 @@ impl Typewriter {
                     }
                 }
 
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() while adjusting text width textstroke failed with Err: {e:?}");
-                }
+                );
 
                 *current_pos = element.pos;
 
@@ -309,13 +305,11 @@ impl Typewriter {
                 engine_view
                     .store
                     .update_geometry_for_strokes(&[*stroke_key]);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err: {e:?}");
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key: *stroke_key,
@@ -339,13 +333,11 @@ impl Typewriter {
                 engine_view
                     .store
                     .update_geometry_for_strokes(&[*stroke_key]);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() while adjusting textstroke text width failed with Err: {e:?}");
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key: *stroke_key,
@@ -432,13 +424,11 @@ impl Typewriter {
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
 
-                        if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                        engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err: {e:?}");
-                        }
+                        );
 
                         self.state = TypewriterState::Modifying {
                             stroke_key,
@@ -785,13 +775,11 @@ impl Typewriter {
                     .store
                     .insert_stroke(Stroke::TextStroke(textstroke), None);
 
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err: {e:?}");
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key,

@@ -168,13 +168,11 @@ impl PenBehaviour for Shaper {
 
                             drawstyle.advance_seed();
 
-                            if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                            engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
-                            ) {
-                                log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err: {e:?}");
-                            }
+                            );
                         }
 
                         widget_flags.redraw = true;
@@ -210,13 +208,11 @@ impl PenBehaviour for Shaper {
 
                             drawstyle.advance_seed();
 
-                            if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                            engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
-                            ) {
-                                log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err: {e:?}");
-                            }
+                            );
                         }
 
                         self.state = ShaperState::Idle;

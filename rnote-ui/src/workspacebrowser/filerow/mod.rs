@@ -1,4 +1,4 @@
-mod action;
+mod actions;
 
 use crate::RnoteAppWindow;
 use gtk4::{
@@ -198,11 +198,11 @@ impl FileRow {
 
         self.imp()
             .action_group
-            .add_action(&action::open(self, appwindow));
-        self.imp().action_group.add_action(&action::rename(self));
-        self.imp().action_group.add_action(&action::trash(self));
+            .add_action(&actions::open(self, appwindow));
+        self.imp().action_group.add_action(&actions::rename(self));
+        self.imp().action_group.add_action(&actions::trash(self));
         self.imp()
             .action_group
-            .add_action(&action::duplicate(self, appwindow));
+            .add_action(&actions::duplicate(self, appwindow));
     }
 }

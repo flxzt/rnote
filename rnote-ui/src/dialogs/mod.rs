@@ -10,7 +10,7 @@ use gtk4::{
 
 use crate::appwindow::RnoteAppWindow;
 use crate::config;
-use crate::workspacebrowser::WorkspaceRow;
+use crate::workspacebrowser::workspacesbar::WorkspaceRow;
 use crate::{globals, IconPicker};
 
 // About Dialog
@@ -210,32 +210,38 @@ pub(crate) fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     dialog_quit_save.show();
 }
 
-pub(crate) fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
-    let edit_workspace_preview_row: WorkspaceRow =
-        builder.object("edit_workspace_preview_row").unwrap();
-    let change_workspace_name_entryrow: adw::EntryRow =
-        builder.object("change_workspace_name_entryrow").unwrap();
-    let change_workspace_color_button: ColorButton =
-        builder.object("change_workspace_color_button").unwrap();
-    let change_workspace_dir_label: Label = builder.object("change_workspace_dir_label").unwrap();
-    let change_workspace_dir_button: Button =
-        builder.object("change_workspace_dir_button").unwrap();
-    let change_workspace_icon_menubutton: MenuButton =
-        builder.object("change_workspace_icon_menubutton").unwrap();
-    let change_workspace_icon_picker: IconPicker =
-        builder.object("change_workspace_icon_picker").unwrap();
+    let dialog: Dialog = builder.object("dialog_edit_selected_workspace").unwrap();
+    let preview_row: WorkspaceRow = builder
+        .object("edit_selected_workspace_preview_row")
+        .unwrap();
+    let name_entryrow: adw::EntryRow = builder
+        .object("edit_selected_workspace_name_entryrow")
+        .unwrap();
+    let color_button: ColorButton = builder
+        .object("edit_selected_workspace_color_button")
+        .unwrap();
+    let dir_label: Label = builder.object("edit_selected_workspace_dir_label").unwrap();
+    let dir_button: Button = builder
+        .object("edit_selected_workspace_dir_button")
+        .unwrap();
+    let icon_menubutton: MenuButton = builder
+        .object("edit_selected_workspace_icon_menubutton")
+        .unwrap();
+    let icon_picker: IconPicker = builder
+        .object("edit_selected_workspace_icon_picker")
+        .unwrap();
 
-    edit_workspace_preview_row.init(appwindow);
-    dialog_edit_workspace.set_transient_for(Some(appwindow));
+    preview_row.init(appwindow);
+    dialog.set_transient_for(Some(appwindow));
 
     // Sets the icons
-    change_workspace_icon_picker.set_list(StringList::new(globals::WORKSPACELISTENTRY_ICONS_LIST));
+    icon_picker.set_list(StringList::new(globals::WORKSPACELISTENTRY_ICONS_LIST));
 
-    let filechooser_change_workspace_dir: FileChooserNative = FileChooserNative::builder()
+    let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Change workspace directory"))
         .modal(true)
         .transient_for(appwindow)
@@ -245,107 +251,97 @@ pub(crate) fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         .select_multiple(false)
         .build();
 
-    if let Some(row) = appwindow
+    if let Some(entry) = appwindow
         .workspacebrowser()
-        .current_selected_workspace_row()
+        .workspacesbar()
+        .selected_workspacelistentry()
     {
-        if let Err(e) =
-            filechooser_change_workspace_dir.set_file(&gio::File::for_path(row.entry().dir()))
-        {
+        if let Err(e) = filechooser.set_file(&gio::File::for_path(entry.dir())) {
             log::error!("set file in change workspace dialog failed with Err: {e:?}");
         }
 
         // set initial dialog UI on popup
-        edit_workspace_preview_row
-            .entry()
-            .replace_data(&row.entry());
-        change_workspace_name_entryrow.set_text(row.entry().name().as_str());
-        change_workspace_icon_menubutton.set_icon_name(row.entry().icon().as_str());
-        change_workspace_color_button.set_rgba(&row.entry().color());
-        change_workspace_dir_label.set_label(row.entry().dir().as_str());
+        preview_row.entry().replace_data(&entry);
+        name_entryrow.set_text(entry.name().as_str());
+        icon_menubutton.set_icon_name(entry.icon().as_str());
+        color_button.set_rgba(&entry.color());
+        dir_label.set_label(entry.dir().as_str());
     }
 
-    change_workspace_name_entryrow.connect_changed(
-        clone!(@weak edit_workspace_preview_row => move |entry| {
-            let text = entry.text().to_string();
-            edit_workspace_preview_row.entry().set_name(text);
-        }),
-    );
+    name_entryrow.connect_changed(clone!(@weak preview_row => move |entry| {
+        let text = entry.text().to_string();
+        preview_row.entry().set_name(text);
+    }));
 
-    change_workspace_icon_picker.connect_local(
+    icon_picker.connect_local(
         "icon-picked",
         false,
-        clone!(@weak change_workspace_icon_menubutton, @weak edit_workspace_preview_row, @weak appwindow =>@default-return None, move |args| {
+        clone!(@weak icon_menubutton, @weak preview_row, @weak appwindow =>@default-return None, move |args| {
             let picked = args[1].get::<String>().unwrap();
 
-            change_workspace_icon_menubutton.set_icon_name(&picked);
-            edit_workspace_preview_row.entry().set_icon(picked);
+            icon_menubutton.set_icon_name(&picked);
+            preview_row.entry().set_icon(picked);
             None
         }),
     );
 
-    change_workspace_color_button.connect_color_set(
-        clone!(@weak edit_workspace_preview_row => move |button| {
-            let color = button.rgba();
-            edit_workspace_preview_row.entry().set_color(color);
-        }),
-    );
+    color_button.connect_color_set(clone!(@weak preview_row => move |button| {
+        let color = button.rgba();
+        preview_row.entry().set_color(color);
+    }));
 
-    filechooser_change_workspace_dir.connect_response(clone!(
-        @weak edit_workspace_preview_row,
-        @weak change_workspace_name_entryrow,
-        @weak change_workspace_dir_label,
-        @weak dialog_edit_workspace,
+    filechooser.connect_response(clone!(
+        @weak preview_row,
+        @weak name_entryrow,
+        @weak dir_label,
+        @weak dialog,
         @weak appwindow => move |filechooser, responsetype| {
         match responsetype {
             ResponseType::Accept => {
                 if let Some(p) = filechooser.file().and_then(|f| f.path()) {
                     let path_string = p.to_string_lossy().to_string();
-                    change_workspace_dir_label.set_label(&path_string);
-                    edit_workspace_preview_row.entry().set_dir(path_string);
+                    dir_label.set_label(&path_string);
+                    preview_row.entry().set_dir(path_string);
 
                     // Update the entry row with the file name of the new selected directory
                     if let Some(file_name) = p.file_name().map(|n| n.to_string_lossy()) {
-                        change_workspace_name_entryrow.set_text(&file_name);
+                        name_entryrow.set_text(&file_name);
                     }
                 } else {
-                    change_workspace_dir_label.set_label(&gettext("- no directory selected -"));
+                    dir_label.set_label(&gettext("- no directory selected -"));
                 }
             }
             _ => {}
         }
 
         filechooser.hide();
-        dialog_edit_workspace.show();
+        dialog.show();
     }));
 
-    dialog_edit_workspace.connect_response(
-        clone!(@weak edit_workspace_preview_row, @weak appwindow => move |dialog_modify_workspace, responsetype| {
+    dialog.connect_response(
+        clone!(@weak preview_row, @weak appwindow => move |dialog, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
-                    // update the actual row
-                    if let Some(current_row) = appwindow.workspacebrowser().current_selected_workspace_row() {
-                        current_row.entry().replace_data(&edit_workspace_preview_row.entry());
-
-                        // refreshing the files list
-                        appwindow.workspacebrowser().refresh();
-                        // And save the state
-                        appwindow.workspacebrowser().save_workspaces_to_settings(&appwindow.app_settings());
-                    }
+                    // update the actual selected entry
+                    appwindow.workspacebrowser().workspacesbar().replace_selected_workspacelistentry(preview_row.entry());
+                    // refreshing the files list
+                    appwindow.workspacebrowser().refresh_dirlist_selected_workspace();
+                    // And save the state
+                    appwindow.workspacebrowser().workspacesbar().save_to_settings(&appwindow.app_settings());
                 }
                 _ => {}
             }
 
-            dialog_modify_workspace.close();
+            dialog.close();
         }));
 
-    change_workspace_dir_button.connect_clicked(
-        clone!(@weak dialog_edit_workspace, @weak filechooser_change_workspace_dir, @weak appwindow => move |_| {
-            dialog_edit_workspace.hide();
-            filechooser_change_workspace_dir.show();
+    dir_button.connect_clicked(
+        clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
+            dialog.hide();
+            filechooser.show();
         }),
     );
 
-    dialog_edit_workspace.show();
-    *appwindow.filechoosernative().borrow_mut() = Some(filechooser_change_workspace_dir);
+    dialog.show();
+    *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }

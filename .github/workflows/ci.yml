@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y meson gcc gcc-c++ clang make automake cmake kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+          sudo dnf install -y gcc gcc-c++ clang make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
       - name: Cache
         uses: actions/cache@v3
         with:
@@ -46,14 +46,11 @@ jobs:
         run: meson compile app-cargo-check -C _mesonbuild
       - name: Check CLI
         run: meson compile cli-cargo-check -C _mesonbuild
-      - name: Run clippy
-        uses: actions-rs/clippy-check@v1
+      - name: Run clippy for app
+        run: meson compile app-cargo-clippy -C _mesonbuild
         continue-on-error: true
-        env:
-          CARGO_HOME: _mesonbuild/cargo-home/ 
-          CARGO_TARGET_DIR: _mesonbuild/target/
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+      - name: Run clippy for CLI
+        run: meson compile cli-cargo-clippy -C _mesonbuild
+        continue-on-error: true
       - name: Run tests
         run: meson test -v -C _mesonbuild

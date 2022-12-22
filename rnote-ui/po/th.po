@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-21 14:27+0100\n"
+"POT-Creation-Date: 2022-12-22 12:46+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -370,7 +370,7 @@ msgstr "ทำซ้ำ"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
-#: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/src/dialogs/mod.rs:248 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:740
 msgid "Select"
 msgstr "เลือก"
@@ -391,7 +391,7 @@ msgstr "การทำสิ่งนี้ จะล้างเอกสา�
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
-#: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/src/dialogs/mod.rs:249 rnote-ui/src/dialogs/import.rs:83
 #: rnote-ui/src/dialogs/import.rs:145 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:741 rnote-ui/src/dialogs/export.rs:818
@@ -404,7 +404,7 @@ msgstr "ยกเลิก"
 msgid "Clear"
 msgstr "ล้าง"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:727
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:729
 msgid "New Document"
 msgstr "เอกสารใหม่"
 
@@ -437,7 +437,6 @@ msgid ""
 msgstr "การเปลี่ยนแปลงที่ยังไม่ได้บันทึกทั้งหมดจะหายไป คุณต้องการบันทึกเอกสารนี้หรือไม่?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:173
 msgid "Edit workspace"
 msgstr "แก้ไขพื้นที่ทำงาน"
 
@@ -476,12 +475,12 @@ msgid "Change the workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงานนี้"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- ไม่มีไดเรกทอรีที่เลือกไว้ -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
+#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:245
 msgid "Change workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
@@ -755,7 +754,7 @@ msgid "Open"
 msgstr "เปิด"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "ตั้งชื่อใหม่"
 
@@ -772,7 +771,7 @@ msgstr "สำเนาสิ่งที่เลือก"
 msgid "New document"
 msgstr "เอกสารใหม่"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:729
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:731
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
@@ -1174,18 +1173,38 @@ msgstr "กลับไปไดเร็กทอรีก่อนหน้า
 msgid "Workspace directory actions"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:154
-msgid "Add workspace"
-msgstr "เพิ่มพื้นที่ทำงาน"
-
-#: rnote-ui/data/ui/workspacebrowser.ui:163
-msgid "Remove workspace"
-msgstr "ลบพื้นที่ทำงาน"
-
-#: rnote-ui/data/ui/workspacebrowser.ui:190
+#: rnote-ui/data/ui/workspacebrowser.ui:121
 #, fuzzy
 msgid "Create new folder"
 msgstr "ไดเรกทอรี"
+
+#: rnote-ui/data/ui/workspacesbar.ui:54
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Move selected workspace up"
+msgstr "ลบพื้นที่ทำงาน"
+
+#: rnote-ui/data/ui/workspacesbar.ui:63
+#, fuzzy
+#| msgid "Change the workspace icon"
+msgid "Move selected workspace down"
+msgstr "เปลี่ยนไอค่อนของพื้นที่ทำงานนี้"
+
+#: rnote-ui/data/ui/workspacesbar.ui:72
+msgid "Add workspace"
+msgstr "เพิ่มพื้นที่ทำงาน"
+
+#: rnote-ui/data/ui/workspacesbar.ui:81
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Remove selected workspace"
+msgstr "ลบพื้นที่ทำงาน"
+
+#: rnote-ui/data/ui/workspacesbar.ui:91
+#, fuzzy
+#| msgid "Edit workspace"
+msgid "Edit selected workspace"
+msgstr "แก้ไขพื้นที่ทำงาน"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1578,7 +1597,7 @@ msgstr "ผู้แปล: 'Archer Allstars https://dev.to/archerallstars'"
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:299
-#: rnote-ui/src/appwindow/appwindowactions.rs:624
+#: rnote-ui/src/appwindow/appwindowactions.rs:617
 msgid "Saving document failed."
 msgstr "การบันทึกเอกสารล้มเหลว"
 
@@ -1640,11 +1659,11 @@ msgstr "วันที่แก้ไข:"
 msgid "Pages:"
 msgstr "จำนวนหน้า:"
 
-#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:141
+#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:143
 msgid "Opening PDF file failed."
 msgstr "การเปิดไฟล์ PDF ล้มเหลว"
 
-#: rnote-ui/src/dialogs/import.rs:377 rnote-ui/src/appwindow/imexport.rs:123
+#: rnote-ui/src/dialogs/import.rs:377 rnote-ui/src/appwindow/imexport.rs:125
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
@@ -1742,35 +1761,35 @@ msgstr "ส่งออกการตั้งค่าเอนจินล้
 msgid "Exported engine config successfully."
 msgstr "ส่งออกการตั้งค่าเอนจินสำเร็จแล้ว"
 
-#: rnote-ui/src/appwindow/imexport.rs:69
+#: rnote-ui/src/appwindow/imexport.rs:71
 msgid "Opening .rnote file failed."
 msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:87
+#: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening vector image file failed."
 msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:105
+#: rnote-ui/src/appwindow/imexport.rs:107
 msgid "Opening bitmap image file failed."
 msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
 
-#: rnote-ui/src/appwindow/imexport.rs:154
+#: rnote-ui/src/appwindow/imexport.rs:156
 msgid "Error: Tried opening folder as file"
 msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
 
-#: rnote-ui/src/appwindow/imexport.rs:159
+#: rnote-ui/src/appwindow/imexport.rs:161
 msgid "Failed to open file: Unsupported file type."
 msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:740
+#: rnote-ui/src/appwindow/appwindowactions.rs:733
 msgid "Printed document successfully"
 msgstr "พิมพ์เอกสารสำเร็จแล้ว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:749
+#: rnote-ui/src/appwindow/appwindowactions.rs:742
 msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:775
+#: rnote-ui/src/appwindow/appwindowactions.rs:768
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
@@ -1792,13 +1811,13 @@ msgstr ""
 msgid "Opened file was moved or deleted on disk."
 msgstr ""
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 #, fuzzy
 #| msgid "File name:"
 msgid "Folder name"
 msgstr "ชื่อไฟล์:"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-21 14:27+0100\n"
+"POT-Creation-Date: 2022-12-22 12:46+0100\n"
 "PO-Revision-Date: 2022-12-21 22:56+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -302,7 +302,7 @@ msgstr "Rehacer"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
-#: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/src/dialogs/mod.rs:248 rnote-ui/src/dialogs/export.rs:220
 #: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:740
 msgid "Select"
 msgstr "Seleccionar"
@@ -323,7 +323,7 @@ msgstr "Esto limpia todo el documento. Por favor, confirme."
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
-#: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/src/dialogs/mod.rs:249 rnote-ui/src/dialogs/import.rs:83
 #: rnote-ui/src/dialogs/import.rs:145 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
 #: rnote-ui/src/dialogs/export.rs:741 rnote-ui/src/dialogs/export.rs:818
@@ -336,7 +336,7 @@ msgstr "Cancelar"
 msgid "Clear"
 msgstr "Limpiar"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:727
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:729
 msgid "New Document"
 msgstr "Documento nuevo"
 
@@ -370,7 +370,6 @@ msgstr ""
 "Cualquier cambio no guardado se perderá. ¿Desea guardar el documento actual?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:173
 msgid "Edit workspace"
 msgstr "Editar área de trabajo"
 
@@ -409,12 +408,12 @@ msgid "Change the workspace directory"
 msgstr "Cambiar el directorio del área de trabajo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- ningún directorio seleccionado -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
+#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:245
 msgid "Change workspace directory"
 msgstr "Cambiar el directorio del área de trabajo"
 
@@ -661,7 +660,7 @@ msgid "Open"
 msgstr "Abrir"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "Renombrar"
 
@@ -677,7 +676,7 @@ msgstr "Duplicar"
 msgid "New document"
 msgstr "Documento nuevo"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:729
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:731
 msgid "Draft"
 msgstr "Borrador"
 
@@ -1073,17 +1072,37 @@ msgstr "Mover directorio hacia arriba"
 msgid "Workspace directory actions"
 msgstr "Acciones del directorio del espacio de trabajo"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:154
+#: rnote-ui/data/ui/workspacebrowser.ui:121
+msgid "Create new folder"
+msgstr "Crear nueva carpeta"
+
+#: rnote-ui/data/ui/workspacesbar.ui:54
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Move selected workspace up"
+msgstr "Quitar área de trabajo"
+
+#: rnote-ui/data/ui/workspacesbar.ui:63
+#, fuzzy
+#| msgid "Change the workspace icon"
+msgid "Move selected workspace down"
+msgstr "Cambiar el icono del área de trabajo"
+
+#: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Añadir área de trabajo"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:163
-msgid "Remove workspace"
+#: rnote-ui/data/ui/workspacesbar.ui:81
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Remove selected workspace"
 msgstr "Quitar área de trabajo"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:190
-msgid "Create new folder"
-msgstr "Crear nueva carpeta"
+#: rnote-ui/data/ui/workspacesbar.ui:91
+#, fuzzy
+#| msgid "Edit workspace"
+msgid "Edit selected workspace"
+msgstr "Editar área de trabajo"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1469,7 +1488,7 @@ msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
 #: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:68
 #: rnote-ui/src/appwindow/mod.rs:299
-#: rnote-ui/src/appwindow/appwindowactions.rs:624
+#: rnote-ui/src/appwindow/appwindowactions.rs:617
 msgid "Saving document failed."
 msgstr "No se ha podido guardar el documento."
 
@@ -1529,11 +1548,11 @@ msgstr "Fecha de modificación:"
 msgid "Pages:"
 msgstr "Páginas:"
 
-#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:141
+#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:143
 msgid "Opening PDF file failed."
 msgstr "Error al abrir el archivo PDF."
 
-#: rnote-ui/src/dialogs/import.rs:377 rnote-ui/src/appwindow/imexport.rs:123
+#: rnote-ui/src/dialogs/import.rs:377 rnote-ui/src/appwindow/imexport.rs:125
 msgid "Opening Xournal++ file failed."
 msgstr "Error al abrir el archivo Xournal++."
 
@@ -1614,35 +1633,35 @@ msgstr "Error al exportar la configuración del motor."
 msgid "Exported engine config successfully."
 msgstr "Exportada la configuración del motor con éxito."
 
-#: rnote-ui/src/appwindow/imexport.rs:69
+#: rnote-ui/src/appwindow/imexport.rs:71
 msgid "Opening .rnote file failed."
 msgstr "Error al abrir el archivo .rnote."
 
-#: rnote-ui/src/appwindow/imexport.rs:87
+#: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening vector image file failed."
 msgstr "Error al abrir el archivo de imagen vectorial."
 
-#: rnote-ui/src/appwindow/imexport.rs:105
+#: rnote-ui/src/appwindow/imexport.rs:107
 msgid "Opening bitmap image file failed."
 msgstr "Error al abrir el archivo de imagen de mapa de bits."
 
-#: rnote-ui/src/appwindow/imexport.rs:154
+#: rnote-ui/src/appwindow/imexport.rs:156
 msgid "Error: Tried opening folder as file"
 msgstr "Error: Intento de abrir la carpeta como archivo"
 
-#: rnote-ui/src/appwindow/imexport.rs:159
+#: rnote-ui/src/appwindow/imexport.rs:161
 msgid "Failed to open file: Unsupported file type."
 msgstr "No se pudo abrir el archivo: Tipo de archivo no admitido."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:740
+#: rnote-ui/src/appwindow/appwindowactions.rs:733
 msgid "Printed document successfully"
 msgstr "Documento impreso con éxito"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:749
+#: rnote-ui/src/appwindow/appwindowactions.rs:742
 msgid "Printing document failed"
 msgstr "Fallo en la impresión del documento"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:775
+#: rnote-ui/src/appwindow/appwindowactions.rs:768
 msgid "Export selection failed, nothing selected."
 msgstr "La selección de la exportación ha fallado, no se ha seleccionado nada."
 
@@ -1662,11 +1681,11 @@ msgstr "Se cambió el nombre del archivo abierto en el disco."
 msgid "Opened file was moved or deleted on disk."
 msgstr "El archivo abierto se ha movido o borrado del disco."
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 msgid "Folder name"
 msgstr "Nombre de la carpeta"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Carpeta nueva"
 

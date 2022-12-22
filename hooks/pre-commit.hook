@@ -17,8 +17,36 @@ install_rustfmt() {
     fi
 }
 
+CONFIG_FILE=./rnote-ui/src/config.rs
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Unable to check the project's code style, because config.rs does not exist. Please build the project in order to generate it."
+
+    if [ ! -t 1 ]; then
+        # No input is possible
+        echo "Performing commit."
+        exit 0
+    fi
+
+    echo ""
+    echo "y: Perform the commit"
+    echo "N: Abort the commit"
+
+    echo ""
+    while true
+    do
+        printf "%s" "Perform commit anyway? [y/N]: "; read yn < /dev/tty
+        case $yn in
+            [Yy]* ) echo "Performing commit."; exit 0;;
+            [Nn]* | "" ) echo "Aborting commit."; exit 1 >/dev/null 2>&1;;
+            * ) echo "Invalid input";;
+        esac
+    done
+
+fi
+
 if ! which cargo >/dev/null 2>&1 || ! cargo fmt --help >/dev/null 2>&1; then
-    echo "Unable to check the project’s code style, because rustfmt could not be run."
+    echo "Unable to check the project's code style, because rustfmt could not be run."
 
     if [ ! -t 1 ]; then
         # No input is possible

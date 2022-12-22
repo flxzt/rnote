@@ -99,7 +99,7 @@ impl PenBehaviour for Selector {
             self.state = SelectorState::ModifySelection {
                 modify_state: ModifyState::default(),
                 selection,
-                selection_bounds,
+                selection_bounds: selection_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN),
             };
 
             widget_flags.redraw = true;
@@ -151,7 +151,7 @@ impl PenBehaviour for Selector {
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
                         let all_strokes = engine_view.store.keys_sorted_chrono();
 
-                        if let Some(new_selection_bounds) =
+                        if let Some(selection_bounds) =
                             engine_view.store.bounds_for_strokes(&all_strokes)
                         {
                             engine_view.store.set_selected_keys(&all_strokes, true);
@@ -159,7 +159,8 @@ impl PenBehaviour for Selector {
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
                                 selection: all_strokes,
-                                selection_bounds: new_selection_bounds,
+                                selection_bounds: selection_bounds
+                                    .loosened(Self::SELECTION_BOUNDS_MARGIN),
                             };
 
                             engine_view
@@ -279,7 +280,8 @@ impl PenBehaviour for Selector {
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
                             selection,
-                            selection_bounds,
+                            selection_bounds: selection_bounds
+                                .loosened(Self::SELECTION_BOUNDS_MARGIN),
                         };
                         pen_progress = PenProgress::InProgress;
                     }
@@ -307,7 +309,7 @@ impl PenBehaviour for Selector {
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
                         let all_strokes = engine_view.store.keys_sorted_chrono();
 
-                        if let Some(new_selection_bounds) =
+                        if let Some(selection_bounds) =
                             engine_view.store.bounds_for_strokes(&all_strokes)
                         {
                             engine_view.store.set_selected_keys(&all_strokes, true);
@@ -315,7 +317,8 @@ impl PenBehaviour for Selector {
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
                                 selection: all_strokes,
-                                selection_bounds: new_selection_bounds,
+                                selection_bounds: selection_bounds
+                                    .loosened(Self::SELECTION_BOUNDS_MARGIN),
                             };
 
                             engine_view
@@ -604,8 +607,10 @@ impl PenBehaviour for Selector {
                     engine_view.camera.image_scale(),
                 );
 
-                if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
-                    *selection_bounds = new_bounds
+                if let Some(new_selection_bounds) = engine_view.store.bounds_for_strokes(selection)
+                {
+                    *selection_bounds =
+                        new_selection_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN);
                 }
                 *modify_state = ModifyState::Up;
 
@@ -634,7 +639,7 @@ impl PenBehaviour for Selector {
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
                         let all_strokes = engine_view.store.keys_sorted_chrono();
 
-                        if let Some(new_selection_bounds) =
+                        if let Some(selection_bounds) =
                             engine_view.store.bounds_for_strokes(&all_strokes)
                         {
                             engine_view.store.set_selected_keys(&all_strokes, true);
@@ -642,7 +647,8 @@ impl PenBehaviour for Selector {
                             self.state = SelectorState::ModifySelection {
                                 modify_state: ModifyState::default(),
                                 selection: all_strokes,
-                                selection_bounds: new_selection_bounds,
+                                selection_bounds: selection_bounds
+                                    .loosened(Self::SELECTION_BOUNDS_MARGIN),
                             };
 
                             engine_view
@@ -924,6 +930,9 @@ impl Selector {
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
     const SINGLE_SELECTING_CIRCLE_RADIUS: f64 = 4.0;
+
+    /// The margins for the selection
+    const SELECTION_BOUNDS_MARGIN: f64 = 12.0;
 
     /// resize node size, in surface coords
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];

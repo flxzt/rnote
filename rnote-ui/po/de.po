@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:46+0100\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
 "PO-Revision-Date: 2022-12-22 11:57+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -1036,9 +1036,11 @@ msgid "Drawing"
 msgstr "Zeichnen"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
-msgstr "Kopiere in die Zwischenablage"
+msgid "Copy to clipboard"
+msgstr "_Kopiere in die Zwischenablage"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
 #, fuzzy
@@ -1681,6 +1683,10 @@ msgstr "Ordnername"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Neuer Ordner"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "Kopiere in die Zwischenablage"
 
 #~ msgid "_Clear document"
 #~ msgstr "Dokument _leeren"

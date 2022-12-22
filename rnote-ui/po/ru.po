@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:46+0100\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -1063,8 +1063,11 @@ msgid "Drawing"
 msgstr "Рисование"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
+msgid "Copy to clipboard"
 msgstr "Скопировать в буфер обмена"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
@@ -1722,6 +1725,10 @@ msgstr "Имя папки:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Новая папка"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "Скопировать в буфер обмена"
 
 #~ msgid "_Clear document"
 #~ msgstr "_Очистить документ"

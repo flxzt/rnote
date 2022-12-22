@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:46+0100\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Nguyen Phi Truong <Nguyenairport56@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -1046,9 +1046,11 @@ msgid "Drawing"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgid "_Paste clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
-msgstr ""
+msgid "Copy to clipboard"
+msgstr "Dán từ bộ đệm"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
 #, fuzzy

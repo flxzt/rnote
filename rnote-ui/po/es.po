@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:46+0100\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
 "PO-Revision-Date: 2022-12-21 22:56+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -1040,9 +1040,11 @@ msgid "Drawing"
 msgstr "Dibujo"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
-msgstr "Copiar al portapapeles"
+msgid "Copy to clipboard"
+msgstr "_Copiar al portapapeles"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
 msgctxt "shortcut window"
@@ -1688,6 +1690,10 @@ msgstr "Nombre de la carpeta"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Carpeta nueva"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "Copiar al portapapeles"
 
 #~ msgid "_Clear document"
 #~ msgstr "_Limpiar documento"

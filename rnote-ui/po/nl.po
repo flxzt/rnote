@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:46+0100\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
 "PO-Revision-Date: 2022-12-22 11:57+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1038,9 +1038,11 @@ msgid "Drawing"
 msgstr "Teken"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
-msgstr "Kopiëren naar klembord"
+msgid "Copy to clipboard"
+msgstr "Kopiëren naar _klembord"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
 msgctxt "shortcut window"
@@ -1672,6 +1674,10 @@ msgstr "Bestandsnaam"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nieuwe map"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "Kopiëren naar klembord"
 
 #~ msgid "_Clear document"
 #~ msgstr "Do_cument wissen"

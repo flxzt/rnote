@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:46+0100\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -1145,7 +1145,7 @@ msgstr "ציור"
 #: rnote-ui/data/ui/shortcuts.ui:177
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
+msgid "Copy to clipboard"
 msgstr "העתקת הבחירה ללוח הגזירים"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
@@ -1837,6 +1837,11 @@ msgstr "שינוי שם"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "העתקת הבחירה ללוח הגזירים"
 
 #, fuzzy
 #~ msgid "_Clear document"

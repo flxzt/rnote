@@ -66,6 +66,19 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.10" date="2022-12-06">
+      <description>
+        <li>feature: added a grid builder</li>
+        <li>feature: ctrl + pointer drag for panning the canvas, ctrl+shift + pointer drag for zooming</li>
+        <li>improvement: added the ability to reorder workspaces</li>
+        <li>improvement: rough style now supports transparent colors</li>
+        <li>improvement: full asynchronicity for all import and exports</li>
+        <li>fix: rough style bezier curves drawing</li>
+        <li>fix: added missing association for `.xopp` files</li>
+        <li>fix: ability to select folders in export-doc-pages filechooser</li>
+        <li>fix: text input with IME's ( thanks @Mr-Spade !)</li>
+      </description>
+    </release>
     <release version="0.5.9" date="2022-12-06">
       <description>
         <p>this release changes:</p>

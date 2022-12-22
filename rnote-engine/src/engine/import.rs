@@ -282,6 +282,8 @@ impl RnoteEngine {
 
         self.store.set_selected_keys(&inserted, true);
 
+        widget_flags.merge(self.update_state_current_pen());
+
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
         }

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:46+0100\n"
-"PO-Revision-Date: 2022-12-21 22:56+0000\n"
+"PO-Revision-Date: 2022-12-22 11:57+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1075,32 +1075,24 @@ msgid "Create new folder"
 msgstr "Map aanmaken"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "Werkblad verwijderen"
+msgstr "Gekozen werkblad omhoog verplaatsen"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "Wijzig het werkbladpictogram"
+msgstr "Gekozen werkblad omlaag verplaatsen"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Werkblad toevoegen"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "Werkblad verwijderen"
+msgstr "Geko;zen werkblad verwijderen"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "Werkblad bewerken"
+msgstr "Gekozen werkblad bewerken"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"

@@ -1,7 +1,7 @@
 use crate::RnoteAppWindow;
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider,
-    GestureClick, GestureLongPress, Image, Label, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider, Image,
+    Label, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
@@ -211,29 +211,7 @@ impl WorkspaceRow {
         self.set_property("entry", entry.to_value());
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        let rightclick_gesture = GestureClick::builder()
-            .name("rightclick_gesture")
-            .button(gdk::BUTTON_SECONDARY)
-            .build();
-        self.add_controller(&rightclick_gesture);
-        rightclick_gesture.connect_pressed(
-            clone!(@weak appwindow => move |_rightclick_gesture, _n_press, _x, _y| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow.workspacebrowser().workspacesbar().action_group(), "edit-selected-workspace", None);
-            }),
-        );
-
-        let longpress_gesture = GestureLongPress::builder()
-            .name("longpress_gesture")
-            .touch_only(true)
-            .build();
-        self.add_controller(&longpress_gesture);
-        longpress_gesture.group_with(&rightclick_gesture);
-
-        longpress_gesture.connect_pressed(
-            clone!(@weak appwindow => move |_rightclick_gesture, _x, _y| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow.workspacebrowser().workspacesbar().action_group(), "edit-selected-workspace", None);
-            }),
-        );
+    pub(crate) fn init(&self, _appwindow: &RnoteAppWindow) {
+        // TODO: add gestures / menu for editing the row
     }
 }

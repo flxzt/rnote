@@ -251,22 +251,23 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnoteAppWindow) {
         .select_multiple(false)
         .build();
 
-    if let Some(entry) = appwindow
+    let Some(initial_entry) = appwindow
         .workspacebrowser()
         .workspacesbar()
-        .selected_workspacelistentry()
-    {
-        if let Err(e) = filechooser.set_file(&gio::File::for_path(entry.dir())) {
-            log::error!("set file in change workspace dialog failed with Err: {e:?}");
-        }
-
-        // set initial dialog UI on popup
-        preview_row.entry().replace_data(&entry);
-        name_entryrow.set_text(entry.name().as_str());
-        icon_menubutton.set_icon_name(entry.icon().as_str());
-        color_button.set_rgba(&entry.color());
-        dir_label.set_label(entry.dir().as_str());
+        .selected_workspacelistentry() else {
+            log::warn!("tried to edit workspace dialog, but no workspace was selected");
+            return;
+        };
+    if let Err(e) = filechooser.set_file(&gio::File::for_path(initial_entry.dir())) {
+        log::error!("set file in change workspace dialog failed with Err: {e:?}");
     }
+
+    // set initial dialog UI on popup
+    preview_row.entry().replace_data(&initial_entry);
+    name_entryrow.set_text(initial_entry.name().as_str());
+    icon_menubutton.set_icon_name(initial_entry.icon().as_str());
+    color_button.set_rgba(&initial_entry.color());
+    dir_label.set_label(initial_entry.dir().as_str());
 
     name_entryrow.connect_changed(clone!(@weak preview_row => move |entry| {
         let text = entry.text().to_string();

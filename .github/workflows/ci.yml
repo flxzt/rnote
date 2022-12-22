@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y meson gcc gcc-c++ clang make automake cmake kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel desktop-file-utils
+          sudo dnf install -y meson gcc gcc-c++ clang make automake cmake kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
       - name: Cache
         uses: actions/cache@v3
         with:

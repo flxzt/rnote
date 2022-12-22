@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:46+0100\n"
-"PO-Revision-Date: 2022-12-06 11:56+0000\n"
+"PO-Revision-Date: 2022-12-22 11:57+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -65,8 +65,6 @@ msgid "A selection"
 msgstr "Eine Auswahl"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
 msgstr "_Farbschema"
 
@@ -127,24 +125,16 @@ msgid "_Import file"
 msgstr "_Importiere Datei"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
 msgstr "_Zwischenablage einfügen"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "_Copy to clipboard"
-msgstr "Kopiere in die Zwischenablage"
+msgstr "_Kopiere in die Zwischenablage"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "C_ut to clipboard"
-msgstr "Kopiere in die Zwischenablage"
+msgstr "_Ausschneiden in die Zwischenablage"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste clipboard"
@@ -241,8 +231,6 @@ msgid "Settings"
 msgstr "Einstellungen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
 msgstr "_Dokument-Layout"
 
@@ -271,10 +259,8 @@ msgid "_Pen sounds"
 msgstr "_Stiftklänge"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "Dokument leeren"
+msgstr "Dokument _leeren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_Return to origin page"

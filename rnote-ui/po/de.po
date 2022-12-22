@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-22 11:57+0000\n"
+"PO-Revision-Date: 2022-12-22 12:08+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1036,19 +1036,14 @@ msgid "Drawing"
 msgstr "Zeichnen"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
-msgstr "_Kopiere in die Zwischenablage"
+msgstr "Kopiere in die Zwischenablage"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "Kopiere in die Zwischenablage"
+msgstr "Ausschneiden in die Zwischenablage"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1078,32 +1073,24 @@ msgid "Create new folder"
 msgstr "Erstelle neuen Ordner"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "Arbeitsfläche entfernen"
+msgstr "Ausgewählte Arbeitsfläche nach oben verschieben"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "Ändere das Arbeitsflächensymbol"
+msgstr "Ausgewählte Arbeitsfläche nach unten verschieben"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Arbeitsfläche hinzufügen"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "Arbeitsfläche entfernen"
+msgstr "Ausgewählte Arbeitsfläche entfernen"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "Bearbeite Arbeitsfläche"
+msgstr "Bearbeite ausgewählte Arbeitsfläche"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"

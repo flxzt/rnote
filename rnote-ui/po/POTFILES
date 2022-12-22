@@ -17,6 +17,7 @@ rnote-ui/data/ui/settingspanel.ui
 rnote-ui/data/ui/shortcuts.ui
 rnote-ui/data/ui/unitentry.ui
 rnote-ui/data/ui/workspacebrowser.ui
+rnote-ui/data/ui/workspacesbar.ui
 rnote-ui/data/ui/workspacerow.ui
 rnote-ui/data/ui/penssidebar/brushpage.ui
 rnote-ui/data/ui/penssidebar/eraserpage.ui
@@ -34,6 +35,6 @@ rnote-ui/src/appwindow/imexport.rs
 rnote-ui/src/appwindow/appwindowactions.rs
 rnote-ui/src/canvaswrapper.rs
 rnote-ui/src/canvas/mod.rs
-rnote-ui/src/workspacebrowser/filerow/action/rename.rs
+rnote-ui/src/workspacebrowser/filerow/actions/rename.rs
 rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs
-rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs
+rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs

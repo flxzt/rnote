@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-06 14:51+0100\n"
-"PO-Revision-Date: 2022-12-10 11:17+0000\n"
-"Last-Translator: WhiredPlanck <whiredplanck@outlook.com>\n"
+"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"PO-Revision-Date: 2022-12-21 22:56+0000\n"
+"Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -27,7 +27,7 @@ msgstr "素描与手写笔记"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome；GTK；Office；图形；笔记；"
+msgstr "Gnome;GTK;Office;图形;笔记;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -65,7 +65,7 @@ msgid "A selection"
 msgstr "选项"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-msgid "_Color scheme"
+msgid "Co_lor scheme"
 msgstr "配色方案"
 
 #: rnote-ui/data/ui/appmenu.ui:26
@@ -121,54 +121,66 @@ msgid "_Print"
 msgstr "打印文档"
 
 #: rnote-ui/data/ui/appmenu.ui:90
-msgid "Paste _clipboard"
-msgstr "粘贴剪切板(C)"
-
-#: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Import file"
 msgstr "导入文件"
 
-#: rnote-ui/data/ui/appmenu.ui:98
+#: rnote-ui/data/ui/appmenu.ui:94
+msgid "_Clipboard"
+msgstr "剪切板(C)"
+
+#: rnote-ui/data/ui/appmenu.ui:96
+msgid "_Copy to clipboard"
+msgstr "复制到剪切板"
+
+#: rnote-ui/data/ui/appmenu.ui:100
+msgid "C_ut to clipboard"
+msgstr "剪切到剪切板"
+
+#: rnote-ui/data/ui/appmenu.ui:104
+msgid "_Paste clipboard"
+msgstr "粘贴剪切板"
+
+#: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
 msgstr "导出…"
 
-#: rnote-ui/data/ui/appmenu.ui:100
+#: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _document"
 msgstr "导出文档"
 
-#: rnote-ui/data/ui/appmenu.ui:104
+#: rnote-ui/data/ui/appmenu.ui:115
 msgid "Export document _pages"
 msgstr "导出文档页面(P)"
 
-#: rnote-ui/data/ui/appmenu.ui:108
+#: rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _selection"
 msgstr "导出所选"
 
-#: rnote-ui/data/ui/appmenu.ui:115
+#: rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
 msgstr "设置(T)"
 
-#: rnote-ui/data/ui/appmenu.ui:119
+#: rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard shortcuts"
 msgstr "快捷键"
 
-#: rnote-ui/data/ui/appmenu.ui:123
+#: rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
 msgstr "捐赠💝"
 
-#: rnote-ui/data/ui/appmenu.ui:127
+#: rnote-ui/data/ui/appmenu.ui:138
 msgid "A_bout Rnote"
 msgstr "关于 Rnote(B)"
 
-#: rnote-ui/data/ui/appmenu.ui:158
+#: rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the left side"
 msgstr "左侧侧边栏"
 
-#: rnote-ui/data/ui/appmenu.ui:167
+#: rnote-ui/data/ui/appmenu.ui:178
 msgid "Sidebar on the right side"
 msgstr "右侧侧边栏"
 
-#: rnote-ui/data/ui/appmenu.ui:177
+#: rnote-ui/data/ui/appmenu.ui:188
 msgid "Toggle fullscreen"
 msgstr "切换全屏"
 
@@ -219,7 +231,7 @@ msgid "Settings"
 msgstr "设置"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-msgid "Document _layout"
+msgid "_Document layout"
 msgstr "文档布局(L)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
@@ -247,7 +259,7 @@ msgid "_Pen sounds"
 msgstr "手写笔音效(P)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-msgid "_Clear document"
+msgid "C_lear document"
 msgstr "清空文档"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
@@ -288,8 +300,8 @@ msgstr "重做"
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
-#: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
-#: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
+#: rnote-ui/src/dialogs/mod.rs:248 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:740
 msgid "Select"
 msgstr "选择"
 
@@ -309,11 +321,11 @@ msgstr "这将清空整个文档。请确认。"
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
-#: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
-#: rnote-ui/src/dialogs/import.rs:150 rnote-ui/src/dialogs/export.rs:26
+#: rnote-ui/src/dialogs/mod.rs:249 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/src/dialogs/import.rs:145 rnote-ui/src/dialogs/export.rs:26
 #: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
-#: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
-#: rnote-ui/src/dialogs/export.rs:880
+#: rnote-ui/src/dialogs/export.rs:741 rnote-ui/src/dialogs/export.rs:818
+#: rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "取消"
@@ -322,7 +334,7 @@ msgstr "取消"
 msgid "Clear"
 msgstr "清空"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:744
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:729
 msgid "New Document"
 msgstr "新建文档"
 
@@ -353,7 +365,6 @@ msgid ""
 msgstr "所有未保存的更改都将丢失，你确定要继续退出当前文档吗？"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:173
 msgid "Edit workspace"
 msgstr "编辑工作区"
 
@@ -392,12 +403,12 @@ msgid "Change the workspace directory"
 msgstr "更改工作区目录"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
+#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:245
 msgid "Change workspace directory"
 msgstr "更改工作区目录"
 
@@ -416,7 +427,7 @@ msgid "Import PDF"
 msgstr "导入 PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:144
 msgid "Import"
 msgstr "导入"
 
@@ -493,8 +504,8 @@ msgid "Export document"
 msgstr "导出文档"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
-#: rnote-ui/src/dialogs/export.rs:879
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
+#: rnote-ui/src/dialogs/export.rs:881
 msgid "Export"
 msgstr "导出"
 
@@ -509,8 +520,8 @@ msgstr "选择导出文件"
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
 #: rnote-ui/src/dialogs/export.rs:122 rnote-ui/src/dialogs/export.rs:148
-#: rnote-ui/src/dialogs/export.rs:177 rnote-ui/src/dialogs/export.rs:619
-#: rnote-ui/src/dialogs/export.rs:645 rnote-ui/src/dialogs/export.rs:679
+#: rnote-ui/src/dialogs/export.rs:177 rnote-ui/src/dialogs/export.rs:621
+#: rnote-ui/src/dialogs/export.rs:647 rnote-ui/src/dialogs/export.rs:681
 msgid "- no file selected -"
 msgstr "— 没有文件被选中 —"
 
@@ -553,7 +564,7 @@ msgstr "导出的格式"
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:259
-#: rnote-ui/src/dialogs/export.rs:534 rnote-ui/src/dialogs/export.rs:777
+#: rnote-ui/src/dialogs/export.rs:536 rnote-ui/src/dialogs/export.rs:779
 msgid "Svg"
 msgstr "可缩放矢量图（SVG）"
 
@@ -578,20 +589,18 @@ msgid "Select the export directory"
 msgstr "选择导出时的目录"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
 msgstr "导出文件主名称"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539
-#: rnote-ui/src/dialogs/export.rs:782
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:541
+#: rnote-ui/src/dialogs/export.rs:784
 msgid "Png"
 msgstr "便携式网络图形（PNG）"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285
-#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:545
-#: rnote-ui/src/dialogs/export.rs:788
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:547
+#: rnote-ui/src/dialogs/export.rs:790
 msgid "Jpeg"
 msgstr "联合图像标准（JPEG）"
 
@@ -619,7 +628,7 @@ msgstr "Jpeg图像质量"
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "设置Jpeg图像的质量(1-100)"
 
-#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:735
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:737
 msgid "Export selection"
 msgstr "导出所选"
 
@@ -635,12 +644,12 @@ msgstr "边距"
 msgid "Set the margin around the selected area"
 msgstr "设置选区周围的边距"
 
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:82
 msgid "Open"
 msgstr "打开"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "重命名"
 
@@ -656,7 +665,7 @@ msgstr "重复所选内容"
 msgid "New document"
 msgstr "新建文档"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:746
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:731
 msgid "Draft"
 msgstr "草稿"
 
@@ -829,6 +838,7 @@ msgid "Lines"
 msgstr "线"
 
 #: rnote-ui/data/ui/settingspanel.ui:318
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
 msgid "Grid"
 msgstr "方格"
 
@@ -1017,21 +1027,28 @@ msgid "Drawing"
 msgstr "绘画"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
+msgid "Copy to clipboard"
 msgstr "复制到剪切板"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
 msgctxt "shortcut window"
+msgid "Cut to clipboard"
+msgstr "剪切到剪切板"
+
+#: rnote-ui/data/ui/shortcuts.ui:189
+msgctxt "shortcut window"
 msgid "Paste clipboard"
 msgstr "粘贴剪切板"
 
-#: rnote-ui/data/ui/shortcuts.ui:189
+#: rnote-ui/data/ui/shortcuts.ui:195
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "撤销"
 
-#: rnote-ui/data/ui/shortcuts.ui:195
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "重做"
@@ -1044,17 +1061,37 @@ msgstr "向上移动目录"
 msgid "Workspace directory actions"
 msgstr "工作区目录操作"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:154
+#: rnote-ui/data/ui/workspacebrowser.ui:121
+msgid "Create new folder"
+msgstr "创建新文件夹"
+
+#: rnote-ui/data/ui/workspacesbar.ui:54
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Move selected workspace up"
+msgstr "移除工作区"
+
+#: rnote-ui/data/ui/workspacesbar.ui:63
+#, fuzzy
+#| msgid "Change the workspace icon"
+msgid "Move selected workspace down"
+msgstr "更改工作区图标"
+
+#: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "添加工作区"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:163
-msgid "Remove workspace"
+#: rnote-ui/data/ui/workspacesbar.ui:81
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Remove selected workspace"
 msgstr "移除工作区"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:190
-msgid "Create new folder"
-msgstr "创建新文件夹"
+#: rnote-ui/data/ui/workspacesbar.ui:91
+#, fuzzy
+#| msgid "Edit workspace"
+msgid "Edit selected workspace"
+msgstr "编辑工作区"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1104,25 +1141,27 @@ msgstr "简单"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "按照原始输入生成线段。\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Curved"
-msgstr ""
+msgstr "曲线"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "生成光滑、弯曲的线段。\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:208
 msgid "Modeled"
-msgstr ""
+msgstr "建模"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:209
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"使用模拟物理的算法生成建模后的轨迹。\n"
+"结果是所有方法中最好看的（译者注：对于中文用户不一定如此）。"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Solid style"
@@ -1205,20 +1244,16 @@ msgid "Split strokes"
 msgstr "分割画笔"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
-msgstr "选择多边形"
+msgstr "选择一个多边形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
-msgstr "选择矩形"
+msgstr "选择一个矩形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "逐个选择"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1259,7 +1294,7 @@ msgid "Shape builders"
 msgstr "形状构建工具"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:113
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:425
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:436
 msgid "Constraints"
 msgstr "约束条件"
 
@@ -1280,46 +1315,40 @@ msgid "Rough style"
 msgstr "粗糙样式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "硬笔样式"
+msgstr "填充样式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "选择格式"
+msgstr "选择填充样式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "阴影线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "锯齿"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "锯齿线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "交叉阴影线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "虚线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "带角度的阴影线"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "设置画笔的光标"
+msgstr "设置阴影线的角度"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
@@ -1329,39 +1358,39 @@ msgstr "直线"
 msgid "Rectangle"
 msgstr "矩形"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:332
-msgid "2D coordinate system"
-msgstr ""
-
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
-msgid "3D coordinate system"
-msgstr ""
+msgid "2D coordinate system"
+msgstr "2维坐标系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
-msgid "2D single quadrant coordinate system"
-msgstr ""
+msgid "3D coordinate system"
+msgstr "3维坐标系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
+msgid "2D single quadrant coordinate system"
+msgstr "2维单象限坐标系"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse"
 msgstr "椭圆"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:387
 msgid "Ellipse with foci"
 msgstr "焦点椭圆"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:387
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:398
 msgid "Quadratic bezier curve"
 msgstr "二次贝塞尔曲线"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:398
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:409
 msgid "Cubic bezier curve"
 msgstr "三次贝塞尔曲线"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:442
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:453
 msgid "Enabled"
 msgstr "启用"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:443
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:454
 msgid ""
 "Hold Ctrl to temporarily enable/disable constraints\n"
 "when this switch is off/on"
@@ -1369,15 +1398,15 @@ msgstr ""
 "按住Ctrl键可暂时启用/禁用约束条件\n"
 "当此开关被关闭/打开时"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:454
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:465
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:464
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:475
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:474
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:485
 msgid "Golden ratio (1:1.618)"
 msgstr "黄金比例(1:1.618)"
 
@@ -1445,73 +1474,73 @@ msgid "translator-credits"
 msgstr "译者注"
 
 #: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
-#: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:316
-#: rnote-ui/src/appwindow/appwindowactions.rs:615
+#: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:68
+#: rnote-ui/src/appwindow/mod.rs:299
+#: rnote-ui/src/appwindow/appwindowactions.rs:617
 msgid "Saving document failed."
 msgstr "文档保存失败。"
 
-#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:109
+#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:105
 msgid "Opening file failed."
 msgstr "文件打开失败。"
 
-#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
+#: rnote-ui/src/dialogs/import.rs:76 rnote-ui/src/dialogs/export.rs:19
 msgid ".rnote"
 msgstr ".rnote"
 
-#: rnote-ui/src/dialogs/import.rs:80
+#: rnote-ui/src/dialogs/import.rs:79
 msgid "Open file"
 msgstr "打开文件"
 
-#: rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/src/dialogs/import.rs:138
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import file"
 msgstr "导入文件"
 
-#: rnote-ui/src/dialogs/import.rs:258
+#: rnote-ui/src/dialogs/import.rs:253
 msgid "- no file name -"
 msgstr "—— 没有文件名 ——"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no title -"
 msgstr "—— 无标题 ——"
 
-#: rnote-ui/src/dialogs/import.rs:266
+#: rnote-ui/src/dialogs/import.rs:261
 msgid "- no author -"
 msgstr "—— 无作者 ——"
 
-#: rnote-ui/src/dialogs/import.rs:270
+#: rnote-ui/src/dialogs/import.rs:265
 msgid "- no date -"
 msgstr "—— 无日期 ——"
 
-#: rnote-ui/src/dialogs/import.rs:277
+#: rnote-ui/src/dialogs/import.rs:272
 msgid "File name:"
 msgstr "文件名："
 
-#: rnote-ui/src/dialogs/import.rs:281
+#: rnote-ui/src/dialogs/import.rs:276
 msgid "Title:"
 msgstr "标题："
 
-#: rnote-ui/src/dialogs/import.rs:285
+#: rnote-ui/src/dialogs/import.rs:280
 msgid "Author:"
 msgstr "作者："
 
-#: rnote-ui/src/dialogs/import.rs:289
+#: rnote-ui/src/dialogs/import.rs:284
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: rnote-ui/src/dialogs/import.rs:293
+#: rnote-ui/src/dialogs/import.rs:288
 msgid "Pages:"
 msgstr "页码："
 
-#: rnote-ui/src/dialogs/import.rs:322 rnote-ui/src/appwindow/imexport.rs:151
+#: rnote-ui/src/dialogs/import.rs:317 rnote-ui/src/appwindow/imexport.rs:143
 msgid "Opening PDF file failed."
 msgstr "PDF打开失败。"
 
-#: rnote-ui/src/dialogs/import.rs:388 rnote-ui/src/appwindow/imexport.rs:133
+#: rnote-ui/src/dialogs/import.rs:377 rnote-ui/src/appwindow/imexport.rs:125
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ 文件打开失败。"
 
@@ -1524,155 +1553,131 @@ msgid "Saved document successfully."
 msgstr "文档保存成功。"
 
 #: rnote-ui/src/dialogs/export.rs:193
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文档失败。"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "导出文档为 SVG 成功。"
+msgstr "导出文档成功。"
 
 #: rnote-ui/src/dialogs/export.rs:201
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文件失败，没有选择文件。"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document pages failed."
-msgstr "导出文档为 SVG 失败。"
+msgstr "导出文档页面失败。"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document pages successfully."
-msgstr "导出文档为 SVG 成功。"
+msgstr "导出文档页面成功。"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document pages failed, no directory selected."
-msgstr "导出文档为 SVG 失败。"
-
-#: rnote-ui/src/dialogs/export.rs:711
-#, fuzzy
-#| msgid "Export selection as SVG failed."
-msgid "Export selection failed."
-msgstr "导出所选为 SVG 失败。"
+msgstr "导出文档页面失败，没有选择目录。"
 
 #: rnote-ui/src/dialogs/export.rs:713
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
+msgid "Export selection failed."
+msgstr "导出选择内容失败。"
+
+#: rnote-ui/src/dialogs/export.rs:715
 msgid "Exported selection successfully."
-msgstr "导出所选为 SVG 成功。"
+msgstr "导出选择内容成功。"
 
-#: rnote-ui/src/dialogs/export.rs:719
-#, fuzzy
-#| msgid "Export selection as SVG failed."
+#: rnote-ui/src/dialogs/export.rs:721
 msgid "Export selection failed, no file selected."
-msgstr "导出所选为 SVG 失败。"
+msgstr "导出选择内容失败，没有选择文件。"
 
-#: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
+#: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "JSON"
-msgstr "JSON 文件"
+msgstr "JSON"
 
-#: rnote-ui/src/dialogs/export.rs:812
+#: rnote-ui/src/dialogs/export.rs:814
 msgid "Export engine state"
 msgstr "导出引擎状态"
 
-#: rnote-ui/src/dialogs/export.rs:850
+#: rnote-ui/src/dialogs/export.rs:852
 msgid "Export engine state failed."
 msgstr "引擎状态导出失败。"
 
-#: rnote-ui/src/dialogs/export.rs:852
+#: rnote-ui/src/dialogs/export.rs:854
 msgid "Exported engine state successfully."
 msgstr "引擎状态导出成功。"
 
-#: rnote-ui/src/dialogs/export.rs:876
+#: rnote-ui/src/dialogs/export.rs:878
 msgid "Export engine config"
 msgstr "导出引擎配置"
 
-#: rnote-ui/src/dialogs/export.rs:914
+#: rnote-ui/src/dialogs/export.rs:916
 msgid "Export engine config failed."
 msgstr "引擎设置导出失败。"
 
-#: rnote-ui/src/dialogs/export.rs:916
+#: rnote-ui/src/dialogs/export.rs:918
 msgid "Exported engine config successfully."
 msgstr "引擎设置导出成功。"
 
-#: rnote-ui/src/appwindow/imexport.rs:79
+#: rnote-ui/src/appwindow/imexport.rs:71
 msgid "Opening .rnote file failed."
 msgstr ".rnote 文件打开失败。"
 
-#: rnote-ui/src/appwindow/imexport.rs:97
+#: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening vector image file failed."
 msgstr "矢量图文件打开失败。"
 
-#: rnote-ui/src/appwindow/imexport.rs:115
+#: rnote-ui/src/appwindow/imexport.rs:107
 msgid "Opening bitmap image file failed."
 msgstr "位图文件打开失败。"
 
-#: rnote-ui/src/appwindow/imexport.rs:165
+#: rnote-ui/src/appwindow/imexport.rs:156
 msgid "Error: Tried opening folder as file"
 msgstr "错误：将文件夹作为文件打开"
 
-#: rnote-ui/src/appwindow/imexport.rs:171
-#, fuzzy
+#: rnote-ui/src/appwindow/imexport.rs:161
 msgid "Failed to open file: Unsupported file type."
 msgstr "打开文件失败：不支持的文件类型。"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:731
+#: rnote-ui/src/appwindow/appwindowactions.rs:733
 msgid "Printed document successfully"
 msgstr "打印成功"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:740
+#: rnote-ui/src/appwindow/appwindowactions.rs:742
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:766
-#, fuzzy
-#| msgid "Export selection as SVG failed."
+#: rnote-ui/src/appwindow/appwindowactions.rs:768
 msgid "Export selection failed, nothing selected."
-msgstr "导出所选为 SVG 失败。"
+msgstr "导出选择内容失败，没有选择内容。"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "打开的文件已在磁盘上被修改过。"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "重新加载"
 
-#: rnote-ui/src/canvas/mod.rs:632
+#: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "打开的文件已在磁盘上被重命名。"
 
-#: rnote-ui/src/canvas/mod.rs:639
+#: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "打开的文件已在磁盘上被移动或者删除。"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 msgid "Folder name"
-msgstr "文件名："
+msgstr "文件夹名称"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
-msgstr ""
+msgstr "新建文件夹"
 
-#, fuzzy
-#~| msgctxt "shortcut window"
-#~| msgid "Paste clipboard"
-#~ msgid "_Paste clipboard"
-#~ msgstr "粘贴剪切板"
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "复制到剪切板"
+
+#~ msgid "_Clear document"
+#~ msgstr "清空文档"
 
 #~ msgid "Stroke dots radii"
 #~ msgstr "笔画点阵半径"

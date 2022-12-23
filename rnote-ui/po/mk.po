@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -41,7 +41,7 @@ msgstr ""
 "Rnote е векторска апликација за скицирање, правење ракописни белешки, и за "
 "бележење врз документи и слики."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -49,19 +49,19 @@ msgstr ""
 "ВНИМАНИЕ: Датотечниот формат сѐ уште е нестабилен. Можно е во иднина да биде "
 "изменет и да не се поклопува меѓу верзии."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "Главен прозорец во светли бои"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "Главен прозорец во темни бои"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "PDF бележење"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "Избор"
 
@@ -161,25 +161,16 @@ msgid "_Clipboard"
 msgstr "Налепи од привремената меморија"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "_Copy to clipboard"
-msgstr "Копирај кај привремена меморија"
+msgid "_Copy"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "C_ut to clipboard"
-msgstr "Копирај кај привремена меморија"
+msgid "C_ut"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
-msgid "_Paste clipboard"
-msgstr "Налепи од привремената меморија"
+msgid "_Paste"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
 #, fuzzy
@@ -482,7 +473,7 @@ msgid "Change the workspace directory"
 msgstr "Промени ја папката на раб. површина"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- не е одбрана ниту една папка -"
@@ -1832,6 +1823,24 @@ msgstr "Име на датотека:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "_Copy to clipboard"
+#~ msgstr "Копирај кај привремена меморија"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "C_ut to clipboard"
+#~ msgstr "Копирај кај привремена меморија"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Paste clipboard"
+#~ msgid "_Paste clipboard"
+#~ msgstr "Налепи од привремената меморија"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

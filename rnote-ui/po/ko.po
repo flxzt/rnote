@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-11-16 10:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -40,7 +40,7 @@ msgstr ""
 "Rnote는 스케치하기, 필기 메모, 문서, 그림에 주석을 달기위한 벡터 기반 그리기 "
 "앱입니다."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -48,19 +48,19 @@ msgstr ""
 "면책 조항 : 파일 형식이 여전히 불안정합니다. 버전 간의 호환성이 변경되고 손상"
 "될 수 있습니다."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "밝은 색상의 기본 창"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "어두운 색상의 기본 창"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "PDF 주석"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "선택항목"
 
@@ -135,15 +135,15 @@ msgid "_Clipboard"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:96
-msgid "_Copy to clipboard"
+msgid "_Copy"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-msgid "C_ut to clipboard"
+msgid "C_ut"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
+msgid "_Paste"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
@@ -417,7 +417,7 @@ msgid "Change the workspace directory"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr ""

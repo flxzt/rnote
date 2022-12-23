@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -41,7 +41,7 @@ msgstr ""
 "Rnoteは、スケッチを描いたり、手書きのノートを取ったり、書類や画像にメモしたり"
 "するためのベクター描画アプリです。"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -49,19 +49,19 @@ msgstr ""
 "ファイルフォーマットはまだ安定しておらず、変更が加わりバージョン間の互換性が"
 "失われる可能性もあります。"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr ""
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr ""
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr ""
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr ""
 
@@ -146,15 +146,15 @@ msgid "_Clipboard"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:96
-msgid "_Copy to clipboard"
+msgid "_Copy"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-msgid "C_ut to clipboard"
+msgid "C_ut"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
+msgid "_Paste"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
@@ -439,7 +439,7 @@ msgid "Change the workspace directory"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr ""

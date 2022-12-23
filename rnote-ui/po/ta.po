@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-12-23 05:21+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -40,7 +40,7 @@ msgstr ""
 "Rnote என்பது ஒரு திசையன் அடிப்படையிலான வரைதல் பயன்பாடாகும், இது வரைதல், கையால் "
 "எழுதப்பட்ட குறிப்புகள் மற்றும் ஆவணங்கள் மற்றும் படங்களை சிறுகுறிப்பு செய்ய."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -48,19 +48,19 @@ msgstr ""
 "மறுப்பு: கோப்பு வடிவம் இன்னும் நிலையற்றது. இது பதிப்புகளுக்கு இடையிலான இணக்கத்தன்மையை "
 "மாற்றலாம் மற்றும் உடைக்கலாம்."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "வெளிர் வண்ணங்களில் பிரதான சாளரம்"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "அடர் வண்ணங்களில் பிரதான சாளரம்"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "ஒரு PDF சிறுகுறிப்பு"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "ஒரு தேர்வு"
 
@@ -129,16 +129,16 @@ msgid "_Clipboard"
 msgstr "_கிளிப்போர்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-msgid "_Copy to clipboard"
-msgstr "_கிளிப்போர்டுக்கு நகலெடுக்கவும்"
+msgid "_Copy"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-msgid "C_ut to clipboard"
-msgstr "_கிளிப்போர்டுக்கு வெட்டுங்கள்"
+msgid "C_ut"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
-msgstr "_ கிளிப்போர்டை ஒட்டு"
+msgid "_Paste"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -406,7 +406,7 @@ msgid "Change the workspace directory"
 msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- எந்த கோப்பகமும் தேர்ந்தெடுக்கப்படவில்லை -"
@@ -1668,6 +1668,15 @@ msgstr "கோப்புறை பெயர்"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "புதிய அடைவு"
+
+#~ msgid "_Copy to clipboard"
+#~ msgstr "_கிளிப்போர்டுக்கு நகலெடுக்கவும்"
+
+#~ msgid "C_ut to clipboard"
+#~ msgstr "_கிளிப்போர்டுக்கு வெட்டுங்கள்"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "_ கிளிப்போர்டை ஒட்டு"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

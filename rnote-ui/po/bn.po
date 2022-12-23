@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-12-05 15:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -40,7 +40,7 @@ msgstr ""
 "Rnote স্কেচিং, হাতে লেখা নোট এবং নথি এবং ছবি টীকা করার জন্য একটি ভেক্টর-ভিত্তিক "
 "অঙ্কন অ্যাপ্লিকেশন।"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -48,19 +48,19 @@ msgstr ""
 "দাবিত্যাগ: ফাইল বিন্যাস এখনও অস্থির। এটি ভার্সনগুলির মধ্যে সামঞ্জস্যতা পরিবর্তন এবং "
 "ভাঙ্গতে সক্ষম।"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "হালকা রঙে প্রধান উইন্ড"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "গাঢ় রঙে প্রধান উইন্ডো"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "একটি PDF টীকা"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "একটি নির্বাচন"
 
@@ -135,22 +135,16 @@ msgid "_Clipboard"
 msgstr "_ক্লিপবোর্ডে পেস্ট করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "_Copy to clipboard"
-msgstr "ক্লিপবোর্ডে কপি করুন"
+msgid "_Copy"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "C_ut to clipboard"
-msgstr "ক্লিপবোর্ডে কপি করুন"
+msgid "C_ut"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
-msgstr "ক্লিপবোর্ডে _পেস্ট করুন"
+msgid "_Paste"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -424,7 +418,7 @@ msgid "Change the workspace directory"
 msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
@@ -1727,6 +1721,21 @@ msgstr "ফাইলের নাম:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "নতুন ফোল্ডার"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "_Copy to clipboard"
+#~ msgstr "ক্লিপবোর্ডে কপি করুন"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "C_ut to clipboard"
+#~ msgstr "ক্লিপবোর্ডে কপি করুন"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "ক্লিপবোর্ডে _পেস্ট করুন"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

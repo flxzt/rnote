@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-23 03:04+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"PO-Revision-Date: 2022-12-23 16:27+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -65,10 +65,8 @@ msgid "A selection"
 msgstr "Una selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
-msgstr "_Tema"
+msgstr "Schema  colore"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
@@ -132,15 +130,15 @@ msgstr "_Appunti"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_Copia"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "T_aglia"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_Incolla"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -261,10 +259,8 @@ msgid "_Pen sounds"
 msgstr "_Suoni penna"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "Pulisci documento"
+msgstr "P_ulisci documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_Return to origin page"

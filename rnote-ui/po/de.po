@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-22 12:08+0000\n"
+"PO-Revision-Date: 2022-12-23 03:04+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -126,7 +126,7 @@ msgstr "_Importiere Datei"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr "_Zwischenablage einfügen"
+msgstr "_Zwischenablage"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy to clipboard"

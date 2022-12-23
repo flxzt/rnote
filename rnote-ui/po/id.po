@@ -8,13 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-12-24 12:01+0000\n"
+"Last-Translator: Anggara Permana Putra <anggaraperpe@gmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
+">\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -28,13 +31,15 @@ msgstr ""
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr ""
+msgstr "Jendela Baru"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
+"Rnote adalah aplikasi menggambar berbasis vektor untuk membuat sketsa, "
+"catatan tulis tangan dan untuk memberikan catata pada dokumen dan gambar"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -44,11 +49,11 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
-msgstr ""
+msgstr "Jendela utama dalam warna cerah"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
-msgstr ""
+msgstr "jendela utama dalam warna gelap"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -1585,7 +1590,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:916
 msgid "Export engine config failed."
-msgstr ""
+msgstr "konfigurasi mesin expor gagal."
 
 #: rnote-ui/src/dialogs/export.rs:918
 msgid "Exported engine config successfully."
@@ -1593,56 +1598,56 @@ msgstr ""
 
 #: rnote-ui/src/appwindow/imexport.rs:71
 msgid "Opening .rnote file failed."
-msgstr ""
+msgstr "Pembukaan berkas .rnote gagal."
 
 #: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening vector image file failed."
-msgstr ""
+msgstr "Pembukaan berkas gambar vektor gagal."
 
 #: rnote-ui/src/appwindow/imexport.rs:107
 msgid "Opening bitmap image file failed."
-msgstr ""
+msgstr "Pembukaan berkas gambar bitmap gagal."
 
 #: rnote-ui/src/appwindow/imexport.rs:156
 msgid "Error: Tried opening folder as file"
-msgstr ""
+msgstr "Galat: Mencoba membuka folder sebagai berkas"
 
 #: rnote-ui/src/appwindow/imexport.rs:161
 msgid "Failed to open file: Unsupported file type."
-msgstr ""
+msgstr "Gagal membuka file: tipe file tidak didukung."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:733
 msgid "Printed document successfully"
-msgstr ""
+msgstr "Dokumen sukses tercetak"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:742
 msgid "Printing document failed"
-msgstr ""
+msgstr "Pencetakan dokumen gagal"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:768
 msgid "Export selection failed, nothing selected."
-msgstr ""
+msgstr "Mengekspor seleksi gagal, tidak ada yang dipilih"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "File yang dibuka telah dimodifikasi pada disk."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Muat ulang"
 
 #: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "File yang dibuka diganti nama pada disk"
 
 #: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "File yang terbuka dipindahkan atau dihapus pada disk."
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 msgid "Folder name"
-msgstr ""
+msgstr "Nama folder"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
-msgstr ""
+msgstr "Folder Baru"

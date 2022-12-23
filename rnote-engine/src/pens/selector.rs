@@ -520,7 +520,8 @@ impl PenBehaviour for Selector {
                             if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(selection)
                             {
-                                *selection_bounds = new_bounds
+                                *selection_bounds =
+                                    new_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN);
                             }
                             *current_rotation_angle = new_rotation_angle;
                         }

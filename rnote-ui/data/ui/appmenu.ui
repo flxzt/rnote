@@ -93,15 +93,15 @@
           <submenu>
             <attribute name="label" translatable="yes">_Clipboard</attribute>
             <item>
-              <attribute name="label" translatable="yes">_Copy to clipboard</attribute>
+              <attribute name="label" translatable="yes">_Copy</attribute>
               <attribute name="action">win.clipboard-copy</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">C_ut to clipboard</attribute>
+              <attribute name="label" translatable="yes">C_ut</attribute>
               <attribute name="action">win.clipboard-cut</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">_Paste clipboard</attribute>
+              <attribute name="label" translatable="yes">_Paste</attribute>
               <attribute name="action">win.clipboard-paste</attribute>
             </item>
           </submenu>

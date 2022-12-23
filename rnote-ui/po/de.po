@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-22 12:08+0000\n"
+"PO-Revision-Date: 2022-12-23 05:26+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -126,7 +126,7 @@ msgstr "_Importiere Datei"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr "_Zwischenablage einfügen"
+msgstr "_Zwischenablage"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy to clipboard"
@@ -1159,7 +1159,7 @@ msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
-"Produziert einen modellierten Pfad mit physik-basierten Algorithmen.\n"
+"Produziert einen modellierten Pfad mithilfe physik-basierten Algorithmen.\n"
 "Erzeugt die am besten aussehende Handschrift."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
@@ -1367,7 +1367,7 @@ msgstr "3D Koordinatensystem"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "2D single quadrant coordinate system"
-msgstr "2D einzelner Quadrant Koordinatensystem"
+msgstr "2D Einzelquadrant Koordinatensystem"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse"

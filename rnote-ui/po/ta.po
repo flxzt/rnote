@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-23 03:04+0000\n"
+"PO-Revision-Date: 2022-12-23 05:21+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -129,18 +129,12 @@ msgid "_Clipboard"
 msgstr "_கிளிப்போர்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "_Copy to clipboard"
-msgstr "கிளிப்போர்டில் நகலெடுக்கவும்"
+msgstr "_கிளிப்போர்டுக்கு நகலெடுக்கவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgid "C_ut to clipboard"
-msgstr "கிளிப்போர்டில் நகலெடுக்கவும்"
+msgstr "_கிளிப்போர்டுக்கு வெட்டுங்கள்"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste clipboard"
@@ -237,10 +231,8 @@ msgid "Settings"
 msgstr "அமைப்புகள்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
-msgstr "ஆவணத்தின் _தளவமைப்பு"
+msgstr "_ஆவணத்தின் தளவமைப்பு"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed size"
@@ -267,10 +259,8 @@ msgid "_Pen sounds"
 msgstr "_பேனா ஒலிகள்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "தெளிவான ஆவணம்"
+msgstr "_தெளிவான ஆவணம்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_Return to origin page"
@@ -1043,20 +1033,14 @@ msgid "Drawing"
 msgstr "வரைதல்"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
-msgstr "கிளிப்போர்டில் நகலெடுக்கவும்"
+msgstr "கிளிப்போர்டுக்கு நகலெடுக்கவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "கிளிப்போர்டில் நகலெடுக்கவும்"
+msgstr "கிளிப்போர்டுக்கு வெட்டுங்கள்"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1086,32 +1070,24 @@ msgid "Create new folder"
 msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "பணியிடத்தை அகற்று"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை மேலே நகர்த்தவும்"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "பணியிட ஐகானை மாற்று"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை கீழே நகர்த்தவும்"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "பணியிடத்தைச் சேர்க்கவும்"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "பணியிடத்தை அகற்று"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை அகற்று"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "பணியிடத்தை திருத்து"
+msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தைத் திருத்தவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"

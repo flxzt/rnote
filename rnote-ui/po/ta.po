@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-10 11:17+0000\n"
+"PO-Revision-Date: 2022-12-23 03:04+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -65,8 +65,6 @@ msgid "A selection"
 msgstr "ஒரு தேர்வு"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
 msgstr "_வண்ண திட்டம்"
 
@@ -127,10 +125,8 @@ msgid "_Import file"
 msgstr "_இறக்குமதி கோப்பை"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "ஒட்டவும் _கிளிப்போர்டை"
+msgstr "_கிளிப்போர்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 #, fuzzy

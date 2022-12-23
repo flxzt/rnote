@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-05 15:27+0000\n"
+"PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -129,14 +129,12 @@ msgid "_Import file"
 msgstr "ফাইল _আমদানি করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "_ক্লিপবোর্ডে পেস্ট করুন"
+msgstr "_ক্লিপবোর্ড"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_কপি"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
@@ -144,7 +142,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_পেস্ট করুন"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -239,10 +237,8 @@ msgid "Settings"
 msgstr "সেটিংস"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
-msgstr "নথির _বিন্যাস"
+msgstr "_নথির বিন্যাস"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed size"
@@ -513,7 +509,6 @@ msgid "DPI"
 msgstr "ডিপিআই"
 
 #: rnote-ui/data/ui/dialogs/import.ui:242
-#, fuzzy
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ ফাইলের জন্য পছন্দের DPI সেট করুন"
 
@@ -607,10 +602,8 @@ msgid "Select the export directory"
 msgstr "রপ্তানির ডাইরেক্টরি নির্বাচন করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
-msgstr "ইঞ্জিনের অবস্থা রপ্তানী করুন"
+msgstr "ফাইল স্টেম নাম রপ্তানি করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:541
@@ -627,7 +620,7 @@ msgstr "জেপিজি/জেপেগ"
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap scale factor"
-msgstr ""
+msgstr "বিটম্যাপ স্কেল ফ্যাক্টর"
 
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
@@ -1045,20 +1038,14 @@ msgid "Drawing"
 msgstr "অঙ্কন"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "ক্লিপবোর্ডে কপি করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "ক্লিপবোর্ডে কপি করুন"
+msgstr "ক্লিপবোর্ডে কাট করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1084,38 +1071,28 @@ msgid "Workspace directory actions"
 msgstr "কর্মক্ষেত্র ডিরেক্টরির ক্রিয়া"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
-msgstr "ডিরেক্টরি তৈরি করুন"
+msgstr "নতুন ফোল্ডার তৈরি করুন"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "কর্মক্ষেত্র মুছে ফেলুন"
+msgstr "নির্বাচিত কর্মক্ষেত্র উপরে সরান"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "কর্মক্ষেত্র আইকন পরিবর্তন করুন"
+msgstr "নির্বাচিত কর্মক্ষেত্র নিচে সরান"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "কর্মক্ষেত্র যোগ করুন"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "কর্মক্ষেত্র মুছে ফেলুন"
+msgstr "নির্বাচিত কর্মক্ষেত্র মুছে ফেলুন"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "কর্মক্ষেত্র সম্পাদনা করুন"
+msgstr "নির্বাচিত কর্মক্ষেত্র সম্পাদনা করুন"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1135,10 +1112,8 @@ msgid "Marker"
 msgstr "মার্কার"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
-msgstr "অন্যান্য তুলি স্ট্রোকের নীচে চিহ্নিত করুন"
+msgstr "অন্যান্য স্ট্রোকের নীচে চিহ্নিত করুন"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
@@ -1270,14 +1245,10 @@ msgid "Split strokes"
 msgstr "বিরতিযুক্ত স্ট্রোক"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
 msgstr "বহুভুজ দিয়ে নির্বাচন করুন"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
 msgstr "আয়তক্ষেত্র দিয়ে নির্বাচন করুন"
 
@@ -1345,20 +1316,16 @@ msgid "Rough style"
 msgstr "রুক্ষ স্টাইল"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
 msgstr "পূর্ণ করা স্টাইল"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "একটি বিন্যাস ঠিক করুন"
+msgstr "একটি পুর্ণ করা স্টাইল নির্বাচন করুন"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "হাচুরে"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
@@ -1374,11 +1341,11 @@ msgstr "ক্রসহ্যাচ"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "ড্যাশড"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "হাচুরে কোণ"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
 #, fuzzy
@@ -1521,10 +1488,8 @@ msgid "Opening file failed."
 msgstr "ফাইল খোলা ব্যর্থ হয়েছে।"
 
 #: rnote-ui/src/dialogs/import.rs:76 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote file"
 msgid ".rnote"
-msgstr ".rnote ফাইল"
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/import.rs:79
 msgid "Open file"
@@ -1582,7 +1547,7 @@ msgstr "PDF ফাইল খোলা ব্যর্থ হয়েছে।"
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
-msgstr ".xopp ফাইল খোলা ব্যর্থ হয়েছে।"
+msgstr "জার্নাল++ ফাইল খোলা ব্যর্থ হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:22
 msgid "Save document as"
@@ -1605,22 +1570,16 @@ msgid "Export document failed, no file selected."
 msgstr "নথি রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Export document pages failed."
-msgstr "নথি রপ্তানি ব্যর্থ হয়েছে।"
+msgstr "নথিপত্র রপ্তানি ব্যর্থ হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
-msgstr "সফলভাবে নথি রপ্তানি করা হয়েছে।"
+msgstr "সফলভাবে নথিপত্র রপ্তানি করা হয়েছে।"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
-msgstr "নথি রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
+msgstr "নথিপত্র রপ্তানি ব্যর্থ হয়েছে, কোন ডিরেক্টরি নির্বাচিত নেই।"
 
 #: rnote-ui/src/dialogs/export.rs:713
 msgid "Export selection failed."
@@ -1635,10 +1594,8 @@ msgid "Export selection failed, no file selected."
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই।"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "JSON ফাইল"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:814
 msgid "Export engine state"
@@ -1698,25 +1655,23 @@ msgstr "নির্বাচন রপ্তানি ব্যর্থ হয
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "খোলা ফাইল ডিস্কে পরিবর্তন করা হয়েছে."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "পুনরায় লোড করুন"
 
 #: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ করা হয়েছে।"
 
 #: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "খোলা ফাইলটি ডিস্কে সরানো বা মুছে ফেলা হয়েছে।"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "ফাইলের নাম:"
+msgstr "ফোল্ডারের নাম"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"

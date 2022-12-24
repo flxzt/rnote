@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-23 05:21+0000\n"
+"PO-Revision-Date: 2022-12-24 17:28+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -130,15 +130,15 @@ msgstr "_கிளிப்போர்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_நகல்"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "_வெட்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_ஒட்டு"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"

@@ -99,7 +99,7 @@ impl Selector {
                                 start_rotation_angle: rotation_angle,
                                 current_rotation_angle: rotation_angle,
                             };
-                            // clicking on on of the resize nodes at the corners
+                            // clicking on one of the resize nodes at the corners
                         } else if Self::resize_node_bounds(
                             ResizeCorner::TopLeft,
                             *selection_bounds,
@@ -472,8 +472,8 @@ impl Selector {
             SelectorState::Idle => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        // Select all keys
                         if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                            // Select all keys
                             let all_strokes = engine_view.store.keys_sorted_chrono();
 
                             if let Some(selection_bounds) =
@@ -496,11 +496,9 @@ impl Selector {
                                 widget_flags.resize = true;
                                 widget_flags.indicate_changed_store = true;
                             }
-
-                            PenProgress::InProgress
-                        } else {
-                            PenProgress::InProgress
                         }
+
+                        PenProgress::InProgress
                     }
                     _ => PenProgress::InProgress,
                 }
@@ -508,8 +506,8 @@ impl Selector {
             SelectorState::Selecting { .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        // Select all keys
                         if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                            // Select all keys
                             let all_strokes = engine_view.store.keys_sorted_chrono();
 
                             if let Some(selection_bounds) =
@@ -532,11 +530,9 @@ impl Selector {
                                 widget_flags.resize = true;
                                 widget_flags.indicate_changed_store = true;
                             }
-
-                            PenProgress::InProgress
-                        } else {
-                            PenProgress::InProgress
                         }
+
+                        PenProgress::InProgress
                     }
                     _ => PenProgress::InProgress,
                 }
@@ -569,11 +565,9 @@ impl Selector {
                                 widget_flags.resize = true;
                                 widget_flags.indicate_changed_store = true;
                             }
-
-                            PenProgress::InProgress
-                        } else {
-                            PenProgress::InProgress
                         }
+
+                        PenProgress::InProgress
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
                         engine_view.store.set_trashed_keys(selection, true);

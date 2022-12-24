@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-06 11:56+0000\n"
+"PO-Revision-Date: 2022-12-24 12:01+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -66,8 +66,6 @@ msgid "A selection"
 msgstr "Egy kijelölés"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
 msgstr "_Színösszeállítás"
 
@@ -128,22 +126,20 @@ msgid "_Import file"
 msgstr "Fájl _importálása"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "_Vágólap beillesztése"
+msgstr "_Vágólap"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_Másolás"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "_Kivágás"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_Beillesztés"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -229,17 +225,15 @@ msgstr "Összehajtott fedél becsukása"
 
 #: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
-msgstr "Munkafelület"
+msgstr "Munkaterület"
 
 #: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
 msgstr "Beállítások"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
-msgstr "Dokumentum el_rendezés"
+msgstr "_Dokumentum elrendezés"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed size"
@@ -266,10 +260,8 @@ msgid "_Pen sounds"
 msgstr "_Ceruza hangok"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "Dokumentum törlése"
+msgstr "Dokumentum _törlése"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_Return to origin page"
@@ -377,7 +369,7 @@ msgstr "A nem mentett módosítások elvesznek. Menti a jelenlegi dokumentumot?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid "Edit workspace"
-msgstr "Munkafelület szerkesztése"
+msgstr "Munkaterület szerkesztése"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
@@ -386,7 +378,7 @@ msgstr "Alkalmazás"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:92
 msgid "Workspace Name"
-msgstr "Munkafelület neve"
+msgstr "Munkaterület neve"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:97
 msgid "Icon"
@@ -394,7 +386,7 @@ msgstr "Ikon"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:98
 msgid "Change the workspace icon"
-msgstr "A munkafelület ikonjának módosítása"
+msgstr "Munkaterület ikonjának módosítása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:117
 #: rnote-ui/data/ui/settingspanel.ui:293
@@ -403,7 +395,7 @@ msgstr "Szín"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:118
 msgid "Change the workspace color"
-msgstr "A munkafelület színének módosítása"
+msgstr "Munkaterület színének módosítása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:131
 msgid "Directory"
@@ -411,7 +403,7 @@ msgstr "Könyvtár"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:132
 msgid "Change the workspace directory"
-msgstr "A munkafelület könyvtárának módosítása"
+msgstr "Munkaterület könyvtárának módosítása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
@@ -421,7 +413,7 @@ msgstr "- nincs kiválasztott könyvtár -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:245
 msgid "Change workspace directory"
-msgstr "Munkafelület-könyvtár módosítása"
+msgstr "Munkaterület-könyvtár módosítása"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -1043,20 +1035,14 @@ msgid "Drawing"
 msgstr "Rajzolás"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "Másolás a vágólapra"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "Másolás a vágólapra"
+msgstr "Kivágás a vágólapra"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1079,39 +1065,31 @@ msgstr "Könyvtár feljebb mozgatása"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:70
 msgid "Workspace directory actions"
-msgstr "Munkafelületi könyvtárműveletek"
+msgstr "Munkaterületi könyvtárműveletek"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
 msgid "Create new folder"
 msgstr "Új mappa létrehozása"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "Munkafelület eltávolítása"
+msgstr "Kijelölt munkaterület mozgatása felfelé"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "A munkafelület ikonjának módosítása"
+msgstr "Kijelölt munkaterület mozgatása lefelé"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
-msgstr "Munkafelület hozzáadása"
+msgstr "Munkaterület hozzáadása"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "Munkafelület eltávolítása"
+msgstr "Kijelölt munkaterület eltávolítása"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "Munkafelület szerkesztése"
+msgstr "Kijelölt munkaterület szerkesztése"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"

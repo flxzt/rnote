@@ -51,9 +51,11 @@ mod imp {
         #[template_child]
         pub(crate) settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
+        pub(crate) sidebar_start_spacer_revealer: TemplateChild<Revealer>,
+        #[template_child]
         pub(crate) sidebar_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub(crate) sidebar_grid: TemplateChild<Grid>,
+        pub(crate) sidebar_box: TemplateChild<Grid>,
         #[template_child]
         pub(crate) sidebar_sep: TemplateChild<Separator>,
         #[template_child]
@@ -111,8 +113,9 @@ mod imp {
                 main_grid: TemplateChild::<Grid>::default(),
                 canvas_wrapper: TemplateChild::<RnoteCanvasWrapper>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
+                sidebar_start_spacer_revealer: TemplateChild::<Revealer>::default(),
                 sidebar_scroller: TemplateChild::<ScrolledWindow>::default(),
-                sidebar_grid: TemplateChild::<Grid>::default(),
+                sidebar_box: TemplateChild::<Grid>::default(),
                 sidebar_sep: TemplateChild::<Separator>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
                 flap_box: TemplateChild::<gtk4::Box>::default(),
@@ -514,12 +517,12 @@ mod imp {
 
             if righthanded {
                 inst.flap().set_flap_position(PackType::Start);
-                inst.main_grid().remove(&inst.sidebar_grid());
+                inst.main_grid().remove(&inst.sidebar_box());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid()
                     .remove(&inst.narrow_pens_toggles_revealer());
                 inst.main_grid().remove(&inst.canvas_wrapper());
-                inst.main_grid().attach(&inst.sidebar_grid(), 0, 1, 1, 2);
+                inst.main_grid().attach(&inst.sidebar_box(), 0, 1, 1, 2);
                 inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
                 inst.main_grid()
                     .attach(&inst.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
@@ -619,12 +622,12 @@ mod imp {
                 inst.main_grid()
                     .remove(&inst.narrow_pens_toggles_revealer());
                 inst.main_grid().remove(&inst.sidebar_sep());
-                inst.main_grid().remove(&inst.sidebar_grid());
+                inst.main_grid().remove(&inst.sidebar_box());
                 inst.main_grid().attach(&inst.canvas_wrapper(), 0, 2, 1, 1);
                 inst.main_grid()
                     .attach(&inst.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
                 inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
-                inst.main_grid().attach(&inst.sidebar_grid(), 2, 1, 1, 2);
+                inst.main_grid().attach(&inst.sidebar_box(), 2, 1, 1, 2);
                 inst.canvas_wrapper()
                     .quickactions_box()
                     .set_halign(Align::Start);
@@ -802,8 +805,8 @@ impl RnoteAppWindow {
         self.imp().sidebar_scroller.get()
     }
 
-    pub(crate) fn sidebar_grid(&self) -> Grid {
-        self.imp().sidebar_grid.get()
+    pub(crate) fn sidebar_box(&self) -> Grid {
+        self.imp().sidebar_box.get()
     }
 
     pub(crate) fn sidebar_sep(&self) -> Separator {
@@ -937,6 +940,17 @@ impl RnoteAppWindow {
         // rerender the canvas
         self.canvas().regenerate_background_pattern();
         self.canvas().update_engine_rendering();
+
+        // Reveal the spacer
+        self.imp()
+            .narrow_pens_toggles_revealer
+            .bind_property(
+                "reveal-child",
+                &*self.imp().sidebar_start_spacer_revealer,
+                "reveal-child",
+            )
+            .sync_create()
+            .build();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
     }

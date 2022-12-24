@@ -17,6 +17,7 @@ use rnote_compose::builders::{
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
+use rnote_compose::penpath::Element;
 
 #[derive(Debug)]
 enum ShaperState {
@@ -60,58 +61,13 @@ impl PenBehaviour for Shaper {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
                 engine_view.pens_config.shaper_config.new_style_seeds();
 
-                match engine_view.pens_config.shaper_config.builder_type {
-                    ShapeBuilderType::Line => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(LineBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::Rectangle => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(RectangleBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::Grid => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(GridBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::CoordSystem2D => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(CoordSystem2DBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::CoordSystem3D => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(CoordSystem3DBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::QuadrantCoordSystem2D => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadrantCoordSystem2DBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::Ellipse => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(EllipseBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::FociEllipse => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(FociEllipseBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::QuadBez => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadBezBuilder::start(element, now)),
-                        }
-                    }
-                    ShapeBuilderType::CubBez => {
-                        self.state = ShaperState::BuildShape {
-                            builder: Box::new(CubBezBuilder::start(element, now)),
-                        }
-                    }
-                }
+                self.state = ShaperState::BuildShape {
+                    builder: new_builder(
+                        engine_view.pens_config.shaper_config.builder_type,
+                        element,
+                        now,
+                    ),
+                };
 
                 widget_flags.redraw = true;
 
@@ -264,5 +220,26 @@ impl DrawOnDocBehaviour for Shaper {
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
+    }
+}
+
+fn new_builder(
+    builder_type: ShapeBuilderType,
+    element: Element,
+    now: Instant,
+) -> Box<dyn ShapeBuilderBehaviour> {
+    match builder_type {
+        ShapeBuilderType::Line => Box::new(LineBuilder::start(element, now)),
+        ShapeBuilderType::Rectangle => Box::new(RectangleBuilder::start(element, now)),
+        ShapeBuilderType::Grid => Box::new(GridBuilder::start(element, now)),
+        ShapeBuilderType::CoordSystem2D => Box::new(CoordSystem2DBuilder::start(element, now)),
+        ShapeBuilderType::CoordSystem3D => Box::new(CoordSystem3DBuilder::start(element, now)),
+        ShapeBuilderType::QuadrantCoordSystem2D => {
+            Box::new(QuadrantCoordSystem2DBuilder::start(element, now))
+        }
+        ShapeBuilderType::Ellipse => Box::new(EllipseBuilder::start(element, now)),
+        ShapeBuilderType::FociEllipse => Box::new(FociEllipseBuilder::start(element, now)),
+        ShapeBuilderType::QuadBez => Box::new(QuadBezBuilder::start(element, now)),
+        ShapeBuilderType::CubBez => Box::new(CubBezBuilder::start(element, now)),
     }
 }

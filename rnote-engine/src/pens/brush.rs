@@ -18,6 +18,7 @@ use rnote_compose::penevents::PenEvent;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::builders::PenPathBuilderType;
+use rnote_compose::penpath::Element;
 
 #[derive(Debug)]
 enum BrushState {
@@ -90,19 +91,6 @@ impl PenBehaviour for Brush {
                         ),
                     );
 
-                    let path_builder: Box<dyn PenPathBuilderBehaviour> =
-                        match engine_view.pens_config.brush_config.builder_type {
-                            PenPathBuilderType::Simple => {
-                                Box::new(PenPathSimpleBuilder::start(element, now))
-                            }
-                            PenPathBuilderType::Curved => {
-                                Box::new(PenPathCurvedBuilder::start(element, now))
-                            }
-                            PenPathBuilderType::Modeled => {
-                                Box::new(PenPathModeledBuilder::start(element, now))
-                            }
-                        };
-
                     engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
                         engine_view.camera.viewport(),
@@ -110,7 +98,11 @@ impl PenBehaviour for Brush {
                     );
 
                     self.state = BrushState::Drawing {
-                        path_builder,
+                        path_builder: new_builder(
+                            engine_view.pens_config.brush_config.builder_type,
+                            element,
+                            now,
+                        ),
                         current_stroke_key,
                     };
 
@@ -321,5 +313,17 @@ impl Brush {
         if let Some(audioplayer) = engine_view.audioplayer {
             audioplayer.stop_random_brush_sond();
         }
+    }
+}
+
+fn new_builder(
+    builder_type: PenPathBuilderType,
+    element: Element,
+    now: Instant,
+) -> Box<dyn PenPathBuilderBehaviour> {
+    match builder_type {
+        PenPathBuilderType::Simple => Box::new(PenPathSimpleBuilder::start(element, now)),
+        PenPathBuilderType::Curved => Box::new(PenPathCurvedBuilder::start(element, now)),
+        PenPathBuilderType::Modeled => Box::new(PenPathModeledBuilder::start(element, now)),
     }
 }

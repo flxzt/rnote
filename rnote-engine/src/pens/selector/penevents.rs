@@ -83,7 +83,8 @@ impl Selector {
                             if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(selection)
                             {
-                                *selection_bounds = new_bounds;
+                                *selection_bounds =
+                                    new_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN);
                             }
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))

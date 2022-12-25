@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-11-20 18:53+0000\n"
+"PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -65,8 +65,6 @@ msgid "A selection"
 msgstr "Seçim"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
 msgstr "_Renk şeması"
 
@@ -83,8 +81,6 @@ msgid "Use _dark colors"
 msgstr "_Koyu renkler kullan"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
 msgstr "_Geliştirici kipi"
 
@@ -93,8 +89,6 @@ msgid "Developer _menu"
 msgstr "Geliştirici _menüsü"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
 msgstr "_Görsel hata ayıklama"
 
@@ -131,23 +125,20 @@ msgid "_Import file"
 msgstr "Dosya _içe aktar"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "_Clipboard"
-msgstr "Panodan yapıştır"
+msgstr "_Pano"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopyala"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "K_es"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_Yapıştır"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -178,8 +169,6 @@ msgid "_Donate 💝"
 msgstr "_Bağış yap 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:138
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
 msgstr "Rnote _Hakkında"
 
@@ -242,8 +231,6 @@ msgid "Settings"
 msgstr "Ayarlar"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
 msgstr "Belge _düzeni"
 
@@ -268,22 +255,16 @@ msgid "Draw with _touch input"
 msgstr "_Dokunmatik girişle çiz"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "P_en sounds"
 msgid "_Pen sounds"
 msgstr "_Kalem sesleri"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "Belgeyi temizle"
+msgstr "Belgeyi _temizle"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "Özgün sayfaya dön"
+msgstr "Özgün sayfaya _dön"
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
 msgid "Zoom out"
@@ -1056,20 +1037,14 @@ msgid "Drawing"
 msgstr "Çizim"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "Panoya kopyala"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "Panoya kopyala"
+msgstr "Panoya kes"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1095,36 +1070,26 @@ msgid "Workspace directory actions"
 msgstr "Çalışma alanı dizin eylemleri"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Create new folder"
-msgstr "Dizin Oluştur"
+msgstr "Yeni klasör oluştur"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "Çalışma alanı kaldır"
+msgstr "Çalışma alanı yukarı taşı"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "Çalışma alanı simgesini değiştir"
+msgstr "Çalışma alanı aşağı taşı"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Çalışma alanı ekle"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
 msgstr "Çalışma alanı kaldır"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
 msgstr "Çalışma alanını düzenle"
 
@@ -1146,10 +1111,8 @@ msgid "Marker"
 msgstr "İşaretçi"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
-msgstr "Diğer fırça darbelerinin altını işaretle"
+msgstr "Diğer darbelerin altını işaretle"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:127
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:242
@@ -1281,20 +1244,16 @@ msgid "Split strokes"
 msgstr "Darbeleri ayır"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
 msgstr "Çokgen ile seç"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
 msgstr "Dikdörtgen ile seç"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "Tek tek seç"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1356,46 +1315,40 @@ msgid "Rough style"
 msgstr "Kaba biçim"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "Düz biçim"
+msgstr "Dolgu biçimi"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "Biçim seç"
+msgstr "Bir dolgu biçimi seç"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "Tarama"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Zig-Zag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Zig-Zag Hattı"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "Çapraz tarama"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "Kesikli"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "Tarama açısı"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "Çizim imlecini ayarla"
+msgstr "Tarama dolgularının açısını ayarla"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
@@ -1543,7 +1496,7 @@ msgstr "Dosya aç"
 
 #: rnote-ui/src/dialogs/import.rs:138
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:141
 msgid "Import file"
@@ -1699,29 +1652,27 @@ msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "Açılan dosya disk üzerinde değiştirildi."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Yeniden yükle"
 
 #: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "Açılan dosya disk üzerinde yeniden adlandırıldı."
 
 #: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "Açılan dosya diskte taşınmış veya silinmiş."
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "Dosya adı:"
+msgstr "Klasör adı"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
-msgstr ""
+msgstr "Yeni klasör"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

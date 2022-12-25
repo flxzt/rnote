@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-21 22:56+0000\n"
+"PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -130,15 +130,15 @@ msgstr "剪切板(C)"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "复制"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "剪切"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "粘贴"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -1027,8 +1027,6 @@ msgid "Drawing"
 msgstr "绘画"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "复制到剪切板"
@@ -1066,32 +1064,24 @@ msgid "Create new folder"
 msgstr "创建新文件夹"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "移除工作区"
+msgstr "向上移动选定的工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "更改工作区图标"
+msgstr "向下移动选定的工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "添加工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "移除工作区"
+msgstr "移除选定的工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "编辑工作区"
+msgstr "编辑选定的工作区"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"

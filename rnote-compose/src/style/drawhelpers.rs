@@ -98,7 +98,7 @@ pub fn rectangular_node_shape(
     bounds: Aabb,
     zoom: f64,
 ) -> kurbo::RoundedRect {
-    const CORNER_RADIUS: f64 = 2.0;
+    const CORNER_RADIUS: f64 = 1.0;
 
     kurbo::RoundedRect::from_rect(
         bounds

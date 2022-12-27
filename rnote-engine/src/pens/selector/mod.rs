@@ -100,7 +100,7 @@ impl PenBehaviour for Selector {
             self.state = SelectorState::ModifySelection {
                 modify_state: ModifyState::default(),
                 selection,
-                selection_bounds: selection_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN),
+                selection_bounds,
             };
 
             widget_flags.redraw = true;
@@ -348,9 +348,6 @@ impl Selector {
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
     const SINGLE_SELECTING_CIRCLE_RADIUS: f64 = 4.0;
-
-    /// The margins for the selection
-    const SELECTION_BOUNDS_MARGIN: f64 = 12.0;
 
     /// resize node size, in surface coords
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];

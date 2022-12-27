@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{KeyboardKey, ShortcutKey};
@@ -83,8 +83,7 @@ impl Selector {
                             if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(selection)
                             {
-                                *selection_bounds =
-                                    new_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN);
+                                *selection_bounds = new_bounds;
                             }
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
@@ -217,8 +216,7 @@ impl Selector {
                             if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(selection)
                             {
-                                *selection_bounds =
-                                    new_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN);
+                                *selection_bounds = new_bounds;
                             }
                             *current_rotation_angle = new_rotation_angle;
                         }
@@ -387,14 +385,12 @@ impl Selector {
                         }
                     }
                 } {
-                    if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection)
-                    {
+                    if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&selection) {
                         // Change to the modify state
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
                             selection,
-                            selection_bounds: selection_bounds
-                                .loosened(Self::SELECTION_BOUNDS_MARGIN),
+                            selection_bounds: new_bounds,
                         };
                         pen_progress = PenProgress::InProgress;
                     }
@@ -420,10 +416,8 @@ impl Selector {
                     engine_view.camera.image_scale(),
                 );
 
-                if let Some(new_selection_bounds) = engine_view.store.bounds_for_strokes(selection)
-                {
-                    *selection_bounds =
-                        new_selection_bounds.loosened(Self::SELECTION_BOUNDS_MARGIN);
+                if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
+                    *selection_bounds = new_bounds;
                 }
                 *modify_state = ModifyState::Up;
 
@@ -477,7 +471,7 @@ impl Selector {
                             // Select all keys
                             let all_strokes = engine_view.store.keys_sorted_chrono();
 
-                            if let Some(selection_bounds) =
+                            if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(&all_strokes)
                             {
                                 engine_view.store.set_selected_keys(&all_strokes, true);
@@ -485,8 +479,7 @@ impl Selector {
                                 self.state = SelectorState::ModifySelection {
                                     modify_state: ModifyState::default(),
                                     selection: all_strokes,
-                                    selection_bounds: selection_bounds
-                                        .loosened(Self::SELECTION_BOUNDS_MARGIN),
+                                    selection_bounds: new_bounds,
                                 };
 
                                 engine_view
@@ -511,7 +504,7 @@ impl Selector {
                             // Select all keys
                             let all_strokes = engine_view.store.keys_sorted_chrono();
 
-                            if let Some(selection_bounds) =
+                            if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(&all_strokes)
                             {
                                 engine_view.store.set_selected_keys(&all_strokes, true);
@@ -519,8 +512,7 @@ impl Selector {
                                 self.state = SelectorState::ModifySelection {
                                     modify_state: ModifyState::default(),
                                     selection: all_strokes,
-                                    selection_bounds: selection_bounds
-                                        .loosened(Self::SELECTION_BOUNDS_MARGIN),
+                                    selection_bounds: new_bounds,
                                 };
 
                                 engine_view
@@ -546,7 +538,7 @@ impl Selector {
                         if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
                             let all_strokes = engine_view.store.keys_sorted_chrono();
 
-                            if let Some(selection_bounds) =
+                            if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(&all_strokes)
                             {
                                 engine_view.store.set_selected_keys(&all_strokes, true);
@@ -554,8 +546,7 @@ impl Selector {
                                 self.state = SelectorState::ModifySelection {
                                     modify_state: ModifyState::default(),
                                     selection: all_strokes,
-                                    selection_bounds: selection_bounds
-                                        .loosened(Self::SELECTION_BOUNDS_MARGIN),
+                                    selection_bounds: new_bounds,
                                 };
 
                                 engine_view

@@ -72,6 +72,17 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.11" date="2022-12-27">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UI: minor sidebar tweaks</li>
+          <li>i18n: updated strings and translations</li>
+          <li>fix: remove selection bounds margins</li>
+          <li>fix: don't overwrite active palette color when start modifying existing text</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.10" date="2022-12-23">
       <description>
         <p>this release changes:</p>

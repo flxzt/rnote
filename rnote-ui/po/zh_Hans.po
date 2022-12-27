@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-21 22:56+0000\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
+"PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
@@ -41,26 +41,26 @@ msgstr ""
 "Rnote 是一款基于矢量绘图的软件，用于素描、手写笔记、以及为文件和图片添加注"
 "释。"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
 "免责声明：该文件格式尚未完全支持，它可能改变并损坏不同版本之间的兼容性。"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "浅色主窗口"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "暗色主窗口"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "PDF 注释"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "选项"
 
@@ -129,16 +129,16 @@ msgid "_Clipboard"
 msgstr "剪切板(C)"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-msgid "_Copy to clipboard"
-msgstr "复制到剪切板"
+msgid "_Copy"
+msgstr "复制"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-msgid "C_ut to clipboard"
-msgstr "剪切到剪切板"
+msgid "C_ut"
+msgstr "剪切"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
-msgstr "粘贴剪切板"
+msgid "_Paste"
+msgstr "粘贴"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -403,7 +403,7 @@ msgid "Change the workspace directory"
 msgstr "更改工作区目录"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
@@ -1027,8 +1027,6 @@ msgid "Drawing"
 msgstr "绘画"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgid "_Copy to clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "复制到剪切板"
@@ -1066,32 +1064,24 @@ msgid "Create new folder"
 msgstr "创建新文件夹"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "移除工作区"
+msgstr "向上移动选定的工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "更改工作区图标"
+msgstr "向下移动选定的工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "添加工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "移除工作区"
+msgstr "移除选定的工作区"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "编辑工作区"
+msgstr "编辑选定的工作区"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1671,6 +1661,15 @@ msgstr "文件夹名称"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "新建文件夹"
+
+#~ msgid "_Copy to clipboard"
+#~ msgstr "复制到剪切板"
+
+#~ msgid "C_ut to clipboard"
+#~ msgstr "剪切到剪切板"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "粘贴剪切板"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

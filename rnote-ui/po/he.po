@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -42,7 +42,7 @@ msgstr ""
 "‫Rnote הוא יישום ציור פשוט מבוסס וקטורים להערות בכתב־יד וכדי להוסיף הערות על "
 "מסמכים ותמונות."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 #, fuzzy
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
@@ -51,19 +51,19 @@ msgstr ""
 "הבהרה: סוג הקובץ אינו יציב. הוא עשוי להשתנות בין הגרסאות והתאימות לאחור "
 "עשויה להיפגע."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "החלון הראשי בצבעים בהירים"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "החלון הראשי בצבעים כהים"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "הערות על PDF"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "בחירה"
 
@@ -156,19 +156,16 @@ msgid "_Clipboard"
 msgstr "הדבקת לוח הגזירים כבחירה"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-msgid "_Copy to clipboard"
-msgstr "העתקת הבחירה ללוח הגזירים"
+msgid "_Copy"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-msgid "C_ut to clipboard"
-msgstr "העתקת הבחירה ללוח הגזירים"
+msgid "C_ut"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-msgid "_Paste clipboard"
-msgstr "הדבקת לוח הגזירים כבחירה"
+msgid "_Paste"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
 #, fuzzy
@@ -470,7 +467,7 @@ msgid "Change the workspace directory"
 msgstr "החלפת תיקיית סביבת עבודה"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr ""
@@ -1837,6 +1834,18 @@ msgstr "שינוי שם"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~ msgid "_Copy to clipboard"
+#~ msgstr "העתקת הבחירה ללוח הגזירים"
+
+#, fuzzy
+#~ msgid "C_ut to clipboard"
+#~ msgstr "העתקת הבחירה ללוח הגזירים"
+
+#, fuzzy
+#~ msgid "_Paste clipboard"
+#~ msgstr "הדבקת לוח הגזירים כבחירה"
 
 #, fuzzy
 #~ msgctxt "shortcut window"

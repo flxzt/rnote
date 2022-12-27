@@ -8,16 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-11 18:26+0000\n"
-"Last-Translator: Mathieu B. <mathieu.bousquet2@gmail.com>\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
+"PO-Revision-Date: 2022-12-23 16:27+0000\n"
+"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -41,7 +41,7 @@ msgstr ""
 "Rnote est une application de dessin vectoriel pour réaliser des croquis, "
 "prendre des notes manuscrites ou annoter des documents et des images."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -49,27 +49,25 @@ msgstr ""
 "ATTENTION : le format de fichier est toujours instable. Cela pourrait "
 "changer à l'avenir et rompre la compatibilité entre les versions."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "Fenêtre principale aux couleurs claires"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "Fenêtre principale aux couleurs sombres"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "Une annotation PDF"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "Une sélection"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
-msgstr "Thème de _couleurs"
+msgstr "Thème de cou_leurs"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
@@ -128,31 +126,20 @@ msgid "_Import file"
 msgstr "_Importer un fichier"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "_Coller le presse-papiers"
+msgstr "_Presse-papiers"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "_Copy to clipboard"
-msgstr "Copier dans le presse-papiers"
+msgid "_Copy"
+msgstr "_Copier"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "C_ut to clipboard"
-msgstr "Copier dans le presse-papiers"
+msgid "C_ut"
+msgstr "Co_uper"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
-msgid "_Paste clipboard"
-msgstr "Coller le presse-papiers"
+msgid "_Paste"
+msgstr "Co_ller"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -245,8 +232,6 @@ msgid "Settings"
 msgstr "Paramètres"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
 msgstr "_Mise en page"
 
@@ -275,10 +260,8 @@ msgid "_Pen sounds"
 msgstr "Sons du _stylo"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "Effacer le document"
+msgstr "_Effacer le document"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_Return to origin page"
@@ -425,7 +408,7 @@ msgid "Change the workspace directory"
 msgstr "Changer d’espace de travail"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- aucun répertoire sélectionné -"
@@ -1059,20 +1042,14 @@ msgid "Drawing"
 msgstr "Dessein"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "Copier dans le presse-papiers"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "Copier dans le presse-papiers"
+msgstr "Couper dans le presse-papiers"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1102,32 +1079,24 @@ msgid "Create new folder"
 msgstr "Créer un nouveau dossier"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "Supprimer l'espace de travail"
+msgstr "Déplacer l’espace de travail sélectionné vers le haut"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "Modifier l'icône de l'espace de travail"
+msgstr "Déplacer l’espace de travail sélectionné vers le bas"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Ajouter un espace de travail"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "Supprimer l'espace de travail"
+msgstr "Supprimer l’espace de travail sélectionné"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "Modifier l'espace de travail"
+msgstr "Modifier l’espace de travail sélectionné"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1709,6 +1678,24 @@ msgstr "Nom du dossier"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nouveau dossier"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "_Copy to clipboard"
+#~ msgstr "Copier dans le presse-papiers"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "C_ut to clipboard"
+#~ msgstr "Copier dans le presse-papiers"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Paste clipboard"
+#~ msgid "_Paste clipboard"
+#~ msgstr "Coller le presse-papiers"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

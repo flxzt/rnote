@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
 "PO-Revision-Date: 2022-11-30 09:31+0000\n"
 "Last-Translator: Larix_45 <milarczek2004@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
@@ -41,7 +41,7 @@ msgstr ""
 "Rnote to oparta na grafice wektorowej aplikacja do rysowania, robienia "
 "odręcznych notatek oraz do dodawania adnotacji do dokumentów i zdjęć."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -49,19 +49,19 @@ msgstr ""
 "Uwaga: Format pliku jest wciąż niestabilny. Może się zmienić i być "
 "niekompatybilnym między wersjami."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "Główne okno w jasnych kolorach"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "Główne okno w ciemnych kolorach"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "Adnotacja PDF"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "Wybór"
 
@@ -161,22 +161,16 @@ msgid "_Clipboard"
 msgstr "Wklej ze schowek"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "_Copy to clipboard"
-msgstr "Kopiuj do schowka"
+msgid "_Copy"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgid "C_ut to clipboard"
-msgstr "Kopiuj do schowka"
+msgid "C_ut"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
-msgstr "Wklej ze schowka"
+msgid "_Paste"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:109
 #, fuzzy
@@ -475,7 +469,7 @@ msgid "Change the workspace directory"
 msgstr "Zmień katalog obszaru roboczego"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- nie wybrano żadnego katalogu -"
@@ -1804,6 +1798,21 @@ msgstr "Nazwa folderu"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nowy folder"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "_Copy to clipboard"
+#~ msgstr "Kopiuj do schowka"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "C_ut to clipboard"
+#~ msgstr "Kopiuj do schowka"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "Wklej ze schowka"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

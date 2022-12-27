@@ -8,103 +8,96 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-11-16 10:26+0000\n"
-"Last-Translator: 이정희 <daemul72@gmail.com>\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
-"Language: ko\n"
+"PO-Revision-Date: 2022-12-24 12:01+0000\n"
+"Last-Translator: Anggara Permana Putra <anggaraperpe@gmail.com>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
+">\n"
+"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
 msgid "Sketch and take handwritten notes"
-msgstr "스케치 및 필기 메모 작성"
+msgstr ""
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Graphics;Notes;그놈;오피스;그래픽;메모;"
+msgstr ""
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr "새 창"
+msgstr "Jendela Baru"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote는 스케치하기, 필기 메모, 문서, 그림에 주석을 달기위한 벡터 기반 그리기 "
-"앱입니다."
+"Rnote adalah aplikasi menggambar berbasis vektor untuk membuat sketsa, "
+"catatan tulis tangan dan untuk memberikan catata pada dokumen dan gambar"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"면책 조항 : 파일 형식이 여전히 불안정합니다. 버전 간의 호환성이 변경되고 손상"
-"될 수 있습니다."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
-msgstr "밝은 색상의 기본 창"
+msgstr "Jendela utama dalam warna cerah"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
-msgstr "어두운 색상의 기본 창"
+msgstr "jendela utama dalam warna gelap"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
-msgstr "PDF 주석"
+msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
-msgstr "선택항목"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
-msgstr "색 구성표(_C)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
-msgstr "시스템 색상 사용하기(_S)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _light colors"
-msgstr "밝은 색상 사용하기(_L)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _dark colors"
-msgstr "어두운 색상 사용하기(_D)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper mode"
-msgstr "개발자 모드(_D)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
-msgstr "개발자 메뉴(_M)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _debugging"
-msgstr "시각적 디버깅(_V)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:60
 msgid "Export engine _config"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
@@ -163,66 +156,62 @@ msgid "Export _selection"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:126
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "설정"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard shortcuts"
-msgstr "키보드 단축키(_K)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
-msgstr "기부하기(_D) 💝"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:138
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
-msgstr "Rnote 정보(_A)"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the left side"
-msgstr "왼쪽의 사이드바"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:178
 msgid "Sidebar on the right side"
-msgstr "오른쪽의 사이드바"
+msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:188
 msgid "Toggle fullscreen"
-msgstr "전체화면 전환하기"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:67 rnote-ui/data/ui/mainheader.ui:77
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
 msgid "Brush"
-msgstr "브러시"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:74 rnote-ui/data/ui/mainheader.ui:84
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
 msgid "Shaper"
-msgstr "셰이퍼"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
 msgid "Typewriter"
-msgstr "타이프라이터"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Eraser"
-msgstr "지우개"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
 msgid "Selector"
-msgstr "선택자"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:106 rnote-ui/data/ui/mainheader.ui:116
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
 msgid "Tools"
-msgstr "도구"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:197
 msgid "Reveal / hide flap"
@@ -230,25 +219,23 @@ msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:267
 msgid "Close the folded flap"
-msgstr "접힌 플랩 닫기"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:284
 msgid "Workspace"
-msgstr "작업 공간"
+msgstr ""
 
 #: rnote-ui/data/ui/appwindow.ui:295
 msgid "Settings"
-msgstr "설정"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
-msgstr "문서 레이아웃(_L)"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed size"
-msgstr "고정된 크기(_F)"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "_Continuous vertical"
@@ -264,7 +251,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Draw with _touch input"
-msgstr "터치 입력으로 그리기(_T)"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen sounds"
@@ -275,14 +262,12 @@ msgid "C_lear document"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to origin page"
-msgstr "원본 페이지로 돌아가기"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/canvaswrapper.ui:77
 msgid "Zoom out"
-msgstr "축소"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:104
 msgid "Reset the zoom"
@@ -290,7 +275,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:111 rnote-ui/data/ui/canvaswrapper.ui:89
 msgid "Zoom in"
-msgstr "확대"
+msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:123
 msgid "Zoom to fit page width"
@@ -298,19 +283,19 @@ msgstr ""
 
 #: rnote-ui/data/ui/canvaswrapper.ui:49
 msgid "Add page"
-msgstr "페이지 추가하기"
+msgstr ""
 
 #: rnote-ui/data/ui/canvaswrapper.ui:61
 msgid "Resize document to fit the strokes"
-msgstr "자획에 맞게 문서 크기 조정하기"
+msgstr ""
 
 #: rnote-ui/data/ui/canvaswrapper.ui:102
 msgid "Undo"
-msgstr "실행 취소"
+msgstr ""
 
 #: rnote-ui/data/ui/canvaswrapper.ui:115
 msgid "Redo"
-msgstr "다시 실행"
+msgstr ""
 
 #: rnote-ui/data/ui/colorpicker.ui:64
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
@@ -1605,7 +1590,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:916
 msgid "Export engine config failed."
-msgstr ""
+msgstr "konfigurasi mesin expor gagal."
 
 #: rnote-ui/src/dialogs/export.rs:918
 msgid "Exported engine config successfully."
@@ -1613,56 +1598,56 @@ msgstr ""
 
 #: rnote-ui/src/appwindow/imexport.rs:71
 msgid "Opening .rnote file failed."
-msgstr ""
+msgstr "Pembukaan berkas .rnote gagal."
 
 #: rnote-ui/src/appwindow/imexport.rs:89
 msgid "Opening vector image file failed."
-msgstr ""
+msgstr "Pembukaan berkas gambar vektor gagal."
 
 #: rnote-ui/src/appwindow/imexport.rs:107
 msgid "Opening bitmap image file failed."
-msgstr ""
+msgstr "Pembukaan berkas gambar bitmap gagal."
 
 #: rnote-ui/src/appwindow/imexport.rs:156
 msgid "Error: Tried opening folder as file"
-msgstr ""
+msgstr "Galat: Mencoba membuka folder sebagai berkas"
 
 #: rnote-ui/src/appwindow/imexport.rs:161
 msgid "Failed to open file: Unsupported file type."
-msgstr ""
+msgstr "Gagal membuka file: tipe file tidak didukung."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:733
 msgid "Printed document successfully"
-msgstr ""
+msgstr "Dokumen sukses tercetak"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:742
 msgid "Printing document failed"
-msgstr ""
+msgstr "Pencetakan dokumen gagal"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:768
 msgid "Export selection failed, nothing selected."
-msgstr ""
+msgstr "Mengekspor seleksi gagal, tidak ada yang dipilih"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "File yang dibuka telah dimodifikasi pada disk."
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "Muat ulang"
 
 #: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "File yang dibuka diganti nama pada disk"
 
 #: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "File yang terbuka dipindahkan atau dihapus pada disk."
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 msgid "Folder name"
-msgstr ""
+msgstr "Nama folder"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
-msgstr ""
+msgstr "Folder Baru"

@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-22 12:57+0100\n"
-"PO-Revision-Date: 2022-12-23 03:04+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"POT-Creation-Date: 2022-12-23 06:31+0100\n"
+"PO-Revision-Date: 2022-12-23 16:27+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -40,7 +40,7 @@ msgstr ""
 "Rnote è un'applicazione per disegnare, prendere appunti e per annotare "
 "documenti e immagini basata su vettori."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -48,27 +48,25 @@ msgstr ""
 "Disclaimer: il formato del file è ancora instabile. Potrebbe cambiare tra "
 "versioni e perdere compatibilità con le versioni precedenti."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "Finestra principale dai colori chiari"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "Finestra principale dai colori scuri"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "Un'annotazione PDF"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "Una selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
-msgstr "_Tema"
+msgstr "Schema  colore"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
@@ -131,16 +129,16 @@ msgid "_Clipboard"
 msgstr "_Appunti"
 
 #: rnote-ui/data/ui/appmenu.ui:96
-msgid "_Copy to clipboard"
-msgstr "_Copia negli appunti"
+msgid "_Copy"
+msgstr "_Copia"
 
 #: rnote-ui/data/ui/appmenu.ui:100
-msgid "C_ut to clipboard"
-msgstr "_Taglia negli appunti"
+msgid "C_ut"
+msgstr "T_aglia"
 
 #: rnote-ui/data/ui/appmenu.ui:104
-msgid "_Paste clipboard"
-msgstr "_Incolla gli appunti"
+msgid "_Paste"
+msgstr "_Incolla"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -261,10 +259,8 @@ msgid "_Pen sounds"
 msgstr "_Suoni penna"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
-msgstr "Pulisci documento"
+msgstr "P_ulisci documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:65
 msgid "_Return to origin page"
@@ -411,7 +407,7 @@ msgid "Change the workspace directory"
 msgstr "Cambia la cartella dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:311
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:312
 #: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
 msgid "- no directory selected -"
 msgstr "- nessuna cartella selezionata -"
@@ -1678,6 +1674,15 @@ msgstr "Nome cartella"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nuova cartella"
+
+#~ msgid "_Copy to clipboard"
+#~ msgstr "_Copia negli appunti"
+
+#~ msgid "C_ut to clipboard"
+#~ msgstr "_Taglia negli appunti"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "_Incolla gli appunti"
 
 #~ msgctxt "shortcut window"
 #~ msgid "Copy into clipboard"

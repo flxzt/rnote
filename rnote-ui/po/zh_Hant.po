@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-22 13:05+0100\n"
-"Last-Translator: WhiredPlanck <whiredplanck@outlook.com>\n"
-"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
-"rnote/repo/zh_Hans/>\n"
-"Language: zh_TW\n"
+"PO-Revision-Date: 2022-12-25 17:47+0000\n"
+"Last-Translator: OpenCC\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"rnote/repo/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:23
@@ -65,8 +65,6 @@ msgid "A selection"
 msgstr "選項"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor scheme"
 msgstr "配色方案"
 
@@ -127,22 +125,20 @@ msgid "_Import file"
 msgstr "匯入檔案"
 
 #: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Paste _clipboard"
 msgid "_Clipboard"
-msgstr "貼上剪下板(C)"
+msgstr "剪下板(C)"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "複製"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "剪下"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "貼上"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -235,8 +231,6 @@ msgid "Settings"
 msgstr "設定"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document layout"
 msgstr "文件佈局(L)"
 
@@ -265,8 +259,6 @@ msgid "_Pen sounds"
 msgstr "手寫筆音效(P)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
 msgid "C_lear document"
 msgstr "清空文件"
 
@@ -597,8 +589,6 @@ msgid "Select the export directory"
 msgstr "選擇匯出時的目錄"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export files stem name"
 msgstr "匯出檔案主名稱"
 
@@ -1037,20 +1027,14 @@ msgid "Drawing"
 msgstr "繪畫"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Copy to clipboard"
 msgstr "複製到剪下板"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
 msgid "Cut to clipboard"
-msgstr "複製到剪下板"
+msgstr "剪下到剪下板"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
@@ -1080,32 +1064,24 @@ msgid "Create new folder"
 msgstr "建立新資料夾"
 
 #: rnote-ui/data/ui/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Move selected workspace up"
-msgstr "移除工作區"
+msgstr "向上移動選定的工作區"
 
 #: rnote-ui/data/ui/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Change the workspace icon"
 msgid "Move selected workspace down"
-msgstr "更改工作區圖示"
+msgstr "向下移動選定的工作區"
 
 #: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "新增工作區"
 
 #: rnote-ui/data/ui/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove workspace"
 msgid "Remove selected workspace"
-msgstr "移除工作區"
+msgstr "移除選定的工作區"
 
 #: rnote-ui/data/ui/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit selected workspace"
-msgstr "編輯工作區"
+msgstr "編輯選定的工作區"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:32
 msgid "Brush style"
@@ -1155,25 +1131,27 @@ msgstr "簡單"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "按照原始輸入生成線段。\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Curved"
-msgstr ""
+msgstr "曲線"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "生成光滑、彎曲的線段。\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:208
 msgid "Modeled"
-msgstr ""
+msgstr "建模"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:209
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"使用模擬物理的演算法生成建模後的軌跡。\n"
+"結果是所有方法中最好看的（譯者注：對於中文使用者不一定如此）。"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:218
 msgid "Solid style"
@@ -1256,20 +1234,16 @@ msgid "Split strokes"
 msgstr "分割畫筆"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
 msgid "Select with a polygon"
-msgstr "選擇多邊形"
+msgstr "選擇一個多邊形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
 msgid "Select with a rectangle"
-msgstr "選擇矩形"
+msgstr "選擇一個矩形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Select one by one"
-msgstr ""
+msgstr "逐個選擇"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
@@ -1331,46 +1305,40 @@ msgid "Rough style"
 msgstr "粗糙樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-#, fuzzy
-#| msgid "Solid style"
 msgid "Fill style"
-msgstr "硬筆樣式"
+msgstr "填充樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:238
-#, fuzzy
-#| msgid "Choose a format"
 msgid "Choose a fill style"
-msgstr "選擇格式"
+msgstr "選擇填充樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:243
 msgid "Hachure"
-msgstr ""
+msgstr "陰影線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:244
 msgid "Zig-Zag"
-msgstr ""
+msgstr "鋸齒"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:245
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "鋸齒線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
 msgid "Crosshatch"
-msgstr ""
+msgstr "交叉陰影線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Dashed"
-msgstr ""
+msgstr "虛線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:256
 msgid "Hachure angle"
-msgstr ""
+msgstr "帶角度的陰影線"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:257
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
-msgstr "設定畫筆的游標"
+msgstr "設定陰影線的角度"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:310
 msgid "Line"
@@ -1382,15 +1350,15 @@ msgstr "矩形"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:343
 msgid "2D coordinate system"
-msgstr ""
+msgstr "2維座標系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:354
 msgid "3D coordinate system"
-msgstr ""
+msgstr "3維座標系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:365
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "2維單象限座標系"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:376
 msgid "Ellipse"
@@ -1516,7 +1484,7 @@ msgstr "開啟檔案"
 
 #: rnote-ui/src/dialogs/import.rs:138
 msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:141
 msgid "Import file"
@@ -1575,64 +1543,44 @@ msgid "Saved document successfully."
 msgstr "文件儲存成功。"
 
 #: rnote-ui/src/dialogs/export.rs:193
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed."
-msgstr "匯出文件為 SVG 失敗。"
+msgstr "匯出文件失敗。"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document successfully."
-msgstr "匯出文件為 SVG 成功。"
+msgstr "匯出文件成功。"
 
 #: rnote-ui/src/dialogs/export.rs:201
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document failed, no file selected."
-msgstr "匯出文件為 SVG 失敗。"
+msgstr "匯出檔案失敗，沒有選擇檔案。"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document pages failed."
-msgstr "匯出文件為 SVG 失敗。"
+msgstr "匯出文件頁面失敗。"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document as SVG successfully."
 msgid "Exported document pages successfully."
-msgstr "匯出文件為 SVG 成功。"
+msgstr "匯出文件頁面成功。"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document as SVG failed."
 msgid "Export document pages failed, no directory selected."
-msgstr "匯出文件為 SVG 失敗。"
+msgstr "匯出文件頁面失敗，沒有選擇目錄。"
 
 #: rnote-ui/src/dialogs/export.rs:713
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed."
-msgstr "匯出所選為 SVG 失敗。"
+msgstr "匯出選擇內容失敗。"
 
 #: rnote-ui/src/dialogs/export.rs:715
-#, fuzzy
-#| msgid "Exported selection as SVG successfully."
 msgid "Exported selection successfully."
-msgstr "匯出所選為 SVG 成功。"
+msgstr "匯出選擇內容成功。"
 
 #: rnote-ui/src/dialogs/export.rs:721
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, no file selected."
-msgstr "匯出所選為 SVG 失敗。"
+msgstr "匯出選擇內容失敗，沒有選擇檔案。"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
-#, fuzzy
-#| msgid "JSON file"
 msgid "JSON"
-msgstr "JSON 檔案"
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:814
 msgid "Export engine state"
@@ -1675,7 +1623,6 @@ msgid "Error: Tried opening folder as file"
 msgstr "錯誤：將資料夾作為檔案開啟"
 
 #: rnote-ui/src/appwindow/imexport.rs:161
-#, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "開啟檔案失敗：不支援的檔案型別。"
 
@@ -1688,45 +1635,48 @@ msgid "Printing document failed"
 msgstr "列印失敗"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:768
-#, fuzzy
-#| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
-msgstr "匯出所選為 SVG 失敗。"
+msgstr "匯出選擇內容失敗，沒有選擇內容。"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Opened file was modified on disk."
-msgstr ""
+msgstr "開啟的檔案已在磁碟上被修改過。"
 
 #: rnote-ui/src/canvas/mod.rs:601
 msgid "Reload"
-msgstr ""
+msgstr "重新載入"
 
 #: rnote-ui/src/canvas/mod.rs:641
 msgid "Opened file was renamed on disk."
-msgstr ""
+msgstr "開啟的檔案已在磁碟上被重新命名。"
 
 #: rnote-ui/src/canvas/mod.rs:654
 msgid "Opened file was moved or deleted on disk."
-msgstr ""
+msgstr "開啟的檔案已在磁碟上被移動或者刪除。"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
-#, fuzzy
-#| msgid "File name:"
 msgid "Folder name"
-msgstr "檔名："
+msgstr "資料夾名稱"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
-msgstr ""
+msgstr "新建資料夾"
+
+#~ msgid "_Copy to clipboard"
+#~ msgstr "複製到剪下板"
+
+#~ msgid "C_ut to clipboard"
+#~ msgstr "剪下到剪下板"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "貼上剪下板"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "複製到剪下板"
 
 #~ msgid "_Clear document"
 #~ msgstr "清空文件"
-
-#, fuzzy
-#~| msgctxt "shortcut window"
-#~| msgid "Paste clipboard"
-#~ msgid "_Paste clipboard"
-#~ msgstr "貼上剪下板"
 
 #~ msgid "Stroke dots radii"
 #~ msgstr "筆畫點陣半徑"

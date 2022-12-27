@@ -89,14 +89,12 @@ mod imp {
             let inst = self.instance();
 
             let colorchooser = self.colorchooser.get();
-            let first_colorsetter = self.first_colorsetter.get();
             let colorpicker_popover = self.colorpicker_popover.get();
             let colorchooser_editor_gobackbutton = self.colorchooser_editor_gobackbutton.get();
 
             self.first_colorsetter.connect_clicked(
                 clone!(@weak inst as colorpicker => move |first_colorsetter| {
-                    let color = first_colorsetter.property::<gdk::RGBA>("color");
-                    colorpicker.set_property("current-color", &color.to_value());
+                    colorpicker.set_current_color(first_colorsetter.color());
 
                     // Avoid loops
                     if colorpicker.selected() != 0_u32 {
@@ -127,24 +125,9 @@ mod imp {
             self.colorchooser.connect_rgba_notify(
                 clone!(@weak inst as colorpicker => move |colorchooser| {
                     let color = colorchooser.rgba();
-                    colorpicker.set_property("current-color", &color.to_value());
+                    colorpicker.set_current_color(color);
                 }),
             );
-
-            inst.connect_notify_local(Some("current-color"), clone!(@weak first_colorsetter, @weak self.colorsetters as colorsetters => move |obj, _param| {
-                let current_color = obj.current_color();
-
-                // store color in the buttons
-                if first_colorsetter.is_active() {
-                    first_colorsetter.set_property("color", current_color.to_value());
-                } else {
-                    for colorsetter in &*colorsetters.borrow() {
-                        if colorsetter.is_active() {
-                            colorsetter.set_property("color", current_color.to_value());
-                        }
-                    }
-                }
-            }));
         }
 
         fn dispose(&self) {
@@ -210,9 +193,10 @@ mod imp {
                         .expect("value not of type `PositionType`");
                     self.position.replace(position);
 
-                    self.first_colorsetter.set_property("position", position);
+                    self.first_colorsetter.set_position(position);
+
                     for setter_button in self.colorsetters.borrow().iter() {
-                        setter_button.set_property("position", position);
+                        setter_button.set_position(position);
                     }
 
                     match position {
@@ -331,7 +315,7 @@ mod imp {
                 setter_button.connect_clicked(
                     clone!(@weak inst as colorpicker => move |setter_button| {
                         let color = setter_button.property::<gdk::RGBA>("color");
-                        colorpicker.set_property("current-color", &color.to_value());
+                        colorpicker.set_current_color(color);
 
                         // Avoid loops
                         if colorpicker.selected() != i {
@@ -361,7 +345,7 @@ mod imp {
                     0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
                     1.0,
                 );
-                setter_button.set_property("color", &color.to_value());
+                setter_button.set_color(color);
             }
         }
     }
@@ -369,7 +353,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
-        @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for ColorPicker {

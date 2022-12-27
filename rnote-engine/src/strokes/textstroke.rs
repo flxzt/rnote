@@ -864,10 +864,14 @@ impl TextStroke {
             let next_line = (hittest_position.line + 1).min(lines.len() - 1);
 
             if next_line != hittest_position.line {
-                let current_line_rel_offset =
-                    cursor.cur_cursor() - lines[hittest_position.line].start_offset;
-                let next_line_max_offset =
-                    lines[next_line].end_offset - 1 - lines[next_line].start_offset;
+                let current_line_rel_offset = cursor
+                    .cur_cursor()
+                    .saturating_sub(lines[hittest_position.line].start_offset);
+
+                let next_line_max_offset = lines[next_line]
+                    .end_offset
+                    .saturating_sub(lines[next_line].start_offset)
+                    .saturating_sub(1);
 
                 let line_rel_offset = current_line_rel_offset.min(next_line_max_offset);
 
@@ -893,10 +897,13 @@ impl TextStroke {
             let prev_line = hittest_position.line.saturating_sub(1);
 
             if prev_line != hittest_position.line {
-                let current_line_rel_offset =
-                    cursor.cur_cursor() - lines[hittest_position.line].start_offset;
-                let prev_line_max_offset =
-                    lines[prev_line].end_offset - 1 - lines[prev_line].start_offset;
+                let current_line_rel_offset = cursor
+                    .cur_cursor()
+                    .saturating_sub(lines[hittest_position.line].start_offset);
+                let prev_line_max_offset = lines[prev_line]
+                    .end_offset
+                    .saturating_sub(lines[prev_line].start_offset)
+                    .saturating_sub(1);
 
                 let line_rel_offset = current_line_rel_offset.min(prev_line_max_offset);
 

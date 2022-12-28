@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-23 16:27+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2022-12-29 08:49+0000\n"
+"Last-Translator: Giulio Girardi <giulio@rapgenic.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -66,19 +66,19 @@ msgstr "Una selezione"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor scheme"
-msgstr "Schema  colore"
+msgstr "Schema colore"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
-msgstr "Segui il tema del_sistema"
+msgstr "Segui il tema del _sistema"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _light colors"
-msgstr "Usa_colori chiari"
+msgstr "Usa _colori chiari"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _dark colors"
-msgstr "Usa_colori scuri"
+msgstr "Usa _colori scuri"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper mode"
@@ -86,7 +86,7 @@ msgstr "Mo_dalità sviluppatore"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _menu"
-msgstr "Menu_sviluppatore"
+msgstr "Menu _sviluppatore"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _debugging"
@@ -94,11 +94,11 @@ msgstr "Debug _visivo"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export engine _state"
-msgstr "Esporta 'engine_state'"
+msgstr "Esporta 'engine _state'"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 msgid "Export engine _config"
-msgstr "Esporta 'engine_config'"
+msgstr "Esporta 'engine _config'"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
@@ -114,7 +114,7 @@ msgstr "_Salva"
 
 #: rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _as"
-msgstr "Salva_come"
+msgstr "Salva _come"
 
 #: rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
@@ -146,11 +146,11 @@ msgstr "_Esporta…"
 
 #: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _document"
-msgstr "Esporta_documento"
+msgstr "Esporta _documento"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Export document _pages"
-msgstr "Esporta pagine_del documento"
+msgstr "Esporta pagine _del documento"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _selection"
@@ -248,11 +248,11 @@ msgstr "_Infinito"
 
 #: rnote-ui/data/ui/canvasmenu.ui:44
 msgid "Show _format borders"
-msgstr "Mostra_formato bordi"
+msgstr "Mostra _formato bordi"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Draw with _touch input"
-msgstr "Disegna con _l'imput touch"
+msgstr "Disegna con _l'input touch"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "_Pen sounds"
@@ -963,7 +963,7 @@ msgstr "Passa alla 'Forma'"
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr "Passa alla \"Macchina da scrivere\""
+msgstr "Passa alla 'Macchina da scrivere'"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
@@ -978,7 +978,7 @@ msgstr "Passa al 'Selettore'"
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr "Passa agli \"Strumenti\""
+msgstr "Passa agli 'Strumenti'"
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103

@@ -39,7 +39,7 @@
     color: @destructive_color;
 }
 
-.narrow_pens_toggles_box {
+.narrow_pens_toggles_clamp {
     background: linear-gradient(to right, #0000000a 0%, #00000000 6%, #00000000 94%, #0000000a 100%);
 }
 

@@ -14,7 +14,8 @@
 
   <object class="AdwMessageDialog" id="dialog_new_doc">
     <property name="heading" translatable="yes">New Document</property>
-    <property name="body" translatable="yes">Creating a new document will discard any unsaved changes. Do you want to save the current document?</property>
+    <property name="body" translatable="yes">Creating a new document will discard any unsaved
+      changes. Do you want to save the current document?</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
     <responses>
@@ -26,12 +27,17 @@
 
   <object class="AdwMessageDialog" id="dialog_quit_save">
     <property name="heading" translatable="yes">Quit Application</property>
-    <property name="body" translatable="yes">Any unsaved changes will be lost. Do you want to save the current document?</property>
+    <property name="body" translatable="yes">Some opened files contain unsaved changes. Changes which are not saved will be permanently lost.</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup" id="quit_save_files_group">
+        <property name="title">Unsaved documents</property>
+      </object>
+    </property>
     <responses>
       <response id="cancel" translatable="yes">Cancel</response>
-      <response id="discard" appearance="destructive" translatable="yes">Discard</response>
+      <response id="discard" appearance="destructive" translatable="yes">Discard all</response>
       <response id="save" appearance="suggested" translatable="yes">Save</response>
     </responses>
   </object>
@@ -152,7 +158,8 @@
                               <property name="row">1</property>
                             </layout>
                             <property name="icon_name">folder-open-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Change workspace directory</property>
+                            <property name="tooltip_text" translatable="yes">Change workspace
+                              directory</property>
                           </object>
                         </child>
                       </object>

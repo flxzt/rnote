@@ -289,6 +289,15 @@ impl StrokeStore {
         })
     }
 
+    /// clears the rendering for all strokes
+    pub fn clear_rendering(&mut self) {
+        for (_key, render_comp) in self.render_components.iter_mut() {
+            render_comp.rendernodes = vec![];
+            render_comp.images = vec![];
+            render_comp.state = RenderCompState::Dirty;
+        }
+    }
+
     /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completely
     pub fn append_rendering_last_segments(
         &mut self,

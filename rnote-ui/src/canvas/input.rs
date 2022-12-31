@@ -207,7 +207,7 @@ pub(crate) fn process_pen_down(
 ) {
     let mut widget_flags = WidgetFlags::default();
 
-    appwindow.canvas().switch_between_cursors(true);
+    appwindow.active_tab().canvas().switch_between_cursors(true);
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
@@ -215,6 +215,7 @@ pub(crate) fn process_pen_down(
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
         widget_flags.merge(
             appwindow
+                .active_tab()
                 .canvas()
                 .engine()
                 .borrow_mut()
@@ -227,6 +228,7 @@ pub(crate) fn process_pen_down(
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
         widget_flags.merge(
             appwindow
+                .active_tab()
                 .canvas()
                 .engine()
                 .borrow_mut()
@@ -238,14 +240,21 @@ pub(crate) fn process_pen_down(
     }
 
     // Handle all other events as pen down
-    widget_flags.merge(appwindow.canvas().engine().borrow_mut().handle_pen_event(
-        PenEvent::Down {
-            element,
-            shortcut_keys,
-        },
-        pen_mode,
-        now,
-    ));
+    widget_flags.merge(
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .handle_pen_event(
+                PenEvent::Down {
+                    element,
+                    shortcut_keys,
+                },
+                pen_mode,
+                now,
+            ),
+    );
 
     appwindow.handle_widget_flags(widget_flags);
 }
@@ -260,7 +269,10 @@ pub(crate) fn process_pen_up(
 ) {
     let mut widget_flags = WidgetFlags::default();
 
-    appwindow.canvas().switch_between_cursors(false);
+    appwindow
+        .active_tab()
+        .canvas()
+        .switch_between_cursors(false);
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
@@ -268,6 +280,7 @@ pub(crate) fn process_pen_up(
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
         widget_flags.merge(
             appwindow
+                .active_tab()
                 .canvas()
                 .engine()
                 .borrow_mut()
@@ -280,6 +293,7 @@ pub(crate) fn process_pen_up(
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
         widget_flags.merge(
             appwindow
+                .active_tab()
                 .canvas()
                 .engine()
                 .borrow_mut()
@@ -291,14 +305,21 @@ pub(crate) fn process_pen_up(
     }
 
     // Handle all other events as pen up
-    widget_flags.merge(appwindow.canvas().engine().borrow_mut().handle_pen_event(
-        PenEvent::Up {
-            element,
-            shortcut_keys,
-        },
-        pen_mode,
-        now,
-    ));
+    widget_flags.merge(
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .handle_pen_event(
+                PenEvent::Up {
+                    element,
+                    shortcut_keys,
+                },
+                pen_mode,
+                now,
+            ),
+    );
 
     appwindow.handle_widget_flags(widget_flags);
 }
@@ -313,14 +334,21 @@ pub(crate) fn process_pen_proximity(
 ) {
     let mut widget_flags = WidgetFlags::default();
 
-    widget_flags.merge(appwindow.canvas().engine().borrow_mut().handle_pen_event(
-        PenEvent::Proximity {
-            element,
-            shortcut_keys,
-        },
-        pen_mode,
-        now,
-    ));
+    widget_flags.merge(
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .handle_pen_event(
+                PenEvent::Proximity {
+                    element,
+                    shortcut_keys,
+                },
+                pen_mode,
+                now,
+            ),
+    );
 
     appwindow.handle_widget_flags(widget_flags);
 }
@@ -333,6 +361,7 @@ pub(crate) fn process_shortcut_key_pressed(
     appwindow: &RnoteAppWindow,
 ) {
     let widget_flags = appwindow
+        .active_tab()
         .canvas()
         .engine()
         .borrow_mut()
@@ -348,25 +377,31 @@ pub(crate) fn process_keyboard_key_pressed(
     now: Instant,
     appwindow: &RnoteAppWindow,
 ) {
-    let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
-        PenEvent::KeyPressed {
-            keyboard_key,
-            shortcut_keys,
-        },
-        None,
-        now,
-    );
+    let widget_flags = appwindow
+        .active_tab()
+        .canvas()
+        .engine()
+        .borrow_mut()
+        .handle_pen_event(
+            PenEvent::KeyPressed {
+                keyboard_key,
+                shortcut_keys,
+            },
+            None,
+            now,
+        );
 
     appwindow.handle_widget_flags(widget_flags);
 }
 
 /// Process keyboard text
 pub(crate) fn process_keyboard_text(text: String, now: Instant, appwindow: &RnoteAppWindow) {
-    let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
-        PenEvent::Text { text },
-        None,
-        now,
-    );
+    let widget_flags = appwindow
+        .active_tab()
+        .canvas()
+        .engine()
+        .borrow_mut()
+        .handle_pen_event(PenEvent::Text { text }, None, now);
 
     appwindow.handle_widget_flags(widget_flags);
 }

@@ -12,8 +12,8 @@ use crate::{
     penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
     workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::FileRow,
     workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
-    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, SettingsPanel, UnitEntry,
-    WorkspaceBrowser,
+    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel,
+    UnitEntry, WorkspaceBrowser,
 };
 
 mod imp {
@@ -93,6 +93,7 @@ mod imp {
         fn setup_gresources(&self) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
+            RnoteOverlays::static_type();
             RnoteCanvasWrapper::static_type();
             RnoteCanvas::static_type();
             ColorPicker::static_type();

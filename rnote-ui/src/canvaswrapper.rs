@@ -2,19 +2,16 @@ use std::cell::Cell;
 use std::rc::Rc;
 
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate,
     EventControllerScroll, EventControllerScrollFlags, EventSequenceState, GestureDrag,
-    GestureZoom, Inhibit, ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Widget,
+    GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
 };
+use once_cell::sync::Lazy;
 use rnote_engine::Camera;
 
 use crate::{RnoteAppWindow, RnoteCanvas};
 
 mod imp {
-    use std::cell::{Cell, RefCell};
-
-    use once_cell::sync::Lazy;
-
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -23,7 +20,6 @@ mod imp {
     pub(crate) struct RnoteCanvasWrapper {
         pub(crate) permanently_hide_scrollbars: Cell<bool>,
 
-        pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
         pub(crate) canvas_touch_drag_gesture: GestureDrag,
         pub(crate) canvas_drag_empty_area_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
@@ -32,18 +28,6 @@ mod imp {
         pub(crate) canvas_alt_drag_gesture: GestureDrag,
         pub(crate) canvas_alt_shift_drag_gesture: GestureDrag,
 
-        #[template_child]
-        pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
-        #[template_child]
-        pub(crate) progressbar: TemplateChild<ProgressBar>,
-        #[template_child]
-        pub(crate) quickactions_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub(crate) fixedsize_quickactions_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub(crate) undo_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) redo_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -102,7 +86,6 @@ mod imp {
             Self {
                 permanently_hide_scrollbars: Cell::new(false),
 
-                progresspulse_source_id: RefCell::new(None),
                 canvas_touch_drag_gesture,
                 canvas_drag_empty_area_gesture,
                 canvas_zoom_gesture,
@@ -111,12 +94,6 @@ mod imp {
                 canvas_alt_drag_gesture,
                 canvas_alt_shift_drag_gesture,
 
-                toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
-                progressbar: TemplateChild::<ProgressBar>::default(),
-                quickactions_box: TemplateChild::<gtk4::Box>::default(),
-                fixedsize_quickactions_revealer: TemplateChild::<Revealer>::default(),
-                undo_button: TemplateChild::<Button>::default(),
-                redo_button: TemplateChild::<Button>::default(),
                 scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<RnoteCanvas>::default(),
             }
@@ -241,29 +218,6 @@ impl RnoteCanvasWrapper {
         );
     }
 
-    pub(crate) fn quickactions_box(&self) -> gtk4::Box {
-        self.imp().quickactions_box.get()
-    }
-
-    pub(crate) fn fixedsize_quickactions_revealer(&self) -> Revealer {
-        self.imp().fixedsize_quickactions_revealer.get()
-    }
-
-    pub(crate) fn undo_button(&self) -> Button {
-        self.imp().undo_button.get()
-    }
-
-    pub(crate) fn redo_button(&self) -> Button {
-        self.imp().redo_button.get()
-    }
-
-    pub(crate) fn toast_overlay(&self) -> adw::ToastOverlay {
-        self.imp().toast_overlay.get()
-    }
-    pub(crate) fn progressbar(&self) -> ProgressBar {
-        self.imp().progressbar.get()
-    }
-
     pub(crate) fn scroller(&self) -> ScrolledWindow {
         self.imp().scroller.get()
     }
@@ -285,11 +239,11 @@ impl RnoteCanvasWrapper {
         {
             self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak appwindow => @default-return Inhibit(false), move |controller, _, dy| {
                 if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                    let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
+                    let new_zoom = appwindow.active_tab().canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
-                    let current_doc_center = appwindow.canvas().current_center_on_doc();
+                    let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-                    appwindow.canvas().center_around_coord_on_doc(current_doc_center);
+                    appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
 
                     // Stop event propagation
                     Inhibit(true)
@@ -308,8 +262,8 @@ impl RnoteCanvasWrapper {
                     // We don't claim the sequence, because we we want to allow touch zooming. When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
                     touch_drag_start.set(na::vector![
-                        appwindow.canvas().hadjustment().unwrap().value(),
-                        appwindow.canvas().vadjustment().unwrap().value()
+                        appwindow.active_tab().canvas().hadjustment().unwrap().value(),
+                        appwindow.active_tab().canvas().vadjustment().unwrap().value()
                     ]);
                 }),
             );
@@ -317,7 +271,7 @@ impl RnoteCanvasWrapper {
                 clone!(@strong touch_drag_start, @weak appwindow => move |_, x, y| {
                     let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
-                    appwindow.canvas().update_camera_offset(new_adj_values);
+                    appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
                 }),
             );
         }
@@ -331,8 +285,8 @@ impl RnoteCanvasWrapper {
                 .connect_drag_begin(
                     clone!(@strong mouse_drag_start, @weak appwindow => move |_, _, _| {
                         mouse_drag_start.set(na::vector![
-                            appwindow.canvas().hadjustment().unwrap().value(),
-                            appwindow.canvas().vadjustment().unwrap().value()
+                            appwindow.active_tab().canvas().hadjustment().unwrap().value(),
+                            appwindow.active_tab().canvas().vadjustment().unwrap().value()
                         ]);
                     }),
                 );
@@ -342,7 +296,7 @@ impl RnoteCanvasWrapper {
                     clone!(@strong mouse_drag_start, @weak appwindow => move |_, x, y| {
                         let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
-                        appwindow.canvas().update_camera_offset(new_adj_values);
+                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
                     }),
                 );
 
@@ -359,8 +313,8 @@ impl RnoteCanvasWrapper {
 
             self.imp().canvas_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak appwindow => move |_, _x, _y| {
                 mouse_drag_empty_area_start.set(na::vector![
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
+                    appwindow.active_tab().canvas().hadjustment().unwrap().value(),
+                    appwindow.active_tab().canvas().vadjustment().unwrap().value()
                 ]);
             }));
             self.imp()
@@ -369,7 +323,7 @@ impl RnoteCanvasWrapper {
                     clone!(@strong mouse_drag_empty_area_start, @weak appwindow => move |_, x, y| {
                         let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
-                        appwindow.canvas().update_camera_offset(new_adj_values);
+                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
                     }),
                 );
         }
@@ -430,7 +384,7 @@ impl RnoteCanvasWrapper {
                         let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                         let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
 
-                        appwindow.canvas().update_camera_offset(new_adj_values);
+                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
                     }
             }));
 
@@ -477,7 +431,7 @@ impl RnoteCanvasWrapper {
                     @strong adj_start,
                     @weak appwindow => move |_, offset_x, offset_y| {
                         let new_adj_values = adj_start.get() - na::vector![offset_x, offset_y];
-                        appwindow.canvas().update_camera_offset(new_adj_values);
+                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
                 }));
         }
 
@@ -514,15 +468,15 @@ impl RnoteCanvasWrapper {
                     const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
 
                     let new_offset = na::vector![offset_x, offset_y];
-                    let cur_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+                    let cur_zoom = appwindow.active_tab().canvas().engine().borrow().camera.total_zoom();
 
                     // Drag down zooms out, drag up zooms in
                     let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
 
                     if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                        let current_doc_center = appwindow.canvas().current_center_on_doc();
+                        let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-                        appwindow.canvas().center_around_coord_on_doc(current_doc_center);
+                        appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
                     }
 
                     prev_offset.set(new_offset);
@@ -564,111 +518,5 @@ impl RnoteCanvasWrapper {
                 .canvas_zoom_gesture
                 .set_propagation_phase(PropagationPhase::None);
         }
-    }
-
-    pub(crate) fn start_pulsing_progressbar(&self) {
-        const PROGRESS_BAR_PULSE_INTERVAL: std::time::Duration =
-            std::time::Duration::from_millis(300);
-
-        if let Some(old_pulse_source) = self.imp().progresspulse_source_id.replace(Some(glib::source::timeout_add_local(
-            PROGRESS_BAR_PULSE_INTERVAL,
-            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
-                appwindow.progressbar().pulse();
-
-                glib::source::Continue(true)
-            })),
-        )) {
-            old_pulse_source.remove();
-        }
-    }
-
-    pub(crate) fn finish_progressbar(&self) {
-        const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
-            std::time::Duration::from_millis(300);
-
-        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
-            pulse_source.remove();
-        }
-
-        self.progressbar().set_fraction(1.0);
-
-        glib::source::timeout_add_local_once(
-            PROGRESS_BAR_TIMEOUT_TIME,
-            clone!(@weak self as appwindow => move || {
-                appwindow.progressbar().set_fraction(0.0);
-            }),
-        );
-    }
-
-    #[allow(unused)]
-    pub(crate) fn abort_progressbar(&self) {
-        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
-            pulse_source.remove();
-        }
-
-        self.progressbar().set_fraction(0.0);
-    }
-
-    pub(crate) fn dispatch_toast_w_button<F: Fn(&adw::Toast) + 'static>(
-        &self,
-        text: &str,
-        button_label: &str,
-        button_callback: F,
-        timeout: u32,
-    ) -> adw::Toast {
-        let text_notify_toast = adw::Toast::builder()
-            .title(text)
-            .priority(adw::ToastPriority::High)
-            .button_label(button_label)
-            .timeout(timeout)
-            .build();
-
-        text_notify_toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(&text_notify_toast);
-
-        text_notify_toast
-    }
-
-    /// Ensures that only one toast per `singleton_toast` is queued at the same time by dismissing the previous toast.
-    ///
-    /// `singleton_toast` is a mutable reference to an `Option<Toast>`. It will always hold the most recently dispatched toast
-    /// and it should not be modified, because it's used to keep track of previous toasts.
-    pub(crate) fn dispatch_toast_w_button_singleton<F: Fn(&adw::Toast) + 'static>(
-        &self,
-        text: &str,
-        button_label: &str,
-        button_callback: F,
-        timeout: u32,
-        singleton_toast: &mut Option<adw::Toast>,
-    ) {
-        if let Some(previous_toast) = singleton_toast {
-            previous_toast.dismiss();
-        }
-
-        let text_notify_toast =
-            self.dispatch_toast_w_button(text, button_label, button_callback, timeout);
-        *singleton_toast = Some(text_notify_toast);
-    }
-
-    pub(crate) fn dispatch_toast_text(&self, text: &str) {
-        let text_notify_toast = adw::Toast::builder()
-            .title(text)
-            .priority(adw::ToastPriority::High)
-            .timeout(5)
-            .build();
-
-        self.toast_overlay().add_toast(&text_notify_toast);
-    }
-
-    pub(crate) fn dispatch_toast_error(&self, error: &String) {
-        let text_notify_toast = adw::Toast::builder()
-            .title(error.as_str())
-            .priority(adw::ToastPriority::High)
-            .timeout(0)
-            .build();
-
-        log::error!("{error}");
-
-        self.toast_overlay().add_toast(&text_notify_toast);
     }
 }

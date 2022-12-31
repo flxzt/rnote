@@ -25,28 +25,39 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
-                  <property name="column-span">4</property>
+                  <property name="column-span">3</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="AdwTabBar" id="tabbar">
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                  <property name="column-span">3</property>
                 </layout>
               </object>
             </child>
             <child>
               <object class="GtkRevealer" id="narrow_pens_toggles_revealer">
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">1</property>
-                </layout>
                 <property name="transition_type">slide-down</property>
                 <property name="transition_duration">300</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                  <property name="column-span">3</property>
+                </layout>
                 <child>
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <style>
-                      <class name="narrow_pens_toggles_box" />
-                    </style>
+                  <object class="GtkGrid" id="narrow_pens_toggles_grid">
                     <child>
                       <object class="AdwClamp" id="narrow_pens_toggles_clamp">
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">6</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <style>
+                          <class name="narrow_pens_toggles_clamp" />
+                        </style>
                         <property name="maximum-size">600</property>
                         <property name="tightening-threshold">550</property>
                         <property name="hexpand">true</property>
@@ -113,17 +124,44 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSeparator"></object>
+                      <object class="GtkSeparator" id="narrow_pens_toggles_sep">
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <property name="hexpand">false</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="narrow_pens_toggles_spacer">
+                        <layout>
+                          <property name="column">2</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <property name="width-request">62</property>
+                        <property name="halign">fill</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                          <property name="column-span">3</property>
+                        </layout>
+                      </object>
                     </child>
                   </object>
                 </child>
               </object>
             </child>
             <child>
-              <object class="RnoteCanvasWrapper" id="canvas_wrapper">
+              <object class="RnoteOverlays" id="overlays">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">2</property>
+                  <property name="row">3</property>
                 </layout>
               </object>
             </child>
@@ -131,8 +169,7 @@
               <object class="GtkSeparator" id="sidebar_sep">
                 <layout>
                   <property name="column">1</property>
-                  <property name="row">1</property>
-                  <property name="row-span">2</property>
+                  <property name="row">3</property>
                 </layout>
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">false</property>
@@ -142,33 +179,10 @@
               <object class="GtkGrid" id="sidebar_box">
                 <layout>
                   <property name="column">2</property>
-                  <property name="row">1</property>
-                  <property name="row-span">2</property>
+                  <property name="row">3</property>
                 </layout>
                 <property name="orientation">vertical</property>
                 <property name="hexpand">false</property>
-                <child>
-                  <object class="GtkRevealer" id="sidebar_start_spacer_revealer">
-                    <property name="transition-type">slide-down</property>
-                    <property name="transition_duration">300</property>
-                    <child>
-                      <object class="GtkBox">
-                        <property name="height-request">47</property>
-                        <property name="hexpand">true</property>
-                        <property name="halign">fill</property>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="orientation">vertical</property>
-                            <property name="hexpand">true</property>
-                            <property name="halign">fill</property>
-                            <property name="vexpand">false</property>
-                            <property name="valign">end</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
                 <child>
                   <object class="GtkScrolledWindow" id="sidebar_scroller">
                     <property name="propagate-natural-width">true</property>

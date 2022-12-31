@@ -163,7 +163,7 @@ impl BrushPage {
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
                 let value = brush_widthscale_spinbutton.value();
 
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 match engine.pens_config.brush_config.style {
@@ -180,7 +180,7 @@ impl BrushPage {
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
 
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 match engine.pens_config.brush_config.style {
@@ -196,7 +196,7 @@ impl BrushPage {
             clone!(@weak self as brushpage, @weak appwindow => move |_brushstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     {
-                        let engine = appwindow.canvas().engine();
+                        let engine = appwindow.active_tab().canvas().engine();
                         let engine = &mut *engine.borrow_mut();
 
                         engine.pens_config.brush_config.style = BrushStyle::try_from(selected_row.index() as u32).unwrap_or_default();
@@ -225,7 +225,7 @@ impl BrushPage {
         imp.brush_buildertype_listbox.connect_row_selected(
             clone!(@weak self as brushpage, @weak appwindow => move |_, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    appwindow.canvas().engine().borrow_mut().pens_config.brush_config.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
                 }
             }),
         );
@@ -233,7 +233,7 @@ impl BrushPage {
         // Solid style
         // Pressure curve
         imp.solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
-            appwindow.canvas().engine().borrow_mut().pens_config.brush_config.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
+            appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.solid_options.pressure_curve = brushpage.solidstyle_pressure_curve();
         }));
 
         // Textured style
@@ -251,19 +251,20 @@ impl BrushPage {
 
         imp.texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
-                appwindow.canvas().engine().borrow_mut().pens_config.brush_config.textured_options.density = texturedstyle_density_adj.value();
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.density = texturedstyle_density_adj.value();
             }),
         );
 
         // dots distribution
         imp.texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
-            appwindow.canvas().engine().borrow_mut().pens_config.brush_config.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
+            appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
         }));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
         let brush_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()

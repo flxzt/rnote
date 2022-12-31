@@ -29,14 +29,19 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width-request">50</property>
+            <property name="spacing">3</property>
             <child>
               <object class="GtkButton">
-                <property name="visible">true</property>
-                <property name="halign">start</property>
                 <property name="tooltip-text" translatable="yes">Save document</property>
                 <property name="icon-name">doc-save-symbolic</property>
                 <property name="action-name">win.save-doc</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="create_page_button">
+                <property name="icon-name">tab-new-symbolic</property>
+                <property name="action-name">win.new-tab</property>
+                <property name="tooltip-text" translatable="yes">New tab</property>
               </object>
             </child>
           </object>

@@ -47,36 +47,36 @@ impl RnoteAppWindow {
         self.app_settings()
             .bind("autosave-interval-secs", self, "autosave-interval-secs")
             .build();
+        /*
+               // permanently hide canvas scrollbars
+               self.app_settings()
+                   .bind(
+                       "permanently-hide-scrollbars",
+                       &self.active_wrapper().canvas_wrapper(),
+                       "permanently-hide-scrollbars",
+                   )
+                   .build();
 
-        // permanently hide canvas scrollbars
-        self.app_settings()
-            .bind(
-                "permanently-hide-scrollbars",
-                &self.canvas_wrapper(),
-                "permanently-hide-scrollbars",
-            )
-            .build();
+               // righthanded
+               self.app_settings()
+                   .bind("righthanded", self, "righthanded")
+                   .build();
 
-        // righthanded
-        self.app_settings()
-            .bind("righthanded", self, "righthanded")
-            .build();
+               // touch drawing
+               self.app_settings()
+                   .bind("touch-drawing", &self.active_wrapper().canvas(), "touch-drawing")
+                   .build();
 
-        // touch drawing
-        self.app_settings()
-            .bind("touch-drawing", &self.canvas(), "touch-drawing")
-            .build();
+               // regular cursor
+               self.app_settings()
+                   .bind("regular-cursor", &self.active_wrapper().canvas(), "regular-cursor")
+                   .build();
 
-        // regular cursor
-        self.app_settings()
-            .bind("regular-cursor", &self.canvas(), "regular-cursor")
-            .build();
-
-        // drawing cursor
-        self.app_settings()
-            .bind("drawing-cursor", &self.canvas(), "drawing-cursor")
-            .build();
-
+               // drawing cursor
+               self.app_settings()
+                   .bind("drawing-cursor", &self.active_wrapper().canvas(), "drawing-cursor")
+                   .build();
+        */
         // Brush page
         self.app_settings()
             .bind(
@@ -206,6 +206,7 @@ impl RnoteAppWindow {
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
             let widget_flags = match self
+                .active_tab()
                 .canvas()
                 .engine()
                 .borrow_mut()

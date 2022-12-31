@@ -135,7 +135,7 @@ impl TypewriterPage {
         imp.fontchooser.connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
             if let Some(font_family) = fontchooser.font_family().map(|font_family| font_family.name().to_string()) {
                 {
-                    let engine = appwindow.canvas().engine();
+                    let engine = appwindow.active_tab().canvas().engine();
                     let engine = &mut *engine.borrow_mut();
 
                     engine.pens_config.typewriter_config.text_style.font_family = font_family.clone();
@@ -173,7 +173,7 @@ impl TypewriterPage {
                 let font_size = font_size_spinbutton.value();
 
                 {
-                    let engine = appwindow.canvas().engine();
+                    let engine = appwindow.active_tab().canvas().engine();
                     let engine = &mut *engine.borrow_mut();
 
                     engine.pens_config.typewriter_config.text_style.font_size = font_size;
@@ -222,7 +222,7 @@ impl TypewriterPage {
                 let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
 
                 {
-                    let engine = appwindow.canvas().engine();
+                    let engine = appwindow.active_tab().canvas().engine();
                     let engine = &mut *engine.borrow_mut();
 
                     engine.pens_config.typewriter_config.text_style.color = color;
@@ -249,7 +249,7 @@ impl TypewriterPage {
         // Emojis
         imp.emojichooser.connect_emoji_picked(
             clone!(@weak appwindow => move |_emojichooser, emoji_str| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -273,7 +273,7 @@ impl TypewriterPage {
         // reset
         imp.text_reset_button.connect_clicked(
             clone!(@weak appwindow => move |_text_reset_button| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -294,7 +294,7 @@ impl TypewriterPage {
         // Bold
         imp.text_bold_button
             .connect_clicked(clone!(@weak appwindow => move |_text_bold_button| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -315,7 +315,7 @@ impl TypewriterPage {
         // Italic
         imp.text_italic_button.connect_clicked(
             clone!(@weak appwindow => move |_text_italic_button| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -337,7 +337,7 @@ impl TypewriterPage {
         // Underline
         imp.text_underline_button.connect_clicked(
             clone!(@weak appwindow => move |_text_underline_button| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -359,7 +359,7 @@ impl TypewriterPage {
         // Strikethrough
         imp.text_strikethrough_button.connect_clicked(
             clone!(@weak appwindow => move |_text_strikethrough_button| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -383,7 +383,7 @@ impl TypewriterPage {
             clone!(@weak appwindow => move |text_align_start_togglebutton| {
                 if text_align_start_togglebutton.is_active() {
                     {
-                        let engine = appwindow.canvas().engine();
+                        let engine = appwindow.active_tab().canvas().engine();
                         let engine = &mut *engine.borrow_mut();
                         engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Start;
 
@@ -412,7 +412,7 @@ impl TypewriterPage {
             clone!(@weak appwindow => move |text_align_center_togglebutton| {
                 if text_align_center_togglebutton.is_active() {
                     {
-                        let engine = appwindow.canvas().engine();
+                        let engine = appwindow.active_tab().canvas().engine();
                         let engine = &mut *engine.borrow_mut();
                         engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Center;
 
@@ -440,7 +440,7 @@ impl TypewriterPage {
             clone!(@weak appwindow => move |text_align_end_togglebutton| {
                 if text_align_end_togglebutton.is_active() {
                     {
-                        let engine = appwindow.canvas().engine();
+                        let engine = appwindow.active_tab().canvas().engine();
                         let engine = &mut *engine.borrow_mut();
                         engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::End;
 
@@ -468,7 +468,7 @@ impl TypewriterPage {
             clone!(@weak appwindow => move |text_align_fill_togglebutton| {
                 if text_align_fill_togglebutton.is_active() {
                     {
-                        let engine = appwindow.canvas().engine();
+                        let engine = appwindow.active_tab().canvas().engine();
                         let engine = &mut *engine.borrow_mut();
                         engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Fill;
 
@@ -497,6 +497,7 @@ impl TypewriterPage {
         let imp = self.imp();
 
         let typewriter_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()

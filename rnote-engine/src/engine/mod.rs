@@ -523,6 +523,14 @@ impl RnoteEngine {
         widget_flags
     }
 
+    pub fn can_undo(&self) -> bool {
+        self.store.can_undo()
+    }
+
+    pub fn can_redo(&self) -> bool {
+        self.store.can_redo()
+    }
+
     // Clears the store
     pub fn clear(&mut self) -> WidgetFlags {
         self.store.clear();

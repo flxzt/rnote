@@ -1,4 +1,5 @@
 mod canvaslayout;
+pub(crate) mod imexport;
 mod input;
 
 // Re-exports
@@ -429,6 +430,11 @@ impl Default for RnoteCanvas {
     }
 }
 
+pub(crate) static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
+    once_cell::sync::Lazy::new(|| gettext("New Document"));
+pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
+    once_cell::sync::Lazy::new(|| gettext("Draft"));
+
 impl RnoteCanvas {
     // the zoom timeout time
     pub(crate) const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
@@ -590,16 +596,42 @@ impl RnoteCanvas {
         }
     }
 
+    /// The document title for display. Can be used to get a string for the existing / a new save file.
+    ///
+    /// When there is no output-file, falls back to the "New document" string
+    pub(crate) fn doc_title_display(&self) -> String {
+        self.output_file()
+            .map(|f| {
+                f.basename()
+                    .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
+                    .unwrap_or_else(|| gettext("- invalid file name -"))
+            })
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
+    }
+
+    /// The document folder path for display. To get the actual path, use output-file
+    ///
+    /// When there is no output-file, falls back to the "Draft" string
+    pub(crate) fn doc_folderpath_display(&self) -> String {
+        self.output_file()
+            .map(|f| {
+                f.parent()
+                    .and_then(|p| Some(p.path()?.display().to_string()))
+                    .unwrap_or_else(|| gettext("- invalid folder path -"))
+            })
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+    }
+
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnoteAppWindow) {
         match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
             Ok(output_file_monitor) => {
                 output_file_monitor.connect_changed(
                     glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
                         let dispatch_toast_reload_modified_file = || {
-                            appwindow.canvas().set_unsaved_changes(true);
+                            appwindow.active_tab().canvas().set_unsaved_changes(true);
 
-                            appwindow.canvas_wrapper().dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
-                                if let Some(output_file) = appwindow.canvas().output_file() {
+                            appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
+                                if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
                                     if let Err(e) = appwindow.load_in_file(output_file, None) {
                                         log::error!("failed to reload current output file, {}", e);
                                     }
@@ -638,7 +670,7 @@ impl RnoteCanvas {
 
                                     canvas.set_output_file(other_file.cloned());
 
-                                    appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Opened file was renamed on disk."))
+                                    appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk."))
                                 }
                             },
                             gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
@@ -651,7 +683,7 @@ impl RnoteCanvas {
                                 canvas.set_unsaved_changes(true);
                                 canvas.set_output_file(None);
 
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
                             },
                             _ => (),
                         }
@@ -698,16 +730,14 @@ impl RnoteCanvas {
         self.connect_notify_local(
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {
-                let output_file = canvas.output_file();
-
-                if let Some(output_file) = &output_file {
-                    canvas.create_output_file_monitor(output_file, &appwindow);
+                if let Some(output_file) = canvas.output_file(){
+                    canvas.create_output_file_monitor(&output_file, &appwindow);
                 } else {
                     canvas.clear_output_file_monitor();
                     canvas.dismiss_output_file_modified_toast();
                 }
 
-                appwindow.update_titles_for_file(output_file.as_ref());
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
             }),
         );
 
@@ -717,18 +747,16 @@ impl RnoteCanvas {
                 let touch_drawing = canvas.touch_drawing();
 
                 // Disable the zoom gesture when touch drawing is enabled
-                appwindow.canvas_wrapper().canvas_zoom_gesture_enable(!touch_drawing);
+                appwindow.active_tab().canvas_zoom_gesture_enable(!touch_drawing);
             }),
         );
 
-        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |canvas, _pspec| {
-            appwindow.mainheader().main_title_unsaved_indicator().set_visible(canvas.unsaved_changes());
-            if canvas.unsaved_changes() {
-                appwindow.mainheader().main_title().add_css_class("unsaved_changes");
-            } else {
-                appwindow.mainheader().main_title().remove_css_class("unsaved_changes");
-            }
-        }));
+        self.connect_notify_local(
+            Some("unsaved-changes"),
+            clone!(@weak appwindow => move |_canvas, _pspec| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
+            }),
+        );
 
         self.bind_property(
             "regular-cursor",
@@ -776,9 +804,9 @@ impl RnoteCanvas {
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
             // disable drag and zoom gestures entirely while drawing with stylus
-            appwindow.canvas_wrapper().canvas_touch_drag_gesture_enable(false);
-            appwindow.canvas_wrapper().canvas_zoom_gesture_enable(false);
-            appwindow.canvas_wrapper().canvas_drag_empty_area_gesture_enable(false);
+            appwindow.active_tab().canvas_touch_drag_gesture_enable(false);
+            appwindow.active_tab().canvas_zoom_gesture_enable(false);
+            appwindow.active_tab().canvas_drag_empty_area_gesture_enable(false);
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
@@ -817,11 +845,11 @@ impl RnoteCanvas {
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
             // enable drag and zoom gestures again
-            appwindow.canvas_wrapper().canvas_touch_drag_gesture_enable(true);
-            appwindow.canvas_wrapper().canvas_drag_empty_area_gesture_enable(true);
+            appwindow.active_tab().canvas_touch_drag_gesture_enable(true);
+            appwindow.active_tab().canvas_drag_empty_area_gesture_enable(true);
 
             if !canvas.touch_drawing() {
-                appwindow.canvas_wrapper().canvas_zoom_gesture_enable(true);
+                appwindow.active_tab().canvas_zoom_gesture_enable(true);
             }
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
@@ -1026,8 +1054,8 @@ impl RnoteCanvas {
         drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
 
         drop_target.connect_drop(
-            clone!(@weak appwindow => @default-return false, move |_drop_target, value, x, y| {
-                let pos = (appwindow.canvas().engine().borrow().camera.transform().inverse() *
+            clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
+                let pos = (appwindow.active_tab().canvas().engine().borrow().camera.transform().inverse() *
                     na::point![x,y]).coords;
 
                 if value.is::<gio::File>() {
@@ -1035,7 +1063,7 @@ impl RnoteCanvas {
 
                     return true;
                 } else if value.is::<String>() {
-                    if let Err(e) = appwindow.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
+                    if let Err(e) = canvas.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
                         log::error!("failed to insert dropped in text, Err: {e:?}");
                     }
                 }

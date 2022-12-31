@@ -10,7 +10,8 @@ use rnote_engine::engine::export::{
     SelectionExportFormat, SelectionExportPrefs,
 };
 
-use crate::{appwindow, config, RnoteAppWindow};
+use crate::canvas::{self};
+use crate::{config, RnoteAppWindow};
 
 pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
@@ -31,7 +32,7 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
     filechooser.set_filter(&filter);
 
     // Set the output file as default, else at least the current workspace directory
-    if let Some(output_file) = appwindow.canvas().output_file() {
+    if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
         if let Err(e) = filechooser.set_file(&output_file) {
             log::error!("set_file() for dialog_save_doc_as failed with Err: {e:?}");
         }
@@ -44,13 +45,8 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
             }
         }
 
-        let file_title = rnote_engine::utils::default_file_title_for_export(
-            appwindow.canvas().output_file(),
-            Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-            None,
-        );
-
-        filechooser.set_current_name(&(file_title + "." + "rnote"));
+        let file_name = appwindow.active_tab().canvas().doc_title_display() + ".rnote";
+        filechooser.set_current_name(&(file_name));
     }
 
     filechooser.connect_response(
@@ -59,18 +55,18 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                            appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = appwindow.save_document_to_file(&file).await {
-                                appwindow.canvas().set_output_file(None);
+                            if let Err(e) = appwindow.active_tab().canvas().save_document_to_file(&file).await {
+                                appwindow.active_tab().canvas().set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
                             } else {
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Saved document successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Saved document successfully."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                         }));
                     }
                 }
@@ -100,6 +96,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
 
     let doc_export_prefs = appwindow
+        .active_tab()
         .canvas()
         .engine()
         .borrow_mut()
@@ -158,20 +155,20 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     );
 
     with_background_switch.connect_active_notify(clone!(@weak appwindow => move |with_background_switch| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_background = with_background_switch.is_active();
     }));
 
     with_pattern_switch.connect_active_notify(clone!(@weak appwindow => move |with_pattern_switch| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(@weak export_file_label, @weak button_confirm, @weak filechooser, @weak appwindow => move |row| {
         let selected = row.selected();
         let export_format = DocExportFormat::try_from(selected).unwrap();
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_export_prefs.export_format = export_format;
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_export_prefs.export_format = export_format;
 
         // update the filechooser dependent on the selected export format
-        update_export_doc_filechooser_with_prefs(&filechooser, appwindow.canvas().output_file(), &appwindow.canvas().engine().borrow().export_prefs.doc_export_prefs);
+        update_export_doc_filechooser_with_prefs(&filechooser, appwindow.active_tab().canvas().output_file(), &appwindow.active_tab().canvas().engine().borrow().export_prefs.doc_export_prefs);
 
         // force the user to pick another file
         export_file_label.set_label(&gettext("- no file selected -"));
@@ -184,21 +181,25 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
                 ResponseType::Apply => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                            appwindow.overlays().start_pulsing_progressbar();
 
-                            let file_title = file.basename().and_then(|b| Some(b.file_stem()?.to_string_lossy().to_string())).unwrap_or_else(|| appwindow::OUTPUT_FILE_NEW_TITLE.clone());
+                            let file_title = rnote_engine::utils::default_file_title_for_export(
+                                Some(file.clone()),
+                                Some(&canvas::OUTPUT_FILE_NEW_TITLE),
+                                None,
+                            );
 
-                            if let Err(e) = appwindow.export_doc(&file, file_title, None).await {
+                            if let Err(e) = appwindow.active_tab().canvas().export_doc(&file, file_title, None).await {
                                 log::error!("exporting document failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Export document failed."));
                             } else {
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported document successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document failed, no file selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Export document failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -233,8 +234,9 @@ fn create_filechooser_export_doc(appwindow: &RnoteAppWindow) -> FileChooserNativ
 
     update_export_doc_filechooser_with_prefs(
         &filechooser,
-        appwindow.canvas().output_file(),
+        appwindow.active_tab().canvas().output_file(),
         &appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()
@@ -273,14 +275,12 @@ fn update_export_doc_filechooser_with_prefs(
     filechooser.set_filter(&filter);
 
     let file_ext = doc_export_prefs.export_format.file_ext();
-
-    let file_title = rnote_engine::utils::default_file_title_for_export(
+    let file_name = rnote_engine::utils::default_file_title_for_export(
         output_file,
-        Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-        None,
+        Some(&canvas::OUTPUT_FILE_NEW_TITLE),
+        Some(&(String::from(".") + &file_ext)),
     );
-
-    filechooser.set_current_name(&(file_title + "." + &file_ext));
+    filechooser.set_current_name(&file_name);
 }
 
 pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
@@ -323,6 +323,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         .unwrap();
 
     let doc_pages_export_prefs = appwindow
+        .active_tab()
         .canvas()
         .engine()
         .borrow_mut()
@@ -347,15 +348,16 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
 
     export_dir_label.set_label(&gettext("- no directory selected -"));
     button_confirm.set_sensitive(false);
-    let default_stemname = rnote_engine::utils::default_file_title_for_export(
-        appwindow.canvas().output_file(),
-        Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
+
+    let default_stem_name = rnote_engine::utils::default_file_title_for_export(
+        appwindow.active_tab().canvas().output_file(),
+        Some(&canvas::OUTPUT_FILE_NEW_TITLE),
         None,
     );
-    export_files_stemname_entryrow.set_text(&default_stemname);
+    export_files_stemname_entryrow.set_text(&default_stem_name);
 
     page_files_naming_info_label.set_text(
-        &(rnote_engine::utils::doc_pages_files_names(default_stemname, 1)
+        &(rnote_engine::utils::doc_pages_files_names(default_stem_name, 1)
             + "."
             + &doc_pages_export_prefs.export_format.file_ext()),
     );
@@ -395,11 +397,11 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     );
 
     with_background_switch.connect_active_notify(clone!(@weak appwindow => move |with_background_switch| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_background = with_background_switch.is_active();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_background = with_background_switch.is_active();
     }));
 
     with_pattern_switch.connect_active_notify(clone!(@weak appwindow => move |with_pattern_switch| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_pattern = with_pattern_switch.is_active();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(
@@ -413,10 +415,10 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         @weak appwindow => move |row| {
             let selected = row.selected();
             let export_format = DocPagesExportFormat::try_from(selected).unwrap();
-            appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format = export_format;
+            appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format = export_format;
 
             // update the filechooser dependent on the selected export format
-            update_export_doc_pages_filechooser_with_prefs(&filechooser, appwindow.canvas().output_file(), &appwindow.canvas().engine().borrow().export_prefs.doc_pages_export_prefs);
+            update_export_doc_pages_filechooser_with_prefs(&filechooser, appwindow.active_tab().canvas().output_file(), &appwindow.active_tab().canvas().engine().borrow().export_prefs.doc_pages_export_prefs);
 
             // Set the bitmap scalefactor sensitive only when exporting to a bitmap image
             bitmap_scalefactor_row.set_sensitive(export_format == DocPagesExportFormat::Png || export_format == DocPagesExportFormat::Jpeg);
@@ -428,16 +430,16 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
             page_files_naming_info_label.set_text(&(
                 rnote_engine::utils::doc_pages_files_names(export_files_stemname_entryrow.text().to_string(), 1)
                     + "."
-                    + &appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
+                    + &appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
             ));
     }));
 
     bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak appwindow => move |bitmap_scalefactor_spinbutton| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
     }));
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak appwindow => move |jpeg_quality_spinbutton| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
     export_files_stemname_entryrow.connect_changed(
@@ -448,7 +450,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
             page_files_naming_info_label.set_text(&(
                 rnote_engine::utils::doc_pages_files_names(entryrow.text().to_string(), 1)
                     + "."
-                    + &appwindow.canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
+                    + &appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_pages_export_prefs.export_format.file_ext()
             ));
         }),
     );
@@ -459,21 +461,21 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
                 ResponseType::Apply => {
                     if let Some(dir) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                            appwindow.overlays().start_pulsing_progressbar();
 
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
 
-                            if let Err(e) = appwindow.export_doc_pages(&dir, file_stem_name, None).await {
+                            if let Err(e) = appwindow.active_tab().canvas().export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document pages failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Export document pages failed."));
                             } else {
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported document pages successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export document pages failed, no directory selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Export document pages failed, no directory selected."));
                     }
                 }
                 _ => {}
@@ -508,8 +510,9 @@ fn create_filechooser_export_doc_pages(appwindow: &RnoteAppWindow) -> FileChoose
 
     update_export_doc_pages_filechooser_with_prefs(
         &filechooser,
-        appwindow.canvas().output_file(),
+        appwindow.active_tab().canvas().output_file(),
         &appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()
@@ -590,6 +593,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         .unwrap();
 
     let selection_export_prefs = appwindow
+        .active_tab()
         .canvas()
         .engine()
         .borrow_mut()
@@ -657,11 +661,11 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     );
 
     with_background_switch.connect_active_notify(clone!(@weak appwindow => move |with_background_switch| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_background = with_background_switch.is_active();
     }));
 
     with_pattern_switch.connect_active_notify(clone!(@weak appwindow => move |with_pattern_switch| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_pattern = with_pattern_switch.is_active();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.selection_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(
@@ -672,10 +676,10 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         @weak appwindow => move |row| {
             let selected = row.selected();
             let export_format = SelectionExportFormat::try_from(selected).unwrap();
-            appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.export_format = export_format;
+            appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.selection_export_prefs.export_format = export_format;
 
             // update the filechooser dependent on the selected export format
-            update_export_selection_filechooser_with_prefs(&filechooser, appwindow.canvas().output_file(),&appwindow.canvas().engine().borrow().export_prefs.selection_export_prefs);
+            update_export_selection_filechooser_with_prefs(&filechooser, appwindow.active_tab().canvas().output_file(),&appwindow.active_tab().canvas().engine().borrow().export_prefs.selection_export_prefs);
 
             // force the user to pick another file
             export_file_label.set_label(&gettext("- no file selected -"));
@@ -689,15 +693,15 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     }));
 
     bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak appwindow => move |bitmap_scalefactor_spinbutton| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.selection_export_prefs.bitmap_scalefactor = bitmap_scalefactor_spinbutton.value();
     }));
 
     jpeg_quality_spinbutton.connect_value_changed(clone!(@weak appwindow => move |jpeg_quality_spinbutton| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.selection_export_prefs.jpeg_quality = jpeg_quality_spinbutton.value().clamp(1.0, 100.0) as u8;
     }));
 
     margin_spinbutton.connect_value_changed(clone!(@weak appwindow => move |margin_spinbutton| {
-        appwindow.canvas().engine().borrow_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
+        appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.selection_export_prefs.margin = margin_spinbutton.value();
     }));
 
     dialog.connect_response(
@@ -706,19 +710,19 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
                 ResponseType::Apply => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                            appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = appwindow.export_selection(&file, None).await {
+                            if let Err(e) = appwindow.active_tab().canvas().export_selection(&file, None).await {
                                 log::error!("exporting selection failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export selection failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Export selection failed."));
                             } else {
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported selection successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported selection successfully."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export selection failed, no file selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Export selection failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -753,8 +757,9 @@ fn create_filechooser_export_selection(appwindow: &RnoteAppWindow) -> FileChoose
 
     update_export_selection_filechooser_with_prefs(
         &filechooser,
-        appwindow.canvas().output_file(),
+        appwindow.active_tab().canvas().output_file(),
         &appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()
@@ -794,14 +799,12 @@ fn update_export_selection_filechooser_with_prefs(
     filechooser.set_filter(&filter);
 
     let file_ext = selection_export_prefs.export_format.file_ext();
-
-    let file_title = rnote_engine::utils::default_file_title_for_export(
+    let file_name = rnote_engine::utils::default_file_title_for_export(
         output_file,
-        Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-        Some(" - Selection"),
+        Some(&canvas::OUTPUT_FILE_NEW_TITLE),
+        Some(&(String::from(" - Selection") + "." + &file_ext)),
     );
-
-    filechooser.set_current_name(&(file_title + "." + &file_ext));
+    filechooser.set_current_name(&file_name);
 }
 
 pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
@@ -831,13 +834,13 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
         }
     }
 
-    let file_title = rnote_engine::utils::default_file_title_for_export(
-        appwindow.canvas().output_file(),
-        Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-        Some(" - engine state"),
+    let file_name = rnote_engine::utils::default_file_title_for_export(
+        appwindow.active_tab().canvas().output_file(),
+        Some(&canvas::OUTPUT_FILE_NEW_TITLE),
+        Some(" - engine state.json"),
     );
 
-    filechooser.set_current_name(&(file_title + "." + "json"));
+    filechooser.set_current_name(&file_name);
 
     filechooser.connect_response(
         clone!(@weak appwindow => move |filechooser, responsetype| {
@@ -845,16 +848,16 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                            appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = appwindow.export_engine_state(&file).await {
+                            if let Err(e) = appwindow.active_tab().canvas().export_engine_state(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export engine state failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Export engine state failed."));
                             } else {
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported engine state successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported engine state successfully."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                         }));
                     }
                 }
@@ -895,13 +898,13 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
         }
     }
 
-    let file_title = rnote_engine::utils::default_file_title_for_export(
-        appwindow.canvas().output_file(),
-        Some(&appwindow::OUTPUT_FILE_NEW_TITLE),
-        Some(" - engine config"),
+    let file_name = rnote_engine::utils::default_file_title_for_export(
+        appwindow.active_tab().canvas().output_file(),
+        Some(&canvas::OUTPUT_FILE_NEW_TITLE),
+        Some(" - engine config.json"),
     );
 
-    filechooser.set_current_name(&(file_title + "." + "json"));
+    filechooser.set_current_name(&file_name);
 
     filechooser.connect_response(
         clone!(@weak appwindow => move |filechooser, responsetype| {
@@ -909,16 +912,16 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                            appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = appwindow.export_engine_config(&file).await {
+                            if let Err(e) = appwindow.active_tab().canvas().export_engine_config(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Export engine config failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Export engine config failed."));
                             } else {
-                                appwindow.canvas_wrapper().dispatch_toast_text(&gettext("Exported engine config successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported engine config successfully."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                         }));
                     }
                 }

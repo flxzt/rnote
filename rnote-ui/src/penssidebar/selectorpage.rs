@@ -72,30 +72,30 @@ impl SelectorPage {
 
         imp.selectorstyle_polygon_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
             if selectorstyle_polygon_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Polygon;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Polygon;
             }
         }));
 
         imp.selectorstyle_rect_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
             if selectorstyle_rect_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Rectangle;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Rectangle;
             }
         }));
 
         imp.selectorstyle_single_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_single_toggle| {
             if selectorstyle_single_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Single;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::Single;
             }
         }));
 
         imp.selectorstyle_intersectingpath_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
             if selectorstyle_intersectingpath_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::IntersectingPath;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.selector_config.style = SelectorStyle::IntersectingPath;
             }
         }));
 
         imp.resize_lock_aspectratio_togglebutton.connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
-            appwindow.canvas().engine().borrow_mut().pens_config.selector_config.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
+            appwindow.active_tab().canvas().engine().borrow_mut().pens_config.selector_config.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
         }));
     }
 
@@ -103,6 +103,7 @@ impl SelectorPage {
         let imp = self.imp();
 
         let selector_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()

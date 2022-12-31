@@ -181,7 +181,7 @@ impl ShaperPage {
 
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let mut engine = engine.borrow_mut();
 
                 match engine.pens_config.shaper_config.style {
@@ -196,11 +196,11 @@ impl ShaperPage {
             Some("current-color"),
             clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
                 let color = stroke_colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
-                let shaper_style = appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.style;
+                let shaper_style = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.style;
 
                 match shaper_style {
-                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(color),
-                    ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_color= Some(color),
+                    ShaperStyle::Smooth => appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_color = Some(color),
+                    ShaperStyle::Rough => appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_color= Some(color),
                 }
             }),
         );
@@ -211,7 +211,7 @@ impl ShaperPage {
             clone!(@weak appwindow => move |fill_colorpicker, _paramspec| {
                 let color = fill_colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
 
-                let engine = appwindow.canvas().engine();
+                let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 match engine.pens_config.shaper_config.style {
@@ -226,7 +226,7 @@ impl ShaperPage {
             clone!(@weak self as shaperpage, @weak appwindow => move |_shaperstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     {
-                        let engine = appwindow.canvas().engine();
+                        let engine = appwindow.active_tab().canvas().engine();
                         let engine = &mut *engine.borrow_mut();
 
                         engine.pens_config.shaper_config.style = ShaperStyle::try_from(selected_row.index() as u32).unwrap_or_default();
@@ -253,12 +253,12 @@ impl ShaperPage {
         // Rough style
         // Fill style
         imp.roughstyle_fillstyle_row.get().connect_selected_notify(clone!(@weak self as shaperpage, @weak appwindow => move |_roughstyle_fillstyle_row| {
-            appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
+            appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.fill_style = shaperpage.roughstyle_fillstyle();
         }));
 
         // Hachure angle
         imp.roughstyle_hachure_angle_spinbutton.get().connect_value_changed(clone!(@weak self as shaperpage, @weak appwindow => move |spinbutton| {
-            appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
+            appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.hachure_angle = spinbutton.value().round().to_radians().clamp(-std::f64::consts::PI, std::f64::consts::PI);
         }));
 
         // Constraints
@@ -266,7 +266,7 @@ impl ShaperPage {
             .constraint_enabled_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.enabled = switch.state();
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.enabled = switch.state();
             }));
 
         imp
@@ -274,9 +274,9 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::OneToOne);
                 }
             }));
 
@@ -285,9 +285,9 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
                 } else {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
                 }
             }));
 
@@ -296,9 +296,9 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 if switch.state() {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.insert(ConstraintRatio::Golden);
                 } else {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.constraints.ratios.remove(&ConstraintRatio::Golden);
                 }
             }));
 
@@ -306,7 +306,7 @@ impl ShaperPage {
         imp.shapebuildertype_listbox.connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shapetype_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    appwindow.canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = ShapeBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = ShapeBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
 
                     // Need to refresh the whole page, because changing the builder type affects multiple widgets
                     shaperpage.refresh_ui(&appwindow);
@@ -319,6 +319,7 @@ impl ShaperPage {
         let imp = self.imp();
 
         let shaper_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()

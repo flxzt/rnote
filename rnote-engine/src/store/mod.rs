@@ -253,6 +253,19 @@ impl StrokeStore {
         */
     }
 
+    pub(super) fn can_undo(&self) -> bool {
+        let index = self.history_pos.unwrap_or_else(|| self.history.len());
+
+        index > 0
+    }
+
+    pub(super) fn can_redo(&self) -> bool {
+        let history_len = self.history.len();
+        let index = self.history_pos.unwrap_or_else(|| history_len);
+
+        index + 1 < history_len
+    }
+
     fn simple_style_record(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -305,16 +318,11 @@ impl StrokeStore {
             self.import_history_entry(&prev);
 
             self.history_pos = Some(index - 1);
-
-            widget_flags.hide_redo = Some(false);
-
-            if index - 1 == 0 {
-                widget_flags.hide_undo = Some(true);
-            }
         } else {
-            widget_flags.hide_undo = Some(true);
             log::debug!("no history, can't undo");
         }
+
+        widget_flags.hide_undo = Some(!self.can_undo());
 
         widget_flags
     }
@@ -329,16 +337,11 @@ impl StrokeStore {
             self.import_history_entry(&next);
 
             self.history_pos = Some(index + 1);
-
-            widget_flags.hide_undo = Some(false);
-
-            if index + 1 == self.history.len() - 1 {
-                widget_flags.hide_redo = Some(true);
-            }
         } else {
-            widget_flags.hide_redo = Some(true);
             log::debug!("no future history entries, can't redo");
         }
+
+        widget_flags.hide_redo = Some(!self.can_redo());
 
         widget_flags
     }
@@ -362,7 +365,7 @@ impl StrokeStore {
                 self.history.pop_front();
             }
         } else {
-            log::trace!("state has not changed, no need to record");
+            log::debug!("state has not changed, skipped record");
         }
     }
 

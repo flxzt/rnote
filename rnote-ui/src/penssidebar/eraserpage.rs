@@ -69,13 +69,13 @@ impl EraserPage {
 
         imp.eraserstyle_trash_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
             if eraserstyle_trash_colliding_strokes_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::TrashCollidingStrokes;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::TrashCollidingStrokes;
             }
         }));
 
         imp.eraserstyle_split_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_split_colliding_strokes_toggle| {
             if eraserstyle_split_colliding_strokes_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::SplitCollidingStrokes;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::SplitCollidingStrokes;
             }
         }));
 
@@ -86,7 +86,7 @@ impl EraserPage {
 
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().pens_config.eraser_config.width = width_spinbutton.value();
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.width = width_spinbutton.value();
             }),
         );
     }
@@ -95,6 +95,7 @@ impl EraserPage {
         let imp = self.imp();
 
         let eraser_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()

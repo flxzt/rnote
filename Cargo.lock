@@ -1449,9 +1449,9 @@ dependencies = [
 
 [[package]]
 name = "geographiclib-rs"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdbd3cdc1856ca7736763d2784671c2c9b0093f0ee47e2bed0059feed6afca89"
+checksum = "04a4efc8e99f43d1d29331a073981bb13074b253edc08ffc8ccf5f384b1d1d1e"
 dependencies = [
  "lazy_static",
 ]
@@ -1878,7 +1878,7 @@ checksum = "da2d6f23ffea9d7e76c53eee25dfb67bcd8fde7f1198b0855350698c9f07c780"
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
-source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=76fa26925c7d78b21bfd1f72c60327ca11d96ae7#76fa26925c7d78b21bfd1f72c60327ca11d96ae7"
+source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=6d5fae1173a3cf19d6d46c5ac58cef72a9b2553e#6d5fae1173a3cf19d6d46c5ac58cef72a9b2553e"
 dependencies = [
  "anyhow",
  "autocxx",
@@ -2641,9 +2641,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.16.0"
+version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
+checksum = "6f61fba1741ea2b3d6a1e3178721804bb716a68a6aeba1149b5d52e3d464ea66"
 
 [[package]]
 name = "optional"
@@ -2659,9 +2659,9 @@ checksum = "9b7820b9daea5457c9f21c69448905d723fbd21136ccf521748f23fd49e723ee"
 
 [[package]]
 name = "owo-colors"
-version = "3.6.0"
+version = "3.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69dc4ec9e7e12502579e09e8a53c6a305b3aceb62ad5c307a62f7c3eada78324"
+checksum = "c1b04fb49957986fdce4d6ee7a65027d55d4b6d2265e5848bbb507b58ccfdb6f"
 
 [[package]]
 name = "palette"

@@ -1114,7 +1114,9 @@ impl RnoteAppWindow {
         new_wrapper
             .canvas()
             .bind_property("unsaved-changes", &tab_page, "icon")
-            .transform_to(|_, from: bool| from.then_some(gio::ThemedIcon::new("dot-symbolic")))
+            .transform_to(|_, from: bool| {
+                Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
+            })
             .sync_create()
             .build();
 

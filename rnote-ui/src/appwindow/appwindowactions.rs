@@ -387,32 +387,6 @@ impl RnoteAppWindow {
             let current_pen_style_w_override = canvas.engine().borrow().penholder.current_style_w_override();
 
             {
-                // Titles
-                let title = canvas.doc_title_display();
-                let subtitle = canvas.doc_folderpath_display();
-
-                appwindow.set_title(Some(
-                    &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
-                ));
-
-                appwindow.mainheader()
-                    .main_title_unsaved_indicator()
-                    .set_visible(canvas.unsaved_changes());
-                if canvas.unsaved_changes() {
-                    appwindow.mainheader()
-                        .main_title()
-                        .add_css_class("unsaved_changes");
-                } else {
-                    appwindow.mainheader()
-                        .main_title()
-                        .remove_css_class("unsaved_changes");
-                }
-
-                appwindow.mainheader().main_title().set_title(&title);
-                appwindow.mainheader().main_title().set_subtitle(&subtitle);
-            }
-
-            {
                 // Undo / redo
                 let can_undo = canvas.engine().borrow().can_undo();
                 let can_redo = canvas.engine().borrow().can_redo();
@@ -468,6 +442,7 @@ impl RnoteAppWindow {
                 }
             }
 
+            appwindow.update_titles_active_tab();
             appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
             appwindow.penssidebar().shaper_page().refresh_ui(&appwindow);
             appwindow.penssidebar().typewriter_page().refresh_ui(&appwindow);

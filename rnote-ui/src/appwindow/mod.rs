@@ -1118,6 +1118,14 @@ impl RnoteAppWindow {
             .sync_create()
             .build();
 
+        new_wrapper.canvas().connect_notify_local(
+            Some("touch-drawing"),
+            clone!(@weak new_wrapper => move |canvas, _pspec| {
+                // Disable the zoom gesture when touch drawing is enabled
+                new_wrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
+            }),
+        );
+
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
     }
 
@@ -1167,6 +1175,34 @@ impl RnoteAppWindow {
                 .borrow_mut()
                 .clear_rendering();
         }
+    }
+
+    pub(crate) fn update_titles_active_tab(&self) {
+        let canvas = self.active_tab().canvas();
+
+        // Titles
+        let title = canvas.doc_title_display();
+        let subtitle = canvas.doc_folderpath_display();
+
+        self.set_title(Some(
+            &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
+        ));
+
+        self.mainheader()
+            .main_title_unsaved_indicator()
+            .set_visible(canvas.unsaved_changes());
+        if canvas.unsaved_changes() {
+            self.mainheader()
+                .main_title()
+                .add_css_class("unsaved_changes");
+        } else {
+            self.mainheader()
+                .main_title()
+                .remove_css_class("unsaved_changes");
+        }
+
+        self.mainheader().main_title().set_title(&title);
+        self.mainheader().main_title().set_subtitle(&subtitle);
     }
 
     pub(crate) fn open_file_w_dialogs(

@@ -742,19 +742,9 @@ impl RnoteCanvas {
         );
 
         self.connect_notify_local(
-            Some("touch-drawing"),
-            clone!(@weak appwindow => move |canvas, _pspec| {
-                let touch_drawing = canvas.touch_drawing();
-
-                // Disable the zoom gesture when touch drawing is enabled
-                appwindow.active_tab().canvas_zoom_gesture_enable(!touch_drawing);
-            }),
-        );
-
-        self.connect_notify_local(
             Some("unsaved-changes"),
             clone!(@weak appwindow => move |_canvas, _pspec| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
+                appwindow.update_titles_active_tab();
             }),
         );
 

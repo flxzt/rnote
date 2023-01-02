@@ -201,10 +201,10 @@ impl IconPicker {
                 .halign(Align::Center)
                 .valign(Align::Center)
                 .icon_size(IconSize::Large)
-                .margin_top(6)
-                .margin_bottom(6)
-                .margin_start(6)
-                .margin_end(6)
+                .margin_top(3)
+                .margin_bottom(3)
+                .margin_start(3)
+                .margin_end(3)
                 .build();
 
             list_item.set_child(Some(&icon_image));

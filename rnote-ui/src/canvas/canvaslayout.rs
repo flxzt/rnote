@@ -80,7 +80,7 @@ mod imp {
 
             // Update the adjustments
             let (h_lower, h_upper) = match doc_layout {
-                Layout::FixedSize | Layout::ContinuousVertical | Layout::ContinuousXY => (
+                Layout::FixedSize | Layout::ContinuousVertical => (
                     (engine.document.x - Document::SHADOW_WIDTH) * total_zoom,
                     (engine.document.x + engine.document.width + Document::SHADOW_WIDTH)
                         * total_zoom,
@@ -92,7 +92,7 @@ mod imp {
             };
 
             let (v_lower, v_upper) = match doc_layout {
-                Layout::FixedSize | Layout::ContinuousVertical | Layout::ContinuousXY => (
+                Layout::FixedSize | Layout::ContinuousVertical => (
                     (engine.document.y - Document::SHADOW_WIDTH) * total_zoom,
                     (engine.document.y + engine.document.height + Document::SHADOW_WIDTH)
                         * total_zoom,

@@ -261,10 +261,6 @@ impl RnoteAppWindow {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
-                    "continuous-xy" => {
-                        appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousXY);
-                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
-                    },
                     "semi-infinite" => {
                         appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::SemiInfinite);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
@@ -413,7 +409,6 @@ impl RnoteAppWindow {
                 let doc_layout = match doc_layout {
                     Layout::FixedSize => "fixed-size",
                     Layout::ContinuousVertical => "continuous-vertical",
-                    Layout::ContinuousXY => "continuous-xy",
                     Layout::SemiInfinite => "semi-infinite",
                     Layout::Infinite => "infinite",
                 };

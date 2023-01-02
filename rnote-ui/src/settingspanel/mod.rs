@@ -414,31 +414,22 @@ impl SettingsPanel {
         self.imp().settings_scroller.clone()
     }
 
-    pub(crate) fn general_regular_cursor_picker_image(&self) -> Image {
-        self.imp().general_regular_cursor_picker_image.clone()
+    pub(crate) fn general_regular_cursor_picker(&self) -> IconPicker {
+        self.imp().general_regular_cursor_picker.clone()
     }
 
-    pub(crate) fn general_drawing_cursor_picker_image(&self) -> Image {
-        self.imp().general_drawing_cursor_picker_image.clone()
+    pub(crate) fn general_drawing_cursor_picker(&self) -> IconPicker {
+        self.imp().general_drawing_cursor_picker.clone()
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        *self.imp().temporary_format.borrow_mut() = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format
-            .clone();
-
-        self.refresh_general(appwindow);
-        self.fresh_format(appwindow);
-        self.refresh_background(appwindow);
-        self.refresh_shortcuts(appwindow);
+        self.refresh_general_ui(appwindow);
+        self.fresh_format_ui(appwindow);
+        self.refresh_background_ui(appwindow);
+        self.refresh_shortcuts_ui(appwindow);
     }
 
-    fn refresh_general(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_general_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
         let format_border_color = appwindow
@@ -454,7 +445,16 @@ impl SettingsPanel {
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
-    fn fresh_format(&self, appwindow: &RnoteAppWindow) {
+    fn fresh_format_ui(&self, appwindow: &RnoteAppWindow) {
+        *self.imp().temporary_format.borrow_mut() = appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow()
+            .document
+            .format
+            .clone();
+
         let imp = self.imp();
         let format = appwindow
             .active_tab()
@@ -477,7 +477,7 @@ impl SettingsPanel {
         imp.format_height_unitentry.set_value(format.height);
     }
 
-    fn refresh_background(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_background_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
         let background = appwindow
             .active_tab()
@@ -517,7 +517,7 @@ impl SettingsPanel {
             .set_value(background.pattern_size[1]);
     }
 
-    fn refresh_shortcuts(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_shortcuts_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
         let current_shortcuts = appwindow
             .active_tab()
@@ -546,13 +546,16 @@ impl SettingsPanel {
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+        self.setup_general(appwindow);
+        self.setup_format(appwindow);
+        self.setup_background(appwindow);
+        self.setup_shortcuts(appwindow);
+    }
+
+    fn setup_general(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let temporary_format = imp.temporary_format.clone();
-        let penshortcut_stylus_button_primary_row = imp.penshortcut_stylus_button_primary_row.get();
-        let penshortcut_stylus_button_secondary_row =
-            imp.penshortcut_stylus_button_secondary_row.get();
-        let penshortcut_mouse_button_secondary_row =
-            imp.penshortcut_mouse_button_secondary_row.get();
+        let general_regular_cursor_picker_image = imp.general_regular_cursor_picker_image.get();
+        let general_drawing_cursor_picker_image = imp.general_drawing_cursor_picker_image.get();
 
         // autosave enable switch
         imp.general_autosave_enable_switch
@@ -596,10 +599,11 @@ impl SettingsPanel {
         imp.general_regular_cursor_picker.connect_local(
             "icon-picked",
             false,
-            clone!(@weak appwindow => @default-return None, move |args| {
+            clone!(@weak general_regular_cursor_picker_image, @weak appwindow => @default-return None, move |args| {
                 let picked = args[1].get::<String>().unwrap();
 
-                appwindow.active_tab().canvas().set_regular_cursor(picked);
+                general_regular_cursor_picker_image.set_icon_name(Some(&picked));
+                appwindow.active_tab().canvas().set_regular_cursor(&picked);
 
                 None
             }),
@@ -612,14 +616,20 @@ impl SettingsPanel {
         imp.general_drawing_cursor_picker.connect_local(
             "icon-picked",
             false,
-            clone!(@weak appwindow => @default-return None, move |args| {
+            clone!(@weak general_drawing_cursor_picker_image, @weak appwindow => @default-return None, move |args| {
                 let picked = args[1].get::<String>().unwrap();
 
-                appwindow.active_tab().canvas().set_drawing_cursor(picked);
+                general_drawing_cursor_picker_image.set_icon_name(Some(&picked));
+                appwindow.active_tab().canvas().set_drawing_cursor(&picked);
 
                 None
             }),
         );
+    }
+
+    fn setup_format(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        let temporary_format = imp.temporary_format.clone();
 
         // revert format
         imp.format_revert_button.get().connect_clicked(
@@ -639,7 +649,20 @@ impl SettingsPanel {
             }),
         );
 
-        // Background
+        imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
+            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
+            appwindow.active_tab().canvas().engine().borrow_mut().document.format.border_color = format_border_color;
+
+            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
+            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
+
+            appwindow.active_tab().canvas().update_engine_rendering();
+        }));
+    }
+
+    fn setup_background(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
         imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
             appwindow.active_tab().canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
 
@@ -682,16 +705,6 @@ impl SettingsPanel {
             appwindow.active_tab().canvas().update_engine_rendering();
         }));
 
-        imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
-            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
-            appwindow.active_tab().canvas().engine().borrow_mut().document.format.border_color = format_border_color;
-
-            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
-            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-
-            appwindow.active_tab().canvas().update_engine_rendering();
-        }));
-
         imp.background_pattern_width_unitentry.get().connect_local(
             "measurement-changed",
             false,
@@ -721,8 +734,16 @@ impl SettingsPanel {
                     None
             }),
         );
+    }
 
-        // Shortcuts
+    fn setup_shortcuts(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        let penshortcut_stylus_button_primary_row = imp.penshortcut_stylus_button_primary_row.get();
+        let penshortcut_stylus_button_secondary_row =
+            imp.penshortcut_stylus_button_secondary_row.get();
+        let penshortcut_mouse_button_secondary_row =
+            imp.penshortcut_mouse_button_secondary_row.get();
+
         imp.penshortcut_stylus_button_primary_row
             .set_key(Some(ShortcutKey::StylusPrimaryButton));
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {

@@ -47,24 +47,24 @@ impl RnoteAppWindow {
         self.app_settings()
             .bind("autosave-interval-secs", self, "autosave-interval-secs")
             .build();
+
+        // righthanded
+        self.app_settings()
+            .bind("righthanded", self, "righthanded")
+            .build();
+
+        // touch drawing
+        self.app_settings()
+            .bind("touch-drawing", self, "touch-drawing")
+            .build();
         /*
                // permanently hide canvas scrollbars
                self.app_settings()
                    .bind(
                        "permanently-hide-scrollbars",
-                       &self.active_wrapper().canvas_wrapper(),
+                       &self.active_tab(),
                        "permanently-hide-scrollbars",
                    )
-                   .build();
-
-               // righthanded
-               self.app_settings()
-                   .bind("righthanded", self, "righthanded")
-                   .build();
-
-               // touch drawing
-               self.app_settings()
-                   .bind("touch-drawing", &self.active_wrapper().canvas(), "touch-drawing")
                    .build();
 
                // regular cursor

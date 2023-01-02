@@ -52,11 +52,7 @@ impl RnoteAppWindow {
         self.add_action(&action_debug_export_engine_config);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
-        let action_touch_drawing = gio::PropertyAction::new(
-            "touch-drawing",
-            &self.active_tab().canvas(),
-            "touch-drawing",
-        );
+        let action_touch_drawing = gio::PropertyAction::new("touch-drawing", self, "touch-drawing");
         self.add_action(&action_touch_drawing);
 
         let action_pen_sounds =

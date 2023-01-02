@@ -42,6 +42,7 @@ mod imp {
         pub(crate) autosave: Cell<bool>,
         pub(crate) autosave_interval_secs: Cell<u32>,
         pub(crate) righthanded: Cell<bool>,
+        pub(crate) touch_drawing: Cell<bool>,
 
         #[template_child]
         pub(crate) main_grid: TemplateChild<Grid>,
@@ -116,6 +117,7 @@ mod imp {
                 autosave: Cell::new(true),
                 autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
+                touch_drawing: Cell::new(false),
 
                 main_grid: TemplateChild::<Grid>::default(),
                 overlays: TemplateChild::<RnoteOverlays>::default(),
@@ -221,6 +223,14 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Whether to enable touch drawing
+                    glib::ParamSpecBoolean::new(
+                        "touch-drawing",
+                        "touch-drawing",
+                        "touch-drawing",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -231,6 +241,7 @@ mod imp {
                 "autosave" => self.autosave.get().to_value(),
                 "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
+                "touch-drawing" => self.touch_drawing.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -271,6 +282,11 @@ mod imp {
                     self.righthanded.replace(righthanded);
 
                     self.handle_righthanded_property(righthanded);
+                }
+                "touch-drawing" => {
+                    let touch_drawing: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.touch_drawing.replace(touch_drawing);
                 }
                 _ => unimplemented!(),
             }
@@ -827,6 +843,16 @@ impl RnoteAppWindow {
         self.set_property("righthanded", righthanded.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn touch_drawing(&self) -> bool {
+        self.property::<bool>("touch-drawing")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
+        self.set_property("touch-drawing", touch_drawing.to_value());
+    }
+
     pub(crate) fn app(&self) -> RnoteApp {
         self.application().unwrap().downcast::<RnoteApp>().unwrap()
     }
@@ -1127,6 +1153,10 @@ impl RnoteAppWindow {
                 new_wrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
             }),
         );
+
+        self.bind_property("touch-drawing", &new_wrapper.canvas(), "touch_drawing")
+            .sync_create()
+            .build();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
     }

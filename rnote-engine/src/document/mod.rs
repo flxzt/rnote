@@ -185,8 +185,8 @@ impl Document {
             &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
         );
 
-        self.x = 0.0; // new_bounds.mins[0];
-        self.y = 0.0; // new_bounds.mins[1];
+        self.x = 0.0;
+        self.y = 0.0;
         self.width = new_bounds.extents()[0];
         self.height = new_bounds.extents()[1];
     }
@@ -221,8 +221,8 @@ impl Document {
             )
             .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
         };
-        self.x = 0.0; //new_bounds.mins[0];
-        self.y = 0.0; //new_bounds.mins[1];
+        self.x = 0.0;
+        self.y = 0.0;
         self.width = new_bounds.extents()[0];
         self.height = new_bounds.extents()[1];
     }

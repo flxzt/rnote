@@ -34,11 +34,6 @@
                 <attribute name="target">continuous-vertical</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">_Continuous xy</attribute>
-                <attribute name="action">win.doc-layout</attribute>
-                <attribute name="target">continuous-xy</attribute>
-              </item>
-              <item>
                 <attribute name="label" translatable="yes">_Semi infinite</attribute>
                 <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">semi-infinite</attribute>

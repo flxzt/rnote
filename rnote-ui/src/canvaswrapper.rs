@@ -231,6 +231,14 @@ impl RnoteCanvasWrapper {
 
         self.setup_input(appwindow);
 
+        self.canvas().connect_notify_local(
+            Some("touch-drawing"),
+            clone!(@weak self as canvaswrapper => move |canvas, _pspec| {
+                // Disable the zoom gesture when touch drawing is enabled
+                canvaswrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
+            }),
+        );
+
         imp.canvas.init(appwindow);
     }
 

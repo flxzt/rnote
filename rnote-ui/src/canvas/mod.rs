@@ -451,7 +451,7 @@ impl RnoteCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn set_regular_cursor(&self, regular_cursor: String) {
+    pub(crate) fn set_regular_cursor(&self, regular_cursor: &str) {
         self.set_property("regular-cursor", regular_cursor.to_value());
     }
 
@@ -461,7 +461,7 @@ impl RnoteCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn set_drawing_cursor(&self, drawing_cursor: String) {
+    pub(crate) fn set_drawing_cursor(&self, drawing_cursor: &str) {
         self.set_property("drawing-cursor", drawing_cursor.to_value());
     }
 
@@ -628,15 +628,20 @@ impl RnoteCanvas {
                 output_file_monitor.connect_changed(
                     glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
                         let dispatch_toast_reload_modified_file = || {
-                            appwindow.active_tab().canvas().set_unsaved_changes(true);
+                            canvas.set_unsaved_changes(true);
 
-                            appwindow.overlays().dispatch_toast_w_button_singleton(&gettext("Opened file was modified on disk."), &gettext("Reload"), clone!(@weak appwindow => move |_reload_toast| {
-                                if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
-                                    if let Err(e) = appwindow.load_in_file(output_file, None) {
-                                        log::error!("failed to reload current output file, {}", e);
+                            appwindow.overlays().dispatch_toast_w_button_singleton(
+                                &gettext("Opened file was modified on disk."),
+                                &gettext("Reload"),
+                                clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
+                                    if let Some(output_file) = canvas.output_file() {
+                                        if let Err(e) = appwindow.load_in_file(output_file, None) {
+                                            log::error!("failed to reload current output file, {}", e);
+                                        }
                                     }
-                                }
-                            }), 0, &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                                }),
+                                0,
+                            &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                         };
 
                         match event {
@@ -737,7 +742,7 @@ impl RnoteCanvas {
                     canvas.dismiss_output_file_modified_toast();
                 }
 
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
+                appwindow.update_titles_active_tab();
             }),
         );
 
@@ -748,27 +753,7 @@ impl RnoteCanvas {
             }),
         );
 
-        self.bind_property(
-            "regular-cursor",
-            &appwindow
-                .settings_panel()
-                .general_regular_cursor_picker_image(),
-            "icon-name",
-        )
-        .flags(glib::BindingFlags::DEFAULT)
-        .build();
-
-        self.bind_property(
-            "drawing-cursor",
-            &appwindow
-                .settings_panel()
-                .general_drawing_cursor_picker_image(),
-            "icon-name",
-        )
-        .flags(glib::BindingFlags::DEFAULT)
-        .build();
-
-        // set at startup
+        // set scalefactor at startup
         self.engine().borrow_mut().camera.scale_factor = f64::from(self.scale_factor());
         // and connect
         self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {

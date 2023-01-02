@@ -1146,17 +1146,52 @@ impl RnoteAppWindow {
             .sync_create()
             .build();
 
-        new_wrapper.canvas().connect_notify_local(
-            Some("touch-drawing"),
-            clone!(@weak new_wrapper => move |canvas, _pspec| {
-                // Disable the zoom gesture when touch drawing is enabled
-                new_wrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
-            }),
-        );
-
         self.bind_property("touch-drawing", &new_wrapper.canvas(), "touch_drawing")
             .sync_create()
             .build();
+
+        // Connect cursor pickers
+        if let Some(picked) = self
+            .settings_panel()
+            .general_regular_cursor_picker()
+            .picked()
+        {
+            new_wrapper.canvas().set_regular_cursor(&picked);
+        }
+        self.settings_panel()
+            .general_regular_cursor_picker()
+            .connect_local(
+                "icon-picked",
+                false,
+                clone!(@weak new_wrapper => @default-return None, move |args| {
+                    let picked = args[1].get::<String>().unwrap();
+
+                    new_wrapper.canvas().set_regular_cursor(&picked);
+
+                    None
+                }),
+            );
+
+        if let Some(picked) = self
+            .settings_panel()
+            .general_drawing_cursor_picker()
+            .picked()
+        {
+            new_wrapper.canvas().set_drawing_cursor(&picked);
+        }
+        self.settings_panel()
+            .general_drawing_cursor_picker()
+            .connect_local(
+                "icon-picked",
+                false,
+                clone!(@weak new_wrapper => @default-return None, move |args| {
+                    let picked = args[1].get::<String>().unwrap();
+
+                    new_wrapper.canvas().set_drawing_cursor(&picked);
+
+                    None
+                }),
+            );
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
     }

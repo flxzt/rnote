@@ -346,15 +346,13 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnoteAppWindow) {
         preview_row.entry().set_name(text);
     }));
 
-    icon_picker.connect_local(
-        "icon-picked",
-        false,
-        clone!(@weak icon_menubutton, @weak preview_row, @weak appwindow =>@default-return None, move |args| {
-            let picked = args[1].get::<String>().unwrap();
-
-            icon_menubutton.set_icon_name(&picked);
-            preview_row.entry().set_icon(picked);
-            None
+    icon_picker.connect_notify_local(
+        Some("picked"),
+        clone!(@weak icon_menubutton, @weak preview_row, @weak appwindow => move |iconpicker, _| {
+            if let Some(picked) = iconpicker.picked() {
+                icon_menubutton.set_icon_name(&picked);
+                preview_row.entry().set_icon(picked);
+            }
         }),
     );
 

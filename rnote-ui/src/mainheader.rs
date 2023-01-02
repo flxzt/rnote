@@ -149,11 +149,9 @@ impl MainHeader {
                 &appwindow.flap_header(),
                 "show-end-title-buttons",
             )
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
+            .sync_create()
+            .bidirectional()
+            .invert_boolean()
             .build();
 
         self.imp()
@@ -164,11 +162,9 @@ impl MainHeader {
                 &appwindow.flap_header(),
                 "show-start-title-buttons",
             )
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
+            .sync_create()
+            .bidirectional()
+            .invert_boolean()
             .build();
 
         self.pens_toggles_squeezer().connect_visible_child_notify(

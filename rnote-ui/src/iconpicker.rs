@@ -18,6 +18,7 @@ mod imp {
         pub(crate) list: RefCell<Option<StringList>>,
         pub(crate) selection: RefCell<Option<SingleSelection>>,
         pub(crate) selected_handlerid: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) picked: RefCell<Option<String>>,
 
         #[template_child]
         pub(crate) gridview: TemplateChild<GridView>,
@@ -29,6 +30,7 @@ mod imp {
                 list: RefCell::new(None),
                 selection: RefCell::new(None),
                 selected_handlerid: RefCell::new(None),
+                picked: RefCell::new(None),
 
                 gridview: TemplateChild::<GridView>::default(),
             }
@@ -61,16 +63,38 @@ mod imp {
             }
         }
 
-        fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![glib::subclass::Signal::builder("icon-picked")
-                    .param_types(
-                        // Emits the icon name string
-                        [String::static_type()],
-                    )
-                    .build()]
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![glib::ParamSpecString::new(
+                    "picked",
+                    "picked",
+                    "picked",
+                    None,
+                    glib::ParamFlags::READWRITE,
+                )]
             });
-            SIGNALS.as_ref()
+            PROPERTIES.as_ref()
+        }
+
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "picked" => self.picked.borrow().to_value(),
+                _ => unimplemented!(),
+            }
+        }
+
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            match pspec.name() {
+                "picked" => {
+                    let picked = value
+                        .get::<Option<String>>()
+                        .expect("The value needs to be of type `Option<String>`");
+
+                    self.instance().set_picked_intern(picked.clone());
+                    self.picked.replace(picked);
+                }
+                _ => unimplemented!(),
+            }
         }
     }
 
@@ -98,7 +122,18 @@ impl IconPicker {
         self.imp().list.borrow().clone()
     }
 
+    #[allow(unused)]
     pub(crate) fn picked(&self) -> Option<String> {
+        self.property::<Option<String>>("picked")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_picked(&self, picked: Option<String>) {
+        self.set_property("picked", picked.to_value());
+    }
+
+    /// Internal function to retreive the picked icon from the selection
+    fn picked_intern(&self) -> Option<String> {
         self.imp()
             .selection
             .borrow()
@@ -112,12 +147,37 @@ impl IconPicker {
             })
     }
 
+    /// Internal function to set the picked icon
+    fn set_picked_intern(&self, picked: Option<String>) {
+        if let (Some(selection), Some(list)) =
+            (&*self.imp().selection.borrow(), &*self.imp().list.borrow())
+        {
+            if let Some(picked) = picked {
+                let item = list
+                    .snapshot()
+                    .into_iter()
+                    .map(|o| o.downcast::<StringObject>().unwrap().string())
+                    .enumerate()
+                    .find(|(_, s)| s.as_str() == &picked);
+
+                if let Some((i, _)) = item {
+                    selection.set_selected(i as u32);
+                } else {
+                    selection.set_selected(gtk4::INVALID_LIST_POSITION);
+                }
+            } else {
+                selection.set_selected(gtk4::INVALID_LIST_POSITION);
+            }
+        }
+    }
+
     /// Binds a list containing the icon names
     pub(crate) fn set_list(&self, list: StringList) {
         let single_selection = SingleSelection::builder()
             .model(&list)
             // Ensures nothing is selected when initially setting the list
             .selected(gtk4::INVALID_LIST_POSITION)
+            .can_unselect(true)
             .build();
 
         if let Some(old_id) = self.imp().selected_handlerid.borrow_mut().take() {
@@ -127,9 +187,7 @@ impl IconPicker {
         self.imp().selected_handlerid.borrow_mut().replace(
             single_selection.connect_selected_item_notify(
                 clone!(@weak self as iconpicker => move |_| {
-                    if let Some(picked_str) = iconpicker.picked() {
-                        iconpicker.emit_by_name::<()>("icon-picked", &[&picked_str]);
-                    }
+                    iconpicker.set_picked(iconpicker.picked_intern());
                 }),
             ),
         );

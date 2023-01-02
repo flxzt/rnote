@@ -212,7 +212,7 @@ impl TypewriterPage {
 
                 Some(font_desc.to_value())
             })
-            .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
+            .sync_create()
             .build();
 
         // Color

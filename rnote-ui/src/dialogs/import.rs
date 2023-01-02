@@ -219,11 +219,11 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 
     pdf_page_start_spinbutton
         .bind_property("value", &pdf_page_end_spinbutton.adjustment(), "lower")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
     pdf_page_end_spinbutton
         .bind_property("value", &pdf_page_start_spinbutton.adjustment(), "upper")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
 
     // Update preferences

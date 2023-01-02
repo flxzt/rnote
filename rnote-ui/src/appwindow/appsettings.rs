@@ -66,17 +66,26 @@ impl RnoteAppWindow {
                        "permanently-hide-scrollbars",
                    )
                    .build();
-
-               // regular cursor
-               self.app_settings()
-                   .bind("regular-cursor", &self.active_wrapper().canvas(), "regular-cursor")
-                   .build();
-
-               // drawing cursor
-               self.app_settings()
-                   .bind("drawing-cursor", &self.active_wrapper().canvas(), "drawing-cursor")
-                   .build();
         */
+
+        // regular cursor
+        self.app_settings()
+            .bind(
+                "regular-cursor",
+                &self.settings_panel().general_regular_cursor_picker(),
+                "picked",
+            )
+            .build();
+
+        // drawing cursor
+        self.app_settings()
+            .bind(
+                "drawing-cursor",
+                &self.settings_panel().general_drawing_cursor_picker(),
+                "picked",
+            )
+            .build();
+
         // Brush page
         self.app_settings()
             .bind(

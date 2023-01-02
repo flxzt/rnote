@@ -409,7 +409,8 @@ mod imp {
 
             self.flapreveal_toggle
                 .bind_property("active", &flap, "reveal-flap")
-                .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+                .sync_create()
+                .bidirectional()
                 .build();
 
             self.flapreveal_toggle.connect_toggled(
@@ -1150,48 +1151,20 @@ impl RnoteAppWindow {
             .sync_create()
             .build();
 
-        // Connect cursor pickers
-        if let Some(picked) = self
-            .settings_panel()
-            .general_regular_cursor_picker()
-            .picked()
-        {
-            new_wrapper.canvas().set_regular_cursor(&picked);
-        }
+        // bind cursors
         self.settings_panel()
             .general_regular_cursor_picker()
-            .connect_local(
-                "icon-picked",
-                false,
-                clone!(@weak new_wrapper => @default-return None, move |args| {
-                    let picked = args[1].get::<String>().unwrap();
+            .bind_property("picked", &new_wrapper.canvas(), "regular-cursor")
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
 
-                    new_wrapper.canvas().set_regular_cursor(&picked);
-
-                    None
-                }),
-            );
-
-        if let Some(picked) = self
-            .settings_panel()
-            .general_drawing_cursor_picker()
-            .picked()
-        {
-            new_wrapper.canvas().set_drawing_cursor(&picked);
-        }
         self.settings_panel()
             .general_drawing_cursor_picker()
-            .connect_local(
-                "icon-picked",
-                false,
-                clone!(@weak new_wrapper => @default-return None, move |args| {
-                    let picked = args[1].get::<String>().unwrap();
-
-                    new_wrapper.canvas().set_drawing_cursor(&picked);
-
-                    None
-                }),
-            );
+            .bind_property("picked", &new_wrapper.canvas(), "drawing-cursor")
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
     }

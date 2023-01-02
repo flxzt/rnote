@@ -554,13 +554,12 @@ impl SettingsPanel {
 
     fn setup_general(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let general_regular_cursor_picker_image = imp.general_regular_cursor_picker_image.get();
-        let general_drawing_cursor_picker_image = imp.general_drawing_cursor_picker_image.get();
 
         // autosave enable switch
         imp.general_autosave_enable_switch
             .bind_property("state", appwindow, "autosave")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
 
         imp.general_autosave_enable_switch
@@ -570,7 +569,7 @@ impl SettingsPanel {
                 &*imp.general_autosave_interval_secs_row,
                 "sensitive",
             )
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+            .sync_create()
             .build();
 
         imp.general_autosave_interval_secs_spinbutton
@@ -578,7 +577,8 @@ impl SettingsPanel {
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
             .transform_from(|_, val: u32| Some(f64::from(val).to_value()))
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
 
         // permanently hide canvas scrollbars
@@ -589,42 +589,37 @@ impl SettingsPanel {
                 &appwindow.active_tab(),
                 "permanently-hide-scrollbars",
             )
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
 
         // Regular cursor picker
         imp.general_regular_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        imp.general_regular_cursor_picker.connect_local(
-            "icon-picked",
-            false,
-            clone!(@weak general_regular_cursor_picker_image, @weak appwindow => @default-return None, move |args| {
-                let picked = args[1].get::<String>().unwrap();
-
-                general_regular_cursor_picker_image.set_icon_name(Some(&picked));
-                appwindow.active_tab().canvas().set_regular_cursor(&picked);
-
-                None
-            }),
-        );
+        imp.general_regular_cursor_picker
+            .bind_property(
+                "picked",
+                &*imp.general_regular_cursor_picker_image,
+                "icon-name",
+            )
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
 
         // Drawing cursor picker
         imp.general_drawing_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        imp.general_drawing_cursor_picker.connect_local(
-            "icon-picked",
-            false,
-            clone!(@weak general_drawing_cursor_picker_image, @weak appwindow => @default-return None, move |args| {
-                let picked = args[1].get::<String>().unwrap();
-
-                general_drawing_cursor_picker_image.set_icon_name(Some(&picked));
-                appwindow.active_tab().canvas().set_drawing_cursor(&picked);
-
-                None
-            }),
-        );
+        imp.general_drawing_cursor_picker
+            .bind_property(
+                "picked",
+                &*imp.general_drawing_cursor_picker_image,
+                "icon-name",
+            )
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
     }
 
     fn setup_format(&self, appwindow: &RnoteAppWindow) {

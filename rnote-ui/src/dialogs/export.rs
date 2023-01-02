@@ -123,7 +123,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
     // Update prefs
     with_background_switch
         .bind_property("active", &with_pattern_row, "sensitive")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
 
     export_file_button.connect_clicked(
@@ -365,7 +365,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
     // Update prefs
     with_background_switch
         .bind_property("active", &with_pattern_row, "sensitive")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
 
     export_dir_button.connect_clicked(
@@ -629,7 +629,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
     // Update prefs
     with_background_switch
         .bind_property("active", &with_pattern_row, "sensitive")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
 
     export_file_button.connect_clicked(

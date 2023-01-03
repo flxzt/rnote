@@ -58,6 +58,7 @@ mod imp {
         pub(crate) touch_drawing_gesture: GestureDrag,
         pub(crate) key_controller: EventControllerKey,
         pub(crate) key_controller_im_context: IMMulticontext,
+        pub(crate) drop_target: DropTarget,
 
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
@@ -101,6 +102,15 @@ mod imp {
 
             let key_controller_im_context = IMMulticontext::new();
 
+            let drop_target = DropTarget::builder()
+                .name("canvas_drop_target")
+                .propagation_phase(PropagationPhase::Capture)
+                .actions(gdk::DragAction::COPY)
+                .build();
+
+            // The order here is important: first files, then text
+            drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
+
             // Gesture grouping
             mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
             touch_drawing_gesture.group_with(&stylus_drawing_gesture);
@@ -137,6 +147,7 @@ mod imp {
                 vadjustment_signal: RefCell::new(None),
                 hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
+                zoom_timeout_id: RefCell::new(None),
                 regular_cursor: RefCell::new(regular_cursor),
                 regular_cursor_icon_name: RefCell::new(regular_cursor_icon_name),
                 drawing_cursor: RefCell::new(drawing_cursor),
@@ -146,7 +157,7 @@ mod imp {
                 touch_drawing_gesture,
                 key_controller,
                 key_controller_im_context,
-                zoom_timeout_id: RefCell::new(None),
+                drop_target,
 
                 engine: Rc::new(RefCell::new(engine)),
 
@@ -196,6 +207,7 @@ mod imp {
             inst.add_controller(&self.mouse_drawing_gesture);
             inst.add_controller(&self.touch_drawing_gesture);
             inst.add_controller(&self.key_controller);
+            inst.add_controller(&self.drop_target);
 
             self.setup_input();
         }
@@ -1086,17 +1098,7 @@ impl RnoteCanvas {
             .build();
 
         // Drop Target
-        let drop_target = DropTarget::builder()
-            .name("canvas_drop_target")
-            .propagation_phase(PropagationPhase::Capture)
-            .actions(gdk::DragAction::COPY)
-            .build();
-        self.add_controller(&drop_target);
-
-        // The order here is important: first files, then text
-        drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
-
-        drop_target.connect_drop(
+        self.imp().drop_target.connect_drop(
             clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
                 let pos = (canvas.engine().borrow().camera.transform().inverse() *
                     na::point![x,y]).coords;

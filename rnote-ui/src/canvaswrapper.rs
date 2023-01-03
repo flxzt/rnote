@@ -504,13 +504,13 @@ impl RnoteCanvasWrapper {
         self.imp().canvas.get()
     }
 
-    /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved between appwindows through tabs,
+    /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved across appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
     pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
         self.imp().canvas.init_reconnect(appwindow);
     }
 
-    /// This disconnects all handlers with references to external objects prepare moving the widget to another appwindow.
+    /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
     pub(crate) fn disconnect_handlers(&self, appwindow: &RnoteAppWindow) {
         self.canvas().disconnect_handlers(appwindow);
     }

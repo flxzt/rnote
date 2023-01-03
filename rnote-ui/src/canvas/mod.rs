@@ -1222,7 +1222,7 @@ impl RnoteCanvas {
         }
     }
 
-    /// This disconnects all handlers with references to external objects prepare moving the widget to another appwindow.
+    /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
     pub(crate) fn disconnect_handlers(&self, _appwindow: &RnoteAppWindow) {
         let mut handlers = self.imp().handlers.borrow_mut();
         if let Some(old) = handlers.appwindow_output_file.take() {
@@ -1253,7 +1253,7 @@ impl RnoteCanvas {
             self.disconnect(old);
         }
 
-        // Page connections
+        // tab page connections
         if let Some(old) = handlers.tab_page_output_file.take() {
             old.unbind();
         }

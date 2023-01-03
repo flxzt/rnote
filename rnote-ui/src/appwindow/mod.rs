@@ -342,12 +342,7 @@ mod imp {
         }
 
         fn setup_tabbar(&self) {
-            let inst = self.instance();
-
             self.tabbar.set_view(Some(&self.overlays.tabview()));
-
-            // first tab on startup
-            inst.new_tab();
         }
 
         fn setup_narrow_pens_toggles(&self) {
@@ -1103,32 +1098,33 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    #[allow(unused)]
+    /// Get the active (selected) tab page. If there is none (which should only be the case on appwindow startup), we create one
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
-        self.imp().overlays.tabview().selected_page().unwrap()
-    }
-
-    pub(crate) fn active_tab(&self) -> RnoteCanvasWrapper {
+        // We always create a single page, if there is none initially
         self.imp()
             .overlays
             .tabview()
             .selected_page()
-            .unwrap()
+            .unwrap_or_else(|| self.new_tab())
+    }
+
+    /// Get the active (selected) tab page child. If there is none (which should only be the case on appwindow startup), we create one
+    pub(crate) fn active_tab(&self) -> RnoteCanvasWrapper {
+        self.active_tab_page()
             .child()
             .downcast::<RnoteCanvasWrapper>()
             .unwrap()
     }
 
     /// Creates a new tab and set it as selected
-    pub(crate) fn new_tab(&self) {
+    pub(crate) fn new_tab(&self) -> adw::TabPage {
         let new_wrapper = RnoteCanvasWrapper::new();
-        // TODO: move this into connect_tab_page() and make it work
-        new_wrapper.init_reconnect(self);
-        let page = self.overlays().tabview().append(&new_wrapper);
-        new_wrapper.connect_to_tab_page(&page);
 
+        // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview
+        let page = self.overlays().tabview().append(&new_wrapper);
         self.overlays().tabview().set_selected_page(&page);
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
+
+        page
     }
 
     pub(crate) fn tab_pages_snapshot(&self) -> Vec<adw::TabPage> {

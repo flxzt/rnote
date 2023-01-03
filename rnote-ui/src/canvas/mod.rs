@@ -635,7 +635,7 @@ impl RnoteCanvas {
                                 &gettext("Reload"),
                                 clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
                                     if let Some(output_file) = canvas.output_file() {
-                                        if let Err(e) = appwindow.load_in_file(output_file, None) {
+                                        if let Err(e) = appwindow.load_in_file_active_tab(output_file, None) {
                                             log::error!("failed to reload current output file, {}", e);
                                         }
                                     }

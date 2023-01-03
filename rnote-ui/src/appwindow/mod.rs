@@ -1122,15 +1122,17 @@ impl RnoteAppWindow {
             .unwrap()
     }
 
+    /// Creates a new tab and set it as selected
     pub(crate) fn new_tab(&self) {
         let new_wrapper = RnoteCanvasWrapper::new();
-        let tab_page = self.overlays().tabview().append(&new_wrapper);
+        let page = self.overlays().tabview().append(&new_wrapper);
+        self.overlays().tabview().set_selected_page(&page);
         new_wrapper.init(self);
 
         // update the tab title whenever the canvas output file changes
         new_wrapper
             .canvas()
-            .bind_property("output-file", &tab_page, "title")
+            .bind_property("output-file", &page, "title")
             .sync_create()
             .transform_to(|b, _output_file: Option<gio::File>| {
                 Some(
@@ -1145,7 +1147,7 @@ impl RnoteAppWindow {
         // display unsaved changes as icon
         new_wrapper
             .canvas()
-            .bind_property("unsaved-changes", &tab_page, "icon")
+            .bind_property("unsaved-changes", &page, "icon")
             .transform_to(|_, from: bool| {
                 Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
             })
@@ -1257,20 +1259,24 @@ impl RnoteAppWindow {
     ) {
         match crate::utils::FileType::lookup_file_type(&input_file) {
             crate::utils::FileType::RnoteFile => {
-                if self.active_tab().canvas().unsaved_changes() {
-                    dialogs::import::dialog_open_overwrite(self, input_file);
-                } else if let Err(e) = self.load_in_file(input_file, target_pos) {
+                // open a new tab for rnote files
+                self.new_tab();
+
+                if let Err(e) = self.load_in_file_active_tab(input_file, target_pos) {
                     log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
                     );
                 }
             }
             crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
-                if let Err(e) = self.load_in_file(input_file, target_pos) {
+                if let Err(e) = self.load_in_file_active_tab(input_file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {e:?}");
                 }
             }
             crate::utils::FileType::XoppFile => {
+                // open a new tab for xopp file import
+                self.new_tab();
+
                 dialogs::import::dialog_import_xopp_w_prefs(self, input_file);
             }
             crate::utils::FileType::PdfFile => {
@@ -1289,8 +1295,10 @@ impl RnoteAppWindow {
         }
     }
 
-    /// Loads in a file of any supported type into the engine.
-    pub(crate) fn load_in_file(
+    /// Loads in a file of any supported type into the engine of the active tab.
+    ///
+    /// ! overwrites the current state so there should be a user prompt to confirm before this is called
+    pub(crate) fn load_in_file_active_tab(
         &self,
         file: gio::File,
         target_pos: Option<na::Vector2<f64>>,

@@ -9,7 +9,8 @@ use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 
 use crate::{config, RnoteAppWindow};
 
-/// Asks to open the document from the app `input-file` property and overwrites the current document.
+/// Asks to open the given file as rnote file and overwrites the current document.
+#[allow(unused)]
 pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow, input_file: gio::File) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
@@ -24,7 +25,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow, input_file: gio:
         clone!(@weak appwindow => move |_dialog_open_input_file, response| {
             let input_file = input_file.clone();
             let open_overwrite = |appwindow: &RnoteAppWindow| {
-                if let Err(e) = appwindow.load_in_file(input_file, None) {
+                if let Err(e) = appwindow.load_in_file_active_tab(input_file, None) {
                     log::error!("failed to load in input file, {e:?}");
                     appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
                 }
@@ -99,14 +100,12 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
         match responsetype {
             ResponseType::Accept => {
                 if let Some(input_file) = filechooser.file() {
-                    if !appwindow.active_tab().canvas().unsaved_changes() {
-                        if let Err(e) = appwindow.load_in_file(input_file, None) {
-                            log::error!("failed to load in input file, {e:?}");
-                            appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
-                        }
-                    } else {
-                        // Open a dialog to ask for overwriting the current doc
-                        dialog_open_overwrite(&appwindow, input_file);
+                    // open new tab for new rnote file
+                    appwindow.new_tab();
+
+                    if let Err(e) = appwindow.load_in_file_active_tab(input_file, None) {
+                        log::error!("failed to load in input file, {e:?}");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
                     }
                 }
             },

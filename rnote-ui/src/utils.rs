@@ -62,8 +62,17 @@ impl FileType {
                     "rnote" => {
                         return Self::RnoteFile;
                     }
+                    "svg" => {
+                        return Self::VectorImageFile;
+                    }
+                    "jpg" | "jpeg" | "png" => {
+                        return Self::BitmapImageFile;
+                    }
                     "xopp" => {
                         return Self::XoppFile;
+                    }
+                    "pdf" => {
+                        return Self::PdfFile;
                     }
                     _ => {}
                 }

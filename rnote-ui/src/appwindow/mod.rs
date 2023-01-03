@@ -1123,7 +1123,7 @@ impl RnoteAppWindow {
     pub(crate) fn new_tab(&self) {
         let new_wrapper = RnoteCanvasWrapper::new();
         // TODO: move this into connect_tab_page() and make it work
-        new_wrapper.init(self);
+        new_wrapper.init_reconnect(self);
         let page = self.overlays().tabview().append(&new_wrapper);
         new_wrapper.connect_to_tab_page(&page);
 

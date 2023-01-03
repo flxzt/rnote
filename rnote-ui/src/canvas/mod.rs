@@ -12,7 +12,6 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use crate::config;
-use crate::utils::FileType;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 
 use gtk4::{
@@ -1006,7 +1005,7 @@ impl RnoteCanvas {
                                 }
 
                                 // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
-                                if FileType::is_goutputstream_file(file) {
+                                if crate::utils::is_goutputstream_file(file) {
                                     // => file has been modified, handle it the same as the Changed event.
                                     dispatch_toast_reload_modified_file();
                                 } else {

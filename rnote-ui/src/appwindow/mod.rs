@@ -347,7 +347,7 @@ mod imp {
 
             self.tabbar.set_view(Some(&self.overlays.tabview()));
 
-            // one tab on startup
+            // first tab on startup
             inst.new_tab();
         }
 
@@ -1125,14 +1125,23 @@ impl RnoteAppWindow {
     /// Creates a new tab and set it as selected
     pub(crate) fn new_tab(&self) {
         let new_wrapper = RnoteCanvasWrapper::new();
-        let page = self.overlays().tabview().append(&new_wrapper);
-        self.overlays().tabview().set_selected_page(&page);
+        // TODO: move this into connect_tab_page() and make it work
         new_wrapper.init(self);
+
+        let page = self.overlays().tabview().append(&new_wrapper);
+
+        self.overlays().tabview().set_selected_page(&page);
+        self.connect_tab_page(&page);
+    }
+
+    pub(crate) fn connect_tab_page(&self, page: &adw::TabPage) {
+        let new_wrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+        //new_wrapper.init(self);
 
         // update the tab title whenever the canvas output file changes
         new_wrapper
             .canvas()
-            .bind_property("output-file", &page, "title")
+            .bind_property("output-file", page, "title")
             .sync_create()
             .transform_to(|b, _output_file: Option<gio::File>| {
                 Some(
@@ -1147,29 +1156,10 @@ impl RnoteAppWindow {
         // display unsaved changes as icon
         new_wrapper
             .canvas()
-            .bind_property("unsaved-changes", &page, "icon")
+            .bind_property("unsaved-changes", page, "icon")
             .transform_to(|_, from: bool| {
                 Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
             })
-            .sync_create()
-            .build();
-
-        self.bind_property("touch-drawing", &new_wrapper.canvas(), "touch_drawing")
-            .sync_create()
-            .build();
-
-        // bind cursors
-        self.settings_panel()
-            .general_regular_cursor_picker()
-            .bind_property("picked", &new_wrapper.canvas(), "regular-cursor")
-            .transform_to(|_, v: Option<String>| v)
-            .sync_create()
-            .build();
-
-        self.settings_panel()
-            .general_drawing_cursor_picker()
-            .bind_property("picked", &new_wrapper.canvas(), "drawing-cursor")
-            .transform_to(|_, v: Option<String>| v)
             .sync_create()
             .build();
 
@@ -1224,7 +1214,7 @@ impl RnoteAppWindow {
         }
     }
 
-    pub(crate) fn update_titles_active_tab(&self) {
+    pub(crate) fn refresh_titles_active_tab(&self) {
         let canvas = self.active_tab().canvas();
 
         // Titles

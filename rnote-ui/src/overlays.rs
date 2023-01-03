@@ -123,6 +123,7 @@ impl RnoteOverlays {
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+
         imp.tabview
             .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
                 appwindow.clear_rendering_inactive_tabs();
@@ -130,6 +131,11 @@ impl RnoteOverlays {
                 appwindow.active_tab().canvas().regenerate_background_pattern();
                 appwindow.active_tab().canvas().update_engine_rendering();
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
+            }));
+
+        imp.tabview
+            .connect_page_attached(clone!(@weak appwindow => move |_tabview, page, _| {
+                appwindow.connect_tab_page(&page);
             }));
 
         imp.tabview.connect_close_page(

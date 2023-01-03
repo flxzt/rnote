@@ -65,6 +65,7 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                // Since this is nullable we can use it to represent Option<String>
                 vec![glib::ParamSpecString::new(
                     "picked",
                     "picked",

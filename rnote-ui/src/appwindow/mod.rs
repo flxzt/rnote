@@ -16,7 +16,6 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 
-use crate::canvas::RnoteCanvas;
 use crate::{
     config,
     penssidebar::PensSideBar,
@@ -1125,42 +1124,10 @@ impl RnoteAppWindow {
         let new_wrapper = RnoteCanvasWrapper::new();
         // TODO: move this into connect_tab_page() and make it work
         new_wrapper.init(self);
-
         let page = self.overlays().tabview().append(&new_wrapper);
+        new_wrapper.connect_to_tab_page(&page);
 
         self.overlays().tabview().set_selected_page(&page);
-        self.connect_tab_page(&page);
-    }
-
-    pub(crate) fn connect_tab_page(&self, page: &adw::TabPage) {
-        let new_wrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
-        //new_wrapper.init(self);
-
-        // update the tab title whenever the canvas output file changes
-        new_wrapper
-            .canvas()
-            .bind_property("output-file", page, "title")
-            .sync_create()
-            .transform_to(|b, _output_file: Option<gio::File>| {
-                Some(
-                    b.source()?
-                        .downcast::<RnoteCanvas>()
-                        .unwrap()
-                        .doc_title_display(),
-                )
-            })
-            .build();
-
-        // display unsaved changes as icon
-        new_wrapper
-            .canvas()
-            .bind_property("unsaved-changes", page, "icon")
-            .transform_to(|_, from: bool| {
-                Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
-            })
-            .sync_create()
-            .build();
-
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
     }
 

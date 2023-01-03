@@ -37,18 +37,35 @@ use std::time::{self, Instant};
 #[boxed_type(name = "WidgetFlagsBoxed")]
 struct WidgetFlagsBoxed(WidgetFlags);
 
+#[derive(Debug, Default)]
+pub(crate) struct Handlers {
+    pub(crate) hadjustment: Option<glib::SignalHandlerId>,
+    pub(crate) vadjustment: Option<glib::SignalHandlerId>,
+    pub(crate) zoom_timeout: Option<glib::SourceId>,
+    pub(crate) tab_page_output_file: Option<glib::Binding>,
+    pub(crate) tab_page_unsaved_changes: Option<glib::Binding>,
+    pub(crate) appwindow_output_file: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_scalefactor: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_touch_drawing: Option<glib::Binding>,
+    pub(crate) appwindow_regular_cursor: Option<glib::Binding>,
+    pub(crate) appwindow_drawing_cursor: Option<glib::Binding>,
+    pub(crate) appwindow_drop_target: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_zoom_changed: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
+}
+
 mod imp {
     use super::*;
 
     #[allow(missing_debug_implementations)]
     pub(crate) struct RnoteCanvas {
+        pub(crate) handlers: RefCell<Handlers>,
+
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
-        pub(crate) hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
-        pub(crate) vadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
         pub(crate) vscroll_policy: Cell<ScrollablePolicy>,
-        pub(crate) zoom_timeout_id: RefCell<Option<glib::SourceId>>,
         pub(crate) regular_cursor: RefCell<gdk::Cursor>,
         pub(crate) regular_cursor_icon_name: RefCell<String>,
         pub(crate) drawing_cursor: RefCell<gdk::Cursor>,
@@ -141,13 +158,12 @@ mod imp {
             let engine = RnoteEngine::default();
 
             Self {
+                handlers: RefCell::new(Handlers::default()),
+
                 hadjustment: RefCell::new(None),
-                hadjustment_signal: RefCell::new(None),
                 vadjustment: RefCell::new(None),
-                vadjustment_signal: RefCell::new(None),
                 hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
-                zoom_timeout_id: RefCell::new(None),
                 regular_cursor: RefCell::new(regular_cursor),
                 regular_cursor_icon_name: RefCell::new(regular_cursor_icon_name),
                 drawing_cursor: RefCell::new(drawing_cursor),
@@ -208,6 +224,24 @@ mod imp {
             inst.add_controller(&self.touch_drawing_gesture);
             inst.add_controller(&self.key_controller);
             inst.add_controller(&self.drop_target);
+
+            // receive and handling engine tasks
+            glib::MainContext::default().spawn_local(
+                clone!(@strong inst as canvas => async move {
+                    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
+
+                    loop {
+                        if let Some(task) = task_rx.next().await {
+                            let (widget_flags, quit) = canvas.engine().borrow_mut().process_received_task(task);
+                            canvas.emit_handle_widget_flags(widget_flags);
+
+                            if quit {
+                                break;
+                            }
+                        }
+                    }
+                }),
+            );
 
             self.setup_input();
         }
@@ -836,7 +870,7 @@ impl RnoteCanvas {
     }
 
     fn set_hadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().hadjustment_signal.borrow_mut().take() {
+        if let Some(signal_id) = self.imp().handlers.borrow_mut().hadjustment.take() {
             let old_adj = self.imp().hadjustment.borrow().as_ref().unwrap().clone();
             old_adj.disconnect(signal_id);
         }
@@ -849,13 +883,17 @@ impl RnoteCanvas {
                 }),
             );
 
-            self.imp().hadjustment_signal.replace(Some(signal_id));
+            self.imp()
+                .handlers
+                .borrow_mut()
+                .hadjustment
+                .replace(signal_id);
         }
         self.imp().hadjustment.replace(adj);
     }
 
     fn set_vadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().vadjustment_signal.borrow_mut().take() {
+        if let Some(signal_id) = self.imp().handlers.borrow_mut().vadjustment.take() {
             let old_adj = self.imp().vadjustment.borrow().as_ref().unwrap().clone();
             old_adj.disconnect(signal_id);
         }
@@ -868,7 +906,11 @@ impl RnoteCanvas {
                 }),
             );
 
-            self.imp().vadjustment_signal.replace(Some(signal_id));
+            self.imp()
+                .handlers
+                .borrow_mut()
+                .vadjustment
+                .replace(signal_id);
         }
         self.imp().vadjustment.replace(adj);
     }
@@ -1015,26 +1057,10 @@ impl RnoteCanvas {
         }
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        // receiving and handling engine tasks
-        glib::MainContext::default().spawn_local(
-            clone!(@strong self as canvas => async move {
-                let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
-
-                loop {
-                    if let Some(task) = task_rx.next().await {
-                        let (widget_flags, quit) = canvas.engine().borrow_mut().process_received_task(task);
-                        canvas.emit_handle_widget_flags(widget_flags);
-
-                        if quit {
-                            break;
-                        }
-                    }
-                }
-            }),
-        );
-
-        self.connect_notify_local(
+    /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved between appwindows through tabs,
+    /// this function also disconnects and replaces all existing old connections
+    pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
+        let appwindow_output_file = self.connect_notify_local(
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {
                 if let Some(output_file) = canvas.output_file(){
@@ -1048,26 +1074,27 @@ impl RnoteCanvas {
             }),
         );
 
-        // set scalefactor at startup
+        // set scalefactor initially
         self.engine().borrow_mut().camera.scale_factor = f64::from(self.scale_factor());
         // and connect
-        self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
-            let scale_factor = f64::from(canvas.scale_factor());
-            canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
+        let appwindow_scalefactor =
+            self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
+                let scale_factor = f64::from(canvas.scale_factor());
+                canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
 
-            let all_strokes = canvas.engine().borrow_mut().store.stroke_keys_unordered();
-            canvas
-                .engine()
-                .borrow_mut()
-                .store
-                .set_rendering_dirty_for_strokes(&all_strokes);
+                let all_strokes = canvas.engine().borrow_mut().store.stroke_keys_unordered();
+                canvas
+                    .engine()
+                    .borrow_mut()
+                    .store
+                    .set_rendering_dirty_for_strokes(&all_strokes);
 
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
-        });
+                canvas.regenerate_background_pattern();
+                canvas.update_engine_rendering();
+            });
 
         // Update titles when there are changes
-        self.connect_notify_local(
+        let appwindow_unsaved_changes = self.connect_notify_local(
             Some("unsaved-changes"),
             clone!(@weak appwindow => move |_canvas, _pspec| {
                 appwindow.refresh_titles_active_tab();
@@ -1075,13 +1102,13 @@ impl RnoteCanvas {
         );
 
         // one per-appwindow property for touch-drawing
-        appwindow
+        let appwindow_touch_drawing = appwindow
             .bind_property("touch-drawing", self, "touch_drawing")
             .sync_create()
             .build();
 
         // bind cursors
-        appwindow
+        let appwindow_regular_cursor = appwindow
             .settings_panel()
             .general_regular_cursor_picker()
             .bind_property("picked", self, "regular-cursor")
@@ -1089,7 +1116,7 @@ impl RnoteCanvas {
             .sync_create()
             .build();
 
-        appwindow
+        let appwindow_drawing_cursor = appwindow
             .settings_panel()
             .general_drawing_cursor_picker()
             .bind_property("picked", self, "drawing-cursor")
@@ -1098,7 +1125,7 @@ impl RnoteCanvas {
             .build();
 
         // Drop Target
-        self.imp().drop_target.connect_drop(
+        let appwindow_drop_target = self.imp().drop_target.connect_drop(
             clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
                 let pos = (canvas.engine().borrow().camera.transform().inverse() *
                     na::point![x,y]).coords;
@@ -1118,14 +1145,14 @@ impl RnoteCanvas {
         );
 
         // update ui when zoom changes
-        self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
+        let appwindow_zoom_changed = self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
             appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
             None
         }));
 
         // handle widget flags
-        self.connect_local(
+        let appwindow_handle_widget_flags = self.connect_local(
             "handle-widget-flags",
             false,
             clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
@@ -1136,6 +1163,143 @@ impl RnoteCanvas {
                 None
             }),
         );
+
+        // Replace old handlers
+        let mut handlers = self.imp().handlers.borrow_mut();
+        if let Some(old) = handlers
+            .appwindow_output_file
+            .replace(appwindow_output_file)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_scalefactor
+            .replace(appwindow_scalefactor)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_unsaved_changes
+            .replace(appwindow_unsaved_changes)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_touch_drawing
+            .replace(appwindow_touch_drawing)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
+            .appwindow_regular_cursor
+            .replace(appwindow_regular_cursor)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
+            .appwindow_drawing_cursor
+            .replace(appwindow_drawing_cursor)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
+            .appwindow_drop_target
+            .replace(appwindow_drop_target)
+        {
+            self.imp().drop_target.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_zoom_changed
+            .replace(appwindow_zoom_changed)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_handle_widget_flags
+            .replace(appwindow_handle_widget_flags)
+        {
+            self.disconnect(old);
+        }
+    }
+
+    /// This disconnects all handlers with references to external objects prepare moving the widget to another appwindow.
+    pub(crate) fn disconnect_handlers(&self, _appwindow: &RnoteAppWindow) {
+        let mut handlers = self.imp().handlers.borrow_mut();
+        if let Some(old) = handlers.appwindow_output_file.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_scalefactor.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_unsaved_changes.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_touch_drawing.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_regular_cursor.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_drawing_cursor.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_drop_target.take() {
+            self.imp().drop_target.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_zoom_changed.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_handle_widget_flags.take() {
+            self.disconnect(old);
+        }
+
+        // Page connections
+        if let Some(old) = handlers.tab_page_output_file.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.tab_page_unsaved_changes.take() {
+            old.unbind();
+        }
+    }
+
+    /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
+    ///
+    /// disconnects existing bindings / handlers to old tab pages.
+    pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
+        // update the tab title whenever the canvas output file changes
+        let tab_page_output_file = self
+            .bind_property("output-file", page, "title")
+            .sync_create()
+            .transform_to(|b, _output_file: Option<gio::File>| {
+                Some(
+                    b.source()?
+                        .downcast::<RnoteCanvas>()
+                        .unwrap()
+                        .doc_title_display(),
+                )
+            })
+            .build();
+
+        // display unsaved changes as icon
+        let tab_page_unsaved_changes = self
+            .bind_property("unsaved-changes", page, "icon")
+            .transform_to(|_, from: bool| {
+                Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
+            })
+            .sync_create()
+            .build();
+
+        let mut handlers = self.imp().handlers.borrow_mut();
+        if let Some(old) = handlers.tab_page_output_file.replace(tab_page_output_file) {
+            old.unbind();
+        }
+
+        if let Some(old) = handlers
+            .tab_page_unsaved_changes
+            .replace(tab_page_unsaved_changes)
+        {
+            old.unbind();
+        }
     }
 
     pub(crate) fn bounds(&self) -> Aabb {
@@ -1211,8 +1375,8 @@ impl RnoteCanvas {
     /// is private, zooming from other parts of the app should always be done through the "zoom-to-value" action
     fn zoom_to(&self, new_zoom: f64) {
         // Remove the timeout if exists
-        if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
-            zoom_timeout_id.remove();
+        if let Some(source_id) = self.imp().handlers.borrow_mut().zoom_timeout.take() {
+            source_id.remove();
         }
 
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
@@ -1239,8 +1403,8 @@ impl RnoteCanvas {
     /// Repeated calls to this function reset the timeout.
     /// should only be called from the "zoom-to-value" action.
     pub(crate) fn zoom_temporarily_then_scale_to_after_timeout(&self, new_zoom: f64) {
-        if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
-            zoom_timeout_id.remove();
+        if let Some(handler_id) = self.imp().handlers.borrow_mut().zoom_timeout.take() {
+            handler_id.remove();
         }
 
         let old_perm_zoom = self.engine().borrow().camera.zoom();
@@ -1257,26 +1421,23 @@ impl RnoteCanvas {
         // In resize we render the strokes that came into view
         self.queue_resize();
 
-        if let Some(zoom_timeout_id) =
-            self.imp()
-                .zoom_timeout_id
-                .borrow_mut()
-                .replace(glib::source::timeout_add_local_once(
-                    Self::ZOOM_TIMEOUT_TIME,
-                    clone!(@weak self as canvas => move || {
+        if let Some(source_id) = self.imp().handlers.borrow_mut().zoom_timeout.replace(
+            glib::source::timeout_add_local_once(
+                Self::ZOOM_TIMEOUT_TIME,
+                clone!(@weak self as canvas => move || {
 
-                        // After timeout zoom permanent
-                        canvas.zoom_to(new_zoom);
+                    // After timeout zoom permanent
+                    canvas.zoom_to(new_zoom);
 
-                        // Removing the timeout id
-                        let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
-                        if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
-                            zoom_timeout_id.remove();
-                        }
-                    }),
-                ))
-        {
-            zoom_timeout_id.remove();
+                    // Removing the timeout id
+                    let mut handlers = canvas.imp().handlers.borrow_mut();
+                    if let Some(source_id) = handlers.zoom_timeout.take() {
+                        source_id.remove();
+                    }
+                }),
+            ),
+        ) {
+            source_id.remove();
         }
     }
 

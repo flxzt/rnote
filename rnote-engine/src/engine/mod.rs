@@ -331,11 +331,9 @@ pub struct RnoteEngine {
     pub audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub visual_debug: bool,
+    /// the task sender. Must not be modified, only cloned. To install a new engine task handler, regenerate the channel through `regenerate_channel()`
     #[serde(skip)]
     pub tasks_tx: EngineTaskSender,
-    /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
-    #[serde(skip)]
-    pub tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
     pub background_tile_image: Option<render::Image>,
@@ -345,7 +343,7 @@ pub struct RnoteEngine {
 
 impl Default for RnoteEngine {
     fn default() -> Self {
-        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+        let (tasks_tx, _tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
         Self {
             document: Document::default(),
@@ -361,7 +359,6 @@ impl Default for RnoteEngine {
             audioplayer: None,
             visual_debug: false,
             tasks_tx,
-            tasks_rx: Some(tasks_rx),
             background_tile_image: None,
             background_rendernodes: Vec::default(),
         }
@@ -371,6 +368,15 @@ impl Default for RnoteEngine {
 impl RnoteEngine {
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
+    }
+
+    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver which should await and handle the engine tasks through `handle_engine_tasks()`
+    pub fn regenerate_channel(&mut self) -> EngineTaskReceiver {
+        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+
+        self.tasks_tx = tasks_tx;
+
+        tasks_rx
     }
 
     /// Gets the EngineView

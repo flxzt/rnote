@@ -238,7 +238,7 @@ pub(crate) async fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     let files_group: adw::PreferencesGroup = builder.object("quit_save_files_group").unwrap();
     dialog.set_transient_for(Some(appwindow));
 
-    let tabs = appwindow.tabs_snapshot();
+    let tabs = appwindow.tab_pages_snapshot();
     let mut rows = Vec::new();
     let mut close = false;
     let mut prev_doc_title = String::new();

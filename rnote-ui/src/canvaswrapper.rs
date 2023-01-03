@@ -1,6 +1,7 @@
 use std::cell::Cell;
 use std::rc::Rc;
 
+use gtk4::gio;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate,
     EventControllerScroll, EventControllerScrollFlags, EventSequenceState, GestureDrag,
@@ -506,6 +507,34 @@ impl RnoteCanvasWrapper {
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.imp().canvas.init(appwindow);
+    }
+
+    /// When the canvaswrapper is the child of a tab page, we want to connect their titles, icons, ..
+    ///
+    /// disconnects existing handlers to old tab pages.
+    pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
+        // update the tab title whenever the canvas output file changes
+        self.canvas()
+            .bind_property("output-file", page, "title")
+            .sync_create()
+            .transform_to(|b, _output_file: Option<gio::File>| {
+                Some(
+                    b.source()?
+                        .downcast::<RnoteCanvas>()
+                        .unwrap()
+                        .doc_title_display(),
+                )
+            })
+            .build();
+
+        // display unsaved changes as icon
+        self.canvas()
+            .bind_property("unsaved-changes", page, "icon")
+            .transform_to(|_, from: bool| {
+                Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
+            })
+            .sync_create()
+            .build();
     }
 
     pub(crate) fn canvas_touch_drag_gesture_enable(&self, enable: bool) {

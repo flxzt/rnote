@@ -135,7 +135,8 @@ impl RnoteOverlays {
 
         imp.tabview
             .connect_page_attached(clone!(@weak appwindow => move |_tabview, page, _| {
-                appwindow.connect_tab_page(&page);
+                page.child().downcast::<RnoteCanvasWrapper>().unwrap().connect_to_tab_page(&page);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
             }));
 
         imp.tabview.connect_close_page(

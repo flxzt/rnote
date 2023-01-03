@@ -1057,9 +1057,18 @@ impl RnoteCanvas {
         }
     }
 
+    /// Replaces and installs a new file monitor when there is an output file present
+    fn reinstall_output_file_monitor(&self, appwindow: &RnoteAppWindow) {
+        if let Some(output_file) = self.output_file() {
+            self.create_output_file_monitor(&output_file, appwindow);
+        }
+    }
+
     /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved between appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
     pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
+        // Initial file monitor, (e.g. needed when reiniting the widget on a new appwindow)
+        self.reinstall_output_file_monitor(appwindow);
         let appwindow_output_file = self.connect_notify_local(
             Some("output-file"),
             clone!(@weak appwindow => move |canvas, _pspec| {

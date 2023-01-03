@@ -196,6 +196,8 @@ mod imp {
             inst.add_controller(&self.mouse_drawing_gesture);
             inst.add_controller(&self.touch_drawing_gesture);
             inst.add_controller(&self.key_controller);
+
+            self.setup_input();
         }
 
         fn dispose(&self) {
@@ -431,7 +433,265 @@ mod imp {
 
     impl ScrollableImpl for RnoteCanvas {}
 
-    impl RnoteCanvas {}
+    impl RnoteCanvas {
+        fn setup_input(&self) {
+            let inst = self.instance();
+
+            // Stylus Drawing
+            self.stylus_drawing_gesture.connect_down(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
+            //log::debug!("stylus_drawing_gesture down");
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
+
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
+            stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
+            canvas.grab_focus();
+
+            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
+           Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
+
+            let mut widget_flags = WidgetFlags::default();
+            for element in data_entries {
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now(), ));
+            }
+
+            canvas.emit_handle_widget_flags(widget_flags);
+        }));
+
+            self.stylus_drawing_gesture.connect_motion(clone!(@weak inst as canvas => move |stylus_drawing_gesture, x, y| {
+            //log::debug!("stylus_drawing_gesture motion");
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
+
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
+
+            let mut data_entries: VecDeque<Element> = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
+            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
+
+            let mut widget_flags = WidgetFlags::default();
+            for element in data_entries {
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
+            }
+            canvas.emit_handle_widget_flags(widget_flags);
+        }));
+
+            self.stylus_drawing_gesture.connect_up(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
+            //log::debug!("stylus_drawing_gesture up");
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
+
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
+
+            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
+            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
+
+            if let Some(last) = data_entries.pop_back() {
+                let mut widget_flags = WidgetFlags::default();
+                for element in data_entries {
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
+                }
+                widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, pen_mode, Instant::now()));
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        }));
+
+            self.stylus_drawing_gesture.connect_proximity(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
+            //log::debug!("stylus_drawing_gesture proximity");
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
+
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
+
+            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
+            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
+
+            let mut widget_flags = WidgetFlags::default();
+            for element in data_entries {
+                widget_flags.merge(input::process_pen_proximity(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
+            }
+            canvas.emit_handle_widget_flags(widget_flags);
+        }));
+
+            // Mouse drawing
+            self.mouse_drawing_gesture.connect_drag_begin(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
+            //log::debug!("mouse_drawing_gesture begin");
+            //input::debug_drag_gesture(mouse_drawing_gesture);
+
+            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
+            mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
+            canvas.grab_focus();
+
+            let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
+            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
+
+            let mut widget_flags = WidgetFlags::default();
+            for element in data_entries {
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
+            }
+            canvas.emit_handle_widget_flags(widget_flags);
+        }));
+
+            self.mouse_drawing_gesture.connect_drag_update(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
+            //log::debug!("mouse_drawing_gesture motion");
+            //input::debug_drag_gesture(mouse_drawing_gesture);
+
+            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
+
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
+                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
+
+                let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
+
+                let mut widget_flags = WidgetFlags::default();
+                for element in data_entries {
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
+                }
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        }));
+
+            self.mouse_drawing_gesture.connect_drag_end(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
+            //log::debug!("mouse_drawing_gesture end");
+            //input::debug_drag_gesture(mouse_drawing_gesture);
+
+            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
+
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
+                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1) );
+
+                let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
+
+                if let Some(last) = data_entries.pop_back() {
+                    let mut widget_flags = WidgetFlags::default();
+                    for element in data_entries {
+                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
+                    }
+                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
+                    canvas.emit_handle_widget_flags(widget_flags);
+                }
+            }
+        }));
+
+            // Touch drawing
+            self.touch_drawing_gesture.connect_drag_begin(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
+            //log::debug!("touch_drawing_gesture begin");
+
+            if input::filter_touch_input(touch_drawing_gesture) { return; }
+            touch_drawing_gesture.set_state(EventSequenceState::Claimed);
+            canvas.grab_focus();
+
+            let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
+            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
+
+            let mut widget_flags = WidgetFlags::default();
+            for element in data_entries {
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
+            }
+            canvas.emit_handle_widget_flags(widget_flags);
+        }));
+
+            self.touch_drawing_gesture.connect_drag_update(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
+            if let Some(start_point) = touch_drawing_gesture.start_point() {
+                //log::debug!("touch_drawing_gesture motion");
+
+                if input::filter_touch_input(touch_drawing_gesture) { return; }
+
+                let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
+                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
+
+                let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
+
+                let mut widget_flags = WidgetFlags::default();
+                for element in data_entries {
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
+                }
+                canvas.emit_handle_widget_flags(widget_flags);
+            }
+        }));
+
+            self.touch_drawing_gesture.connect_drag_end(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
+            if let Some(start_point) = touch_drawing_gesture.start_point() {
+                //log::debug!("touch_drawing_gesture end");
+
+                if input::filter_touch_input(touch_drawing_gesture) { return; }
+
+                let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
+                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
+
+                let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
+
+                if let Some(last) = data_entries.pop_back() {
+                    let mut widget_flags = WidgetFlags::default();
+                    for element in data_entries {
+                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
+                    }
+                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
+                    canvas.emit_handle_widget_flags(widget_flags);
+                }
+            }
+        }));
+
+            // Key controller
+
+            self.key_controller.connect_key_pressed(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+            //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+            canvas.grab_focus();
+
+            let keyboard_key = input::retrieve_keyboard_key(key);
+            let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
+
+            //log::debug!("keyboard key: {:?}", keyboard_key);
+
+            let widget_flags = input::process_keyboard_key_pressed(&canvas, keyboard_key, shortcut_keys, Instant::now());
+            canvas.emit_handle_widget_flags(widget_flags);
+
+            Inhibit(true)
+        }));
+
+            // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
+            self.key_controller_im_context.connect_commit(clone!(@weak inst as canvas => move |_cx, text| {
+            let widget_flags = input::process_keyboard_text(&canvas, text.to_string(), Instant::now());
+            canvas.emit_handle_widget_flags(widget_flags);
+        }));
+
+            /*
+            self.imp().key_controller.connect_key_released(clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
+                //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+            }));
+
+            self.imp().key_controller.connect_modifiers(clone!(@weak inst as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
+                //log::debug!("key_controller modifier pressed: {:?}", modifier);
+
+                let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
+                canvas.grab_focus();
+
+                let mut widget_flags = WidgetFlags::default();
+                for shortcut_key in shortcut_keys {
+                    log::debug!("shortcut key pressed: {:?}", shortcut_key);
+
+                    widget_flags.merge(input::process_shortcut_key_pressed(self, shortcut_key));
+                }
+                canvas.emit_handle_widget_flags(widget_flags);
+
+                Inhibit(true)
+            }));
+            */
+        }
+    }
 }
 
 glib::wrapper! {
@@ -601,6 +861,10 @@ impl RnoteCanvas {
         self.imp().vadjustment.replace(adj);
     }
 
+    pub(crate) fn stylus_drawing_gesture(&self) -> GestureStylus {
+        self.imp().stylus_drawing_gesture.clone()
+    }
+
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {
         if enable {
             self.imp()
@@ -740,8 +1004,6 @@ impl RnoteCanvas {
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        self.setup_input(appwindow);
-
         // receiving and handling engine tasks
         glib::MainContext::default().spawn_local(
             clone!(@strong self as canvas => async move {
@@ -823,295 +1085,6 @@ impl RnoteCanvas {
             .sync_create()
             .build();
 
-        // update ui when zoom changes
-        self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
-            None
-        }));
-
-        // handle widget flags
-        self.connect_local(
-            "handle-widget-flags",
-            false,
-            clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
-                // first argument is RnoteCanvas
-                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
-
-                appwindow.handle_widget_flags(widget_flags);
-                None
-            }),
-        );
-    }
-
-    fn setup_input(&self, appwindow: &RnoteAppWindow) {
-        // Stylus Drawing
-        self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
-            //log::debug!("stylus_drawing_gesture down");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            // disable drag and zoom gestures entirely while drawing with stylus
-            appwindow.active_tab().canvas_touch_drag_gesture_enable(false);
-            appwindow.active_tab().canvas_zoom_gesture_enable(false);
-            appwindow.active_tab().canvas_drag_empty_area_gesture_enable(false);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-            stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
-            canvas.grab_focus();
-
-            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-           Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now(), ));
-            }
-
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-        self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas => move |stylus_drawing_gesture, x, y| {
-            //log::debug!("stylus_drawing_gesture motion");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-
-            let mut data_entries: VecDeque<Element> = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-        self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
-            //log::debug!("stylus_drawing_gesture up");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            // enable drag and zoom gestures again
-            appwindow.active_tab().canvas_touch_drag_gesture_enable(true);
-            appwindow.active_tab().canvas_drag_empty_area_gesture_enable(true);
-
-            if !canvas.touch_drawing() {
-                appwindow.active_tab().canvas_zoom_gesture_enable(true);
-            }
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-
-            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            if let Some(last) = data_entries.pop_back() {
-                let mut widget_flags = WidgetFlags::default();
-                for element in data_entries {
-                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
-                }
-                widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, pen_mode, Instant::now()));
-                canvas.emit_handle_widget_flags(widget_flags);
-            }
-        }));
-
-        self.imp().stylus_drawing_gesture.connect_proximity(clone!(@weak self as canvas => move |stylus_drawing_gesture,x,y| {
-            //log::debug!("stylus_drawing_gesture proximity");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-
-            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_proximity(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-        // Mouse drawing
-        self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas => move |mouse_drawing_gesture, x, y| {
-            //log::debug!("mouse_drawing_gesture begin");
-            //input::debug_drag_gesture(mouse_drawing_gesture);
-
-            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
-            mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
-            canvas.grab_focus();
-
-            let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-        self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas => move |mouse_drawing_gesture, x, y| {
-            //log::debug!("mouse_drawing_gesture motion");
-            //input::debug_drag_gesture(mouse_drawing_gesture);
-
-            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
-
-            if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
-
-                let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
-
-                let mut widget_flags = WidgetFlags::default();
-                for element in data_entries {
-                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                }
-                canvas.emit_handle_widget_flags(widget_flags);
-            }
-        }));
-
-        self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas => move |mouse_drawing_gesture, x, y| {
-            //log::debug!("mouse_drawing_gesture end");
-            //input::debug_drag_gesture(mouse_drawing_gesture);
-
-            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
-
-            if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1) );
-
-                let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
-
-                if let Some(last) = data_entries.pop_back() {
-                    let mut widget_flags = WidgetFlags::default();
-                    for element in data_entries {
-                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                    }
-                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
-                    canvas.emit_handle_widget_flags(widget_flags);
-                }
-            }
-        }));
-
-        // Touch drawing
-        self.imp().touch_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas => move |touch_drawing_gesture, x, y| {
-            //log::debug!("touch_drawing_gesture begin");
-
-            if input::filter_touch_input(touch_drawing_gesture) { return; }
-            touch_drawing_gesture.set_state(EventSequenceState::Claimed);
-            canvas.grab_focus();
-
-            let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-        self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas => move |touch_drawing_gesture, x, y| {
-            if let Some(start_point) = touch_drawing_gesture.start_point() {
-                //log::debug!("touch_drawing_gesture motion");
-
-                if input::filter_touch_input(touch_drawing_gesture) { return; }
-
-                let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
-
-                let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
-
-                let mut widget_flags = WidgetFlags::default();
-                for element in data_entries {
-                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                }
-                canvas.emit_handle_widget_flags(widget_flags);
-            }
-        }));
-
-        self.imp().touch_drawing_gesture.connect_drag_end(clone!(@weak self as canvas => move |touch_drawing_gesture, x, y| {
-            if let Some(start_point) = touch_drawing_gesture.start_point() {
-                //log::debug!("touch_drawing_gesture end");
-
-                if input::filter_touch_input(touch_drawing_gesture) { return; }
-
-                let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
-
-                let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
-
-                if let Some(last) = data_entries.pop_back() {
-                    let mut widget_flags = WidgetFlags::default();
-                    for element in data_entries {
-                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                    }
-                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
-                    canvas.emit_handle_widget_flags(widget_flags);
-                }
-            }
-        }));
-
-        // Key controller
-
-        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
-            //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-            canvas.grab_focus();
-
-            let keyboard_key = input::retrieve_keyboard_key(key);
-            let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
-
-            //log::debug!("keyboard key: {:?}", keyboard_key);
-
-            let widget_flags = input::process_keyboard_key_pressed(&canvas, keyboard_key, shortcut_keys, Instant::now());
-            canvas.emit_handle_widget_flags(widget_flags);
-
-            Inhibit(true)
-        }));
-
-        // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
-        self.imp().key_controller_im_context.connect_commit(clone!(@weak self as canvas => move |_cx, text| {
-            let widget_flags = input::process_keyboard_text(&canvas, text.to_string(), Instant::now());
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-        /*
-        self.imp().key_controller.connect_key_released(clone!(@weak self as canvas => move |_key_controller, _key, _raw, _modifier| {
-            //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-        }));
-
-        self.imp().key_controller.connect_modifiers(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
-            //log::debug!("key_controller modifier pressed: {:?}", modifier);
-
-            let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
-            canvas.grab_focus();
-
-            let mut widget_flags = WidgetFlags::default();
-            for shortcut_key in shortcut_keys {
-                log::debug!("shortcut key pressed: {:?}", shortcut_key);
-
-                widget_flags.merge(input::process_shortcut_key_pressed(self, shortcut_key));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-
-            Inhibit(true)
-        }));
-        */
-
         // Drop Target
         let drop_target = DropTarget::builder()
             .name("canvas_drop_target")
@@ -1139,6 +1112,26 @@ impl RnoteCanvas {
                 }
 
                 false
+            }),
+        );
+
+        // update ui when zoom changes
+        self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
+            None
+        }));
+
+        // handle widget flags
+        self.connect_local(
+            "handle-widget-flags",
+            false,
+            clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
+                // first argument is RnoteCanvas
+                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
+
+                appwindow.handle_widget_flags(widget_flags);
+                None
             }),
         );
     }

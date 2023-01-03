@@ -33,6 +33,10 @@ use rnote_engine::Document;
 use std::collections::VecDeque;
 use std::time::{self, Instant};
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
+#[boxed_type(name = "WidgetFlagsBoxed")]
+struct WidgetFlagsBoxed(WidgetFlags);
+
 mod imp {
     use super::*;
 
@@ -374,8 +378,14 @@ mod imp {
         }
 
         fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> =
-                Lazy::new(|| vec![glib::subclass::Signal::builder("zoom-changed").build()]);
+            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
+                vec![
+                    glib::subclass::Signal::builder("zoom-changed").build(),
+                    glib::subclass::Signal::builder("handle-widget-flags")
+                        .param_types([WidgetFlagsBoxed::static_type()])
+                        .build(),
+                ]
+            });
             SIGNALS.as_ref()
         }
     }
@@ -542,6 +552,11 @@ impl RnoteCanvas {
     #[allow(unused)]
     fn emit_zoom_changed(&self) {
         self.emit_by_name::<()>("zoom-changed", &[]);
+    }
+
+    #[allow(unused)]
+    fn emit_handle_widget_flags(&self, widget_flags: WidgetFlags) {
+        self.emit_by_name::<()>("handle-widget-flags", &[&WidgetFlagsBoxed(widget_flags)]);
     }
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
@@ -729,13 +744,15 @@ impl RnoteCanvas {
 
         // receiving and handling engine tasks
         glib::MainContext::default().spawn_local(
-            clone!(@strong self as canvas, @strong appwindow => async move {
+            clone!(@strong self as canvas => async move {
                 let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
 
                 loop {
                     if let Some(task) = task_rx.next().await {
-                        let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
-                        if appwindow.handle_widget_flags(widget_flags) {
+                        let (widget_flags, quit) = canvas.engine().borrow_mut().process_received_task(task);
+                        canvas.emit_handle_widget_flags(widget_flags);
+
+                        if quit {
                             break;
                         }
                     }
@@ -812,6 +829,19 @@ impl RnoteCanvas {
             appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
             None
         }));
+
+        // handle widget flags
+        self.connect_local(
+            "handle-widget-flags",
+            false,
+            clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
+                // first argument is RnoteCanvas
+                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
+
+                appwindow.handle_widget_flags(widget_flags);
+                None
+            }),
+        );
     }
 
     fn setup_input(&self, appwindow: &RnoteAppWindow) {
@@ -840,10 +870,10 @@ impl RnoteCanvas {
                 widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now(), ));
             }
 
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
+        self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas => move |stylus_drawing_gesture, x, y| {
             //log::debug!("stylus_drawing_gesture motion");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
@@ -859,7 +889,7 @@ impl RnoteCanvas {
             for element in data_entries {
                 widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
             }
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
         self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
@@ -888,11 +918,11 @@ impl RnoteCanvas {
                     widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
                 }
                 widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, pen_mode, Instant::now()));
-                appwindow.handle_widget_flags(widget_flags);
+                canvas.emit_handle_widget_flags(widget_flags);
             }
         }));
 
-        self.imp().stylus_drawing_gesture.connect_proximity(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+        self.imp().stylus_drawing_gesture.connect_proximity(clone!(@weak self as canvas => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture proximity");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
@@ -908,11 +938,11 @@ impl RnoteCanvas {
             for element in data_entries {
                 widget_flags.merge(input::process_pen_proximity(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
             }
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
         // Mouse drawing
-        self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+        self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture begin");
             //input::debug_drag_gesture(mouse_drawing_gesture);
 
@@ -929,10 +959,10 @@ impl RnoteCanvas {
             for element in data_entries {
                 widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
             }
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+        self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture motion");
             //input::debug_drag_gesture(mouse_drawing_gesture);
 
@@ -948,11 +978,11 @@ impl RnoteCanvas {
                 for element in data_entries {
                     widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                 }
-                appwindow.handle_widget_flags(widget_flags);
+                canvas.emit_handle_widget_flags(widget_flags);
             }
         }));
 
-        self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+        self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture end");
             //input::debug_drag_gesture(mouse_drawing_gesture);
 
@@ -970,13 +1000,13 @@ impl RnoteCanvas {
                         widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                     }
                     widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
-                    appwindow.handle_widget_flags(widget_flags);
+                    canvas.emit_handle_widget_flags(widget_flags);
                 }
             }
         }));
 
         // Touch drawing
-        self.imp().touch_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+        self.imp().touch_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas => move |touch_drawing_gesture, x, y| {
             //log::debug!("touch_drawing_gesture begin");
 
             if input::filter_touch_input(touch_drawing_gesture) { return; }
@@ -992,10 +1022,10 @@ impl RnoteCanvas {
             for element in data_entries {
                 widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
             }
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+        self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 //log::debug!("touch_drawing_gesture motion");
 
@@ -1010,11 +1040,11 @@ impl RnoteCanvas {
                 for element in data_entries {
                     widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                 }
-                appwindow.handle_widget_flags(widget_flags);
+                canvas.emit_handle_widget_flags(widget_flags);
             }
         }));
 
-        self.imp().touch_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+        self.imp().touch_drawing_gesture.connect_drag_end(clone!(@weak self as canvas => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 //log::debug!("touch_drawing_gesture end");
 
@@ -1031,14 +1061,14 @@ impl RnoteCanvas {
                         widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                     }
                     widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
-                    appwindow.handle_widget_flags(widget_flags);
+                    canvas.emit_handle_widget_flags(widget_flags);
                 }
             }
         }));
 
         // Key controller
 
-        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
             //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
             canvas.grab_focus();
 
@@ -1048,19 +1078,19 @@ impl RnoteCanvas {
             //log::debug!("keyboard key: {:?}", keyboard_key);
 
             let widget_flags = input::process_keyboard_key_pressed(&canvas, keyboard_key, shortcut_keys, Instant::now());
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
 
             Inhibit(true)
         }));
 
         // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
-        self.imp().key_controller_im_context.connect_commit(clone!(@weak self as canvas, @weak appwindow => move |_cx, text| {
+        self.imp().key_controller_im_context.connect_commit(clone!(@weak self as canvas => move |_cx, text| {
             let widget_flags = input::process_keyboard_text(&canvas, text.to_string(), Instant::now());
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
         /*
-        self.imp().key_controller.connect_key_released(clone!(@weak self as canvas, @weak appwindow => move |_key_controller, _key, _raw, _modifier| {
+        self.imp().key_controller.connect_key_released(clone!(@weak self as canvas => move |_key_controller, _key, _raw, _modifier| {
             //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
         }));
 
@@ -1076,7 +1106,7 @@ impl RnoteCanvas {
 
                 widget_flags.merge(input::process_shortcut_key_pressed(self, shortcut_key));
             }
-            appwindow.handle_widget_flags(widget_flags);
+            canvas.emit_handle_widget_flags(widget_flags);
 
             Inhibit(true)
         }));

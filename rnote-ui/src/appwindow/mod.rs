@@ -1057,7 +1057,7 @@ impl RnoteAppWindow {
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
-    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
+    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags) {
         if widget_flags.redraw {
             self.active_tab().canvas().queue_draw();
         }
@@ -1089,8 +1089,6 @@ impl RnoteAppWindow {
                 .canvas()
                 .set_text_preprocessing(enable_text_preprocessing);
         }
-
-        widget_flags.quit
     }
 
     pub(crate) fn save_engine_config(&self) -> anyhow::Result<()> {

@@ -558,8 +558,11 @@ impl RnoteEngine {
     ///        }));
     /// ```
     /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
-    pub fn process_received_task(&mut self, task: EngineTask) -> WidgetFlags {
+    ///
+    /// Returns the widget flags, and whether the handler should quit
+    pub fn process_received_task(&mut self, task: EngineTask) -> (WidgetFlags, bool) {
         let mut widget_flags = WidgetFlags::default();
+        let mut quit = false;
 
         match task {
             EngineTask::UpdateStrokeWithImages { key, images } => {
@@ -573,11 +576,11 @@ impl RnoteEngine {
                 widget_flags.redraw = true;
             }
             EngineTask::Quit => {
-                widget_flags.quit = true;
+                quit = true;
             }
         }
 
-        widget_flags
+        (widget_flags, quit)
     }
 
     /// handle an pen event

@@ -1,9 +1,7 @@
 /// Flags returned to the widget holding the engine
 #[must_use]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct WidgetFlags {
-    /// application should be quit
-    pub quit: bool,
     /// needs surface redrawing
     pub redraw: bool,
     /// needs surface resizing
@@ -26,7 +24,6 @@ pub struct WidgetFlags {
 impl Default for WidgetFlags {
     fn default() -> Self {
         Self {
-            quit: false,
             redraw: false,
             resize: false,
             refresh_ui: false,
@@ -42,7 +39,6 @@ impl Default for WidgetFlags {
 impl WidgetFlags {
     /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
     pub fn merge(&mut self, other: Self) {
-        self.quit |= other.quit;
         self.redraw |= other.redraw;
         self.resize |= other.resize;
         self.refresh_ui |= other.refresh_ui;

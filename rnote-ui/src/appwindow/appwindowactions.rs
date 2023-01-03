@@ -438,7 +438,6 @@ impl RnoteAppWindow {
                 }
             }
 
-            appwindow.update_titles_active_tab();
             appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
             appwindow.penssidebar().shaper_page().refresh_ui(&appwindow);
             appwindow.penssidebar().typewriter_page().refresh_ui(&appwindow);
@@ -446,6 +445,7 @@ impl RnoteAppWindow {
             appwindow.penssidebar().selector_page().refresh_ui(&appwindow);
             appwindow.penssidebar().tools_page().refresh_ui(&appwindow);
             appwindow.settings_panel().refresh_ui(&appwindow);
+            appwindow.refresh_titles_active_tab();
         }));
 
         // Trash Selection
@@ -580,9 +580,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |_action_zoom_to_value, target| {
                 let new_zoom = target.unwrap().get::<f64>().unwrap().clamp(Camera::ZOOM_MIN, Camera::ZOOM_MAX);
 
-                appwindow.active_tab().canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, RnoteCanvas::ZOOM_TIMEOUT_TIME);
-
-                appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());
+                appwindow.active_tab().canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
             }));
 
         // Add page to doc in fixed size mode

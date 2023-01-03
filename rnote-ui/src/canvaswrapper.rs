@@ -229,7 +229,7 @@ impl RnoteCanvasWrapper {
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
-        self.setup_input(appwindow);
+        self.setup_input();
 
         self.canvas().connect_notify_local(
             Some("touch-drawing"),
@@ -242,16 +242,16 @@ impl RnoteCanvasWrapper {
         imp.canvas.init(appwindow);
     }
 
-    pub(crate) fn setup_input(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn setup_input(&self) {
         // zoom scrolling with <ctrl> + scroll
         {
-            self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak appwindow => @default-return Inhibit(false), move |controller, _, dy| {
+            self.imp().canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                 if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                    let new_zoom = appwindow.active_tab().canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
+                    let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
-                    let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-                    appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
+                    let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+                    canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                    canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
 
                     // Stop event propagation
                     Inhibit(true)
@@ -266,20 +266,20 @@ impl RnoteCanvasWrapper {
             let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
             self.imp().canvas_touch_drag_gesture.connect_drag_begin(
-                clone!(@strong touch_drag_start, @weak appwindow => move |_, _, _| {
+                clone!(@strong touch_drag_start, @weak self as canvaswrapper => move |_, _, _| {
                     // We don't claim the sequence, because we we want to allow touch zooming. When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
                     touch_drag_start.set(na::vector![
-                        appwindow.active_tab().canvas().hadjustment().unwrap().value(),
-                        appwindow.active_tab().canvas().vadjustment().unwrap().value()
+                        canvaswrapper.canvas().hadjustment().unwrap().value(),
+                        canvaswrapper.canvas().vadjustment().unwrap().value()
                     ]);
                 }),
             );
             self.imp().canvas_touch_drag_gesture.connect_drag_update(
-                clone!(@strong touch_drag_start, @weak appwindow => move |_, x, y| {
+                clone!(@strong touch_drag_start, @weak self as canvaswrapper => move |_, x, y| {
                     let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
-                    appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
+                    canvaswrapper.canvas().update_camera_offset(new_adj_values);
                 }),
             );
         }
@@ -291,27 +291,27 @@ impl RnoteCanvasWrapper {
             self.imp()
                 .canvas_mouse_drag_middle_gesture
                 .connect_drag_begin(
-                    clone!(@strong mouse_drag_start, @weak appwindow => move |_, _, _| {
+                    clone!(@strong mouse_drag_start, @weak self as canvaswrapper => move |_, _, _| {
                         mouse_drag_start.set(na::vector![
-                            appwindow.active_tab().canvas().hadjustment().unwrap().value(),
-                            appwindow.active_tab().canvas().vadjustment().unwrap().value()
+                            canvaswrapper.canvas().hadjustment().unwrap().value(),
+                            canvaswrapper.canvas().vadjustment().unwrap().value()
                         ]);
                     }),
                 );
             self.imp()
                 .canvas_mouse_drag_middle_gesture
                 .connect_drag_update(
-                    clone!(@strong mouse_drag_start, @weak appwindow => move |_, x, y| {
+                    clone!(@strong mouse_drag_start, @weak self as canvaswrapper => move |_, x, y| {
                         let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
-                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
+                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
                     }),
                 );
 
             self.imp()
                 .canvas_mouse_drag_middle_gesture
-                .connect_drag_end(clone!(@weak self as appwindow => move |_, _, _| {
-                    appwindow.canvas().update_engine_rendering();
+                .connect_drag_end(clone!(@weak self as canvaswrapper => move |_, _, _| {
+                    canvaswrapper.canvas().update_engine_rendering();
                 }));
         }
 
@@ -319,19 +319,19 @@ impl RnoteCanvasWrapper {
         {
             let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            self.imp().canvas_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak appwindow => move |_, _x, _y| {
+            self.imp().canvas_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as canvaswrapper => move |_, _x, _y| {
                 mouse_drag_empty_area_start.set(na::vector![
-                    appwindow.active_tab().canvas().hadjustment().unwrap().value(),
-                    appwindow.active_tab().canvas().vadjustment().unwrap().value()
+                    canvaswrapper.canvas().hadjustment().unwrap().value(),
+                    canvaswrapper.canvas().vadjustment().unwrap().value()
                 ]);
             }));
             self.imp()
                 .canvas_drag_empty_area_gesture
                 .connect_drag_update(
-                    clone!(@strong mouse_drag_empty_area_start, @weak appwindow => move |_, x, y| {
+                    clone!(@strong mouse_drag_empty_area_start, @weak self as canvaswrapper => move |_, x, y| {
                         let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
-                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
+                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
                     }),
                 );
         }
@@ -350,10 +350,10 @@ impl RnoteCanvasWrapper {
                 @strong prev_scale,
                 @strong bbcenter_begin,
                 @strong adjs_begin,
-                @weak self as appwindow => move |gesture, _| {
+                @weak self as canvaswrapper => move |gesture, _| {
                     gesture.set_state(EventSequenceState::Claimed);
 
-                    let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+                    let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
                     zoom_begin.set(current_zoom);
                     new_zoom.set(current_zoom);
@@ -361,8 +361,8 @@ impl RnoteCanvasWrapper {
 
                     bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
                     adjs_begin.set(na::vector![
-                        appwindow.canvas().hadjustment().unwrap().value(),
-                        appwindow.canvas().vadjustment().unwrap().value()
+                        canvaswrapper.canvas().hadjustment().unwrap().value(),
+                        canvaswrapper.canvas().vadjustment().unwrap().value()
                         ]);
             }));
 
@@ -372,13 +372,13 @@ impl RnoteCanvasWrapper {
                 @strong prev_scale,
                 @strong bbcenter_begin,
                 @strong adjs_begin,
-                @weak appwindow => move |gesture, scale| {
+                @weak self as canvaswrapper => move |gesture, scale| {
                     if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&(zoom_begin.get() * scale)) {
                         new_zoom.set(zoom_begin.get() * scale);
                         prev_scale.set(scale);
                     }
 
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
+                    canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom.get());
 
                     if let Some(bbcenter_current) = gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
                         let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get() {
@@ -392,18 +392,18 @@ impl RnoteCanvasWrapper {
                         let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                         let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
 
-                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
+                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
                     }
             }));
 
             self.imp().canvas_zoom_gesture.connect_cancel(
-                clone!(@weak appwindow => move |canvas_zoom_gesture, _event_sequence| {
+                clone!(@weak self as canvaswrapper => move |canvas_zoom_gesture, _event_sequence| {
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
 
             self.imp().canvas_zoom_gesture.connect_end(
-                clone!(@weak appwindow => move |canvas_zoom_gesture, _event_sequence| {
+                clone!(@weak self as canvaswrapper => move |canvas_zoom_gesture, _event_sequence| {
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
@@ -417,7 +417,7 @@ impl RnoteCanvasWrapper {
                 .canvas_alt_drag_gesture
                 .connect_drag_begin(clone!(
                     @strong adj_start,
-                    @weak self as appwindow => move |gesture, _, _| {
+                    @weak self as canvaswrapper => move |gesture, _, _| {
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
@@ -425,8 +425,8 @@ impl RnoteCanvasWrapper {
                             gesture.set_state(EventSequenceState::Claimed);
 
                             adj_start.set(na::vector![
-                                appwindow.canvas().hadjustment().unwrap().value(),
-                                appwindow.canvas().vadjustment().unwrap().value()
+                                canvaswrapper.canvas().hadjustment().unwrap().value(),
+                                canvaswrapper.canvas().vadjustment().unwrap().value()
                             ]);
                         } else {
                             gesture.set_state(EventSequenceState::Denied);
@@ -437,9 +437,9 @@ impl RnoteCanvasWrapper {
                 .canvas_alt_drag_gesture
                 .connect_drag_update(clone!(
                     @strong adj_start,
-                    @weak appwindow => move |_, offset_x, offset_y| {
+                    @weak self as canvaswrapper => move |_, offset_x, offset_y| {
                         let new_adj_values = adj_start.get() - na::vector![offset_x, offset_y];
-                        appwindow.active_tab().canvas().update_camera_offset(new_adj_values);
+                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
                 }));
         }
 
@@ -453,13 +453,13 @@ impl RnoteCanvasWrapper {
                 .connect_drag_begin(clone!(
                 @strong zoom_begin,
                 @strong prev_offset,
-                @weak self as appwindow => move |gesture, _, _| {
+                @weak self as canvaswrapper => move |gesture, _, _| {
                     let modifiers = gesture.current_event_state();
 
                     // At the start BUTTON1_MASK is not included
                     if modifiers == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK) {
                         gesture.set_state(EventSequenceState::Claimed);
-                        let current_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
+                        let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
                         zoom_begin.set(current_zoom);
                         prev_offset.set(na::Vector2::<f64>::zeros());
@@ -471,20 +471,20 @@ impl RnoteCanvasWrapper {
             self.imp().canvas_alt_shift_drag_gesture.connect_drag_update(clone!(
                 @strong zoom_begin,
                 @strong prev_offset,
-                @weak appwindow => move |_, offset_x, offset_y| {
+                @weak self as canvaswrapper => move |_, offset_x, offset_y| {
                     // 0.5% zoom for every pixel in y dir
                     const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
 
                     let new_offset = na::vector![offset_x, offset_y];
-                    let cur_zoom = appwindow.active_tab().canvas().engine().borrow().camera.total_zoom();
+                    let cur_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
                     // Drag down zooms out, drag up zooms in
                     let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
 
                     if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                        let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-                        appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
+                        let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+                        canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                        canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
                     }
 
                     prev_offset.set(new_offset);

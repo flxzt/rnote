@@ -13,7 +13,7 @@ use std::rc::Rc;
 
 use crate::config;
 use crate::utils::FileType;
-use rnote_engine::RnoteEngine;
+use rnote_engine::{RnoteEngine, WidgetFlags};
 
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
@@ -372,6 +372,12 @@ mod imp {
                 _ => unimplemented!(),
             }
         }
+
+        fn signals() -> &'static [glib::subclass::Signal] {
+            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> =
+                Lazy::new(|| vec![glib::subclass::Signal::builder("zoom-changed").build()]);
+            SIGNALS.as_ref()
+        }
     }
 
     impl WidgetImpl for RnoteCanvas {
@@ -531,6 +537,11 @@ impl RnoteCanvas {
     #[allow(unused)]
     pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
         self.set_property("touch-drawing", touch_drawing.to_value());
+    }
+
+    #[allow(unused)]
+    fn emit_zoom_changed(&self) {
+        self.emit_by_name::<()>("zoom-changed", &[]);
     }
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
@@ -742,14 +753,7 @@ impl RnoteCanvas {
                     canvas.dismiss_output_file_modified_toast();
                 }
 
-                appwindow.update_titles_active_tab();
-            }),
-        );
-
-        self.connect_notify_local(
-            Some("unsaved-changes"),
-            clone!(@weak appwindow => move |_canvas, _pspec| {
-                appwindow.update_titles_active_tab();
+                appwindow.refresh_titles_active_tab();
             }),
         );
 
@@ -770,6 +774,44 @@ impl RnoteCanvas {
             canvas.regenerate_background_pattern();
             canvas.update_engine_rendering();
         });
+
+        // Update titles when there are changes
+        self.connect_notify_local(
+            Some("unsaved-changes"),
+            clone!(@weak appwindow => move |_canvas, _pspec| {
+                appwindow.refresh_titles_active_tab();
+            }),
+        );
+
+        // one per-appwindow property for touch-drawing
+        appwindow
+            .bind_property("touch-drawing", self, "touch_drawing")
+            .sync_create()
+            .build();
+
+        // bind cursors
+        appwindow
+            .settings_panel()
+            .general_regular_cursor_picker()
+            .bind_property("picked", self, "regular-cursor")
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
+
+        appwindow
+            .settings_panel()
+            .general_drawing_cursor_picker()
+            .bind_property("picked", self, "drawing-cursor")
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
+
+        // update ui when zoom changes
+        self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
+            None
+        }));
     }
 
     fn setup_input(&self, appwindow: &RnoteAppWindow) {
@@ -793,9 +835,12 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), pen_mode, Instant::now(), &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now(), ));
             }
+
+            appwindow.handle_widget_flags(widget_flags);
         }));
 
         self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
@@ -810,9 +855,11 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), pen_mode, Instant::now(), &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
             }
+            appwindow.handle_widget_flags(widget_flags);
         }));
 
         self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
@@ -836,10 +883,12 @@ impl RnoteCanvas {
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
             if let Some(last) = data_entries.pop_back() {
+                let mut widget_flags = WidgetFlags::default();
                 for element in data_entries {
-                    input::process_pen_down(element, shortcut_keys.clone(), pen_mode, Instant::now(), &appwindow);
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
                 }
-                input::process_pen_up(last, shortcut_keys, pen_mode, Instant::now(), &appwindow);
+                widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, pen_mode, Instant::now()));
+                appwindow.handle_widget_flags(widget_flags);
             }
         }));
 
@@ -855,9 +904,11 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_proximity(element, shortcut_keys.clone(), pen_mode, Instant::now(), &appwindow);
+                widget_flags.merge(input::process_pen_proximity(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
             }
+            appwindow.handle_widget_flags(widget_flags);
         }));
 
         // Mouse drawing
@@ -874,9 +925,11 @@ impl RnoteCanvas {
 
             let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now(), &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
             }
+            appwindow.handle_widget_flags(widget_flags);
         }));
 
         self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
@@ -891,9 +944,11 @@ impl RnoteCanvas {
 
                 let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
 
+                let mut widget_flags = WidgetFlags::default();
                 for element in data_entries {
-                    input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now(), &appwindow);
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                 }
+                appwindow.handle_widget_flags(widget_flags);
             }
         }));
 
@@ -910,10 +965,12 @@ impl RnoteCanvas {
                 let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
+                    let mut widget_flags = WidgetFlags::default();
                     for element in data_entries {
-                        input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now(), &appwindow);
+                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                     }
-                    input::process_pen_up(last, shortcut_keys, Some(PenMode::Pen), Instant::now(), &appwindow);
+                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
+                    appwindow.handle_widget_flags(widget_flags);
                 }
             }
         }));
@@ -931,9 +988,11 @@ impl RnoteCanvas {
 
             let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now(), &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
             }
+            appwindow.handle_widget_flags(widget_flags);
         }));
 
         self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
@@ -947,9 +1006,11 @@ impl RnoteCanvas {
 
                 let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
 
+                let mut widget_flags = WidgetFlags::default();
                 for element in data_entries {
-                    input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now(), &appwindow);
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                 }
+                appwindow.handle_widget_flags(widget_flags);
             }
         }));
 
@@ -965,10 +1026,12 @@ impl RnoteCanvas {
                 let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
+                    let mut widget_flags = WidgetFlags::default();
                     for element in data_entries {
-                        input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now(), &appwindow);
+                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                     }
-                    input::process_pen_up(last, shortcut_keys, Some(PenMode::Pen), Instant::now(), &appwindow);
+                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
+                    appwindow.handle_widget_flags(widget_flags);
                 }
             }
         }));
@@ -984,17 +1047,17 @@ impl RnoteCanvas {
 
             //log::debug!("keyboard key: {:?}", keyboard_key);
 
-            input::process_keyboard_key_pressed(keyboard_key, shortcut_keys, Instant::now(), &appwindow);
+            let widget_flags = input::process_keyboard_key_pressed(&canvas, keyboard_key, shortcut_keys, Instant::now());
+            appwindow.handle_widget_flags(widget_flags);
 
             Inhibit(true)
         }));
 
         // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
-        self.imp().key_controller_im_context.connect_commit(
-            clone!(@weak self as canvas, @weak appwindow => move |_cx, text| {
-                input::process_keyboard_text(text.to_string(), Instant::now(), &appwindow);
-            }),
-        );
+        self.imp().key_controller_im_context.connect_commit(clone!(@weak self as canvas, @weak appwindow => move |_cx, text| {
+            let widget_flags = input::process_keyboard_text(&canvas, text.to_string(), Instant::now());
+            appwindow.handle_widget_flags(widget_flags);
+        }));
 
         /*
         self.imp().key_controller.connect_key_released(clone!(@weak self as canvas, @weak appwindow => move |_key_controller, _key, _raw, _modifier| {
@@ -1007,11 +1070,13 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
             canvas.grab_focus();
 
+            let mut widget_flags = WidgetFlags::default();
             for shortcut_key in shortcut_keys {
                 log::debug!("shortcut key pressed: {:?}", shortcut_key);
 
-                input::process_shortcut_key_pressed(shortcut_key, &appwindow);
+                widget_flags.merge(input::process_shortcut_key_pressed(self, shortcut_key));
             }
+            appwindow.handle_widget_flags(widget_flags);
 
             Inhibit(true)
         }));
@@ -1030,7 +1095,7 @@ impl RnoteCanvas {
 
         drop_target.connect_drop(
             clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
-                let pos = (appwindow.active_tab().canvas().engine().borrow().camera.transform().inverse() *
+                let pos = (canvas.engine().borrow().camera.transform().inverse() *
                     na::point![x,y]).coords;
 
                 if value.is::<gio::File>() {
@@ -1148,11 +1213,7 @@ impl RnoteCanvas {
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
     /// Repeated calls to this function reset the timeout.
     /// should only be called from the "zoom-to-value" action.
-    pub(crate) fn zoom_temporarily_then_scale_to_after_timeout(
-        &self,
-        new_zoom: f64,
-        timeout_time: time::Duration,
-    ) {
+    pub(crate) fn zoom_temporarily_then_scale_to_after_timeout(&self, new_zoom: f64) {
         if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }
@@ -1166,6 +1227,8 @@ impl RnoteCanvas {
             .camera
             .set_temporary_zoom(new_temp_zoom);
 
+        self.emit_zoom_changed();
+
         // In resize we render the strokes that came into view
         self.queue_resize();
 
@@ -1174,7 +1237,7 @@ impl RnoteCanvas {
                 .zoom_timeout_id
                 .borrow_mut()
                 .replace(glib::source::timeout_add_local_once(
-                    timeout_time,
+                    Self::ZOOM_TIMEOUT_TIME,
                     clone!(@weak self as canvas => move || {
 
                         // After timeout zoom permanent

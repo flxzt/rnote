@@ -4,7 +4,8 @@ use gtk4::{
 };
 use std::cell::RefCell;
 
-use crate::RnoteAppWindow;
+use crate::canvaswrapper::RnoteCanvasWrapper;
+use crate::{dialogs, RnoteAppWindow};
 
 mod imp {
     use super::*;
@@ -121,7 +122,8 @@ impl RnoteOverlays {
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        self.tabview()
+        let imp = self.imp();
+        imp.tabview
             .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
                 appwindow.clear_rendering_inactive_pages();
 
@@ -129,6 +131,29 @@ impl RnoteOverlays {
                 appwindow.active_tab().canvas().update_engine_rendering();
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
             }));
+
+        imp.tabview.connect_close_page(
+            clone!(@weak appwindow => @default-return true, move |tabview, page| {
+                if !page.is_pinned() {
+                    if page
+                        .child()
+                        .downcast::<RnoteCanvasWrapper>()
+                        .unwrap()
+                        .canvas()
+                        .unsaved_changes()
+                    {
+                        // We close after showing the dialog
+                        dialogs::dialog_close_tab(&appwindow, &page);
+                    } else {
+                        tabview.close_page_finish(&page, true);
+                    }
+                } else {
+                    tabview.close_page_finish(&page, false);
+                }
+
+                true
+            }),
+        );
     }
 
     pub(crate) fn start_pulsing_progressbar(&self) {

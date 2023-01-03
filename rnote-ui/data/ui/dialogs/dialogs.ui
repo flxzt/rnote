@@ -25,6 +25,18 @@
     </responses>
   </object>
 
+  <object class="AdwMessageDialog" id="dialog_close_tab">
+    <property name="heading" translatable="yes">Close tab</property>
+    <property name="body" translatable="yes">The current tab contains unsaved changes. Changes which are not saved will be permanently lost.</property>
+    <property name="default-response">save</property>
+    <property name="close-response">cancel</property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="discard" appearance="destructive" translatable="yes">Discard</response>
+      <response id="save" appearance="suggested" translatable="yes">Save</response>
+    </responses>
+  </object>
+
   <object class="AdwMessageDialog" id="dialog_quit_save">
     <property name="heading" translatable="yes">Quit Application</property>
     <property name="body" translatable="yes">Some opened files contain unsaved changes. Changes which are not saved will be permanently lost.</property>

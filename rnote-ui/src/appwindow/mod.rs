@@ -1106,6 +1106,11 @@ impl RnoteAppWindow {
         Ok(())
     }
 
+    #[allow(unused)]
+    pub(crate) fn active_tab_page(&self) -> adw::TabPage {
+        self.imp().overlays.tabview().selected_page().unwrap()
+    }
+
     pub(crate) fn active_tab(&self) -> RnoteCanvasWrapper {
         self.imp()
             .overlays

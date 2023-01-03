@@ -172,6 +172,64 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
     dialog_new_doc.show();
 }
 
+/// Only to be called from the tabview close-page handler
+pub(crate) fn dialog_close_tab(appwindow: &RnoteAppWindow, active_page: &adw::TabPage) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::MessageDialog = builder.object("dialog_close_tab").unwrap();
+
+    dialog.set_transient_for(Some(appwindow));
+
+    dialog.connect_response(
+        None,
+        clone!(@weak active_page, @weak appwindow => move |_dialog_quit_save, response| {
+            let active_tab = active_page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+
+            match response {
+                "discard" => {
+                    appwindow.overlays().tabview().close_page_finish(&active_page, true);
+                },
+                "save" => {
+                    glib::MainContext::default().spawn_local(clone!(@weak active_page, @weak appwindow => async move {
+                        if let Some(output_file) = active_tab.canvas().output_file() {
+                            appwindow.overlays().start_pulsing_progressbar();
+
+                            if let Err(e) = active_tab.canvas().save_document_to_file(&output_file).await {
+                                active_tab.canvas().set_output_file(None);
+
+                                log::error!("saving document failed with error `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                            }
+
+                            appwindow.overlays().finish_progressbar();
+                            // No success toast on saving without dialog, success is already indicated in the header title
+                        } else {
+                            // Open a dialog to choose a save location
+                            export::filechooser_save_doc_as(&appwindow);
+                        }
+
+                        // only close if saving was successful
+                        appwindow
+                            .overlays()
+                            .tabview()
+                            .close_page_finish(
+                                &active_page,
+                                !active_tab.canvas().unsaved_changes()
+                            );
+                    }));
+                },
+                _ => {
+                // Cancel
+                    appwindow.overlays().tabview().close_page_finish(&active_page, false);
+                }
+            }
+        }),
+    );
+
+    dialog.show();
+}
+
 pub(crate) async fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),

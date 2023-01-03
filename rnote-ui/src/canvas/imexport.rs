@@ -159,20 +159,25 @@ impl RnoteCanvas {
     }
 
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
-        if let Some(basename) = file.basename() {
-            let rnote_bytes_receiver = self
-                .engine()
-                .borrow()
-                .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
+        let basename = file.basename().ok_or_else(|| {
+            anyhow::anyhow!(
+                "save_document_to_file() failed, could not retreive basename for file: {file:?}"
+            )
+        })?;
 
-            self.set_output_file_expect_write(true);
-            self.dismiss_output_file_modified_toast();
+        let rnote_bytes_receiver = self
+            .engine()
+            .borrow()
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
 
-            crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
+        self.set_output_file_expect_write(true);
+        self.dismiss_output_file_modified_toast();
 
-            self.set_output_file(Some(file.to_owned()));
-            self.set_unsaved_changes(false);
-        }
+        crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
+
+        self.set_output_file(Some(file.to_owned()));
+        self.set_unsaved_changes(false);
+
         Ok(())
     }
 

@@ -301,7 +301,7 @@ mod imp {
             let inst = self.instance().to_owned();
 
             // Save current doc
-            if inst.any_unsaved_changes() {
+            if inst.tabs_any_unsaved_changes() {
                 glib::MainContext::default().spawn_local(
                     clone!(@strong inst as appwindow => async move {
                         dialogs::dialog_quit_save(&inst).await;
@@ -1176,7 +1176,7 @@ impl RnoteAppWindow {
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
     }
 
-    pub(crate) fn tabs_snapshot(&self) -> Vec<adw::TabPage> {
+    pub(crate) fn tab_pages_snapshot(&self) -> Vec<adw::TabPage> {
         self.overlays()
             .tabview()
             .pages()
@@ -1186,7 +1186,7 @@ impl RnoteAppWindow {
             .collect()
     }
 
-    pub(crate) fn any_unsaved_changes(&self) -> bool {
+    pub(crate) fn tabs_any_unsaved_changes(&self) -> bool {
         self.overlays()
             .tabview()
             .pages()
@@ -1203,7 +1203,7 @@ impl RnoteAppWindow {
             .any(|c| c.unsaved_changes())
     }
 
-    pub(crate) fn clear_rendering_inactive_pages(&self) {
+    pub(crate) fn clear_rendering_inactive_tabs(&self) {
         for inactive_page in self
             .overlays()
             .tabview()

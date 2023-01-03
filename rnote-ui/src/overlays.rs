@@ -125,7 +125,7 @@ impl RnoteOverlays {
         let imp = self.imp();
         imp.tabview
             .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
-                appwindow.clear_rendering_inactive_pages();
+                appwindow.clear_rendering_inactive_tabs();
 
                 appwindow.active_tab().canvas().regenerate_background_pattern();
                 appwindow.active_tab().canvas().update_engine_rendering();

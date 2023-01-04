@@ -126,6 +126,7 @@ mod imp {
                 clone!(@weak inst as colorpicker => move |colorchooser| {
                     let color = colorchooser.rgba();
                     colorpicker.set_current_color(color);
+                    colorpicker.imp().set_color_selected_setter(color);
                 }),
             );
         }
@@ -346,6 +347,19 @@ mod imp {
                     1.0,
                 );
                 setter_button.set_color(color);
+            }
+        }
+
+        fn set_color_selected_setter(&self, color: gdk::RGBA) {
+            if self.first_colorsetter.is_active() {
+                self.first_colorsetter
+                    .set_property("color", color.to_value());
+            } else {
+                for colorsetter in &*self.colorsetters.borrow() {
+                    if colorsetter.is_active() {
+                        colorsetter.set_property("color", color.to_value());
+                    }
+                }
             }
         }
     }

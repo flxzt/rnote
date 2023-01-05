@@ -1,8 +1,11 @@
+mod colorpad;
 mod colorsetter;
 
 // Re-exports
+pub(crate) use colorpad::ColorPad;
 pub(crate) use colorsetter::ColorSetter;
 
+// Imports
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -17,8 +20,6 @@ use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
-    use crate::ColorPad;
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

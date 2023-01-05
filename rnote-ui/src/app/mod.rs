@@ -7,13 +7,13 @@ use rnote_engine::pens::PenStyle;
 use std::path::Path;
 
 use crate::{
-    colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
-    penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-    penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
+    colorpicker::ColorPad, colorpicker::ColorSetter, config, penssidebar::BrushPage,
+    penssidebar::EraserPage, penssidebar::SelectorPage, penssidebar::ShaperPage,
+    penssidebar::ToolsPage, penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
     workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::FileRow,
-    workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPad, ColorPicker, IconPicker,
-    MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, RnoteOverlays,
-    SettingsPanel, UnitEntry, WorkspaceBrowser,
+    workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
+    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel,
+    UnitEntry, WorkspaceBrowser,
 };
 
 mod imp {

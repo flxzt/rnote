@@ -133,21 +133,15 @@
                   <property name="row">3</property>
                   <property name="column-span">3</property>
                 </layout>
+                <style>
+                  <class name="topbar_box" />
+                </style>
                 <child>
                   <object class="GtkBox">
                     <property name="orientation">horizontal</property>
                     <property name="halign">center</property>
-                    <property name="spacing">24</property>
                     <property name="margin-start">6</property>
                     <property name="margin-end">6</property>
-                    <child>
-                      <object class="ColorPicker" id="colorpicker">
-                        <property name="amount-colorbuttons">8</property>
-                        <property name="position">top</property>
-                        <property name="margin-top">3</property>
-                        <property name="margin-bottom">3</property>
-                      </object>
-                    </child>
                     <child>
                       <object class="AdwSqueezer" id="pens_toggles_squeezer">
                         <property name="transition-type">crossfade</property>
@@ -209,6 +203,14 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ColorPicker" id="colorpicker">
+                        <property name="amount-colorbuttons">8</property>
+                        <property name="position">top</property>
+                        <property name="margin-top">3</property>
+                        <property name="margin-bottom">3</property>
                       </object>
                     </child>
                   </object>

@@ -76,7 +76,7 @@
     <key name="colorpicker-palette" type="(uuuuuuuu)">
       <default>(
         0x000000ff,
-        0xffffffff,
+        0xffffff00,
         0x99c1f1ff,
         0x1a5fb4ff,
         0x26a269ff,

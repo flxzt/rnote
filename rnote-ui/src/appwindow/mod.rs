@@ -87,8 +87,6 @@ mod imp {
         #[template_child]
         pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
-        #[template_child]
         pub(crate) brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
@@ -153,7 +151,6 @@ mod imp {
                 mainheader: TemplateChild::<MainHeader>::default(),
                 pens_toggles_box: TemplateChild::<gtk4::Box>::default(),
                 pens_toggles_squeezer: TemplateChild::<adw::Squeezer>::default(),
-                pens_toggles_placeholderbox: TemplateChild::<gtk4::Box>::default(),
                 brush_toggle: TemplateChild::<ToggleButton>::default(),
                 shaper_toggle: TemplateChild::<ToggleButton>::default(),
                 typewriter_toggle: TemplateChild::<ToggleButton>::default(),
@@ -373,15 +370,20 @@ mod imp {
 
             self.pens_toggles_squeezer.connect_visible_child_notify(
                 clone!(@weak inst as appwindow => move |pens_toggles_squeezer| {
-                    if let Some(visible_child) = pens_toggles_squeezer.visible_child() {
-                        if visible_child == appwindow.pens_toggles_placeholderbox() {
-                            appwindow.narrow_pens_toggles_revealer().set_reveal_child(true);
-                        } else if visible_child == appwindow.imp().pens_toggles_box.get() {
-                            appwindow.narrow_pens_toggles_revealer().set_reveal_child(false);
-                        }
-                    }
+                    // There is only one child, if it is not visible we reveal the narrow version
+                    appwindow.narrow_pens_toggles_revealer().set_reveal_child(pens_toggles_squeezer.visible_child().is_none());
                 }),
             );
+
+            self.pens_toggles_box
+                .bind_property(
+                    "visible",
+                    &*self.narrow_pens_toggles_revealer,
+                    "reveal-child",
+                )
+                .sync_create()
+                .invert_boolean()
+                .build();
 
             self.brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
@@ -957,10 +959,6 @@ impl RnoteAppWindow {
 
     pub(crate) fn mainheader(&self) -> MainHeader {
         self.imp().mainheader.get()
-    }
-
-    pub(crate) fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
-        self.imp().pens_toggles_placeholderbox.get()
     }
 
     pub(crate) fn brush_toggle(&self) -> ToggleButton {

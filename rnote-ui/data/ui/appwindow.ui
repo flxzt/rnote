@@ -152,6 +152,7 @@
                       <object class="AdwSqueezer" id="pens_toggles_squeezer">
                         <property name="transition-type">crossfade</property>
                         <property name="switch-threshold-policy">minimum</property>
+                        <property name="allow-none">true</property>
                         <child>
                           <object class="GtkBox" id="pens_toggles_box">
                             <property name="width-request">480</property>
@@ -206,13 +207,6 @@
                                 <property name="group">brush_toggle</property>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="pens_toggles_placeholderbox">
-                            <property name="hexpand">false</property>
-                            <property name="vexpand">false</property>
-                            <property name="halign">start</property>
                           </object>
                         </child>
                       </object>

@@ -31,13 +31,6 @@
           <object class="GtkBox">
             <property name="spacing">3</property>
             <child>
-              <object class="GtkButton">
-                <property name="tooltip-text" translatable="yes">Save document</property>
-                <property name="icon-name">doc-save-symbolic</property>
-                <property name="action-name">win.save-doc</property>
-              </object>
-            </child>
-            <child>
               <object class="GtkButton" id="create_page_button">
                 <property name="icon-name">tab-new-symbolic</property>
                 <property name="action-name">win.new-tab</property>
@@ -47,14 +40,25 @@
           </object>
         </child>
         <child type="end">
-          <object class="GtkBox" id="menus_box">
+          <object class="GtkBox">
             <property name="spacing">6</property>
-            <property name="margin-start">22</property>
             <child>
-              <object class="CanvasMenu" id="canvasmenu"></object>
+              <object class="GtkButton">
+                <property name="tooltip-text" translatable="yes">Save document</property>
+                <property name="icon-name">doc-save-symbolic</property>
+                <property name="action-name">win.save-doc</property>
+              </object>
             </child>
             <child>
-              <object class="AppMenu" id="appmenu"></object>
+              <object class="GtkBox" id="menus_box">
+                <property name="spacing">6</property>
+                <child>
+                  <object class="CanvasMenu" id="canvasmenu"></object>
+                </child>
+                <child>
+                  <object class="AppMenu" id="appmenu"></object>
+                </child>
+              </object>
             </child>
           </object>
         </child>

@@ -67,7 +67,7 @@ impl RnoteAppWindow {
         self.add_action(&action_format_borders);
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
-            Some(&glib::VariantType::new("s").unwrap()),
+            Some(&Layout::static_variant_type()),
             &Layout::Infinite.to_variant(),
         );
         self.add_action(&action_doc_layout);
@@ -131,7 +131,7 @@ impl RnoteAppWindow {
         self.add_action(&action_clipboard_paste);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
-            Some(&glib::VariantType::new("s").unwrap()),
+            Some(&PenStyle::static_variant_type()),
             &PenStyle::Brush.to_variant(),
         );
         self.add_action(&action_pen_style);

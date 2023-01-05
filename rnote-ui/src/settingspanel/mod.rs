@@ -430,7 +430,7 @@ impl SettingsPanel {
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         self.refresh_general_ui(appwindow);
-        self.fresh_format_ui(appwindow);
+        self.refresh_format_ui(appwindow);
         self.refresh_background_ui(appwindow);
         self.refresh_shortcuts_ui(appwindow);
     }
@@ -451,16 +451,7 @@ impl SettingsPanel {
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
-    fn fresh_format_ui(&self, appwindow: &RnoteAppWindow) {
-        *self.imp().temporary_format.borrow_mut() = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format
-            .clone();
-
+    fn refresh_format_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
         let format = appwindow
             .active_tab()
@@ -470,6 +461,8 @@ impl SettingsPanel {
             .document
             .format
             .clone();
+
+        *self.imp().temporary_format.borrow_mut() = format.clone();
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
@@ -549,6 +542,54 @@ impl SettingsPanel {
                 }
                 _ => {}
             });
+    }
+
+    pub(crate) fn sync_state_active_tab(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
+        // update the UI from the engine
+        self.refresh_general_ui(appwindow);
+        self.refresh_format_ui(appwindow);
+        self.refresh_background_ui(appwindow);
+
+        // update the engine from UI
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .penholder
+            .clear_shortcuts();
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .penholder
+            .register_new_shortcut(
+                ShortcutKey::MouseSecondaryButton,
+                imp.penshortcut_mouse_button_secondary_row.action(),
+            );
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .penholder
+            .register_new_shortcut(
+                ShortcutKey::StylusPrimaryButton,
+                imp.penshortcut_stylus_button_primary_row.action(),
+            );
+        appwindow
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .penholder
+            .register_new_shortcut(
+                ShortcutKey::StylusSecondaryButton,
+                imp.penshortcut_stylus_button_secondary_row.action(),
+            );
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {

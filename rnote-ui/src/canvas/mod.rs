@@ -231,7 +231,7 @@ mod imp {
 
                     loop {
                         if let Some(task) = task_rx.next().await {
-                            let (widget_flags, quit) = canvas.engine().borrow_mut().process_received_task(task);
+                            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
                             canvas.emit_handle_widget_flags(widget_flags);
 
                             if quit {

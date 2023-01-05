@@ -370,7 +370,7 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
-    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver which should await and handle the engine tasks through `handle_engine_tasks()`
+    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver which can be awaited in a engine tasks handler through `handle_engine_tasks()`
     pub fn regenerate_channel(&mut self) -> EngineTaskReceiver {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
@@ -555,7 +555,7 @@ impl RnoteEngine {
 
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
-    ///                    let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
+    ///                    let widget_flags = canvas.engine().borrow_mut().handle_engine_task(task);
     ///                    if appwindow.handle_widget_flags(widget_flags) {
     ///                         break;
     ///                    }
@@ -566,7 +566,7 @@ impl RnoteEngine {
     /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
     ///
     /// Returns the widget flags, and whether the handler should quit
-    pub fn process_received_task(&mut self, task: EngineTask) -> (WidgetFlags, bool) {
+    pub fn handle_engine_task(&mut self, task: EngineTask) -> (WidgetFlags, bool) {
         let mut widget_flags = WidgetFlags::default();
         let mut quit = false;
 

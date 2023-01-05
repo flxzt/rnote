@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2022-12-23 05:34+0000\n"
+"PO-Revision-Date: 2023-01-05 21:29+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -359,7 +359,7 @@ msgstr "Speichern"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:28
 msgid "Quit Application"
-msgstr "Beende die App"
+msgstr "App beenden"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid ""
@@ -926,7 +926,7 @@ msgstr "Schließe das aktive Fenster"
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Beende die App"
+msgstr "App beenden"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
 msgctxt "shortcut window"

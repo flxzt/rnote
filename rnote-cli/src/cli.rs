@@ -104,7 +104,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         if rnote_files.len() > 1 {
                             return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
                         }
-                        export_to_file(&mut engine, file.to_owned(), output).await?
+                        export_to_file(&mut engine, file, output).await?
                     }
                     None => {
                         return Err(anyhow::anyhow!("Failed to get filename from rnote_files."))
@@ -115,7 +115,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         let mut output = file.clone();
                         output.set_extension("pdf");
                         println!("exporting `{}`", file.to_string_lossy());
-                        export_to_file(&mut engine, file, &output).await?
+                        export_to_file(&mut engine, &file, &output).await?
                     }
                 }
             }
@@ -190,7 +190,7 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
 pub(crate) async fn export_to_file(
     engine: &mut RnoteEngine,
-    rnote_file: PathBuf,
+    rnote_file: &PathBuf,
     output_file: &PathBuf,
 ) -> anyhow::Result<()> {
     let Some(export_file_name) = output_file.file_name().map(|s| s.to_string_lossy().to_string()) else {

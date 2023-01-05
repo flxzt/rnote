@@ -92,7 +92,7 @@ impl Color {
     /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`. The values are 8 bit integers, ranging [0, 255]
     pub fn to_css_color_attr(self) -> String {
         format!(
-            "rgb({:03},{:03},{:03},{:.3})",
+            "rgba({:03},{:03},{:03},{:.3})",
             (self.r * 255.0) as i32,
             (self.g * 255.0) as i32,
             (self.b * 255.0) as i32,

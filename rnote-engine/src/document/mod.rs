@@ -4,21 +4,42 @@ pub mod format;
 // Re-exports
 pub use background::Background;
 pub use format::Format;
+
+// Imports
 use rnote_compose::Color;
 
 use crate::{Camera, StrokeStore};
 use rnote_compose::helpers::AabbHelpers;
 
+use gtk4::glib;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    glib::Enum,
+    glib::Variant,
+    Serialize,
+    Deserialize,
+)]
 #[serde(rename = "layout")]
+#[repr(u32)]
+#[enum_type(name = "Layout")]
+#[variant_enum(enum)]
 pub enum Layout {
+    #[enum_value(name = "FixedSize", nick = "fixed_size")]
     #[serde(rename = "fixed_size")]
     FixedSize,
+    #[enum_value(name = "ContinuousVertical", nick = "continuous_vertical")]
     #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
     ContinuousVertical,
+    #[enum_value(name = "Infinite", nick = "infinite")]
     #[serde(rename = "infinite")]
     Infinite,
 }

@@ -64,6 +64,42 @@ impl EraserPage {
         glib::Object::new(&[])
     }
 
+    pub(crate) fn width_spinbutton(&self) -> SpinButton {
+        self.imp().width_spinbutton.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn eraser_style(&self) -> Option<EraserStyle> {
+        if self
+            .imp()
+            .eraserstyle_trash_colliding_strokes_toggle
+            .is_active()
+        {
+            Some(EraserStyle::TrashCollidingStrokes)
+        } else if self
+            .imp()
+            .eraserstyle_split_colliding_strokes_toggle
+            .is_active()
+        {
+            Some(EraserStyle::SplitCollidingStrokes)
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn set_eraser_style(&self, style: EraserStyle) {
+        match style {
+            EraserStyle::TrashCollidingStrokes => self
+                .imp()
+                .eraserstyle_trash_colliding_strokes_toggle
+                .set_active(true),
+            EraserStyle::SplitCollidingStrokes => self
+                .imp()
+                .eraserstyle_split_colliding_strokes_toggle
+                .set_active(true),
+        }
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
@@ -104,13 +140,7 @@ impl EraserPage {
             .clone();
 
         imp.width_spinbutton.set_value(eraser_config.width);
-        match eraser_config.style {
-            EraserStyle::TrashCollidingStrokes => imp
-                .eraserstyle_trash_colliding_strokes_toggle
-                .set_active(true),
-            EraserStyle::SplitCollidingStrokes => imp
-                .eraserstyle_split_colliding_strokes_toggle
-                .set_active(true),
-        }
+
+        self.set_eraser_style(eraser_config.style);
     }
 }

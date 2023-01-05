@@ -107,40 +107,6 @@
         </child>
       </object>
     </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">stroke-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="stroke_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">fill-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="fill_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
 
     <!-- Shaper style -->
     <object class="GtkPopover" id="shaperstyle_popover">
@@ -439,8 +405,9 @@
               <child>
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable constraints
-when this switch is off/on</property>
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
+                    enable/disable constraints
+                    when this switch is off/on</property>
                   <child type="suffix">
                     <object class="GtkSwitch" id="constraint_enabled_switch">
                       <property name="valign">center</property>

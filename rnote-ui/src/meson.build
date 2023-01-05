@@ -97,6 +97,7 @@ rnote_ui_sources = files(
     'config.rs',
     'globals.rs',
     'iconpicker.rs',
+    'colorpad.rs',
     'main.rs',
     'mainheader.rs',
     'unitentry.rs',

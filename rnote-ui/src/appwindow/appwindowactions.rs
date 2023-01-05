@@ -3,9 +3,13 @@ use crate::config;
 use crate::{dialogs, RnoteCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::Color;
 use rnote_engine::document::Layout;
+use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
+use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::{render, Camera, Document, DrawBehaviour, RnoteEngine};
+use rnote_engine::utils::GdkRGBAHelpers;
+use rnote_engine::{render, Camera, Document, DrawBehaviour, RnoteEngine, WidgetFlags};
 
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
@@ -64,7 +68,7 @@ impl RnoteAppWindow {
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
             Some(&glib::VariantType::new("s").unwrap()),
-            &String::from("infinite").to_variant(),
+            &Layout::Infinite.to_variant(),
         );
         self.add_action(&action_doc_layout);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
@@ -125,17 +129,16 @@ impl RnoteAppWindow {
         self.add_action(&action_clipboard_cut);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
         self.add_action(&action_clipboard_paste);
-        let action_pen_override = gio::SimpleAction::new(
-            "pen-style-override",
+        let action_pen_style = gio::SimpleAction::new_stateful(
+            "pen-style",
             Some(&glib::VariantType::new("s").unwrap()),
+            &PenStyle::Brush.to_variant(),
         );
-        self.add_action(&action_pen_override);
-        let action_pen_style =
-            gio::SimpleAction::new("pen-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_pen_style);
-
-        let action_refresh_ui = gio::SimpleAction::new("refresh-ui", None);
-        self.add_action(&action_refresh_ui);
+        let action_sync_state_active_tab = gio::SimpleAction::new("sync-state-active-tab", None);
+        self.add_action(&action_sync_state_active_tab);
+        let action_refresh_ui_from_engine = gio::SimpleAction::new("refresh-ui-from-engine", None);
+        self.add_action(&action_refresh_ui_from_engine);
 
         // Close active window
         action_close_active.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -230,29 +233,13 @@ impl RnoteAppWindow {
         // Doc layout
         action_doc_layout.connect_activate(
             clone!(@weak self as appwindow => move |action_doc_layout, target| {
-                let doc_layout = target.unwrap().str().unwrap();
-
-                match doc_layout {
-                    "fixed-size" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::FixedSize);
-                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(true);
-                    },
-                    "continuous-vertical" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
-                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(false);
-                    },
-                    "infinite" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
-                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(false);
-                    }
-                    invalid_str => {
-                        log::error!("action doc-layout failed, invalid str: {invalid_str}");
-                        return;
-                    }
-                }
-                appwindow.active_tab().canvas().update_engine_rendering();
-
+                let doc_layout = target.unwrap().get::<Layout>().unwrap();
                 action_doc_layout.set_state(&doc_layout.to_variant());
+
+                appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(doc_layout);
+                appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(doc_layout == Layout::FixedSize);
+
+                appwindow.active_tab().canvas().update_engine_rendering();
             }));
 
         // Pen sounds
@@ -280,99 +267,107 @@ impl RnoteAppWindow {
 
         // Pen style
         action_pen_style.connect_activate(
-            clone!(@weak self as appwindow => move |_action_pen_style, target| {
-                let pen_style = target.unwrap().str().unwrap();
+            clone!(@weak self as appwindow => move |action, target| {
+                let new_pen_style = target.unwrap().get::<PenStyle>().unwrap();
+                action.set_state(&new_pen_style.to_variant());
 
-                let new_pen_style = match pen_style {
-                    "brush" => {
-                        Some(PenStyle::Brush)
-                    }
-                    "shaper" => {
-                        Some(PenStyle::Shaper)
-                    }
-                    "typewriter" => {
-                        Some(PenStyle::Typewriter)
-                    }
-                    "eraser" => {
-                        Some(PenStyle::Eraser)
-                    }
-                    "selector" => {
-                        Some(PenStyle::Selector)
-                    }
-                    "tools" => {
-                        Some(PenStyle::Tools)
-                    }
-                    _ => {
-                        log::error!("invalid target for action_pen_style, `{pen_style}`");
-                        None
-                    }
-                };
-
-                if let Some(new_pen_style) = new_pen_style {
-                    // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
-                    if new_pen_style != appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override() {
-                        let mut widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style(
-                            new_pen_style,
-                        );
-                        widget_flags.merge(appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style_override(
-                            None,
-                        ));
-
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
-                }
-            }),
-        );
-
-        // Pen override
-        action_pen_override.connect_activate(
-            clone!(@weak self as appwindow => move |_action_pen_override, target| {
-                let pen_style_override = target.unwrap().str().unwrap();
-                log::trace!("pen overwrite activated with target: {}", pen_style_override);
-
-                let new_pen_style_override= match pen_style_override {
-                    "brush" => {
-                        Some(Some(PenStyle::Brush))
-                    }
-                    "shaper" => {
-                        Some(Some(PenStyle::Shaper))
-                    }
-                    "typewriter" => {
-                        Some(Some(PenStyle::Typewriter))
-                    }
-                    "eraser" => {
-                        Some(Some(PenStyle::Eraser))
-                    }
-                    "selector" => {
-                        Some(Some(PenStyle::Selector))
-                    }
-                    "tools" => {
-                        Some(Some(PenStyle::Tools))
-                    }
-                    "none" => {
-                        Some(None)
-                    }
-                    _ => {
-                        log::error!("invalid target for action_pen_overwrite, `{pen_style_override}`");
-                        None
-                    }
-                };
-
-                if let Some(new_pen_style_override) = new_pen_style_override {
-                    let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style_override(
-                        new_pen_style_override,
+                // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
+                if new_pen_style != appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override() {
+                    let mut widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style(
+                        new_pen_style,
                     );
+                    widget_flags.merge(appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style_override(
+                        None,
+                    ));
+
                     appwindow.handle_widget_flags(widget_flags);
                 }
             }),
         );
 
-        // Refresh UI state for the active tab
-        action_refresh_ui.connect_activate(clone!(
+        // sync active tab engine state with the UI. The UI is generally the source of truth for things like the pens config.
+        // Other things like the format is per-engine, so they are updating the UI
+        action_sync_state_active_tab.connect_activate(clone!(
+        @weak self as appwindow,
+        @strong action_pen_sounds,
+        @strong action_doc_layout,
+        @strong action_format_borders,
+        @strong action_pen_style,
+        => move |_, _| {
+            let canvas = appwindow.active_tab().canvas();
+            let mut widget_flags = WidgetFlags::default();
+
+            {
+                // state changes from the UI to the engine
+                let pen_style = action_pen_style.state().unwrap().get::<PenStyle>().unwrap();
+                let pen_sounds = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
+                let format_borders = action_format_borders.state().unwrap().get::<bool>().unwrap();
+                let stroke_color = appwindow.colorpicker().stroke_color().into_compose_color();
+                let fill_color = appwindow.colorpicker().fill_color().into_compose_color();
+
+                let engine = canvas.engine();
+                let mut engine = engine.borrow_mut();
+
+                widget_flags.merge(engine.change_pen_style(pen_style));
+                engine.set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKGDATADIR)));
+
+                engine.document.format.show_borders = format_borders;
+
+                engine.pens_config.brush_config.style = appwindow.penssidebar().brush_page().brush_style().unwrap_or_default();
+                engine.pens_config.brush_config.builder_type = appwindow.penssidebar().brush_page().buildertype().unwrap_or_default();
+                let brush_stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                engine.pens_config.brush_config.marker_options.stroke_width = brush_stroke_width;
+                engine.pens_config.brush_config.solid_options.stroke_width = brush_stroke_width;
+                engine.pens_config.brush_config.textured_options.stroke_width = brush_stroke_width;
+                engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
+                engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+
+                engine.pens_config.shaper_config.style = appwindow.penssidebar().shaper_page().shaper_style().unwrap_or_default();
+                engine.pens_config.shaper_config.builder_type = appwindow.penssidebar().shaper_page().shapebuildertype().unwrap_or_default();
+                let shaper_stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
+                engine.pens_config.shaper_config.smooth_options.stroke_width = shaper_stroke_width;
+                engine.pens_config.shaper_config.rough_options.stroke_width = shaper_stroke_width;
+                engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
+                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+
+                engine.pens_config.typewriter_config.text_style = appwindow.penssidebar().typewriter_page().text_style();
+                engine.pens_config.typewriter_config.text_style.color = stroke_color;
+
+                engine.pens_config.eraser_config.width = appwindow.penssidebar().eraser_page().width_spinbutton().value();
+
+                engine.pens_config.selector_config.style = appwindow.penssidebar().selector_page().selector_style().unwrap_or_default();
+                engine.pens_config.selector_config.resize_lock_aspectratio = appwindow.penssidebar().selector_page().resize_lock_aspectratio_togglebutton().is_active();
+            }
+
+            {
+                // state changes from the engine to the UI
+                let format = canvas.engine().borrow().document.format.clone();
+                let doc_layout = canvas.engine().borrow().doc_layout();
+                let can_undo = canvas.engine().borrow().can_undo();
+                let can_redo = canvas.engine().borrow().can_redo();
+
+                action_doc_layout.activate(Some(&doc_layout.to_variant()));
+                action_format_borders.change_state(&format.show_borders.to_variant());
+                appwindow.overlays().undo_button().set_sensitive(can_undo);
+                appwindow.overlays().redo_button().set_sensitive(can_redo);
+                appwindow.refresh_titles_active_tab();
+            }
+
+            appwindow.handle_widget_flags(widget_flags);
+        }));
+
+        // Refresh UI state from the active tab engine. The engine is considered to be the source of truth
+        action_refresh_ui_from_engine.connect_activate(clone!(
             @weak self as appwindow,
             @strong action_pen_sounds,
             @strong action_doc_layout,
             @strong action_format_borders,
+            @strong action_pen_style,
             => move |_, _| {
             let canvas = appwindow.active_tab().canvas();
 
@@ -380,59 +375,89 @@ impl RnoteAppWindow {
             let format = canvas.engine().borrow().document.format.clone();
             let doc_layout = canvas.engine().borrow().doc_layout();
             let pen_sounds = canvas.engine().borrow().pen_sounds();
-            let current_pen_style_w_override = canvas.engine().borrow().penholder.current_style_w_override();
+            let pen_style = canvas.engine().borrow().penholder.current_style_w_override();
 
-            {
-                // Undo / redo
-                let can_undo = canvas.engine().borrow().can_undo();
-                let can_redo = canvas.engine().borrow().can_redo();
+            // Undo / redo
+            let can_undo = canvas.engine().borrow().can_undo();
+            let can_redo = canvas.engine().borrow().can_redo();
 
-                appwindow.overlays().undo_button().set_sensitive(can_undo);
-                appwindow.overlays().redo_button().set_sensitive(can_redo);
-            }
+            appwindow.overlays().undo_button().set_sensitive(can_undo);
+            appwindow.overlays().redo_button().set_sensitive(can_redo);
 
-            {
-                // Engine
-                let doc_layout = match doc_layout {
-                    Layout::FixedSize => "fixed-size",
-                    Layout::ContinuousVertical => "continuous-vertical",
-                    Layout::Infinite => "infinite",
-                };
-                // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
-                action_doc_layout.activate(Some(&doc_layout.to_variant()));
-                action_pen_sounds.change_state(&pen_sounds.to_variant());
-                action_format_borders.change_state(&format.show_borders.to_variant());
-            }
+            // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
+            action_doc_layout.activate(Some(&doc_layout.to_variant()));
+            action_pen_sounds.change_state(&pen_sounds.to_variant());
+            action_format_borders.change_state(&format.show_borders.to_variant());
+            action_pen_style.activate(Some(&pen_style.to_variant()));
 
             // Current pen
-            match current_pen_style_w_override {
+            match pen_style {
                 PenStyle::Brush => {
-                    appwindow.mainheader().brush_toggle().set_active(true);
+                    appwindow.brush_toggle().set_active(true);
                     appwindow.narrow_brush_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
+
+                    let style = canvas.engine().borrow().pens_config.brush_config.style;
+                    match style {
+                        BrushStyle::Marker => {
+                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.marker_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let fill_color = canvas.engine().borrow().pens_config.brush_config.marker_options.fill_color.unwrap_or(Color::TRANSPARENT);
+                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        BrushStyle::Solid => {
+                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.solid_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let fill_color = canvas.engine().borrow().pens_config.brush_config.solid_options.fill_color.unwrap_or(Color::TRANSPARENT);
+                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        BrushStyle::Textured => {
+                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.textured_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        }
+                    }
                 }
                 PenStyle::Shaper => {
-                    appwindow.mainheader().shaper_toggle().set_active(true);
+                    appwindow.shaper_toggle().set_active(true);
                     appwindow.narrow_shaper_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
+
+                    let style = canvas.engine().borrow().pens_config.shaper_config.style;
+                    match style {
+                        ShaperStyle::Smooth => {
+                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let fill_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.fill_color.unwrap_or(Color::TRANSPARENT);
+                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        ShaperStyle::Rough => {
+                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let fill_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.fill_color.unwrap_or(Color::TRANSPARENT);
+                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                    }
                 }
                 PenStyle::Typewriter => {
-                    appwindow.mainheader().typewriter_toggle().set_active(true);
+                    appwindow.typewriter_toggle().set_active(true);
                     appwindow.narrow_typewriter_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
+
+                    let text_color = canvas.engine().borrow().pens_config.typewriter_config.text_style.color;
+                    appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(text_color));
                 }
                 PenStyle::Eraser => {
-                    appwindow.mainheader().eraser_toggle().set_active(true);
+                    appwindow.eraser_toggle().set_active(true);
                     appwindow.narrow_eraser_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                 }
                 PenStyle::Selector => {
-                    appwindow.mainheader().selector_toggle().set_active(true);
+                    appwindow.selector_toggle().set_active(true);
                     appwindow.narrow_selector_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 }
                 PenStyle::Tools => {
-                    appwindow.mainheader().tools_toggle().set_active(true);
+                    appwindow.tools_toggle().set_active(true);
                     appwindow.narrow_tools_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                 }

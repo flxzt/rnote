@@ -325,6 +325,8 @@ impl RnoteEngine {
             ));
         }
 
+        widget_flags.redraw = true;
+
         Ok(widget_flags)
     }
 }

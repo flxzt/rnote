@@ -1209,14 +1209,9 @@ impl RnoteAppWindow {
                 crate::utils::FileType::RnoteFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            match appwindow.active_tab().canvas().load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
-                                Ok(widget_flags) => {
-                                    appwindow.handle_widget_flags(widget_flags);
-                                },
-                                Err(e) => {
-                                    log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed."));
-                                }
+                            if let Err(e) = appwindow.active_tab().canvas().load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
+                                log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed."));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -1225,14 +1220,9 @@ impl RnoteAppWindow {
                 crate::utils::FileType::VectorImageFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            match appwindow.active_tab().canvas().load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
-                                Ok(widget_flags) => {
-                                    appwindow.handle_widget_flags(widget_flags);
-                                },
-                                Err(e) => {
-                                    log::error!("load_in_vectorimage_bytes() failed with Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed."));
-                                }
+                            if let Err(e) = appwindow.active_tab().canvas().load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
+                                log::error!("load_in_vectorimage_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed."));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -1241,14 +1231,9 @@ impl RnoteAppWindow {
                 crate::utils::FileType::BitmapImageFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            match appwindow.active_tab().canvas().load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
-                                Ok(widget_flags) => {
-                                    appwindow.handle_widget_flags(widget_flags);
-                                },
-                                Err(e) => {
-                                    log::error!("load_in_bitmapimage_bytes() failed with Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
-                                }
+                            if let Err(e) = appwindow.active_tab().canvas().load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
+                                log::error!("load_in_bitmapimage_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -1257,14 +1242,9 @@ impl RnoteAppWindow {
                 crate::utils::FileType::XoppFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            match appwindow.active_tab().canvas().load_in_xopp_bytes(bytes.to_vec()).await {
-                                Ok(widget_flags) => {
-                                    appwindow.handle_widget_flags(widget_flags);
-                                },
-                                Err(e) => {
-                                    log::error!("load_in_xopp_bytes() failed with Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
-                                }
+                            if let Err(e) = appwindow.active_tab().canvas().load_in_xopp_bytes(bytes.to_vec()).await {
+                                log::error!("load_in_xopp_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -1273,14 +1253,9 @@ impl RnoteAppWindow {
                 crate::utils::FileType::PdfFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            match appwindow.active_tab().canvas().load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
-                                Ok(widget_flags) => {
-                                    appwindow.handle_widget_flags(widget_flags);
-                                },
-                                Err(e) => {
-                                    log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
-                                }
+                            if let Err(e) = appwindow.active_tab().canvas().load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
+                                log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),

@@ -68,7 +68,6 @@ impl EraserPage {
         self.imp().width_spinbutton.get()
     }
 
-    #[allow(unused)]
     pub(crate) fn eraser_style(&self) -> Option<EraserStyle> {
         if self
             .imp()

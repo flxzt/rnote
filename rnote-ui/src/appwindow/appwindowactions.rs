@@ -338,6 +338,7 @@ impl RnoteAppWindow {
                 engine.pens_config.typewriter_config.text_style = appwindow.penssidebar().typewriter_page().text_style();
                 engine.pens_config.typewriter_config.text_style.color = stroke_color;
 
+                engine.pens_config.eraser_config.style = appwindow.penssidebar().eraser_page().eraser_style().unwrap_or_default();
                 engine.pens_config.eraser_config.width = appwindow.penssidebar().eraser_page().width_spinbutton().value();
 
                 engine.pens_config.selector_config.style = appwindow.penssidebar().selector_page().selector_style().unwrap_or_default();

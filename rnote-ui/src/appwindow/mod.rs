@@ -11,7 +11,7 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
     CornerType, CssProvider, FileChooserNative, GestureDrag, Grid, IconTheme, Inhibit, PackType,
-    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    PropagationPhase, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 
@@ -83,8 +83,6 @@ mod imp {
         #[template_child]
         pub(crate) mainheader: TemplateChild<MainHeader>,
         #[template_child]
-        pub(crate) pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
-        #[template_child]
         pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
         #[template_child]
         pub(crate) brush_toggle: TemplateChild<ToggleButton>,
@@ -98,20 +96,6 @@ mod imp {
         pub(crate) selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) tools_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_pens_toggles_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub(crate) narrow_brush_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_shaper_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_eraser_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_selector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_typewriter_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_tools_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
@@ -150,20 +134,12 @@ mod imp {
                 flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
                 pens_toggles_box: TemplateChild::<gtk4::Box>::default(),
-                pens_toggles_squeezer: TemplateChild::<adw::Squeezer>::default(),
                 brush_toggle: TemplateChild::<ToggleButton>::default(),
                 shaper_toggle: TemplateChild::<ToggleButton>::default(),
                 typewriter_toggle: TemplateChild::<ToggleButton>::default(),
                 eraser_toggle: TemplateChild::<ToggleButton>::default(),
                 selector_toggle: TemplateChild::<ToggleButton>::default(),
                 tools_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_pens_toggles_revealer: TemplateChild::<Revealer>::default(),
-                narrow_brush_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_shaper_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_typewriter_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_eraser_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_selector_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_tools_toggle: TemplateChild::<ToggleButton>::default(),
                 colorpicker: TemplateChild::<ColorPicker>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
             }
@@ -209,7 +185,6 @@ mod imp {
             self.setup_tabbar();
             self.setup_flap();
             self.setup_pens_toggles();
-            self.setup_narrow_pens_toggles();
             self.setup_colorpicker();
         }
 
@@ -368,23 +343,6 @@ mod imp {
         fn setup_pens_toggles(&self) {
             let inst = self.instance();
 
-            self.pens_toggles_squeezer.connect_visible_child_notify(
-                clone!(@weak inst as appwindow => move |pens_toggles_squeezer| {
-                    // There is only one child, if it is not visible we reveal the narrow version
-                    appwindow.narrow_pens_toggles_revealer().set_reveal_child(pens_toggles_squeezer.visible_child().is_none());
-                }),
-            );
-
-            self.pens_toggles_box
-                .bind_property(
-                    "visible",
-                    &*self.narrow_pens_toggles_revealer,
-                    "reveal-child",
-                )
-                .sync_create()
-                .invert_boolean()
-                .build();
-
             self.brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
@@ -420,47 +378,6 @@ mod imp {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
             }
         }));
-        }
-
-        fn setup_narrow_pens_toggles(&self) {
-            let inst = self.instance();
-
-            // pens narrow toggles
-            self.narrow_brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_brush_toggle| {
-                if narrow_brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_shaper_toggle| {
-                if narrow_shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_typewriter_toggle| {
-                if narrow_typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_eraser_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_eraser_toggle| {
-                if narrow_eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_selector_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_selector_toggle| {
-                if narrow_selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_tools_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_tools_toggle| {
-                if narrow_tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
-                }
-            }));
         }
 
         fn setup_colorpicker(&self) {
@@ -983,34 +900,6 @@ impl RnoteAppWindow {
 
     pub(crate) fn tools_toggle(&self) -> ToggleButton {
         self.imp().tools_toggle.get()
-    }
-
-    pub(crate) fn narrow_pens_toggles_revealer(&self) -> Revealer {
-        self.imp().narrow_pens_toggles_revealer.get()
-    }
-
-    pub(crate) fn narrow_brush_toggle(&self) -> ToggleButton {
-        self.imp().narrow_brush_toggle.get()
-    }
-
-    pub(crate) fn narrow_shaper_toggle(&self) -> ToggleButton {
-        self.imp().narrow_shaper_toggle.get()
-    }
-
-    pub(crate) fn narrow_typewriter_toggle(&self) -> ToggleButton {
-        self.imp().narrow_typewriter_toggle.get()
-    }
-
-    pub(crate) fn narrow_eraser_toggle(&self) -> ToggleButton {
-        self.imp().narrow_eraser_toggle.get()
-    }
-
-    pub(crate) fn narrow_selector_toggle(&self) -> ToggleButton {
-        self.imp().narrow_selector_toggle.get()
-    }
-
-    pub(crate) fn narrow_tools_toggle(&self) -> ToggleButton {
-        self.imp().narrow_tools_toggle.get()
     }
 
     pub(crate) fn colorpicker(&self) -> ColorPicker {

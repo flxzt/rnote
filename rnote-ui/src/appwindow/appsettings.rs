@@ -60,16 +60,16 @@ impl RnoteAppWindow {
             .bind("touch-drawing", self, "touch-drawing")
             .build();
 
-        /*
-               // permanently hide canvas scrollbars
-               self.app_settings()
-                   .bind(
-                       "permanently-hide-scrollbars",
-                       &self.active_tab(),
-                       "permanently-hide-scrollbars",
-                   )
-                   .build();
-        */
+        // permanently hide canvas scrollbars
+        self.app_settings()
+            .bind(
+                "permanently-hide-scrollbars",
+                &self
+                    .settings_panel()
+                    .general_permanently_hide_scrollbars_switch(),
+                "active",
+            )
+            .build();
 
         // regular cursor
         self.app_settings()

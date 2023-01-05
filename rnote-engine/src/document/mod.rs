@@ -11,7 +11,7 @@ use rnote_compose::Color;
 use crate::{Camera, StrokeStore};
 use rnote_compose::helpers::AabbHelpers;
 
-use gtk4::glib;
+use gtk4::{glib, prelude::*};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
@@ -33,10 +33,10 @@ use serde::{Deserialize, Serialize};
 #[enum_type(name = "Layout")]
 #[variant_enum(enum)]
 pub enum Layout {
-    #[enum_value(name = "FixedSize", nick = "fixed_size")]
+    #[enum_value(name = "FixedSize", nick = "fixed-size")]
     #[serde(rename = "fixed_size")]
     FixedSize,
-    #[enum_value(name = "ContinuousVertical", nick = "continuous_vertical")]
+    #[enum_value(name = "ContinuousVertical", nick = "continuous-vertical")]
     #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
     ContinuousVertical,
     #[enum_value(name = "Infinite", nick = "infinite")]
@@ -47,6 +47,24 @@ pub enum Layout {
 impl Default for Layout {
     fn default() -> Self {
         Self::Infinite
+    }
+}
+
+impl Layout {
+    pub fn name(self) -> String {
+        glib::EnumValue::from_value(&self.to_value())
+            .unwrap()
+            .1
+            .name()
+            .to_string()
+    }
+
+    pub fn nick(self) -> String {
+        glib::EnumValue::from_value(&self.to_value())
+            .unwrap()
+            .1
+            .nick()
+            .to_string()
     }
 }
 

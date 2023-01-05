@@ -31,8 +31,8 @@
 }
 
 .flap_resizer:hover {
-    background-color: @theme_selected_bg_color;
-    box-shadow: 0 0 6px darker(@theme_selected_bg_color);
+    background-color: @accent_color;
+    box-shadow: 0 0 6px darker(@accent_color);
 }
 
 .flat-destructive-action {
@@ -55,15 +55,25 @@
     background-position: 0px 0px, 9px 9px;
     border-width: 1px;
     border-style: solid;
-    border-color: mix(@colorpad_color, @theme_fg_color, 0.195);
+    border-color: @borders;
     border-radius: 32px;
-    transition: transform 0.15s ease-out, filter 0.15s ease-out, border-color 0.15s ease-out;
+    transform: scale(0.90);
+    transition: all 0.15s ease-out;
+}
+
+.colorpad:hover {
+    filter: brightness(93%);
+}
+
+.colorpad:active {
+    filter: brightness(86%);
 }
 
 .colorpad:checked {
-    filter: brightness(93%);
-    border-color: @accent_bg_color;
-    box-shadow: 0px 0px 3px @accent_bg_color;
+    filter: brightness(100%);
+    border-color: @accent_color;
+    box-shadow: 0px 0px 2px alpha(@window_fg_color, 0.6);
+    transform: scale(1.0);
 }
 
 .colorsetter {
@@ -77,10 +87,10 @@
     background-position: 0px 0px, 9px 9px;
     border-style: solid;
     border-width: 1px;
+    border-color: @borders;
     filter: brightness(100%);
-    border-color: mix(@colorsetter_color, @theme_fg_color, 0.195);
     border-radius: 2px;
-    transition: transform 0.15s ease-out, filter 0.15s ease-out, border-color 0.15s ease-out;
+    transition: all 0.15s ease-out;
 }
 
 .colorsetter:hover {
@@ -92,9 +102,9 @@
 }
 
 .colorsetter:checked {
-    filter: brightness(93%);
-    border-color: @accent_bg_color;
-    box-shadow: 0px 0px 3px @accent_bg_color;
+    filter: brightness(100%);
+    border-color: @accent_color;
+    box-shadow: 0px 0px 2px alpha(@window_fg_color, 0.6);
 }
 
 .quickaction-button {

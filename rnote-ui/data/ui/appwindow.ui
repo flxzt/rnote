@@ -48,98 +48,69 @@
                   <property name="column-span">3</property>
                 </layout>
                 <child>
-                  <object class="GtkGrid" id="narrow_pens_toggles_grid">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="hexpand">true</property>
+                    <property name="halign">fill</property>
+                    <style>
+                      <class name="topbar_box" />
+                    </style>
                     <child>
-                      <object class="AdwClamp" id="narrow_pens_toggles_clamp">
-                        <layout>
-                          <property name="column">0</property>
-                          <property name="row">0</property>
-                        </layout>
-                        <style>
-                          <class name="narrow_pens_toggles_clamp" />
-                        </style>
-                        <property name="maximum-size">600</property>
-                        <property name="tightening-threshold">550</property>
+                      <object class="GtkBox" id="narrow_pens_toggles_box">
                         <property name="hexpand">true</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">fill</property>
-                        <property name="halign">fill</property>
-                        <property name="child">
-                          <object class="GtkBox" id="narrow_pens_toggles_box">
+                        <property name="halign">center</property>
+                        <property name="homogeneous">true</property>
+                        <property name="width-request">480</property>
+                        <style>
+                          <class name="toolbar" />
+                        </style>
+                        <child>
+                          <object class="GtkToggleButton" id="narrow_brush_toggle">
+                            <property name="icon_name">pen-brush-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Brush</property>
                             <property name="hexpand">true</property>
-                            <property name="halign">fill</property>
-                            <property name="homogeneous">true</property>
-                            <style>
-                              <class name="toolbar" />
-                            </style>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_brush_toggle">
-                                <property name="icon_name">pen-brush-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Brush</property>
-                                <property name="hexpand">true</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_shaper_toggle">
-                                <property name="icon_name">pen-shaper-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Shaper</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_typewriter_toggle">
-                                <property name="icon_name">pen-typewriter-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Typewriter</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_eraser_toggle">
-                                <property name="icon_name">pen-eraser-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Eraser</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_selector_toggle">
-                                <property name="icon_name">pen-selector-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Selector</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_tools_toggle">
-                                <property name="icon_name">pen-tools-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Tools</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
                           </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator" id="narrow_pens_toggles_sep">
-                        <layout>
-                          <property name="column">1</property>
-                          <property name="row">0</property>
-                        </layout>
-                        <property name="hexpand">false</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="narrow_pens_toggles_spacer">
-                        <layout>
-                          <property name="column">2</property>
-                          <property name="row">0</property>
-                        </layout>
-                        <property name="width-request">62</property>
-                        <property name="halign">fill</property>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="narrow_shaper_toggle">
+                            <property name="icon_name">pen-shaper-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Shaper</property>
+                            <property name="hexpand">true</property>
+                            <property name="group">narrow_brush_toggle</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="narrow_typewriter_toggle">
+                            <property name="icon_name">pen-typewriter-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Typewriter</property>
+                            <property name="hexpand">true</property>
+                            <property name="group">narrow_brush_toggle</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="narrow_eraser_toggle">
+                            <property name="icon_name">pen-eraser-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Eraser</property>
+                            <property name="hexpand">true</property>
+                            <property name="group">narrow_brush_toggle</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="narrow_selector_toggle">
+                            <property name="icon_name">pen-selector-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Selector</property>
+                            <property name="hexpand">true</property>
+                            <property name="group">narrow_brush_toggle</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="narrow_tools_toggle">
+                            <property name="icon_name">pen-tools-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Tools</property>
+                            <property name="hexpand">true</property>
+                            <property name="group">narrow_brush_toggle</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
@@ -147,10 +118,109 @@
                         <layout>
                           <property name="column">0</property>
                           <property name="row">1</property>
-                          <property name="column-span">3</property>
                         </layout>
                       </object>
                     </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">3</property>
+                  <property name="column-span">3</property>
+                </layout>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">horizontal</property>
+                    <property name="halign">center</property>
+                    <property name="spacing">12</property>
+                    <property name="margin-start">6</property>
+                    <property name="margin-end">6</property>
+                    <child>
+                      <object class="AdwSqueezer" id="pens_toggles_squeezer">
+                        <property name="transition-type">crossfade</property>
+                        <property name="switch-threshold-policy">minimum</property>
+                        <child>
+                          <object class="GtkBox" id="pens_toggles_box">
+                            <property name="width-request">480</property>
+                            <property name="homogeneous">true</property>
+                            <style>
+                              <class name="toolbar" />
+                            </style>
+                            <child>
+                              <object class="GtkToggleButton" id="brush_toggle">
+                                <property name="icon_name">pen-brush-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Brush</property>
+                                <property name="hexpand">true</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="shaper_toggle">
+                                <property name="icon_name">pen-shaper-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Shaper</property>
+                                <property name="hexpand">true</property>
+                                <property name="group">brush_toggle</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="typewriter_toggle">
+                                <property name="icon_name">pen-typewriter-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Typewriter</property>
+                                <property name="hexpand">true</property>
+                                <property name="group">brush_toggle</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="eraser_toggle">
+                                <property name="icon_name">pen-eraser-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Eraser</property>
+                                <property name="hexpand">true</property>
+                                <property name="group">brush_toggle</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="selector_toggle">
+                                <property name="icon_name">pen-selector-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Selector</property>
+                                <property name="hexpand">true</property>
+                                <property name="group">brush_toggle</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="tools_toggle">
+                                <property name="icon_name">pen-tools-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Tools</property>
+                                <property name="hexpand">true</property>
+                                <property name="group">brush_toggle</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="pens_toggles_placeholderbox">
+                            <property name="hexpand">false</property>
+                            <property name="vexpand">false</property>
+                            <property name="halign">start</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ColorPicker" id="colorpicker">
+                        <property name="amount-colorbuttons">8</property>
+                        <property name="position">top</property>
+                        <property name="margin-top">3</property>
+                        <property name="margin-bottom">3</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
                   </object>
                 </child>
               </object>
@@ -161,7 +231,7 @@
                 <property name="vexpand">true</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">3</property>
+                  <property name="row">4</property>
                 </layout>
               </object>
             </child>
@@ -169,7 +239,7 @@
               <object class="GtkSeparator" id="sidebar_sep">
                 <layout>
                   <property name="column">1</property>
-                  <property name="row">3</property>
+                  <property name="row">4</property>
                 </layout>
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">false</property>
@@ -179,7 +249,7 @@
               <object class="GtkGrid" id="sidebar_box">
                 <layout>
                   <property name="column">2</property>
-                  <property name="row">3</property>
+                  <property name="row">4</property>
                 </layout>
                 <property name="orientation">vertical</property>
                 <property name="hexpand">false</property>

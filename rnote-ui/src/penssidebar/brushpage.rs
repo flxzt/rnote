@@ -1,19 +1,17 @@
 use adw::prelude::*;
 use gtk4::{
-    gdk, glib, glib::clone, subclass::prelude::*, CompositeTemplate, Image, ListBox, MenuButton,
+    glib, glib::clone, subclass::prelude::*, CompositeTemplate, Image, ListBox, MenuButton,
     Popover, SpinButton,
 };
 use num_traits::cast::ToPrimitive;
 
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
-use rnote_compose::Color;
 use rnote_engine::pens::pensconfig::BrushConfig;
 
-use crate::{appwindow::RnoteAppWindow, ColorPicker};
+use crate::appwindow::RnoteAppWindow;
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
-use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
     use super::*;
@@ -23,8 +21,6 @@ mod imp {
     pub(crate) struct BrushPage {
         #[template_child]
         pub(crate) width_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -103,8 +99,8 @@ impl BrushPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn colorpicker(&self) -> ColorPicker {
-        self.imp().colorpicker.get()
+    pub(crate) fn width_spinbutton(&self) -> SpinButton {
+        self.imp().width_spinbutton.get()
     }
 
     pub(crate) fn brushstyle_menubutton(&self) -> MenuButton {
@@ -113,6 +109,51 @@ impl BrushPage {
 
     pub(crate) fn brushconfig_menubutton(&self) -> MenuButton {
         self.imp().brushconfig_menubutton.get()
+    }
+
+    pub(crate) fn brush_style(&self) -> Option<BrushStyle> {
+        BrushStyle::try_from(self.imp().brushstyle_listbox.selected_row()?.index() as u32).ok()
+    }
+
+    pub(crate) fn set_brush_style(&self, brush_style: BrushStyle) {
+        match brush_style {
+            BrushStyle::Marker => self
+                .imp()
+                .brushstyle_listbox
+                .select_row(Some(&*self.imp().brushstyle_marker_row)),
+            BrushStyle::Solid => self
+                .imp()
+                .brushstyle_listbox
+                .select_row(Some(&*self.imp().brushstyle_solid_row)),
+            BrushStyle::Textured => self
+                .imp()
+                .brushstyle_listbox
+                .select_row(Some(&*self.imp().brushstyle_textured_row)),
+        }
+    }
+
+    pub(crate) fn buildertype(&self) -> Option<PenPathBuilderType> {
+        PenPathBuilderType::try_from(
+            self.imp().brush_buildertype_listbox.selected_row()?.index() as u32
+        )
+        .ok()
+    }
+
+    pub(crate) fn set_buildertype(&self, buildertype: PenPathBuilderType) {
+        match buildertype {
+            PenPathBuilderType::Simple => self
+                .imp()
+                .brush_buildertype_listbox
+                .select_row(Some(&*self.imp().brush_buildertype_simple)),
+            PenPathBuilderType::Curved => self
+                .imp()
+                .brush_buildertype_listbox
+                .select_row(Some(&*self.imp().brush_buildertype_curved)),
+            PenPathBuilderType::Modeled => self
+                .imp()
+                .brush_buildertype_listbox
+                .select_row(Some(&*self.imp().brush_buildertype_modeled)),
+        }
     }
 
     pub(crate) fn solidstyle_pressure_curve(&self) -> PressureCurve {
@@ -161,71 +202,37 @@ impl BrushPage {
 
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
-                let value = brush_widthscale_spinbutton.value();
+                let stroke_width = brush_widthscale_spinbutton.value();
 
                 let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                match engine.pens_config.brush_config.style {
-                    BrushStyle::Marker => engine.pens_config.brush_config.marker_options.stroke_width = value,
-                    BrushStyle::Solid => engine.pens_config.brush_config.solid_options.stroke_width = value,
-                    BrushStyle::Textured => engine.pens_config.brush_config.textured_options.stroke_width = value,
-                }
-            }),
-        );
-
-        // Stroke color
-        imp.colorpicker.connect_notify_local(
-            Some("current-color"),
-            clone!(@weak appwindow => move |colorpicker, _paramspec| {
-                let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
-
-                let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
-
-                match engine.pens_config.brush_config.style {
-                    BrushStyle::Marker => engine.pens_config.brush_config.marker_options.stroke_color = Some(color),
-                    BrushStyle::Solid => engine.pens_config.brush_config.solid_options.stroke_color = Some(color),
-                    BrushStyle::Textured => engine.pens_config.brush_config.textured_options.stroke_color = Some(color),
-                }
+                engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
             }),
         );
 
         // Style
         imp.brushstyle_listbox.connect_row_selected(
-            clone!(@weak self as brushpage, @weak appwindow => move |_brushstyle_listbox, selected_row| {
-                if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    {
-                        let engine = appwindow.active_tab().canvas().engine();
-                        let engine = &mut *engine.borrow_mut();
+            clone!(@weak self as brushpage, @weak appwindow => move |_, _| {
+                if let Some(brush_style) = brushpage.brush_style() {
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.style = brush_style;
 
-                        engine.pens_config.brush_config.style = BrushStyle::try_from(selected_row.index() as u32).unwrap_or_default();
-
-                        // Overwrite the color, but not the width
-                        match engine.pens_config.brush_config.style {
-                            BrushStyle::Marker => {
-                                engine.pens_config.brush_config.marker_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
-                            },
-                            BrushStyle::Solid => {
-                                engine.pens_config.brush_config.solid_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
-                            },
-                            BrushStyle::Textured => {
-                                engine.pens_config.brush_config.textured_options.stroke_color = Some(brushpage.colorpicker().current_color().into_compose_color());
-                            },
-                        }
+                    match brush_style {
+                        BrushStyle::Marker => brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-marker-symbolic")),
+                        BrushStyle::Solid => brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-solid-symbolic")),
+                        BrushStyle::Textured => brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-textured-symbolic")),
                     }
-
-                    // Need to refresh the whole page, because changing the style affects multiple widgets
-                    brushpage.refresh_ui(&appwindow);
                 }
             }),
         );
 
         // Builder type
         imp.brush_buildertype_listbox.connect_row_selected(
-            clone!(@weak self as brushpage, @weak appwindow => move |_, selected_row| {
-                if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.builder_type = PenPathBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+            clone!(@weak self as brushpage, @weak appwindow => move |_, _| {
+                if let Some(buildertype) = brushpage.buildertype() {
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.builder_type = buildertype;
                 }
             }),
         );
@@ -277,66 +284,21 @@ impl BrushPage {
             .set_value(brush_config.textured_options.density);
         self.set_texturedstyle_distribution_variant(brush_config.textured_options.distribution);
 
-        match brush_config.builder_type {
-            PenPathBuilderType::Simple => {
-                imp.brush_buildertype_listbox
-                    .select_row(Some(&*imp.brush_buildertype_simple));
-            }
-            PenPathBuilderType::Curved => {
-                imp.brush_buildertype_listbox
-                    .select_row(Some(&*imp.brush_buildertype_curved));
-            }
-            PenPathBuilderType::Modeled => {
-                imp.brush_buildertype_listbox
-                    .select_row(Some(&*imp.brush_buildertype_modeled));
-            }
-        }
+        self.set_brush_style(brush_config.style);
+        self.set_buildertype(brush_config.builder_type);
 
         match brush_config.style {
             BrushStyle::Marker => {
-                imp.brushstyle_listbox
-                    .select_row(Some(&*imp.brushstyle_marker_row));
                 imp.width_spinbutton
                     .set_value(brush_config.marker_options.stroke_width);
-                imp.colorpicker
-                    .set_current_color(gdk::RGBA::from_compose_color(
-                        brush_config
-                            .marker_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT),
-                    ));
-                imp.brushstyle_image
-                    .set_icon_name(Some("pen-brush-style-marker-symbolic"));
             }
             BrushStyle::Solid => {
-                imp.brushstyle_listbox
-                    .select_row(Some(&*imp.brushstyle_solid_row));
                 imp.width_spinbutton
                     .set_value(brush_config.solid_options.stroke_width);
-                imp.colorpicker
-                    .set_current_color(gdk::RGBA::from_compose_color(
-                        brush_config
-                            .solid_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT),
-                    ));
-                imp.brushstyle_image
-                    .set_icon_name(Some("pen-brush-style-solid-symbolic"));
             }
             BrushStyle::Textured => {
-                imp.brushstyle_listbox
-                    .select_row(Some(&*imp.brushstyle_textured_row));
                 imp.width_spinbutton
                     .set_value(brush_config.textured_options.stroke_width);
-                imp.colorpicker
-                    .set_current_color(gdk::RGBA::from_compose_color(
-                        brush_config
-                            .textured_options
-                            .stroke_color
-                            .unwrap_or(Color::TRANSPARENT),
-                    ));
-                imp.brushstyle_image
-                    .set_icon_name(Some("pen-brush-style-textured-symbolic"));
             }
         }
     }

@@ -11,11 +11,11 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
     CornerType, CssProvider, FileChooserNative, GestureDrag, Grid, IconTheme, Inhibit, PackType,
-    PositionType, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext,
-    ToggleButton,
+    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 
+use crate::colorpicker::ColorPicker;
 use crate::{
     config,
     penssidebar::PensSideBar,
@@ -24,6 +24,9 @@ use crate::{
     RnoteApp, RnoteCanvasWrapper, RnoteOverlays,
     {dialogs, mainheader::MainHeader},
 };
+use rnote_engine::engine::EngineViewMut;
+use rnote_engine::pens::Pen;
+use rnote_engine::utils::GdkRGBAHelpers;
 use rnote_engine::{engine::EngineTask, pens::PenStyle, WidgetFlags};
 
 mod imp {
@@ -80,15 +83,25 @@ mod imp {
         #[template_child]
         pub(crate) mainheader: TemplateChild<MainHeader>,
         #[template_child]
+        pub(crate) pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
+        #[template_child]
+        pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) brush_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) eraser_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) selector_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) tools_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub(crate) narrow_pens_toggles_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub(crate) narrow_pens_toggles_grid: TemplateChild<Grid>,
-        #[template_child]
-        pub(crate) narrow_pens_toggles_sep: TemplateChild<Separator>,
-        #[template_child]
-        pub(crate) narrow_pens_toggles_clamp: TemplateChild<adw::Clamp>,
-        #[template_child]
-        pub(crate) narrow_pens_toggles_spacer: TemplateChild<gtk4::Box>,
         #[template_child]
         pub(crate) narrow_brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -101,6 +114,8 @@ mod imp {
         pub(crate) narrow_typewriter_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) narrow_tools_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
         pub(crate) penssidebar: TemplateChild<PensSideBar>,
     }
@@ -136,17 +151,23 @@ mod imp {
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
+                pens_toggles_box: TemplateChild::<gtk4::Box>::default(),
+                pens_toggles_squeezer: TemplateChild::<adw::Squeezer>::default(),
+                pens_toggles_placeholderbox: TemplateChild::<gtk4::Box>::default(),
+                brush_toggle: TemplateChild::<ToggleButton>::default(),
+                shaper_toggle: TemplateChild::<ToggleButton>::default(),
+                typewriter_toggle: TemplateChild::<ToggleButton>::default(),
+                eraser_toggle: TemplateChild::<ToggleButton>::default(),
+                selector_toggle: TemplateChild::<ToggleButton>::default(),
+                tools_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_pens_toggles_revealer: TemplateChild::<Revealer>::default(),
-                narrow_pens_toggles_grid: TemplateChild::<Grid>::default(),
-                narrow_pens_toggles_sep: TemplateChild::<Separator>::default(),
-                narrow_pens_toggles_clamp: TemplateChild::<adw::Clamp>::default(),
-                narrow_pens_toggles_spacer: TemplateChild::<gtk4::Box>::default(),
                 narrow_brush_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_shaper_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_typewriter_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_eraser_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_selector_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_tools_toggle: TemplateChild::<ToggleButton>::default(),
+                colorpicker: TemplateChild::<ColorPicker>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
             }
         }
@@ -190,7 +211,9 @@ mod imp {
 
             self.setup_tabbar();
             self.setup_flap();
+            self.setup_pens_toggles();
             self.setup_narrow_pens_toggles();
+            self.setup_colorpicker();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -345,6 +368,58 @@ mod imp {
             self.tabbar.set_view(Some(&self.overlays.tabview()));
         }
 
+        fn setup_pens_toggles(&self) {
+            let inst = self.instance();
+
+            self.pens_toggles_squeezer.connect_visible_child_notify(
+                clone!(@weak inst as appwindow => move |pens_toggles_squeezer| {
+                    if let Some(visible_child) = pens_toggles_squeezer.visible_child() {
+                        if visible_child == appwindow.pens_toggles_placeholderbox() {
+                            appwindow.narrow_pens_toggles_revealer().set_reveal_child(true);
+                        } else if visible_child == appwindow.imp().pens_toggles_box.get() {
+                            appwindow.narrow_pens_toggles_revealer().set_reveal_child(false);
+                        }
+                    }
+                }),
+            );
+
+            self.brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |brush_toggle| {
+            if brush_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
+            }
+        }));
+
+            self.shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |shaper_toggle| {
+            if shaper_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+            }
+        }));
+
+            self.typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |typewriter_toggle| {
+            if typewriter_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
+            }
+        }));
+
+            self.eraser_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |eraser_toggle| {
+            if eraser_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
+            }
+        }));
+
+            self.selector_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |selector_toggle| {
+            if selector_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
+            }
+        }));
+
+            self.tools_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |tools_toggle| {
+            if tools_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
+            }
+        }));
+        }
+
         fn setup_narrow_pens_toggles(&self) {
             let inst = self.instance();
 
@@ -384,6 +459,64 @@ mod imp {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
                 }
             }));
+        }
+
+        fn setup_colorpicker(&self) {
+            let inst = self.instance();
+
+            self.colorpicker.connect_notify_local(
+                Some("stroke-color"),
+                clone!(@weak inst as appwindow => move |colorpicker, _paramspec| {
+                    let stroke_style = appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override();
+                    let stroke_color = colorpicker.stroke_color().into_compose_color();
+                    let engine = appwindow.active_tab().canvas().engine();
+                    let engine = &mut *engine.borrow_mut();
+
+                    // We have a global colorpicker, so we apply it to all styles
+                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.rough_options.stroke_color= Some(stroke_color);
+                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
+
+                    match stroke_style {
+                        PenStyle::Typewriter => {
+                            if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                                let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                                    |text_style| {
+                                        text_style.color = stroke_color;
+                                    },
+                                    &mut EngineViewMut {
+                                        tasks_tx: engine.tasks_tx.clone(),
+                                        pens_config: &mut engine.pens_config,
+                                        doc: &mut engine.document,
+                                        store: &mut engine.store,
+                                        camera: &mut engine.camera,
+                                        audioplayer: &mut engine.audioplayer
+                                });
+                                appwindow.handle_widget_flags(widget_flags);
+                            }
+                        }
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools => {}
+                    }
+                }),
+            );
+
+            self.colorpicker.connect_notify_local(
+                Some("fill-color"),
+                clone!(@weak inst as appwindow => move |colorpicker, _paramspec| {
+                    let fill_color = colorpicker.fill_color().into_compose_color();
+                    let engine = appwindow.active_tab().canvas().engine();
+                    let engine = &mut *engine.borrow_mut();
+
+                    // We have a global colorpicker, so we apply it to all styles
+                    engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                    engine.pens_config.brush_config.solid_options.fill_color= Some(fill_color);
+                    engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                    engine.pens_config.shaper_config.rough_options.fill_color= Some(fill_color);
+                }),
+            );
         }
 
         // Setting up the sidebar flap
@@ -556,20 +689,14 @@ mod imp {
                 inst.main_grid().remove(&inst.overlays());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.overlays(), 2, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_box(), 0, 3, 1, 1);
+                inst.main_grid().attach(&inst.overlays(), 2, 4, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 4, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_box(), 0, 4, 1, 1);
                 inst.overlays().quickactions_box().set_halign(Align::End);
                 inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
                     .set_active(true);
-                inst.mainheader()
-                    .headerbar()
-                    .remove(&inst.mainheader().pens_toggles_squeezer());
-                inst.mainheader()
-                    .headerbar()
-                    .pack_start(&inst.mainheader().pens_toggles_squeezer());
                 inst.workspacebrowser()
                     .grid()
                     .remove(&inst.workspacebrowser().workspacesbar());
@@ -597,29 +724,6 @@ mod imp {
                     .workspacesbar()
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
-
-                inst.narrow_pens_toggles_grid()
-                    .remove(&inst.narrow_pens_toggles_clamp());
-                inst.narrow_pens_toggles_grid()
-                    .remove(&inst.narrow_pens_toggles_sep());
-                inst.narrow_pens_toggles_grid()
-                    .remove(&inst.narrow_pens_toggles_spacer());
-                inst.narrow_pens_toggles_grid().attach(
-                    &inst.narrow_pens_toggles_spacer(),
-                    0,
-                    0,
-                    1,
-                    1,
-                );
-                inst.narrow_pens_toggles_grid()
-                    .attach(&inst.narrow_pens_toggles_sep(), 1, 0, 1, 1);
-                inst.narrow_pens_toggles_grid().attach(
-                    &inst.narrow_pens_toggles_clamp(),
-                    2,
-                    0,
-                    1,
-                    1,
-                );
 
                 inst.active_tab()
                     .scroller()
@@ -638,18 +742,6 @@ mod imp {
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Right);
                 inst.penssidebar()
-                    .brush_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .stroke_colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .fill_colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
-                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Right);
@@ -665,29 +757,19 @@ mod imp {
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
-                    .typewriter_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
             } else {
                 inst.flap().set_flap_position(PackType::End);
                 inst.main_grid().remove(&inst.overlays());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.overlays(), 0, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_box(), 2, 3, 1, 1);
+                inst.main_grid().attach(&inst.overlays(), 0, 4, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 4, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_box(), 2, 4, 1, 1);
                 inst.overlays().quickactions_box().set_halign(Align::Start);
                 inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()
                     .set_active(true);
-                inst.mainheader()
-                    .headerbar()
-                    .remove(&inst.mainheader().pens_toggles_squeezer());
-                inst.mainheader()
-                    .headerbar()
-                    .pack_end(&inst.mainheader().pens_toggles_squeezer());
                 inst.workspacebrowser()
                     .grid()
                     .remove(&inst.workspacebrowser().files_scroller());
@@ -716,29 +798,6 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
-                inst.narrow_pens_toggles_grid()
-                    .remove(&inst.narrow_pens_toggles_clamp());
-                inst.narrow_pens_toggles_grid()
-                    .remove(&inst.narrow_pens_toggles_sep());
-                inst.narrow_pens_toggles_grid()
-                    .remove(&inst.narrow_pens_toggles_spacer());
-                inst.narrow_pens_toggles_grid().attach(
-                    &inst.narrow_pens_toggles_clamp(),
-                    0,
-                    0,
-                    1,
-                    1,
-                );
-                inst.narrow_pens_toggles_grid()
-                    .attach(&inst.narrow_pens_toggles_sep(), 1, 0, 1, 1);
-                inst.narrow_pens_toggles_grid().attach(
-                    &inst.narrow_pens_toggles_spacer(),
-                    2,
-                    0,
-                    1,
-                    1,
-                );
-
                 inst.active_tab()
                     .scroller()
                     .set_window_placement(CornerType::BottomLeft);
@@ -756,18 +815,6 @@ mod imp {
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Left);
                 inst.penssidebar()
-                    .brush_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .stroke_colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .fill_colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
-                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Left);
@@ -783,10 +830,6 @@ mod imp {
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
-                    .typewriter_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
             }
         }
     }
@@ -916,24 +959,36 @@ impl RnoteAppWindow {
         self.imp().mainheader.get()
     }
 
+    pub(crate) fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
+        self.imp().pens_toggles_placeholderbox.get()
+    }
+
+    pub(crate) fn brush_toggle(&self) -> ToggleButton {
+        self.imp().brush_toggle.get()
+    }
+
+    pub(crate) fn shaper_toggle(&self) -> ToggleButton {
+        self.imp().shaper_toggle.get()
+    }
+
+    pub(crate) fn typewriter_toggle(&self) -> ToggleButton {
+        self.imp().typewriter_toggle.get()
+    }
+
+    pub(crate) fn eraser_toggle(&self) -> ToggleButton {
+        self.imp().eraser_toggle.get()
+    }
+
+    pub(crate) fn selector_toggle(&self) -> ToggleButton {
+        self.imp().selector_toggle.get()
+    }
+
+    pub(crate) fn tools_toggle(&self) -> ToggleButton {
+        self.imp().tools_toggle.get()
+    }
+
     pub(crate) fn narrow_pens_toggles_revealer(&self) -> Revealer {
         self.imp().narrow_pens_toggles_revealer.get()
-    }
-
-    pub(crate) fn narrow_pens_toggles_grid(&self) -> Grid {
-        self.imp().narrow_pens_toggles_grid.get()
-    }
-
-    pub(crate) fn narrow_pens_toggles_sep(&self) -> Separator {
-        self.imp().narrow_pens_toggles_sep.get()
-    }
-
-    pub(crate) fn narrow_pens_toggles_clamp(&self) -> adw::Clamp {
-        self.imp().narrow_pens_toggles_clamp.get()
-    }
-
-    pub(crate) fn narrow_pens_toggles_spacer(&self) -> gtk4::Box {
-        self.imp().narrow_pens_toggles_spacer.get()
     }
 
     pub(crate) fn narrow_brush_toggle(&self) -> ToggleButton {
@@ -958,6 +1013,10 @@ impl RnoteAppWindow {
 
     pub(crate) fn narrow_tools_toggle(&self) -> ToggleButton {
         self.imp().narrow_tools_toggle.get()
+    }
+
+    pub(crate) fn colorpicker(&self) -> ColorPicker {
+        self.imp().colorpicker.get()
     }
 
     pub(crate) fn penssidebar(&self) -> PensSideBar {
@@ -1025,7 +1084,7 @@ impl RnoteAppWindow {
         self.active_tab().canvas().regenerate_background_pattern();
         self.active_tab().canvas().update_engine_rendering();
 
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
     }
 
     /// Called to close the window
@@ -1059,7 +1118,7 @@ impl RnoteAppWindow {
             self.active_tab().canvas().queue_resize();
         }
         if widget_flags.refresh_ui {
-            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui", None);
+            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
         }
         if widget_flags.indicate_changed_store {
             self.active_tab().canvas().set_unsaved_changes(true);

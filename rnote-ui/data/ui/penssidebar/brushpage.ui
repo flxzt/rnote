@@ -61,16 +61,6 @@
         <property name="climb-rate">0.5</property>
       </object>
     </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="colorpicker">
-        <property name="amount-colorbuttons">8</property>
-      </object>
-    </child>
 
     <!-- Brush style -->
     <object class="GtkPopover" id="brushstyle_popover">

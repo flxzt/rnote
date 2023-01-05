@@ -127,10 +127,9 @@ impl RnoteOverlays {
         imp.tabview
             .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
                 appwindow.clear_rendering_inactive_tabs();
-
                 appwindow.active_tab().canvas().regenerate_background_pattern();
                 appwindow.active_tab().canvas().update_engine_rendering();
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
             }));
 
         imp.tabview
@@ -139,7 +138,7 @@ impl RnoteOverlays {
 
                 canvaswrapper.init_reconnect(&appwindow);
                 canvaswrapper.connect_to_tab_page(&page);
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
             }));
 
         imp.tabview

@@ -67,6 +67,36 @@ impl SelectorPage {
         glib::Object::new(&[])
     }
 
+    pub(crate) fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
+        self.imp().resize_lock_aspectratio_togglebutton.get()
+    }
+
+    pub(crate) fn selector_style(&self) -> Option<SelectorStyle> {
+        if self.imp().selectorstyle_polygon_toggle.is_active() {
+            Some(SelectorStyle::Polygon)
+        } else if self.imp().selectorstyle_rect_toggle.is_active() {
+            Some(SelectorStyle::Rectangle)
+        } else if self.imp().selectorstyle_single_toggle.is_active() {
+            Some(SelectorStyle::Single)
+        } else if self.imp().selectorstyle_intersectingpath_toggle.is_active() {
+            Some(SelectorStyle::IntersectingPath)
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn set_selector_style(&self, style: SelectorStyle) {
+        match style {
+            SelectorStyle::Polygon => self.imp().selectorstyle_polygon_toggle.set_active(true),
+            SelectorStyle::Rectangle => self.imp().selectorstyle_rect_toggle.set_active(true),
+            SelectorStyle::Single => self.imp().selectorstyle_single_toggle.set_active(true),
+            SelectorStyle::IntersectingPath => self
+                .imp()
+                .selectorstyle_intersectingpath_toggle
+                .set_active(true),
+        }
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
@@ -111,14 +141,8 @@ impl SelectorPage {
             .selector_config
             .clone();
 
-        match selector_config.style {
-            SelectorStyle::Polygon => imp.selectorstyle_polygon_toggle.set_active(true),
-            SelectorStyle::Rectangle => imp.selectorstyle_rect_toggle.set_active(true),
-            SelectorStyle::Single => imp.selectorstyle_single_toggle.set_active(true),
-            SelectorStyle::IntersectingPath => {
-                imp.selectorstyle_intersectingpath_toggle.set_active(true)
-            }
-        }
+        self.set_selector_style(selector_config.style);
+
         imp.resize_lock_aspectratio_togglebutton
             .set_active(selector_config.resize_lock_aspectratio);
     }

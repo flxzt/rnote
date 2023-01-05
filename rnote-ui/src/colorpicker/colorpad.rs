@@ -43,8 +43,8 @@ mod imp {
 
             inst.set_hexpand(false);
             inst.set_vexpand(false);
-            inst.set_halign(Align::Center);
-            inst.set_valign(Align::Center);
+            inst.set_halign(Align::Fill);
+            inst.set_valign(Align::Fill);
             inst.set_height_request(38);
             inst.set_width_request(38);
             inst.set_css_classes(&["colorpad"]);

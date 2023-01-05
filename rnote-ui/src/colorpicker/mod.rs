@@ -248,10 +248,6 @@ mod imp {
                             self.active_colors_box
                                 .set_orientation(Orientation::Vertical);
                             self.setterbox.set_orientation(Orientation::Vertical);
-                            self.colorpicker_button.set_margin_start(0);
-                            self.colorpicker_button.set_margin_end(0);
-                            self.colorpicker_button.set_margin_top(3);
-                            self.colorpicker_button.set_margin_bottom(0);
                             self.colorpicker_popover.set_position(PositionType::Right);
                         }
                         PositionType::Right => {
@@ -259,10 +255,6 @@ mod imp {
                             self.active_colors_box
                                 .set_orientation(Orientation::Vertical);
                             self.setterbox.set_orientation(Orientation::Vertical);
-                            self.colorpicker_button.set_margin_start(0);
-                            self.colorpicker_button.set_margin_end(0);
-                            self.colorpicker_button.set_margin_top(3);
-                            self.colorpicker_button.set_margin_bottom(0);
                             self.colorpicker_popover.set_position(PositionType::Left);
                         }
                         PositionType::Top => {
@@ -270,10 +262,6 @@ mod imp {
                             self.active_colors_box
                                 .set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
-                            self.colorpicker_button.set_margin_start(3);
-                            self.colorpicker_button.set_margin_end(0);
-                            self.colorpicker_button.set_margin_top(0);
-                            self.colorpicker_button.set_margin_bottom(0);
                             self.colorpicker_popover.set_position(PositionType::Bottom);
                         }
                         PositionType::Bottom => {
@@ -281,10 +269,6 @@ mod imp {
                             self.active_colors_box
                                 .set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
-                            self.colorpicker_button.set_margin_start(3);
-                            self.colorpicker_button.set_margin_end(0);
-                            self.colorpicker_button.set_margin_top(0);
-                            self.colorpicker_button.set_margin_bottom(0);
                             self.colorpicker_popover.set_position(PositionType::Top);
                         }
                         _ => {}

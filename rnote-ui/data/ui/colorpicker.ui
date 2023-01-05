@@ -4,12 +4,12 @@
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="orientation">vertical</property>
-        <property name="spacing">6</property>
+        <property name="spacing">3</property>
       </object>
     </property>
     <child>
       <object class="GtkBox" id="active_colors_box">
-        <property name="spacing">6</property>
+        <property name="spacing">3</property>
         <child>
           <object class="ColorPad" id="stroke_color_pad">
             <property name="icon_name">stroke-color-symbolic</property>
@@ -45,7 +45,6 @@
       <object class="GtkMenuButton" id="colorpicker_button">
         <property name="direction">left</property>
         <property name="icon-name">preferences-color-symbolic</property>
-        <property name="margin-top">3</property>
         <property name="hexpand">false</property>
         <property name="vexpand">false</property>
         <property name="halign">center</property>

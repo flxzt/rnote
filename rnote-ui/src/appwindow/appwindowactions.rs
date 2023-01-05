@@ -240,15 +240,15 @@ impl RnoteAppWindow {
                 match doc_layout {
                     "fixed-size" => {
                         appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::FixedSize);
-                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(true);
+                        appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(true);
                     },
                     "continuous-vertical" => {
                         appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
-                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(false);
+                        appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     "infinite" => {
                         appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
-                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(false);
+                        appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     other => {
                         log::error!("doc-layout action activated with invalid target string: {other}");
@@ -319,8 +319,8 @@ impl RnoteAppWindow {
                 let pen_style = action_pen_style.state().unwrap().get::<PenStyle>().unwrap();
                 let pen_sounds = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
                 let format_borders = action_format_borders.state().unwrap().get::<bool>().unwrap();
-                let stroke_color = appwindow.colorpicker().stroke_color().into_compose_color();
-                let fill_color = appwindow.colorpicker().fill_color().into_compose_color();
+                let stroke_color = appwindow.overlays().colorpicker().stroke_color().into_compose_color();
+                let fill_color = appwindow.overlays().colorpicker().fill_color().into_compose_color();
 
                 let engine = canvas.engine();
                 let mut engine = engine.borrow_mut();
@@ -371,8 +371,8 @@ impl RnoteAppWindow {
 
                 action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
                 action_format_borders.change_state(&format.show_borders.to_variant());
-                appwindow.overlays().undo_button().set_sensitive(can_undo);
-                appwindow.overlays().redo_button().set_sensitive(can_redo);
+                appwindow.mainheader().undo_button().set_sensitive(can_undo);
+                appwindow.mainheader().redo_button().set_sensitive(can_redo);
                 appwindow.refresh_titles_active_tab();
             }
 
@@ -401,8 +401,8 @@ impl RnoteAppWindow {
             let can_undo = canvas.engine().borrow().can_undo();
             let can_redo = canvas.engine().borrow().can_redo();
 
-            appwindow.overlays().undo_button().set_sensitive(can_undo);
-            appwindow.overlays().redo_button().set_sensitive(can_redo);
+            appwindow.mainheader().undo_button().set_sensitive(can_undo);
+            appwindow.mainheader().redo_button().set_sensitive(can_redo);
 
             // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
             action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
@@ -413,7 +413,7 @@ impl RnoteAppWindow {
             // Current pen
             match pen_style {
                 PenStyle::Brush => {
-                    appwindow.brush_toggle().set_active(true);
+                    appwindow.overlays().brush_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
 
                     let style = canvas.engine().borrow().pens_config.brush_config.style;
@@ -421,23 +421,23 @@ impl RnoteAppWindow {
                         BrushStyle::Marker => {
                             let stroke_color = canvas.engine().borrow().pens_config.brush_config.marker_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.brush_config.marker_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         BrushStyle::Solid => {
                             let stroke_color = canvas.engine().borrow().pens_config.brush_config.solid_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.brush_config.solid_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         BrushStyle::Textured => {
                             let stroke_color = canvas.engine().borrow().pens_config.brush_config.textured_options.stroke_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                         }
                     }
                 }
                 PenStyle::Shaper => {
-                    appwindow.shaper_toggle().set_active(true);
+                    appwindow.overlays().shaper_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
 
                     let style = canvas.engine().borrow().pens_config.shaper_config.style;
@@ -445,34 +445,34 @@ impl RnoteAppWindow {
                         ShaperStyle::Smooth => {
                             let stroke_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         ShaperStyle::Rough => {
                             let stroke_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                     }
                 }
                 PenStyle::Typewriter => {
-                    appwindow.typewriter_toggle().set_active(true);
+                    appwindow.overlays().typewriter_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
 
                     let text_color = canvas.engine().borrow().pens_config.typewriter_config.text_style.color;
-                    appwindow.colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(text_color));
+                    appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(text_color));
                 }
                 PenStyle::Eraser => {
-                    appwindow.eraser_toggle().set_active(true);
+                    appwindow.overlays().eraser_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                 }
                 PenStyle::Selector => {
-                    appwindow.selector_toggle().set_active(true);
+                    appwindow.overlays().selector_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 }
                 PenStyle::Tools => {
-                    appwindow.tools_toggle().set_active(true);
+                    appwindow.overlays().tools_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                 }
             }

@@ -1,11 +1,14 @@
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, ProgressBar,
-    Revealer, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ProgressBar,
+    ToggleButton, Widget,
 };
+use rnote_engine::engine::EngineViewMut;
+use rnote_engine::pens::{Pen, PenStyle};
+use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 
 use crate::canvaswrapper::RnoteCanvasWrapper;
-use crate::{dialogs, RnoteAppWindow};
+use crate::{dialogs, ColorPicker, RnoteAppWindow};
 
 mod imp {
     use super::*;
@@ -21,13 +24,21 @@ mod imp {
         #[template_child]
         pub(crate) progressbar: TemplateChild<ProgressBar>,
         #[template_child]
-        pub(crate) quickactions_box: TemplateChild<gtk4::Box>,
+        pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) fixedsize_quickactions_revealer: TemplateChild<Revealer>,
+        pub(crate) brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) undo_button: TemplateChild<Button>,
+        pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) redo_button: TemplateChild<Button>,
+        pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) eraser_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) selector_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) tools_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
         pub(crate) tabview: TemplateChild<adw::TabView>,
     }
@@ -39,10 +50,14 @@ mod imp {
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 progressbar: TemplateChild::<ProgressBar>::default(),
-                quickactions_box: TemplateChild::<gtk4::Box>::default(),
-                fixedsize_quickactions_revealer: TemplateChild::<Revealer>::default(),
-                undo_button: TemplateChild::<Button>::default(),
-                redo_button: TemplateChild::<Button>::default(),
+                pens_toggles_box: TemplateChild::<gtk4::Box>::default(),
+                brush_toggle: TemplateChild::<ToggleButton>::default(),
+                shaper_toggle: TemplateChild::<ToggleButton>::default(),
+                typewriter_toggle: TemplateChild::<ToggleButton>::default(),
+                eraser_toggle: TemplateChild::<ToggleButton>::default(),
+                selector_toggle: TemplateChild::<ToggleButton>::default(),
+                tools_toggle: TemplateChild::<ToggleButton>::default(),
+                colorpicker: TemplateChild::<ColorPicker>::default(),
                 tabview: TemplateChild::<adw::TabView>::default(),
             }
         }
@@ -94,25 +109,38 @@ impl RnoteOverlays {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn quickactions_box(&self) -> gtk4::Box {
-        self.imp().quickactions_box.get()
+    pub(crate) fn brush_toggle(&self) -> ToggleButton {
+        self.imp().brush_toggle.get()
     }
 
-    pub(crate) fn fixedsize_quickactions_revealer(&self) -> Revealer {
-        self.imp().fixedsize_quickactions_revealer.get()
+    pub(crate) fn shaper_toggle(&self) -> ToggleButton {
+        self.imp().shaper_toggle.get()
     }
 
-    pub(crate) fn undo_button(&self) -> Button {
-        self.imp().undo_button.get()
+    pub(crate) fn typewriter_toggle(&self) -> ToggleButton {
+        self.imp().typewriter_toggle.get()
     }
 
-    pub(crate) fn redo_button(&self) -> Button {
-        self.imp().redo_button.get()
+    pub(crate) fn eraser_toggle(&self) -> ToggleButton {
+        self.imp().eraser_toggle.get()
+    }
+
+    pub(crate) fn selector_toggle(&self) -> ToggleButton {
+        self.imp().selector_toggle.get()
+    }
+
+    pub(crate) fn tools_toggle(&self) -> ToggleButton {
+        self.imp().tools_toggle.get()
+    }
+
+    pub(crate) fn colorpicker(&self) -> ColorPicker {
+        self.imp().colorpicker.get()
     }
 
     pub(crate) fn toast_overlay(&self) -> adw::ToastOverlay {
         self.imp().toast_overlay.get()
     }
+
     pub(crate) fn progressbar(&self) -> ProgressBar {
         self.imp().progressbar.get()
     }
@@ -123,6 +151,9 @@ impl RnoteOverlays {
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+
+        self.setup_pens_toggles(appwindow);
+        self.setup_colorpicker(appwindow);
 
         imp.tabview
             .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
@@ -168,6 +199,104 @@ impl RnoteOverlays {
                 }
 
                 true
+            }),
+        );
+    }
+
+    fn setup_pens_toggles(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
+        imp.brush_toggle.connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
+                if brush_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.to_variant()));
+                }
+            }));
+
+        imp.shaper_toggle.connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
+                if shaper_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.to_variant()));
+                }
+            }));
+
+        imp.typewriter_toggle.connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
+                if typewriter_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.to_variant()));
+                }
+            }));
+
+        imp.eraser_toggle.get().connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
+                if eraser_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.to_variant()));
+                }
+            }));
+
+        imp.selector_toggle.get().connect_toggled(clone!(@weak appwindow => move |selector_toggle| {
+                if selector_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.to_variant()));
+                }
+            }));
+
+        imp.tools_toggle.get().connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
+                if tools_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.to_variant()));
+                }
+            }));
+    }
+
+    fn setup_colorpicker(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
+        imp.colorpicker.connect_notify_local(
+                Some("stroke-color"),
+                clone!(@weak appwindow => move |colorpicker, _paramspec| {
+                    let stroke_style = appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override();
+                    let stroke_color = colorpicker.stroke_color().into_compose_color();
+                    let engine = appwindow.active_tab().canvas().engine();
+                    let engine = &mut *engine.borrow_mut();
+
+                    // We have a global colorpicker, so we apply it to all styles
+                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.rough_options.stroke_color= Some(stroke_color);
+                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
+
+                    match stroke_style {
+                        PenStyle::Typewriter => {
+                            if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                                let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                                    |text_style| {
+                                        text_style.color = stroke_color;
+                                    },
+                                    &mut EngineViewMut {
+                                        tasks_tx: engine.tasks_tx.clone(),
+                                        pens_config: &mut engine.pens_config,
+                                        doc: &mut engine.document,
+                                        store: &mut engine.store,
+                                        camera: &mut engine.camera,
+                                        audioplayer: &mut engine.audioplayer
+                                });
+                                appwindow.handle_widget_flags(widget_flags);
+                            }
+                        }
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools => {}
+                    }
+                }),
+            );
+
+        imp.colorpicker.connect_notify_local(
+            Some("fill-color"),
+            clone!(@weak appwindow => move |colorpicker, _paramspec| {
+                let fill_color = colorpicker.fill_color().into_compose_color();
+                let engine = appwindow.active_tab().canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+                // We have a global colorpicker, so we apply it to all styles
+                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                engine.pens_config.brush_config.solid_options.fill_color= Some(fill_color);
+                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                engine.pens_config.shaper_config.rough_options.fill_color= Some(fill_color);
             }),
         );
     }

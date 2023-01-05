@@ -356,10 +356,11 @@ impl RnoteAppWindow {
                 action_format_borders.change_state(&format.show_borders.to_variant());
                 appwindow.overlays().undo_button().set_sensitive(can_undo);
                 appwindow.overlays().redo_button().set_sensitive(can_redo);
-                appwindow.settings_panel().sync_state_active_tab(&appwindow);
                 appwindow.refresh_titles_active_tab();
             }
 
+            // Update the settings
+            appwindow.settings_panel().sync_state_active_tab(&appwindow);
             appwindow.handle_widget_flags(widget_flags);
         }));
 

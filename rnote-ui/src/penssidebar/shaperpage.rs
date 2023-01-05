@@ -282,16 +282,16 @@ impl ShaperPage {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = buildertype;
 
                     match buildertype {
-                        ShapeBuilderType::Line => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-line-symbolic")),
-                        ShapeBuilderType::Rectangle => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-rectangle-symbolic")),
-                        ShapeBuilderType::Grid => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-grid-symbolic")),
-                        ShapeBuilderType::CoordSystem2D => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-coordsystem2d-symbolic")),
-                        ShapeBuilderType::CoordSystem3D => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-coordsystem3d-symbolic")),
-                        ShapeBuilderType::QuadrantCoordSystem2D => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-quadrantcoordsystem2d-symbolic")),
-                        ShapeBuilderType::Ellipse => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-ellipse-symbolic")),
-                        ShapeBuilderType::FociEllipse => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-fociellipse-symbolic")),
-                        ShapeBuilderType::QuadBez => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-quadbez-symbolic")),
-                        ShapeBuilderType::CubBez => shaperpage.imp().shapebuildertype_line_row.set_icon_name(Some("shapebuilder-cubbez-symbolic")),
+                        ShapeBuilderType::Line => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-line-symbolic")),
+                        ShapeBuilderType::Rectangle => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-rectangle-symbolic")),
+                        ShapeBuilderType::Grid => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-grid-symbolic")),
+                        ShapeBuilderType::CoordSystem2D => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-coordsystem2d-symbolic")),
+                        ShapeBuilderType::CoordSystem3D => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-coordsystem3d-symbolic")),
+                        ShapeBuilderType::QuadrantCoordSystem2D => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-quadrantcoordsystem2d-symbolic")),
+                        ShapeBuilderType::Ellipse => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-ellipse-symbolic")),
+                        ShapeBuilderType::FociEllipse => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-fociellipse-symbolic")),
+                        ShapeBuilderType::QuadBez => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-quadbez-symbolic")),
+                        ShapeBuilderType::CubBez => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-cubbez-symbolic")),
                     }
                 }
             }),

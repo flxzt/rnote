@@ -267,6 +267,8 @@ mod imp {
                         }
                         PositionType::Top => {
                             layout_manager.set_orientation(Orientation::Horizontal);
+                            self.active_colors_box
+                                .set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
                             self.colorpicker_button.set_margin_start(3);
                             self.colorpicker_button.set_margin_end(0);

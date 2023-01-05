@@ -230,7 +230,7 @@ if get_option('cli') == true
         rnote_compose_sources,
         rnote_fileformats_sources,
         rnote_engine_sources,
-        rnote_ui_sources,
+        rnote_cli_sources,
         files(
             meson.project_source_root() + '/Cargo.toml',
             meson.project_source_root() + '/Cargo.lock',

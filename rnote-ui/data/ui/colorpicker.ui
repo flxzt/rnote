@@ -37,7 +37,6 @@
         </style>
         <child>
           <object class="ColorSetter" id="first_colorsetter">
-            <property name="active">true</property>
           </object>
         </child>
       </object>

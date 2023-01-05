@@ -1,4 +1,4 @@
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use gtk4::{
@@ -19,6 +19,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnoteCanvasWrapper {
         pub(crate) permanently_hide_scrollbars: Cell<bool>,
+        pub(crate) appwindow_permanently_hide_scrollbars_bind: RefCell<Option<glib::Binding>>,
 
         pub(crate) canvas_touch_drag_gesture: GestureDrag,
         pub(crate) canvas_drag_empty_area_gesture: GestureDrag,
@@ -85,6 +86,7 @@ mod imp {
 
             Self {
                 permanently_hide_scrollbars: Cell::new(false),
+                appwindow_permanently_hide_scrollbars_bind: RefCell::new(None),
 
                 canvas_touch_drag_gesture,
                 canvas_drag_empty_area_gesture,
@@ -508,6 +510,22 @@ impl RnoteCanvasWrapper {
     /// this function also disconnects and replaces all existing old connections
     pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
         self.imp().canvas.init_reconnect(appwindow);
+
+        if let Some(old) = self
+            .imp()
+            .appwindow_permanently_hide_scrollbars_bind
+            .borrow_mut()
+            .replace(
+                appwindow
+                    .settings_panel()
+                    .general_permanently_hide_scrollbars_switch()
+                    .bind_property("state", self, "permanently-hide-scrollbars")
+                    .sync_create()
+                    .build(),
+            )
+        {
+            old.unbind();
+        }
     }
 
     /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.

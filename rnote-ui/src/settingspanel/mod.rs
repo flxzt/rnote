@@ -422,6 +422,12 @@ impl SettingsPanel {
         self.imp().general_drawing_cursor_picker.clone()
     }
 
+    pub(crate) fn general_permanently_hide_scrollbars_switch(&self) -> Switch {
+        self.imp()
+            .general_permanently_hide_scrollbars_switch
+            .clone()
+    }
+
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         self.refresh_general_ui(appwindow);
         self.fresh_format_ui(appwindow);
@@ -577,18 +583,6 @@ impl SettingsPanel {
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
             .transform_from(|_, val: u32| Some(f64::from(val).to_value()))
-            .sync_create()
-            .bidirectional()
-            .build();
-
-        // permanently hide canvas scrollbars
-        imp.general_permanently_hide_scrollbars_switch
-            .get()
-            .bind_property(
-                "state",
-                &appwindow.active_tab(),
-                "permanently-hide-scrollbars",
-            )
             .sync_create()
             .bidirectional()
             .build();

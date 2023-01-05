@@ -397,7 +397,6 @@ impl RnoteAppWindow {
             match pen_style {
                 PenStyle::Brush => {
                     appwindow.brush_toggle().set_active(true);
-                    appwindow.narrow_brush_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
 
                     let style = canvas.engine().borrow().pens_config.brush_config.style;
@@ -422,7 +421,6 @@ impl RnoteAppWindow {
                 }
                 PenStyle::Shaper => {
                     appwindow.shaper_toggle().set_active(true);
-                    appwindow.narrow_shaper_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
 
                     let style = canvas.engine().borrow().pens_config.shaper_config.style;
@@ -443,7 +441,6 @@ impl RnoteAppWindow {
                 }
                 PenStyle::Typewriter => {
                     appwindow.typewriter_toggle().set_active(true);
-                    appwindow.narrow_typewriter_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
 
                     let text_color = canvas.engine().borrow().pens_config.typewriter_config.text_style.color;
@@ -451,17 +448,14 @@ impl RnoteAppWindow {
                 }
                 PenStyle::Eraser => {
                     appwindow.eraser_toggle().set_active(true);
-                    appwindow.narrow_eraser_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                 }
                 PenStyle::Selector => {
                     appwindow.selector_toggle().set_active(true);
-                    appwindow.narrow_selector_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 }
                 PenStyle::Tools => {
                     appwindow.tools_toggle().set_active(true);
-                    appwindow.narrow_tools_toggle().set_active(true);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                 }
             }

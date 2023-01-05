@@ -608,9 +608,9 @@ mod imp {
                 inst.main_grid().remove(&inst.overlays());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.overlays(), 2, 4, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 4, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_box(), 0, 4, 1, 1);
+                inst.main_grid().attach(&inst.overlays(), 2, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_box(), 0, 3, 1, 1);
                 inst.overlays().quickactions_box().set_halign(Align::End);
                 inst.mainheader()
                     .appmenu()
@@ -681,9 +681,9 @@ mod imp {
                 inst.main_grid().remove(&inst.overlays());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.overlays(), 0, 4, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 4, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_box(), 2, 4, 1, 1);
+                inst.main_grid().attach(&inst.overlays(), 0, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_box(), 2, 3, 1, 1);
                 inst.overlays().quickactions_box().set_halign(Align::Start);
                 inst.mainheader()
                     .appmenu()

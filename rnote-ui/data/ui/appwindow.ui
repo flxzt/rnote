@@ -45,7 +45,7 @@
                 <property name="halign">fill</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">3</property>
+                  <property name="row">2</property>
                   <property name="column-span">3</property>
                 </layout>
                 <style>
@@ -145,7 +145,7 @@
                 <property name="vexpand">true</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">4</property>
+                  <property name="row">3</property>
                 </layout>
               </object>
             </child>
@@ -153,7 +153,7 @@
               <object class="GtkSeparator" id="sidebar_sep">
                 <layout>
                   <property name="column">1</property>
-                  <property name="row">4</property>
+                  <property name="row">3</property>
                 </layout>
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">false</property>
@@ -163,7 +163,7 @@
               <object class="GtkGrid" id="sidebar_box">
                 <layout>
                   <property name="column">2</property>
-                  <property name="row">4</property>
+                  <property name="row">3</property>
                 </layout>
                 <property name="orientation">vertical</property>
                 <property name="hexpand">false</property>

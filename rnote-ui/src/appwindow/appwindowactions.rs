@@ -65,10 +65,11 @@ impl RnoteAppWindow {
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
+        // Couldn't make enums as state together with activation from menu items work, so am using strings instead
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
-            Some(&Layout::static_variant_type()),
-            &Layout::Infinite.to_variant(),
+            Some(&String::static_variant_type()),
+            &String::from("infinite").to_variant(),
         );
         self.add_action(&action_doc_layout);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
@@ -233,11 +234,27 @@ impl RnoteAppWindow {
         // Doc layout
         action_doc_layout.connect_activate(
             clone!(@weak self as appwindow => move |action_doc_layout, target| {
-                let doc_layout = target.unwrap().get::<Layout>().unwrap();
+                let doc_layout = target.unwrap().str().unwrap();
                 action_doc_layout.set_state(&doc_layout.to_variant());
 
-                appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(doc_layout);
-                appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(doc_layout == Layout::FixedSize);
+                match doc_layout {
+                    "fixed-size" => {
+                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::FixedSize);
+                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(true);
+                    },
+                    "continuous-vertical" => {
+                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
+                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(false);
+                    },
+                    "infinite" => {
+                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
+                        appwindow.overlays().fixedsize_quickactions_revealer().set_reveal_child(false);
+                    },
+                    other => {
+                        log::error!("doc-layout action activated with invalid target string: {other}");
+                        unimplemented!()
+                    }
+                }
 
                 appwindow.active_tab().canvas().update_engine_rendering();
             }));
@@ -352,7 +369,7 @@ impl RnoteAppWindow {
                 let can_undo = canvas.engine().borrow().can_undo();
                 let can_redo = canvas.engine().borrow().can_redo();
 
-                action_doc_layout.activate(Some(&doc_layout.to_variant()));
+                action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
                 action_format_borders.change_state(&format.show_borders.to_variant());
                 appwindow.overlays().undo_button().set_sensitive(can_undo);
                 appwindow.overlays().redo_button().set_sensitive(can_redo);
@@ -388,7 +405,7 @@ impl RnoteAppWindow {
             appwindow.overlays().redo_button().set_sensitive(can_redo);
 
             // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
-            action_doc_layout.activate(Some(&doc_layout.to_variant()));
+            action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
             action_pen_sounds.change_state(&pen_sounds.to_variant());
             action_format_borders.change_state(&format.show_borders.to_variant());
             action_pen_style.activate(Some(&pen_style.to_variant()));

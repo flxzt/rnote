@@ -344,40 +344,40 @@ mod imp {
             let inst = self.instance();
 
             self.brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |brush_toggle| {
-            if brush_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
-            }
-        }));
+                if brush_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.to_variant()));
+                }
+            }));
 
             self.shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |shaper_toggle| {
-            if shaper_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
-            }
-        }));
+                if shaper_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.to_variant()));
+                }
+            }));
 
             self.typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |typewriter_toggle| {
-            if typewriter_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
-            }
-        }));
+                if typewriter_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.to_variant()));
+                }
+            }));
 
             self.eraser_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |eraser_toggle| {
-            if eraser_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
-            }
-        }));
+                if eraser_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.to_variant()));
+                }
+            }));
 
             self.selector_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |selector_toggle| {
-            if selector_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
-            }
-        }));
+                if selector_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.to_variant()));
+                }
+            }));
 
             self.tools_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |tools_toggle| {
-            if tools_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
-            }
-        }));
+                if tools_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.to_variant()));
+                }
+            }));
         }
 
         fn setup_colorpicker(&self) {

@@ -5,7 +5,6 @@ use gtk4::{gio, prelude::*};
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::strokes::Stroke;
-use rnote_engine::WidgetFlags;
 
 use super::RnoteCanvas;
 
@@ -14,7 +13,7 @@ impl RnoteCanvas {
         &self,
         bytes: Vec<u8>,
         path: Option<P>,
-    ) -> anyhow::Result<WidgetFlags>
+    ) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
@@ -38,7 +37,8 @@ impl RnoteCanvas {
 
         widget_flags.refresh_ui = true;
 
-        Ok(widget_flags)
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
     }
 
     pub(crate) async fn load_in_vectorimage_bytes(
@@ -46,7 +46,7 @@ impl RnoteCanvas {
         bytes: Vec<u8>,
         // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
-    ) -> anyhow::Result<WidgetFlags> {
+    ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -66,7 +66,8 @@ impl RnoteCanvas {
             .borrow_mut()
             .import_generated_strokes(vec![(Stroke::VectorImage(vectorimage), None)]);
 
-        Ok(widget_flags)
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
     }
 
     /// Target position is in the coordinate space of the doc
@@ -75,7 +76,7 @@ impl RnoteCanvas {
         bytes: Vec<u8>,
         // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
-    ) -> anyhow::Result<WidgetFlags> {
+    ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -93,10 +94,11 @@ impl RnoteCanvas {
             .borrow_mut()
             .import_generated_strokes(vec![(Stroke::BitmapImage(bitmapimage), None)]);
 
-        Ok(widget_flags)
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
     }
 
-    pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<WidgetFlags> {
+    pub(crate) async fn load_in_xopp_bytes(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
         let xopp_import_prefs = self.engine().borrow_mut().import_prefs.xopp_import_prefs;
 
         let engine_snapshot =
@@ -114,7 +116,8 @@ impl RnoteCanvas {
 
         widget_flags.refresh_ui = true;
 
-        Ok(widget_flags)
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
     }
 
     /// Target position is in the coordinate space of the doc
@@ -123,7 +126,7 @@ impl RnoteCanvas {
         bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
         page_range: Option<Range<u32>>,
-    ) -> anyhow::Result<WidgetFlags> {
+    ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -138,7 +141,8 @@ impl RnoteCanvas {
 
         let widget_flags = self.engine().borrow_mut().import_generated_strokes(strokes);
 
-        Ok(widget_flags)
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
     }
 
     /// Target position is in the coordinate space of the doc
@@ -146,7 +150,7 @@ impl RnoteCanvas {
         &self,
         text: String,
         target_pos: Option<na::Vector2<f64>>,
-    ) -> anyhow::Result<WidgetFlags> {
+    ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
@@ -155,7 +159,8 @@ impl RnoteCanvas {
 
         let widget_flags = self.engine().borrow_mut().insert_text(text, pos)?;
 
-        Ok(widget_flags)
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
     }
 
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {

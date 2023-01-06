@@ -2,7 +2,7 @@ use rnote_engine::engine::export::{DocExportFormat, DocExportPrefs};
 use rnote_engine::engine::EngineSnapshot;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
 
@@ -31,18 +31,22 @@ pub(crate) enum Commands {
         #[arg(long)]
         xopp_dpi: Option<f64>,
     },
-    /// Exports the Rnote file and saves it in the output file.{n}
-    /// The export format is recognized from the file extension of the output file.{n}
+    /// Exports the Rnote file(s) and saves it in the desired format.{n}
+    /// When using --output-file, only one input file can be given. The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the same file name is used with the extension changed.{n}
-    /// Currently `.svg`, `.xopp` and `.pdf` are supported.
+    /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
+    /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}
+    /// Usages: {n}
+    /// rnote-cli export --output-file [filename.(svg|xopp|pdf)] [1 file]{n}
+    /// rnote-cli export --output-format [svg|xopp|pdf] [list of files]
     Export {
         /// the rnote save file
         rnote_files: Vec<PathBuf>,
-        /// the export output file. Optional if an output format is specified.
-        #[arg(short = 'o', long)]
+        /// the export output file. Only allows for one input file. Exclusive with output-format.
+        #[arg(short = 'o', long, conflicts_with("output_format"), required(true))]
         output_file: Option<PathBuf>,
-        /// the export output format. Optional if an output file is specified.
-        #[arg(short = 'f', long)]
+        /// the export output format. Exclusive with output-file.
+        #[arg(short = 'f', long, conflicts_with("output_file"), required(true))]
         output_format: Option<String>,
         /// export with background
         #[arg(short = 'b', long)]
@@ -82,21 +86,13 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         } => {
             println!("Exporting..");
 
-            let format = match (&output_file, output_format) {
-                (Some(file), None) => {
-                    get_export_format(file.extension().and_then(|ext| ext.to_str()))
-                }
-                (_, out_format) => get_export_format(out_format.as_deref()),
-            };
-
-            match format {
-                Ok(format) => {
-                    // apply given arguments to export prefs
-                    engine.export_prefs.doc_export_prefs =
-                        create_doc_export_prefs_from_args(format, with_background, with_pattern)?;
-                }
-                Err(err) => return Err(err),
-            }
+            // apply given arguments to export prefs
+            engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
+                output_file.as_deref(),
+                output_format.as_deref(),
+                with_background,
+                with_pattern,
+            )?;
 
             match output_file {
                 Some(ref output) => match rnote_files.get(0) {
@@ -113,7 +109,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 None => {
                     for file in rnote_files {
                         let mut output = file.clone();
-                        output.set_extension("pdf");
+                        output.set_extension(engine.export_prefs.doc_export_prefs.export_format.file_ext());
                         println!("exporting `{}`", file.to_string_lossy());
                         export_to_file(&mut engine, &file, &output).await?
                     }
@@ -154,25 +150,47 @@ pub(crate) async fn import_file(
     Ok(())
 }
 
-fn get_export_format(format: Option<&str>) -> anyhow::Result<DocExportFormat> {
+fn get_export_format(format: &str) -> anyhow::Result<DocExportFormat> {
     match format {
-        Some("svg") => Ok(DocExportFormat::Svg),
-        Some("xopp") => Ok(DocExportFormat::Xopp),
-        Some("pdf") => Ok(DocExportFormat::Pdf),
-        Some(ext) => Err(anyhow::anyhow!(
-            "could not create doc export prefs, unsupported export file extension `{ext}`"
-        )),
-        None => Err(anyhow::anyhow!(
-            "A format or an output file needs to be given to determine the file type"
+        "svg" => Ok(DocExportFormat::Svg),
+        "xopp" => Ok(DocExportFormat::Xopp),
+        "pdf" => Ok(DocExportFormat::Pdf),
+        ext => Err(anyhow::anyhow!(
+            "Could not create doc export prefs, unsupported export file extension `{ext}`"
         )),
     }
 }
 
 pub(crate) fn create_doc_export_prefs_from_args(
-    format: DocExportFormat,
+    output_file: Option<impl AsRef<Path>>,
+    output_format: Option<&str>,
     with_background: Option<bool>,
     with_pattern: Option<bool>,
 ) -> anyhow::Result<DocExportPrefs> {
+    let format = match (output_file, output_format) {
+        (Some(file), None) => match file.as_ref().extension().and_then(|ext| ext.to_str()) {
+            Some(extension) => get_export_format(extension),
+            None => {
+                return Err(anyhow::anyhow!(
+                    "Output file needs to have an extension to determine the file type"
+                ))
+            }
+        },
+        (None, Some(out_format)) => get_export_format(out_format),
+        // unreachable because they are exclusive (conflicts_with)
+        (Some(_), Some(_)) => {
+            return Err(anyhow::anyhow!(
+                "--output-file and --output-format are mutually exclusive."
+            ))
+        }
+        // unreachable because they are required
+        (None, None) => {
+            return Err(anyhow::anyhow!(
+                "--output-file or --output-format is required."
+            ))
+        }
+    }?;
+
     let mut prefs = DocExportPrefs {
         export_format: format,
         ..Default::default()
@@ -190,10 +208,10 @@ pub(crate) fn create_doc_export_prefs_from_args(
 
 pub(crate) async fn export_to_file(
     engine: &mut RnoteEngine,
-    rnote_file: &PathBuf,
-    output_file: &PathBuf,
+    rnote_file: impl AsRef<Path>,
+    output_file: impl AsRef<Path>,
 ) -> anyhow::Result<()> {
-    let Some(export_file_name) = output_file.file_name().map(|s| s.to_string_lossy().to_string()) else {
+    let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
         return Err(anyhow::anyhow!("Failed to get filename from output_file."));
     };
 

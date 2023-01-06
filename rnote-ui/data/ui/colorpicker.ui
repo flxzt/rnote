@@ -4,9 +4,12 @@
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="orientation">vertical</property>
-        <property name="spacing">3</property>
+        <property name="spacing">6</property>
       </object>
     </property>
+    <style>
+      <class name="colorpicker"/>
+    </style>
     <child>
       <object class="GtkBox" id="active_colors_box">
         <property name="spacing">3</property>

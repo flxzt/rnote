@@ -38,8 +38,10 @@
             <property name="width-request">400</property>
             <property name="homogeneous">true</property>
             <style>
-              <class name="osd" />
               <class name="toolbar" />
+              <class name="overlay-toolbar" />
+            </style>
+            <style>
             </style>
             <child>
               <object class="GtkToggleButton" id="brush_toggle">
@@ -103,8 +105,7 @@
             <property name="amount-colorbuttons">8</property>
             <property name="position">top</property>
             <style>
-              <class name="osd" />
-              <class name="toolbar" />
+              <class name="overlay-toolbar" />
             </style>
           </object>
         </child>

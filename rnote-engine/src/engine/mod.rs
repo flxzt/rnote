@@ -737,12 +737,8 @@ impl RnoteEngine {
         self.camera.offset = new_offset;
 
         match self.document.layout() {
-            Layout::FixedSize => {
-                // Does not resize in fixed size mode, use resize_doc_to_fit_strokes() for it.
-            }
-            Layout::ContinuousVertical => {
-                self.document
-                    .resize_doc_continuous_vertical_layout(&self.store);
+            Layout::FixedSize | Layout::ContinuousVertical => {
+                // not resizing in these modes, the size is not dependent on the camera
             }
             Layout::Infinite => {
                 // only expand, don't resize to fit strokes

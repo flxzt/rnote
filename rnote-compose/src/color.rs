@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+/// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
+pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
+
 /// A rgba color
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(default, rename = "color")]

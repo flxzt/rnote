@@ -109,7 +109,13 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 None => {
                     for file in rnote_files {
                         let mut output = file.clone();
-                        output.set_extension(engine.export_prefs.doc_export_prefs.export_format.file_ext());
+                        output.set_extension(
+                            engine
+                                .export_prefs
+                                .doc_export_prefs
+                                .export_format
+                                .file_ext(),
+                        );
                         println!("exporting `{}`", file.to_string_lossy());
                         export_to_file(&mut engine, &file, &output).await?
                     }

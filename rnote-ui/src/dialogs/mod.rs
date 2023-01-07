@@ -138,7 +138,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow) {
                 new_doc(&appwindow)
             },
             "save" => {
-                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
                         appwindow.overlays().start_pulsing_progressbar();
 
@@ -465,7 +465,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnoteAppWindow) {
         }));
 
     dir_button.connect_clicked(
-        clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
+        clone!(@weak dialog, @strong filechooser, @weak appwindow => move |_| {
             dialog.hide();
             filechooser.show();
         }),

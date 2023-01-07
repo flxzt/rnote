@@ -307,10 +307,10 @@ impl RnoteAppWindow {
         // Other things like the format is per-engine, so they are updating the UI
         action_sync_state_active_tab.connect_activate(clone!(
         @weak self as appwindow,
-        @strong action_pen_sounds,
-        @strong action_doc_layout,
-        @strong action_format_borders,
-        @strong action_pen_style,
+        @weak action_pen_sounds,
+        @weak action_doc_layout,
+        @weak action_format_borders,
+        @weak action_pen_style,
         => move |_, _| {
             let canvas = appwindow.active_tab().canvas();
             let mut widget_flags = WidgetFlags::default();
@@ -382,10 +382,10 @@ impl RnoteAppWindow {
         // Refresh UI state from the active tab engine. The engine is considered to be the source of truth
         action_refresh_ui_from_engine.connect_activate(clone!(
             @weak self as appwindow,
-            @strong action_pen_sounds,
-            @strong action_doc_layout,
-            @strong action_format_borders,
-            @strong action_pen_style,
+            @weak action_pen_sounds,
+            @weak action_doc_layout,
+            @weak action_format_borders,
+            @weak action_pen_style,
             => move |_, _| {
             let canvas = appwindow.active_tab().canvas();
 
@@ -659,7 +659,7 @@ impl RnoteAppWindow {
 
         // Save doc
         action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                 if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
                     appwindow.overlays().start_pulsing_progressbar();
 
@@ -885,7 +885,7 @@ impl RnoteAppWindow {
             // TODO: Fix the broken svg import
             /*
             if content_formats.contain_mime_type("image/svg+xml") {
-                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                                 if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
@@ -902,7 +902,7 @@ impl RnoteAppWindow {
             } else
             */
              if content_formats.contain_mime_type("text/uri-list") {
-                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             let file_paths = text.lines().filter_map(|line| {
@@ -945,7 +945,7 @@ impl RnoteAppWindow {
                     "image/bmp",
                 ];
                 if let Some(mime_type) = MIMES.into_iter().find(|&mime| content_formats.contain_mime_type(mime)) {
-                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                    glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
                                 if let Err(e) = appwindow.active_tab().canvas().load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
@@ -960,7 +960,7 @@ impl RnoteAppWindow {
                     }));
                 }
             } else if content_formats.contain_mime_type("text/plain") || content_formats.contain_mime_type("text/plain;charset=utf-8"){
-                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             if let Err(e) = appwindow.active_tab().canvas().load_in_text(text.to_string(), None) {

@@ -548,11 +548,10 @@ impl RnoteEngine {
     /// Returns widget flags to indicate what needs to be updated in the UI.
     /// An example how to use it:
     /// ```rust, ignore
-    /// let main_cx = glib::MainContext::default();
-
-    /// main_cx.spawn_local(clone!(@strong canvas, @strong appwindow => async move {
-    ///            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
-
+    ///
+    /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    ///           let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
+    ///
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
     ///                    let widget_flags = canvas.engine().borrow_mut().handle_engine_task(task);

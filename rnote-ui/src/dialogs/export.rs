@@ -54,7 +54,7 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.active_tab().canvas().save_document_to_file(&file).await {
@@ -127,7 +127,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
         .build();
 
     export_file_button.connect_clicked(
-        clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
+        clone!(@weak dialog, @strong filechooser, @weak appwindow => move |_| {
             dialog.hide();
             filechooser.show();
         }),
@@ -162,7 +162,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
         appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
     }));
 
-    export_format_row.connect_selected_notify(clone!(@weak export_file_label, @weak button_confirm, @weak filechooser, @weak appwindow => move |row| {
+    export_format_row.connect_selected_notify(clone!(@weak export_file_label, @weak button_confirm, @strong filechooser, @weak appwindow => move |row| {
         let selected = row.selected();
         let export_format = DocExportFormat::try_from(selected).unwrap();
         appwindow.active_tab().canvas().engine().borrow_mut().export_prefs.doc_export_prefs.export_format = export_format;
@@ -180,7 +180,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Apply => {
                     if let Some(file) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             let file_title = rnote_engine::utils::default_file_title_for_export(
@@ -369,7 +369,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         .build();
 
     export_dir_button.connect_clicked(
-        clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
+        clone!(@weak dialog, @strong filechooser, @weak appwindow => move |_| {
             dialog.hide();
             filechooser.show();
         }),
@@ -410,7 +410,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
         @weak bitmap_scalefactor_row,
         @weak jpeg_quality_row,
         @weak export_dir_label,
-        @weak filechooser,
+        @strong filechooser,
         @weak button_confirm,
         @weak appwindow => move |row| {
             let selected = row.selected();
@@ -460,7 +460,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Apply => {
                     if let Some(dir) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
@@ -633,7 +633,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         .build();
 
     export_file_button.connect_clicked(
-        clone!(@weak dialog, @weak filechooser, @weak appwindow => move |_| {
+        clone!(@weak dialog, @strong filechooser, @weak appwindow => move |_| {
             dialog.hide();
             filechooser.show();
         }),
@@ -672,7 +672,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
         @weak bitmap_scalefactor_row,
         @weak jpeg_quality_row,
         @weak export_file_label,
-        @weak filechooser,
+        @strong filechooser,
         @weak appwindow => move |row| {
             let selected = row.selected();
             let export_format = SelectionExportFormat::try_from(selected).unwrap();
@@ -709,7 +709,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Apply => {
                     if let Some(file) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.active_tab().canvas().export_selection(&file, None).await {
@@ -847,7 +847,7 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.active_tab().canvas().export_engine_state(&file).await {
@@ -911,7 +911,7 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = appwindow.active_tab().canvas().export_engine_config(&file).await {

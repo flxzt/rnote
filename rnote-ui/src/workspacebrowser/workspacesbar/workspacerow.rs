@@ -104,33 +104,33 @@ mod imp {
 
     impl WorkspaceRow {
         fn connect_entry(&self) {
-            let obj = self.instance();
+            let inst = self.instance();
 
             self.entry.borrow().connect_notify_local(
                 Some("dir"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("icon"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("color"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("name"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
         }

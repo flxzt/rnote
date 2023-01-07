@@ -186,7 +186,7 @@ mod imp {
 
             /*             self.temporary_format.connect_notify_local(
                 Some("dpi"),
-                clone!(@weak obj as settings_panel => move |format, _pspec| {
+                clone!(@weak inst as settings_panel => move |format, _pspec| {
                     settings_panel.format_width_unitentry().set_dpi(format.dpi());
                     settings_panel.format_height_unitentry().set_dpi(format.dpi());
                 }),

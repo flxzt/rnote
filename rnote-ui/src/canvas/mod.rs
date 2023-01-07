@@ -226,7 +226,7 @@ mod imp {
 
             // receive and handling engine tasks
             glib::MainContext::default().spawn_local(
-                clone!(@strong inst as canvas => async move {
+                clone!(@weak inst as canvas => async move {
                     let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
 
                     loop {
@@ -977,7 +977,7 @@ impl RnoteCanvas {
                                 &gettext("Opened file was modified on disk."),
                                 &gettext("Reload"),
                                 clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                                    glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                                         appwindow.overlays().start_pulsing_progressbar();
 
                                         if let Err(e) = canvas.reload_from_disk().await {

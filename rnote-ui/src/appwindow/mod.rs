@@ -267,7 +267,7 @@ mod imp {
             // Save current doc
             if inst.tabs_any_unsaved_changes() {
                 glib::MainContext::default().spawn_local(
-                    clone!(@strong inst as appwindow => async move {
+                    clone!(@weak inst as appwindow => async move {
                         dialogs::dialog_close_window(&inst).await;
                     }),
                 );
@@ -286,18 +286,20 @@ mod imp {
 
     impl RnoteAppWindow {
         fn update_autosave_handler(&self) {
-            let obj = self.instance();
+            let inst = self.instance();
 
-            if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
-                if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
-                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                        if let Err(e) = appwindow.active_tab().canvas().save_document_to_file(&output_file).await {
-                            appwindow.active_tab().canvas().set_output_file(None);
+            if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
+                clone!(@weak inst as appwindow => @default-return glib::source::Continue(false), move || {
+                    if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            if let Err(e) = appwindow.active_tab().canvas().save_document_to_file(&output_file).await {
+                                appwindow.active_tab().canvas().set_output_file(None);
 
-                            log::error!("saving document failed with error `{e:?}`");
-                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                                log::error!("saving document failed with error `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                            }
                         }
-                    }));
+                    ));
                 }
 
                 glib::source::Continue(true)
@@ -789,7 +791,7 @@ impl RnoteAppWindow {
         // Periodically save engine config
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@strong self as appwindow => @default-return glib::source::Continue(false), move || {
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
                     if let Err(e) = appwindow.save_engine_config() {
                         log::error!("saving engine config in periodic task failed with Err: {e:?}");
                     }
@@ -1046,7 +1048,7 @@ impl RnoteAppWindow {
         file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        glib::MainContext::default().spawn_local(clone!(@strong self as appwindow => async move {
+        glib::MainContext::default().spawn_local(clone!(@weak self as appwindow => async move {
             appwindow.overlays().start_pulsing_progressbar();
 
             match crate::utils::FileType::lookup_file_type(&file) {

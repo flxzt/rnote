@@ -36,7 +36,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow, input_file: gio:
                     open_overwrite(&appwindow);
                 }
                 "save" => {
-                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                    glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                         if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
                             appwindow.overlays().start_pulsing_progressbar();
 
@@ -307,7 +307,7 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 
                     let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
 
-                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
+                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak appwindow => async move {
                         appwindow.overlays().start_pulsing_progressbar();
 
                         let result = input_file.load_bytes_future().await;
@@ -368,7 +368,7 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow, input_file:
                 ResponseType::Apply => {
                     dialog.close();
 
-                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
+                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak appwindow => async move {
                         appwindow.overlays().start_pulsing_progressbar();
 
                         let result = input_file.load_bytes_future().await;

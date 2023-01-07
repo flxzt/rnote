@@ -30,7 +30,7 @@ pub(crate) fn dialog_open_overwrite(
         clone!(@weak canvas, @weak appwindow => move |_dialog_open_input_file, response| {
             let input_file = input_file.clone();
             let open_overwrite = |appwindow: &RnoteAppWindow, canvas: &RnoteCanvas| {
-                if let Err(e) = appwindow.load_in_file(input_file, None, &canvas) {
+                if let Err(e) = appwindow.load_in_file(input_file, None, canvas) {
                     log::error!("failed to load in input file, {e:?}");
                     appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
                 }

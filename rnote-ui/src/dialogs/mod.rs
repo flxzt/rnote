@@ -112,7 +112,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
     };
 
     if !canvas.unsaved_changes() {
-        new_doc(appwindow, &canvas);
+        new_doc(appwindow, canvas);
         return;
     }
 

@@ -55,8 +55,12 @@
     background-size: 18px 18px;
     background-position: 0px 0px, 9px 9px;
     border: 1px solid @borders;
-    border-radius: 32px;
+    border-radius: 12px;
     transition: all 0.15s ease-out;
+}
+
+.colorpad > image {
+    -gtk-icon-size: 14px;
 }
 
 .colorpad:hover {
@@ -70,7 +74,7 @@
 .colorpad:checked {
     filter: brightness(100%);
     border-color: alpha(@accent_color, 1.0);
-    box-shadow: 0px 0px 2px alpha(@window_fg_color, 0.6);
+    box-shadow: 0px 0px 6px @accent_bg_color;
 }
 
 .colorsetter {
@@ -99,8 +103,9 @@
 
 .colorsetter:checked {
     filter: brightness(100%);
-    border-color: alpha(@accent_color, 1.0);
-    box-shadow: 0px 0px 2px alpha(@window_fg_color, 0.6);
+    box-shadow:
+        0px 0px 2px alpha(@window_fg_color, 0.6),
+        inset 0px -3px 0px 0px @colorsetter_fg_color;
 }
 
 .quickaction-button {

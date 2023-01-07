@@ -64,18 +64,53 @@ impl EraserPage {
         glib::Object::new(&[])
     }
 
+    pub(crate) fn width_spinbutton(&self) -> SpinButton {
+        self.imp().width_spinbutton.get()
+    }
+
+    pub(crate) fn eraser_style(&self) -> Option<EraserStyle> {
+        if self
+            .imp()
+            .eraserstyle_trash_colliding_strokes_toggle
+            .is_active()
+        {
+            Some(EraserStyle::TrashCollidingStrokes)
+        } else if self
+            .imp()
+            .eraserstyle_split_colliding_strokes_toggle
+            .is_active()
+        {
+            Some(EraserStyle::SplitCollidingStrokes)
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn set_eraser_style(&self, style: EraserStyle) {
+        match style {
+            EraserStyle::TrashCollidingStrokes => self
+                .imp()
+                .eraserstyle_trash_colliding_strokes_toggle
+                .set_active(true),
+            EraserStyle::SplitCollidingStrokes => self
+                .imp()
+                .eraserstyle_split_colliding_strokes_toggle
+                .set_active(true),
+        }
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
         imp.eraserstyle_trash_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
             if eraserstyle_trash_colliding_strokes_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::TrashCollidingStrokes;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::TrashCollidingStrokes;
             }
         }));
 
         imp.eraserstyle_split_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_split_colliding_strokes_toggle| {
             if eraserstyle_split_colliding_strokes_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::SplitCollidingStrokes;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.style = EraserStyle::SplitCollidingStrokes;
             }
         }));
 
@@ -86,7 +121,7 @@ impl EraserPage {
 
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().pens_config.eraser_config.width = width_spinbutton.value();
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.width = width_spinbutton.value();
             }),
         );
     }
@@ -95,6 +130,7 @@ impl EraserPage {
         let imp = self.imp();
 
         let eraser_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()
@@ -103,13 +139,7 @@ impl EraserPage {
             .clone();
 
         imp.width_spinbutton.set_value(eraser_config.width);
-        match eraser_config.style {
-            EraserStyle::TrashCollidingStrokes => imp
-                .eraserstyle_trash_colliding_strokes_toggle
-                .set_active(true),
-            EraserStyle::SplitCollidingStrokes => imp
-                .eraserstyle_split_colliding_strokes_toggle
-                .set_active(true),
-        }
+
+        self.set_eraser_style(eraser_config.style);
     }
 }

@@ -186,7 +186,7 @@ mod imp {
 
             /*             self.temporary_format.connect_notify_local(
                 Some("dpi"),
-                clone!(@weak obj as settings_panel => move |format, _pspec| {
+                clone!(@weak inst as settings_panel => move |format, _pspec| {
                     settings_panel.format_width_unitentry().set_dpi(format.dpi());
                     settings_panel.format_height_unitentry().set_dpi(format.dpi());
                 }),
@@ -414,42 +414,44 @@ impl SettingsPanel {
         self.imp().settings_scroller.clone()
     }
 
-    pub(crate) fn general_regular_cursor_picker_image(&self) -> Image {
-        self.imp().general_regular_cursor_picker_image.clone()
+    pub(crate) fn general_regular_cursor_picker(&self) -> IconPicker {
+        self.imp().general_regular_cursor_picker.clone()
     }
 
-    pub(crate) fn general_drawing_cursor_picker_image(&self) -> Image {
-        self.imp().general_drawing_cursor_picker_image.clone()
+    pub(crate) fn general_drawing_cursor_picker(&self) -> IconPicker {
+        self.imp().general_drawing_cursor_picker.clone()
+    }
+
+    pub(crate) fn general_permanently_hide_scrollbars_switch(&self) -> Switch {
+        self.imp()
+            .general_permanently_hide_scrollbars_switch
+            .clone()
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        *self.imp().temporary_format.borrow_mut() =
-            appwindow.canvas().engine().borrow().document.format.clone();
-
-        self.refresh_general(appwindow);
-        self.fresh_format(appwindow);
-        self.refresh_background(appwindow);
-        self.refresh_shortcuts(appwindow);
+        self.refresh_general_ui(appwindow);
+        self.refresh_format_ui(appwindow);
+        self.refresh_background_ui(appwindow);
+        self.refresh_shortcuts_ui(appwindow);
     }
 
-    fn refresh_general(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_general_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+        let canvas = appwindow.active_tab().canvas();
 
-        let format_border_color = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format
-            .border_color;
+        let format_border_color = canvas.engine().borrow().document.format.border_color;
 
         imp.general_format_border_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
-    fn fresh_format(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_format_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let format = appwindow.canvas().engine().borrow().document.format.clone();
+        let canvas = appwindow.active_tab().canvas();
+
+        let format = canvas.engine().borrow().document.format;
+
+        *self.imp().temporary_format.borrow_mut() = format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
@@ -463,16 +465,12 @@ impl SettingsPanel {
         imp.format_height_unitentry.set_value(format.height);
     }
 
-    fn refresh_background(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_background_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let background = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .background
-            .clone();
-        let format = appwindow.canvas().engine().borrow().document.format.clone();
+        let canvas = appwindow.active_tab().canvas();
+
+        let background = canvas.engine().borrow().document.background;
+        let format = canvas.engine().borrow().document.format;
 
         imp.background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -495,14 +493,11 @@ impl SettingsPanel {
             .set_value(background.pattern_size[1]);
     }
 
-    fn refresh_shortcuts(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_shortcuts_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let current_shortcuts = appwindow
-            .canvas()
-            .engine()
-            .borrow()
-            .penholder
-            .list_current_shortcuts();
+        let canvas = appwindow.active_tab().canvas();
+
+        let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
 
         current_shortcuts
             .into_iter()
@@ -522,19 +517,58 @@ impl SettingsPanel {
             });
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn sync_state_active_tab(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let temporary_format = imp.temporary_format.clone();
-        let penshortcut_stylus_button_primary_row = imp.penshortcut_stylus_button_primary_row.get();
-        let penshortcut_stylus_button_secondary_row =
-            imp.penshortcut_stylus_button_secondary_row.get();
-        let penshortcut_mouse_button_secondary_row =
-            imp.penshortcut_mouse_button_secondary_row.get();
+        let canvas = appwindow.active_tab().canvas();
+
+        // update the UI from the engine
+        self.refresh_general_ui(appwindow);
+        self.refresh_format_ui(appwindow);
+        self.refresh_background_ui(appwindow);
+
+        // update the engine from UI
+        canvas.engine().borrow_mut().penholder.clear_shortcuts();
+        canvas
+            .engine()
+            .borrow_mut()
+            .penholder
+            .register_new_shortcut(
+                ShortcutKey::MouseSecondaryButton,
+                imp.penshortcut_mouse_button_secondary_row.action(),
+            );
+        canvas
+            .engine()
+            .borrow_mut()
+            .penholder
+            .register_new_shortcut(
+                ShortcutKey::StylusPrimaryButton,
+                imp.penshortcut_stylus_button_primary_row.action(),
+            );
+        canvas
+            .engine()
+            .borrow_mut()
+            .penholder
+            .register_new_shortcut(
+                ShortcutKey::StylusSecondaryButton,
+                imp.penshortcut_stylus_button_secondary_row.action(),
+            );
+    }
+
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+        self.setup_general(appwindow);
+        self.setup_format(appwindow);
+        self.setup_background(appwindow);
+        self.setup_shortcuts(appwindow);
+    }
+
+    fn setup_general(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
 
         // autosave enable switch
         imp.general_autosave_enable_switch
             .bind_property("state", appwindow, "autosave")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
 
         imp.general_autosave_enable_switch
@@ -544,7 +578,7 @@ impl SettingsPanel {
                 &*imp.general_autosave_interval_secs_row,
                 "sensitive",
             )
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+            .sync_create()
             .build();
 
         imp.general_autosave_interval_secs_spinbutton
@@ -552,51 +586,42 @@ impl SettingsPanel {
             .bind_property("value", appwindow, "autosave-interval-secs")
             .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
             .transform_from(|_, val: u32| Some(f64::from(val).to_value()))
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
-
-        // permanently hide canvas scrollbars
-        imp.general_permanently_hide_scrollbars_switch
-            .get()
-            .bind_property(
-                "state",
-                &appwindow.canvas_wrapper(),
-                "permanently-hide-scrollbars",
-            )
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
 
         // Regular cursor picker
         imp.general_regular_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        imp.general_regular_cursor_picker.connect_local(
-            "icon-picked",
-            false,
-            clone!(@weak appwindow => @default-return None, move |args| {
-                let picked = args[1].get::<String>().unwrap();
-
-                appwindow.canvas().set_regular_cursor(picked);
-
-                None
-            }),
-        );
+        imp.general_regular_cursor_picker
+            .bind_property(
+                "picked",
+                &*imp.general_regular_cursor_picker_image,
+                "icon-name",
+            )
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
 
         // Drawing cursor picker
         imp.general_drawing_cursor_picker
             .set_list(StringList::new(globals::CURSORS_LIST));
 
-        imp.general_drawing_cursor_picker.connect_local(
-            "icon-picked",
-            false,
-            clone!(@weak appwindow => @default-return None, move |args| {
-                let picked = args[1].get::<String>().unwrap();
+        imp.general_drawing_cursor_picker
+            .bind_property(
+                "picked",
+                &*imp.general_drawing_cursor_picker_image,
+                "icon-name",
+            )
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
+    }
 
-                appwindow.canvas().set_drawing_cursor(picked);
-
-                None
-            }),
-        );
+    fn setup_format(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        let temporary_format = imp.temporary_format.clone();
 
         // revert format
         imp.format_revert_button.get().connect_clicked(
@@ -608,26 +633,44 @@ impl SettingsPanel {
         // Apply format
         imp.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
-                let temporary_format = temporary_format.borrow().clone();
-                appwindow.canvas().engine().borrow_mut().document.format = temporary_format;
+                let temporary_format = *temporary_format.borrow();
+                let canvas = appwindow.active_tab().canvas();
 
-                appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.canvas().update_engine_rendering();
+                canvas.engine().borrow_mut().document.format = temporary_format;
+                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                canvas.update_engine_rendering();
             }),
         );
 
-        // Background
-        imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+        imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
+            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.canvas().regenerate_background_pattern();
-            appwindow.canvas().update_engine_rendering();
+            canvas.engine().borrow_mut().document.format.border_color = format_border_color;
+
+            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
+            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
+
+            canvas.update_engine_rendering();
+        }));
+    }
+
+    fn setup_background(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
+        imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
+            let canvas = appwindow.active_tab().canvas();
+
+            canvas.engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         }));
 
         imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_background_patterns_row| {
             let pattern = settings_panel.background_pattern();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.canvas().engine().borrow_mut().document.background.pattern = pattern;
+            canvas.engine().borrow_mut().document.background.pattern = pattern;
 
             match pattern {
                 PatternStyle::None => {
@@ -648,38 +691,30 @@ impl SettingsPanel {
                 },
             }
 
-            appwindow.canvas().regenerate_background_pattern();
-            appwindow.canvas().update_engine_rendering();
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         }));
 
         imp.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.canvas().regenerate_background_pattern();
-            appwindow.canvas().update_engine_rendering();
-        }));
-
-        imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
-            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
-            appwindow.canvas().engine().borrow_mut().document.format.border_color = format_border_color;
-
-            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
-            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-
-            appwindow.canvas().update_engine_rendering();
+            canvas.engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         }));
 
         imp.background_pattern_width_unitentry.get().connect_local(
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
+                    let canvas = appwindow.active_tab().canvas();
+
+                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
                     pattern_size[0] = settings_panel.imp().background_pattern_width_unitentry.value_in_px();
+                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
+                    canvas.regenerate_background_pattern();
+                    canvas.update_engine_rendering();
 
-                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
-
-                    appwindow.canvas().regenerate_background_pattern();
-                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );
@@ -688,23 +723,32 @@ impl SettingsPanel {
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
+                    let canvas = appwindow.active_tab().canvas();
+
+                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
                     pattern_size[1] = settings_panel.imp().background_pattern_height_unitentry.value_in_px();
+                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
+                    canvas.regenerate_background_pattern();
+                    canvas.update_engine_rendering();
 
-                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
-
-                    appwindow.canvas().regenerate_background_pattern();
-                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );
+    }
 
-        // Shortcuts
+    fn setup_shortcuts(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        let penshortcut_stylus_button_primary_row = imp.penshortcut_stylus_button_primary_row.get();
+        let penshortcut_stylus_button_secondary_row =
+            imp.penshortcut_stylus_button_secondary_row.get();
+        let penshortcut_mouse_button_secondary_row =
+            imp.penshortcut_mouse_button_secondary_row.get();
+
         imp.penshortcut_stylus_button_primary_row
             .set_key(Some(ShortcutKey::StylusPrimaryButton));
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
@@ -712,7 +756,7 @@ impl SettingsPanel {
             .set_key(Some(ShortcutKey::StylusSecondaryButton));
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
@@ -720,17 +764,17 @@ impl SettingsPanel {
             .set_key(Some(ShortcutKey::StylusSecondaryButton));
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
     }
 
     fn revert_format(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+        let canvas = appwindow.active_tab().canvas();
 
-        *imp.temporary_format.borrow_mut() =
-            appwindow.canvas().engine().borrow().document.format.clone();
-        let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
+        *imp.temporary_format.borrow_mut() = canvas.engine().borrow().document.format;
+        let revert_format = canvas.engine().borrow().document.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
 

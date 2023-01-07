@@ -6,6 +6,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/overlays.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvaswrapper.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
@@ -35,6 +36,7 @@
         <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/flap-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/tab-new-filled-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-in-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-out-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
@@ -50,6 +52,7 @@
         <file compressed="true">icons/scalable/actions/clipboard-copy-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/clipboard-paste-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/dot-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/emojichooser-symbolic.svg</file>

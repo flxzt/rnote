@@ -1,14 +1,13 @@
-use crate::{appwindow::RnoteAppWindow, ColorPicker};
+use crate::appwindow::RnoteAppWindow;
 use gtk4::pango;
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-    EmojiChooser, FontChooserLevel, FontChooserWidget, Image, MenuButton, Popover, SpinButton,
-    ToggleButton,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, EmojiChooser,
+    FontChooserLevel, FontChooserWidget, Image, MenuButton, Popover, SpinButton, ToggleButton,
 };
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::Pen;
+use rnote_engine::strokes::textstroke::TextStyle;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
-use rnote_engine::{strokes::textstroke::TextStyle, utils::GdkRGBAHelpers};
 
 mod imp {
     use super::*;
@@ -42,8 +41,6 @@ mod imp {
         pub(crate) text_underline_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) text_strikethrough_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
         pub(crate) text_align_start_togglebutton: TemplateChild<ToggleButton>,
         #[template_child]
@@ -103,8 +100,38 @@ impl TypewriterPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn colorpicker(&self) -> ColorPicker {
-        self.imp().colorpicker.get()
+    #[allow(unused)]
+    pub(crate) fn alignment(&self) -> Option<TextAlignment> {
+        if self.imp().text_align_start_togglebutton.is_active() {
+            Some(TextAlignment::Start)
+        } else if self.imp().text_align_center_togglebutton.is_active() {
+            Some(TextAlignment::Center)
+        } else if self.imp().text_align_end_togglebutton.is_active() {
+            Some(TextAlignment::End)
+        } else if self.imp().text_align_fill_togglebutton.is_active() {
+            Some(TextAlignment::Fill)
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn set_alignment(&self, alignment: TextAlignment) {
+        match alignment {
+            TextAlignment::Start => self.imp().text_align_start_togglebutton.set_active(true),
+            TextAlignment::Center => self.imp().text_align_center_togglebutton.set_active(true),
+            TextAlignment::End => self.imp().text_align_end_togglebutton.set_active(true),
+            TextAlignment::Fill => self.imp().text_align_fill_togglebutton.set_active(true),
+        }
+    }
+
+    pub(crate) fn text_style(&self) -> TextStyle {
+        let mut text_style = TextStyle::default();
+        if let Some(font_desc) = self.imp().fontchooser.font_desc() {
+            text_style.load_pango_font_desc(font_desc);
+        }
+        text_style.font_size = self.imp().font_size_spinbutton.value();
+
+        text_style
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
@@ -134,27 +161,26 @@ impl TypewriterPage {
         // or we activate the signal manually elsewhere in the code
         imp.fontchooser.connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
             if let Some(font_family) = fontchooser.font_family().map(|font_family| font_family.name().to_string()) {
-                {
-                    let engine = appwindow.canvas().engine();
-                    let engine = &mut *engine.borrow_mut();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
+                let engine = &mut *engine.borrow_mut();
 
-                    engine.pens_config.typewriter_config.text_style.font_family = font_family.clone();
+                engine.pens_config.typewriter_config.text_style.font_family = font_family.clone();
 
-                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                            |text_style| {
-                                text_style.font_family = font_family;
-                            },
-                            &mut EngineViewMut {
-                                tasks_tx: engine.tasks_tx.clone(),
-                                pens_config: &mut engine.pens_config,
-                                doc: &mut engine.document,
-                                store: &mut engine.store,
-                                camera: &mut engine.camera,
-                                audioplayer: &mut engine.audioplayer
-                        });
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
+                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.font_family = font_family;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx.clone(),
+                            pens_config: &mut engine.pens_config,
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
 
                 fontchooser_popover.popdown();
@@ -171,28 +197,26 @@ impl TypewriterPage {
         imp.font_size_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |font_size_spinbutton| {
                 let font_size = font_size_spinbutton.value();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
+                let engine = &mut *engine.borrow_mut();
 
-                {
-                    let engine = appwindow.canvas().engine();
-                    let engine = &mut *engine.borrow_mut();
+                engine.pens_config.typewriter_config.text_style.font_size = font_size;
 
-                    engine.pens_config.typewriter_config.text_style.font_size = font_size;
-
-                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                            |text_style| {
-                                text_style.font_size = font_size;
-                            },
-                            &mut EngineViewMut {
-                                tasks_tx: engine.tasks_tx.clone(),
-                                pens_config: &mut engine.pens_config,
-                                doc: &mut engine.document,
-                                store: &mut engine.store,
-                                camera: &mut engine.camera,
-                                audioplayer: &mut engine.audioplayer
-                        });
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
+                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.font_size = font_size;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx.clone(),
+                            pens_config: &mut engine.pens_config,
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
         );
@@ -212,44 +236,14 @@ impl TypewriterPage {
 
                 Some(font_desc.to_value())
             })
-            .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
+            .sync_create()
             .build();
-
-        // Color
-        imp.colorpicker.connect_notify_local(
-            Some("current-color"),
-            clone!(@weak appwindow => move |colorpicker, _paramspec| {
-                let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
-
-                {
-                    let engine = appwindow.canvas().engine();
-                    let engine = &mut *engine.borrow_mut();
-
-                    engine.pens_config.typewriter_config.text_style.color = color;
-
-                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                            |text_style| {
-                                text_style.color = color;
-                            },
-                            &mut EngineViewMut {
-                                tasks_tx: engine.tasks_tx.clone(),
-                                pens_config: &mut engine.pens_config,
-                                doc: &mut engine.document,
-                                store: &mut engine.store,
-                                camera: &mut engine.camera,
-                                audioplayer: &mut engine.audioplayer
-                        });
-                        appwindow.handle_widget_flags(widget_flags);
-                    }
-                }
-            }),
-        );
 
         // Emojis
         imp.emojichooser.connect_emoji_picked(
             clone!(@weak appwindow => move |_emojichooser, emoji_str| {
-                let engine = appwindow.canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -264,7 +258,7 @@ impl TypewriterPage {
                             camera: &mut engine.camera,
                             audioplayer: &mut engine.audioplayer
                     });
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
 
             }),
@@ -273,7 +267,8 @@ impl TypewriterPage {
         // reset
         imp.text_reset_button.connect_clicked(
             clone!(@weak appwindow => move |_text_reset_button| {
-                let engine = appwindow.canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -286,7 +281,7 @@ impl TypewriterPage {
                             camera: &mut engine.camera,
                             audioplayer: &mut engine.audioplayer
                     });
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
         );
@@ -294,7 +289,8 @@ impl TypewriterPage {
         // Bold
         imp.text_bold_button
             .connect_clicked(clone!(@weak appwindow => move |_text_bold_button| {
-                let engine = appwindow.canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -308,14 +304,15 @@ impl TypewriterPage {
                             camera: &mut engine.camera,
                             audioplayer: &mut engine.audioplayer
                     });
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }));
 
         // Italic
         imp.text_italic_button.connect_clicked(
             clone!(@weak appwindow => move |_text_italic_button| {
-                let engine = appwindow.canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -329,7 +326,7 @@ impl TypewriterPage {
                             camera: &mut engine.camera,
                             audioplayer: &mut engine.audioplayer
                     });
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
         );
@@ -337,7 +334,8 @@ impl TypewriterPage {
         // Underline
         imp.text_underline_button.connect_clicked(
             clone!(@weak appwindow => move |_text_underline_button| {
-                let engine = appwindow.canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -351,7 +349,7 @@ impl TypewriterPage {
                             camera: &mut engine.camera,
                             audioplayer: &mut engine.audioplayer
                     });
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
         );
@@ -359,7 +357,8 @@ impl TypewriterPage {
         // Strikethrough
         imp.text_strikethrough_button.connect_clicked(
             clone!(@weak appwindow => move |_text_strikethrough_button| {
-                let engine = appwindow.canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -373,7 +372,7 @@ impl TypewriterPage {
                             camera: &mut engine.camera,
                             audioplayer: &mut engine.audioplayer
                     });
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
         );
@@ -382,26 +381,25 @@ impl TypewriterPage {
         imp.text_align_start_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_start_togglebutton| {
                 if text_align_start_togglebutton.is_active() {
-                    {
-                        let engine = appwindow.canvas().engine();
-                        let engine = &mut *engine.borrow_mut();
-                        engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Start;
+                    let canvas = appwindow.active_tab().canvas();
+                    let engine = canvas.engine();
+                    let engine = &mut *engine.borrow_mut();
+                    engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Start;
 
-                        if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                            let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                |text_style| {
-                                    text_style.alignment = TextAlignment::Start;
-                                },
-                                &mut EngineViewMut {
-                                    tasks_tx: engine.tasks_tx.clone(),
-                                    pens_config: &mut engine.pens_config,
-                                    doc: &mut engine.document,
-                                    store: &mut engine.store,
-                                    camera: &mut engine.camera,
-                                    audioplayer: &mut engine.audioplayer
-                            });
-                            appwindow.handle_widget_flags(widget_flags);
-                        }
+                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::Start;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx.clone(),
+                                pens_config: &mut engine.pens_config,
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                 }
 
@@ -411,26 +409,25 @@ impl TypewriterPage {
         imp.text_align_center_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_center_togglebutton| {
                 if text_align_center_togglebutton.is_active() {
-                    {
-                        let engine = appwindow.canvas().engine();
-                        let engine = &mut *engine.borrow_mut();
-                        engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Center;
+                    let canvas = appwindow.active_tab().canvas();
+                    let engine = canvas.engine();
+                    let engine = &mut *engine.borrow_mut();
+                    engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Center;
 
-                        if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                            let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                |text_style| {
-                                    text_style.alignment = TextAlignment::Center;
-                                },
-                                &mut EngineViewMut {
-                                    tasks_tx: engine.tasks_tx.clone(),
-                                    pens_config: &mut engine.pens_config,
-                                    doc: &mut engine.document,
-                                    store: &mut engine.store,
-                                    camera: &mut engine.camera,
-                                    audioplayer: &mut engine.audioplayer
-                            });
-                            appwindow.handle_widget_flags(widget_flags);
-                        }
+                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::Center;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx.clone(),
+                                pens_config: &mut engine.pens_config,
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                 }
             }),
@@ -439,26 +436,25 @@ impl TypewriterPage {
         imp.text_align_end_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_end_togglebutton| {
                 if text_align_end_togglebutton.is_active() {
-                    {
-                        let engine = appwindow.canvas().engine();
-                        let engine = &mut *engine.borrow_mut();
-                        engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::End;
+                    let canvas = appwindow.active_tab().canvas();
+                    let engine = canvas.engine();
+                    let engine = &mut *engine.borrow_mut();
+                    engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::End;
 
-                        if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                            let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                |text_style| {
-                                    text_style.alignment = TextAlignment::End;
-                                },
-                                &mut EngineViewMut {
-                                    tasks_tx: engine.tasks_tx.clone(),
-                                    pens_config: &mut engine.pens_config,
-                                    doc: &mut engine.document,
-                                    store: &mut engine.store,
-                                    camera: &mut engine.camera,
-                                    audioplayer: &mut engine.audioplayer
-                            });
-                            appwindow.handle_widget_flags(widget_flags);
-                        }
+                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::End;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx.clone(),
+                                pens_config: &mut engine.pens_config,
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                 }
             }),
@@ -467,26 +463,25 @@ impl TypewriterPage {
         imp.text_align_fill_togglebutton.connect_active_notify(
             clone!(@weak appwindow => move |text_align_fill_togglebutton| {
                 if text_align_fill_togglebutton.is_active() {
-                    {
-                        let engine = appwindow.canvas().engine();
-                        let engine = &mut *engine.borrow_mut();
-                        engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Fill;
+                    let canvas = appwindow.active_tab().canvas();
+                    let engine = canvas.engine();
+                    let engine = &mut *engine.borrow_mut();
+                    engine.pens_config.typewriter_config.text_style.alignment = TextAlignment::Fill;
 
-                        if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                            let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                |text_style| {
-                                    text_style.alignment = TextAlignment::Fill;
-                                },
-                                &mut EngineViewMut {
-                                    tasks_tx: engine.tasks_tx.clone(),
-                                    pens_config: &mut engine.pens_config,
-                                    doc: &mut engine.document,
-                                    store: &mut engine.store,
-                                    camera: &mut engine.camera,
-                                    audioplayer: &mut engine.audioplayer
-                            });
-                            appwindow.handle_widget_flags(widget_flags);
-                        }
+                    if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                        let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::Fill;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx.clone(),
+                                pens_config: &mut engine.pens_config,
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                 }
             }),
@@ -497,6 +492,7 @@ impl TypewriterPage {
         let imp = self.imp();
 
         let typewriter_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()
@@ -508,16 +504,7 @@ impl TypewriterPage {
             .set_font_desc(&typewriter_config.text_style.extract_pango_font_desc());
         imp.font_size_spinbutton
             .set_value(typewriter_config.text_style.font_size);
-        imp.colorpicker
-            .set_current_color(gdk::RGBA::from_compose_color(
-                typewriter_config.text_style.color,
-            ));
 
-        match typewriter_config.text_style.alignment {
-            TextAlignment::Start => imp.text_align_start_togglebutton.set_active(true),
-            TextAlignment::Center => imp.text_align_center_togglebutton.set_active(true),
-            TextAlignment::End => imp.text_align_end_togglebutton.set_active(true),
-            TextAlignment::Fill => imp.text_align_fill_togglebutton.set_active(true),
-        }
+        self.set_alignment(typewriter_config.text_style.alignment);
     }
 }

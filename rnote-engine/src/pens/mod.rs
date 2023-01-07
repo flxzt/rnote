@@ -154,6 +154,7 @@ impl DrawOnDocBehaviour for Pen {
     Copy,
     Debug,
     glib::Enum,
+    glib::Variant,
     Serialize,
     Deserialize,
     PartialOrd,
@@ -163,11 +164,12 @@ impl DrawOnDocBehaviour for Pen {
 )]
 #[repr(u32)]
 #[enum_type(name = "PenStyle")]
+#[variant_enum(enum)]
 #[serde(rename = "pen_style")]
 pub enum PenStyle {
     #[enum_value(name = "Brush", nick = "brush")]
     #[serde(rename = "brush")]
-    Brush = 0,
+    Brush,
     #[enum_value(name = "Shaper", nick = "shaper")]
     #[serde(rename = "shaper")]
     Shaper,

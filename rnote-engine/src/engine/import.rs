@@ -217,7 +217,7 @@ impl RnoteEngine {
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
         let pdf_import_prefs = self.import_prefs.pdf_import_prefs;
 
-        let format = self.document.format.clone();
+        let format = self.document.format;
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>> {
@@ -324,6 +324,8 @@ impl RnoteEngine {
                 },
             ));
         }
+
+        widget_flags.redraw = true;
 
         Ok(widget_flags)
     }

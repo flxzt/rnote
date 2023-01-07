@@ -113,7 +113,7 @@ impl Default for EngineConfig {
         let engine = RnoteEngine::default();
 
         Self {
-            document: serde_json::to_value(&engine.document).unwrap(),
+            document: serde_json::to_value(engine.document).unwrap(),
             pens_config: serde_json::to_value(&engine.pens_config).unwrap(),
             penholder: serde_json::to_value(&engine.penholder).unwrap(),
 
@@ -331,11 +331,9 @@ pub struct RnoteEngine {
     pub audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub visual_debug: bool,
+    /// the task sender. Must not be modified, only cloned. To install a new engine task handler, regenerate the channel through `regenerate_channel()`
     #[serde(skip)]
     pub tasks_tx: EngineTaskSender,
-    /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
-    #[serde(skip)]
-    pub tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
     pub background_tile_image: Option<render::Image>,
@@ -345,7 +343,7 @@ pub struct RnoteEngine {
 
 impl Default for RnoteEngine {
     fn default() -> Self {
-        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+        let (tasks_tx, _tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
         Self {
             document: Document::default(),
@@ -361,7 +359,6 @@ impl Default for RnoteEngine {
             audioplayer: None,
             visual_debug: false,
             tasks_tx,
-            tasks_rx: Some(tasks_rx),
             background_tile_image: None,
             background_rendernodes: Vec::default(),
         }
@@ -371,6 +368,15 @@ impl Default for RnoteEngine {
 impl RnoteEngine {
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
+    }
+
+    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver which can be awaited in a engine tasks handler through `handle_engine_tasks()`
+    pub fn regenerate_channel(&mut self) -> EngineTaskReceiver {
+        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+
+        self.tasks_tx = tasks_tx;
+
+        tasks_rx
     }
 
     /// Gets the EngineView
@@ -442,7 +448,7 @@ impl RnoteEngine {
         }
 
         EngineSnapshot {
-            document: self.document.clone(),
+            document: self.document,
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
@@ -452,7 +458,7 @@ impl RnoteEngine {
     /// imports a engine snapshot. A save file should always be loaded with this method.
     /// the store then needs to update its rendering
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document.clone();
+        self.document = snapshot.document;
         self.store.import_from_snapshot(&snapshot);
 
         self.update_state_current_pen()
@@ -523,6 +529,14 @@ impl RnoteEngine {
         widget_flags
     }
 
+    pub fn can_undo(&self) -> bool {
+        self.store.can_undo()
+    }
+
+    pub fn can_redo(&self) -> bool {
+        self.store.can_redo()
+    }
+
     // Clears the store
     pub fn clear(&mut self) -> WidgetFlags {
         self.store.clear();
@@ -534,14 +548,13 @@ impl RnoteEngine {
     /// Returns widget flags to indicate what needs to be updated in the UI.
     /// An example how to use it:
     /// ```rust, ignore
-    /// let main_cx = glib::MainContext::default();
-
-    /// main_cx.spawn_local(clone!(@strong canvas, @strong appwindow => async move {
-    ///            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
-
+    ///
+    /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+    ///           let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
+    ///
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
-    ///                    let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
+    ///                    let widget_flags = canvas.engine().borrow_mut().handle_engine_task(task);
     ///                    if appwindow.handle_widget_flags(widget_flags) {
     ///                         break;
     ///                    }
@@ -550,8 +563,11 @@ impl RnoteEngine {
     ///        }));
     /// ```
     /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
-    pub fn process_received_task(&mut self, task: EngineTask) -> WidgetFlags {
+    ///
+    /// Returns the widget flags, and whether the handler should quit
+    pub fn handle_engine_task(&mut self, task: EngineTask) -> (WidgetFlags, bool) {
         let mut widget_flags = WidgetFlags::default();
+        let mut quit = false;
 
         match task {
             EngineTask::UpdateStrokeWithImages { key, images } => {
@@ -565,11 +581,11 @@ impl RnoteEngine {
                 widget_flags.redraw = true;
             }
             EngineTask::Quit => {
-                widget_flags.quit = true;
+                quit = true;
             }
         }
 
-        widget_flags
+        (widget_flags, quit)
     }
 
     /// handle an pen event
@@ -709,15 +725,6 @@ impl RnoteEngine {
         )
     }
 
-    /// the current document layout
-    pub fn doc_layout(&self) -> Layout {
-        self.document.layout()
-    }
-
-    pub fn set_doc_layout(&mut self, layout: Layout) {
-        self.document.set_layout(layout, &self.store, &self.camera);
-    }
-
     /// resizes the doc to the format and to fit all strokes
     /// Document background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
@@ -736,7 +743,7 @@ impl RnoteEngine {
     pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
         self.camera.offset = new_offset;
 
-        match self.document.layout() {
+        match self.document.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
                 // not resizing in these modes, the size is not dependent on the camera
             }

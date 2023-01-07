@@ -34,7 +34,8 @@ impl RnoteApp {
                 }
                 _ => None,
             })
-            .flags(glib::BindingFlags::BIDIRECTIONAL | glib::BindingFlags::SYNC_CREATE)
+            .sync_create()
+            .bidirectional()
             .build();
 
         // Quit App

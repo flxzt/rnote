@@ -4,6 +4,7 @@ use gtk4::{
     Label, Widget,
 };
 use once_cell::sync::Lazy;
+use rnote_compose::{color, Color};
 use std::cell::RefCell;
 use unicode_segmentation::UnicodeSegmentation;
 
@@ -103,33 +104,33 @@ mod imp {
 
     impl WorkspaceRow {
         fn connect_entry(&self) {
-            let obj = self.instance();
+            let inst = self.instance();
 
             self.entry.borrow().connect_notify_local(
                 Some("dir"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("icon"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("color"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("name"),
-                clone!(@strong obj => move |_, _| {
-                    obj.imp().update_apearance();
+                clone!(@weak inst as workspacerow => move |_, _| {
+                    workspacerow.imp().update_apearance();
                 }),
             );
         }
@@ -137,21 +138,20 @@ mod imp {
         fn update_apearance(&self) {
             let dir = self.entry.borrow().dir();
             let icon = self.entry.borrow().icon();
-            let color = self.entry.borrow().color();
+            let color = self.entry.borrow().color().into_compose_color();
             let name = self.entry.borrow().name();
 
-            let color_str = format!(
+            let workspacerow_color = format!(
                 "rgba({0}, {1}, {2}, {3:.3})",
-                (color.red() * 255.0) as i32,
-                (color.green() * 255.0) as i32,
-                (color.blue() * 255.0) as i32,
-                (color.alpha() * 1000.0).round() / 1000.0,
+                (color.r * 255.0) as i32,
+                (color.g * 255.0) as i32,
+                (color.b * 255.0) as i32,
+                (color.a * 1000.0).round() / 1000.0,
             );
 
-            // Check luminosity to either have light or dark fg colors to ensure good contrast
-            let fg_color_str = if color.into_compose_color().luma()
-                < super::WorkspaceRow::FG_LUMINANCE_THRESHOLD
-            {
+            let workspacerow_fg_color = if color == Color::TRANSPARENT {
+                String::from("@window_fg_color")
+            } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {
                 String::from("@light_1")
             } else {
                 String::from("@dark_5")
@@ -167,8 +167,7 @@ mod imp {
             self.folder_image.set_icon_name(Some(&icon));
 
             let custom_css = format!(
-                "@define-color workspacerow_color {};@define-color workspacerow_fg_color {};",
-                color_str, fg_color_str
+                "@define-color workspacerow_color {workspacerow_color};@define-color workspacerow_fg_color {workspacerow_fg_color};",
             );
 
             css.load_from_data(custom_css.as_bytes());
@@ -194,9 +193,6 @@ impl Default for WorkspaceRow {
 }
 
 impl WorkspaceRow {
-    /// The threshold of the luminance of the workspacerow color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
-    pub(crate) const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
-
     pub(crate) fn new(entry: &WorkspaceListEntry) -> Self {
         glib::Object::new(&[("entry", &entry.to_value())])
     }

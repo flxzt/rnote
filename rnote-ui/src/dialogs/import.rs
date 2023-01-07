@@ -7,55 +7,61 @@ use gtk4::{
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 
+use crate::canvas::RnoteCanvas;
+use crate::canvaswrapper::RnoteCanvasWrapper;
 use crate::{config, RnoteAppWindow};
 
-/// Asks to open the document from the app `input-file` property and overwrites the current document.
-pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow, input_file: gio::File) {
+/// Asks to open the given file as rnote file and overwrites the current document.
+#[allow(unused)]
+pub(crate) fn dialog_open_overwrite(
+    appwindow: &RnoteAppWindow,
+    canvas: &RnoteCanvas,
+    input_file: gio::File,
+) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
-    let dialog_open_input_file: adw::MessageDialog =
-        builder.object("dialog_open_overwrite").unwrap();
+    let dialog: adw::MessageDialog = builder.object("dialog_open_overwrite").unwrap();
 
-    dialog_open_input_file.set_transient_for(Some(appwindow));
+    dialog.set_transient_for(Some(appwindow));
 
-    dialog_open_input_file.connect_response(
+    dialog.connect_response(
         None,
-        clone!(@weak appwindow => move |_dialog_open_input_file, response| {
+        clone!(@weak canvas, @weak appwindow => move |_dialog_open_input_file, response| {
             let input_file = input_file.clone();
-            let open_overwrite = |appwindow: &RnoteAppWindow| {
-                if let Err(e) = appwindow.load_in_file(input_file, None) {
+            let open_overwrite = |appwindow: &RnoteAppWindow, canvas: &RnoteCanvas| {
+                if let Err(e) = appwindow.load_in_file(input_file, None, canvas) {
                     log::error!("failed to load in input file, {e:?}");
-                    appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
+                    appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
                 }
             };
 
             match response {
                 "discard" => {
-                    open_overwrite(&appwindow);
+                    open_overwrite(&appwindow, &canvas);
                 }
                 "save" => {
-                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                        if let Some(output_file) = appwindow.canvas().output_file() {
-                            appwindow.canvas_wrapper().start_pulsing_progressbar();
+                    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        if let Some(output_file) = canvas.output_file() {
+                            appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = appwindow.save_document_to_file(&output_file).await {
-                                appwindow.canvas().set_output_file(None);
+                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                canvas.set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
                             }
 
-                            appwindow.canvas_wrapper().finish_progressbar();
+                            appwindow.overlays().finish_progressbar();
                             // No success toast on saving without dialog, success is already indicated in the header title
                         } else {
                             // Open a dialog to choose a save location
-                            super::export::filechooser_save_doc_as(&appwindow);
+                            super::export::filechooser_save_doc_as(&appwindow, &canvas);
                         }
 
                         // only open and overwrite document if saving was successful
-                        if !appwindow.canvas().unsaved_changes() {
-                            open_overwrite(&appwindow);
+                        if !canvas.unsaved_changes() {
+                            open_overwrite(&appwindow, &canvas);
                         }
                     }));
                 },
@@ -66,7 +72,7 @@ pub(crate) fn dialog_open_overwrite(appwindow: &RnoteAppWindow, input_file: gio:
         }),
     );
 
-    dialog_open_input_file.show();
+    dialog.show();
 }
 
 pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
@@ -99,14 +105,13 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
         match responsetype {
             ResponseType::Accept => {
                 if let Some(input_file) = filechooser.file() {
-                    if !appwindow.canvas().unsaved_changes() {
-                        if let Err(e) = appwindow.load_in_file(input_file, None) {
-                            log::error!("failed to load in input file, {e:?}");
-                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening file failed."));
-                        }
-                    } else {
-                        // Open a dialog to ask for overwriting the current doc
-                        dialog_open_overwrite(&appwindow, input_file);
+                    // open new tab for new rnote file
+                    let new_tab = appwindow.new_tab();
+                    let canvas = new_tab.child().downcast::<RnoteCanvasWrapper>().unwrap().canvas();
+
+                    if let Err(e) = appwindow.load_in_file(input_file, None, &canvas) {
+                        log::error!("failed to load in input file, {e:?}");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
                     }
                 }
             },
@@ -176,13 +181,14 @@ pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
 
 pub(crate) fn dialog_import_pdf_w_prefs(
     appwindow: &RnoteAppWindow,
+    canvas: &RnoteCanvas,
     input_file: gio::File,
     target_pos: Option<na::Vector2<f64>>,
 ) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
-    let dialog_import_pdf: Dialog = builder.object("dialog_import_pdf_w_prefs").unwrap();
+    let dialog: Dialog = builder.object("dialog_import_pdf_w_prefs").unwrap();
     let pdf_page_start_spinbutton: SpinButton =
         builder.object("pdf_page_start_spinbutton").unwrap();
     let pdf_page_end_spinbutton: SpinButton = builder.object("pdf_page_end_spinbutton").unwrap();
@@ -196,14 +202,9 @@ pub(crate) fn dialog_import_pdf_w_prefs(
     let pdf_import_page_spacing_row: adw::ComboRow =
         builder.object("pdf_import_page_spacing_row").unwrap();
 
-    dialog_import_pdf.set_transient_for(Some(appwindow));
+    dialog.set_transient_for(Some(appwindow));
 
-    let pdf_import_prefs = appwindow
-        .canvas()
-        .engine()
-        .borrow()
-        .import_prefs
-        .pdf_import_prefs;
+    let pdf_import_prefs = canvas.engine().borrow().import_prefs.pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
     pdf_import_width_perc_spinbutton.set_value(pdf_import_prefs.page_width_perc);
@@ -218,32 +219,36 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 
     pdf_page_start_spinbutton
         .bind_property("value", &pdf_page_end_spinbutton.adjustment(), "lower")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
     pdf_page_end_spinbutton
         .bind_property("value", &pdf_page_start_spinbutton.adjustment(), "upper")
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .sync_create()
         .build();
 
     // Update preferences
-    pdf_import_as_bitmap_toggle.connect_toggled(clone!(@weak appwindow => move |toggle| {
-        let pages_type = if toggle.is_active() {
-            PdfImportPagesType::Bitmap
-        } else {
-            PdfImportPagesType::Vector
-        };
+    pdf_import_as_bitmap_toggle.connect_toggled(
+        clone!(@weak canvas, @weak appwindow => move |toggle| {
+            let pages_type = if toggle.is_active() {
+                PdfImportPagesType::Bitmap
+            } else {
+                PdfImportPagesType::Vector
+            };
 
-        appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = pages_type;
-    }));
+            canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = pages_type;
+        }),
+    );
 
-    pdf_import_page_spacing_row.connect_selected_notify(clone!(@weak appwindow => move |row| {
-        let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
+    pdf_import_page_spacing_row.connect_selected_notify(
+        clone!(@weak canvas, @weak appwindow => move |row| {
+            let page_spacing = PdfImportPageSpacing::try_from(row.selected()).unwrap();
 
-        appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
-    }));
+            canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.page_spacing = page_spacing;
+        }),
+    );
 
-    pdf_import_width_perc_spinbutton.connect_value_changed(clone!(@weak appwindow => move |spinbutton| {
-        appwindow.canvas().engine().borrow_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
+    pdf_import_width_perc_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
+        canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.page_width_perc = spinbutton.value();
     }));
 
     if let Ok(poppler_doc) =
@@ -299,45 +304,49 @@ pub(crate) fn dialog_import_pdf_w_prefs(
         pdf_page_end_spinbutton.set_value(n_pages.into());
     }
 
-    dialog_import_pdf.connect_response(
-        clone!(@weak appwindow => move |dialog_import_pdf, responsetype| {
+    dialog.connect_response(
+        clone!(@weak canvas, @weak appwindow => move |dialog, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
-                    dialog_import_pdf.close();
+                    dialog.close();
 
                     let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
 
-                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
-                        appwindow.canvas_wrapper().start_pulsing_progressbar();
+                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak canvas, @weak appwindow => async move {
+                        appwindow.overlays().start_pulsing_progressbar();
 
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
-                            if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening PDF file failed."));
+                            if let Err(e) = canvas.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
                                 log::error!(
                                     "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
                                 );
                             }
                         }
 
-                        appwindow.canvas_wrapper().finish_progressbar();
+                        appwindow.overlays().finish_progressbar();
                     }));
                 }
                 ResponseType::Cancel => {
-                    dialog_import_pdf.close();
+                    dialog.close();
                 }
                 _ => {
-                    dialog_import_pdf.close();
+                    dialog.close();
                 }
             }
         }),
     );
 
-    dialog_import_pdf.show();
+    dialog.show();
 }
 
-pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow, input_file: gio::File) {
+pub(crate) fn dialog_import_xopp_w_prefs(
+    appwindow: &RnoteAppWindow,
+    canvas: &RnoteCanvas,
+    input_file: gio::File,
+) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/import.ui").as_str(),
     );
@@ -346,42 +355,37 @@ pub(crate) fn dialog_import_xopp_w_prefs(appwindow: &RnoteAppWindow, input_file:
 
     dialog.set_transient_for(Some(appwindow));
 
-    let xopp_import_prefs = appwindow
-        .canvas()
-        .engine()
-        .borrow()
-        .import_prefs
-        .xopp_import_prefs;
+    let xopp_import_prefs = canvas.engine().borrow().import_prefs.xopp_import_prefs;
 
     // Set initial widget state for preference
     dpi_spinbutton.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
-    dpi_spinbutton.connect_changed(clone!(@weak appwindow => move |spinbutton| {
-        appwindow.canvas().engine().borrow_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
+    dpi_spinbutton.connect_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
+        canvas.engine().borrow_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
     }));
 
     dialog.connect_response(
-        clone!(@weak appwindow => move |dialog, responsetype| {
+        clone!(@weak canvas, @weak appwindow => move |dialog, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
                     dialog.close();
 
-                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
-                        appwindow.canvas_wrapper().start_pulsing_progressbar();
+                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak appwindow => async move {
+                        appwindow.overlays().start_pulsing_progressbar();
 
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
-                            if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec()).await {
-                                appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
+                            if let Err(e) = canvas.load_in_xopp_bytes(file_bytes.to_vec()).await {
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                                 log::error!(
                                     "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
                                 );
                             }
                         }
 
-                        appwindow.canvas_wrapper().finish_progressbar();
+                        appwindow.overlays().finish_progressbar();
                     }));
                 }
                 ResponseType::Cancel => {

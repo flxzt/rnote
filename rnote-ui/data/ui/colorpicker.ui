@@ -4,22 +4,42 @@
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
       </object>
     </property>
+    <style>
+      <class name="colorpicker"/>
+    </style>
+    <child>
+      <object class="GtkBox" id="active_colors_box">
+        <property name="spacing">3</property>
+        <child>
+          <object class="ColorPad" id="stroke_color_pad">
+            <property name="icon_name">stroke-color-symbolic</property>
+            <property name="active">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="ColorPad" id="fill_color_pad">
+            <property name="icon_name">fill-color-symbolic</property>
+            <property name="group">stroke_color_pad</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator"></object>
+    </child>
     <child>
       <object class="GtkBox" id="setterbox">
         <property name="orientation">vertical</property>
         <property name="homogeneous">true</property>
+        <property name="spacing">6</property>
         <style>
           <class name="linked" />
         </style>
         <child>
           <object class="ColorSetter" id="first_colorsetter">
-            <property name="hexpand">true</property>
-            <property name="vexpand">true</property>
-            <property name="halign">fill</property>
-            <property name="valign">fill</property>
-            <property name="active">true</property>
           </object>
         </child>
       </object>
@@ -28,7 +48,10 @@
       <object class="GtkMenuButton" id="colorpicker_button">
         <property name="direction">left</property>
         <property name="icon-name">preferences-color-symbolic</property>
-        <property name="margin-top">3</property>
+        <property name="hexpand">false</property>
+        <property name="vexpand">false</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
         <property name="popover">colorpicker_popover</property>
         <style>
           <class name="flat" />
@@ -49,7 +72,6 @@
             <object class="GtkButton" id="colorchooser_editor_gobackbutton">
               <property name="icon-name">left-symbolic</property>
               <property name="hexpand">false</property>
-              <property name="width-request">48</property>
               <property name="halign">start</property>
               <property name="vexpand">false</property>
               <property name="visible">false</property>

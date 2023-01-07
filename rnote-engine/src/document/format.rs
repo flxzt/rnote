@@ -133,7 +133,7 @@ impl Default for Orientation {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "format")]
 pub struct Format {
     #[serde(rename = "width")]

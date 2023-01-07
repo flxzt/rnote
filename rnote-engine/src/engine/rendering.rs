@@ -62,6 +62,13 @@ impl RnoteEngine {
         Ok(())
     }
 
+    /// Clears the rendering of the entire engine (e.g. when it becomes off-screen)
+    pub fn clear_rendering(&mut self) {
+        self.store.clear_rendering();
+        self.background_tile_image.take();
+        self.background_rendernodes.clear();
+    }
+
     /// regenerates the background tile image and updates the rendering.
     pub fn background_regenerate_pattern(&mut self) -> anyhow::Result<()> {
         let image_scale = self.camera.image_scale();

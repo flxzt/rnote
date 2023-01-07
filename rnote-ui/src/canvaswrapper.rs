@@ -1,6 +1,7 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
+use gtk4::CornerType;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate,
     EventControllerScroll, EventControllerScrollFlags, EventSequenceState, GestureDrag,
@@ -19,7 +20,9 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnoteCanvasWrapper {
         pub(crate) permanently_hide_scrollbars: Cell<bool>,
+
         pub(crate) appwindow_permanently_hide_scrollbars_bind: RefCell<Option<glib::Binding>>,
+        pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
 
         pub(crate) canvas_touch_drag_gesture: GestureDrag,
         pub(crate) canvas_drag_empty_area_gesture: GestureDrag,
@@ -86,7 +89,9 @@ mod imp {
 
             Self {
                 permanently_hide_scrollbars: Cell::new(false),
+
                 appwindow_permanently_hide_scrollbars_bind: RefCell::new(None),
+                appwindow_righthanded_bind: RefCell::new(None),
 
                 canvas_touch_drag_gesture,
                 canvas_drag_empty_area_gesture,
@@ -524,6 +529,22 @@ impl RnoteCanvasWrapper {
                     .build(),
             )
         {
+            old.unbind();
+        }
+
+        if let Some(old) = self.imp().appwindow_righthanded_bind.borrow_mut().replace(
+            appwindow
+                .bind_property("righthanded", &self.scroller(), "window-placement")
+                .transform_to(|_, righthanded: bool| {
+                    if righthanded {
+                        Some(CornerType::BottomRight)
+                    } else {
+                        Some(CornerType::BottomLeft)
+                    }
+                })
+                .sync_create()
+                .build(),
+        ) {
             old.unbind();
         }
     }

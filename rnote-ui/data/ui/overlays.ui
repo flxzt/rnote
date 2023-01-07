@@ -12,7 +12,7 @@
     <property name="halign">fill</property>
     <property name="valign">fill</property>
     <child>
-      <object class="GtkOverlay">
+      <object class="GtkOverlay" id="toolbar_overlay">
         <property name="focusable">true</property>
         <property name="overflow">hidden</property>
         <child type="overlay">

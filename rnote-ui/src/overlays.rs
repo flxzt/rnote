@@ -1,5 +1,5 @@
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ProgressBar,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay, ProgressBar,
     ToggleButton, Widget,
 };
 use rnote_engine::engine::EngineViewMut;
@@ -14,11 +14,13 @@ mod imp {
     use super::*;
 
     #[allow(missing_debug_implementations)]
-    #[derive(CompositeTemplate)]
+    #[derive(Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnoteOverlays {
         pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
 
+        #[template_child]
+        pub(crate) toolbar_overlay: TemplateChild<Overlay>,
         #[template_child]
         pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
@@ -43,26 +45,6 @@ mod imp {
         pub(crate) tabview: TemplateChild<adw::TabView>,
     }
 
-    impl Default for RnoteOverlays {
-        fn default() -> Self {
-            Self {
-                progresspulse_source_id: RefCell::new(None),
-
-                toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
-                progressbar: TemplateChild::<ProgressBar>::default(),
-                pens_toggles_box: TemplateChild::<gtk4::Box>::default(),
-                brush_toggle: TemplateChild::<ToggleButton>::default(),
-                shaper_toggle: TemplateChild::<ToggleButton>::default(),
-                typewriter_toggle: TemplateChild::<ToggleButton>::default(),
-                eraser_toggle: TemplateChild::<ToggleButton>::default(),
-                selector_toggle: TemplateChild::<ToggleButton>::default(),
-                tools_toggle: TemplateChild::<ToggleButton>::default(),
-                colorpicker: TemplateChild::<ColorPicker>::default(),
-                tabview: TemplateChild::<adw::TabView>::default(),
-            }
-        }
-    }
-
     #[glib::object_subclass]
     impl ObjectSubclass for RnoteOverlays {
         const NAME: &'static str = "RnoteOverlays";
@@ -81,6 +63,8 @@ mod imp {
     impl ObjectImpl for RnoteOverlays {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.setup_toolbar_overlay();
         }
 
         fn dispose(&self) {
@@ -91,6 +75,14 @@ mod imp {
     }
 
     impl WidgetImpl for RnoteOverlays {}
+    impl RnoteOverlays {
+        fn setup_toolbar_overlay(&self) {
+            self.toolbar_overlay
+                .set_measure_overlay(&*self.colorpicker, true);
+            self.toolbar_overlay
+                .set_measure_overlay(&*self.pens_toggles_box, true);
+        }
+    }
 }
 
 glib::wrapper! {

@@ -44,48 +44,45 @@
             </child>
             <child>
               <object class="GtkBox">
-                <style>
-                  <class name="linked" />
-                </style>
-                <child>
-                  <object class="GtkButton" id="undo_button">
-                    <property name="sensitive">false</property>
-                    <property name="icon_name">edit-undo-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Undo</property>
-                    <property name="action-name">win.undo</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="redo_button">
-                    <property name="sensitive">false</property>
-                    <property name="icon_name">edit-redo-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Redo</property>
-                    <property name="action-name">win.redo</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="fixedsize_quickactions_box">
                 <property name="spacing">3</property>
                 <child>
-                  <object class="GtkButton">
-                    <property name="icon_name">add-page-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Add page</property>
-                    <property name="action-name">win.add-page-to-doc</property>
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkButton" id="undo_button">
+                        <property name="sensitive">false</property>
+                        <property name="icon_name">edit-undo-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Undo</property>
+                        <property name="action-name">win.undo</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="redo_button">
+                        <property name="sensitive">false</property>
+                        <property name="icon_name">edit-redo-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Redo</property>
+                        <property name="action-name">win.redo</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton">
-                    <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
-                    <property name="action-name">win.resize-to-fit-strokes</property>
+                  <object class="GtkBox" id="fixedsize_quickactions_box">
+                    <property name="spacing">3</property>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="icon_name">add-page-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Add page</property>
+                        <property name="action-name">win.add-page-to-doc</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Resize document to fit the
+                          strokes</property>
+                        <property name="action-name">win.resize-to-fit-strokes</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

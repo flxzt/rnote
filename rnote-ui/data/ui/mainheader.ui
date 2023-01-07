@@ -67,7 +67,6 @@
                 </child>
                 <child>
                   <object class="GtkBox" id="fixedsize_quickactions_box">
-                    <property name="spacing">3</property>
                     <child>
                       <object class="GtkButton">
                         <property name="icon_name">add-page-symbolic</property>
@@ -78,8 +77,7 @@
                     <child>
                       <object class="GtkButton">
                         <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize document to fit the
-                          strokes</property>
+                        <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
                         <property name="action-name">win.resize-to-fit-strokes</property>
                       </object>
                     </child>

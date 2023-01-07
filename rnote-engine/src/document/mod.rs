@@ -68,7 +68,7 @@ impl Layout {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
     #[serde(rename = "x")]
@@ -84,7 +84,7 @@ pub struct Document {
     #[serde(rename = "background")]
     pub background: Background,
     #[serde(rename = "layout", alias = "expand_mode")]
-    layout: Layout,
+    pub layout: Layout,
 }
 
 impl Default for Document {
@@ -110,16 +110,6 @@ impl Document {
         b: 0.0,
         a: 0.35,
     };
-
-    pub(crate) fn layout(&self) -> Layout {
-        self.layout
-    }
-
-    pub(crate) fn set_layout(&mut self, layout: Layout, store: &StrokeStore, camera: &Camera) {
-        self.layout = layout;
-
-        self.resize_to_fit_strokes(store, camera);
-    }
 
     pub fn bounds(&self) -> Aabb {
         Aabb::new(

@@ -8,7 +8,7 @@ use rnote_compose::helpers::AabbHelpers;
 
 use crate::canvas::RnoteCanvas;
 use rnote_engine::document::Layout;
-use rnote_engine::{render, Document};
+use rnote_engine::render;
 
 mod imp {
     use super::*;
@@ -48,19 +48,22 @@ mod imp {
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let document = canvas.engine().borrow().document;
 
             if orientation == Orientation::Vertical {
-                let natural_height = ((canvas.engine().borrow().document.height
-                    + 2.0 * Document::SHADOW_WIDTH)
-                    * total_zoom)
-                    .ceil() as i32;
+                let canvas_height = canvas.height() as f64;
+
+                let natural_height = (document.height * total_zoom + canvas_height
+                    - 2.0 * super::CanvasLayout::ADJS_LIMIT)
+                    .round() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let natural_width = ((canvas.engine().borrow().document.width
-                    + 2.0 * Document::SHADOW_WIDTH)
-                    * total_zoom)
-                    .ceil() as i32;
+                let canvas_width = canvas.width() as f64;
+
+                let natural_width = (document.width * total_zoom + canvas_width
+                    - 2.0 * super::CanvasLayout::ADJS_LIMIT)
+                    .round() as i32;
 
                 (0, natural_width, -1, -1)
             }
@@ -74,32 +77,32 @@ mod imp {
             let engine = canvas.engine();
             let mut engine = engine.borrow_mut();
             let total_zoom = engine.camera.total_zoom();
-            let doc_layout = engine.doc_layout();
+            let document = engine.document;
 
             let new_size = na::vector![f64::from(width), f64::from(height)];
 
             // Update the adjustments
-            let (h_lower, h_upper) = match doc_layout {
+            let (h_lower, h_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    (engine.document.x - Document::SHADOW_WIDTH) * total_zoom,
-                    (engine.document.x + engine.document.width + Document::SHADOW_WIDTH)
-                        * total_zoom,
+                    document.x * total_zoom - new_size[0] + super::CanvasLayout::ADJS_LIMIT,
+                    (document.x + document.width) * total_zoom + new_size[0]
+                        - super::CanvasLayout::ADJS_LIMIT,
                 ),
                 Layout::Infinite => (
-                    engine.document.x * total_zoom,
-                    (engine.document.x + engine.document.width) * total_zoom,
+                    document.x * total_zoom,
+                    (document.x + document.width) * total_zoom,
                 ),
             };
 
-            let (v_lower, v_upper) = match doc_layout {
+            let (v_lower, v_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    (engine.document.y - Document::SHADOW_WIDTH) * total_zoom,
-                    (engine.document.y + engine.document.height + Document::SHADOW_WIDTH)
-                        * total_zoom,
+                    document.y * total_zoom - new_size[1] + super::CanvasLayout::ADJS_LIMIT,
+                    (document.y + document.height) * total_zoom + new_size[1]
+                        - super::CanvasLayout::ADJS_LIMIT,
                 ),
                 Layout::Infinite => (
-                    engine.document.y * total_zoom,
-                    (engine.document.y + engine.document.height) * total_zoom,
+                    document.y * total_zoom,
+                    (document.y + document.height) * total_zoom,
                 ),
             };
 
@@ -174,6 +177,8 @@ impl Default for CanvasLayout {
 }
 
 impl CanvasLayout {
+    pub const ADJS_LIMIT: f64 = 128.0;
+
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

@@ -239,15 +239,15 @@ impl RnoteAppWindow {
 
                 match doc_layout {
                     "fixed-size" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::FixedSize);
+                        appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::FixedSize;
                         appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(true);
                     },
                     "continuous-vertical" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
+                        appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::ContinuousVertical;
                         appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     "infinite" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
+                        appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::Infinite;
                         appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     other => {
@@ -256,6 +256,7 @@ impl RnoteAppWindow {
                     }
                 }
 
+                appwindow.active_tab().canvas().engine().borrow_mut().resize_to_fit_strokes();
                 appwindow.active_tab().canvas().update_engine_rendering();
             }));
 
@@ -365,7 +366,7 @@ impl RnoteAppWindow {
             {
                 // state changes from the engine to the UI
                 let format = canvas.engine().borrow().document.format.clone();
-                let doc_layout = canvas.engine().borrow().doc_layout();
+                let doc_layout = canvas.engine().borrow().document.layout;
                 let can_undo = canvas.engine().borrow().can_undo();
                 let can_redo = canvas.engine().borrow().can_redo();
 
@@ -393,7 +394,7 @@ impl RnoteAppWindow {
 
             // Avoids already borrowed
             let format = canvas.engine().borrow().document.format.clone();
-            let doc_layout = canvas.engine().borrow().doc_layout();
+            let doc_layout = canvas.engine().borrow().document.layout;
             let pen_sounds = canvas.engine().borrow().pen_sounds();
             let pen_style = canvas.engine().borrow().penholder.current_style_w_override();
 

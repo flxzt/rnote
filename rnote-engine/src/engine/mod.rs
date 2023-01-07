@@ -726,15 +726,6 @@ impl RnoteEngine {
         )
     }
 
-    /// the current document layout
-    pub fn doc_layout(&self) -> Layout {
-        self.document.layout()
-    }
-
-    pub fn set_doc_layout(&mut self, layout: Layout) {
-        self.document.set_layout(layout, &self.store, &self.camera);
-    }
-
     /// resizes the doc to the format and to fit all strokes
     /// Document background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
@@ -753,7 +744,7 @@ impl RnoteEngine {
     pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
         self.camera.offset = new_offset;
 
-        match self.document.layout() {
+        match self.document.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
                 // not resizing in these modes, the size is not dependent on the camera
             }

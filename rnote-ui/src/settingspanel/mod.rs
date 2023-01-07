@@ -459,10 +459,9 @@ impl SettingsPanel {
             .engine()
             .borrow()
             .document
-            .format
-            .clone();
+            .format;
 
-        *self.imp().temporary_format.borrow_mut() = format.clone();
+        *self.imp().temporary_format.borrow_mut() = format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
@@ -484,16 +483,14 @@ impl SettingsPanel {
             .engine()
             .borrow()
             .document
-            .background
-            .clone();
+            .background;
         let format = appwindow
             .active_tab()
             .canvas()
             .engine()
             .borrow()
             .document
-            .format
-            .clone();
+            .format;
 
         imp.background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -671,7 +668,7 @@ impl SettingsPanel {
         // Apply format
         imp.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
-                let temporary_format = temporary_format.borrow().clone();
+                let temporary_format = *temporary_format.borrow();
                 appwindow.active_tab().canvas().engine().borrow_mut().document.format = temporary_format;
 
                 appwindow.active_tab().canvas().engine().borrow_mut().resize_to_fit_strokes();
@@ -808,16 +805,14 @@ impl SettingsPanel {
             .engine()
             .borrow()
             .document
-            .format
-            .clone();
+            .format;
         let revert_format = appwindow
             .active_tab()
             .canvas()
             .engine()
             .borrow()
             .document
-            .format
-            .clone();
+            .format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
 

@@ -365,7 +365,7 @@ impl RnoteAppWindow {
 
             {
                 // state changes from the engine to the UI
-                let format = canvas.engine().borrow().document.format.clone();
+                let format = canvas.engine().borrow().document.format;
                 let doc_layout = canvas.engine().borrow().document.layout;
                 let can_undo = canvas.engine().borrow().can_undo();
                 let can_redo = canvas.engine().borrow().can_redo();
@@ -393,7 +393,7 @@ impl RnoteAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             // Avoids already borrowed
-            let format = canvas.engine().borrow().document.format.clone();
+            let format = canvas.engine().borrow().document.format;
             let doc_layout = canvas.engine().borrow().document.layout;
             let pen_sounds = canvas.engine().borrow().pen_sounds();
             let pen_style = canvas.engine().borrow().penholder.current_style_w_override();

@@ -160,7 +160,7 @@ impl RnoteOverlays {
                 let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
 
                 canvaswrapper.init_reconnect(&appwindow);
-                canvaswrapper.connect_to_tab_page(&page);
+                canvaswrapper.connect_to_tab_page(page);
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
             }));
 
@@ -182,12 +182,12 @@ impl RnoteOverlays {
                         .unsaved_changes()
                     {
                         // We close after showing the dialog
-                        dialogs::dialog_close_tab(&appwindow, &page);
+                        dialogs::dialog_close_tab(&appwindow, page);
                     } else {
-                        tabview.close_page_finish(&page, true);
+                        tabview.close_page_finish(page, true);
                     }
                 } else {
-                    tabview.close_page_finish(&page, false);
+                    tabview.close_page_finish(page, false);
                 }
 
                 true

@@ -261,7 +261,7 @@ pub(crate) async fn dialog_quit_save(appwindow: &RnoteAppWindow) {
             let mut doc_title = c.doc_title_display();
             // Ensuring we don't save with same file names by suffixing with a running index if it already exists
             let mut suff_i = 1;
-            while &doc_title == &prev_doc_title {
+            while doc_title == prev_doc_title {
                 suff_i += 1;
                 doc_title += &format!(" - {suff_i}");
             }

@@ -159,7 +159,7 @@ impl IconPicker {
                     .into_iter()
                     .map(|o| o.downcast::<StringObject>().unwrap().string())
                     .enumerate()
-                    .find(|(_, s)| s.as_str() == &picked);
+                    .find(|(_, s)| s == &picked);
 
                 if let Some((i, _)) = item {
                     selection.set_selected(i as u32);

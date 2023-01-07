@@ -32,7 +32,7 @@
             <property name="spacing">6</property>
             <child>
               <object class="GtkButton" id="create_page_button">
-                <property name="icon-name">tab-new-symbolic</property>
+                <property name="icon-name">tab-new-filled-symbolic</property>
                 <property name="action-name">win.new-tab</property>
                 <property name="tooltip-text" translatable="yes">New tab</property>
               </object>

@@ -29,7 +29,7 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox" id="quickactions_box">
-            <property name="spacing">3</property>
+            <property name="spacing">6</property>
             <child>
               <object class="GtkButton" id="create_page_button">
                 <property name="icon-name">tab-new-filled-symbolic</property>
@@ -40,34 +40,6 @@
             <child>
               <object class="GtkSeparator">
                 <property name="orientation">vertical</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkRevealer" id="fixedsize_quickactions_revealer">
-                <property name="transition-type">slide-right</property>
-                <property name="transition-duration">300</property>
-                <property name="overflow">visible</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="homogeneous">true</property>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Add page</property>
-                        <property name="action-name">win.add-page-to-doc</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize document to fit
-                          the
-                          strokes</property>
-                        <property name="action-name">win.resize-to-fit-strokes</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
@@ -95,6 +67,25 @@
                     <style>
                       <class name="flat" />
                     </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="fixedsize_quickactions_box">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="icon_name">add-page-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Add page</property>
+                    <property name="action-name">win.add-page-to-doc</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="icon_name">resize-to-fit-strokes-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
+                    <property name="action-name">win.resize-to-fit-strokes</property>
                   </object>
                 </child>
               </object>

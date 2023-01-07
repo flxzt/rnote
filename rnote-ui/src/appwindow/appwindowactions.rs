@@ -240,15 +240,15 @@ impl RnoteAppWindow {
                 match doc_layout {
                     "fixed-size" => {
                         appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::FixedSize;
-                        appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(true);
+                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(true);
                     },
                     "continuous-vertical" => {
                         appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::ContinuousVertical;
-                        appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(false);
+                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
                     },
                     "infinite" => {
                         appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::Infinite;
-                        appwindow.mainheader().fixedsize_quickactions_revealer().set_reveal_child(false);
+                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
                     },
                     other => {
                         log::error!("doc-layout action activated with invalid target string: {other}");

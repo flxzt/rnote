@@ -113,7 +113,7 @@ impl Default for EngineConfig {
         let engine = RnoteEngine::default();
 
         Self {
-            document: serde_json::to_value(&engine.document).unwrap(),
+            document: serde_json::to_value(engine.document).unwrap(),
             pens_config: serde_json::to_value(&engine.pens_config).unwrap(),
             penholder: serde_json::to_value(&engine.penholder).unwrap(),
 
@@ -448,7 +448,7 @@ impl RnoteEngine {
         }
 
         EngineSnapshot {
-            document: self.document.clone(),
+            document: self.document,
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
             chrono_counter: store_history_entry.chrono_counter,
@@ -458,7 +458,7 @@ impl RnoteEngine {
     /// imports a engine snapshot. A save file should always be loaded with this method.
     /// the store then needs to update its rendering
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document.clone();
+        self.document = snapshot.document;
         self.store.import_from_snapshot(&snapshot);
 
         self.update_state_current_pen()

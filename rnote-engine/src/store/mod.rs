@@ -254,14 +254,14 @@ impl StrokeStore {
     }
 
     pub(super) fn can_undo(&self) -> bool {
-        let index = self.history_pos.unwrap_or_else(|| self.history.len());
+        let index = self.history_pos.unwrap_or(self.history.len());
 
         index > 0
     }
 
     pub(super) fn can_redo(&self) -> bool {
         let history_len = self.history.len();
-        let index = self.history_pos.unwrap_or_else(|| history_len);
+        let index = self.history_pos.unwrap_or(history_len);
 
         index + 1 < history_len
     }

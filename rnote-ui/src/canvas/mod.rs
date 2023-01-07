@@ -1172,7 +1172,7 @@ impl RnoteCanvas {
                 // first argument is RnoteCanvas
                 let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
 
-                appwindow.handle_widget_flags(widget_flags);
+                appwindow.handle_widget_flags(widget_flags, &canvas);
                 None
             }),
         );

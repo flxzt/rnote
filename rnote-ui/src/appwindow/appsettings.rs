@@ -174,11 +174,10 @@ impl RnoteAppWindow {
         }
 
         {
+            let canvas = self.active_tab().canvas();
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
-            let widget_flags = match self
-                .active_tab()
-                .canvas()
+            let widget_flags = match canvas
                 .engine()
                 .borrow_mut()
                 .load_engine_config(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
@@ -194,9 +193,10 @@ impl RnoteAppWindow {
                 }
                 Ok(widget_flags) => Some(widget_flags),
             };
+
             // Avoiding already borrowed
             if let Some(widget_flags) = widget_flags {
-                self.handle_widget_flags(widget_flags);
+                self.handle_widget_flags(widget_flags, &canvas);
             }
         }
     }
@@ -234,7 +234,7 @@ impl RnoteAppWindow {
 
         {
             // Save engine config
-            self.save_engine_config()?;
+            self.save_engine_config_active_tab()?;
         }
 
         Ok(())

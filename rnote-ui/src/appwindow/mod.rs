@@ -15,6 +15,7 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 
+use crate::canvas::RnoteCanvas;
 use crate::{
     config,
     penssidebar::PensSideBar,
@@ -290,10 +291,12 @@ mod imp {
 
             if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
                 clone!(@weak inst as appwindow => @default-return glib::source::Continue(false), move || {
-                    if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                            if let Err(e) = appwindow.active_tab().canvas().save_document_to_file(&output_file).await {
-                                appwindow.active_tab().canvas().set_output_file(None);
+                    let canvas = appwindow.active_tab().canvas();
+
+                    if let Some(output_file) = canvas.output_file() {
+                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                canvas.set_output_file(None);
 
                                 log::error!("saving document failed with error `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
@@ -518,9 +521,6 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
-                inst.active_tab()
-                    .scroller()
-                    .set_window_placement(CornerType::BottomRight);
                 inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopRight);
                 inst.settings_panel()
@@ -593,9 +593,6 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
-                inst.active_tab()
-                    .scroller()
-                    .set_window_placement(CornerType::BottomLeft);
                 inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopLeft);
                 inst.settings_panel()
@@ -776,6 +773,9 @@ impl RnoteAppWindow {
         imp.penssidebar.get().selector_page().init(self);
         imp.penssidebar.get().tools_page().init(self);
 
+        // A first canvas. Must! come before binding the settings
+        self.new_tab();
+
         // add icon theme resource path because automatic lookup does not work in the devel build.
         let app_icon_theme = IconTheme::for_display(&self.display());
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
@@ -792,7 +792,7 @@ impl RnoteAppWindow {
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
                 Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
-                    if let Err(e) = appwindow.save_engine_config() {
+                    if let Err(e) = appwindow.save_engine_config_active_tab() {
                         log::error!("saving engine config in periodic task failed with Err: {e:?}");
                     }
 
@@ -845,26 +845,24 @@ impl RnoteAppWindow {
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
-    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags) {
+    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnoteCanvas) {
         if widget_flags.redraw {
-            self.active_tab().canvas().queue_draw();
+            canvas.queue_draw();
         }
         if widget_flags.resize {
-            self.active_tab().canvas().queue_resize();
+            canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
         }
         if widget_flags.indicate_changed_store {
-            self.active_tab().canvas().set_unsaved_changes(true);
-            self.active_tab().canvas().set_empty(false);
+            canvas.set_unsaved_changes(true);
+            canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = self.active_tab().canvas().engine().borrow().camera.offset;
+            let camera_offset = canvas.engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
-            self.active_tab()
-                .canvas()
-                .update_camera_offset(camera_offset);
+            canvas.update_camera_offset(camera_offset);
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
             self.mainheader().undo_button().set_sensitive(!hide_undo);
@@ -873,13 +871,11 @@ impl RnoteAppWindow {
             self.mainheader().redo_button().set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
-            self.active_tab()
-                .canvas()
-                .set_text_preprocessing(enable_text_preprocessing);
+            canvas.set_text_preprocessing(enable_text_preprocessing);
         }
     }
 
-    pub(crate) fn save_engine_config(&self) -> anyhow::Result<()> {
+    pub(crate) fn save_engine_config_active_tab(&self) -> anyhow::Result<()> {
         let engine_config = self
             .active_tab()
             .canvas()
@@ -1005,27 +1001,44 @@ impl RnoteAppWindow {
         match crate::utils::FileType::lookup_file_type(&input_file) {
             crate::utils::FileType::RnoteFile => {
                 // open a new tab for rnote files
-                self.new_tab();
+                let new_tab = self.new_tab();
+                let canvas = new_tab
+                    .child()
+                    .downcast::<RnoteCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
 
-                if let Err(e) = self.load_in_file_active_tab(input_file, target_pos) {
+                if let Err(e) = self.load_in_file(input_file, target_pos, &canvas) {
                     log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
                     );
                 }
             }
             crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
-                if let Err(e) = self.load_in_file_active_tab(input_file, target_pos) {
+                if let Err(e) =
+                    self.load_in_file(input_file, target_pos, &self.active_tab().canvas())
+                {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {e:?}");
                 }
             }
             crate::utils::FileType::XoppFile => {
                 // open a new tab for xopp file import
-                self.new_tab();
+                let new_tab = self.new_tab();
+                let canvas = new_tab
+                    .child()
+                    .downcast::<RnoteCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
 
-                dialogs::import::dialog_import_xopp_w_prefs(self, input_file);
+                dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file);
             }
             crate::utils::FileType::PdfFile => {
-                dialogs::import::dialog_import_pdf_w_prefs(self, input_file, target_pos);
+                dialogs::import::dialog_import_pdf_w_prefs(
+                    self,
+                    &self.active_tab().canvas(),
+                    input_file,
+                    target_pos,
+                );
             }
             crate::utils::FileType::Folder => {
                 if let Some(dir) = input_file.path() {
@@ -1040,22 +1053,23 @@ impl RnoteAppWindow {
         }
     }
 
-    /// Loads in a file of any supported type into the engine of the active tab.
+    /// Loads in a file of any supported type into the engine of the given canvas.
     ///
     /// ! overwrites the current state so there should be a user prompt to confirm before this is called
-    pub(crate) fn load_in_file_active_tab(
+    pub(crate) fn load_in_file(
         &self,
         file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
+        canvas: &RnoteCanvas,
     ) -> anyhow::Result<()> {
-        glib::MainContext::default().spawn_local(clone!(@weak self as appwindow => async move {
+        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak self as appwindow => async move {
             appwindow.overlays().start_pulsing_progressbar();
 
             match crate::utils::FileType::lookup_file_type(&file) {
                 crate::utils::FileType::RnoteFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            if let Err(e) = appwindow.active_tab().canvas().load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
+                            if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
                                 log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed."));
                             }
@@ -1066,7 +1080,7 @@ impl RnoteAppWindow {
                 crate::utils::FileType::VectorImageFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            if let Err(e) = appwindow.active_tab().canvas().load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
+                            if let Err(e) = canvas.load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
                                 log::error!("load_in_vectorimage_bytes() failed with Err: {e:?}");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed."));
                             }
@@ -1077,7 +1091,7 @@ impl RnoteAppWindow {
                 crate::utils::FileType::BitmapImageFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            if let Err(e) = appwindow.active_tab().canvas().load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
+                            if let Err(e) = canvas.load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
                                 log::error!("load_in_bitmapimage_bytes() failed with Err: {e:?}");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
                             }
@@ -1088,7 +1102,7 @@ impl RnoteAppWindow {
                 crate::utils::FileType::XoppFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            if let Err(e) = appwindow.active_tab().canvas().load_in_xopp_bytes(bytes.to_vec()).await {
+                            if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
                                 log::error!("load_in_xopp_bytes() failed with Err: {e:?}");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
                             }
@@ -1099,7 +1113,7 @@ impl RnoteAppWindow {
                 crate::utils::FileType::PdfFile => {
                     match file.load_bytes_future().await {
                         Ok((bytes, _)) => {
-                            if let Err(e) = appwindow.active_tab().canvas().load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
+                            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
                                 log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
                             }

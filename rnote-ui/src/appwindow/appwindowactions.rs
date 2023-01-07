@@ -204,10 +204,10 @@ impl RnoteAppWindow {
         action_visual_debug.connect_change_state(
             clone!(@weak self as appwindow => move |action_visual_debug, state_request| {
                 let requested_state = state_request.unwrap().get::<bool>().unwrap();
+                let canvas = appwindow.active_tab().canvas();
 
-
-                appwindow.active_tab().canvas().engine().borrow_mut().visual_debug = requested_state;
-                appwindow.active_tab().canvas().queue_draw();
+                canvas.engine().borrow_mut().visual_debug = requested_state;
+                canvas.queue_draw();
                 action_visual_debug.set_state(&requested_state.to_variant());
             }),
         );
@@ -220,14 +220,14 @@ impl RnoteAppWindow {
         // Export engine state
         action_debug_export_engine_state.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
-                dialogs::export::filechooser_export_engine_state(&appwindow);
+                dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab().canvas());
             }),
         );
 
         // Export engine config
         action_debug_export_engine_config.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_config, _target| {
-                dialogs::export::filechooser_export_engine_config(&appwindow);
+                dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab().canvas());
             }),
         );
 
@@ -236,18 +236,19 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |action_doc_layout, target| {
                 let doc_layout = target.unwrap().str().unwrap();
                 action_doc_layout.set_state(&doc_layout.to_variant());
+                let canvas = appwindow.active_tab().canvas();
 
                 match doc_layout {
                     "fixed-size" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::FixedSize;
+                        canvas.engine().borrow_mut().document.layout = Layout::FixedSize;
                         appwindow.mainheader().fixedsize_quickactions_box().set_visible(true);
                     },
                     "continuous-vertical" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::ContinuousVertical;
+                        canvas.engine().borrow_mut().document.layout = Layout::ContinuousVertical;
                         appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
                     },
                     "infinite" => {
-                        appwindow.active_tab().canvas().engine().borrow_mut().document.layout = Layout::Infinite;
+                        canvas.engine().borrow_mut().document.layout = Layout::Infinite;
                         appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
                     },
                     other => {
@@ -256,8 +257,8 @@ impl RnoteAppWindow {
                     }
                 }
 
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                canvas.update_engine_rendering();
             }));
 
         // Pen sounds
@@ -275,9 +276,10 @@ impl RnoteAppWindow {
         action_format_borders.connect_change_state(
             clone!(@weak self as appwindow => move |action_format_borders, state_request| {
                 let format_borders = state_request.unwrap().get::<bool>().unwrap();
+                let canvas = appwindow.active_tab().canvas();
 
-                appwindow.active_tab().canvas().engine().borrow_mut().document.format.show_borders = format_borders;
-                appwindow.active_tab().canvas().queue_draw();
+                canvas.engine().borrow_mut().document.format.show_borders = format_borders;
+                canvas.queue_draw();
 
                 action_format_borders.set_state(&format_borders.to_variant());
             }),
@@ -288,17 +290,18 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |action, target| {
                 let new_pen_style = target.unwrap().get::<PenStyle>().unwrap();
                 action.set_state(&new_pen_style.to_variant());
+                let canvas = appwindow.active_tab().canvas();
 
                 // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
-                if new_pen_style != appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override() {
-                    let mut widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style(
+                if new_pen_style != canvas.engine().borrow().penholder.current_style_w_override() {
+                    let mut widget_flags = canvas.engine().borrow_mut().change_pen_style(
                         new_pen_style,
                     );
-                    widget_flags.merge(appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style_override(
+                    widget_flags.merge(canvas.engine().borrow_mut().change_pen_style_override(
                         None,
                     ));
 
-                    appwindow.handle_widget_flags(widget_flags);
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),
         );
@@ -376,7 +379,7 @@ impl RnoteAppWindow {
 
             // Update the settings
             appwindow.settings_panel().sync_state_active_tab(&appwindow);
-            appwindow.handle_widget_flags(widget_flags);
+            appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
         // Refresh UI state from the active tab engine. The engine is considered to be the source of truth
@@ -488,168 +491,176 @@ impl RnoteAppWindow {
         // Trash Selection
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().record(Instant::now());
-                appwindow.handle_widget_flags(widget_flags);
+                let canvas = appwindow.active_tab().canvas();
 
-                let selection_keys = appwindow.active_tab().canvas().engine().borrow().store.selection_keys_as_rendered();
-                appwindow.active_tab().canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
+                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let selection_keys = canvas.engine().borrow().store.selection_keys_as_rendered();
+                canvas.engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
+                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                canvas.engine().borrow_mut().resize_autoexpand();
+                canvas.update_engine_rendering();
 
-                let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().update_state_current_pen();
-                appwindow.handle_widget_flags(widget_flags);
-
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().record(Instant::now());
-                appwindow.handle_widget_flags(widget_flags);
+                let canvas = appwindow.active_tab().canvas();
 
-                let new_selected = appwindow.active_tab().canvas().engine().borrow_mut().store.duplicate_selection();
-                appwindow.active_tab().canvas().engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
+                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let new_selected = canvas.engine().borrow_mut().store.duplicate_selection();
+                canvas.engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
+                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                canvas.engine().borrow_mut().resize_autoexpand();
+                canvas.update_engine_rendering();
 
-                let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().update_state_current_pen();
-                appwindow.handle_widget_flags(widget_flags);
-
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().record(Instant::now());
-                appwindow.handle_widget_flags(widget_flags);
+                let canvas = appwindow.active_tab().canvas();
 
-                let all_strokes = appwindow.active_tab().canvas().engine().borrow().store.stroke_keys_as_rendered();
-                appwindow.active_tab().canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
+                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let all_strokes = canvas.engine().borrow().store.stroke_keys_as_rendered();
+                canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
+                widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
+                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                canvas.engine().borrow_mut().resize_autoexpand();
+                canvas.update_engine_rendering();
 
-                let mut widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
-                widget_flags.merge(appwindow.active_tab().canvas().engine().borrow_mut().update_state_current_pen());
-                appwindow.handle_widget_flags(widget_flags);
-
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                let widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().record(Instant::now());
-                appwindow.handle_widget_flags(widget_flags);
+                let canvas = appwindow.active_tab().canvas();
 
-                let all_strokes = appwindow.active_tab().canvas().engine().borrow().store.selection_keys_as_rendered();
-                appwindow.active_tab().canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
+                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let all_strokes = canvas.engine().borrow().store.selection_keys_as_rendered();
+                canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
+                widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
+                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                canvas.engine().borrow_mut().resize_autoexpand();
+                canvas.update_engine_rendering();
 
-                let mut widget_flags = appwindow.active_tab().canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
-                widget_flags.merge(appwindow.active_tab().canvas().engine().borrow_mut().update_state_current_pen());
-                appwindow.handle_widget_flags(widget_flags);
-
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
         // Clear doc
         action_clear_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_clear_doc(&appwindow);
+            dialogs::dialog_clear_doc(&appwindow, &appwindow.active_tab().canvas());
         }));
 
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let widget_flags =appwindow.active_tab().canvas().engine().borrow_mut().undo(Instant::now());
-            appwindow.handle_widget_flags(widget_flags);
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().update_engine_rendering();
+            let widget_flags = canvas.engine().borrow_mut().undo(Instant::now());
+            canvas.update_engine_rendering();
+
+            appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let widget_flags =appwindow.active_tab().canvas().engine().borrow_mut().redo(Instant::now());
-            appwindow.handle_widget_flags(widget_flags);
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().update_engine_rendering();
+            let widget_flags = canvas.engine().borrow_mut().redo(Instant::now());
+            canvas.update_engine_rendering();
+
+            appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
         // Zoom reset
         action_zoom_reset.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = Camera::ZOOM_DEFAULT;
+            let canvas = appwindow.active_tab().canvas();
 
-            let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
+            let new_zoom = Camera::ZOOM_DEFAULT;
+            let current_doc_center = canvas.current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
+            canvas.center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom fit to width
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = f64::from(appwindow.active_tab().scroller().width()) / (appwindow.active_tab().canvas().engine().borrow().document.format.width + 2.0 * Document::SHADOW_WIDTH);
+            let canvaswrapper = appwindow.active_tab();
 
-            let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
+            let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * Document::SHADOW_WIDTH);
+            let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
+            canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom in
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = appwindow.active_tab().canvas().engine().borrow().camera.total_zoom() * (1.0 + RnoteCanvas::ZOOM_STEP);
+            let canvas = appwindow.active_tab().canvas();
 
-            let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
+            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnoteCanvas::ZOOM_STEP);
+            let current_doc_center = canvas.current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
+            canvas.center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom out
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = appwindow.active_tab().canvas().engine().borrow().camera.total_zoom() * (1.0 - RnoteCanvas::ZOOM_STEP);
+            let canvas = appwindow.active_tab().canvas();
 
-            let current_doc_center = appwindow.active_tab().canvas().current_center_on_doc();
+            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnoteCanvas::ZOOM_STEP);
+            let current_doc_center = canvas.current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.active_tab().canvas().center_around_coord_on_doc(current_doc_center);
+            canvas.center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom to value
         action_zoom_to_value.connect_activate(
             clone!(@weak self as appwindow => move |_action_zoom_to_value, target| {
                 let new_zoom = target.unwrap().get::<f64>().unwrap().clamp(Camera::ZOOM_MIN, Camera::ZOOM_MAX);
-
                 appwindow.active_tab().canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
             }));
 
         // Add page to doc in fixed size mode
         action_add_page_to_doc.connect_activate(
             clone!(@weak self as appwindow => move |_action_add_page_to_doc, _target| {
-            let format_height = appwindow.active_tab().canvas().engine().borrow().document.format.height;
-            let new_doc_height = appwindow.active_tab().canvas().engine().borrow().document.height + format_height;
-            appwindow.active_tab().canvas().engine().borrow_mut().document.height = new_doc_height;
+                let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().update_engine_rendering();
-        }));
+                let format_height = canvas.engine().borrow().document.format.height;
+                let new_doc_height = canvas.engine().borrow().document.height + format_height;
+                canvas.engine().borrow_mut().document.height = new_doc_height;
+
+                canvas.update_engine_rendering();
+            }),
+        );
 
         // Resize to fit strokes
         action_resize_to_fit_strokes.connect_activate(
             clone!(@weak self as appwindow => move |_action_resize_to_fit_strokes, _target| {
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_to_fit_strokes();
+                let canvas = appwindow.active_tab().canvas();
 
-                appwindow.active_tab().canvas().update_engine_rendering();
+                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                canvas.update_engine_rendering();
             }),
         );
 
         // Return to the origin page
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.active_tab().canvas().return_to_origin_page();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.active_tab().canvas().update_engine_rendering();
+            canvas.return_to_origin_page();
+            canvas.engine().borrow_mut().resize_autoexpand();
+            canvas.update_engine_rendering();
         }));
 
         // New doc
         action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_new_doc(&appwindow);
+            dialogs::dialog_new_doc(&appwindow, &appwindow.active_tab().canvas());
         }));
 
         // Open doc
@@ -660,11 +671,13 @@ impl RnoteAppWindow {
         // Save doc
         action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                if let Some(output_file) = appwindow.active_tab().canvas().output_file() {
+                let canvas = appwindow.active_tab().canvas();
+
+                if let Some(output_file) = canvas.output_file() {
                     appwindow.overlays().start_pulsing_progressbar();
 
-                    if let Err(e) = appwindow.active_tab().canvas().save_document_to_file(&output_file).await {
-                        appwindow.active_tab().canvas().set_output_file(None);
+                    if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                        canvas.set_output_file(None);
 
                         log::error!("saving document failed with error `{e:?}`");
                         appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
@@ -674,23 +687,25 @@ impl RnoteAppWindow {
                     // No success toast on saving without dialog, success is already indicated in the header title
                 } else {
                     // Open a dialog to choose a save location
-                    dialogs::export::filechooser_save_doc_as(&appwindow);
+                    dialogs::export::filechooser_save_doc_as(&appwindow, &canvas);
                 }
             }));
         }));
 
         // Save doc as
         action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::export::filechooser_save_doc_as(&appwindow);
+            dialogs::export::filechooser_save_doc_as(&appwindow, &appwindow.active_tab().canvas());
         }));
 
         // Print doc
         action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let doc_bounds = appwindow.active_tab().canvas().engine().borrow().document.bounds();
-            let format_size = na::vector![appwindow.active_tab().canvas().engine().borrow().document.format.width, appwindow.active_tab().canvas().engine().borrow().document.format.height];
-            let engine_snapshot = appwindow.active_tab().canvas().engine().borrow().take_snapshot();
-            let pages_bounds = appwindow.active_tab().canvas().engine().borrow().pages_bounds_w_content();
+            let canvas = appwindow.active_tab().canvas();
+
+            let pages_bounds = canvas.engine().borrow().pages_bounds_w_content();
             let n_pages = pages_bounds.len();
+            let engine_snapshot = canvas.engine().borrow().take_snapshot();
+            let doc_bounds = engine_snapshot.document.bounds();
+            let format_size = na::vector![engine_snapshot.document.format.width, engine_snapshot.document.format.height];
 
             // TODO: Exposing this as a setting in the print dialog
             let with_background = true;
@@ -698,7 +713,7 @@ impl RnoteAppWindow {
             appwindow.overlays().start_pulsing_progressbar();
 
             let background_svg = if with_background {
-                appwindow.active_tab().canvas().engine().borrow().document
+                canvas.engine().borrow().document
                     .background
                     .gen_svg(doc_bounds, true)
                     .map_err(|e| {
@@ -720,11 +735,11 @@ impl RnoteAppWindow {
             }));
 
 
-            print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_no| {
+            print_op.connect_draw_page(clone!(@weak appwindow, @weak canvas => move |_print_op, print_cx, page_no| {
                 if let Err(e) = || -> anyhow::Result<()> {
                     let page_bounds = pages_bounds[page_no as usize];
 
-                    let page_strokes = appwindow.active_tab().canvas().engine().borrow()
+                    let page_strokes = canvas.engine().borrow()
                         .store
                         .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
 
@@ -805,18 +820,20 @@ impl RnoteAppWindow {
 
         // Export document
         action_export_doc.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::dialog_export_doc_w_prefs(&appwindow);
+            dialogs::export::dialog_export_doc_w_prefs(&appwindow, &appwindow.active_tab().canvas());
         }));
 
         // Export document pages
         action_export_doc_pages.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow);
+            dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow, &appwindow.active_tab().canvas());
         }));
 
         // Export selection
         action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            if !appwindow.active_tab().canvas().engine().borrow().store.selection_keys_unordered().is_empty() {
-                dialogs::export::dialog_export_selection_w_prefs(&appwindow);
+            let canvas = appwindow.active_tab().canvas();
+
+            if !canvas.engine().borrow().store.selection_keys_unordered().is_empty() {
+                dialogs::export::dialog_export_selection_w_prefs(&appwindow, &appwindow.active_tab().canvas());
             } else {
                 appwindow.overlays().dispatch_toast_error(&gettext("Export selection failed, nothing selected."));
             }
@@ -824,7 +841,9 @@ impl RnoteAppWindow {
 
         // Clipboard copy
         action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let (content, widget_flags) = match appwindow.active_tab().canvas().engine().borrow().fetch_clipboard_content() {
+            let canvas = appwindow.active_tab().canvas();
+
+            let (content, widget_flags) = match canvas.engine().borrow().fetch_clipboard_content() {
                 Ok((content, widget_flags)) => (content,widget_flags),
                 Err(e) => {
                     log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err: {e:?}");
@@ -847,12 +866,14 @@ impl RnoteAppWindow {
                 }
             }
 
-            appwindow.handle_widget_flags(widget_flags);
+            appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
         // Clipboard cut
         action_clipboard_cut.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let (content, widget_flags) = match appwindow.active_tab().canvas().engine().borrow_mut().cut_clipboard_content() {
+            let canvas = appwindow.active_tab().canvas();
+
+            let (content, widget_flags) = match canvas.engine().borrow_mut().cut_clipboard_content() {
 
                 Ok((content, widget_flags)) => (content,widget_flags),
                 Err(e) => {
@@ -874,11 +895,12 @@ impl RnoteAppWindow {
                 }
             }
 
-            appwindow.handle_widget_flags(widget_flags);
+            appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
         // Clipboard paste as selection
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let canvas = appwindow.active_tab().canvas();
             let content_formats = appwindow.clipboard().formats();
 
             // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in many text based formats
@@ -945,10 +967,10 @@ impl RnoteAppWindow {
                     "image/bmp",
                 ];
                 if let Some(mime_type) = MIMES.into_iter().find(|&mime| content_formats.contain_mime_type(mime)) {
-                    glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
-                                if let Err(e) = appwindow.active_tab().canvas().load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
+                                if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
                                     log::error!("failed to paste clipboard as {mime_type}, load_in_bitmapimage_bytes() returned Err: {e:?}");
                                 };
                             }
@@ -960,10 +982,10 @@ impl RnoteAppWindow {
                     }));
                 }
             } else if content_formats.contain_mime_type("text/plain") || content_formats.contain_mime_type("text/plain;charset=utf-8"){
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
-                            if let Err(e) = appwindow.active_tab().canvas().load_in_text(text.to_string(), None) {
+                            if let Err(e) = canvas.load_in_text(text.to_string(), None) {
                                 log::error!("failed to paste clipboard text, Err: {e:?}");
                             }
                         }

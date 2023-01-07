@@ -203,7 +203,6 @@ impl BrushPage {
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
                 let stroke_width = brush_widthscale_spinbutton.value();
-
                 let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 

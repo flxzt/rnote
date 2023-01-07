@@ -149,9 +149,11 @@ impl RnoteOverlays {
 
         imp.tabview
             .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
+                let canvas = appwindow.active_tab().canvas();
+
                 appwindow.clear_rendering_inactive_tabs();
-                appwindow.active_tab().canvas().regenerate_background_pattern();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                canvas.regenerate_background_pattern();
+                canvas.update_engine_rendering();
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
             }));
 
@@ -241,9 +243,10 @@ impl RnoteOverlays {
         imp.colorpicker.connect_notify_local(
                 Some("stroke-color"),
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
-                    let stroke_style = appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override();
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let engine = appwindow.active_tab().canvas().engine();
+                    let canvas = appwindow.active_tab().canvas();
+                    let stroke_style = canvas.engine().borrow().penholder.current_style_w_override();
+                    let engine = canvas.engine();
                     let engine = &mut *engine.borrow_mut();
 
                     // We have a global colorpicker, so we apply it to all styles
@@ -269,7 +272,7 @@ impl RnoteOverlays {
                                         camera: &mut engine.camera,
                                         audioplayer: &mut engine.audioplayer
                                 });
-                                appwindow.handle_widget_flags(widget_flags);
+                                appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }
                         PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools => {}
@@ -281,7 +284,8 @@ impl RnoteOverlays {
             Some("fill-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let fill_color = colorpicker.fill_color().into_compose_color();
-                let engine = appwindow.active_tab().canvas().engine();
+                let canvas = appwindow.active_tab().canvas();
+                let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 // We have a global colorpicker, so we apply it to all styles

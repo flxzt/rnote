@@ -241,7 +241,6 @@ impl ShaperPage {
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
                 let stroke_width = width_spinbutton.value();
-
                 let engine = appwindow.active_tab().canvas().engine();
                 let mut engine = engine.borrow_mut();
 

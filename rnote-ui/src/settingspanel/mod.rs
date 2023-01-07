@@ -437,15 +437,9 @@ impl SettingsPanel {
 
     fn refresh_general_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+        let canvas = appwindow.active_tab().canvas();
 
-        let format_border_color = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format
-            .border_color;
+        let format_border_color = canvas.engine().borrow().document.format.border_color;
 
         imp.general_format_border_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
@@ -453,13 +447,9 @@ impl SettingsPanel {
 
     fn refresh_format_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let format = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format;
+        let canvas = appwindow.active_tab().canvas();
+
+        let format = canvas.engine().borrow().document.format;
 
         *self.imp().temporary_format.borrow_mut() = format;
 
@@ -477,20 +467,10 @@ impl SettingsPanel {
 
     fn refresh_background_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let background = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .background;
-        let format = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format;
+        let canvas = appwindow.active_tab().canvas();
+
+        let background = canvas.engine().borrow().document.background;
+        let format = canvas.engine().borrow().document.format;
 
         imp.background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -515,13 +495,9 @@ impl SettingsPanel {
 
     fn refresh_shortcuts_ui(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
-        let current_shortcuts = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .penholder
-            .list_current_shortcuts();
+        let canvas = appwindow.active_tab().canvas();
+
+        let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
 
         current_shortcuts
             .into_iter()
@@ -543,6 +519,7 @@ impl SettingsPanel {
 
     pub(crate) fn sync_state_active_tab(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+        let canvas = appwindow.active_tab().canvas();
 
         // update the UI from the engine
         self.refresh_general_ui(appwindow);
@@ -550,16 +527,8 @@ impl SettingsPanel {
         self.refresh_background_ui(appwindow);
 
         // update the engine from UI
-        appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .penholder
-            .clear_shortcuts();
-        appwindow
-            .active_tab()
-            .canvas()
+        canvas.engine().borrow_mut().penholder.clear_shortcuts();
+        canvas
             .engine()
             .borrow_mut()
             .penholder
@@ -567,9 +536,7 @@ impl SettingsPanel {
                 ShortcutKey::MouseSecondaryButton,
                 imp.penshortcut_mouse_button_secondary_row.action(),
             );
-        appwindow
-            .active_tab()
-            .canvas()
+        canvas
             .engine()
             .borrow_mut()
             .penholder
@@ -577,9 +544,7 @@ impl SettingsPanel {
                 ShortcutKey::StylusPrimaryButton,
                 imp.penshortcut_stylus_button_primary_row.action(),
             );
-        appwindow
-            .active_tab()
-            .canvas()
+        canvas
             .engine()
             .borrow_mut()
             .penholder
@@ -669,21 +634,24 @@ impl SettingsPanel {
         imp.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 let temporary_format = *temporary_format.borrow();
-                appwindow.active_tab().canvas().engine().borrow_mut().document.format = temporary_format;
+                let canvas = appwindow.active_tab().canvas();
 
-                appwindow.active_tab().canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.active_tab().canvas().update_engine_rendering();
+                canvas.engine().borrow_mut().document.format = temporary_format;
+                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                canvas.update_engine_rendering();
             }),
         );
 
         imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
             let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
-            appwindow.active_tab().canvas().engine().borrow_mut().document.format.border_color = format_border_color;
+            let canvas = appwindow.active_tab().canvas();
+
+            canvas.engine().borrow_mut().document.format.border_color = format_border_color;
 
             // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
 
-            appwindow.active_tab().canvas().update_engine_rendering();
+            canvas.update_engine_rendering();
         }));
     }
 
@@ -691,16 +659,18 @@ impl SettingsPanel {
         let imp = self.imp();
 
         imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.active_tab().canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().regenerate_background_pattern();
-            appwindow.active_tab().canvas().update_engine_rendering();
+            canvas.engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         }));
 
         imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_background_patterns_row| {
             let pattern = settings_panel.background_pattern();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().engine().borrow_mut().document.background.pattern = pattern;
+            canvas.engine().borrow_mut().document.background.pattern = pattern;
 
             match pattern {
                 PatternStyle::None => {
@@ -721,28 +691,30 @@ impl SettingsPanel {
                 },
             }
 
-            appwindow.active_tab().canvas().regenerate_background_pattern();
-            appwindow.active_tab().canvas().update_engine_rendering();
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         }));
 
         imp.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.active_tab().canvas().engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+            let canvas = appwindow.active_tab().canvas();
 
-            appwindow.active_tab().canvas().regenerate_background_pattern();
-            appwindow.active_tab().canvas().update_engine_rendering();
+            canvas.engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         }));
 
         imp.background_pattern_width_unitentry.get().connect_local(
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.active_tab().canvas().engine().borrow().document.background.pattern_size;
+                    let canvas = appwindow.active_tab().canvas();
+
+                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
                     pattern_size[0] = settings_panel.imp().background_pattern_width_unitentry.value_in_px();
+                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
+                    canvas.regenerate_background_pattern();
+                    canvas.update_engine_rendering();
 
-                    appwindow.active_tab().canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
-
-                    appwindow.active_tab().canvas().regenerate_background_pattern();
-                    appwindow.active_tab().canvas().update_engine_rendering();
                     None
             }),
         );
@@ -751,13 +723,14 @@ impl SettingsPanel {
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.active_tab().canvas().engine().borrow().document.background.pattern_size;
+                    let canvas = appwindow.active_tab().canvas();
+
+                    let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
                     pattern_size[1] = settings_panel.imp().background_pattern_height_unitentry.value_in_px();
+                    canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
+                    canvas.regenerate_background_pattern();
+                    canvas.update_engine_rendering();
 
-                    appwindow.active_tab().canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
-
-                    appwindow.active_tab().canvas().regenerate_background_pattern();
-                    appwindow.active_tab().canvas().update_engine_rendering();
                     None
             }),
         );
@@ -798,21 +771,10 @@ impl SettingsPanel {
 
     fn revert_format(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
+        let canvas = appwindow.active_tab().canvas();
 
-        *imp.temporary_format.borrow_mut() = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format;
-        let revert_format = appwindow
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .document
-            .format;
+        *imp.temporary_format.borrow_mut() = canvas.engine().borrow().document.format;
+        let revert_format = canvas.engine().borrow().document.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
 

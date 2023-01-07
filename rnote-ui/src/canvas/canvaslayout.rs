@@ -7,8 +7,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 
 use crate::canvas::RnoteCanvas;
-use rnote_engine::document::Layout;
-use rnote_engine::render;
+use rnote_engine::{document::Layout, render, Document};
 
 mod imp {
     use super::*;
@@ -53,17 +52,14 @@ mod imp {
             if orientation == Orientation::Vertical {
                 let canvas_height = canvas.height() as f64;
 
-                let natural_height = (document.height * total_zoom + canvas_height
-                    - 2.0 * super::CanvasLayout::ADJS_LIMIT)
-                    .round() as i32;
+                let natural_height = (document.height * total_zoom + canvas_height).ceil() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let canvas_width = canvas.width() as f64;
+                // let canvas_width = canvas.width() as f64;
 
-                let natural_width = (document.width * total_zoom + canvas_width
-                    - 2.0 * super::CanvasLayout::ADJS_LIMIT)
-                    .round() as i32;
+                let natural_width =
+                    (document.width * total_zoom + 2.0 * Document::SHADOW_WIDTH).ceil() as i32;
 
                 (0, natural_width, -1, -1)
             }
@@ -79,14 +75,13 @@ mod imp {
             let total_zoom = engine.camera.total_zoom();
             let document = engine.document;
 
-            let new_size = na::vector![f64::from(width), f64::from(height)];
+            let canvas_size = na::vector![f64::from(width), f64::from(height)];
 
             // Update the adjustments
             let (h_lower, h_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.x * total_zoom - new_size[0] + super::CanvasLayout::ADJS_LIMIT,
-                    (document.x + document.width) * total_zoom + new_size[0]
-                        - super::CanvasLayout::ADJS_LIMIT,
+                    document.x * total_zoom - Document::SHADOW_WIDTH,
+                    (document.x + document.width) * total_zoom + Document::SHADOW_WIDTH,
                 ),
                 Layout::Infinite => (
                     document.x * total_zoom,
@@ -95,10 +90,10 @@ mod imp {
             };
 
             let (v_lower, v_upper) = match document.layout {
+                // Scroll beyond the document by half the widget size
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.y * total_zoom - new_size[1] + super::CanvasLayout::ADJS_LIMIT,
-                    (document.y + document.height) * total_zoom + new_size[1]
-                        - super::CanvasLayout::ADJS_LIMIT,
+                    document.y * total_zoom - canvas_size[1] * 0.5,
+                    (document.y + document.height) * total_zoom + canvas_size[1] * 0.5,
                 ),
                 Layout::Infinite => (
                     document.y * total_zoom,
@@ -110,23 +105,23 @@ mod imp {
                 hadj.value(),
                 h_lower,
                 h_upper,
-                0.1 * new_size[0],
-                0.9 * new_size[0],
-                new_size[0],
+                0.1 * canvas_size[0],
+                0.9 * canvas_size[0],
+                canvas_size[0],
             );
 
             vadj.configure(
                 vadj.value(),
                 v_lower,
                 v_upper,
-                0.1 * new_size[1],
-                0.9 * new_size[1],
-                new_size[1],
+                0.1 * canvas_size[1],
+                0.9 * canvas_size[1],
+                canvas_size[1],
             );
 
             // Update the camera
             engine.camera.offset = na::vector![hadj.value(), vadj.value()];
-            engine.camera.size = new_size;
+            engine.camera.size = canvas_size;
 
             // always update the background rendering
             if let Err(e) = engine.update_background_rendering_current_viewport() {
@@ -177,8 +172,6 @@ impl Default for CanvasLayout {
 }
 
 impl CanvasLayout {
-    pub const ADJS_LIMIT: f64 = 128.0;
-
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

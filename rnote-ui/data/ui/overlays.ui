@@ -26,6 +26,23 @@
           </object>
         </child>
         <child type="overlay">
+          <object class="ColorPicker" id="colorpicker">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">18</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="amount-colorbuttons">8</property>
+            <property name="position">top</property>
+            <style>
+              <class name="overlay-toolbar" />
+            </style>
+          </object>
+        </child>
+        <child type="overlay">
           <object class="GtkBox" id="pens_toggles_box">
             <property name="hexpand">false</property>
             <property name="vexpand">false</property>
@@ -90,23 +107,6 @@
                 <property name="group">brush_toggle</property>
               </object>
             </child>
-          </object>
-        </child>
-        <child type="overlay">
-          <object class="ColorPicker" id="colorpicker">
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-            <property name="halign">center</property>
-            <property name="valign">start</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
-            <property name="margin-start">6</property>
-            <property name="margin-end">6</property>
-            <property name="amount-colorbuttons">8</property>
-            <property name="position">top</property>
-            <style>
-              <class name="overlay-toolbar" />
-            </style>
           </object>
         </child>
         <child>

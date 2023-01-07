@@ -319,7 +319,6 @@ impl RnoteAppWindow {
                 // state changes from the UI to the engine
                 let pen_style = action_pen_style.state().unwrap().get::<PenStyle>().unwrap();
                 let pen_sounds = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
-                let format_borders = action_format_borders.state().unwrap().get::<bool>().unwrap();
                 let stroke_color = appwindow.overlays().colorpicker().stroke_color().into_compose_color();
                 let fill_color = appwindow.overlays().colorpicker().fill_color().into_compose_color();
 
@@ -328,8 +327,6 @@ impl RnoteAppWindow {
 
                 widget_flags.merge(engine.change_pen_style(pen_style));
                 engine.set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKGDATADIR)));
-
-                engine.document.format.show_borders = format_borders;
 
                 engine.pens_config.brush_config.style = appwindow.penssidebar().brush_page().brush_style().unwrap_or_default();
                 engine.pens_config.brush_config.builder_type = appwindow.penssidebar().brush_page().buildertype().unwrap_or_default();
@@ -365,13 +362,13 @@ impl RnoteAppWindow {
 
             {
                 // state changes from the engine to the UI
-                let format = canvas.engine().borrow().document.format;
+                let format_show_borders = canvas.engine().borrow().document.format.show_borders;
                 let doc_layout = canvas.engine().borrow().document.layout;
                 let can_undo = canvas.engine().borrow().can_undo();
                 let can_redo = canvas.engine().borrow().can_redo();
 
+                action_format_borders.change_state(&format_show_borders.to_variant());
                 action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
-                action_format_borders.change_state(&format.show_borders.to_variant());
                 appwindow.mainheader().undo_button().set_sensitive(can_undo);
                 appwindow.mainheader().redo_button().set_sensitive(can_redo);
                 appwindow.refresh_titles_active_tab();

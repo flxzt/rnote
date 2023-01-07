@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-07 22:22+0100\n"
-"PO-Revision-Date: 2022-12-23 16:27+0000\n"
+"PO-Revision-Date: 2023-01-08 08:55+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -99,16 +99,12 @@ msgid "New Document"
 msgstr "Nieuw document"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved changes. Do you want to "
-#| "save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved\n"
 "      changes. Do you want to save the current document?"
 msgstr ""
-"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Wilt u het huidige "
-"werkblad opslaan?"
+"Hierdoor gaan alle niet-opgeslagen aanpassingen verloren.\n"
+"            Wilt u het huidige werkblad opslaan?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
@@ -124,7 +120,7 @@ msgstr "Opslaan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close tab"
-msgstr ""
+msgstr "Tabblad sluiten"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""

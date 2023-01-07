@@ -49,19 +49,22 @@ mod imp {
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
             let document = canvas.engine().borrow().document;
 
-            if orientation == Orientation::Vertical {
-                let canvas_height = canvas.height() as f64;
-
-                let natural_height = (document.height * total_zoom + canvas_height).ceil() as i32;
-
-                (0, natural_height, -1, -1)
-            } else {
+            if orientation == Orientation::Horizontal {
                 // let canvas_width = canvas.width() as f64;
 
-                let natural_width =
-                    (document.width * total_zoom + 2.0 * Document::SHADOW_WIDTH).ceil() as i32;
+                let natural_width = (document.width * total_zoom
+                    + 2.0 * super::CanvasLayout::OVERSHOOT_HORIZONTAL)
+                    .ceil() as i32;
 
                 (0, natural_width, -1, -1)
+            } else {
+                // let canvas_height = canvas.height() as f64;
+
+                let natural_height = (document.height * total_zoom
+                    + 2.0 * super::CanvasLayout::OVERSHOOT_VERTICAL)
+                    .ceil() as i32;
+
+                (0, natural_height, -1, -1)
             }
         }
 
@@ -80,8 +83,9 @@ mod imp {
             // Update the adjustments
             let (h_lower, h_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.x * total_zoom - Document::SHADOW_WIDTH,
-                    (document.x + document.width) * total_zoom + Document::SHADOW_WIDTH,
+                    document.x * total_zoom - super::CanvasLayout::OVERSHOOT_HORIZONTAL,
+                    (document.x + document.width) * total_zoom
+                        + super::CanvasLayout::OVERSHOOT_HORIZONTAL,
                 ),
                 Layout::Infinite => (
                     document.x * total_zoom,
@@ -92,8 +96,9 @@ mod imp {
             let (v_lower, v_upper) = match document.layout {
                 // Scroll beyond the document by half the widget size
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.y * total_zoom - canvas_size[1] * 0.5,
-                    (document.y + document.height) * total_zoom + canvas_size[1] * 0.5,
+                    document.y * total_zoom - super::CanvasLayout::OVERSHOOT_VERTICAL,
+                    (document.y + document.height) * total_zoom
+                        + super::CanvasLayout::OVERSHOOT_VERTICAL,
                 ),
                 Layout::Infinite => (
                     document.y * total_zoom,
@@ -172,6 +177,9 @@ impl Default for CanvasLayout {
 }
 
 impl CanvasLayout {
+    const OVERSHOOT_VERTICAL: f64 = 96.0;
+    const OVERSHOOT_HORIZONTAL: f64 = Document::SHADOW_WIDTH;
+
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

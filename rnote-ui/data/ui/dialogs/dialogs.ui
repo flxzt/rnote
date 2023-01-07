@@ -37,13 +37,13 @@
     </responses>
   </object>
 
-  <object class="AdwMessageDialog" id="dialog_quit_save">
-    <property name="heading" translatable="yes">Quit Application</property>
+  <object class="AdwMessageDialog" id="dialog_close_window">
+    <property name="heading" translatable="yes">Close window</property>
     <property name="body" translatable="yes">Some opened files contain unsaved changes. Changes which are not saved will be permanently lost.</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
     <property name="extra-child">
-      <object class="AdwPreferencesGroup" id="quit_save_files_group">
+      <object class="AdwPreferencesGroup" id="close_window_files_group">
         <property name="title">Unsaved documents</property>
       </object>
     </property>

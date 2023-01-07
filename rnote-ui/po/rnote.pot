@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 16:32+0100\n"
+"POT-Creation-Date: 2023-01-07 16:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,8 +58,6 @@ msgstr ""
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr ""
-
-
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear document"
@@ -124,7 +122,7 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-msgid "Quit Application"
+msgid "Close window"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42

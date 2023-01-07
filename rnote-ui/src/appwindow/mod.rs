@@ -268,7 +268,7 @@ mod imp {
             if inst.tabs_any_unsaved_changes() {
                 glib::MainContext::default().spawn_local(
                     clone!(@strong inst as appwindow => async move {
-                        dialogs::dialog_quit_save(&inst).await;
+                        dialogs::dialog_close_window(&inst).await;
                     }),
                 );
             } else {

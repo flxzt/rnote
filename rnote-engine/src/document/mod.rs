@@ -4,21 +4,42 @@ pub mod format;
 // Re-exports
 pub use background::Background;
 pub use format::Format;
+
+// Imports
 use rnote_compose::Color;
 
 use crate::{Camera, StrokeStore};
 use rnote_compose::helpers::AabbHelpers;
 
+use gtk4::{glib, prelude::*};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    glib::Enum,
+    glib::Variant,
+    Serialize,
+    Deserialize,
+)]
 #[serde(rename = "layout")]
+#[repr(u32)]
+#[enum_type(name = "Layout")]
+#[variant_enum(enum)]
 pub enum Layout {
+    #[enum_value(name = "FixedSize", nick = "fixed-size")]
     #[serde(rename = "fixed_size")]
     FixedSize,
+    #[enum_value(name = "ContinuousVertical", nick = "continuous-vertical")]
     #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
     ContinuousVertical,
+    #[enum_value(name = "Infinite", nick = "infinite")]
     #[serde(rename = "infinite")]
     Infinite,
 }
@@ -29,7 +50,25 @@ impl Default for Layout {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+impl Layout {
+    pub fn name(self) -> String {
+        glib::EnumValue::from_value(&self.to_value())
+            .unwrap()
+            .1
+            .name()
+            .to_string()
+    }
+
+    pub fn nick(self) -> String {
+        glib::EnumValue::from_value(&self.to_value())
+            .unwrap()
+            .1
+            .nick()
+            .to_string()
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
     #[serde(rename = "x")]
@@ -45,7 +84,7 @@ pub struct Document {
     #[serde(rename = "background")]
     pub background: Background,
     #[serde(rename = "layout", alias = "expand_mode")]
-    layout: Layout,
+    pub layout: Layout,
 }
 
 impl Default for Document {
@@ -71,16 +110,6 @@ impl Document {
         b: 0.0,
         a: 0.35,
     };
-
-    pub(crate) fn layout(&self) -> Layout {
-        self.layout
-    }
-
-    pub(crate) fn set_layout(&mut self, layout: Layout, store: &StrokeStore, camera: &Camera) {
-        self.layout = layout;
-
-        self.resize_to_fit_strokes(store, camera);
-    }
 
     pub fn bounds(&self) -> Aabb {
         Aabb::new(

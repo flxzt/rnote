@@ -41,7 +41,7 @@ pub(crate) fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::S
                 }
             }
 
-            appwindow.canvas_wrapper().finish_progressbar();
+            appwindow.overlays().finish_progressbar();
         }),
     );
 
@@ -59,10 +59,7 @@ fn create_process_evaluator(
             status as f64
         };
 
-        appwindow
-            .canvas_wrapper()
-            .progressbar()
-            .set_fraction(status);
+        appwindow.overlays().progressbar().set_fraction(status);
         TransitProcessResult::ContinueOrAbort
     }
 }

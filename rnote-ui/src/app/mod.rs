@@ -7,13 +7,13 @@ use rnote_engine::pens::PenStyle;
 use std::path::Path;
 
 use crate::{
-    colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
-    penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-    penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
+    colorpicker::ColorPad, colorpicker::ColorSetter, config, penssidebar::BrushPage,
+    penssidebar::EraserPage, penssidebar::SelectorPage, penssidebar::ShaperPage,
+    penssidebar::ToolsPage, penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
     workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::FileRow,
     workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
-    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, SettingsPanel, UnitEntry,
-    WorkspaceBrowser,
+    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel,
+    UnitEntry, WorkspaceBrowser,
 };
 
 mod imp {
@@ -93,10 +93,12 @@ mod imp {
         fn setup_gresources(&self) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
+            RnoteOverlays::static_type();
             RnoteCanvasWrapper::static_type();
             RnoteCanvas::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
+            ColorPad::static_type();
             CanvasMenu::static_type();
             SettingsPanel::static_type();
             AppMenu::static_type();

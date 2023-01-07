@@ -65,13 +65,13 @@ impl ToolsPage {
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::VerticalSpace;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::VerticalSpace;
             }
         }));
 
         imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
             if toolstyle_offsetcamera_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::OffsetCamera;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::OffsetCamera;
             }
         }));
     }
@@ -80,6 +80,7 @@ impl ToolsPage {
         let imp = self.imp();
 
         let tools_config = appwindow
+            .active_tab()
             .canvas()
             .engine()
             .borrow()

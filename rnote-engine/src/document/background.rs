@@ -179,7 +179,7 @@ pub fn gen_dots_pattern(
     group.into()
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "background")]
 pub struct Background {
     #[serde(rename = "color")]

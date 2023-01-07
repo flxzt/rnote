@@ -59,7 +59,8 @@ mod imp {
             inst.bind_property("value", &self.value_spinner.get(), "value")
                 .transform_to(|_, val: f64| Some(val))
                 .transform_from(|_, val: f64| Some(val))
-                .flags(glib::BindingFlags::BIDIRECTIONAL | glib::BindingFlags::SYNC_CREATE)
+                .sync_create()
+                .bidirectional()
                 .build();
 
             // DropDown

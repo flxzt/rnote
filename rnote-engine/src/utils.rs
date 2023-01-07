@@ -98,13 +98,13 @@ pub fn now_formatted_string() -> String {
 
 pub fn default_file_title_for_export(
     output_file: Option<gio::File>,
-    default_fallback: Option<&str>,
+    fallback: Option<&str>,
     suffix: Option<&str>,
 ) -> String {
     let mut title = output_file
         .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
         .unwrap_or_else(|| {
-            default_fallback
+            fallback
                 .map(|f| f.to_owned())
                 .unwrap_or_else(now_formatted_string)
         });

@@ -1,6 +1,5 @@
 mod appsettings;
 mod appwindowactions;
-pub(crate) mod imexport;
 
 use std::{
     cell::{Cell, RefCell},
@@ -12,21 +11,20 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
     CornerType, CssProvider, FileChooserNative, GestureDrag, Grid, IconTheme, Inhibit, PackType,
-    PositionType, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext,
-    ToggleButton,
+    PropagationPhase, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 
+use crate::canvas::RnoteCanvas;
 use crate::{
-    canvas::RnoteCanvas,
     config,
     penssidebar::PensSideBar,
     settingspanel::SettingsPanel,
     workspacebrowser::WorkspaceBrowser,
-    RnoteApp, RnoteCanvasWrapper,
+    RnoteApp, RnoteCanvasWrapper, RnoteOverlays,
     {dialogs, mainheader::MainHeader},
 };
-use rnote_engine::{engine::EngineTask, pens::PenStyle, WidgetFlags};
+use rnote_engine::{engine::EngineTask, WidgetFlags};
 
 mod imp {
     use super::*;
@@ -43,15 +41,16 @@ mod imp {
         pub(crate) autosave: Cell<bool>,
         pub(crate) autosave_interval_secs: Cell<u32>,
         pub(crate) righthanded: Cell<bool>,
+        pub(crate) touch_drawing: Cell<bool>,
 
         #[template_child]
         pub(crate) main_grid: TemplateChild<Grid>,
         #[template_child]
-        pub(crate) canvas_wrapper: TemplateChild<RnoteCanvasWrapper>,
+        pub(crate) overlays: TemplateChild<RnoteOverlays>,
+        #[template_child]
+        pub(crate) tabbar: TemplateChild<adw::TabBar>,
         #[template_child]
         pub(crate) settings_panel: TemplateChild<SettingsPanel>,
-        #[template_child]
-        pub(crate) sidebar_start_spacer_revealer: TemplateChild<Revealer>,
         #[template_child]
         pub(crate) sidebar_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -81,20 +80,6 @@ mod imp {
         #[template_child]
         pub(crate) mainheader: TemplateChild<MainHeader>,
         #[template_child]
-        pub(crate) narrow_pens_toggles_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub(crate) narrow_brush_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_shaper_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_eraser_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_selector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_typewriter_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) narrow_tools_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
         pub(crate) penssidebar: TemplateChild<PensSideBar>,
     }
 
@@ -109,11 +94,12 @@ mod imp {
                 autosave: Cell::new(true),
                 autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
+                touch_drawing: Cell::new(false),
 
                 main_grid: TemplateChild::<Grid>::default(),
-                canvas_wrapper: TemplateChild::<RnoteCanvasWrapper>::default(),
+                overlays: TemplateChild::<RnoteOverlays>::default(),
+                tabbar: TemplateChild::<adw::TabBar>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
-                sidebar_start_spacer_revealer: TemplateChild::<Revealer>::default(),
                 sidebar_scroller: TemplateChild::<ScrolledWindow>::default(),
                 sidebar_box: TemplateChild::<Grid>::default(),
                 sidebar_sep: TemplateChild::<Separator>::default(),
@@ -128,13 +114,6 @@ mod imp {
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
-                narrow_pens_toggles_revealer: TemplateChild::<Revealer>::default(),
-                narrow_brush_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_shaper_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_typewriter_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_eraser_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_selector_toggle: TemplateChild::<ToggleButton>::default(),
-                narrow_tools_toggle: TemplateChild::<ToggleButton>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
             }
         }
@@ -176,8 +155,8 @@ mod imp {
                 gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
             );
 
+            self.setup_tabbar();
             self.setup_flap();
-            self.setup_narrow_pens_toggles();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -209,6 +188,14 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Whether to enable touch drawing
+                    glib::ParamSpecBoolean::new(
+                        "touch-drawing",
+                        "touch-drawing",
+                        "touch-drawing",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -219,6 +206,7 @@ mod imp {
                 "autosave" => self.autosave.get().to_value(),
                 "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
+                "touch-drawing" => self.touch_drawing.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -260,6 +248,11 @@ mod imp {
 
                     self.handle_righthanded_property(righthanded);
                 }
+                "touch-drawing" => {
+                    let touch_drawing: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.touch_drawing.replace(touch_drawing);
+                }
                 _ => unimplemented!(),
             }
         }
@@ -270,11 +263,15 @@ mod imp {
     impl WindowImpl for RnoteAppWindow {
         // Save window state right before the window will be closed
         fn close_request(&self) -> Inhibit {
-            let inst = self.instance();
+            let inst = self.instance().to_owned();
 
             // Save current doc
-            if inst.canvas().unsaved_changes() {
-                dialogs::dialog_quit_save(&inst);
+            if inst.tabs_any_unsaved_changes() {
+                glib::MainContext::default().spawn_local(
+                    clone!(@weak inst as appwindow => async move {
+                        dialogs::dialog_close_window(&inst).await;
+                    }),
+                );
             } else {
                 inst.close_force();
             }
@@ -290,18 +287,22 @@ mod imp {
 
     impl RnoteAppWindow {
         fn update_autosave_handler(&self) {
-            let obj = self.instance();
+            let inst = self.instance();
 
-            if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
-                if let Some(output_file) = appwindow.canvas_wrapper().canvas().output_file() {
-                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                        if let Err(e) = appwindow.save_document_to_file(&output_file).await {
-                            appwindow.canvas().set_output_file(None);
+            if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
+                clone!(@weak inst as appwindow => @default-return glib::source::Continue(false), move || {
+                    let canvas = appwindow.active_tab().canvas();
 
-                            log::error!("saving document failed with error `{e:?}`");
-                            appwindow.canvas_wrapper().dispatch_toast_error(&gettext("Saving document failed."));
+                    if let Some(output_file) = canvas.output_file() {
+                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                                canvas.set_output_file(None);
+
+                                log::error!("saving document failed with error `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                            }
                         }
-                    }));
+                    ));
                 }
 
                 glib::source::Continue(true)
@@ -310,45 +311,8 @@ mod imp {
             }
         }
 
-        fn setup_narrow_pens_toggles(&self) {
-            let inst = self.instance();
-
-            // pens narrow toggles
-            self.narrow_brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_brush_toggle| {
-                if narrow_brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_shaper_toggle| {
-                if narrow_shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_typewriter_toggle| {
-                if narrow_typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_eraser_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_eraser_toggle| {
-                if narrow_eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_selector_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_selector_toggle| {
-                if narrow_selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
-                }
-            }));
-
-            self.narrow_tools_toggle.connect_toggled(clone!(@weak inst as appwindow => move |narrow_tools_toggle| {
-                if narrow_tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
-                }
-            }));
+        fn setup_tabbar(&self) {
+            self.tabbar.set_view(Some(&self.overlays.tabview()));
         }
 
         // Setting up the sidebar flap
@@ -368,7 +332,8 @@ mod imp {
 
             self.flapreveal_toggle
                 .bind_property("active", &flap, "reveal-flap")
-                .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+                .sync_create()
+                .bidirectional()
                 .build();
 
             self.flapreveal_toggle.connect_toggled(
@@ -517,29 +482,17 @@ mod imp {
 
             if righthanded {
                 inst.flap().set_flap_position(PackType::Start);
-                inst.main_grid().remove(&inst.sidebar_box());
+                inst.main_grid().remove(&inst.overlays());
                 inst.main_grid().remove(&inst.sidebar_sep());
-                inst.main_grid()
-                    .remove(&inst.narrow_pens_toggles_revealer());
-                inst.main_grid().remove(&inst.canvas_wrapper());
-                inst.main_grid().attach(&inst.sidebar_box(), 0, 1, 1, 2);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
-                inst.main_grid()
-                    .attach(&inst.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
-                inst.main_grid().attach(&inst.canvas_wrapper(), 2, 2, 1, 1);
-                inst.canvas_wrapper()
-                    .quickactions_box()
-                    .set_halign(Align::End);
+                inst.main_grid().remove(&inst.sidebar_box());
+                inst.main_grid().attach(&inst.overlays(), 2, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_box(), 0, 3, 1, 1);
+                inst.mainheader().quickactions_box().set_halign(Align::End);
                 inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
                     .set_active(true);
-                inst.mainheader()
-                    .headerbar()
-                    .remove(&inst.mainheader().pens_toggles_squeezer());
-                inst.mainheader()
-                    .headerbar()
-                    .pack_start(&inst.mainheader().pens_toggles_squeezer());
                 inst.workspacebrowser()
                     .grid()
                     .remove(&inst.workspacebrowser().workspacesbar());
@@ -568,9 +521,6 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
-                inst.canvas_wrapper()
-                    .scroller()
-                    .set_window_placement(CornerType::BottomRight);
                 inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopRight);
                 inst.settings_panel()
@@ -584,18 +534,6 @@ mod imp {
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
-                    .brush_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .stroke_colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .fill_colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
                 inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
@@ -612,35 +550,21 @@ mod imp {
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
-                    .typewriter_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Left.to_value());
             } else {
                 inst.flap().set_flap_position(PackType::End);
-                inst.main_grid().remove(&inst.canvas_wrapper());
-                inst.main_grid()
-                    .remove(&inst.narrow_pens_toggles_revealer());
+                inst.main_grid().remove(&inst.overlays());
                 inst.main_grid().remove(&inst.sidebar_sep());
                 inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.canvas_wrapper(), 0, 2, 1, 1);
-                inst.main_grid()
-                    .attach(&inst.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 1, 1, 2);
-                inst.main_grid().attach(&inst.sidebar_box(), 2, 1, 1, 2);
-                inst.canvas_wrapper()
+                inst.main_grid().attach(&inst.overlays(), 0, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
+                inst.main_grid().attach(&inst.sidebar_box(), 2, 3, 1, 1);
+                inst.mainheader()
                     .quickactions_box()
                     .set_halign(Align::Start);
                 inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()
                     .set_active(true);
-                inst.mainheader()
-                    .headerbar()
-                    .remove(&inst.mainheader().pens_toggles_squeezer());
-                inst.mainheader()
-                    .headerbar()
-                    .pack_end(&inst.mainheader().pens_toggles_squeezer());
                 inst.workspacebrowser()
                     .grid()
                     .remove(&inst.workspacebrowser().files_scroller());
@@ -669,9 +593,6 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
-                inst.canvas_wrapper()
-                    .scroller()
-                    .set_window_placement(CornerType::BottomLeft);
                 inst.sidebar_scroller()
                     .set_window_placement(CornerType::TopLeft);
                 inst.settings_panel()
@@ -685,18 +606,6 @@ mod imp {
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
-                    .brush_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .stroke_colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
-                inst.penssidebar()
-                    .shaper_page()
-                    .fill_colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
                 inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
@@ -713,10 +622,6 @@ mod imp {
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
-                    .typewriter_page()
-                    .colorpicker()
-                    .set_property("position", PositionType::Right.to_value());
             }
         }
     }
@@ -727,11 +632,6 @@ glib::wrapper! {
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
         @implements gio::ActionMap, gio::ActionGroup;
 }
-
-pub(crate) static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
-    once_cell::sync::Lazy::new(|| gettext("New Document"));
-pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
-    once_cell::sync::Lazy::new(|| gettext("Draft"));
 
 impl RnoteAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
@@ -773,6 +673,16 @@ impl RnoteAppWindow {
         self.set_property("righthanded", righthanded.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn touch_drawing(&self) -> bool {
+        self.property::<bool>("touch-drawing")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
+        self.set_property("touch-drawing", touch_drawing.to_value());
+    }
+
     pub(crate) fn app(&self) -> RnoteApp {
         self.application().unwrap().downcast::<RnoteApp>().unwrap()
     }
@@ -789,12 +699,8 @@ impl RnoteAppWindow {
         self.imp().main_grid.get()
     }
 
-    pub(crate) fn canvas_wrapper(&self) -> RnoteCanvasWrapper {
-        self.imp().canvas_wrapper.get()
-    }
-
-    pub(crate) fn canvas(&self) -> RnoteCanvas {
-        self.imp().canvas_wrapper.get().canvas()
+    pub(crate) fn overlays(&self) -> RnoteOverlays {
+        self.imp().overlays.get()
     }
 
     pub(crate) fn settings_panel(&self) -> SettingsPanel {
@@ -845,34 +751,6 @@ impl RnoteAppWindow {
         self.imp().mainheader.get()
     }
 
-    pub(crate) fn narrow_pens_toggles_revealer(&self) -> Revealer {
-        self.imp().narrow_pens_toggles_revealer.get()
-    }
-
-    pub(crate) fn narrow_brush_toggle(&self) -> ToggleButton {
-        self.imp().narrow_brush_toggle.get()
-    }
-
-    pub(crate) fn narrow_shaper_toggle(&self) -> ToggleButton {
-        self.imp().narrow_shaper_toggle.get()
-    }
-
-    pub(crate) fn narrow_typewriter_toggle(&self) -> ToggleButton {
-        self.imp().narrow_typewriter_toggle.get()
-    }
-
-    pub(crate) fn narrow_eraser_toggle(&self) -> ToggleButton {
-        self.imp().narrow_eraser_toggle.get()
-    }
-
-    pub(crate) fn narrow_selector_toggle(&self) -> ToggleButton {
-        self.imp().narrow_selector_toggle.get()
-    }
-
-    pub(crate) fn narrow_tools_toggle(&self) -> ToggleButton {
-        self.imp().narrow_tools_toggle.get()
-    }
-
     pub(crate) fn penssidebar(&self) -> PensSideBar {
         self.imp().penssidebar.get()
     }
@@ -881,6 +759,7 @@ impl RnoteAppWindow {
     pub(crate) fn init(&self, input_file: Option<gio::File>) {
         let imp = self.imp();
 
+        imp.overlays.get().init(self);
         imp.workspacebrowser.get().init(self);
         imp.settings_panel.get().init(self);
         imp.mainheader.get().init(self);
@@ -893,7 +772,9 @@ impl RnoteAppWindow {
         imp.penssidebar.get().eraser_page().init(self);
         imp.penssidebar.get().selector_page().init(self);
         imp.penssidebar.get().tools_page().init(self);
-        imp.canvas_wrapper.get().init(self);
+
+        // A first canvas. Must! come before binding the settings
+        self.new_tab();
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
         let app_icon_theme = IconTheme::for_display(&self.display());
@@ -910,8 +791,8 @@ impl RnoteAppWindow {
         // Periodically save engine config
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
-                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@strong self as appwindow => @default-return glib::source::Continue(false), move || {
-                    if let Err(e) = appwindow.save_engine_config() {
+                Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+                    if let Err(e) = appwindow.save_engine_config_active_tab() {
                         log::error!("saving engine config in periodic task failed with Err: {e:?}");
                     }
 
@@ -925,34 +806,20 @@ impl RnoteAppWindow {
             self.open_file_w_dialogs(input_file, None);
         }
 
-        // Initial titles
-        self.update_titles_for_file(None);
-
         self.init_misc();
     }
 
     // Anything that needs to be done right before showing the appwindow
     pub(crate) fn init_misc(&self) {
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        self.canvas_wrapper().undo_button().set_sensitive(false);
-        self.canvas_wrapper().redo_button().set_sensitive(false);
+        self.mainheader().undo_button().set_sensitive(false);
+        self.mainheader().redo_button().set_sensitive(false);
 
         // rerender the canvas
-        self.canvas().regenerate_background_pattern();
-        self.canvas().update_engine_rendering();
+        self.active_tab().canvas().regenerate_background_pattern();
+        self.active_tab().canvas().update_engine_rendering();
 
-        // Reveal the spacer
-        self.imp()
-            .narrow_pens_toggles_revealer
-            .bind_property(
-                "reveal-child",
-                &*self.imp().sidebar_start_spacer_revealer,
-                "reveal-child",
-            )
-            .sync_create()
-            .build();
-
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
     }
 
     /// Called to close the window
@@ -964,6 +831,7 @@ impl RnoteAppWindow {
 
         // Closing the state tasks channel receiver
         if let Err(e) = self
+            .active_tab()
             .canvas()
             .engine()
             .borrow()
@@ -977,66 +845,297 @@ impl RnoteAppWindow {
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
-    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
+    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnoteCanvas) {
         if widget_flags.redraw {
-            self.canvas().queue_draw();
+            canvas.queue_draw();
         }
         if widget_flags.resize {
-            self.canvas().queue_resize();
+            canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
+            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
         }
         if widget_flags.indicate_changed_store {
-            self.canvas().set_unsaved_changes(true);
-            self.canvas().set_empty(false);
+            canvas.set_unsaved_changes(true);
+            canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = self.canvas().engine().borrow().camera.offset;
+            let camera_offset = canvas.engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
-            self.canvas().update_camera_offset(camera_offset);
+            canvas.update_camera_offset(camera_offset);
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
-            self.canvas_wrapper()
-                .undo_button()
-                .set_sensitive(!hide_undo);
+            self.mainheader().undo_button().set_sensitive(!hide_undo);
         }
         if let Some(hide_redo) = widget_flags.hide_redo {
-            self.canvas_wrapper()
-                .redo_button()
-                .set_sensitive(!hide_redo);
+            self.mainheader().redo_button().set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
-            self.canvas()
-                .set_text_preprocessing(enable_text_preprocessing);
+            canvas.set_text_preprocessing(enable_text_preprocessing);
         }
-
-        widget_flags.quit
     }
 
-    pub(crate) fn save_engine_config(&self) -> anyhow::Result<()> {
-        let engine_config = self.canvas().engine().borrow().save_engine_config()?;
+    pub(crate) fn save_engine_config_active_tab(&self) -> anyhow::Result<()> {
+        let engine_config = self
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow()
+            .save_engine_config()?;
         self.app_settings()
             .set_string("engine-config", engine_config.as_str())?;
 
         Ok(())
     }
 
-    pub(crate) fn update_titles_for_file(&self, file: Option<&gio::File>) {
-        let title: String = file
-            .and_then(|f| f.basename())
-            .map(|t| t.with_extension("").display().to_string())
-            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string());
+    /// Get the active (selected) tab page. If there is none (which should only be the case on appwindow startup), we create one
+    pub(crate) fn active_tab_page(&self) -> adw::TabPage {
+        // We always create a single page, if there is none initially
+        self.imp()
+            .overlays
+            .tabview()
+            .selected_page()
+            .unwrap_or_else(|| self.new_tab())
+    }
 
-        let subtitle: String = file
-            .and_then(|f| Some(f.parent()?.path()?.display().to_string()))
-            .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string());
+    /// Get the active (selected) tab page child. If there is none (which should only be the case on appwindow startup), we create one
+    pub(crate) fn active_tab(&self) -> RnoteCanvasWrapper {
+        self.active_tab_page()
+            .child()
+            .downcast::<RnoteCanvasWrapper>()
+            .unwrap()
+    }
+
+    /// Creates a new tab and set it as selected
+    pub(crate) fn new_tab(&self) -> adw::TabPage {
+        let new_wrapper = RnoteCanvasWrapper::new();
+
+        // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview
+        let page = self.overlays().tabview().append(&new_wrapper);
+        self.overlays().tabview().set_selected_page(&page);
+
+        page
+    }
+
+    pub(crate) fn tab_pages_snapshot(&self) -> Vec<adw::TabPage> {
+        self.overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .into_iter()
+            .map(|o| o.downcast::<adw::TabPage>().unwrap())
+            .collect()
+    }
+
+    pub(crate) fn tabs_any_unsaved_changes(&self) -> bool {
+        self.overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .iter()
+            .map(|o| {
+                o.downcast_ref::<adw::TabPage>()
+                    .unwrap()
+                    .child()
+                    .downcast_ref::<RnoteCanvasWrapper>()
+                    .unwrap()
+                    .canvas()
+            })
+            .any(|c| c.unsaved_changes())
+    }
+
+    pub(crate) fn clear_rendering_inactive_tabs(&self) {
+        for inactive_page in self
+            .overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .into_iter()
+            .map(|o| o.downcast::<adw::TabPage>().unwrap())
+            .filter(|p| !p.is_selected())
+        {
+            inactive_page
+                .child()
+                .downcast::<RnoteCanvasWrapper>()
+                .unwrap()
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .clear_rendering();
+        }
+    }
+
+    pub(crate) fn refresh_titles_active_tab(&self) {
+        let canvas = self.active_tab().canvas();
+
+        // Titles
+        let title = canvas.doc_title_display();
+        let subtitle = canvas.doc_folderpath_display();
 
         self.set_title(Some(
             &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
         ));
 
+        self.mainheader()
+            .main_title_unsaved_indicator()
+            .set_visible(canvas.unsaved_changes());
+        if canvas.unsaved_changes() {
+            self.mainheader()
+                .main_title()
+                .add_css_class("unsaved_changes");
+        } else {
+            self.mainheader()
+                .main_title()
+                .remove_css_class("unsaved_changes");
+        }
+
         self.mainheader().main_title().set_title(&title);
         self.mainheader().main_title().set_subtitle(&subtitle);
+    }
+
+    pub(crate) fn open_file_w_dialogs(
+        &self,
+        input_file: gio::File,
+        target_pos: Option<na::Vector2<f64>>,
+    ) {
+        match crate::utils::FileType::lookup_file_type(&input_file) {
+            crate::utils::FileType::RnoteFile => {
+                // open a new tab for rnote files
+                let new_tab = self.new_tab();
+                let canvas = new_tab
+                    .child()
+                    .downcast::<RnoteCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
+
+                if let Err(e) = self.load_in_file(input_file, target_pos, &canvas) {
+                    log::error!(
+                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
+                    );
+                }
+            }
+            crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
+                if let Err(e) =
+                    self.load_in_file(input_file, target_pos, &self.active_tab().canvas())
+                {
+                    log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {e:?}");
+                }
+            }
+            crate::utils::FileType::XoppFile => {
+                // open a new tab for xopp file import
+                let new_tab = self.new_tab();
+                let canvas = new_tab
+                    .child()
+                    .downcast::<RnoteCanvasWrapper>()
+                    .unwrap()
+                    .canvas();
+
+                dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file);
+            }
+            crate::utils::FileType::PdfFile => {
+                dialogs::import::dialog_import_pdf_w_prefs(
+                    self,
+                    &self.active_tab().canvas(),
+                    input_file,
+                    target_pos,
+                );
+            }
+            crate::utils::FileType::Folder => {
+                if let Some(dir) = input_file.path() {
+                    self.workspacebrowser()
+                        .workspacesbar()
+                        .set_selected_workspace_dir(dir);
+                }
+            }
+            crate::utils::FileType::Unsupported => {
+                log::error!("tried to open unsupported file type.");
+            }
+        }
+    }
+
+    /// Loads in a file of any supported type into the engine of the given canvas.
+    ///
+    /// ! overwrites the current state so there should be a user prompt to confirm before this is called
+    pub(crate) fn load_in_file(
+        &self,
+        file: gio::File,
+        target_pos: Option<na::Vector2<f64>>,
+        canvas: &RnoteCanvas,
+    ) -> anyhow::Result<()> {
+        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak self as appwindow => async move {
+            appwindow.overlays().start_pulsing_progressbar();
+
+            match crate::utils::FileType::lookup_file_type(&file) {
+                crate::utils::FileType::RnoteFile => {
+                    match file.load_bytes_future().await {
+                        Ok((bytes, _)) => {
+                            if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
+                                log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed."));
+                            }
+                        }
+                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                    }
+                }
+                crate::utils::FileType::VectorImageFile => {
+                    match file.load_bytes_future().await {
+                        Ok((bytes, _)) => {
+                            if let Err(e) = canvas.load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
+                                log::error!("load_in_vectorimage_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed."));
+                            }
+                        }
+                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                    }
+                }
+                crate::utils::FileType::BitmapImageFile => {
+                    match file.load_bytes_future().await {
+                        Ok((bytes, _)) => {
+                            if let Err(e) = canvas.load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
+                                log::error!("load_in_bitmapimage_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
+                            }
+                        }
+                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                    }
+                }
+                crate::utils::FileType::XoppFile => {
+                    match file.load_bytes_future().await {
+                        Ok((bytes, _)) => {
+                            if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
+                                log::error!("load_in_xopp_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
+                            }
+                        }
+                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                    }
+                }
+                crate::utils::FileType::PdfFile => {
+                    match file.load_bytes_future().await {
+                        Ok((bytes, _)) => {
+                            if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
+                                log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
+                            }
+                        }
+                        Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
+                    }
+                }
+                crate::utils::FileType::Folder => {
+                    log::error!("tried to open a folder as a file.");
+                    appwindow.overlays()
+                        .dispatch_toast_error(&gettext("Error: Tried opening folder as file"));
+                }
+                crate::utils::FileType::Unsupported => {
+                    log::error!("tried to open a unsupported file type.");
+                    appwindow.overlays()
+                        .dispatch_toast_error(&gettext("Failed to open file: Unsupported file type."));
+                }
+            }
+
+            appwindow.overlays().finish_progressbar();
+        }));
+
+        Ok(())
     }
 }

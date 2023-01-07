@@ -91,16 +91,15 @@ impl AppMenu {
         self.imp()
             .lefthanded_toggle
             .bind_property("active", appwindow, "righthanded")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
+            .sync_create()
+            .bidirectional()
+            .invert_boolean()
             .build();
         self.imp()
             .righthanded_toggle
             .bind_property("active", appwindow, "righthanded")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
     }
 }

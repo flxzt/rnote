@@ -12,7 +12,7 @@ impl RnoteCanvas {
     pub(crate) async fn load_in_rnote_bytes<P>(
         &self,
         bytes: Vec<u8>,
-        path: Option<P>,
+        file_path: Option<P>,
     ) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
@@ -21,8 +21,8 @@ impl RnoteCanvas {
 
         let mut widget_flags = self.engine().borrow_mut().load_snapshot(engine_snapshot);
 
-        if let Some(path) = path {
-            let file = gio::File::for_path(path);
+        if let Some(file_path) = file_path {
+            let file = gio::File::for_path(file_path);
             self.dismiss_output_file_modified_toast();
             self.set_output_file(Some(file));
         }
@@ -38,6 +38,17 @@ impl RnoteCanvas {
         widget_flags.refresh_ui = true;
 
         self.emit_handle_widget_flags(widget_flags);
+        Ok(())
+    }
+
+    pub(crate) async fn reload_from_disk(&self) -> anyhow::Result<()> {
+        if let Some(output_file) = self.output_file() {
+            let (bytes, _) = output_file.load_bytes_future().await?;
+
+            self.load_in_rnote_bytes(bytes.to_vec(), output_file.path())
+                .await?;
+        }
+
         Ok(())
     }
 

@@ -1046,9 +1046,7 @@ impl RnoteAppWindow {
         file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
-        let main_cx = glib::MainContext::default();
-
-        main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+        glib::MainContext::default().spawn_local(clone!(@strong self as appwindow => async move {
             appwindow.overlays().start_pulsing_progressbar();
 
             match crate::utils::FileType::lookup_file_type(&file) {

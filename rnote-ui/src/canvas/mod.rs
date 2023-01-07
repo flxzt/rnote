@@ -977,11 +977,16 @@ impl RnoteCanvas {
                                 &gettext("Opened file was modified on disk."),
                                 &gettext("Reload"),
                                 clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
-                                    if let Some(output_file) = canvas.output_file() {
-                                        if let Err(e) = appwindow.load_in_file_active_tab(output_file, None) {
+                                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                                        appwindow.overlays().start_pulsing_progressbar();
+
+                                        if let Err(e) = canvas.reload_from_disk().await {
+                                            appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed."));
                                             log::error!("failed to reload current output file, {}", e);
                                         }
-                                    }
+
+                                        appwindow.overlays().finish_progressbar();
+                                    }));
                                 }),
                                 0,
                             &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());

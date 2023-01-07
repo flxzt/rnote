@@ -15,7 +15,6 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 
-use crate::colorpicker::ColorPicker;
 use crate::{
     config,
     penssidebar::PensSideBar,
@@ -24,10 +23,7 @@ use crate::{
     RnoteApp, RnoteCanvasWrapper, RnoteOverlays,
     {dialogs, mainheader::MainHeader},
 };
-use rnote_engine::engine::EngineViewMut;
-use rnote_engine::pens::Pen;
-use rnote_engine::utils::GdkRGBAHelpers;
-use rnote_engine::{engine::EngineTask, pens::PenStyle, WidgetFlags};
+use rnote_engine::{engine::EngineTask, WidgetFlags};
 
 mod imp {
     use super::*;
@@ -83,22 +79,6 @@ mod imp {
         #[template_child]
         pub(crate) mainheader: TemplateChild<MainHeader>,
         #[template_child]
-        pub(crate) pens_toggles_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub(crate) brush_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) eraser_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) selector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) tools_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) colorpicker: TemplateChild<ColorPicker>,
-        #[template_child]
         pub(crate) penssidebar: TemplateChild<PensSideBar>,
     }
 
@@ -133,14 +113,6 @@ mod imp {
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
-                pens_toggles_box: TemplateChild::<gtk4::Box>::default(),
-                brush_toggle: TemplateChild::<ToggleButton>::default(),
-                shaper_toggle: TemplateChild::<ToggleButton>::default(),
-                typewriter_toggle: TemplateChild::<ToggleButton>::default(),
-                eraser_toggle: TemplateChild::<ToggleButton>::default(),
-                selector_toggle: TemplateChild::<ToggleButton>::default(),
-                tools_toggle: TemplateChild::<ToggleButton>::default(),
-                colorpicker: TemplateChild::<ColorPicker>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
             }
         }
@@ -184,8 +156,6 @@ mod imp {
 
             self.setup_tabbar();
             self.setup_flap();
-            self.setup_pens_toggles();
-            self.setup_colorpicker();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -338,104 +308,6 @@ mod imp {
 
         fn setup_tabbar(&self) {
             self.tabbar.set_view(Some(&self.overlays.tabview()));
-        }
-
-        fn setup_pens_toggles(&self) {
-            let inst = self.instance();
-
-            self.brush_toggle.connect_toggled(clone!(@weak inst as appwindow => move |brush_toggle| {
-                if brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.to_variant()));
-                }
-            }));
-
-            self.shaper_toggle.connect_toggled(clone!(@weak inst as appwindow => move |shaper_toggle| {
-                if shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.to_variant()));
-                }
-            }));
-
-            self.typewriter_toggle.connect_toggled(clone!(@weak inst as appwindow => move |typewriter_toggle| {
-                if typewriter_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.to_variant()));
-                }
-            }));
-
-            self.eraser_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |eraser_toggle| {
-                if eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.to_variant()));
-                }
-            }));
-
-            self.selector_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |selector_toggle| {
-                if selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.to_variant()));
-                }
-            }));
-
-            self.tools_toggle.get().connect_toggled(clone!(@weak inst as appwindow => move |tools_toggle| {
-                if tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.to_variant()));
-                }
-            }));
-        }
-
-        fn setup_colorpicker(&self) {
-            let inst = self.instance();
-
-            self.colorpicker.connect_notify_local(
-                Some("stroke-color"),
-                clone!(@weak inst as appwindow => move |colorpicker, _paramspec| {
-                    let stroke_style = appwindow.active_tab().canvas().engine().borrow().penholder.current_style_w_override();
-                    let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let engine = appwindow.active_tab().canvas().engine();
-                    let engine = &mut *engine.borrow_mut();
-
-                    // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color= Some(stroke_color);
-                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
-
-                    match stroke_style {
-                        PenStyle::Typewriter => {
-                            if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                                let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                    |text_style| {
-                                        text_style.color = stroke_color;
-                                    },
-                                    &mut EngineViewMut {
-                                        tasks_tx: engine.tasks_tx.clone(),
-                                        pens_config: &mut engine.pens_config,
-                                        doc: &mut engine.document,
-                                        store: &mut engine.store,
-                                        camera: &mut engine.camera,
-                                        audioplayer: &mut engine.audioplayer
-                                });
-                                appwindow.handle_widget_flags(widget_flags);
-                            }
-                        }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools => {}
-                    }
-                }),
-            );
-
-            self.colorpicker.connect_notify_local(
-                Some("fill-color"),
-                clone!(@weak inst as appwindow => move |colorpicker, _paramspec| {
-                    let fill_color = colorpicker.fill_color().into_compose_color();
-                    let engine = appwindow.active_tab().canvas().engine();
-                    let engine = &mut *engine.borrow_mut();
-
-                    // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                    engine.pens_config.brush_config.solid_options.fill_color= Some(fill_color);
-                    engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                    engine.pens_config.shaper_config.rough_options.fill_color= Some(fill_color);
-                }),
-            );
         }
 
         // Setting up the sidebar flap
@@ -611,7 +483,7 @@ mod imp {
                 inst.main_grid().attach(&inst.overlays(), 2, 3, 1, 1);
                 inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
                 inst.main_grid().attach(&inst.sidebar_box(), 0, 3, 1, 1);
-                inst.overlays().quickactions_box().set_halign(Align::End);
+                inst.mainheader().quickactions_box().set_halign(Align::End);
                 inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
@@ -684,7 +556,9 @@ mod imp {
                 inst.main_grid().attach(&inst.overlays(), 0, 3, 1, 1);
                 inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
                 inst.main_grid().attach(&inst.sidebar_box(), 2, 3, 1, 1);
-                inst.overlays().quickactions_box().set_halign(Align::Start);
+                inst.mainheader()
+                    .quickactions_box()
+                    .set_halign(Align::Start);
                 inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()
@@ -878,34 +752,6 @@ impl RnoteAppWindow {
         self.imp().mainheader.get()
     }
 
-    pub(crate) fn brush_toggle(&self) -> ToggleButton {
-        self.imp().brush_toggle.get()
-    }
-
-    pub(crate) fn shaper_toggle(&self) -> ToggleButton {
-        self.imp().shaper_toggle.get()
-    }
-
-    pub(crate) fn typewriter_toggle(&self) -> ToggleButton {
-        self.imp().typewriter_toggle.get()
-    }
-
-    pub(crate) fn eraser_toggle(&self) -> ToggleButton {
-        self.imp().eraser_toggle.get()
-    }
-
-    pub(crate) fn selector_toggle(&self) -> ToggleButton {
-        self.imp().selector_toggle.get()
-    }
-
-    pub(crate) fn tools_toggle(&self) -> ToggleButton {
-        self.imp().tools_toggle.get()
-    }
-
-    pub(crate) fn colorpicker(&self) -> ColorPicker {
-        self.imp().colorpicker.get()
-    }
-
     pub(crate) fn penssidebar(&self) -> PensSideBar {
         self.imp().penssidebar.get()
     }
@@ -964,8 +810,8 @@ impl RnoteAppWindow {
     // Anything that needs to be done right before showing the appwindow
     pub(crate) fn init_misc(&self) {
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        self.overlays().undo_button().set_sensitive(false);
-        self.overlays().redo_button().set_sensitive(false);
+        self.mainheader().undo_button().set_sensitive(false);
+        self.mainheader().redo_button().set_sensitive(false);
 
         // rerender the canvas
         self.active_tab().canvas().regenerate_background_pattern();
@@ -1019,10 +865,10 @@ impl RnoteAppWindow {
                 .update_camera_offset(camera_offset);
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
-            self.overlays().undo_button().set_sensitive(!hide_undo);
+            self.mainheader().undo_button().set_sensitive(!hide_undo);
         }
         if let Some(hide_redo) = widget_flags.hide_redo {
-            self.overlays().redo_button().set_sensitive(!hide_redo);
+            self.mainheader().redo_button().set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             self.active_tab()

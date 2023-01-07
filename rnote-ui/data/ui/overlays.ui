@@ -26,101 +26,87 @@
           </object>
         </child>
         <child type="overlay">
-          <object class="GtkBox" id="quickactions_box">
-            <property name="halign">start</property>
+          <object class="GtkBox" id="pens_toggles_box">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">center</property>
+            <property name="valign">end</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="width-request">400</property>
+            <property name="homogeneous">true</property>
+            <style>
+              <class name="toolbar" />
+              <class name="overlay-toolbar" />
+            </style>
+            <style>
+            </style>
+            <child>
+              <object class="GtkToggleButton" id="brush_toggle">
+                <property name="icon_name">pen-brush-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Brush</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="shaper_toggle">
+                <property name="icon_name">pen-shaper-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Shaper</property>
+                <property name="hexpand">true</property>
+                <property name="group">brush_toggle</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="typewriter_toggle">
+                <property name="icon_name">pen-typewriter-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Typewriter</property>
+                <property name="hexpand">true</property>
+                <property name="group">brush_toggle</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="eraser_toggle">
+                <property name="icon_name">pen-eraser-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Eraser</property>
+                <property name="hexpand">true</property>
+                <property name="group">brush_toggle</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="selector_toggle">
+                <property name="icon_name">pen-selector-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Selector</property>
+                <property name="hexpand">true</property>
+                <property name="group">brush_toggle</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="tools_toggle">
+                <property name="icon_name">pen-tools-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Tools</property>
+                <property name="hexpand">true</property>
+                <property name="group">brush_toggle</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="ColorPicker" id="colorpicker">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">center</property>
             <property name="valign">start</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <property name="margin-top">12</property>
-            <property name="margin-bottom">12</property>
-            <property name="spacing">6</property>
-            <child>
-              <object class="GtkRevealer" id="fixedsize_quickactions_revealer">
-                <property name="transition-type">slide-right</property>
-                <property name="transition-duration">300</property>
-                <property name="overflow">visible</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="homogeneous">true</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Add page</property>
-                        <property name="action-name">win.add-page-to-doc</property>
-                        <style>
-                          <class name="osd" />
-                          <class name="circular" />
-                          <class name="quickaction-button" />
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
-                        <property name="action-name">win.resize-to-fit-strokes</property>
-                        <style>
-                          <class name="osd" />
-                          <class name="circular" />
-                          <class name="quickaction-button" />
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="icon_name">zoom-out-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Zoom out</property>
-                <property name="action-name">win.zoom-out</property>
-                <style>
-                  <class name="osd" />
-                  <class name="circular" />
-                  <class name="quickaction-button" />
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="icon_name">zoom-in-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Zoom in</property>
-                <property name="action-name">win.zoom-in</property>
-                <style>
-                  <class name="osd" />
-                  <class name="circular" />
-                  <class name="quickaction-button" />
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="undo_button">
-                <property name="sensitive">false</property>
-                <property name="icon_name">edit-undo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Undo</property>
-                <property name="action-name">win.undo</property>
-                <style>
-                  <class name="osd" />
-                  <class name="circular" />
-                  <class name="quickaction-button" />
-                </style>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="redo_button">
-                <property name="sensitive">false</property>
-                <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Redo</property>
-                <property name="action-name">win.redo</property>
-                <style>
-                  <class name="osd" />
-                  <class name="circular" />
-                  <class name="quickaction-button" />
-                </style>
-              </object>
-            </child>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="amount-colorbuttons">8</property>
+            <property name="position">top</property>
+            <style>
+              <class name="overlay-toolbar" />
+            </style>
           </object>
         </child>
         <child>

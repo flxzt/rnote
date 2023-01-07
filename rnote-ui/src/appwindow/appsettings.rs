@@ -91,7 +91,11 @@ impl RnoteAppWindow {
 
         // Active stroke color
         self.app_settings()
-            .bind("active-stroke-color", &self.colorpicker(), "stroke-color")
+            .bind(
+                "active-stroke-color",
+                &self.overlays().colorpicker(),
+                "stroke-color",
+            )
             .mapping(|val, _| {
                 Some(
                     gdk::RGBA::from_compose_color(Color::from(val.get::<u32>().unwrap()))
@@ -105,7 +109,11 @@ impl RnoteAppWindow {
 
         // Active fill color
         self.app_settings()
-            .bind("active-fill-color", &self.colorpicker(), "fill-color")
+            .bind(
+                "active-fill-color",
+                &self.overlays().colorpicker(),
+                "fill-color",
+            )
             .mapping(|val, _| {
                 Some(
                     gdk::RGBA::from_compose_color(Color::from(val.get::<u32>().unwrap()))
@@ -162,7 +170,7 @@ impl RnoteAppWindow {
             .into_iter()
             .map(Color::from)
             .collect::<Vec<Color>>();
-            self.colorpicker().load_colors(&colors);
+            self.overlays().colorpicker().load_colors(&colors);
         }
 
         {
@@ -210,6 +218,7 @@ impl RnoteAppWindow {
         {
             // Colorpicker
             let colors = self
+                .overlays()
                 .colorpicker()
                 .fetch_all_colors()
                 .into_iter()

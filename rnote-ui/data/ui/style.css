@@ -51,13 +51,11 @@
         linear-gradient(45deg, #0a0a0a88 25%, transparent 25%, transparent 75%, #0a0a0a88 75%, #0a0a0a88),
         linear-gradient(45deg, #0a0a0a88 25%, transparent 25%, transparent 75%, #0a0a0a88 75%, #0a0a0a88);
     background-color: @colorpad_color;
+    color: @colorpad_fg_color;
     background-size: 18px 18px;
     background-position: 0px 0px, 9px 9px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: @borders;
+    border: 1px solid @borders;
     border-radius: 32px;
-    transform: scale(0.90);
     transition: all 0.15s ease-out;
 }
 
@@ -71,9 +69,8 @@
 
 .colorpad:checked {
     filter: brightness(100%);
-    border-color: @accent_color;
+    border-color: alpha(@accent_color, 1.0);
     box-shadow: 0px 0px 2px alpha(@window_fg_color, 0.6);
-    transform: scale(1.0);
 }
 
 .colorsetter {
@@ -83,11 +80,10 @@
         linear-gradient(45deg, #0a0a0a88 25%, transparent 25%, transparent 75%, #0a0a0a88 75%, #0a0a0a88),
         linear-gradient(45deg, #0a0a0a88 25%, transparent 25%, transparent 75%, #0a0a0a88 75%, #0a0a0a88);
     background-color: @colorsetter_color;
+    color: @colorsetter_fg_color;
     background-size: 18px 18px;
     background-position: 0px 0px, 9px 9px;
-    border-style: solid;
-    border-width: 1px;
-    border-color: @borders;
+    border: 1px solid @borders;
     filter: brightness(100%);
     border-radius: 2px;
     transition: all 0.15s ease-out;
@@ -103,7 +99,7 @@
 
 .colorsetter:checked {
     filter: brightness(100%);
-    border-color: @accent_color;
+    border-color: alpha(@accent_color, 1.0);
     box-shadow: 0px 0px 2px alpha(@window_fg_color, 0.6);
 }
 
@@ -172,4 +168,19 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 
 .iconpicker_gridview child {
     margin: 2px;
+}
+
+.overlay-toolbar {
+    border-radius: 12px;
+    background-color: @window_bg_color;
+    border: 1px solid @borders;
+    box-shadow: 0px 3px 6px @shade_color;
+}
+
+.overlay-toolbar.colorpicker {
+    padding: 9px;
+}
+
+toast {
+    margin-bottom: 64px;
 }

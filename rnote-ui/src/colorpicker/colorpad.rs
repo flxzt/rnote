@@ -1,15 +1,13 @@
 use std::cell::Cell;
 
 use gtk4::{
-    gdk, glib, prelude::*, subclass::prelude::*, Button, CssProvider, ToggleButton, Widget,
+    gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, ToggleButton, Widget,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::Color;
+use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
-    use gtk4::Align;
-
     use super::*;
 
     #[derive(Debug)]
@@ -43,13 +41,13 @@ mod imp {
 
             inst.set_hexpand(false);
             inst.set_vexpand(false);
-            inst.set_halign(Align::Center);
+            inst.set_halign(Align::Fill);
             inst.set_valign(Align::Center);
-            inst.set_height_request(38);
-            inst.set_width_request(38);
+            inst.set_width_request(34);
+            inst.set_height_request(34);
             inst.set_css_classes(&["colorpad"]);
 
-            self.update_appearance(&super::ColorPad::COLOR_DEFAULT);
+            self.update_appearance(super::ColorPad::COLOR_DEFAULT);
             inst.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
@@ -75,7 +73,7 @@ mod imp {
                         .expect("value not of type `gdk::RGBA`");
                     self.color.set(color);
 
-                    self.update_appearance(&color.into_compose_color());
+                    self.update_appearance(color.into_compose_color());
                 }
                 _ => panic!("invalid property name"),
             }
@@ -94,11 +92,20 @@ mod imp {
     impl ToggleButtonImpl for ColorPad {}
 
     impl ColorPad {
-        fn update_appearance(&self, color: &Color) {
+        fn update_appearance(&self, color: Color) {
             let css = CssProvider::new();
+
+            let colorpad_color = color.to_css_color_attr();
+            let colorpad_fg_color = if color == Color::TRANSPARENT {
+                String::from("@window_fg_color")
+            } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {
+                String::from("@light_1")
+            } else {
+                String::from("@dark_5")
+            };
+
             let custom_css = format!(
-                "@define-color colorpad_color {};",
-                color.to_css_color_attr()
+                "@define-color colorpad_color {colorpad_color}; @define-color colorpad_fg_color {colorpad_fg_color};",
             );
             css.load_from_data(custom_css.as_bytes());
 

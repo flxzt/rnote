@@ -1,16 +1,15 @@
 use std::cell::Cell;
 
 use gtk4::{
-    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Button, CssProvider,
-    PositionType, ToggleButton, Widget,
+    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Align, Button,
+    CssProvider, PositionType, ToggleButton, Widget,
 };
+
 use once_cell::sync::Lazy;
-use rnote_compose::Color;
+use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
-    use gtk4::Align;
-
     use super::*;
 
     #[derive(Debug)]
@@ -46,13 +45,13 @@ mod imp {
 
             inst.set_hexpand(false);
             inst.set_vexpand(false);
-            inst.set_halign(Align::Center);
-            inst.set_valign(Align::Center);
-            inst.set_height_request(38);
-            inst.set_width_request(38);
+            inst.set_halign(Align::Fill);
+            inst.set_valign(Align::Fill);
+            inst.set_width_request(34);
+            inst.set_height_request(34);
             inst.set_css_classes(&["colorsetter"]);
 
-            self.update_appearance(&super::ColorSetter::COLOR_DEFAULT);
+            self.update_appearance(super::ColorSetter::COLOR_DEFAULT);
             inst.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
@@ -94,7 +93,7 @@ mod imp {
                         .expect("value not of type `gdk::RGBA`");
                     self.color.set(color);
 
-                    self.update_appearance(&color.into_compose_color());
+                    self.update_appearance(color.into_compose_color());
                 }
                 "position" => {
                     let position = value
@@ -123,11 +122,20 @@ mod imp {
     impl ToggleButtonImpl for ColorSetter {}
 
     impl ColorSetter {
-        fn update_appearance(&self, color: &Color) {
+        fn update_appearance(&self, color: Color) {
             let css = CssProvider::new();
+
+            let colorsetter_color = color.to_css_color_attr();
+            let colorsetter_fg_color = if color == Color::TRANSPARENT {
+                String::from("@window_fg_color")
+            } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {
+                String::from("@light_1")
+            } else {
+                String::from("@dark_5")
+            };
+
             let custom_css = format!(
-                "@define-color colorsetter_color {};",
-                color.to_css_color_attr()
+                "@define-color colorsetter_color {colorsetter_color}; @define-color colorsetter_fg_color {colorsetter_fg_color};",
             );
             css.load_from_data(custom_css.as_bytes());
 

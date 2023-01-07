@@ -1,5 +1,7 @@
 use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
-use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, Label, Widget};
+use gtk4::{
+    glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, Revealer, Widget,
+};
 
 mod imp {
     use super::*;
@@ -13,6 +15,14 @@ mod imp {
         pub(crate) main_title: TemplateChild<adw::WindowTitle>,
         #[template_child]
         pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
+        #[template_child]
+        pub(crate) quickactions_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) fixedsize_quickactions_revealer: TemplateChild<Revealer>,
+        #[template_child]
+        pub(crate) undo_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) redo_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -72,6 +82,22 @@ impl MainHeader {
 
     pub(crate) fn main_title_unsaved_indicator(&self) -> Label {
         self.imp().main_title_unsaved_indicator.get()
+    }
+
+    pub(crate) fn quickactions_box(&self) -> gtk4::Box {
+        self.imp().quickactions_box.get()
+    }
+
+    pub(crate) fn fixedsize_quickactions_revealer(&self) -> Revealer {
+        self.imp().fixedsize_quickactions_revealer.get()
+    }
+
+    pub(crate) fn undo_button(&self) -> Button {
+        self.imp().undo_button.get()
+    }
+
+    pub(crate) fn redo_button(&self) -> Button {
+        self.imp().redo_button.get()
     }
 
     pub(crate) fn menus_box(&self) -> gtk4::Box {

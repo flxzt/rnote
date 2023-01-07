@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-12-23 06:31+0100\n"
-"PO-Revision-Date: 2023-01-05 21:29+0000\n"
+"PO-Revision-Date: 2023-01-07 10:57+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1415,7 +1415,7 @@ msgstr "Vertikaler Raum einfügen"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:51
 msgid "Offset the camera by dragging"
-msgstr "Bewege die Kamera mit ziehen"
+msgstr "Bewege die Kamera durch ziehen"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
 msgid ""

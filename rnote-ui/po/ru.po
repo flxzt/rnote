@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 22:22+0100\n"
+"POT-Creation-Date: 2023-01-08 10:03+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -85,7 +85,7 @@ msgstr "Это очистит весь документ. Пожалуйста, �
 #: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
 #: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
 #: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
-#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:150
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
 #: rnote-ui/src/dialogs/mod.rs:372
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
@@ -124,8 +124,11 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-msgid "Close tab"
-msgstr ""
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close the active tab"
+msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -137,7 +140,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close window"
+msgid "Close the application window"
 msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -198,10 +201,8 @@ msgstr "- каталог не выбран -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 #, fuzzy
-#| msgid "Change workspace directory"
-msgid ""
-"Change workspace\n"
-"                              directory"
+#| msgid "Change the workspace directory"
+msgid "Change the directory"
 msgstr "Выбрать каталог коллекции"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
@@ -221,7 +222,7 @@ msgid "Import PDF"
 msgstr "Импорт PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
 msgstr "Импортировать"
 
@@ -1113,23 +1114,23 @@ msgstr "Черновик"
 msgid "New tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:54
+#: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
 msgstr "Отменить"
 
-#: rnote-ui/data/ui/mainheader.ui:62
+#: rnote-ui/data/ui/mainheader.ui:65
 msgid "Redo"
 msgstr "Повторить"
 
-#: rnote-ui/data/ui/mainheader.ui:73
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Add page"
 msgstr "Добавить страницу"
 
-#: rnote-ui/data/ui/mainheader.ui:80
+#: rnote-ui/data/ui/mainheader.ui:83
 msgid "Resize document to fit the strokes"
 msgstr "Изменить размер документа в соответствии с содержимым"
 
-#: rnote-ui/data/ui/mainheader.ui:95
+#: rnote-ui/data/ui/mainheader.ui:98
 msgid "Save document"
 msgstr "Сохранить документ"
 
@@ -1547,39 +1548,39 @@ msgstr "Удалить коллекцию"
 msgid "Edit selected workspace"
 msgstr "Редактировать коллекцию"
 
-#: rnote-ui/src/appwindow/mod.rs:302
+#: rnote-ui/src/appwindow/mod.rs:303
 #: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
 #: rnote-ui/src/dialogs/mod.rs:316
 msgid "Saving document failed."
 msgstr "Не удалось сохранить документ."
 
-#: rnote-ui/src/appwindow/mod.rs:1074
+#: rnote-ui/src/appwindow/mod.rs:1111
 msgid "Opening .rnote file failed."
 msgstr "Не удалось открыть .rnote файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1085
+#: rnote-ui/src/appwindow/mod.rs:1122
 msgid "Opening vector image file failed."
 msgstr "Не удалось открыть векторное изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:1096
+#: rnote-ui/src/appwindow/mod.rs:1133
 msgid "Opening bitmap image file failed."
 msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:1107 rnote-ui/src/dialogs/import.rs:381
+#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
 msgid "Opening Xournal++ file failed."
 msgstr "Не удалось открыть Xournal++ файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1118 rnote-ui/src/dialogs/import.rs:322
+#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "Не удалось открыть PDF файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1127
+#: rnote-ui/src/appwindow/mod.rs:1164
 msgid "Error: Tried opening folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
 
-#: rnote-ui/src/appwindow/mod.rs:1132
+#: rnote-ui/src/appwindow/mod.rs:1169
 msgid "Failed to open file: Unsupported file type."
 msgstr "Не удалось открыть файл: формат файла не поддерживается."
 
@@ -1709,7 +1710,7 @@ msgstr "Не удалось экспортировать конфиг движк
 msgid "Exported engine config successfully."
 msgstr "Конфиг движка успешно экспортирован."
 
-#: rnote-ui/src/dialogs/import.rs:35 rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:34
 msgid "Opening file failed."
 msgstr "Не удалось открыть файл."
 
@@ -1717,47 +1718,47 @@ msgstr "Не удалось открыть файл."
 msgid "Open file"
 msgstr "Открыть файлы"
 
-#: rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/src/dialogs/import.rs:135
 msgid "JPG, PDF, PNG, SVG, Xopp"
 msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/src/dialogs/import.rs:138
 msgid "Import file"
 msgstr "Импортировать файл"
 
-#: rnote-ui/src/dialogs/import.rs:258
+#: rnote-ui/src/dialogs/import.rs:250
 msgid "- no file name -"
 msgstr "- нет имени файла -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:255
 msgid "- no title -"
 msgstr "- нет заголовка -"
 
-#: rnote-ui/src/dialogs/import.rs:266
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no author -"
 msgstr "- нет автора -"
 
-#: rnote-ui/src/dialogs/import.rs:270
+#: rnote-ui/src/dialogs/import.rs:262
 msgid "- no date -"
 msgstr "- нет даты -"
 
-#: rnote-ui/src/dialogs/import.rs:277
+#: rnote-ui/src/dialogs/import.rs:269
 msgid "File name:"
 msgstr "Имя файла:"
 
-#: rnote-ui/src/dialogs/import.rs:281
+#: rnote-ui/src/dialogs/import.rs:273
 msgid "Title:"
 msgstr "Заголовок:"
 
-#: rnote-ui/src/dialogs/import.rs:285
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "Author:"
 msgstr "Автор:"
 
-#: rnote-ui/src/dialogs/import.rs:289
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Modification date:"
 msgstr "Дата изменения:"
 
-#: rnote-ui/src/dialogs/import.rs:293
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Pages:"
 msgstr "Страницы:"
 
@@ -1781,6 +1782,19 @@ msgstr "Имя папки:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Новая папка"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close window"
+#~ msgstr "Закрыть активное окно"
+
+#, fuzzy
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "Выбрать каталог коллекции"
 
 #~ msgid "Quit Application"
 #~ msgstr "Выйти из программы"

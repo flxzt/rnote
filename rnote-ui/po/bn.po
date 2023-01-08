@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 22:22+0100\n"
+"POT-Creation-Date: 2023-01-08 10:03+0100\n"
 "PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -84,7 +84,7 @@ msgstr "এটি সম্পূর্ণ নথি পরিষ্কার �
 #: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
 #: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
 #: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
-#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:150
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
 #: rnote-ui/src/dialogs/mod.rs:372
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
@@ -123,8 +123,11 @@ msgid "Save"
 msgstr "সংরক্ষণ করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-msgid "Close tab"
-msgstr ""
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close the active tab"
+msgstr "সক্রিয় উইন্ডোটি বন্ধ করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -136,7 +139,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close window"
+msgid "Close the application window"
 msgstr "সক্রিয় উইন্ডোটি বন্ধ করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -197,10 +200,8 @@ msgstr "- কোনও ডিরেক্টরি নির্বাচিত �
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 #, fuzzy
-#| msgid "Change workspace directory"
-msgid ""
-"Change workspace\n"
-"                              directory"
+#| msgid "Change the workspace directory"
+msgid "Change the directory"
 msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
@@ -220,7 +221,7 @@ msgid "Import PDF"
 msgstr "PDF আমদানি করুন"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
 msgstr "আমদানি করুন"
 
@@ -1089,23 +1090,23 @@ msgstr "খসড়া"
 msgid "New tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:54
+#: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
 msgstr "পূর্বাবস্থায় ফিরুন"
 
-#: rnote-ui/data/ui/mainheader.ui:62
+#: rnote-ui/data/ui/mainheader.ui:65
 msgid "Redo"
 msgstr "পুনঃকরণ"
 
-#: rnote-ui/data/ui/mainheader.ui:73
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Add page"
 msgstr "পৃষ্ঠা যোগ করুন"
 
-#: rnote-ui/data/ui/mainheader.ui:80
+#: rnote-ui/data/ui/mainheader.ui:83
 msgid "Resize document to fit the strokes"
 msgstr "স্ট্রোকের সাথে সমতুল্যভাবে নথির আকার পরিবর্তন করুন"
 
-#: rnote-ui/data/ui/mainheader.ui:95
+#: rnote-ui/data/ui/mainheader.ui:98
 msgid "Save document"
 msgstr "নথি সংরক্ষণ করুন"
 
@@ -1509,41 +1510,41 @@ msgstr "নির্বাচিত কর্মক্ষেত্র মুছ�
 msgid "Edit selected workspace"
 msgstr "নির্বাচিত কর্মক্ষেত্র সম্পাদনা করুন"
 
-#: rnote-ui/src/appwindow/mod.rs:302
+#: rnote-ui/src/appwindow/mod.rs:303
 #: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
 #: rnote-ui/src/dialogs/mod.rs:316
 msgid "Saving document failed."
 msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1074
+#: rnote-ui/src/appwindow/mod.rs:1111
 msgid "Opening .rnote file failed."
 msgstr ".rnote ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1085
+#: rnote-ui/src/appwindow/mod.rs:1122
 msgid "Opening vector image file failed."
 msgstr "ভেক্টর ইমেজ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1096
+#: rnote-ui/src/appwindow/mod.rs:1133
 msgid "Opening bitmap image file failed."
 msgstr "বিটম্যাপ ইমেজ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1107 rnote-ui/src/dialogs/import.rs:381
+#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr "জার্নাল++ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1118 rnote-ui/src/dialogs/import.rs:322
+#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "PDF ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1127
+#: rnote-ui/src/appwindow/mod.rs:1164
 msgid "Error: Tried opening folder as file"
 msgstr "ত্রুটি: ফাইল হিসাবে ফোল্ডার খোলার চেষ্টা করা হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:1132
+#: rnote-ui/src/appwindow/mod.rs:1169
 msgid "Failed to open file: Unsupported file type."
 msgstr "ফাইল খুলতে ব্যর্থ: অসমর্থিত ফাইল প্রকার।"
 
@@ -1667,7 +1668,7 @@ msgstr "ইঞ্জিন কনফিগ রপ্তানী ব্যর্
 msgid "Exported engine config successfully."
 msgstr "ইঞ্জিন কনফিগ সফলভাবে রপ্তানি করা হয়েছে।"
 
-#: rnote-ui/src/dialogs/import.rs:35 rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:34
 msgid "Opening file failed."
 msgstr "ফাইল খোলা ব্যর্থ হয়েছে।"
 
@@ -1675,47 +1676,47 @@ msgstr "ফাইল খোলা ব্যর্থ হয়েছে।"
 msgid "Open file"
 msgstr "ফাইল খুলুন"
 
-#: rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/src/dialogs/import.rs:135
 msgid "JPG, PDF, PNG, SVG, Xopp"
 msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/src/dialogs/import.rs:138
 msgid "Import file"
 msgstr "ফাইল আমদানি করুন"
 
-#: rnote-ui/src/dialogs/import.rs:258
+#: rnote-ui/src/dialogs/import.rs:250
 msgid "- no file name -"
 msgstr "- কোন ফাইলের নাম নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:255
 msgid "- no title -"
 msgstr "- কোনো শিরোনাম নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:266
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no author -"
 msgstr "- কোন লেখক নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:270
+#: rnote-ui/src/dialogs/import.rs:262
 msgid "- no date -"
 msgstr "- তারিখ নেই -"
 
-#: rnote-ui/src/dialogs/import.rs:277
+#: rnote-ui/src/dialogs/import.rs:269
 msgid "File name:"
 msgstr "ফাইলের নাম:"
 
-#: rnote-ui/src/dialogs/import.rs:281
+#: rnote-ui/src/dialogs/import.rs:273
 msgid "Title:"
 msgstr "শিরোনাম:"
 
-#: rnote-ui/src/dialogs/import.rs:285
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "Author:"
 msgstr "লেখক:"
 
-#: rnote-ui/src/dialogs/import.rs:289
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Modification date:"
 msgstr "পরিবর্তনের তারিখ:"
 
-#: rnote-ui/src/dialogs/import.rs:293
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Pages:"
 msgstr "পৃষ্ঠা:"
 
@@ -1739,6 +1740,19 @@ msgstr "ফোল্ডারের নাম"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "নতুন ফোল্ডার"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close window"
+#~ msgstr "সক্রিয় উইন্ডোটি বন্ধ করুন"
+
+#, fuzzy
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
 #~ msgid "Quit Application"
 #~ msgstr "অ্যাপ্লিকেশন প্রস্থান করুন"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 22:22+0100\n"
+"POT-Creation-Date: 2023-01-08 10:03+0100\n"
 "PO-Revision-Date: 2022-12-29 08:49+0000\n"
 "Last-Translator: Giulio Girardi <giulio@rapgenic.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -84,7 +84,7 @@ msgstr "Questo cancella l'intero documento. Si prega di confermare."
 #: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
 #: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
 #: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
-#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:150
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
 #: rnote-ui/src/dialogs/mod.rs:372
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
@@ -123,8 +123,11 @@ msgid "Save"
 msgstr "Salva"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-msgid "Close tab"
-msgstr ""
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close the active tab"
+msgstr "Chiudi la finestra attiva"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -136,7 +139,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close window"
+msgid "Close the application window"
 msgstr "Chiudi la finestra attiva"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -197,11 +200,9 @@ msgstr "- nessuna cartella selezionata -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 #, fuzzy
-#| msgid "Change workspace directory"
-msgid ""
-"Change workspace\n"
-"                              directory"
-msgstr "Cambia cartella dell'area di lavoro"
+#| msgid "Change the workspace directory"
+msgid "Change the directory"
+msgstr "Cambia la cartella dell'area di lavoro"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -220,7 +221,7 @@ msgid "Import PDF"
 msgstr "Importa PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
 msgstr "Importa"
 
@@ -1086,23 +1087,23 @@ msgstr "Bozza"
 msgid "New tab"
 msgstr "Nuovo Foglio"
 
-#: rnote-ui/data/ui/mainheader.ui:54
+#: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
 msgstr "Annulla"
 
-#: rnote-ui/data/ui/mainheader.ui:62
+#: rnote-ui/data/ui/mainheader.ui:65
 msgid "Redo"
 msgstr "Ripristina"
 
-#: rnote-ui/data/ui/mainheader.ui:73
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Add page"
 msgstr "Aggiungi pagina"
 
-#: rnote-ui/data/ui/mainheader.ui:80
+#: rnote-ui/data/ui/mainheader.ui:83
 msgid "Resize document to fit the strokes"
 msgstr "Ridimensiona per adattare il formato del documento"
 
-#: rnote-ui/data/ui/mainheader.ui:95
+#: rnote-ui/data/ui/mainheader.ui:98
 msgid "Save document"
 msgstr "Salva documento"
 
@@ -1508,39 +1509,39 @@ msgstr "Rimuovi l'area di lavoro selezionata"
 msgid "Edit selected workspace"
 msgstr "Modifica l'area di lavoro selezionata"
 
-#: rnote-ui/src/appwindow/mod.rs:302
+#: rnote-ui/src/appwindow/mod.rs:303
 #: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
 #: rnote-ui/src/dialogs/mod.rs:316
 msgid "Saving document failed."
 msgstr "Salvataggio del documento non riuscito."
 
-#: rnote-ui/src/appwindow/mod.rs:1074
+#: rnote-ui/src/appwindow/mod.rs:1111
 msgid "Opening .rnote file failed."
 msgstr "Apertura file .rnote fallita."
 
-#: rnote-ui/src/appwindow/mod.rs:1085
+#: rnote-ui/src/appwindow/mod.rs:1122
 msgid "Opening vector image file failed."
 msgstr "Apertura del file immagine vettoriale non riuscita."
 
-#: rnote-ui/src/appwindow/mod.rs:1096
+#: rnote-ui/src/appwindow/mod.rs:1133
 msgid "Opening bitmap image file failed."
 msgstr "Apertura del file immagine bitmap non riuscita."
 
-#: rnote-ui/src/appwindow/mod.rs:1107 rnote-ui/src/dialogs/import.rs:381
+#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
 msgid "Opening Xournal++ file failed."
 msgstr "Apertura file Xournal++ fallita."
 
-#: rnote-ui/src/appwindow/mod.rs:1118 rnote-ui/src/dialogs/import.rs:322
+#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "Apertura file PDF fallita."
 
-#: rnote-ui/src/appwindow/mod.rs:1127
+#: rnote-ui/src/appwindow/mod.rs:1164
 msgid "Error: Tried opening folder as file"
 msgstr "Errore: si è provato ad aprire la cartella come file"
 
-#: rnote-ui/src/appwindow/mod.rs:1132
+#: rnote-ui/src/appwindow/mod.rs:1169
 msgid "Failed to open file: Unsupported file type."
 msgstr "Apertura del file fallita: il formato del file non è supportato."
 
@@ -1666,7 +1667,7 @@ msgstr "Esportazione del 'engine config' fallita."
 msgid "Exported engine config successfully."
 msgstr "Esportazione del 'engine config' avvenuta con successo."
 
-#: rnote-ui/src/dialogs/import.rs:35 rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:34
 msgid "Opening file failed."
 msgstr "Apertura file fallita."
 
@@ -1674,47 +1675,47 @@ msgstr "Apertura file fallita."
 msgid "Open file"
 msgstr "Apri file"
 
-#: rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/src/dialogs/import.rs:135
 msgid "JPG, PDF, PNG, SVG, Xopp"
 msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/src/dialogs/import.rs:138
 msgid "Import file"
 msgstr "Importa file"
 
-#: rnote-ui/src/dialogs/import.rs:258
+#: rnote-ui/src/dialogs/import.rs:250
 msgid "- no file name -"
 msgstr "- nessun nome file -"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:255
 msgid "- no title -"
 msgstr "- senza titolo -"
 
-#: rnote-ui/src/dialogs/import.rs:266
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no author -"
 msgstr "- nessun autore -"
 
-#: rnote-ui/src/dialogs/import.rs:270
+#: rnote-ui/src/dialogs/import.rs:262
 msgid "- no date -"
 msgstr "- nessuna data -"
 
-#: rnote-ui/src/dialogs/import.rs:277
+#: rnote-ui/src/dialogs/import.rs:269
 msgid "File name:"
 msgstr "Nome file:"
 
-#: rnote-ui/src/dialogs/import.rs:281
+#: rnote-ui/src/dialogs/import.rs:273
 msgid "Title:"
 msgstr "Titolo:"
 
-#: rnote-ui/src/dialogs/import.rs:285
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "Author:"
 msgstr "Autore:"
 
-#: rnote-ui/src/dialogs/import.rs:289
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Modification date:"
 msgstr "Data di modifica:"
 
-#: rnote-ui/src/dialogs/import.rs:293
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Pages:"
 msgstr "Pagine:"
 
@@ -1738,6 +1739,19 @@ msgstr "Nome cartella"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nuova cartella"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close window"
+#~ msgstr "Chiudi la finestra attiva"
+
+#, fuzzy
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "Cambia cartella dell'area di lavoro"
 
 #~ msgid "Quit Application"
 #~ msgstr "Esci dall'applicazione"

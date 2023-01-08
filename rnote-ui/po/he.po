@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 22:22+0100\n"
+"POT-Creation-Date: 2023-01-08 10:03+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -89,7 +89,7 @@ msgstr "פעולה זו מוחקת את תוכן הגיליון במלואו. נ
 #: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
 #: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
 #: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
-#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:150
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
 #: rnote-ui/src/dialogs/mod.rs:372
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
@@ -124,8 +124,11 @@ msgid "Save"
 msgstr "שמירה"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-msgid "Close tab"
-msgstr ""
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close the active tab"
+msgstr "סגירת החלון הפעיל"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -137,7 +140,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close window"
+msgid "Close the application window"
 msgstr "סגירת החלון הפעיל"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -202,10 +205,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 #, fuzzy
-#| msgid "Change workspace directory"
-msgid ""
-"Change workspace\n"
-"                              directory"
+msgid "Change the directory"
 msgstr "החלפת תיקיית סביבת עבודה"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
@@ -225,7 +225,7 @@ msgid "Import PDF"
 msgstr "ייבוא"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
 msgstr "ייבוא"
 
@@ -1182,24 +1182,24 @@ msgstr "טיוטה"
 msgid "New tab"
 msgstr "גיליון חדש"
 
-#: rnote-ui/data/ui/mainheader.ui:54
+#: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:62
+#: rnote-ui/data/ui/mainheader.ui:65
 msgid "Redo"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:73
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Add page"
 msgstr "הוספת עמוד"
 
-#: rnote-ui/data/ui/mainheader.ui:80
+#: rnote-ui/data/ui/mainheader.ui:83
 #, fuzzy
 msgid "Resize document to fit the strokes"
 msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
 
-#: rnote-ui/data/ui/mainheader.ui:95
+#: rnote-ui/data/ui/mainheader.ui:98
 #, fuzzy
 msgid "Save document"
 msgstr "מסמך חדש"
@@ -1629,45 +1629,45 @@ msgstr "פתיחת סביבת עבודה"
 msgid "Edit selected workspace"
 msgstr "פתיחת סביבת עבודה"
 
-#: rnote-ui/src/appwindow/mod.rs:302
+#: rnote-ui/src/appwindow/mod.rs:303
 #: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
 #: rnote-ui/src/dialogs/mod.rs:316
 #, fuzzy
 msgid "Saving document failed."
 msgstr "שמירת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1074
+#: rnote-ui/src/appwindow/mod.rs:1111
 #, fuzzy
 msgid "Opening .rnote file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1085
+#: rnote-ui/src/appwindow/mod.rs:1122
 #, fuzzy
 msgid "Opening vector image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1096
+#: rnote-ui/src/appwindow/mod.rs:1133
 #, fuzzy
 msgid "Opening bitmap image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1107 rnote-ui/src/dialogs/import.rs:381
+#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
 #, fuzzy
 msgid "Opening Xournal++ file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1118 rnote-ui/src/dialogs/import.rs:322
+#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
 #, fuzzy
 msgid "Opening PDF file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1127
+#: rnote-ui/src/appwindow/mod.rs:1164
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1132
+#: rnote-ui/src/appwindow/mod.rs:1169
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
@@ -1811,7 +1811,7 @@ msgstr "ייצוא הבחירה ל־SVG נכשל"
 msgid "Exported engine config successfully."
 msgstr "ייצוא הבחירה ל־SVG הצליח"
 
-#: rnote-ui/src/dialogs/import.rs:35 rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:34
 #, fuzzy
 msgid "Opening file failed."
 msgstr "פתיחת הגיליון נכשלה"
@@ -1820,48 +1820,48 @@ msgstr "פתיחת הגיליון נכשלה"
 msgid "Open file"
 msgstr "פתיחת קובץ"
 
-#: rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/src/dialogs/import.rs:135
 msgid "JPG, PDF, PNG, SVG, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/src/dialogs/import.rs:138
 msgid "Import file"
 msgstr "ייבוא קובץ"
 
-#: rnote-ui/src/dialogs/import.rs:258
+#: rnote-ui/src/dialogs/import.rs:250
 msgid "- no file name -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:255
 msgid "- no title -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:266
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no author -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:270
+#: rnote-ui/src/dialogs/import.rs:262
 msgid "- no date -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:277
+#: rnote-ui/src/dialogs/import.rs:269
 #, fuzzy
 msgid "File name:"
 msgstr "שינוי שם"
 
-#: rnote-ui/src/dialogs/import.rs:281
+#: rnote-ui/src/dialogs/import.rs:273
 msgid "Title:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:285
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "Author:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:289
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Modification date:"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:293
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Pages:"
 msgstr ""
 
@@ -1886,6 +1886,19 @@ msgstr "שינוי שם"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close window"
+#~ msgstr "סגירת החלון הפעיל"
+
+#, fuzzy
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "החלפת תיקיית סביבת עבודה"
 
 #~ msgid "Quit Application"
 #~ msgstr "יציאה מהיישום"

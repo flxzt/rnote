@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 22:22+0100\n"
+"POT-Creation-Date: 2023-01-08 10:03+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -84,7 +84,7 @@ msgstr "這將清空整個文件。請確認。"
 #: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
 #: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
 #: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
-#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:150
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
 #: rnote-ui/src/dialogs/mod.rs:372
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
@@ -121,8 +121,11 @@ msgid "Save"
 msgstr "儲存"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-msgid "Close tab"
-msgstr ""
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close the active tab"
+msgstr "關閉活動視窗"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -134,7 +137,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close window"
+msgid "Close the application window"
 msgstr "關閉活動視窗"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -195,10 +198,8 @@ msgstr "—— 沒有選擇目錄 ——"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 #, fuzzy
-#| msgid "Change workspace directory"
-msgid ""
-"Change workspace\n"
-"                              directory"
+#| msgid "Change the workspace directory"
+msgid "Change the directory"
 msgstr "更改工作區目錄"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
@@ -216,7 +217,7 @@ msgid "Import PDF"
 msgstr "匯入 PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
 msgstr "匯入"
 
@@ -1077,23 +1078,23 @@ msgstr "草稿"
 msgid "New tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:54
+#: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
 msgstr "撤銷"
 
-#: rnote-ui/data/ui/mainheader.ui:62
+#: rnote-ui/data/ui/mainheader.ui:65
 msgid "Redo"
 msgstr "重做"
 
-#: rnote-ui/data/ui/mainheader.ui:73
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Add page"
 msgstr "新建頁面"
 
-#: rnote-ui/data/ui/mainheader.ui:80
+#: rnote-ui/data/ui/mainheader.ui:83
 msgid "Resize document to fit the strokes"
 msgstr "調整文件大小以適應畫筆"
 
-#: rnote-ui/data/ui/mainheader.ui:95
+#: rnote-ui/data/ui/mainheader.ui:98
 msgid "Save document"
 msgstr "儲存文件"
 
@@ -1497,39 +1498,39 @@ msgstr "移除選定的工作區"
 msgid "Edit selected workspace"
 msgstr "編輯選定的工作區"
 
-#: rnote-ui/src/appwindow/mod.rs:302
+#: rnote-ui/src/appwindow/mod.rs:303
 #: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:52
+#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
 #: rnote-ui/src/dialogs/mod.rs:316
 msgid "Saving document failed."
 msgstr "文件儲存失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1074
+#: rnote-ui/src/appwindow/mod.rs:1111
 msgid "Opening .rnote file failed."
 msgstr ".rnote 檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1085
+#: rnote-ui/src/appwindow/mod.rs:1122
 msgid "Opening vector image file failed."
 msgstr "向量圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1096
+#: rnote-ui/src/appwindow/mod.rs:1133
 msgid "Opening bitmap image file failed."
 msgstr "點陣圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1107 rnote-ui/src/dialogs/import.rs:381
+#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ 檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1118 rnote-ui/src/dialogs/import.rs:322
+#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "PDF開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1127
+#: rnote-ui/src/appwindow/mod.rs:1164
 msgid "Error: Tried opening folder as file"
 msgstr "錯誤：將資料夾作為檔案開啟"
 
-#: rnote-ui/src/appwindow/mod.rs:1132
+#: rnote-ui/src/appwindow/mod.rs:1169
 msgid "Failed to open file: Unsupported file type."
 msgstr "開啟檔案失敗：不支援的檔案型別。"
 
@@ -1653,7 +1654,7 @@ msgstr "引擎設定匯出失敗。"
 msgid "Exported engine config successfully."
 msgstr "引擎設定匯出成功。"
 
-#: rnote-ui/src/dialogs/import.rs:35 rnote-ui/src/dialogs/import.rs:114
+#: rnote-ui/src/dialogs/import.rs:34
 msgid "Opening file failed."
 msgstr "檔案開啟失敗。"
 
@@ -1661,47 +1662,47 @@ msgstr "檔案開啟失敗。"
 msgid "Open file"
 msgstr "開啟檔案"
 
-#: rnote-ui/src/dialogs/import.rs:143
+#: rnote-ui/src/dialogs/import.rs:135
 msgid "JPG, PDF, PNG, SVG, Xopp"
 msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/src/dialogs/import.rs:138
 msgid "Import file"
 msgstr "匯入檔案"
 
-#: rnote-ui/src/dialogs/import.rs:258
+#: rnote-ui/src/dialogs/import.rs:250
 msgid "- no file name -"
 msgstr "—— 沒有檔名 ——"
 
-#: rnote-ui/src/dialogs/import.rs:263
+#: rnote-ui/src/dialogs/import.rs:255
 msgid "- no title -"
 msgstr "—— 無標題 ——"
 
-#: rnote-ui/src/dialogs/import.rs:266
+#: rnote-ui/src/dialogs/import.rs:258
 msgid "- no author -"
 msgstr "—— 無作者 ——"
 
-#: rnote-ui/src/dialogs/import.rs:270
+#: rnote-ui/src/dialogs/import.rs:262
 msgid "- no date -"
 msgstr "—— 無日期 ——"
 
-#: rnote-ui/src/dialogs/import.rs:277
+#: rnote-ui/src/dialogs/import.rs:269
 msgid "File name:"
 msgstr "檔名："
 
-#: rnote-ui/src/dialogs/import.rs:281
+#: rnote-ui/src/dialogs/import.rs:273
 msgid "Title:"
 msgstr "標題："
 
-#: rnote-ui/src/dialogs/import.rs:285
+#: rnote-ui/src/dialogs/import.rs:277
 msgid "Author:"
 msgstr "作者："
 
-#: rnote-ui/src/dialogs/import.rs:289
+#: rnote-ui/src/dialogs/import.rs:281
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: rnote-ui/src/dialogs/import.rs:293
+#: rnote-ui/src/dialogs/import.rs:285
 msgid "Pages:"
 msgstr "頁碼："
 
@@ -1725,6 +1726,19 @@ msgstr "資料夾名稱"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "新建資料夾"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close window"
+#~ msgstr "關閉活動視窗"
+
+#, fuzzy
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "更改工作區目錄"
 
 #~ msgid "Quit Application"
 #~ msgstr "退出應用"

@@ -31,7 +31,7 @@
           <object class="GtkBox" id="quickactions_box">
             <property name="spacing">6</property>
             <child>
-              <object class="GtkButton" id="create_page_button">
+              <object class="GtkButton">
                 <property name="icon-name">tab-new-filled-symbolic</property>
                 <property name="action-name">win.new-tab</property>
                 <property name="tooltip-text" translatable="yes">New tab</property>
@@ -40,6 +40,9 @@
             <child>
               <object class="GtkSeparator">
                 <property name="orientation">vertical</property>
+                <style>
+                  <class name="spacer"/>
+                </style>
               </object>
             </child>
             <child>

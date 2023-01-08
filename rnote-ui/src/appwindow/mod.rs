@@ -1,6 +1,7 @@
 mod appsettings;
 mod appwindowactions;
 
+use std::path::Path;
 use std::{
     cell::{Cell, RefCell},
     rc::Rc,
@@ -944,6 +945,32 @@ impl RnoteAppWindow {
             .any(|c| c.unsaved_changes())
     }
 
+    pub(crate) fn tabs_query_file_opened(
+        &self,
+        input_file_path: impl AsRef<Path>,
+    ) -> Option<adw::TabPage> {
+        self.overlays()
+            .tabview()
+            .pages()
+            .snapshot()
+            .into_iter()
+            .filter_map(|o| {
+                let tab_page = o.downcast::<adw::TabPage>().unwrap();
+                Some((
+                    tab_page.clone(),
+                    tab_page
+                        .child()
+                        .downcast_ref::<RnoteCanvasWrapper>()
+                        .unwrap()
+                        .canvas()
+                        .output_file()?
+                        .path()?,
+                ))
+            })
+            .find(|(_, output_file_path)| output_file_path == input_file_path.as_ref())
+            .map(|(found, _)| found)
+    }
+
     pub(crate) fn clear_rendering_inactive_tabs(&self) {
         for inactive_page in self
             .overlays()
@@ -1000,18 +1027,28 @@ impl RnoteAppWindow {
     ) {
         match crate::utils::FileType::lookup_file_type(&input_file) {
             crate::utils::FileType::RnoteFile => {
-                // open a new tab for rnote files
-                let new_tab = self.new_tab();
-                let canvas = new_tab
-                    .child()
-                    .downcast::<RnoteCanvasWrapper>()
-                    .unwrap()
-                    .canvas();
+                let Some(input_file_path) = input_file.path() else {
+                    log::error!("could not open file: {input_file:?}, path returned None");
+                    return;
+                };
 
-                if let Err(e) = self.load_in_file(input_file, target_pos, &canvas) {
-                    log::error!(
+                // If the file is already opened in a tab, simply switch to it
+                if let Some(page) = self.tabs_query_file_opened(input_file_path) {
+                    self.overlays().tabview().set_selected_page(&page);
+                } else {
+                    // open a new tab for rnote files
+                    let new_tab = self.new_tab();
+                    let canvas = new_tab
+                        .child()
+                        .downcast::<RnoteCanvasWrapper>()
+                        .unwrap()
+                        .canvas();
+
+                    if let Err(e) = self.load_in_file(input_file, target_pos, &canvas) {
+                        log::error!(
                         "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {e:?}"
                     );
+                    }
                 }
             }
             crate::utils::FileType::VectorImageFile | crate::utils::FileType::BitmapImageFile => {
@@ -1055,7 +1092,7 @@ impl RnoteAppWindow {
 
     /// Loads in a file of any supported type into the engine of the given canvas.
     ///
-    /// ! overwrites the current state so there should be a user prompt to confirm before this is called
+    /// ! if the file is a rnote save file, it will overwrite the current state so there should be a user prompt to confirm before this is called
     pub(crate) fn load_in_file(
         &self,
         file: gio::File,

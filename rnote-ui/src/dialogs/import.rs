@@ -8,7 +8,6 @@ use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 
 use crate::canvas::RnoteCanvas;
-use crate::canvaswrapper::RnoteCanvasWrapper;
 use crate::{config, RnoteAppWindow};
 
 /// Asks to open the given file as rnote file and overwrites the current document.
@@ -75,6 +74,7 @@ pub(crate) fn dialog_open_overwrite(
     dialog.show();
 }
 
+/// Opens a new rnote save file in a new tab
 pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
@@ -105,18 +105,10 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
         match responsetype {
             ResponseType::Accept => {
                 if let Some(input_file) = filechooser.file() {
-                    // open new tab for new rnote file
-                    let new_tab = appwindow.new_tab();
-                    let canvas = new_tab.child().downcast::<RnoteCanvasWrapper>().unwrap().canvas();
-
-                    if let Err(e) = appwindow.load_in_file(input_file, None, &canvas) {
-                        log::error!("failed to load in input file, {e:?}");
-                        appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
-                    }
+                    appwindow.open_file_w_dialogs(input_file, None);
                 }
             },
-            _ => {
-            }
+            _ => {}
         }
 
     }));

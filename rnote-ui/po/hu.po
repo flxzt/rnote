@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:03+0100\n"
+"POT-Creation-Date: 2023-01-08 10:22+0100\n"
 "PO-Revision-Date: 2022-12-24 12:01+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -127,20 +127,20 @@ msgstr "Mentés"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close the active tab"
+msgid "Close tab"
 msgstr "Aktív ablak bezárása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
-"The current tab contains unsaved changes. Changes which are not saved will "
-"be permanently lost."
+"This tab contains unsaved changes. Changes which are not saved will be "
+"permanently lost."
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close the application window"
+msgid "Close window"
 msgstr "Aktív ablak bezárása"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -1515,31 +1515,31 @@ msgstr "Kijelölt munkaterület szerkesztése"
 msgid "Saving document failed."
 msgstr "A dokumentum mentése sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1111
+#: rnote-ui/src/appwindow/mod.rs:1113
 msgid "Opening .rnote file failed."
 msgstr "A .rnote fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1122
+#: rnote-ui/src/appwindow/mod.rs:1124
 msgid "Opening vector image file failed."
 msgstr "A vektoros képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1133
+#: rnote-ui/src/appwindow/mod.rs:1135
 msgid "Opening bitmap image file failed."
 msgstr "A pontképes képfájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
+#: rnote-ui/src/appwindow/mod.rs:1146 rnote-ui/src/dialogs/import.rs:373
 msgid "Opening Xournal++ file failed."
 msgstr "A Xournal++ fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
+#: rnote-ui/src/appwindow/mod.rs:1157 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "A PDF fájl megnyitása sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1164
+#: rnote-ui/src/appwindow/mod.rs:1166
 msgid "Error: Tried opening folder as file"
 msgstr "Hiba: Mappa fájlként való megnyitása"
 
-#: rnote-ui/src/appwindow/mod.rs:1169
+#: rnote-ui/src/appwindow/mod.rs:1171
 msgid "Failed to open file: Unsupported file type."
 msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
 
@@ -1739,7 +1739,7 @@ msgstr "Új mappa"
 #, fuzzy
 #~| msgctxt "shortcut window"
 #~| msgid "Close the active window"
-#~ msgid "Close window"
+#~ msgid "Close the application window"
 #~ msgstr "Aktív ablak bezárása"
 
 #, fuzzy

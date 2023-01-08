@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:03+0100\n"
+"POT-Creation-Date: 2023-01-08 10:22+0100\n"
 "PO-Revision-Date: 2023-01-08 08:55+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -119,23 +119,20 @@ msgid "Save"
 msgstr "Opslaan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
-msgid "Close the active tab"
-msgstr "Sluit het huidige venster"
+msgid "Close tab"
+msgstr "Tabblad sluiten"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
-"The current tab contains unsaved changes. Changes which are not saved will "
-"be permanently lost."
+"This tab contains unsaved changes. Changes which are not saved will be "
+"permanently lost."
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close the application window"
+msgid "Close window"
 msgstr "Sluit het huidige venster"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -1513,31 +1510,31 @@ msgstr "Gekozen werkblad bewerken"
 msgid "Saving document failed."
 msgstr "Het document kan niet worden opgeslagen."
 
-#: rnote-ui/src/appwindow/mod.rs:1111
+#: rnote-ui/src/appwindow/mod.rs:1113
 msgid "Opening .rnote file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/mod.rs:1122
+#: rnote-ui/src/appwindow/mod.rs:1124
 msgid "Opening vector image file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/mod.rs:1133
+#: rnote-ui/src/appwindow/mod.rs:1135
 msgid "Opening bitmap image file failed."
 msgstr "Het bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
+#: rnote-ui/src/appwindow/mod.rs:1146 rnote-ui/src/dialogs/import.rs:373
 msgid "Opening Xournal++ file failed."
 msgstr "Het Xournal++-bestand kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
+#: rnote-ui/src/appwindow/mod.rs:1157 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "Het document kan niet worden geopend."
 
-#: rnote-ui/src/appwindow/mod.rs:1164
+#: rnote-ui/src/appwindow/mod.rs:1166
 msgid "Error: Tried opening folder as file"
 msgstr "Een map kan niet als bestand worden geopend"
 
-#: rnote-ui/src/appwindow/mod.rs:1169
+#: rnote-ui/src/appwindow/mod.rs:1171
 msgid "Failed to open file: Unsupported file type."
 msgstr "Dit bestandstype wordt niet ondersteund."
 
@@ -1734,13 +1731,16 @@ msgstr "Bestandsnaam"
 msgid "New folder"
 msgstr "Nieuwe map"
 
-#~ msgid "Close tab"
-#~ msgstr "Tabblad sluiten"
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close the active tab"
+#~ msgstr "Sluit het huidige venster"
 
 #, fuzzy
 #~| msgctxt "shortcut window"
 #~| msgid "Close the active window"
-#~ msgid "Close window"
+#~ msgid "Close the application window"
 #~ msgstr "Sluit het huidige venster"
 
 #, fuzzy

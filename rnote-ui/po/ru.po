@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:03+0100\n"
+"POT-Creation-Date: 2023-01-08 10:22+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -127,20 +127,20 @@ msgstr "Сохранить"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close the active tab"
+msgid "Close tab"
 msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
-"The current tab contains unsaved changes. Changes which are not saved will "
-"be permanently lost."
+"This tab contains unsaved changes. Changes which are not saved will be "
+"permanently lost."
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close the application window"
+msgid "Close window"
 msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -1556,31 +1556,31 @@ msgstr "Редактировать коллекцию"
 msgid "Saving document failed."
 msgstr "Не удалось сохранить документ."
 
-#: rnote-ui/src/appwindow/mod.rs:1111
+#: rnote-ui/src/appwindow/mod.rs:1113
 msgid "Opening .rnote file failed."
 msgstr "Не удалось открыть .rnote файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1122
+#: rnote-ui/src/appwindow/mod.rs:1124
 msgid "Opening vector image file failed."
 msgstr "Не удалось открыть векторное изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:1133
+#: rnote-ui/src/appwindow/mod.rs:1135
 msgid "Opening bitmap image file failed."
 msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:1144 rnote-ui/src/dialogs/import.rs:373
+#: rnote-ui/src/appwindow/mod.rs:1146 rnote-ui/src/dialogs/import.rs:373
 msgid "Opening Xournal++ file failed."
 msgstr "Не удалось открыть Xournal++ файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1155 rnote-ui/src/dialogs/import.rs:314
+#: rnote-ui/src/appwindow/mod.rs:1157 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "Не удалось открыть PDF файл."
 
-#: rnote-ui/src/appwindow/mod.rs:1164
+#: rnote-ui/src/appwindow/mod.rs:1166
 msgid "Error: Tried opening folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
 
-#: rnote-ui/src/appwindow/mod.rs:1169
+#: rnote-ui/src/appwindow/mod.rs:1171
 msgid "Failed to open file: Unsupported file type."
 msgstr "Не удалось открыть файл: формат файла не поддерживается."
 
@@ -1786,7 +1786,7 @@ msgstr "Новая папка"
 #, fuzzy
 #~| msgctxt "shortcut window"
 #~| msgid "Close the active window"
-#~ msgid "Close window"
+#~ msgid "Close the application window"
 #~ msgstr "Закрыть активное окно"
 
 #, fuzzy

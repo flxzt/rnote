@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 13:19+0100\n"
-"PO-Revision-Date: 2023-01-08 10:34+0000\n"
+"PO-Revision-Date: 2023-01-09 11:36+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1127,14 +1127,11 @@ msgstr "Kies een formaatkaderkleur"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show scrollbars"
-msgstr ""
+msgstr "Schuifbalken tonen"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
-"Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
+msgstr "Geef aan of de schuifbalken op het canvas dienen te worden getoond"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"

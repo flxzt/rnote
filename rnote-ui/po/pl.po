@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2022-11-30 09:31+0000\n"
 "Last-Translator: Larix_45 <milarczek2004@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
@@ -1232,11 +1232,13 @@ msgid "Set the format border color"
 msgstr "Ustawienie koloru obramowania formatu"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "Stale ukryty pasek przewijania"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Ustaw czy paski przewijania na płótnie mają być stale ukryte"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -1853,6 +1855,9 @@ msgstr "Nazwa folderu"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nowy folder"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "Stale ukryty pasek przewijania"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

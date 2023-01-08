@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -1167,11 +1167,13 @@ msgid "Set the format border color"
 msgstr "Выбрать цвет границ страницы"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "Не показывать полосы прокрутки"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -1782,6 +1784,9 @@ msgstr "Имя папки:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Новая папка"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "Не показывать полосы прокрутки"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

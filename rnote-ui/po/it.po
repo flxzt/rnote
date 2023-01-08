@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2022-12-29 08:49+0000\n"
 "Last-Translator: Giulio Girardi <giulio@rapgenic.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -1139,11 +1139,13 @@ msgid "Set the format border color"
 msgstr "Scegli il colore del bordo"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "Barre di scorrimento nascoste"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr ""
 "Imposta se le barre di scorrimento sull'area di disegno sono nascoste in "
 "modo permanente"
@@ -1738,6 +1740,9 @@ msgstr "Nome cartella"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nuova cartella"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "Barre di scorrimento nascoste"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

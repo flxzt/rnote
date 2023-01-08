@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2023-01-08 10:34+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1126,11 +1126,13 @@ msgid "Set the format border color"
 msgstr "Kies een formaatkaderkleur"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "Schuifbalken verbergen"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr ""
 "Geef aan of de schuifbalken van het canvas altijd verborgen moeten zijn"
 
@@ -1718,6 +1720,9 @@ msgstr "Bestandsnaam"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Nieuwe map"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "Schuifbalken verbergen"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

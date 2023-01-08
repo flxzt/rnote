@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -1228,12 +1228,12 @@ msgid "Set the format border color"
 msgstr "ตั้งค่าสีขอบเขตของหน้ากระดาษ"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "ซ่อนแถบเลื่อนเป็นการถาวร"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 #, fuzzy
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "ตั้งว่าจะให้ซ่อนแถบเลื่อนของเอกสารเป็นการถาวรหรือไม่"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -1871,6 +1871,9 @@ msgstr "ชื่อไฟล์:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "ซ่อนแถบเลื่อนเป็นการถาวร"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

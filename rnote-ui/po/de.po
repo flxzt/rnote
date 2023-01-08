@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2023-01-08 10:34+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -1126,11 +1126,13 @@ msgid "Set the format border color"
 msgstr "Ändere die Farbe der Formatränder"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "Dauerhaft versteckte Scrollbalken"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Ändere ob die Scrollbalken der Leinwand dauerhaft versteckt sind"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -1717,6 +1719,9 @@ msgstr "Ordnername"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "Neuer Ordner"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "Dauerhaft versteckte Scrollbalken"
 
 #~ msgid "Close the active tab"
 #~ msgstr "Schließe den aktiven Tab"

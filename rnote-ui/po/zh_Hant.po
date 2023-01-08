@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -1131,11 +1131,13 @@ msgid "Set the format border color"
 msgstr "設定格式界線顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "保持隱藏捲軸"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "設定畫布上的捲軸是否永久隱藏"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -1726,6 +1728,9 @@ msgstr "資料夾名稱"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "新建資料夾"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "保持隱藏捲軸"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 10:22+0100\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
 "PO-Revision-Date: 2022-12-24 17:28+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1136,11 +1136,13 @@ msgid "Set the format border color"
 msgstr "பார்மட் பார்டர் நிறத்தை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "நிரந்தரமாக மறைக்கப்பட்ட சுருள்ப்பட்டிகள்"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "கேன்வாஸில் உள்ள சுருள் பட்டைகள் நிரந்தரமாக மறைக்கப்பட்டுள்ளதா என்பதை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -1732,6 +1734,9 @@ msgstr "கோப்புறை பெயர்"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "புதிய அடைவு"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "நிரந்தரமாக மறைக்கப்பட்ட சுருள்ப்பட்டிகள்"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

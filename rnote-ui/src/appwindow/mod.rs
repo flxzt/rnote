@@ -967,7 +967,9 @@ impl RnoteAppWindow {
                         .path()?,
                 ))
             })
-            .find(|(_, output_file_path)| output_file_path == input_file_path.as_ref())
+            .find(|(_, output_file_path)| {
+                same_file::is_same_file(output_file_path, input_file_path.as_ref()).unwrap_or(false)
+            })
             .map(|(found, _)| found)
     }
 

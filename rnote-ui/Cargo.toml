@@ -47,5 +47,6 @@ url = "2"
 unicode-segmentation = "1"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 fs_extra = "1"
+same-file = "1"
 regex = "1"
 xdg-user = "0.2"

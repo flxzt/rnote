@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 13:19+0100\n"
-"PO-Revision-Date: 2023-01-08 10:34+0000\n"
+"PO-Revision-Date: 2023-01-09 11:36+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1127,13 +1127,11 @@ msgstr "Ändere die Farbe der Formatränder"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show scrollbars"
-msgstr ""
+msgstr "Zeige Scrollbalken"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr "Ändere ob die Scrollbalken der Leinwand dauerhaft versteckt sind"
+msgstr "Ändere ob die Scrollbalken der Leinwand sichtbar sind"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"

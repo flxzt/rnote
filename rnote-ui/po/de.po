@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 10:03+0100\n"
-"PO-Revision-Date: 2023-01-08 08:55+0000\n"
+"PO-Revision-Date: 2023-01-08 09:12+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -120,11 +120,8 @@ msgid "Save"
 msgstr "Speichern"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close the active tab"
-msgstr "Schließe das aktive Fenster"
+msgstr "Schließe den aktiven Tab"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -135,11 +132,8 @@ msgstr ""
 "gespeichert werden gehen unwiderruflich verloren."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close the application window"
-msgstr "Schließe das aktive Fenster"
+msgstr "Schließe das App-Fenster"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -198,10 +192,8 @@ msgid "- no directory selected -"
 msgstr "- kein Verzeichnis ausgewählt -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "Ändere das Arbeitsflächenverzeichnis"
+msgstr "Ändere das Verzeichnis"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -783,7 +775,8 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Halte Ctrl um die Beschränkungen temporär zu de- /aktivieren\n"
+"Halte Ctrl um die Beschränkungen\n"
+"temporär zu de- /aktivieren\n"
 "wenn der Schalter aktiviert / deaktiviert ist"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:420

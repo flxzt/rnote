@@ -9,6 +9,8 @@
     </property>
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
+
+    <!-- bruhstyle menu -->
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -48,17 +50,64 @@
         </child>
       </object>
     </child>
+
+    <!-- Separator -->
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
       </object>
     </child>
+
+    <!-- size spinbutton -->
     <child>
       <object class="GtkSpinButton" id="width_spinbutton">
         <property name="orientation">vertical</property>
         <property name="numeric">true</property>
         <property name="digits">1</property>
         <property name="climb-rate">0.5</property>
+      </object>
+    </child>
+
+    <!-- brush size presets -->
+    <child>
+      <object class="GtkBox" id="brush_preset_togglebox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkToggleButton" id="small_brush_preset">
+            <property name="tooltip_text" translatable="yes">Small brush</property>
+            <property name="active">true</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">brush-preset-small</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="medium_brush_preset">
+            <property name="group">small_brush_preset</property>
+            <property name="tooltip_text" translatable="yes">Medium brush</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">brush-preset-medium</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="large_brush_preset">
+            <property name="group">medium_brush_preset</property>
+            <property name="tooltip_text" translatable="yes">Large brush</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">brush-preset-large</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
 

@@ -19,9 +19,9 @@ mod imp {
     #[derive(CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnoteCanvasWrapper {
-        pub(crate) permanently_hide_scrollbars: Cell<bool>,
+        pub(crate) show_scrollbars: Cell<bool>,
 
-        pub(crate) appwindow_permanently_hide_scrollbars_bind: RefCell<Option<glib::Binding>>,
+        pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
 
         pub(crate) canvas_touch_drag_gesture: GestureDrag,
@@ -88,9 +88,9 @@ mod imp {
                 .build();
 
             Self {
-                permanently_hide_scrollbars: Cell::new(false),
+                show_scrollbars: Cell::new(false),
 
-                appwindow_permanently_hide_scrollbars_bind: RefCell::new(None),
+                appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
 
                 canvas_touch_drag_gesture,
@@ -181,44 +181,35 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![
-                    // permanently hide canvas scrollbars
-                    glib::ParamSpecBoolean::new(
-                        "permanently-hide-scrollbars",
-                        "permanently-hide-scrollbars",
-                        "permanently-hide-scrollbars",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                ]
+                vec![glib::ParamSpecBoolean::new(
+                    "show-scrollbars",
+                    "show-scrollbars",
+                    "show-scrollbars",
+                    false,
+                    glib::ParamFlags::READWRITE,
+                )]
             });
             PROPERTIES.as_ref()
         }
 
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
-                "permanently-hide-scrollbars" => self.permanently_hide_scrollbars.get().to_value(),
+                "show-scrollbars" => self.show_scrollbars.get().to_value(),
                 _ => unimplemented!(),
             }
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
-                "permanently-hide-scrollbars" => {
-                    let permanently_hide_canvas_scrollbars = value
+                "show-scrollbars" => {
+                    let show_scrollbars = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`.");
 
-                    self.permanently_hide_scrollbars
-                        .replace(permanently_hide_canvas_scrollbars);
+                    self.show_scrollbars.replace(show_scrollbars);
 
-                    if permanently_hide_canvas_scrollbars {
-                        self.scroller.hscrollbar().set_visible(false);
-                        self.scroller.vscrollbar().set_visible(false);
-                    } else {
-                        self.scroller.hscrollbar().set_visible(true);
-                        self.scroller.vscrollbar().set_visible(true);
-                    }
+                    self.scroller.hscrollbar().set_visible(show_scrollbars);
+                    self.scroller.vscrollbar().set_visible(show_scrollbars);
                 }
                 _ => unimplemented!(),
             }
@@ -491,16 +482,13 @@ impl RnoteCanvasWrapper {
     }
 
     #[allow(unused)]
-    pub(crate) fn permanently_hide_scrollbars(&self) -> bool {
-        self.property::<bool>("permanently-hide-scrollbars")
+    pub(crate) fn show_scrollbars(&self) -> bool {
+        self.property::<bool>("show-scrollbars")
     }
 
     #[allow(unused)]
-    pub(crate) fn set_permanently_hide_scrollbars(&self, permanently_hide_canvas_scrollbars: bool) {
-        self.set_property(
-            "permanently-hide-scrollbars",
-            permanently_hide_canvas_scrollbars.to_value(),
-        );
+    pub(crate) fn set_show_scrollbars(&self, show_scrollbars: bool) {
+        self.set_property("show-scrollbars", show_scrollbars.to_value());
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {
@@ -518,13 +506,13 @@ impl RnoteCanvasWrapper {
 
         if let Some(old) = self
             .imp()
-            .appwindow_permanently_hide_scrollbars_bind
+            .appwindow_show_scrollbars_bind
             .borrow_mut()
             .replace(
                 appwindow
                     .settings_panel()
-                    .general_permanently_hide_scrollbars_switch()
-                    .bind_property("state", self, "permanently-hide-scrollbars")
+                    .general_show_scrollbars_switch()
+                    .bind_property("state", self, "show-scrollbars")
                     .sync_create()
                     .build(),
             )

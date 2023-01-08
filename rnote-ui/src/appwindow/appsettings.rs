@@ -63,10 +63,8 @@ impl RnoteAppWindow {
         // permanently hide canvas scrollbars
         self.app_settings()
             .bind(
-                "permanently-hide-scrollbars",
-                &self
-                    .settings_panel()
-                    .general_permanently_hide_scrollbars_switch(),
+                "show-scrollbars",
+                &self.settings_panel().general_show_scrollbars_switch(),
                 "active",
             )
             .build();

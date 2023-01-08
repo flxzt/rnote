@@ -3391,6 +3391,7 @@ dependencies = [
  "rnote-compose",
  "rnote-engine",
  "rnote-fileformats",
+ "same-file",
  "serde",
  "serde_json",
  "svg",

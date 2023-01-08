@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 10:22+0100\n"
-"PO-Revision-Date: 2023-01-08 08:55+0000\n"
+"PO-Revision-Date: 2023-01-08 10:34+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -127,25 +127,24 @@ msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Dit tabblad bevat niet-opgeslagen wijzigingen. Sla uw werk op om te "
+"voorkomen dat de wijzigingen verloren gaan."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close window"
-msgstr "Sluit het huidige venster"
+msgstr "Venster sluiten"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Er zijn niet-opgeslagen wijzigingen. Sla uw werk op om te voorkomen dat de "
+"wijzigingen verloren gaan."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard all"
-msgstr "Niet opslaan"
+msgstr "Niets opslaan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
@@ -192,10 +191,8 @@ msgid "- no directory selected -"
 msgstr "- Geen map gekozen -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "Wijzig de werkbladmap"
+msgstr "Wijzig de map"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -771,16 +768,13 @@ msgid "Enabled"
 msgstr "Ingeschakeld"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:408
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Houd Ctrl ingedrukt om de beperkingen tijdelijk\n"
+"Houd Ctrl ingedrukt om de\n"
+"beperkingen tijdelijk\n"
 "in of uit te schakelen"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:420
@@ -1074,10 +1068,8 @@ msgid "Draft"
 msgstr "Concept"
 
 #: rnote-ui/data/ui/mainheader.ui:37
-#, fuzzy
-#| msgid "New Sheet"
 msgid "New tab"
-msgstr "Nieuw werkblad"
+msgstr "Nieuw tabblad"
 
 #: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
@@ -1551,14 +1543,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
 
 #: rnote-ui/src/canvas/mod.rs:950
-#, fuzzy
-#| msgid "- no file name -"
 msgid "- invalid file name -"
-msgstr "- geen bestandsnaam -"
+msgstr "- ongeldige bestandsnaam -"
 
 #: rnote-ui/src/canvas/mod.rs:963
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- ongeldige bestandslocatie -"
 
 #: rnote-ui/src/canvas/mod.rs:977
 msgid "Opened file was modified on disk."
@@ -1569,10 +1559,8 @@ msgid "Reload"
 msgstr "Herladen"
 
 #: rnote-ui/src/canvas/mod.rs:984
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed."
-msgstr "Het bestand kan niet worden geopend."
+msgstr "Het bestand kan niet worden herladen."
 
 #: rnote-ui/src/canvas/mod.rs:1026
 msgid "Opened file was renamed on disk."
@@ -1717,7 +1705,7 @@ msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:272
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- er is geen geldige opslagmap aangetroffen -"
 
 #: rnote-ui/src/dialogs/mod.rs:368
 msgid "Change workspace directory"

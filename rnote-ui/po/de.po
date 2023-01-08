@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 10:22+0100\n"
-"PO-Revision-Date: 2023-01-08 09:12+0000\n"
+"PO-Revision-Date: 2023-01-08 10:34+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -124,16 +124,12 @@ msgid "Close tab"
 msgstr "Tab schließen"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
-#| msgid ""
-#| "The current tab contains unsaved changes. Changes which are not saved "
-#| "will be permanently lost."
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
-"Der aktuelle Tab enthält ungesicherte Änderungen. Änderungen die nicht "
-"gespeichert werden gehen unwiderruflich verloren."
+"Dieser Tab enthält ungesicherte Änderungen. Änderungen die nicht gespeichert "
+"werden gehen unwiderruflich verloren."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Close window"

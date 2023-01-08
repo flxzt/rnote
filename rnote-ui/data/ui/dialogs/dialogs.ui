@@ -26,7 +26,7 @@
   </object>
 
   <object class="AdwMessageDialog" id="dialog_close_tab">
-    <property name="heading" translatable="yes">Close tab</property>
+    <property name="heading" translatable="yes">Close the active tab</property>
     <property name="body" translatable="yes">The current tab contains unsaved changes. Changes which are not saved will be permanently lost.</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
@@ -38,7 +38,7 @@
   </object>
 
   <object class="AdwMessageDialog" id="dialog_close_window">
-    <property name="heading" translatable="yes">Close window</property>
+    <property name="heading" translatable="yes">Close the application window</property>
     <property name="body" translatable="yes">Some opened files contain unsaved changes. Changes which are not saved will be permanently lost.</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
@@ -170,8 +170,7 @@
                               <property name="row">1</property>
                             </layout>
                             <property name="icon_name">folder-open-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Change workspace
-                              directory</property>
+                            <property name="tooltip_text" translatable="yes">Change the directory</property>
                           </object>
                         </child>
                       </object>

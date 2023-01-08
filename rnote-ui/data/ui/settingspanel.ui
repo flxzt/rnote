@@ -90,11 +90,11 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_permanently_hide_scrollbars_row">
-                        <property name="title" translatable="yes">Permanently hidden scrollbars</property>
-                        <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are hidden permanently</property>
+                      <object class="AdwActionRow" id="general_show_scrollbars_row">
+                        <property name="title" translatable="yes">Show scrollbars</property>
+                        <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>
                         <child type="suffix">
-                          <object class="GtkSwitch" id="general_permanently_hide_scrollbars_switch">
+                          <object class="GtkSwitch" id="general_show_scrollbars_switch">
                             <property name="valign">center</property>
                           </object>
                         </child>

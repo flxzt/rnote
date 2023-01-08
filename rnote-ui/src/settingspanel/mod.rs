@@ -42,7 +42,7 @@ mod imp {
         #[template_child]
         pub(crate) general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
-        pub(crate) general_permanently_hide_scrollbars_switch: TemplateChild<Switch>,
+        pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<IconPicker>,
         #[template_child]
@@ -422,10 +422,8 @@ impl SettingsPanel {
         self.imp().general_drawing_cursor_picker.clone()
     }
 
-    pub(crate) fn general_permanently_hide_scrollbars_switch(&self) -> Switch {
-        self.imp()
-            .general_permanently_hide_scrollbars_switch
-            .clone()
+    pub(crate) fn general_show_scrollbars_switch(&self) -> Switch {
+        self.imp().general_show_scrollbars_switch.clone()
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {

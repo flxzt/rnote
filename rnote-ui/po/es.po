@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 13:19+0100\n"
-"PO-Revision-Date: 2022-12-24 12:01+0000\n"
-"Last-Translator: Óscar Fernández Díaz <oscfdezdz@tuta.io>\n"
+"PO-Revision-Date: 2023-01-09 11:36+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -99,16 +99,12 @@ msgid "New Document"
 msgstr "Documento nuevo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved changes. Do you want to "
-#| "save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved\n"
 "      changes. Do you want to save the current document?"
 msgstr ""
-"Al crear un documento nuevo se descartan los cambios no guardados. ¿Desea "
-"guardar el documento actual?"
+"La creación de un nuevo documento descartará los cambios no guardados.\n"
+"¿Desea guardar el documento actual?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
@@ -123,36 +119,31 @@ msgid "Save"
 msgstr "Guardar"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close tab"
-msgstr "Cerrar la ventana activa"
+msgstr "Cerrar la pestaña"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Esta pestaña contiene cambios que no se han guardado. Los cambios que no se "
+"guarden se perderán de forma permanente."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close window"
-msgstr "Cerrar la ventana activa"
+msgstr "Cerrar la ventana"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Hay cambios sin guardar. Guarde su trabajo para evitar perder los cambios."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard all"
-msgstr "Descartar"
+msgstr "Descartar todo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
@@ -199,10 +190,8 @@ msgid "- no directory selected -"
 msgstr "- ningún directorio seleccionado -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "Cambiar el directorio del área de trabajo"
+msgstr "Cambiar el directorio"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -780,18 +769,14 @@ msgid "Enabled"
 msgstr "Activado"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:408
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Mantenga pulsada la tecla Ctrl para activar/desactivar temporalmente las "
-"restricciones\n"
-"cuando este conmutador esté apagado/encendido"
+"Mantenga presionada la tecla Ctrl para temporalmente\n"
+"habilitar/deshabilitar restricciones\n"
+"cuando este interruptor está apagado/encendido"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:420
 msgid "1:1"
@@ -1085,7 +1070,7 @@ msgstr "Borrador"
 
 #: rnote-ui/data/ui/mainheader.ui:37
 msgid "New tab"
-msgstr ""
+msgstr "Nueva pestaña"
 
 #: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
@@ -1141,15 +1126,11 @@ msgstr "Establecer el color del borde del formato"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show scrollbars"
-msgstr ""
+msgstr "Mostrar las barras de desplazamiento"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
-"Establece si las barras de desplazamiento del lienzo se ocultan "
-"permanentemente"
+msgstr "Cambiar si las barras de desplazamiento del lienzo están visibles"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
@@ -1560,14 +1541,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "La selección de la exportación ha fallado, no se ha seleccionado nada."
 
 #: rnote-ui/src/canvas/mod.rs:950
-#, fuzzy
-#| msgid "- no file name -"
 msgid "- invalid file name -"
-msgstr "- sin nombre de archivo -"
+msgstr "- Nombre de archivo inválido -"
 
 #: rnote-ui/src/canvas/mod.rs:963
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- ruta de carpeta inválida -"
 
 #: rnote-ui/src/canvas/mod.rs:977
 msgid "Opened file was modified on disk."
@@ -1578,10 +1557,8 @@ msgid "Reload"
 msgstr "Recarga"
 
 #: rnote-ui/src/canvas/mod.rs:984
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed."
-msgstr "Error al abrir el archivo .rnote."
+msgstr "Error al volver a cargar el archivo .rnote desde el disco."
 
 #: rnote-ui/src/canvas/mod.rs:1026
 msgid "Opened file was renamed on disk."
@@ -1731,7 +1708,7 @@ msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 
 #: rnote-ui/src/dialogs/mod.rs:272
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- No se puede encontrar una carpeta para las copias de seguridad -"
 
 #: rnote-ui/src/dialogs/mod.rs:368
 msgid "Change workspace directory"

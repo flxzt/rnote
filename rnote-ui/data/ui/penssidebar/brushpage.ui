@@ -78,7 +78,7 @@
             <property name="active">true</property>
             <child>
               <object class="GtkImage">
-                <property name="icon_name">brush-preset-small</property>
+                <property name="icon_name">brush-preset-small-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -90,7 +90,7 @@
             <property name="tooltip_text" translatable="yes">Medium brush</property>
             <child>
               <object class="GtkImage">
-                <property name="icon_name">brush-preset-medium</property>
+                <property name="icon_name">brush-preset-medium-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -102,7 +102,7 @@
             <property name="tooltip_text" translatable="yes">Large brush</property>
             <child>
               <object class="GtkImage">
-                <property name="icon_name">brush-preset-large</property>
+                <property name="icon_name">brush-preset-large-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>

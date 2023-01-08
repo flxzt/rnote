@@ -7,7 +7,7 @@
    viewBox="0 0 16.0 16.0"
    version="1.1"
    id="SVGRoot"
-   sodipodi:docname="brush-preset-small.svg"
+   sodipodi:docname="brush-preset-large.svg"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -43,11 +43,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <circle
-       style="fill:#dedede;fill-opacity:1;stroke-width:0.53289"
-       id="path5403"
-       cx="8"
-       cy="8"
-       r="2" />
+    <path
+       id="path1577"
+       style="fill:#212121;stroke-width:1.599;stroke-dasharray:none"
+       d="M 14,8 A 6,6 0 0 1 8,14 6,6 0 0 1 2,8 6,6 0 0 1 8,2 6,6 0 0 1 14,8 Z" />
   </g>
 </svg>

@@ -177,8 +177,8 @@
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-travel-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-weather-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-weight-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/brush-preset-small.svg</file>
-        <file compressed="true">icons/scalable/actions/brush-preset-medium.svg</file>
-        <file compressed="true">icons/scalable/actions/brush-preset-large.svg</file>
+        <file compressed="true">icons/scalable/actions/brush-preset-small-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/brush-preset-medium-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/brush-preset-large-symbolic.svg</file>
     </gresource>
 </gresources>

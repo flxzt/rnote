@@ -1,3 +1,4 @@
+use super::chrono_comp::StrokeLayer;
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
 use crate::WidgetFlags;
@@ -138,12 +139,14 @@ impl StrokeStore {
             .stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .flat_map(|key| {
-                let stroke = match Arc::make_mut(&mut self.stroke_components)
+                let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                     .get_mut(key)
-                    .map(Arc::make_mut)
-                {
-                    Some(stroke) => stroke,
-                    None => return vec![],
+                    .map(Arc::make_mut) else {
+                    return vec![]
+                };
+
+                let Some(chrono_comp) = self.chrono_components.get(key) else {
+                    return vec![]
                 };
 
                 let mut new_strokes = vec![];
@@ -183,14 +186,15 @@ impl StrokeStore {
                                         ));
                                         modified_keys.push(key);
 
-                                        new_strokes.push(Stroke::BrushStroke(
-                                            BrushStroke::from_penpath(
+                                        new_strokes.push((
+                                            Stroke::BrushStroke(BrushStroke::from_penpath(
                                                 PenPath::new_w_segments(
                                                     second_start,
                                                     second_split.to_vec(),
                                                 ),
                                                 brushstroke.style.clone(),
-                                            ),
+                                            )),
+                                            chrono_comp.layer,
                                         ));
                                     }
                                     (false, true) => {
@@ -234,12 +238,12 @@ impl StrokeStore {
 
                 new_strokes
             })
-            .collect::<Vec<Stroke>>();
+            .collect::<Vec<(Stroke, StrokeLayer)>>();
 
         modified_keys.append(
             &mut new_strokes
                 .into_iter()
-                .map(|new_stroke| self.insert_stroke(new_stroke, None))
+                .map(|(new_stroke, layer)| self.insert_stroke(new_stroke, Some(layer)))
                 .collect(),
         );
 

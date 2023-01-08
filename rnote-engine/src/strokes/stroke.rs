@@ -200,7 +200,8 @@ impl Stroke {
 
         let layer = match stroke.tool {
             xoppformat::XoppTool::Pen => {
-                smooth_options.stroke_color = Some(crate::utils::color_from_xopp(stroke.color));
+                smooth_options.stroke_options.stroke_color =
+                    Some(crate::utils::color_from_xopp(stroke.color));
                 StrokeLayer::UserLayer(0)
             }
             xoppformat::XoppTool::Highlighter => {
@@ -208,11 +209,11 @@ impl Stroke {
                 // the highlighter always has alpha 0.5
                 color.a = 0.5;
 
-                smooth_options.stroke_color = Some(color);
+                smooth_options.stroke_options.stroke_color = Some(color);
                 StrokeLayer::Highlighter
             }
             xoppformat::XoppTool::Eraser => {
-                smooth_options.stroke_color = Some(Color::WHITE);
+                smooth_options.stroke_options.stroke_color = Some(Color::WHITE);
                 StrokeLayer::UserLayer(0)
             }
         };
@@ -236,7 +237,7 @@ impl Stroke {
             widths = (0..coords.len()).map(|_| 1.0).collect();
         };
 
-        smooth_options.stroke_width = stroke_width;
+        smooth_options.stroke_options.set_stroke_width(stroke_width);
 
         let penpath = PenPath::try_from_elements(
             coords
@@ -301,16 +302,16 @@ impl Stroke {
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
                     Style::Smooth(options) => (
-                        options.stroke_width,
-                        crate::utils::xoppcolor_from_color(options.stroke_color?),
+                        options.stroke_options.get_stroke_width(),
+                        crate::utils::xoppcolor_from_color(options.stroke_options.stroke_color?),
                     ),
                     Style::Rough(options) => (
-                        options.stroke_width,
-                        crate::utils::xoppcolor_from_color(options.stroke_color?),
+                        options.stroke_options.get_stroke_width(),
+                        crate::utils::xoppcolor_from_color(options.stroke_options.stroke_color?),
                     ),
                     Style::Textured(options) => (
-                        options.stroke_width,
-                        crate::utils::xoppcolor_from_color(options.stroke_color?),
+                        options.stroke_options.get_stroke_width(),
+                        crate::utils::xoppcolor_from_color(options.stroke_options.stroke_color?),
                     ),
                 };
 

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::style::strokeoptions::StrokeOptions;
 use crate::style::PressureCurve;
-use crate::Color;
 
 use super::textureddotsdistribution::TexturedDotsDistribution;
 
@@ -10,15 +10,12 @@ use super::textureddotsdistribution::TexturedDotsDistribution;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]
 pub struct TexturedOptions {
+    /// The stroke
+    #[serde(rename = "stroke_options")]
+    pub stroke_options: StrokeOptions,
     /// An optional seed to generate reproducible strokes
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
-    /// The width
-    #[serde(rename = "stroke_width")]
-    pub stroke_width: f64,
-    /// The color of the stroke
-    #[serde(rename = "stroke_color")]
-    pub stroke_color: Option<Color>,
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
     pub density: f64,
@@ -33,10 +30,9 @@ pub struct TexturedOptions {
 impl Default for TexturedOptions {
     fn default() -> Self {
         Self {
+            stroke_options: StrokeOptions::default(),
             seed: None,
-            stroke_width: 6.0,
             density: 5.0,
-            stroke_color: Some(Color::BLACK),
             distribution: TexturedDotsDistribution::default(),
             pressure_curve: PressureCurve::default(),
         }

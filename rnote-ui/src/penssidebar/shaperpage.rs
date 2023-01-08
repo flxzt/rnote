@@ -236,16 +236,16 @@ impl ShaperPage {
         // set value after the range!
         imp.width_spinbutton
             .get()
-            .set_value(SmoothOptions::default().stroke_width);
+            .set_value(SmoothOptions::default().stroke_options.get_stroke_width());
 
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
                 let stroke_width = width_spinbutton.value();
                 let engine = appwindow.active_tab().canvas().engine();
-                let mut engine = engine.borrow_mut();
+                let engine = engine.borrow();
 
-                engine.pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
-                engine.pens_config.shaper_config.rough_options.stroke_width = stroke_width;
+                engine.pens_config.shaper_config.smooth_options.stroke_options.set_stroke_width(stroke_width);
+                engine.pens_config.shaper_config.rough_options.stroke_options.set_stroke_width(stroke_width);
             }),
         );
 
@@ -354,12 +354,20 @@ impl ShaperPage {
 
         match shaper_config.style {
             ShaperStyle::Smooth => {
-                imp.width_spinbutton
-                    .set_value(shaper_config.smooth_options.stroke_width);
+                imp.width_spinbutton.set_value(
+                    shaper_config
+                        .smooth_options
+                        .stroke_options
+                        .get_stroke_width(),
+                );
             }
             ShaperStyle::Rough => {
-                imp.width_spinbutton
-                    .set_value(shaper_config.rough_options.stroke_width);
+                imp.width_spinbutton.set_value(
+                    shaper_config
+                        .rough_options
+                        .stroke_options
+                        .get_stroke_width(),
+                );
             }
         }
 

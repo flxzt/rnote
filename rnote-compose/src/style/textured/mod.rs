@@ -18,7 +18,8 @@ use super::Composer;
 
 impl Composer<TexturedOptions> for Line {
     fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
@@ -32,13 +33,15 @@ impl Composer<TexturedOptions> for Line {
             let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
             let line_vec = self.end - self.start;
-            let line_rect = self.line_w_width_to_rect(options.stroke_width);
+            let line_rect = self.line_w_width_to_rect(options.stroke_options.get_stroke_width());
 
             let area = 4.0 * line_rect.cuboid.half_extents[0] * line_rect.cuboid.half_extents[1];
 
             // Radii scale with the stroke width, with a weight.
             let dots_radii = TexturedOptions::DOTS_RADII_DEFAULT
-                * (1.0 + options.stroke_width * TexturedOptions::STROKE_WIDTH_RADII_WEIGHT);
+                * (1.0
+                    + options.stroke_options.get_stroke_width()
+                        * TexturedOptions::STROKE_WIDTH_RADII_WEIGHT);
 
             // Ranges for randomization
             let range_x = -line_rect.cuboid.half_extents[0]..line_rect.cuboid.half_extents[0];
@@ -87,7 +90,7 @@ impl Composer<TexturedOptions> for Line {
             bez_path
         };
 
-        if let Some(fill_color) = options.stroke_color {
+        if let Some(fill_color) = options.stroke_options.stroke_color {
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(bez_path, &fill_brush);
         }
@@ -97,7 +100,8 @@ impl Composer<TexturedOptions> for Line {
 
 impl Composer<TexturedOptions> for PenPath {
     fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width())
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
@@ -113,11 +117,14 @@ impl Composer<TexturedOptions> for PenPath {
                         end: end.pos,
                     };
 
-                    let mut options = options.clone();
+                    let options = options.clone();
 
-                    options.stroke_width = options
-                        .pressure_curve
-                        .apply(options.stroke_width, (prev.pressure + end.pressure) * 0.5);
+                    options
+                        .stroke_options
+                        .set_stroke_width(options.pressure_curve.apply(
+                            options.stroke_options.get_stroke_width(),
+                            (prev.pressure + end.pressure) * 0.5,
+                        ));
 
                     line.draw_composed(cx, &options);
                     prev = *end;
@@ -128,11 +135,14 @@ impl Composer<TexturedOptions> for PenPath {
                         end: end.pos,
                     };
 
-                    let mut options = options.clone();
+                    let options = options.clone();
 
-                    options.stroke_width = options
-                        .pressure_curve
-                        .apply(options.stroke_width, (prev.pressure + end.pressure) * 0.5);
+                    options
+                        .stroke_options
+                        .set_stroke_width(options.pressure_curve.apply(
+                            options.stroke_options.get_stroke_width(),
+                            (prev.pressure + end.pressure) * 0.5,
+                        ));
 
                     line.draw_composed(cx, &options);
                     prev = *end;
@@ -143,11 +153,14 @@ impl Composer<TexturedOptions> for PenPath {
                         end: end.pos,
                     };
 
-                    let mut options = options.clone();
+                    let options = options.clone();
 
-                    options.stroke_width = options
-                        .pressure_curve
-                        .apply(options.stroke_width, (prev.pressure + end.pressure) * 0.5);
+                    options
+                        .stroke_options
+                        .set_stroke_width(options.pressure_curve.apply(
+                            options.stroke_options.get_stroke_width(),
+                            (prev.pressure + end.pressure) * 0.5,
+                        ));
 
                     line.draw_composed(cx, &options);
                     prev = *end;

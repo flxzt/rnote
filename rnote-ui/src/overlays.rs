@@ -250,11 +250,11 @@ impl RnoteOverlays {
                     let engine = &mut *engine.borrow_mut();
 
                     // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color= Some(stroke_color);
+                    engine.pens_config.brush_config.marker_options.stroke_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.solid_options.stroke_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.textured_options.stroke_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.smooth_options.stroke_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.rough_options.stroke_options.stroke_color= Some(stroke_color);
                     engine.pens_config.typewriter_config.text_style.color = stroke_color;
 
                     match stroke_style {

@@ -119,16 +119,21 @@ fn compose_lines_variable_width(
 
 impl Composer<SmoothOptions> for Line {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
         let line = self.to_kurbo();
 
-        if let Some(stroke_color) = options.stroke_color {
+        if let Some(stroke_color) = options.stroke_options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(line, &stroke_brush, options.stroke_width);
+            cx.stroke(
+                line,
+                &stroke_brush,
+                options.stroke_options.get_stroke_width(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -136,7 +141,8 @@ impl Composer<SmoothOptions> for Line {
 
 impl Composer<SmoothOptions> for Rectangle {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -148,9 +154,13 @@ impl Composer<SmoothOptions> for Rectangle {
             cx.fill(shape.clone(), &fill_brush);
         }
 
-        if let Some(stroke_color) = options.stroke_color {
+        if let Some(stroke_color) = options.stroke_options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(shape, &stroke_brush, options.stroke_width);
+            cx.stroke(
+                shape,
+                &stroke_brush,
+                options.stroke_options.get_stroke_width(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -158,7 +168,8 @@ impl Composer<SmoothOptions> for Rectangle {
 
 impl Composer<SmoothOptions> for Ellipse {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -170,9 +181,13 @@ impl Composer<SmoothOptions> for Ellipse {
             cx.fill(ellipse, &fill_brush);
         }
 
-        if let Some(stroke_color) = options.stroke_color {
+        if let Some(stroke_color) = options.stroke_options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(ellipse, &stroke_brush, options.stroke_width);
+            cx.stroke(
+                ellipse,
+                &stroke_brush,
+                options.stroke_options.get_stroke_width(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -180,7 +195,8 @@ impl Composer<SmoothOptions> for Ellipse {
 
 impl Composer<SmoothOptions> for QuadraticBezier {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -192,9 +208,13 @@ impl Composer<SmoothOptions> for QuadraticBezier {
             cx.fill(quadbez, &fill_brush);
         }
 
-        if let Some(stroke_color) = options.stroke_color {
+        if let Some(stroke_color) = options.stroke_options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+            cx.stroke(
+                quadbez,
+                &stroke_brush,
+                options.stroke_options.get_stroke_width(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -202,7 +222,8 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 
 impl Composer<SmoothOptions> for CubicBezier {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -214,9 +235,13 @@ impl Composer<SmoothOptions> for CubicBezier {
             cx.fill(cubbez, &fill_brush);
         }
 
-        if let Some(stroke_color) = options.stroke_color {
+        if let Some(stroke_color) = options.stroke_options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(cubbez, &stroke_brush, options.stroke_width);
+            cx.stroke(
+                cubbez,
+                &stroke_brush,
+                options.stroke_options.get_stroke_width(),
+            );
         }
         cx.restore().unwrap();
     }
@@ -224,7 +249,8 @@ impl Composer<SmoothOptions> for CubicBezier {
 
 impl Composer<SmoothOptions> for PenPath {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        self.bounds()
+            .loosened(options.stroke_options.get_stroke_width() * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -238,10 +264,10 @@ impl Composer<SmoothOptions> for PenPath {
                         let (width_start, width_end) = (
                             options
                                 .pressure_curve
-                                .apply(options.stroke_width, prev.pressure),
+                                .apply(options.stroke_options.get_stroke_width(), prev.pressure),
                             options
                                 .pressure_curve
-                                .apply(options.stroke_width, end.pressure),
+                                .apply(options.stroke_options.get_stroke_width(), end.pressure),
                         );
 
                         let bez_path = compose_lines_variable_width(
@@ -261,10 +287,10 @@ impl Composer<SmoothOptions> for PenPath {
                         let (width_start, width_end) = (
                             options
                                 .pressure_curve
-                                .apply(options.stroke_width, prev.pressure),
+                                .apply(options.stroke_options.get_stroke_width(), prev.pressure),
                             options
                                 .pressure_curve
-                                .apply(options.stroke_width, end.pressure),
+                                .apply(options.stroke_options.get_stroke_width(), end.pressure),
                         );
 
                         let n_splits = 5;
@@ -287,10 +313,10 @@ impl Composer<SmoothOptions> for PenPath {
                         let (width_start, width_end) = (
                             options
                                 .pressure_curve
-                                .apply(options.stroke_width, prev.pressure),
+                                .apply(options.stroke_options.get_stroke_width(), prev.pressure),
                             options
                                 .pressure_curve
-                                .apply(options.stroke_width, end.pressure),
+                                .apply(options.stroke_options.get_stroke_width(), end.pressure),
                         );
 
                         let n_splits = 5;
@@ -312,7 +338,7 @@ impl Composer<SmoothOptions> for PenPath {
                 }
             };
 
-            if let Some(fill_color) = options.stroke_color {
+            if let Some(fill_color) = options.stroke_options.stroke_color {
                 // Outlines for debugging
                 //let stroke_brush = cx.solid_brush(piet::Color::RED);
                 //cx.stroke(bez_path.clone(), &stroke_brush, 0.4);

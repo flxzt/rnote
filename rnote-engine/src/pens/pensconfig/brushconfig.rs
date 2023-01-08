@@ -53,7 +53,6 @@ impl Default for MarkerOptions {
     fn default() -> Self {
         let mut options = SmoothOptions::default();
         options.pressure_curve = PressureCurve::Const;
-        options.stroke_width = 12.0;
 
         Self(options)
     }

@@ -334,23 +334,23 @@ impl RnoteAppWindow {
                 engine.pens_config.brush_config.style = appwindow.penssidebar().brush_page().brush_style().unwrap_or_default();
                 engine.pens_config.brush_config.builder_type = appwindow.penssidebar().brush_page().buildertype().unwrap_or_default();
                 let brush_stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                engine.pens_config.brush_config.marker_options.stroke_width = brush_stroke_width;
-                engine.pens_config.brush_config.solid_options.stroke_width = brush_stroke_width;
-                engine.pens_config.brush_config.textured_options.stroke_width = brush_stroke_width;
-                engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                engine.pens_config.brush_config.marker_options.stroke_options.set_stroke_width(brush_stroke_width);
+                engine.pens_config.brush_config.solid_options.stroke_options.set_stroke_width(brush_stroke_width);
+                engine.pens_config.brush_config.textured_options.stroke_options.set_stroke_width(brush_stroke_width);
+                engine.pens_config.brush_config.marker_options.stroke_options.stroke_color = Some(stroke_color);
                 engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                engine.pens_config.brush_config.solid_options.stroke_options.stroke_color = Some(stroke_color);
                 engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                engine.pens_config.brush_config.textured_options.stroke_options.stroke_color = Some(stroke_color);
 
                 engine.pens_config.shaper_config.style = appwindow.penssidebar().shaper_page().shaper_style().unwrap_or_default();
                 engine.pens_config.shaper_config.builder_type = appwindow.penssidebar().shaper_page().shapebuildertype().unwrap_or_default();
                 let shaper_stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
-                engine.pens_config.shaper_config.smooth_options.stroke_width = shaper_stroke_width;
-                engine.pens_config.shaper_config.rough_options.stroke_width = shaper_stroke_width;
-                engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                engine.pens_config.shaper_config.smooth_options.stroke_options.set_stroke_width(shaper_stroke_width);
+                engine.pens_config.shaper_config.rough_options.stroke_options.set_stroke_width(shaper_stroke_width);
+                engine.pens_config.shaper_config.smooth_options.stroke_options.stroke_color = Some(stroke_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
+                engine.pens_config.shaper_config.rough_options.stroke_options.stroke_color = Some(stroke_color);
                 engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
 
                 engine.pens_config.typewriter_config.text_style = appwindow.penssidebar().typewriter_page().text_style();
@@ -420,19 +420,19 @@ impl RnoteAppWindow {
                     let style = canvas.engine().borrow().pens_config.brush_config.style;
                     match style {
                         BrushStyle::Marker => {
-                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.marker_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.marker_options.stroke_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.brush_config.marker_options.fill_color.unwrap_or(Color::TRANSPARENT);
                             appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                             appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         BrushStyle::Solid => {
-                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.solid_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.solid_options.stroke_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.brush_config.solid_options.fill_color.unwrap_or(Color::TRANSPARENT);
                             appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                             appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         BrushStyle::Textured => {
-                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.textured_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.textured_options.stroke_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                         }
                     }
@@ -444,13 +444,13 @@ impl RnoteAppWindow {
                     let style = canvas.engine().borrow().pens_config.shaper_config.style;
                     match style {
                         ShaperStyle::Smooth => {
-                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.stroke_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.fill_color.unwrap_or(Color::TRANSPARENT);
                             appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                             appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                         ShaperStyle::Rough => {
-                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.stroke_color.unwrap_or(Color::TRANSPARENT);
+                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.stroke_options.stroke_color.unwrap_or(Color::TRANSPARENT);
                             let fill_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.fill_color.unwrap_or(Color::TRANSPARENT);
                             appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                             appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));

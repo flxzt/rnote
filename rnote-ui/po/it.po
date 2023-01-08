@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 13:19+0100\n"
-"PO-Revision-Date: 2022-12-29 08:49+0000\n"
-"Last-Translator: Giulio Girardi <giulio@rapgenic.com>\n"
+"PO-Revision-Date: 2023-01-09 11:36+0000\n"
+"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -123,10 +123,8 @@ msgid "Save"
 msgstr "Salva"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "New Sheet"
 msgid "Close tab"
-msgstr "Nuovo Foglio"
+msgstr "Chiudi la scheda"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""

@@ -117,7 +117,7 @@ impl Composer<TexturedOptions> for PenPath {
                         end: end.pos,
                     };
 
-                    let options = options.clone();
+                    let mut options = options.clone();
 
                     options
                         .stroke_options
@@ -135,7 +135,7 @@ impl Composer<TexturedOptions> for PenPath {
                         end: end.pos,
                     };
 
-                    let options = options.clone();
+                    let mut options = options.clone();
 
                     options
                         .stroke_options
@@ -153,7 +153,7 @@ impl Composer<TexturedOptions> for PenPath {
                         end: end.pos,
                     };
 
-                    let options = options.clone();
+                    let mut options = options.clone();
 
                     options
                         .stroke_options

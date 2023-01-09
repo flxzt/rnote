@@ -333,7 +333,6 @@ impl BrushPage {
 
         match brush_config.style {
             BrushStyle::Marker => {
-                println!("setting marker size");
                 imp.width_spinbutton.set_value(
                     brush_config
                         .marker_options
@@ -342,12 +341,10 @@ impl BrushPage {
                 );
             }
             BrushStyle::Solid => {
-                println!("setting solid size");
                 imp.width_spinbutton
                     .set_value(brush_config.solid_options.stroke_options.get_stroke_width());
             }
             BrushStyle::Textured => {
-                println!("setting textured size");
                 imp.width_spinbutton.set_value(
                     brush_config
                         .textured_options

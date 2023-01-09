@@ -9,6 +9,4 @@ splitted = "splitted"
 extend-exclude = [
     "*.pot",
     "*LICENSE*",
-    "ink-stroke-modeler-rs/*",
-    "piet/*",
 ]

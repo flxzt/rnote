@@ -10,18 +10,6 @@
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
     <child>
-      <object class="GtkImage">
-        <property name="icon_name">pen-brush-symbolic</property>
-        <property name="margin-top">9</property>
-        <property name="margin-bottom">9</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
@@ -73,16 +61,6 @@
         <property name="climb-rate">0.5</property>
       </object>
     </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="colorpicker">
-        <property name="amount-colorbuttons">8</property>
-      </object>
-    </child>
 
     <!-- Brush style -->
     <object class="GtkPopover" id="brushstyle_popover">
@@ -105,7 +83,7 @@
           <child>
             <object class="GtkListBox" id="brushstyle_listbox">
               <property name="width-request">300</property>
-              <property name="selection-mode">single</property>
+              <property name="selection-mode">browse</property>
               <style>
                 <class name="content" />
                 <class name="large" />
@@ -184,7 +162,7 @@
           <child>
             <object class="GtkListBox" id="brush_buildertype_listbox">
               <property name="width-request">300</property>
-              <property name="selection-mode">single</property>
+              <property name="selection-mode">browse</property>
               <style>
                 <class name="content" />
                 <class name="large" />
@@ -252,65 +230,6 @@ Results in the best looking handwriting.</property>
                       <property name="numeric">true</property>
                       <property name="digits">1</property>
                       <property name="climb-rate">0.5</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Stroke dots radii</property>
-                  <property name="subtitle" translatable="yes">The radii of the individual dots in the textured stroke</property>
-                  <child type="suffix">
-                    <object class="GtkBox">
-                      <property name="orientation">vertical</property>
-                      <property name="margin-top">6</property>
-                      <property name="margin-bottom">6</property>
-                      <property name="spacing">6</property>
-                      <property name="halign">end</property>
-                      <child>
-                        <object class="GtkBox">
-                          <property name="orientation">horizontal</property>
-                          <property name="halign">end</property>
-                          <child>
-                            <object class="GtkLabel">
-                              <property name="label">X:</property>
-                              <property name="margin-start">6</property>
-                              <property name="margin-end">6</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
-                              <property name="valign">center</property>
-                              <property name="orientation">horizontal</property>
-                              <property name="numeric">true</property>
-                              <property name="digits">1</property>
-                              <property name="climb-rate">0.5</property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkBox">
-                          <property name="orientation">horizontal</property>
-                          <property name="halign">end</property>
-                          <child>
-                            <object class="GtkLabel">
-                              <property name="label">Y:</property>
-                              <property name="margin-start">6</property>
-                              <property name="margin-end">6</property>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
-                              <property name="valign">center</property>
-                              <property name="orientation">horizontal</property>
-                              <property name="numeric">true</property>
-                              <property name="digits">1</property>
-                              <property name="climb-rate">0.5</property>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
                     </object>
                   </child>
                 </object>

@@ -22,7 +22,7 @@ if not os.environ.get('DESTDIR', ''):
         call(["update-mime-database", os.path.join(datadir, 'mime')])
     elif sys.platform == "win32" or sys.platform == "cygwin":
         print('Updating icon cache...')
-        call(['gtk-update-icon-cache-3.0.exe', '-qtf', os.path.join(datadir, 'icons/hicolor')])
+        call(['gtk-update-icon-cache.exe', '-qtf', os.path.join(datadir, 'icons/hicolor')])
         print("Compiling new schemas...")
         call(["glib-compile-schemas.exe", os.path.join(datadir, 'glib-2.0/schemas')])
         print("Updating desktop database...")

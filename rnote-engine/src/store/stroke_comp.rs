@@ -9,7 +9,7 @@ use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
@@ -51,7 +51,7 @@ impl StrokeStore {
         self.stroke_components.keys().collect()
     }
 
-    pub fn keys_unordered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+    pub fn keys_unordered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.key_tree.keys_intersecting_bounds(bounds)
     }
 
@@ -72,7 +72,7 @@ impl StrokeStore {
     }
 
     /// Returns the stroke keys in the order that they should be rendered, intersecting the given bounds.
-    pub fn stroke_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+    pub fn stroke_keys_as_rendered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter(|&key| !(self.trashed(key).unwrap_or(false)))
@@ -147,7 +147,7 @@ impl StrokeStore {
     }
 
     /// Generates the enclosing bounds for the given stroke keys
-    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
+    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<Aabb> {
         let mut keys_iter = keys.iter();
         let key = keys_iter.next()?;
         let first = self.stroke_components.get(*key)?;
@@ -163,14 +163,15 @@ impl StrokeStore {
     }
 
     /// Collects all bounds for the given strokes
-    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<AABB> {
+    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<Aabb> {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
-            .collect::<Vec<AABB>>()
+            .collect::<Vec<Aabb>>()
     }
 
     /// Translate the strokes with the offset.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their geometry and rendering
     pub fn translate_strokes(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -186,6 +187,9 @@ impl StrokeStore {
         });
     }
 
+    /// Translate the stroke renderin images
+    ///
+    /// Strokes then need to update their rendering
     pub fn translate_strokes_images(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -198,8 +202,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in translate_strokes_images() with Err {}",
-                        e
+                        "images_to_rendernode() failed in translate_strokes_images() with Err: {e:?}"
                     ),
                 }
             }
@@ -207,7 +210,8 @@ impl StrokeStore {
     }
 
     /// Rotates the stroke with angle (rad) around the center.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn rotate_strokes(&mut self, keys: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -223,6 +227,9 @@ impl StrokeStore {
         });
     }
 
+    /// Rotates the stroke rendering images
+    ///
+    /// Strokes then need to update their rendering
     pub fn rotate_strokes_images(
         &mut self,
         keys: &[StrokeKey],
@@ -242,8 +249,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() with Err {}",
-                        e
+                        "images_to_rendernode() failed in rotate_strokes() with Err: {e:?}"
                     ),
                 }
             }
@@ -251,7 +257,8 @@ impl StrokeStore {
     }
 
     /// Scales the strokes with the factor.
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -267,6 +274,9 @@ impl StrokeStore {
         });
     }
 
+    /// Scales the stroke rendering images
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes_images(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -281,8 +291,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in rotate_strokes() with Err {}",
-                        e
+                        "images_to_rendernode() failed in rotate_strokes() with Err: {e:?}"
                     ),
                 }
             }
@@ -290,7 +299,8 @@ impl StrokeStore {
     }
 
     /// Scales the strokes with a pivot as the scaling origin
-    /// strokes then need to update their rendering
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes_with_pivot(
         &mut self,
         keys: &[StrokeKey],
@@ -302,6 +312,9 @@ impl StrokeStore {
         self.translate_strokes(keys, pivot);
     }
 
+    /// Scales the stroke rendering images with a pivot
+    ///
+    /// Strokes then need to update their rendering
     pub fn scale_strokes_images_with_pivot(
         &mut self,
         strokes: &[StrokeKey],
@@ -314,8 +327,9 @@ impl StrokeStore {
     }
 
     /// Resizes the strokes to new bounds.
-    /// strokes then need to update their rendering
-    pub fn resize_strokes(&mut self, keys: &[StrokeKey], new_bounds: AABB) {
+    ///
+    /// Strokes then need to update their rendering
+    pub fn resize_strokes(&mut self, keys: &[StrokeKey], new_bounds: Aabb) {
         let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
             None => return,
@@ -350,7 +364,10 @@ impl StrokeStore {
         });
     }
 
-    pub fn resize_strokes_images(&mut self, keys: &[StrokeKey], new_bounds: AABB) {
+    /// Resizes the strokes rendering images to new bounds.
+    ///
+    /// Strokes then need to update their rendering
+    pub fn resize_strokes_images(&mut self, keys: &[StrokeKey], new_bounds: Aabb) {
         let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
             None => return,
@@ -384,8 +401,7 @@ impl StrokeStore {
                         render_comp.rendernodes = rendernodes;
                     }
                     Err(e) => log::error!(
-                        "images_to_rendernode() failed in resize_strokes() with Err {}",
-                        e
+                        "images_to_rendernode() failed in resize_strokes() with Err: {e:?}"
                     ),
                 }
             }
@@ -396,7 +412,7 @@ impl StrokeStore {
     pub fn strokes_hitboxes_contained_in_path_polygon(
         &mut self,
         path: &[Element],
-        viewport: AABB,
+        viewport: Aabb,
     ) -> Vec<StrokeKey> {
         let selector_polygon = {
             let selector_path_points = path
@@ -447,7 +463,7 @@ impl StrokeStore {
     pub fn strokes_hitboxes_intersect_path(
         &mut self,
         path: &[Element],
-        viewport: AABB,
+        viewport: Aabb,
     ) -> Vec<StrokeKey> {
         let path_linestring = {
             let selector_path_points = path
@@ -491,8 +507,8 @@ impl StrokeStore {
     /// returns the keys to the strokes whose hitboxes are contained in the given aabb
     pub fn strokes_hitboxes_contained_in_aabb(
         &mut self,
-        aabb: AABB,
-        viewport: AABB,
+        aabb: Aabb,
+        viewport: Aabb,
     ) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .into_iter()
@@ -525,7 +541,7 @@ impl StrokeStore {
     /// returns the strokes for the given coord is inside at least one of the stroke hitboxes
     pub fn stroke_hitboxes_contain_coord(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         coord: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)

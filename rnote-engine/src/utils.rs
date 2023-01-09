@@ -1,8 +1,10 @@
+use std::ops::Range;
+
 use geo::line_string;
 use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use rnote_compose::{penhelpers::KeyboardKey, Transform};
+use rnote_compose::{penevents::KeyboardKey, Transform};
 use rnote_fileformats::xoppformat;
 
 pub trait GdkRGBAHelpers
@@ -70,11 +72,11 @@ pub trait GrapheneRectHelpers
 where
     Self: Sized,
 {
-    fn from_p2d_aabb(aabb: AABB) -> Self;
+    fn from_p2d_aabb(aabb: Aabb) -> Self;
 }
 
 impl GrapheneRectHelpers for graphene::Rect {
-    fn from_p2d_aabb(aabb: AABB) -> Self {
+    fn from_p2d_aabb(aabb: Aabb) -> Self {
         graphene::Rect::new(
             aabb.mins[0] as f32,
             aabb.mins[1] as f32,
@@ -96,13 +98,13 @@ pub fn now_formatted_string() -> String {
 
 pub fn default_file_title_for_export(
     output_file: Option<gio::File>,
-    default_fallback: Option<&str>,
+    fallback: Option<&str>,
     suffix: Option<&str>,
 ) -> String {
     let mut title = output_file
         .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
         .unwrap_or_else(|| {
-            default_fallback
+            fallback
                 .map(|f| f.to_owned())
                 .unwrap_or_else(now_formatted_string)
         });
@@ -176,8 +178,8 @@ pub fn raw_font_weight_to_pango(raw_font_weight: u16) -> pango::Weight {
     }
 }
 
-/// Converts a AABB to a geo::Polygon
-pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
+/// Converts a Aabb to a geo::Polygon
+pub fn p2d_aabb_to_geo_polygon(aabb: Aabb) -> geo::Polygon<f64> {
     let line_string = line_string![
         (x: aabb.mins[0], y: aabb.mins[1]),
         (x: aabb.maxs[0], y: aabb.mins[1]),
@@ -211,6 +213,17 @@ pub fn keyboard_key_from_gdk(gdk_key: gdk::Key) -> KeyboardKey {
             gdk::Key::Control_R => KeyboardKey::CtrlRight,
             _ => KeyboardKey::Unsupported,
         }
+    }
+}
+
+pub fn positive_range<I>(first: I, second: I) -> Range<I>
+where
+    I: PartialOrd,
+{
+    if first < second {
+        first..second
+    } else {
+        second..first
     }
 }
 

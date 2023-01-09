@@ -1,8 +1,8 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 
-use crate::penhelpers::PenEvent;
+use crate::penevents::PenEvent;
 use crate::penpath::Element;
 use crate::{Shape, Style};
 
@@ -10,7 +10,7 @@ use super::Constraints;
 
 #[derive(Debug, Clone)]
 /// the builder progress
-pub enum BuilderProgress {
+pub enum ShapeBuilderProgress {
     /// in progress
     InProgress,
     /// emits shapes, but continue
@@ -35,10 +35,10 @@ pub trait ShapeBuilderBehaviour: std::fmt::Debug {
         event: PenEvent,
         now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress;
+    ) -> ShapeBuilderProgress;
 
     /// the bounds
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB>;
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb>;
 
     /// draw with a style
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64);

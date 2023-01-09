@@ -1,5 +1,5 @@
 use kurbo::Shape;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{KurboHelpers, Vector2Helpers};
@@ -48,11 +48,11 @@ impl TransformBehaviour for QuadraticBezier {
 }
 
 impl ShapeBehaviour for QuadraticBezier {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> p2d::bounding_volume::Aabb {
         self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         // TODO: should be depending on the actual curve length
         let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
 
@@ -148,14 +148,14 @@ fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f6
 }
 
 /// Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-#[allow(dead_code)]
+#[allow(unused)]
 fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0
 }
 
 /// calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
-#[allow(dead_code)]
-fn quadbez_calc(
+#[allow(unused)]
+pub fn quadbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -178,9 +178,9 @@ fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vec
     2.0 * p1 - 2.0 * p0
 }
 
-#[allow(dead_code)]
+#[allow(unused)]
 /// calculating the derivative of the bezier curve for t: between 0.0 and 1.0
-fn quadbez_derive_calc(
+pub fn quadbez_derive_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

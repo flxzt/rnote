@@ -1,9 +1,9 @@
-use crate::app::RnoteApp;
+use crate::RnoteApp;
 use adw::prelude::*;
 use gtk4::{gio, glib, glib::clone};
 
 impl RnoteApp {
-    pub fn setup_actions(&self) {
+    pub(crate) fn setup_actions(&self) {
         let action_quit = gio::SimpleAction::new("quit", None);
         self.add_action(&action_quit);
 
@@ -34,7 +34,8 @@ impl RnoteApp {
                 }
                 _ => None,
             })
-            .flags(glib::BindingFlags::BIDIRECTIONAL | glib::BindingFlags::SYNC_CREATE)
+            .sync_create()
+            .bidirectional()
             .build();
 
         // Quit App
@@ -51,7 +52,7 @@ impl RnoteApp {
     }
 
     // Accelerators / Keyboard Shortcuts
-    pub fn setup_action_accels(&self) {
+    pub(crate) fn setup_action_accels(&self) {
         self.set_accels_for_action("app.quit", &["<Ctrl>q"]);
     }
 }

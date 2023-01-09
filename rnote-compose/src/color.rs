@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+/// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
+pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
+
 /// A rgba color
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(default, rename = "color")]
@@ -92,7 +95,7 @@ impl Color {
     /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`. The values are 8 bit integers, ranging [0, 255]
     pub fn to_css_color_attr(self) -> String {
         format!(
-            "rgb({:03},{:03},{:03},{:.3})",
+            "rgba({:03},{:03},{:03},{:.3})",
             (self.r * 255.0) as i32,
             (self.g * 255.0) as i32,
             (self.b * 255.0) as i32,
@@ -156,20 +159,20 @@ impl From<Color> for u32 {
     }
 }
 
-impl From<roughr::Srgb> for Color {
-    fn from(c: roughr::Srgb) -> Self {
+impl From<roughr::Srgba> for Color {
+    fn from(c: roughr::Srgba) -> Self {
         Self {
             r: c.blue as f64,
             g: c.green as f64,
             b: c.blue as f64,
-            a: 1.0,
+            a: c.alpha as f64,
         }
     }
 }
 
-impl From<Color> for roughr::Srgb {
+impl From<Color> for roughr::Srgba {
     fn from(c: Color) -> Self {
-        roughr::Srgb::new(c.r as f32, c.g as f32, c.b as f32)
+        roughr::Srgba::new(c.r as f32, c.g as f32, c.b as f32, c.a as f32)
     }
 }
 

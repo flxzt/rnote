@@ -29,9 +29,9 @@
         Use the color scheme in the application's UI and in the text area.
       </description>
     </key>
-    <key name="current-workspace-index" type="u">
+    <key name="selected-workspace-index" type="u">
       <default>0</default>
-      <summary>the current workspace index</summary>
+      <summary>the selected workspace index</summary>
     </key>
     <key name="workspace-list" type="a(aysus)">
       <default>[(b'./', 'folder-symbolic', 442479871, 'default')]</default>
@@ -45,9 +45,9 @@
       <default>120</default>
       <summary>the sec interval for the autosave</summary>
     </key>
-    <key name="permanently-hide-canvas-scrollbars" type="b">
+    <key name="show-scrollbars" type="b">
       <default>false</default>
-      <summary>Whether the canvas scrollbars are permanently hidden</summary>
+      <summary>Whether the canvas scrollbars are shown</summary>
     </key>
     <key name="righthanded" type="b">
       <default>true</default>
@@ -65,14 +65,18 @@
       <default>"cursor-dot-small"</default>
       <summary>The drawing cursor</summary>
     </key>
-    <key name="brushpage-selected-color" type="u">
-      <default>0</default>
-      <summary>the default selected color row on the brush page</summary>
+    <key name="active-stroke-color" type="u">
+      <default>0x000000ff</default>
+      <summary>the active stroke color</summary>
     </key>
-    <key name="brushpage-colors" type="(uuuuuuuu)">
+    <key name="active-fill-color" type="u">
+      <default>0x99c1f1ff</default>
+      <summary>the active fill color</summary>
+    </key>
+    <key name="colorpicker-palette" type="(uuuuuuuu)">
       <default>(
         0x000000ff,
-        0xffffffff,
+        0xffffff00,
         0x99c1f1ff,
         0x1a5fb4ff,
         0x26a269ff,
@@ -80,40 +84,7 @@
         0xff7800ff,
         0xe01b24ff
       )</default>
-      <summary>the brush page colors</summary>
-    </key>
-    <key name="shaperpage-selected-color" type="u">
-      <default>0</default>
-      <summary>the default selected color row on the shaper page</summary>
-    </key>
-    <key name="shaperpage-colors" type="(uu)">
-      <default>(
-        0x000000ff,
-        0x1a5fb4ff
-      )</default>
-      <summary>the shaper page colors</summary>
-    </key>
-    <key name="shaperpage-selected-fill" type="u">
-      <default>0</default>
-      <summary>the default selected fill color row on the shaper page</summary>
-    </key>
-    <key name="shaperpage-fills" type="(uu)">
-      <default>(
-        0x00000000,
-        0x99c1f1ff
-      )</default>
-      <summary>the shaper page fill colors</summary>
-    </key>
-    <key name="typewriterpage-colors" type="(uu)">
-      <default>(
-        0x000000ff,
-        0x1a5fb4ff
-      )</default>
-      <summary>the typewriter page colors</summary>
-    </key>
-    <key name="typewriterpage-selected-color" type="u">
-      <default>0</default>
-      <summary>the default selected color row on the typewriter page</summary>
+      <summary>the colorpicker palette colors</summary>
     </key>
     <key name="resize-lock-aspectratio" type="b">
       <default>false</default>

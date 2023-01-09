@@ -8,8 +8,12 @@ pub mod cubbezbuilder;
 pub mod ellipsebuilder;
 /// foci and point ellipse builder
 pub mod fociellipsebuilder;
+/// grid builder
+pub mod gridbuilder;
 /// line builder
 pub mod linebuilder;
+/// pen path builder behaviour
+pub mod penpathbuilderbehaviour;
 /// the regular pen path builder, using bezier curves to interpolate between input elements.
 pub mod penpathcurvedbuilder;
 /// modeled pen path builder, uses ink-stroke-modeler for smooth paths with advanced algorithms and its predictor to reduce input latency
@@ -25,15 +29,17 @@ pub mod rectanglebuilder;
 /// shape builder behaviour
 pub mod shapebuilderbehaviour;
 
-use std::collections::HashSet;
-
 // Re-exports
 pub use coordsystem2dbuilder::CoordSystem2DBuilder;
 pub use coordsystem3dbuilder::CoordSystem3DBuilder;
 pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
+pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
+pub use penpathbuilderbehaviour::PenPathBuilderBehaviour;
+pub use penpathbuilderbehaviour::PenPathBuilderCreator;
+pub use penpathbuilderbehaviour::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
@@ -41,8 +47,12 @@ pub use quadbezbuilder::QuadBezBuilder;
 pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
+pub use shapebuilderbehaviour::ShapeBuilderCreator;
+pub use shapebuilderbehaviour::ShapeBuilderProgress;
 
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 
 #[derive(
     Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -50,32 +60,35 @@ use serde::{Deserialize, Serialize};
 #[serde(rename = "shapebuilder_type")]
 /// A choice for a shape builder type
 pub enum ShapeBuilderType {
-    #[serde(rename = "line")]
     /// A line builder
+    #[serde(rename = "line")]
     Line = 0,
-    #[serde(rename = "rectangle")]
     /// A rectangle builder
+    #[serde(rename = "rectangle")]
     Rectangle,
-    #[serde(rename = "coord_system_2d")]
+    /// A grid
+    #[serde(rename = "grid")]
+    Grid,
     /// A 2D coordinate system builder
+    #[serde(rename = "coord_system_2d")]
     CoordSystem2D,
-    #[serde(rename = "coord_system_3d")]
     /// A 3D coordinate system builder
+    #[serde(rename = "coord_system_3d")]
     CoordSystem3D,
-    #[serde(rename = "quadrant_coord_system_2d")]
     /// A 2D single quadrant coordinate system builder
+    #[serde(rename = "quadrant_coord_system_2d")]
     QuadrantCoordSystem2D,
-    #[serde(rename = "ellipse")]
     /// An ellipse builder
+    #[serde(rename = "ellipse")]
     Ellipse,
-    #[serde(rename = "foci_ellipse")]
     /// A foci ellipse builder
+    #[serde(rename = "foci_ellipse")]
     FociEllipse,
-    #[serde(rename = "quadbez")]
     /// An quadbez builder
+    #[serde(rename = "quadbez")]
     QuadBez,
-    #[serde(rename = "cubbez")]
     /// An cubic bezier builder
+    #[serde(rename = "cubbez")]
     CubBez,
 }
 
@@ -89,12 +102,8 @@ impl TryFrom<u32> for ShapeBuilderType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "ShapeBuilderType try_from::<u32>() for value {} failed",
-                value
-            )
-        })
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("ShapeBuilderType try_from::<u32>() for value {value} failed"))
     }
 }
 
@@ -125,11 +134,8 @@ impl TryFrom<u32> for PenPathBuilderType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "PenPathBuilderType try_from::<u32>() for value {} failed",
-                value
-            )
+        num_traits::FromPrimitive::from_u32(value).with_context(|| {
+            format!("PenPathBuilderType try_from::<u32>() for value {value} failed",)
         })
     }
 }

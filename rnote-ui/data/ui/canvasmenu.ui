@@ -21,7 +21,7 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">Document _layout</attribute>
+            <attribute name="label" translatable="yes">_Document layout</attribute>
             <section>
               <item>
                 <attribute name="label" translatable="yes">_Fixed size</attribute>
@@ -56,14 +56,14 @@
             <attribute name="action">win.touch-drawing</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">P_en sounds</attribute>
+            <attribute name="label" translatable="yes">_Pen sounds</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.pen-sounds</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label" translatable="yes">_Clear document</attribute>
+            <attribute name="label" translatable="yes">C_lear document</attribute>
             <attribute name="action">win.clear-doc</attribute>
           </item>
           <item>

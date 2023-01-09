@@ -1,7 +1,7 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AABBHelpers, Vector2Helpers};
+use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
@@ -40,11 +40,11 @@ impl TransformBehaviour for Line {
 }
 
 impl ShapeBehaviour for Line {
-    fn bounds(&self) -> AABB {
-        AABBHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
+    fn bounds(&self) -> Aabb {
+        AabbHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         let n_splits = super::hitbox_elems_for_shape_len((self.end - self.start).magnitude());
 
         self.split(n_splits)

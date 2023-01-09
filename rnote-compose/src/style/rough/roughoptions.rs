@@ -1,3 +1,4 @@
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
 use crate::Color;
@@ -31,10 +32,11 @@ impl Default for RoughOptions {
     fn default() -> Self {
         Self {
             stroke_color: Some(Color::BLACK),
-            stroke_width: Self::STROKE_WIDTH_DEFAULT,
+            stroke_width: 2.4,
             fill_color: None,
             fill_style: FillStyle::Hachure,
-            hachure_angle: Self::HACHURE_ANGLE_DEFAULT,
+            // Default hachure angle (in rad). is -41 degrees
+            hachure_angle: -0.715585,
             seed: None,
         }
     }
@@ -42,17 +44,14 @@ impl Default for RoughOptions {
 
 impl RoughOptions {
     /// The margin for the bounds of composed rough shapes
-    /// TODO: make this not a const margin, but dependent on the shape size
+    ///
+    /// TODO: make this not a fixed value, but dependent on the shape size, roughness, etc.
     pub const ROUGH_BOUNDS_MARGIN: f64 = 20.0;
 
-    /// Default stroke width
-    pub const STROKE_WIDTH_DEFAULT: f64 = 1.0;
-    /// min stroke width
-    pub const STROKE_WIDTH_MIN: f64 = 0.1;
-    /// max stroke width
-    pub const STROKE_WIDTH_MAX: f64 = 1000.0;
-    /// Default hachure angle (in rad). Defaults to -41 degrees
-    pub const HACHURE_ANGLE_DEFAULT: f64 = -0.715585;
+    /// Advances the seed
+    pub fn advance_seed(&mut self) {
+        self.seed = self.seed.map(crate::utils::seed_advance)
+    }
 }
 
 /// available Fill styles
@@ -82,6 +81,9 @@ pub enum FillStyle {
     /// Zig zag
     #[serde(rename = "zig_zag")]
     ZigZag,
+    /// Zig zag line
+    #[serde(rename = "zig_zag_line")]
+    ZigZagLine,
     /// Crosshatch
     #[serde(rename = "crosshatch")]
     Crosshatch,
@@ -108,8 +110,7 @@ impl From<roughr::core::FillStyle> for FillStyle {
             roughr::core::FillStyle::CrossHatch => Self::Crosshatch,
             roughr::core::FillStyle::Dots => Self::Dots,
             roughr::core::FillStyle::Dashed => Self::Dashed,
-            // These are not implemented yet in roughr, but already exist in the struct
-            _ => Self::Solid,
+            roughr::core::FillStyle::ZigZagLine => Self::ZigZag,
         }
     }
 }
@@ -123,6 +124,7 @@ impl From<FillStyle> for roughr::core::FillStyle {
             FillStyle::Crosshatch => roughr::core::FillStyle::CrossHatch,
             FillStyle::Dots => roughr::core::FillStyle::Dots,
             FillStyle::Dashed => roughr::core::FillStyle::Dashed,
+            FillStyle::ZigZagLine => roughr::core::FillStyle::ZigZagLine,
         }
     }
 }
@@ -131,8 +133,7 @@ impl TryFrom<u32> for FillStyle {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("FillStyle try_from::<u32>() for value {} failed", value)
-        })
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("FillStyle try_from::<u32>() for value {value} failed"))
     }
 }

@@ -1,16 +1,16 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::shape::Cuboid;
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 /// rect builder
@@ -37,21 +37,23 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
+                return ShapeBuilderProgress::Finished(vec![Shape::Rectangle(
+                    self.state_as_rect(),
+                )]);
             }
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_rect()
                 .composed_bounds(style)

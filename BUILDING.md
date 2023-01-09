@@ -86,7 +86,8 @@ To enable the development profile, set `-Dprofile=devel` as a parameter. Else th
 
 To enable building the `rnote-cli` binary, set `-Dcli=true`.
 
-### Reconfigure
+**Reconfigure**
+
 reconfiguring the meson build options can be done with:
 
 ```bash
@@ -169,13 +170,23 @@ and a `launch.json` entry:
         {
             "type": "lldb",
             "request": "launch",
-            "name": "launch debug build of 'rnote'",
+            "name": "compile and launch debug build of 'rnote'",
             "args": [],
             "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
-            "preLaunchTask": "meson compile"
+            "preLaunchTask": "meson compile",
+            "env": {"RUST_LOG": "rnote=debug"}
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "install and launch debug build of 'rnote'",
+            "args": [],
+            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
+            "preLaunchTask": "meson install",
+            "env": {"RUST_LOG": "rnote=debug"}
         }
     ]
 }
 ```
 
-This launch configuration can then be launched through `Run -> Start Debugging` or by selecting and running it in the `Run and Debug` panel. 
+These configurations can then be selected in the `Run and Debug` panel and launched there or through `Run -> Start Debugging`.

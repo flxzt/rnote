@@ -3,9 +3,9 @@ use std::ops::Range;
 use gtk4::pango;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
-use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{color, Color, Transform};
@@ -317,7 +317,7 @@ impl TextStyle {
 
         text_layout_builder
             .build()
-            .map_err(|e| anyhow::anyhow!("{}", e))
+            .map_err(|e| anyhow::anyhow!("{e:?}"))
     }
 
     pub fn untransformed_size<T>(&self, piet_text: &mut T, text: String) -> Option<na::Vector2<f64>>
@@ -382,7 +382,7 @@ impl TextStyle {
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let range = if selection_cursor.cur_cursor() >= cursor.cur_cursor() {
             cursor.cur_cursor()..selection_cursor.cur_cursor()
@@ -495,19 +495,20 @@ impl TransformBehaviour for TextStroke {
 }
 
 impl ShapeBehaviour for TextStroke {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         let untransformed_size = self
             .text_style
             .untransformed_size(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size));
+            .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size))
+            .maxs(&na::vector![1.0, 1.0]);
 
-        self.transform.transform_aabb(AABB::new(
+        self.transform.transform_aabb(Aabb::new(
             na::point![0.0, 0.0],
             na::Point2::from(untransformed_size),
         ))
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         let text_layout = match self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
@@ -515,18 +516,31 @@ impl ShapeBehaviour for TextStroke {
             Ok(text_layout) => text_layout,
             Err(e) => {
                 log::error!(
-                    "build_text_layout() failed while calculating the hitboxes, Err {}",
-                    e
+                    "build_text_layout() failed while calculating the hitboxes, Err: {e:?}"
                 );
+
                 return vec![self.bounds()];
             }
         };
 
-        text_layout
+        let mut hitboxes: Vec<Aabb> = text_layout
             .rects_for_range(0..self.text.len())
             .into_iter()
-            .map(|rect| self.transform.transform_aabb(AABB::from_kurbo_rect(rect)))
-            .collect()
+            .map(|rect| self.transform.transform_aabb(Aabb::from_kurbo_rect(rect)))
+            .collect();
+
+        let text_size = text_layout.size();
+
+        if hitboxes.is_empty() {
+            hitboxes.push(self.transform.transform_aabb(Aabb::new_positive(
+                na::point![0.0, 0.0],
+                na::Point2::from(
+                    na::vector![text_size.width, text_size.height].maxs(&na::vector![1.0, 1.0]),
+                ),
+            )))
+        }
+
+        hitboxes
     }
 }
 
@@ -546,7 +560,7 @@ impl StrokeBehaviour for TextStroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -579,7 +593,7 @@ impl StrokeBehaviour for TextStroke {
 
 impl DrawBehaviour for TextStroke {
     fn draw(&self, cx: &mut impl RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         if let Ok(text_layout) = self
             .text_style
@@ -589,7 +603,7 @@ impl DrawBehaviour for TextStroke {
             cx.draw_text(&text_layout, kurbo::Point::new(0.0, 0.0))
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -615,7 +629,7 @@ impl TextStroke {
         let text_layout = self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
             (self.transform.affine.inverse() * na::Point2::from(coord))
                 .coords
@@ -850,10 +864,14 @@ impl TextStroke {
             let next_line = (hittest_position.line + 1).min(lines.len() - 1);
 
             if next_line != hittest_position.line {
-                let current_line_rel_offset =
-                    cursor.cur_cursor() - lines[hittest_position.line].start_offset;
-                let next_line_max_offset =
-                    lines[next_line].end_offset - 1 - lines[next_line].start_offset;
+                let current_line_rel_offset = cursor
+                    .cur_cursor()
+                    .saturating_sub(lines[hittest_position.line].start_offset);
+
+                let next_line_max_offset = lines[next_line]
+                    .end_offset
+                    .saturating_sub(lines[next_line].start_offset)
+                    .saturating_sub(1);
 
                 let line_rel_offset = current_line_rel_offset.min(next_line_max_offset);
 
@@ -879,10 +897,13 @@ impl TextStroke {
             let prev_line = hittest_position.line.saturating_sub(1);
 
             if prev_line != hittest_position.line {
-                let current_line_rel_offset =
-                    cursor.cur_cursor() - lines[hittest_position.line].start_offset;
-                let prev_line_max_offset =
-                    lines[prev_line].end_offset - 1 - lines[prev_line].start_offset;
+                let current_line_rel_offset = cursor
+                    .cur_cursor()
+                    .saturating_sub(lines[hittest_position.line].start_offset);
+                let prev_line_max_offset = lines[prev_line]
+                    .end_offset
+                    .saturating_sub(lines[prev_line].start_offset)
+                    .saturating_sub(1);
 
                 let line_rel_offset = current_line_rel_offset.min(prev_line_max_offset);
 

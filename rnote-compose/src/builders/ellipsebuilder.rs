@@ -1,15 +1,15 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 /// ellipse builder
@@ -36,21 +36,23 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);
+                return ShapeBuilderProgress::Finished(vec![Shape::Ellipse(
+                    self.state_as_ellipse(),
+                )]);
             }
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_ellipse()
                 .composed_bounds(style)

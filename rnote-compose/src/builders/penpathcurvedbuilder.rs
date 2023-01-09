@@ -1,16 +1,16 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
-use crate::penhelpers::PenEvent;
+use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
 use crate::style::Composer;
-use crate::{PenPath, Shape, Style};
+use crate::{PenPath, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::penpathbuilderbehaviour::PenPathBuilderCreator;
+use super::{Constraints, PenPathBuilderBehaviour, PenPathBuilderProgress};
 
 #[derive(Debug, Clone)]
 pub(crate) enum PenPathCurvedBuilderState {
@@ -28,7 +28,7 @@ pub struct PenPathCurvedBuilder {
     i: usize,
 }
 
-impl ShapeBuilderCreator for PenPathCurvedBuilder {
+impl PenPathBuilderCreator for PenPathCurvedBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             state: PenPathCurvedBuilderState::Start,
@@ -38,13 +38,13 @@ impl ShapeBuilderCreator for PenPathCurvedBuilder {
     }
 }
 
-impl ShapeBuilderBehaviour for PenPathCurvedBuilder {
+impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
     fn handle_event(
         &mut self,
         event: PenEvent,
         _now: Instant,
         _constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> PenPathBuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,
@@ -57,35 +57,40 @@ impl ShapeBuilderBehaviour for PenPathCurvedBuilder {
                 self.buffer.push(element);
 
                 match self.try_build_segments_start() {
-                    Some(shapes) => BuilderProgress::EmitContinue(shapes),
-                    None => BuilderProgress::InProgress,
+                    Some(segments) => {
+                        // Here we have enough elements to switch into during state
+
+                        self.state = PenPathCurvedBuilderState::During;
+                        PenPathBuilderProgress::EmitContinue(segments)
+                    }
+                    None => PenPathBuilderProgress::InProgress,
                 }
             }
             (PenPathCurvedBuilderState::During, PenEvent::Down { element, .. }) => {
                 self.buffer.push(element);
 
                 match self.try_build_segments_during() {
-                    Some(shapes) => BuilderProgress::EmitContinue(shapes),
-                    None => BuilderProgress::InProgress,
+                    Some(shapes) => PenPathBuilderProgress::EmitContinue(shapes),
+                    None => PenPathBuilderProgress::InProgress,
                 }
             }
             (_, PenEvent::Up { element, .. }) => {
                 self.buffer.push(element);
 
-                BuilderProgress::Finished(self.try_build_segments_end())
+                PenPathBuilderProgress::Finished(self.try_build_segments_end())
             }
             (_, PenEvent::Proximity { .. })
             | (_, PenEvent::KeyPressed { .. })
-            | (_, PenEvent::Text { .. }) => BuilderProgress::InProgress,
+            | (_, PenEvent::Text { .. }) => PenPathBuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 
-                BuilderProgress::Finished(vec![])
+                PenPathBuilderProgress::Finished(vec![])
             }
         }
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         let stroke_width = style.stroke_width();
 
         if self.buffer.len().saturating_sub(1) < self.i {
@@ -95,7 +100,7 @@ impl ShapeBuilderBehaviour for PenPathCurvedBuilder {
         Some(
             self.buffer[self.i..]
                 .iter()
-                .fold(AABB::new_invalid(), |mut acc, x| {
+                .fold(Aabb::new_invalid(), |mut acc, x| {
                     acc.take_point(na::Point2::from(x.pos));
                     acc.loosened(stroke_width / zoom)
                 }),
@@ -109,43 +114,30 @@ impl ShapeBuilderBehaviour for PenPathCurvedBuilder {
 
         cx.save().unwrap();
 
-        let penpath = match &self.state {
-            PenPathCurvedBuilderState::Start => self.buffer[self.i..]
-                .iter()
-                .zip(self.buffer[self.i..].iter().skip(1))
-                .map(|(start, end)| Segment::Line {
-                    start: *start,
-                    end: *end,
-                })
-                .collect::<PenPath>(),
+        let pen_path = match &self.state {
+            PenPathCurvedBuilderState::Start => {
+                PenPath::try_from_elements(self.buffer[self.i..].iter().copied())
+            }
             // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
-            PenPathCurvedBuilderState::During => self.buffer[self.i..]
-                .iter()
-                .skip(1)
-                .zip(self.buffer[self.i..].iter().skip(2))
-                .map(|(start, end)| Segment::Line {
-                    start: *start,
-                    end: *end,
-                })
-                .collect::<PenPath>(),
+            PenPathCurvedBuilderState::During => {
+                PenPath::try_from_elements(self.buffer[self.i..].iter().skip(1).copied())
+            }
         };
 
-        penpath.draw_composed(cx, style);
+        if let Some(pen_path) = pen_path {
+            pen_path.draw_composed(cx, style);
+        }
 
         cx.restore().unwrap();
     }
 }
 
 impl PenPathCurvedBuilder {
-    fn try_build_segments_start(&mut self) -> Option<Vec<Shape>> {
-        if self.buffer.len().saturating_sub(1) >= self.i + 2 {
-            // Here we have enough elements to switch into during state
-            self.state = PenPathCurvedBuilderState::During;
-
-            let segment = Shape::Segment(Segment::Line {
-                start: self.buffer[self.i],
-                end: self.buffer[self.i + 1],
-            });
+    fn try_build_segments_start(&mut self) -> Option<Vec<Segment>> {
+        if self.buffer.len().saturating_sub(1) > self.i {
+            let segment = Segment::LineTo {
+                end: self.buffer[self.i],
+            };
 
             Some(vec![segment])
         } else {
@@ -153,7 +145,7 @@ impl PenPathCurvedBuilder {
         }
     }
 
-    fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
+    fn try_build_segments_during(&mut self) -> Option<Vec<Segment>> {
         if self.buffer.len().saturating_sub(1) < self.i + 3 {
             return None;
         }
@@ -167,27 +159,22 @@ impl PenPathCurvedBuilder {
                 self.buffer[self.i + 2].pos,
                 self.buffer[self.i + 3].pos,
             ) {
-                let segment = Shape::Segment(Segment::CubBez {
-                    start: Element {
-                        pos: cubbez.start,
-                        ..self.buffer[self.i + 1]
-                    },
+                let segment = Segment::CubBezTo {
                     cp1: cubbez.cp1,
                     cp2: cubbez.cp2,
                     end: Element {
                         pos: cubbez.end,
                         ..self.buffer[self.i + 2]
                     },
-                });
+                };
 
                 self.i += 1;
 
                 segments.push(segment);
             } else {
-                let segment = Shape::Segment(Segment::Line {
-                    start: self.buffer[self.i + 1],
+                let segment = Segment::LineTo {
                     end: self.buffer[self.i + 2],
-                });
+                };
 
                 self.i += 1;
 
@@ -198,65 +185,50 @@ impl PenPathCurvedBuilder {
         Some(segments)
     }
 
-    fn try_build_segments_end(&mut self) -> Vec<Shape> {
+    fn try_build_segments_end(&mut self) -> Vec<Segment> {
         let buffer_last_pos = self.buffer.len().saturating_sub(1);
-        let mut segments: Vec<Shape> = vec![];
+        let mut segments: Vec<Segment> = vec![];
 
-        while let Some(mut new_segments) = if buffer_last_pos >= self.i + 3 {
+        while let Some(mut new_segments) = if buffer_last_pos > self.i + 2 {
             if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
                 self.buffer[self.i].pos,
                 self.buffer[self.i + 1].pos,
                 self.buffer[self.i + 2].pos,
                 self.buffer[self.i + 3].pos,
             ) {
-                let segment = Shape::Segment(Segment::CubBez {
-                    start: Element {
-                        pos: cubbez.start,
-                        ..self.buffer[self.i + 1]
-                    },
+                let segment = Segment::CubBezTo {
                     cp1: cubbez.cp1,
                     cp2: cubbez.cp2,
                     end: Element {
                         pos: cubbez.end,
                         ..self.buffer[self.i + 2]
                     },
-                });
+                };
 
                 self.i += 1;
 
                 Some(vec![segment])
             } else {
-                let segment = Shape::Segment(Segment::Line {
-                    start: self.buffer[self.i + 1],
+                let segment = Segment::LineTo {
                     end: self.buffer[self.i + 2],
-                });
+                };
 
                 self.i += 1;
 
                 Some(vec![segment])
             }
-        } else if buffer_last_pos > self.i + 2 {
-            let segment = Shape::Segment(Segment::Line {
-                start: self.buffer[self.i + 1],
-                end: self.buffer[self.i + 2],
-            });
-
-            self.i += 2;
-
-            Some(vec![segment])
         } else if buffer_last_pos > self.i + 1 {
-            let segment = Shape::Segment(Segment::Line {
-                start: self.buffer[self.i],
+            let segment = Segment::LineTo {
                 end: self.buffer[self.i + 1],
-            });
+            };
 
             self.i += 2;
 
             Some(vec![segment])
         } else if buffer_last_pos > self.i {
-            let segment = Shape::Segment(Segment::Dot {
-                element: self.buffer[self.i],
-            });
+            let segment = Segment::LineTo {
+                end: self.buffer[self.i],
+            };
 
             self.i += 1;
 

@@ -1,25 +1,24 @@
+use std::time::Instant;
+
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
-use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
+use rnote_compose::penevents::PenEvent;
 
-use p2d::bounding_volume::AABB;
-use serde::{Deserialize, Serialize};
+use p2d::bounding_volume::Aabb;
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::pensconfig::toolsconfig::ToolsStyle;
+use super::PenStyle;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default, rename = "verticalspace_tool")]
+#[derive(Clone, Debug)]
 pub struct VerticalSpaceTool {
-    #[serde(skip)]
     start_pos_y: f64,
-    #[serde(skip)]
     current_pos_y: f64,
-    #[serde(skip)]
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -46,14 +45,14 @@ impl VerticalSpaceTool {
 }
 
 impl DrawOnDocBehaviour for VerticalSpaceTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let viewport = engine_view.camera.viewport();
 
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
         let height = self.current_pos_y - self.start_pos_y;
-        let tool_bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         Some(tool_bounds)
     }
@@ -63,14 +62,14 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let viewport = engine_view.camera.viewport();
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
         let height = self.current_pos_y - self.start_pos_y;
-        let tool_bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         let tool_bounds_rect = kurbo::Rect::from_points(
             tool_bounds.mins.coords.to_kurbo_point(),
@@ -98,15 +97,13 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
             Self::OFFSET_LINE_WIDTH,
         );
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default, rename = "offsetcamera_tool")]
+#[derive(Clone, Debug)]
 pub struct OffsetCameraTool {
-    #[serde(skip)]
     pub start: na::Vector2<f64>,
 }
 
@@ -131,8 +128,8 @@ impl OffsetCameraTool {
 }
 
 impl DrawOnDocBehaviour for OffsetCameraTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
-        Some(AABB::from_half_extents(
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        Some(Aabb::from_half_extents(
             na::Point2::from(self.start),
             ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5)
                 / engine_view.camera.total_zoom(),
@@ -144,7 +141,7 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
@@ -160,45 +157,8 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
             cx.fill(bez_path, &*OFFSETCAMERATOOL_FILL_COLOR);
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
-    }
-}
-
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    Serialize,
-    Deserialize,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    num_derive::FromPrimitive,
-    num_derive::ToPrimitive,
-)]
-#[serde(rename = "tools_style")]
-pub enum ToolsStyle {
-    #[serde(rename = "verticalspace")]
-    VerticalSpace,
-    #[serde(rename = "offsetcamera")]
-    OffsetCamera,
-}
-
-impl Default for ToolsStyle {
-    fn default() -> Self {
-        Self::VerticalSpace
-    }
-}
-
-impl TryFrom<u32> for ToolsStyle {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("ToolsStyle try_from::<u32>() for value {} failed", value)
-        })
     }
 }
 
@@ -214,24 +174,26 @@ impl Default for ToolsState {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-#[serde(default, rename = "tools")]
+#[derive(Clone, Debug, Default)]
 pub struct Tools {
-    #[serde(rename = "style")]
-    pub style: ToolsStyle,
-    #[serde(rename = "verticalspace_tool")]
     pub verticalspace_tool: VerticalSpaceTool,
-    #[serde(rename = "offsetcamera_tool")]
     pub offsetcamera_tool: OffsetCameraTool,
-
-    #[serde(skip)]
     state: ToolsState,
 }
 
 impl PenBehaviour for Tools {
+    fn style(&self) -> PenStyle {
+        PenStyle::Tools
+    }
+
+    fn update_state(&mut self, _engine_view: &mut EngineViewMut) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -244,9 +206,9 @@ impl PenBehaviour for Tools {
                     shortcut_keys: _,
                 },
             ) => {
-                widget_flags.merge_with_other(engine_view.store.record());
+                widget_flags.merge(engine_view.store.record(Instant::now()));
 
-                match self.style {
+                match engine_view.pens_config.tools_config.style {
                     ToolsStyle::VerticalSpace => {
                         self.verticalspace_tool.start_pos_y = element.pos[1];
                         self.verticalspace_tool.current_pos_y = element.pos[1];
@@ -269,7 +231,6 @@ impl PenBehaviour for Tools {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
@@ -281,7 +242,7 @@ impl PenBehaviour for Tools {
                     shortcut_keys: _,
                 },
             ) => {
-                let pen_progress = match self.style {
+                let pen_progress = match engine_view.pens_config.tools_config.style {
                     ToolsStyle::VerticalSpace => {
                         let y_offset = element.pos[1] - self.verticalspace_tool.current_pos_y;
 
@@ -333,7 +294,7 @@ impl PenBehaviour for Tools {
                 pen_progress
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
-                match self.style {
+                match engine_view.pens_config.tools_config.style {
                     ToolsStyle::VerticalSpace => {
                         engine_view
                             .store
@@ -348,7 +309,7 @@ impl PenBehaviour for Tools {
                     engine_view.camera.image_scale(),
                 );
 
-                self.reset();
+                self.reset(engine_view);
                 self.state = ToolsState::Idle;
 
                 engine_view
@@ -358,14 +319,13 @@ impl PenBehaviour for Tools {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
             (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::Cancel) => {
-                self.reset();
+                self.reset(engine_view);
                 self.state = ToolsState::Idle;
 
                 engine_view
@@ -375,7 +335,6 @@ impl PenBehaviour for Tools {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
@@ -387,9 +346,9 @@ impl PenBehaviour for Tools {
 }
 
 impl DrawOnDocBehaviour for Tools {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         match self.state {
-            ToolsState::Active => match self.style {
+            ToolsState::Active => match engine_view.pens_config.tools_config.style {
                 ToolsStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
                 ToolsStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
             },
@@ -402,9 +361,9 @@ impl DrawOnDocBehaviour for Tools {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        match &self.style {
+        match &engine_view.pens_config.tools_config.style {
             ToolsStyle::VerticalSpace => {
                 self.verticalspace_tool.draw_on_doc(cx, engine_view)?;
             }
@@ -413,16 +372,14 @@ impl DrawOnDocBehaviour for Tools {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
 impl Tools {
-    fn reset(&mut self) {
-        let current_style = self.style;
-
-        match current_style {
+    fn reset(&mut self, engine_view: &mut EngineViewMut) {
+        match engine_view.pens_config.tools_config.style {
             ToolsStyle::VerticalSpace => {
                 self.verticalspace_tool.start_pos_y = 0.0;
                 self.verticalspace_tool.current_pos_y = 0.0;

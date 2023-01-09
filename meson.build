@@ -1,8 +1,8 @@
 project(
     'rnote',
-    ['cpp', 'rust'],
-    version: '0.5.8',
-    meson_version: '>= 0.56',
+    ['rust', 'cpp'],
+    version: '0.5.12',
+    meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
 patch = ''
@@ -13,6 +13,10 @@ fs = import('fs')
 
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
+# the name of the produced binary of the cli crate
+cli_name = 'rnote-cli'
+# We need to rename the cli, because else the output file would collide with the rnote-cli folder
+cli_output_name = 'rnote_cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
@@ -35,18 +39,21 @@ if get_option('profile') == 'devel'
     profile = 'devel'
     version_suffix = '-devel'
     app_id = base_id + '.' + 'Devel'
+    rust_target_folder = 'debug'
 else
     profile = 'default'
     app_id = base_id
     version_suffix = patch
+    rust_target_folder = 'release'
 endif
 
 app_idpath = '/com/github/flxzt/' + app_name + '/'
 
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')
-localedir = prefix / get_option('localedir')
 datadir = prefix / get_option('datadir')
+libdir = prefix / get_option('libdir')
+localedir = prefix / get_option('localedir')
 pkgdatadir = datadir / app_name
 iconsdir = datadir / 'icons'
 gettext_package = app_name
@@ -77,6 +84,7 @@ glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
+cargo_build_script = find_program('build-aux/cargo_build.py')
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -96,77 +104,186 @@ if get_option('profile') == 'devel'
     )
 endif
 
-# local crates
-cargo_sources = files(
-    meson.project_source_root() + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
-    meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
-)
-
+# workspace crates
 subdir('rnote-compose')
-subdir('rnote-engine')
 subdir('rnote-fileformats')
+subdir('rnote-engine')
 subdir('rnote-ui')
 
-# Cargo
-sources = [
+cargo_manifest_path = meson.project_source_root() / 'Cargo.toml'
+cargo_target_dir = meson.project_build_root() / 'target'
+cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
+
+# cargo fmt check
+run_target(
+    'cargo-fmt-check',
+    command: [
+        cargo,
+        [
+            'fmt',
+            '--all',
+            '--check',
+            '--manifest-path',
+            cargo_manifest_path,
+        ],
+    ],
+    env: cargo_env,
+)
+
+
+# build / install the app
+app_sources = [
     rnote_compose_sources,
-    rnote_engine_sources,
     rnote_fileformats_sources,
+    rnote_engine_sources,
     rnote_ui_sources,
-    cargo_sources,
+    files(
+        meson.project_source_root() + '/Cargo.toml',
+        meson.project_source_root() + '/Cargo.lock',
+        meson.project_source_root() + '/rnote-compose/Cargo.toml',
+        meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
+        meson.project_source_root() + '/rnote-engine/Cargo.toml',
+        meson.project_source_root() + '/rnote-ui/Cargo.toml',
+        meson.project_source_root() + '/rnote-ui/build.rs',
+    ),
 ]
 
-cargo_target_dir = meson.project_build_root() / 'target'
-cargo_options = ['--manifest-path', meson.project_source_root() / 'Cargo.toml']
-cargo_options += ['--target-dir', cargo_target_dir]
-cargo_options += ['-p', 'rnote']
-
-if get_option('cli') == true
-    cargo_options += ['-p', 'rnote-cli']
-endif
+app_cargo_options = ['--manifest-path', cargo_manifest_path]
+app_cargo_options += ['--target-dir', cargo_target_dir]
+app_cargo_options += ['-p', 'rnote']
 
 if get_option('profile') == 'default'
-    cargo_options += ['--release']
-    rust_target = 'release'
-    message('cargo: building in release mode')
-else
-    rust_target = 'debug'
-    message('cargo: building in debug mode')
+    app_cargo_options += ['--release']
 endif
-
-cargo_env = ['CARGO_HOME=' + meson.project_build_root() / 'cargo-home']
 
 # see https://mesonbuild.com/Reference-tables.html#operating-system-names
 if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-    bin_output = app_name + '.exe'
+    app_bin_output = app_name + '.exe'
 else
-    bin_output = app_name
+    app_bin_output = app_name
 endif
 
+# app cargo check
+run_target(
+    'app-cargo-check',
+    command: [
+        cargo,
+        'check',
+        app_cargo_options,
+    ],
+    env: cargo_env,
+)
+
+# app cargo clippy
+run_target(
+    'app-cargo-clippy',
+    command: [
+        cargo,
+        'clippy',
+        app_cargo_options,
+    ],
+    env: cargo_env,
+)
+
+# app cargo build
 custom_target(
-    'cargo-build',
+    'app-cargo-build',
     build_by_default: true,
-    input: sources,
-    output: bin_output,
+    input: app_sources,
+    output: app_bin_output,
     console: true,
     install: true,
     install_dir: bindir,
     depends: gresources,
     command: [
-        'env',
+        cargo_build_script,
+        meson.project_build_root(),
+        meson.project_source_root(),
         cargo_env,
         cargo,
-        'build',
-        cargo_options,
-        '&&',
-        'cp',
-        cargo_target_dir / rust_target / app_name,
+        ' '.join(app_cargo_options),
+        cargo_target_dir / rust_target_folder / app_name,
         meson.project_build_root() / '@OUTPUT@',
     ],
 )
+
+# build / install the cli
+if get_option('cli') == true
+    # cli crate
+    subdir('rnote-cli')
+
+    cli_cargo_options = ['--manifest-path', cargo_manifest_path]
+    cli_cargo_options += ['--target-dir', cargo_target_dir]
+    cli_cargo_options += ['-p', 'rnote-cli']
+
+    if get_option('profile') == 'default'
+        cli_cargo_options += ['--release']
+    endif
+
+    if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
+        cli_bin_output = cli_output_name + '.exe'
+    else
+        cli_bin_output = cli_output_name
+    endif
+
+    cli_sources = [
+        rnote_compose_sources,
+        rnote_fileformats_sources,
+        rnote_engine_sources,
+        rnote_cli_sources,
+        files(
+            meson.project_source_root() + '/Cargo.toml',
+            meson.project_source_root() + '/Cargo.lock',
+            meson.project_source_root() + '/rnote-compose/Cargo.toml',
+            meson.project_source_root() + '/rnote-fileformats/Cargo.toml',
+            meson.project_source_root() + '/rnote-engine/Cargo.toml',
+            meson.project_source_root() + '/rnote-cli/Cargo.toml',
+        ),
+    ]
+
+    # cli cargo check
+    run_target(
+        'cli-cargo-check',
+        command: [
+            cargo,
+            'check',
+            cli_cargo_options,
+        ],
+        env: cargo_env,
+    )
+
+    # cli cargo clippy
+    run_target(
+        'cli-cargo-clippy',
+        command: [
+            cargo,
+            'clippy',
+            cli_cargo_options,
+        ],
+        env: cargo_env,
+    )
+
+    # cli cargo build
+    custom_target(
+        'cli-cargo-build',
+        build_by_default: true,
+        input: cli_sources,
+        output: cli_bin_output,
+        console: true,
+        install: true,
+        install_dir: bindir,
+        command: [
+            cargo_build_script,
+            meson.project_build_root(),
+            meson.project_source_root(),
+            cargo_env,
+            cargo,
+            ' '.join(cli_cargo_options),
+            cargo_target_dir / rust_target_folder / cli_name,
+            meson.project_build_root() / '@OUTPUT@',
+        ],
+    )
+endif
 
 # meson >= 0.64 will include `update-mime-database` in the gnome module.
 # Then this script can be replaced by `gnome.post_install(..)`

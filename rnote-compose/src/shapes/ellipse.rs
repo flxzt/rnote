@@ -1,5 +1,5 @@
 use kurbo::Shape;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{Affine2Helpers, Vector2Helpers};
@@ -45,7 +45,7 @@ impl TransformBehaviour for Ellipse {
 }
 
 impl ShapeBehaviour for Ellipse {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
         let half_extents = na::Vector2::from_homogeneous(
@@ -54,10 +54,10 @@ impl ShapeBehaviour for Ellipse {
         .unwrap()
         .abs();
 
-        AABB::from_half_extents(center, half_extents)
+        Aabb::from_half_extents(center, half_extents)
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.approx_with_lines()
             .into_iter()
             .map(|line| line.bounds())

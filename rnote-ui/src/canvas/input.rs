@@ -1,16 +1,17 @@
 use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
-use rnote_compose::penhelpers::KeyboardKey;
-use rnote_compose::penhelpers::PenEvent;
-use rnote_compose::penhelpers::ShortcutKey;
+use rnote_compose::penevents::KeyboardKey;
+use rnote_compose::penevents::PenEvent;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penpath::Element;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::collections::VecDeque;
+use std::time::Instant;
 
-use crate::appwindow::RnoteAppWindow;
+use super::RnoteCanvas;
 
 /// Returns true if input should be rejected
-pub fn filter_mouse_input(mouse_drawing_gesture: &GestureDrag) -> bool {
+pub(crate) fn filter_mouse_input(mouse_drawing_gesture: &GestureDrag) -> bool {
     match mouse_drawing_gesture.current_button() {
         gdk::BUTTON_PRIMARY | gdk::BUTTON_SECONDARY => {}
         _ => {
@@ -32,17 +33,17 @@ pub fn filter_mouse_input(mouse_drawing_gesture: &GestureDrag) -> bool {
 }
 
 /// Returns true if input should be rejected
-pub fn filter_touch_input(_touch_drawing_gesture: &GestureDrag) -> bool {
+pub(crate) fn filter_touch_input(_touch_drawing_gesture: &GestureDrag) -> bool {
     false
 }
 
 /// Returns true if input should be rejected
-pub fn filter_stylus_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
+pub(crate) fn filter_stylus_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
     false
 }
 
-#[allow(dead_code)]
-pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
+#[allow(unused)]
+pub(crate) fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
     log::debug!(
         "stylus_gesture | modifier: {:?}, current_button: {:?}, tool_type: {:?}, event.event_type: {:?}",
         stylus_gesture.current_event_state(),
@@ -56,8 +57,8 @@ pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
     );
 }
 
-#[allow(dead_code)]
-pub fn debug_drag_gesture(drag_gesture: &GestureDrag) {
+#[allow(unused)]
+pub(crate) fn debug_drag_gesture(drag_gesture: &GestureDrag) {
     log::debug!(
         "gesture modifier: {:?}, current_button: {:?}, event.event_type: {:?}",
         drag_gesture.current_event_state(),
@@ -70,7 +71,7 @@ pub fn debug_drag_gesture(drag_gesture: &GestureDrag) {
 
 /// retrieve elements from a (emulated) pointer
 /// X and Y is already available from closure, and should not retrieved from .axis() (because of gtk weirdness)
-pub fn retrieve_pointer_elements(
+pub(crate) fn retrieve_pointer_elements(
     _mouse_drawing_gesture: &GestureDrag,
     x: f64,
     y: f64,
@@ -82,7 +83,9 @@ pub fn retrieve_pointer_elements(
     data_entries
 }
 
-pub fn retrieve_mouse_shortcut_keys(mouse_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
+pub(crate) fn retrieve_mouse_shortcut_keys(
+    mouse_drawing_gesture: &GestureDrag,
+) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
 
     match mouse_drawing_gesture.current_button() {
@@ -99,7 +102,9 @@ pub fn retrieve_mouse_shortcut_keys(mouse_drawing_gesture: &GestureDrag) -> Vec<
     shortcut_keys
 }
 
-pub fn retrieve_touch_shortcut_keys(touch_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
+pub(crate) fn retrieve_touch_shortcut_keys(
+    touch_drawing_gesture: &GestureDrag,
+) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
 
     shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
@@ -110,7 +115,9 @@ pub fn retrieve_touch_shortcut_keys(touch_drawing_gesture: &GestureDrag) -> Vec<
 }
 
 /// Retrieving the shortcut keys for the stylus gesture
-pub fn retrieve_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> Vec<ShortcutKey> {
+pub(crate) fn retrieve_stylus_shortcut_keys(
+    stylus_drawing_gesture: &GestureStylus,
+) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
 
     // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent.
@@ -132,7 +139,7 @@ pub fn retrieve_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> 
     shortcut_keys
 }
 
-pub fn retrieve_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Option<PenMode> {
+pub(crate) fn retrieve_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Option<PenMode> {
     if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
         match device_tool.tool_type() {
             gdk::DeviceToolType::Pen => {
@@ -148,12 +155,12 @@ pub fn retrieve_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Optio
     None
 }
 
-pub fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
+pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
     rnote_engine::utils::keyboard_key_from_gdk(gdk_key)
 }
 
 /// Retrieving modifier shortcut keys. Note that here Button modifiers are skipped, they have different meanings with different kind of pointers and have to be handled individually
-pub fn retrieve_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
+pub(crate) fn retrieve_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
     let mut shortcut_keys = vec![];
     if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
         shortcut_keys.push(ShortcutKey::KeyboardShift);
@@ -170,7 +177,7 @@ pub fn retrieve_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<Shortc
 
 /// retrieves available input axes, defaults if not available.
 /// X and Y is already available from closure, and should not retrieved from .axis() (because of gtk weirdness)
-pub fn retrieve_stylus_elements(
+pub(crate) fn retrieve_stylus_elements(
     stylus_drawing_gesture: &GestureStylus,
     x: f64,
     y: f64,
@@ -191,163 +198,170 @@ pub fn retrieve_stylus_elements(
 }
 
 /// Process "Pen down"
-pub fn process_pen_down(
+pub(crate) fn process_pen_down(
+    canvas: &RnoteCanvas,
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
-    appwindow: &RnoteAppWindow,
-) {
+    now: Instant,
+) -> WidgetFlags {
     let mut widget_flags = WidgetFlags::default();
 
-    appwindow.canvas().switch_between_cursors(true);
+    canvas.switch_between_cursors(true);
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        widget_flags.merge_with_other(
-            appwindow
-                .canvas()
+        widget_flags.merge(
+            canvas
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton, now),
         );
 
-        appwindow.handle_widget_flags(widget_flags);
-        return;
+        return widget_flags;
     }
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        widget_flags.merge_with_other(
-            appwindow
-                .canvas()
+        widget_flags.merge(
+            canvas
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton, now),
         );
 
-        appwindow.handle_widget_flags(widget_flags);
-        return;
+        return widget_flags;
     }
 
     // Handle all other events as pen down
-    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
         PenEvent::Down {
             element,
             shortcut_keys,
         },
         pen_mode,
+        now,
     ));
 
-    appwindow.handle_widget_flags(widget_flags);
+    widget_flags
 }
 
 /// Process "Pen up"
-pub fn process_pen_up(
+pub(crate) fn process_pen_up(
+    canvas: &RnoteCanvas,
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
-    appwindow: &RnoteAppWindow,
-) {
+    now: Instant,
+) -> WidgetFlags {
     let mut widget_flags = WidgetFlags::default();
 
-    appwindow.canvas().switch_between_cursors(false);
+    canvas.switch_between_cursors(false);
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        widget_flags.merge_with_other(
-            appwindow
-                .canvas()
+        widget_flags.merge(
+            canvas
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton, now),
         );
 
-        appwindow.handle_widget_flags(widget_flags);
-        return;
+        return widget_flags;
     }
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        widget_flags.merge_with_other(
-            appwindow
-                .canvas()
+        widget_flags.merge(
+            canvas
                 .engine()
                 .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton, now),
         );
 
-        appwindow.handle_widget_flags(widget_flags);
-        return;
+        return widget_flags;
     }
 
     // Handle all other events as pen up
-    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
         PenEvent::Up {
             element,
             shortcut_keys,
         },
         pen_mode,
+        now,
     ));
 
-    appwindow.handle_widget_flags(widget_flags);
+    widget_flags
 }
 
 /// Process "Pen proximity"
-pub fn process_pen_proximity(
+pub(crate) fn process_pen_proximity(
+    canvas: &RnoteCanvas,
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
-    appwindow: &RnoteAppWindow,
-) {
+    now: Instant,
+) -> WidgetFlags {
     let mut widget_flags = WidgetFlags::default();
 
-    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
         PenEvent::Proximity {
             element,
             shortcut_keys,
         },
         pen_mode,
+        now,
     ));
 
-    appwindow.handle_widget_flags(widget_flags);
+    widget_flags
 }
 
 /// Process shortcut key pressed
 #[allow(unused)]
-pub fn process_shortcut_key_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppWindow) {
-    let widget_flags = appwindow
-        .canvas()
+pub(crate) fn process_shortcut_key_pressed(
+    canvas: &RnoteCanvas,
+    shortcut_key: ShortcutKey,
+    now: Instant,
+) -> WidgetFlags {
+    let widget_flags = canvas
         .engine()
         .borrow_mut()
-        .handle_pen_pressed_shortcut_key(shortcut_key);
+        .handle_pen_pressed_shortcut_key(shortcut_key, now);
 
-    appwindow.handle_widget_flags(widget_flags);
+    widget_flags
 }
 
 /// Process keyboard key pressed
-pub fn process_keyboard_key_pressed(
+pub(crate) fn process_keyboard_key_pressed(
+    canvas: &RnoteCanvas,
     keyboard_key: KeyboardKey,
     shortcut_keys: Vec<ShortcutKey>,
-    appwindow: &RnoteAppWindow,
-) {
-    let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    now: Instant,
+) -> WidgetFlags {
+    let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
         PenEvent::KeyPressed {
             keyboard_key,
             shortcut_keys,
         },
         None,
+        now,
     );
 
-    appwindow.handle_widget_flags(widget_flags);
+    widget_flags
 }
 
 /// Process keyboard text
-pub fn process_keyboard_text(text: String, appwindow: &RnoteAppWindow) {
-    let widget_flags = appwindow
-        .canvas()
-        .engine()
-        .borrow_mut()
-        .handle_pen_event(PenEvent::Text { text }, None);
+pub(crate) fn process_keyboard_text(
+    canvas: &RnoteCanvas,
+    text: String,
+    now: Instant,
+) -> WidgetFlags {
+    let widget_flags =
+        canvas
+            .engine()
+            .borrow_mut()
+            .handle_pen_event(PenEvent::Text { text }, None, now);
 
-    appwindow.handle_widget_flags(widget_flags);
+    widget_flags
 }

@@ -3,25 +3,24 @@ use std::cell::Cell;
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
 };
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use rnote_compose::helpers::AABBHelpers;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::helpers::AabbHelpers;
 
 use crate::canvas::RnoteCanvas;
-use rnote_engine::document::Layout;
-use rnote_engine::{render, Document};
+use rnote_engine::{document::Layout, render, Document};
 
 mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub struct CanvasLayout {
-        pub old_viewport: Cell<AABB>,
+    pub(crate) struct CanvasLayout {
+        pub(crate) old_viewport: Cell<Aabb>,
     }
 
     impl Default for CanvasLayout {
         fn default() -> Self {
             Self {
-                old_viewport: Cell::new(AABB::new_zero()),
+                old_viewport: Cell::new(Aabb::new_zero()),
             }
         }
     }
@@ -48,21 +47,24 @@ mod imp {
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let document = canvas.engine().borrow().document;
 
-            if orientation == Orientation::Vertical {
-                let natural_height = ((canvas.engine().borrow().document.height
-                    + 2.0 * Document::SHADOW_WIDTH)
-                    * total_zoom)
-                    .ceil() as i32;
+            if orientation == Orientation::Horizontal {
+                // let canvas_width = canvas.width() as f64;
 
-                (0, natural_height, -1, -1)
-            } else {
-                let natural_width = ((canvas.engine().borrow().document.width
-                    + 2.0 * Document::SHADOW_WIDTH)
-                    * total_zoom)
+                let natural_width = (document.width * total_zoom
+                    + 2.0 * super::CanvasLayout::OVERSHOOT_HORIZONTAL)
                     .ceil() as i32;
 
                 (0, natural_width, -1, -1)
+            } else {
+                // let canvas_height = canvas.height() as f64;
+
+                let natural_height = (document.height * total_zoom
+                    + 2.0 * super::CanvasLayout::OVERSHOOT_VERTICAL)
+                    .ceil() as i32;
+
+                (0, natural_height, -1, -1)
             }
         }
 
@@ -74,40 +76,41 @@ mod imp {
             let engine = canvas.engine();
             let mut engine = engine.borrow_mut();
             let total_zoom = engine.camera.total_zoom();
-            let doc_layout = engine.doc_layout();
+            let document = engine.document;
 
-            let new_size = na::vector![f64::from(width), f64::from(height)];
+            let canvas_size = na::vector![f64::from(width), f64::from(height)];
 
             // Update the adjustments
-            let (h_lower, h_upper) = match doc_layout {
+            let (h_lower, h_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    (engine.document.x - Document::SHADOW_WIDTH) * total_zoom,
-                    (engine.document.x + engine.document.width + Document::SHADOW_WIDTH)
-                        * total_zoom,
+                    document.x * total_zoom - super::CanvasLayout::OVERSHOOT_HORIZONTAL,
+                    (document.x + document.width) * total_zoom
+                        + super::CanvasLayout::OVERSHOOT_HORIZONTAL,
                 ),
                 Layout::SemiInfinite => (
                     (engine.document.x - Document::SHADOW_WIDTH) * total_zoom,
                     (engine.document.x + engine.document.width) * total_zoom,
                 ),
                 Layout::Infinite => (
-                    engine.document.x * total_zoom,
-                    (engine.document.x + engine.document.width) * total_zoom,
+                    document.x * total_zoom,
+                    (document.x + document.width) * total_zoom,
                 ),
             };
 
-            let (v_lower, v_upper) = match doc_layout {
+            let (v_lower, v_upper) = match document.layout {
+                // Scroll beyond the document by half the widget size
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    (engine.document.y - Document::SHADOW_WIDTH) * total_zoom,
-                    (engine.document.y + engine.document.height + Document::SHADOW_WIDTH)
-                        * total_zoom,
+                    document.y * total_zoom - super::CanvasLayout::OVERSHOOT_VERTICAL,
+                    (document.y + document.height) * total_zoom
+                        + super::CanvasLayout::OVERSHOOT_VERTICAL,
                 ),
                 Layout::SemiInfinite => (
                     (engine.document.y - Document::SHADOW_WIDTH) * total_zoom,
                     (engine.document.y + engine.document.height) * total_zoom,
                 ),
                 Layout::Infinite => (
-                    engine.document.y * total_zoom,
-                    (engine.document.y + engine.document.height) * total_zoom,
+                    document.y * total_zoom,
+                    (document.y + document.height) * total_zoom,
                 ),
             };
 
@@ -115,26 +118,28 @@ mod imp {
                 hadj.value(),
                 h_lower,
                 h_upper,
-                0.1 * new_size[0],
-                0.9 * new_size[0],
-                new_size[0],
+                0.1 * canvas_size[0],
+                0.9 * canvas_size[0],
+                canvas_size[0],
             );
 
             vadj.configure(
                 vadj.value(),
                 v_lower,
                 v_upper,
-                0.1 * new_size[1],
-                0.9 * new_size[1],
-                new_size[1],
+                0.1 * canvas_size[1],
+                0.9 * canvas_size[1],
+                canvas_size[1],
             );
 
             // Update the camera
             engine.camera.offset = na::vector![hadj.value(), vadj.value()];
-            engine.camera.size = new_size;
+            engine.camera.size = canvas_size;
 
             // always update the background rendering
-            engine.update_background_rendering_current_viewport();
+            if let Err(e) = engine.update_background_rendering_current_viewport() {
+                log::error!("failed to update background rendering for current viewport in canvas layout allocate, Err: {e:?}");
+            }
 
             let viewport = engine.camera.viewport();
             let old_viewport = self.old_viewport.get();
@@ -158,7 +163,9 @@ mod imp {
             // But after zoom ins we need to update old_viewport with layout_manager.update_state()
             if !old_viewport_extended.contains(&viewport) {
                 // Because we don't set the rendering of strokes that are already in the view dirty, we only render those that may come into the view.
-                engine.update_rendering_current_viewport();
+                if let Err(e) = engine.update_rendering_current_viewport() {
+                    log::error!("failed to update engine rendering for current viewport in canvas layout allocate, Err: {e:?}");
+                }
 
                 self.old_viewport.set(viewport);
             }
@@ -167,7 +174,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
+    pub(crate) struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
         @extends LayoutManager;
 }
 
@@ -178,12 +185,15 @@ impl Default for CanvasLayout {
 }
 
 impl CanvasLayout {
-    pub fn new() -> Self {
+    const OVERSHOOT_VERTICAL: f64 = 96.0;
+    const OVERSHOOT_HORIZONTAL: f64 = Document::SHADOW_WIDTH;
+
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
     // needs to be called after zooming
-    pub fn update_state(&self, canvas: &RnoteCanvas) {
+    pub(crate) fn update_state(&self, canvas: &RnoteCanvas) {
         self.imp()
             .old_viewport
             .set(canvas.engine().borrow().camera.viewport());

@@ -7,15 +7,15 @@ use super::{StrokeBehaviour, TextStroke};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, RnoteEngine};
 use crate::{utils, DrawBehaviour};
-use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{Color, PenPath, Style};
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use rnote_fileformats::xoppformat::{self, XoppColor};
 use serde::{Deserialize, Serialize};
 
@@ -34,12 +34,6 @@ pub enum Stroke {
     BitmapImage(BitmapImage),
 }
 
-impl Default for Stroke {
-    fn default() -> Self {
-        Self::BrushStroke(BrushStroke::default())
-    }
-}
-
 impl StrokeBehaviour for Stroke {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         match self {
@@ -53,7 +47,7 @@ impl StrokeBehaviour for Stroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         match self {
@@ -79,7 +73,7 @@ impl DrawBehaviour for Stroke {
 }
 
 impl ShapeBehaviour for Stroke {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.bounds(),
             Self::ShapeStroke(shapestroke) => shapestroke.bounds(),
@@ -89,7 +83,7 @@ impl ShapeBehaviour for Stroke {
         }
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.hitboxes(),
             Self::ShapeStroke(shapestroke) => shapestroke.hitboxes(),
@@ -244,22 +238,15 @@ impl Stroke {
 
         smooth_options.stroke_width = stroke_width;
 
-        let penpath = coords
-            .iter()
-            .zip(widths.iter())
-            .zip(coords.iter().skip(1).zip(widths.iter().skip(1)))
-            .map(
-                |((start_pos, start_pressure), (end_pos, end_pressure))| Segment::Line {
-                    start: Element::new(start_pos + offset, *start_pressure),
-                    end: Element::new(end_pos + offset, *end_pressure),
-                },
-            )
-            .collect::<PenPath>();
+        let penpath = PenPath::try_from_elements(
+            coords
+                .into_iter()
+                .zip(widths.into_iter())
+                .map(|(pos, pressure)| Element::new(pos + offset, pressure)),
+        )
+        .ok_or_else(|| anyhow::anyhow!("from_xoppstroke() failed, failed to create pen path"))?;
 
-        let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options))
-            .ok_or_else(|| {
-                anyhow::anyhow!("creating brushstroke from penpath in from_xoppstroke() failed.")
-            })?;
+        let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options));
 
         Ok((Stroke::BrushStroke(brushstroke), layer))
     }
@@ -269,7 +256,7 @@ impl Stroke {
         offset: na::Vector2<f64>,
         target_dpi: f64,
     ) -> Result<Self, anyhow::Error> {
-        let bounds = AABB::new(
+        let bounds = Aabb::new(
             na::point![
                 crate::utils::convert_value_dpi(
                     xopp_image.left,
@@ -378,7 +365,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -406,7 +393,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }
@@ -443,7 +430,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -471,7 +458,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }
@@ -482,7 +469,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -510,7 +497,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }
@@ -521,7 +508,7 @@ impl Stroke {
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err: {e:?}");
                         return None;
                     }
                 };
@@ -550,7 +537,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&png_data),
+                        data: base64::encode(png_data),
                     },
                 ))
             }

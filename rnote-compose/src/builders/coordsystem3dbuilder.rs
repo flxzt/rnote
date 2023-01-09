@@ -1,15 +1,15 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{Constraints, ShapeBuilderBehaviour};
 
 /// 3D coordinate system builder
@@ -36,13 +36,13 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.tip_y = constraints.constrain(element.pos - self.tip_z) + self.tip_z;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(
+                return ShapeBuilderProgress::Finished(
                     self.state_as_lines()
                         .iter()
                         .map(|&line| Shape::Line(line))
@@ -52,15 +52,15 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_lines()
                 .iter()
                 .map(|line| line.composed_bounds(style))
-                .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
                 .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
         )
     }

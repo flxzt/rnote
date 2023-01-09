@@ -9,7 +9,7 @@ use crate::DrawBehaviour;
 use piet::RenderContext;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
@@ -17,7 +17,7 @@ use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::{cairo, glib};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,7 +54,7 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -87,7 +87,7 @@ impl StrokeBehaviour for BitmapImage {
 
 impl DrawBehaviour for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
 
@@ -100,22 +100,22 @@ impl DrawBehaviour for BitmapImage {
                 &self.image.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
 impl ShapeBehaviour for BitmapImage {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         vec![self.bounds()]
     }
 }
@@ -245,7 +245,7 @@ impl BitmapImage {
                 match result() {
                     Ok(ret) => Some(ret),
                     Err(e) => {
-                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err {}", e);
+                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err: {e:?}");
                         None
                     }
                 }
@@ -261,7 +261,7 @@ impl BitmapImage {
                 ) {
                     Ok(bitmapimage) => Some(bitmapimage),
                     Err(e) => {
-                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err {}", e);
+                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err: {e:?}");
                         None
                     }
                 }

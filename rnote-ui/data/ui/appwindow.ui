@@ -25,280 +25,50 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
-                  <property name="column-span">4</property>
+                  <property name="column-span">3</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="GtkRevealer" id="narrow_pens_toggles_revealer">
+              <object class="AdwTabBar" id="tabbar">
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>
+                  <property name="column-span">3</property>
                 </layout>
-                <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
-                <property name="transition_duration">300</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="orientation">vertical</property>
-                    <style>
-                      <class name="narrow_pens_toggles_box" />
-                    </style>
-                    <child>
-                      <object class="AdwClamp" id="narrow_pens_toggles_clamp">
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">6</property>
-                        <property name="maximum-size">600</property>
-                        <property name="tightening-threshold">550</property>
-                        <property name="hexpand">true</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">fill</property>
-                        <property name="halign">fill</property>
-                        <property name="child">
-                          <object class="GtkBox" id="narrow_pens_toggles_box">
-                            <property name="hexpand">true</property>
-                            <property name="halign">fill</property>
-                            <property name="homogeneous">true</property>
-                            <style>
-                              <class name="toolbar" />
-                            </style>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_brush_toggle">
-                                <property name="icon_name">pen-brush-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Brush</property>
-                                <property name="hexpand">true</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_shaper_toggle">
-                                <property name="icon_name">pen-shaper-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Shaper</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_typewriter_toggle">
-                                <property name="icon_name">pen-typewriter-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Typewriter</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_eraser_toggle">
-                                <property name="icon_name">pen-eraser-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Eraser</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_selector_toggle">
-                                <property name="icon_name">pen-selector-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Selector</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="narrow_tools_toggle">
-                                <property name="icon_name">pen-tools-symbolic</property>
-                                <property name="tooltip_text" translatable="yes">Tools</property>
-                                <property name="hexpand">true</property>
-                                <property name="group">narrow_brush_toggle</property>
-                              </object>
-                            </child>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator"></object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="canvas_box">
-                <property name="focusable">true</property>
+              <object class="RnoteOverlays" id="overlays">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">2</property>
+                  <property name="row">3</property>
                 </layout>
-                <child>
-                  <object class="GtkOverlay" id="canvas_actions_overlay">
-                    <property name="focusable">true</property>
-                    <property name="overflow">hidden</property>
-                    <child type="overlay">
-                      <object class="GtkProgressBar" id="canvas_progressbar">
-                        <property name="halign">fill</property>
-                        <property name="valign">start</property>
-                        <property name="pulse-step">0.33</property>
-                        <style>
-                          <class name="osd" />
-                        </style>
-                      </object>
-                    </child>
-                    <child type="overlay">
-                      <object class="GtkBox" id="canvas_quickactions_box">
-                        <property name="halign">start</property>
-                        <property name="valign">start</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">12</property>
-                        <property name="margin-top">12</property>
-                        <property name="margin-bottom">12</property>
-                        <property name="spacing">6</property>
-                        <child>
-                          <object class="GtkRevealer" id="canvas_fixedsize_quickactions_revealer">
-                            <property name="transition-type">slide-right</property>
-                            <property name="transition-duration">300</property>
-                            <property name="overflow">visible</property>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="homogeneous">true</property>
-                                <property name="spacing">6</property>
-                                <child>
-                                  <object class="GtkButton" id="add_page_button">
-                                    <property name="icon_name">add-page-symbolic</property>
-                                    <property name="tooltip_text" translatable="yes">Add page</property>
-                                    <property name="action-name">win.add-page-to-doc</property>
-                                    <style>
-                                      <class name="osd" />
-                                      <class name="circular" />
-                                      <class name="quickaction-button" />
-                                    </style>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="resize_to_fit_strokes_button">
-                                    <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                                    <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
-                                    <property name="action-name">win.resize-to-fit-strokes</property>
-                                    <style>
-                                      <class name="osd" />
-                                      <class name="circular" />
-                                      <class name="quickaction-button" />
-                                    </style>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="quickactions_zoom_out_button">
-                            <property name="icon_name">zoom-out-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Zoom out</property>
-                            <property name="action-name">win.zoom-out</property>
-                            <style>
-                              <class name="osd" />
-                              <class name="circular" />
-                              <class name="quickaction-button" />
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="quickactions_zoom_in_button">
-                            <property name="icon_name">zoom-in-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Zoom in</property>
-                            <property name="action-name">win.zoom-in</property>
-                            <style>
-                              <class name="osd" />
-                              <class name="circular" />
-                              <class name="quickaction-button" />
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="undo_button">
-                            <property name="sensitive">false</property>
-                            <property name="icon_name">edit-undo-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Undo</property>
-                            <property name="action-name">win.undo</property>
-                            <style>
-                              <class name="osd" />
-                              <class name="circular" />
-                              <class name="quickaction-button" />
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="redo_button">
-                            <property name="sensitive">false</property>
-                            <property name="icon_name">edit-redo-symbolic</property>
-                            <property name="tooltip_text" translatable="yes">Redo</property>
-                            <property name="action-name">win.redo</property>
-                            <style>
-                              <class name="osd" />
-                              <class name="circular" />
-                              <class name="quickaction-button" />
-                            </style>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwToastOverlay" id="toast_overlay">
-                        <property name="focusable">true</property>
-                        <property name="child">
-                          <object class="GtkScrolledWindow" id="canvas_scroller">
-                            <style>
-                              <class name="canvas_scroller" />
-                            </style>
-                            <property name="kinetic_scrolling">false</property>
-                            <property name="propagate-natural-width">false</property>
-                            <property name="propagate-natural-height">false</property>
-                            <property name="halign">fill</property>
-                            <property name="valign">fill</property>
-                            <property name="vexpand">true</property>
-                            <property name="hexpand">true</property>
-                            <property name="window-placement">bottom-right</property>
-                            <property name="overlay-scrolling">true</property>
-                            <property name="focusable">true</property>
-                            <child>
-                              <object class="RnoteCanvas" id="canvas">
-                                <property name="halign">center</property>
-                                <property name="valign">start</property>
-                                <property name="focusable">true</property>
-                                <property name="can-focus">true</property>
-                                <property name="can-target">true</property>
-                              </object>
-                            </child>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
               <object class="GtkSeparator" id="sidebar_sep">
                 <layout>
                   <property name="column">1</property>
-                  <property name="row">1</property>
-                  <property name="row-span">2</property>
+                  <property name="row">3</property>
                 </layout>
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">false</property>
               </object>
             </child>
             <child>
-              <object class="GtkGrid" id="sidebar_grid">
+              <object class="GtkGrid" id="sidebar_box">
                 <layout>
                   <property name="column">2</property>
-                  <property name="row">1</property>
-                  <property name="row-span">2</property>
+                  <property name="row">3</property>
                 </layout>
                 <property name="orientation">vertical</property>
                 <property name="hexpand">false</property>
+                <property name="margin-top">3</property>
                 <child>
                   <object class="GtkScrolledWindow" id="sidebar_scroller">
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">0</property>
-                    </layout>
                     <property name="propagate-natural-width">true</property>
                     <property name="propagate-natural-height">true</property>
                     <property name="overlay-scrolling">true</property>
@@ -317,10 +87,6 @@
                 </child>
                 <child>
                   <object class="GtkSeparator">
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">1</property>
-                    </layout>
                     <property name="orientation">vertical</property>
                     <property name="vexpand">false</property>
                     <property name="valign">end</property>
@@ -328,10 +94,6 @@
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="flapreveal_toggle">
-                    <layout>
-                      <property name="column">0</property>
-                      <property name="row">2</property>
-                    </layout>
                     <property name="hexpand">true</property>
                     <property name="halign">fill</property>
                     <property name="valign">end</property>

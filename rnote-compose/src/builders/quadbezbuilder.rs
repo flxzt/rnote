@@ -1,15 +1,15 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 
-use crate::helpers::AABBHelpers;
-use crate::penhelpers::{PenEvent, PenState};
+use crate::helpers::AabbHelpers;
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::QuadraticBezier;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
@@ -56,7 +56,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         // we always want to allow horizontal and vertical constraints while building a quadbez
@@ -88,36 +88,38 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 *end = constraints.constrain(element.pos - *cp) + *cp;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
-                return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
-                    start: *start,
-                    cp: *cp,
-                    end: *end,
-                })]);
+                return ShapeBuilderProgress::Finished(vec![Shape::QuadraticBezier(
+                    QuadraticBezier {
+                        start: *start,
+                        cp: *cp,
+                        end: *end,
+                    },
+                )]);
             }
             (QuadBezBuilderState::End { .. }, ..) => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         let stroke_width = style.stroke_width();
 
         match &self.state {
             crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
-                Some(AABB::from_half_extents(
+                Some(Aabb::from_half_extents(
                     na::Point2::from(*start),
                     na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
                 ))
             }
             crate::builders::quadbezbuilder::QuadBezBuilderState::Cp { start, cp } => Some(
-                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
+                Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
                     .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
             ),
             crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
                 let stroke_width = style.stroke_width();
 
-                let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*end));
+                let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*end));
                 aabb.take_point(na::Point2::from(*cp));
 
                 Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))

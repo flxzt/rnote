@@ -6,13 +6,13 @@ mod toolspage;
 mod typewriterpage;
 
 // Re-exports
-pub use brushpage::BrushPage;
-pub use eraserpage::EraserPage;
-use rnote_engine::pens::penholder::PenStyle;
-pub use selectorpage::SelectorPage;
-pub use shaperpage::ShaperPage;
-pub use toolspage::ToolsPage;
-pub use typewriterpage::TypewriterPage;
+pub(crate) use brushpage::BrushPage;
+pub(crate) use eraserpage::EraserPage;
+use rnote_engine::pens::PenStyle;
+pub(crate) use selectorpage::SelectorPage;
+pub(crate) use shaperpage::ShaperPage;
+pub(crate) use toolspage::ToolsPage;
+pub(crate) use typewriterpage::TypewriterPage;
 
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
@@ -26,33 +26,33 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/penssidebar.ui")]
-    pub struct PensSideBar {
+    pub(crate) struct PensSideBar {
         #[template_child]
-        pub sidebar_stack: TemplateChild<Stack>,
+        pub(crate) sidebar_stack: TemplateChild<Stack>,
         #[template_child]
-        pub brush_stackpage: TemplateChild<StackPage>,
+        pub(crate) brush_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub brush_page: TemplateChild<BrushPage>,
+        pub(crate) brush_page: TemplateChild<BrushPage>,
         #[template_child]
-        pub shaper_stackpage: TemplateChild<StackPage>,
+        pub(crate) shaper_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub shaper_page: TemplateChild<ShaperPage>,
+        pub(crate) shaper_page: TemplateChild<ShaperPage>,
         #[template_child]
-        pub typewriter_stackpage: TemplateChild<StackPage>,
+        pub(crate) typewriter_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub typewriter_page: TemplateChild<TypewriterPage>,
+        pub(crate) typewriter_page: TemplateChild<TypewriterPage>,
         #[template_child]
-        pub eraser_stackpage: TemplateChild<StackPage>,
+        pub(crate) eraser_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub eraser_page: TemplateChild<EraserPage>,
+        pub(crate) eraser_page: TemplateChild<EraserPage>,
         #[template_child]
-        pub selector_stackpage: TemplateChild<StackPage>,
+        pub(crate) selector_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub selector_page: TemplateChild<SelectorPage>,
+        pub(crate) selector_page: TemplateChild<SelectorPage>,
         #[template_child]
-        pub tools_stackpage: TemplateChild<StackPage>,
+        pub(crate) tools_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub tools_page: TemplateChild<ToolsPage>,
+        pub(crate) tools_page: TemplateChild<ToolsPage>,
     }
 
     #[glib::object_subclass]
@@ -85,7 +85,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
+    pub(crate) struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
         @extends gtk4::Widget;
 }
 
@@ -96,84 +96,60 @@ impl Default for PensSideBar {
 }
 
 impl PensSideBar {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn sidebar_stack(&self) -> Stack {
+    pub(crate) fn sidebar_stack(&self) -> Stack {
         self.imp().sidebar_stack.get()
     }
 
-    pub fn brush_stackpage(&self) -> StackPage {
-        self.imp().brush_stackpage.get()
-    }
-
-    pub fn brush_page(&self) -> BrushPage {
+    pub(crate) fn brush_page(&self) -> BrushPage {
         self.imp().brush_page.get()
     }
 
-    pub fn shaper_stackpage(&self) -> StackPage {
-        self.imp().shaper_stackpage.get()
-    }
-
-    pub fn shaper_page(&self) -> ShaperPage {
+    pub(crate) fn shaper_page(&self) -> ShaperPage {
         self.imp().shaper_page.get()
     }
 
-    pub fn typewriter_stackpage(&self) -> StackPage {
-        self.imp().typewriter_stackpage.get()
-    }
-
-    pub fn typewriter_page(&self) -> TypewriterPage {
+    pub(crate) fn typewriter_page(&self) -> TypewriterPage {
         self.imp().typewriter_page.get()
     }
 
-    pub fn eraser_stackpage(&self) -> StackPage {
-        self.imp().eraser_stackpage.get()
-    }
-
-    pub fn eraser_page(&self) -> EraserPage {
+    pub(crate) fn eraser_page(&self) -> EraserPage {
         self.imp().eraser_page.get()
     }
 
-    pub fn selector_stackpage(&self) -> StackPage {
-        self.imp().selector_stackpage.get()
-    }
-
-    pub fn selector_page(&self) -> SelectorPage {
+    pub(crate) fn selector_page(&self) -> SelectorPage {
         self.imp().selector_page.get()
     }
 
-    pub fn tools_stackpage(&self) -> StackPage {
-        self.imp().tools_stackpage.get()
-    }
-
-    pub fn tools_page(&self) -> ToolsPage {
+    pub(crate) fn tools_page(&self) -> ToolsPage {
         self.imp().tools_page.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.imp().sidebar_stack.get().connect_visible_child_name_notify(
             clone!(@weak appwindow => move |sidebar_stack| {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {
                         "brush_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.to_variant()));
                         },
                         "shaper_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.to_variant()));
                         },
                         "typewriter_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.to_variant()));
                         },
                         "eraser_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.to_variant()));
                         }
                         "selector_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.to_variant()));
                         }
                         "tools_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.to_variant()));
                         }
                         _ => {}
                     };

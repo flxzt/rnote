@@ -1,15 +1,15 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 
-use crate::helpers::AABBHelpers;
-use crate::penhelpers::{PenEvent, PenState};
+use crate::helpers::AabbHelpers;
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::CubicBezier;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
@@ -67,7 +67,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         event: PenEvent,
         _now: Instant,
         mut constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         // we always want to allow horizontal and vertical constraints while building a cubbez
@@ -119,7 +119,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 },
                 PenEvent::Up { .. },
             ) => {
-                return BuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
+                return ShapeBuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
                     start: *start,
                     cp1: *cp1,
                     cp2: *cp2,
@@ -129,23 +129,23 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             (CubBezBuilderState::End { .. }, ..) => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            CubBezBuilderState::Start(start) => Some(AABB::from_half_extents(
+            CubBezBuilderState::Start(start) => Some(Aabb::from_half_extents(
                 na::Point2::from(*start),
                 na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
             )),
             CubBezBuilderState::Cp1 { start, cp1 } => Some(
-                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
+                Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
                     .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
             ),
             CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
-                let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
+                let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
                 aabb.take_point(na::Point2::from(*cp1));
 
                 Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))
@@ -156,7 +156,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 cp2,
                 end,
             } => {
-                let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*end));
+                let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*end));
                 aabb.take_point(na::Point2::from(*cp1));
                 aabb.take_point(na::Point2::from(*cp2));
 

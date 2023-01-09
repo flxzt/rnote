@@ -14,7 +14,9 @@ pub use trash_comp::TrashComponent;
 
 use std::collections::VecDeque;
 use std::sync::Arc;
+use std::time::Instant;
 
+use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use crate::WidgetFlags;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -40,7 +42,7 @@ pub struct HistoryEntry {
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
 
     #[serde(rename = "chrono_counter")]
-    chrono_counter: u32,
+    pub chrono_counter: u32,
 }
 
 impl Default for HistoryEntry {
@@ -53,31 +55,6 @@ impl Default for HistoryEntry {
 
             chrono_counter: 0,
         }
-    }
-}
-
-// the store snapshot, used when saving the store to a file.
-pub type StoreSnapshot = HistoryEntry;
-
-impl StoreSnapshot {
-    /// Processes the snapshot before it is used to save to a file
-    pub fn process_before_saving(&mut self) {
-        // Remove all trashed strokes
-        let trashed_keys = self
-            .trash_components
-            .iter()
-            .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
-            .collect::<Vec<StrokeKey>>();
-
-        for key in trashed_keys {
-            Arc::make_mut(&mut self.stroke_components).remove(key);
-            Arc::make_mut(&mut self.trash_components).remove(key);
-            Arc::make_mut(&mut self.chrono_components).remove(key);
-        }
-
-        // clear the components that will get rebuild on import.
-        Arc::make_mut(&mut self.trash_components).clear();
-        Arc::make_mut(&mut self.selection_components).clear();
     }
 }
 
@@ -148,16 +125,14 @@ impl StrokeStore {
     /// The max length of the history
     pub(crate) const HISTORY_MAX_LEN: usize = 100;
 
-    /// imports a store snapshot. A loaded strokes store should always be imported with this method.
+    /// imports from a engine snapshot. A loaded strokes store should always be imported with this method.
     /// the store then needs to update its rendering
-    pub fn import_snapshot(&mut self, store_snapshot: &StoreSnapshot) {
+    pub fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
         self.clear();
-        self.stroke_components = Arc::clone(&store_snapshot.stroke_components);
-        self.trash_components = Arc::clone(&store_snapshot.trash_components);
-        self.selection_components = Arc::clone(&store_snapshot.selection_components);
-        self.chrono_components = Arc::clone(&store_snapshot.chrono_components);
+        self.stroke_components = Arc::clone(&snapshot.stroke_components);
+        self.chrono_components = Arc::clone(&snapshot.chrono_components);
 
-        self.chrono_counter = store_snapshot.chrono_counter;
+        self.chrono_counter = snapshot.chrono_counter;
 
         self.update_geometry_for_strokes(&self.keys_unordered());
 
@@ -199,11 +174,6 @@ impl StrokeStore {
         })
     }
 
-    /// Takes a snapshot of the current state
-    pub fn take_store_snapshot(&self) -> Arc<StoreSnapshot> {
-        self.history_entry_from_current_state()
-    }
-
     /// Imports a given history entry and replaces the current state with it.
     fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
         self.stroke_components = Arc::clone(&history_entry.stroke_components);
@@ -220,11 +190,12 @@ impl StrokeStore {
         // and can't display anything until the asynchronous rendering is finished
         // self.reload_render_components_slotmap();
 
-        self.set_rendering_dirty_all_keys();
+        let all_strokes = self.stroke_keys_unordered();
+        self.set_rendering_dirty_for_strokes(&all_strokes);
     }
 
     /// records the current state and saves it in the history
-    pub fn record(&mut self) -> WidgetFlags {
+    pub fn record(&mut self, _now: Instant) -> WidgetFlags {
         /*
                log::debug!(
                    "before record - history len: {}, pos: {:?}",
@@ -244,7 +215,7 @@ impl StrokeStore {
 
     /// Undo the latest changes
     /// Should only be called inside the engine undo wrapper function
-    pub(super) fn undo(&mut self) -> WidgetFlags {
+    pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
         /*
                log::debug!(
                    "before undo - history len: {}, pos: {:?}",
@@ -264,7 +235,7 @@ impl StrokeStore {
 
     /// Redo the latest changes. The actual behaviour might differ depending on the history mode (simple style, emacs style, ..)
     /// Should only be called inside the engine redo wrapper function
-    pub(super) fn redo(&mut self) -> WidgetFlags {
+    pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
         /*
                log::debug!(
                    "before redo - history len: {}, pos: {:?}",
@@ -280,6 +251,19 @@ impl StrokeStore {
                    self.history_pos
                );
         */
+    }
+
+    pub(super) fn can_undo(&self) -> bool {
+        let index = self.history_pos.unwrap_or(self.history.len());
+
+        index > 0
+    }
+
+    pub(super) fn can_redo(&self) -> bool {
+        let history_len = self.history.len();
+        let index = self.history_pos.unwrap_or(history_len);
+
+        index + 1 < history_len
     }
 
     fn simple_style_record(&mut self) -> WidgetFlags {
@@ -334,16 +318,11 @@ impl StrokeStore {
             self.import_history_entry(&prev);
 
             self.history_pos = Some(index - 1);
-
-            widget_flags.hide_redo = Some(false);
-
-            if index - 1 == 0 {
-                widget_flags.hide_undo = Some(true);
-            }
         } else {
-            widget_flags.hide_undo = Some(true);
             log::debug!("no history, can't undo");
         }
+
+        widget_flags.hide_undo = Some(!self.can_undo());
 
         widget_flags
     }
@@ -358,16 +337,11 @@ impl StrokeStore {
             self.import_history_entry(&next);
 
             self.history_pos = Some(index + 1);
-
-            widget_flags.hide_undo = Some(false);
-
-            if index + 1 == self.history.len() - 1 {
-                widget_flags.hide_redo = Some(true);
-            }
         } else {
-            widget_flags.hide_redo = Some(true);
             log::debug!("no future history entries, can't redo");
         }
+
+        widget_flags.hide_redo = Some(!self.can_redo());
 
         widget_flags
     }
@@ -391,7 +365,7 @@ impl StrokeStore {
                 self.history.pop_front();
             }
         } else {
-            log::trace!("state has not changed, no need to record");
+            log::debug!("state has not changed, skipped record");
         }
     }
 

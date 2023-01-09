@@ -10,18 +10,6 @@
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
     <child>
-      <object class="GtkImage">
-        <property name="icon_name">pen-shaper-symbolic</property>
-        <property name="margin-top">9</property>
-        <property name="margin-bottom">9</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
@@ -97,7 +85,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
-                <property name="icon-name">shape-line-symbolic</property>
+                <property name="icon-name">shapebuilder-line-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -117,40 +105,6 @@
             </style>
           </object>
         </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">stroke-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="stroke_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">fill-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="fill_colorpicker">
-        <property name="amount-colorbuttons">2</property>
       </object>
     </child>
 
@@ -175,7 +129,7 @@
           <child>
             <object class="GtkListBox" id="shaperstyle_listbox">
               <property name="width-request">300</property>
-              <property name="selection-mode">single</property>
+              <property name="selection-mode">browse</property>
               <style>
                 <class name="content" />
                 <class name="large" />
@@ -241,7 +195,8 @@
                       <items>
                         <item translatable="yes">Solid</item>
                         <item translatable="yes">Hachure</item>
-                        <item translatable="yes">ZigZag</item>
+                        <item translatable="yes">Zig-Zag</item>
+                        <item translatable="yes">Zig-Zag Line</item>
                         <item translatable="yes">Crosshatch</item>
                         <item translatable="yes">Dots</item>
                         <item translatable="yes">Dashed</item>
@@ -299,7 +254,7 @@
           <child>
             <object class="GtkListBox" id="shapebuildertype_listbox">
               <property name="width-request">300</property>
-              <property name="selection-mode">single</property>
+              <property name="selection-mode">browse</property>
               <style>
                 <class name="content" />
                 <class name="large" />
@@ -309,7 +264,7 @@
                   <property name="title" translatable="yes">Line</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-line-symbolic</property>
+                      <property name="icon-name">shapebuilder-line-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -320,7 +275,18 @@
                   <property name="title" translatable="yes">Rectangle</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-rectangle-symbolic</property>
+                      <property name="icon-name">shapebuilder-rectangle-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_grid_row">
+                  <property name="title" translatable="yes">Grid</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shapebuilder-grid-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -331,7 +297,7 @@
                   <property name="title" translatable="yes">2D coordinate system</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-coordsystem2d-symbolic</property>
+                      <property name="icon-name">shapebuilder-coordsystem2d-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -342,7 +308,7 @@
                   <property name="title" translatable="yes">3D coordinate system</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-coordsystem3d-symbolic</property>
+                      <property name="icon-name">shapebuilder-coordsystem3d-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -353,7 +319,7 @@
                   <property name="title" translatable="yes">2D single quadrant coordinate system</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-quadrantcoordsystem2d-symbolic</property>
+                      <property name="icon-name">shapebuilder-quadrantcoordsystem2d-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -364,7 +330,7 @@
                   <property name="title" translatable="yes">Ellipse</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-ellipse-symbolic</property>
+                      <property name="icon-name">shapebuilder-ellipse-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -375,7 +341,7 @@
                   <property name="title" translatable="yes">Ellipse with foci</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-fociellipse-symbolic</property>
+                      <property name="icon-name">shapebuilder-fociellipse-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -386,7 +352,7 @@
                   <property name="title" translatable="yes">Quadratic bezier curve</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-quadbez-symbolic</property>
+                      <property name="icon-name">shapebuilder-quadbez-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -397,7 +363,7 @@
                   <property name="title" translatable="yes">Cubic bezier curve</property>
                   <child type="prefix">
                     <object class="GtkImage">
-                      <property name="icon-name">shape-cubbez-symbolic</property>
+                      <property name="icon-name">shapebuilder-cubbez-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -439,7 +405,8 @@
               <child>
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable constraints
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
+enable/disable constraints
 when this switch is off/on</property>
                   <child type="suffix">
                     <object class="GtkSwitch" id="constraint_enabled_switch">

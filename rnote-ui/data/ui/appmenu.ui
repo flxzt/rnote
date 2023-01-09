@@ -21,7 +21,7 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">_Color scheme</attribute>
+            <attribute name="label" translatable="yes">Co_lor scheme</attribute>
             <item>
               <attribute name="label" translatable="yes">Use _system colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
@@ -39,7 +39,7 @@
             </item>
           </submenu>
           <item>
-            <attribute name="label" translatable="yes">_Developer mode</attribute>
+            <attribute name="label" translatable="yes">De_veloper mode</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.devel-mode</attribute>
           </item>
@@ -49,7 +49,7 @@
             <attribute name="hidden-when">action-disabled</attribute>
             <section>
               <item>
-                <attribute name="label" translatable="yes">_Visual debugging</attribute>
+                <attribute name="label" translatable="yes">Visual _debugging</attribute>
                 <attribute name="action">win.visual-debug</attribute>
               </item>
               <item>
@@ -87,13 +87,24 @@
             <attribute name="action">win.print-doc</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">_Paste clipboard</attribute>
-            <attribute name="action">win.clipboard-paste</attribute>
-          </item>
-          <item>
             <attribute name="label" translatable="yes">_Import file</attribute>
             <attribute name="action">win.import-file</attribute>
           </item>
+          <submenu>
+            <attribute name="label" translatable="yes">_Clipboard</attribute>
+            <item>
+              <attribute name="label" translatable="yes">_Copy</attribute>
+              <attribute name="action">win.clipboard-copy</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">C_ut</attribute>
+              <attribute name="action">win.clipboard-cut</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">_Paste</attribute>
+              <attribute name="action">win.clipboard-paste</attribute>
+            </item>
+          </submenu>
           <submenu>
             <attribute name="label" translatable="yes">_Export…</attribute>
             <item>
@@ -124,7 +135,7 @@
             <attribute name="action">win.donate</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">_About Rnote</attribute>
+            <attribute name="label" translatable="yes">A_bout Rnote</attribute>
             <attribute name="action">win.about</attribute>
           </item>
         </section>

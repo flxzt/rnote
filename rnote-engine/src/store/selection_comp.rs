@@ -1,6 +1,6 @@
 use super::{StrokeKey, StrokeStore};
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -88,7 +88,7 @@ impl StrokeStore {
 
     /// Returns the selection keys in the order that they should be rendered that intersect the given bounds.
     /// Does not return the not-selected stroke keys.
-    pub fn selection_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+    pub fn selection_keys_as_rendered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter(|&key| {
@@ -99,7 +99,7 @@ impl StrokeStore {
 
     /// Generates the bounds that include all selected strokes.
     /// None if no strokes are selected
-    pub fn gen_selection_bounds(&self) -> Option<AABB> {
+    pub fn gen_selection_bounds(&self) -> Option<Aabb> {
         self.bounds_for_strokes(&self.selection_keys_unordered())
     }
 

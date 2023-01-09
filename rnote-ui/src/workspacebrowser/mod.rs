@@ -1,59 +1,45 @@
-mod widget_helper;
-
 mod filerow;
-mod workspace_action;
-mod workspacelist;
-mod workspacelistentry;
-mod workspacerow;
+mod widget_helper;
+mod workspaceactions;
+pub(crate) mod workspacesbar;
+
+use std::path::PathBuf;
 
 // Re-exports
-pub use filerow::FileRow;
-use gtk4::{CustomFilter, GestureClick, PropagationPhase};
-pub use workspacelist::WorkspaceList;
-pub use workspacelistentry::WorkspaceListEntry;
-pub use workspacerow::WorkspaceRow;
+pub(crate) use filerow::FileRow;
+pub(crate) use workspacesbar::WorkspacesBar;
 
+// Imports
 use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, Grid, ListBox, ListItem, ListView, MultiSorter, PropertyExpression,
-    ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
+    FilterListModel, Grid, ListItem, ListView, MultiSorter, PropertyExpression, ScrolledWindow,
+    SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
 };
-use std::path::PathBuf;
+use gtk4::{CustomFilter, GestureClick, PropagationPhase};
 
 mod imp {
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
-    pub struct WorkspaceBrowser {
-        pub workspace_actions: gio::SimpleActionGroup,
-        pub files_dirlist: DirectoryList,
-        pub workspace_list: WorkspaceList,
+    pub(crate) struct WorkspaceBrowser {
+        pub(crate) action_group: gio::SimpleActionGroup,
+        pub(crate) files_dirlist: DirectoryList,
 
         #[template_child]
-        pub grid: TemplateChild<Grid>,
+        pub(crate) grid: TemplateChild<Grid>,
         #[template_child]
-        pub files_scroller: TemplateChild<ScrolledWindow>,
+        pub(crate) files_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub files_listview: TemplateChild<ListView>,
+        pub(crate) files_listview: TemplateChild<ListView>,
         #[template_child]
-        pub dir_controls_dir_up_button: TemplateChild<Button>,
+        pub(crate) dir_controls_dir_up_button: TemplateChild<Button>,
         #[template_child]
-        pub dir_controls_actions_box: TemplateChild<gtk4::Box>,
+        pub(crate) dir_controls_actions_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub workspaces_bar: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub workspaces_scroller: TemplateChild<ScrolledWindow>,
-        #[template_child]
-        pub workspaces_listbox: TemplateChild<ListBox>,
-        #[template_child]
-        pub add_workspace_button: TemplateChild<Button>,
-        #[template_child]
-        pub remove_workspace_button: TemplateChild<Button>,
-        #[template_child]
-        pub edit_workspace_button: TemplateChild<Button>,
+        pub(crate) workspacesbar: TemplateChild<WorkspacesBar>,
     }
 
     impl Default for WorkspaceBrowser {
@@ -62,21 +48,15 @@ mod imp {
             files_dirlist.set_monitored(true);
 
             Self {
-                workspace_actions: gio::SimpleActionGroup::new(),
+                action_group: gio::SimpleActionGroup::new(),
                 files_dirlist,
-                workspace_list: WorkspaceList::default(),
 
                 grid: TemplateChild::<Grid>::default(),
                 files_scroller: TemplateChild::<ScrolledWindow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
                 dir_controls_dir_up_button: TemplateChild::<Button>::default(),
                 dir_controls_actions_box: TemplateChild::<gtk4::Box>::default(),
-                workspaces_bar: TemplateChild::<gtk4::Box>::default(),
-                workspaces_scroller: TemplateChild::<ScrolledWindow>::default(),
-                workspaces_listbox: TemplateChild::<ListBox>::default(),
-                add_workspace_button: TemplateChild::<Button>::default(),
-                remove_workspace_button: TemplateChild::<Button>::default(),
-                edit_workspace_button: TemplateChild::<Button>::default(),
+                workspacesbar: TemplateChild::<WorkspacesBar>::default(),
             }
         }
     }
@@ -99,6 +79,9 @@ mod imp {
     impl ObjectImpl for WorkspaceBrowser {
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.instance()
+                .insert_action_group("workspacebrowser", Some(&self.action_group));
         }
 
         fn dispose(&self) {
@@ -112,7 +95,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
+    pub(crate) struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
         @extends gtk4::Widget;
 }
 
@@ -123,227 +106,64 @@ impl Default for WorkspaceBrowser {
 }
 
 impl WorkspaceBrowser {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn grid(&self) -> Grid {
+    pub(crate) fn grid(&self) -> Grid {
         self.imp().grid.clone()
     }
 
-    pub fn files_scroller(&self) -> ScrolledWindow {
+    pub(crate) fn files_scroller(&self) -> ScrolledWindow {
         self.imp().files_scroller.clone()
     }
 
-    pub fn files_listview(&self) -> ListView {
-        self.imp().files_listview.clone()
+    pub(crate) fn workspacesbar(&self) -> WorkspacesBar {
+        self.imp().workspacesbar.clone()
     }
 
-    pub fn workspaces_bar(&self) -> gtk4::Box {
-        self.imp().workspaces_bar.clone()
-    }
-
-    pub fn workspaces_scroller(&self) -> ScrolledWindow {
-        self.imp().workspaces_scroller.clone()
-    }
-
-    pub fn dir_controls_actions_box(&self) -> gtk4::Box {
+    pub(crate) fn dir_controls_actions_box(&self) -> gtk4::Box {
         self.imp().dir_controls_actions_box.clone()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        setup_workspaces_sidebar(self, appwindow);
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+        self.imp().workspacesbar.get().init(appwindow);
 
         setup_dir_controls(self, appwindow);
         setup_file_rows(self, appwindow);
 
-        self.setup_dir_actions(appwindow);
+        self.setup_actions(appwindow);
     }
 
-    pub fn add_workspace(&self, dir: PathBuf) {
-        let entry = WorkspaceListEntry::from_path(dir);
-        self.imp().workspace_list.push(entry);
-
-        let n_items = self.imp().workspace_list.n_items();
-        self.select_workspace_by_index(n_items.saturating_sub(1));
+    pub(crate) fn dirlist_file(&self) -> Option<gio::File> {
+        self.imp().files_dirlist.file()
     }
 
-    pub fn remove_current_workspace(&self) {
-        let n_items = self.imp().workspace_list.n_items();
-
-        // never remove the last row
-        if n_items > 0 {
-            let i = self
-                .selected_workspace_index()
-                .unwrap_or_else(|| n_items.saturating_sub(1));
-
-            self.imp().workspace_list.remove(i as usize);
-
-            self.select_workspace_by_index(i);
-        }
+    pub(crate) fn set_dirlist_file(&self, file: Option<&gio::File>) {
+        self.imp().files_dirlist.set_file(file);
     }
 
-    pub fn select_workspace_by_index(&self, index: u32) {
-        let n_items = self.imp().workspace_list.n_items();
-
-        self.imp().workspaces_listbox.select_row(
-            self.imp()
-                .workspaces_listbox
-                .row_at_index(index.min(n_items.saturating_sub(1)) as i32)
-                .as_ref(),
-        );
+    pub(crate) fn dirlist_dir(&self) -> Option<PathBuf> {
+        self.imp().files_dirlist.file().and_then(|f| f.path())
     }
 
-    pub fn refresh(&self) {
-        if let Some(current_workspace_dir) = self.selected_workspace_dir() {
+    pub(crate) fn refresh_dirlist_selected_workspace(&self) {
+        if let Some(current_workspace_dir) = self
+            .workspacesbar()
+            .selected_workspacelistentry()
+            .map(|e| PathBuf::from(e.dir()))
+        {
             self.imp()
                 .files_dirlist
                 .set_file(Some(&gio::File::for_path(current_workspace_dir)));
         }
     }
 
-    pub fn selected_workspace_index(&self) -> Option<u32> {
+    fn setup_actions(&self, _appwindow: &RnoteAppWindow) {
         self.imp()
-            .workspaces_listbox
-            .selected_row()
-            .map(|r| r.index() as u32)
+            .action_group
+            .add_action(&workspaceactions::create_folder(self));
     }
-
-    pub fn selected_workspace_dir(&self) -> Option<PathBuf> {
-        self.selected_workspace_index().and_then(|i| {
-            self.imp()
-                .workspace_list
-                .item(i)
-                .map(|o| PathBuf::from(o.downcast::<WorkspaceListEntry>().unwrap().dir()))
-        })
-    }
-
-    pub fn set_current_workspace_dir(&self, dir: PathBuf) {
-        let i = self.selected_workspace_index().unwrap_or(0);
-
-        let row = self.imp().workspace_list.remove(i as usize);
-        row.set_dir(dir.to_string_lossy().to_string());
-        self.imp().workspace_list.insert(i as usize, row);
-
-        self.select_workspace_by_index(i);
-    }
-
-    pub fn set_current_workspace_color(&self, color: gdk::RGBA) {
-        let i = self.selected_workspace_index().unwrap_or(0);
-
-        let row = self.imp().workspace_list.remove(i as usize);
-        row.set_color(color);
-        self.imp().workspace_list.insert(i as usize, row);
-
-        self.select_workspace_by_index(i);
-    }
-
-    pub fn set_current_workspace_name(&self, name: String) {
-        let i = self.selected_workspace_index().unwrap_or(0);
-
-        let row = self.imp().workspace_list.remove(i as usize);
-        row.set_name(name);
-        self.imp().workspace_list.insert(i as usize, row);
-
-        self.select_workspace_by_index(i);
-    }
-
-    pub fn current_selected_workspace_row(&self) -> Option<WorkspaceRow> {
-        self.imp()
-            .workspaces_listbox
-            .selected_row()
-            .and_then(|row| row.child().map(|w| w.downcast::<WorkspaceRow>().unwrap()))
-    }
-
-    pub fn save_workspaces_to_settings(&self, settings: &gio::Settings) {
-        if let Err(e) = settings.set("workspace-list", &self.imp().workspace_list) {
-            log::error!("saving `workspace-list` to settings failed with Err {}", e);
-        }
-
-        if let Err(e) = settings.set(
-            "current-workspace-index",
-            &self.selected_workspace_index().unwrap_or(0),
-        ) {
-            log::error!(
-                "saving `current-workspace-index` to settings failed with Err {}",
-                e
-            );
-        }
-    }
-
-    pub fn load_from_settings(&self, settings: &gio::Settings) {
-        let workspace_list = settings.get::<WorkspaceList>("workspace-list");
-        // Be sure to get the index before loading the workspaces, else the setting gets overridden
-        let current_workspace_index = settings.uint("current-workspace-index");
-
-        self.imp().workspace_list.replace_self(workspace_list);
-
-        // current workspace index
-        self.select_workspace_by_index(current_workspace_index);
-    }
-
-    fn setup_dir_actions(&self, _appwindow: &RnoteAppWindow) {
-        self.insert_action_group("workspace_action", Some(&self.imp().workspace_actions));
-
-        self.imp()
-            .workspace_actions
-            .add_action(&workspace_action::create_folder(self));
-    }
-}
-
-fn setup_workspaces_sidebar(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
-    wb.imp().workspace_list.connect_items_changed(
-        clone!(@weak wb, @weak appwindow => move |folders_model, _, _, _| {
-            wb.imp().remove_workspace_button.get().set_sensitive(folders_model.n_items() > 1);
-            wb.imp().edit_workspace_button.get().set_sensitive(folders_model.n_items() > 0);
-
-            wb.save_workspaces_to_settings(&appwindow.app_settings());
-        }),
-    );
-
-    let workspace_listbox = wb.imp().workspaces_listbox.get();
-    workspace_listbox.connect_selected_rows_changed(clone!(@weak appwindow, @weak wb => move |_| {
-        if let Some(dir) = wb.current_selected_workspace_row().map(|row| row.entry().dir()) {
-            wb.imp().files_dirlist.set_file(Some(&gio::File::for_path(dir)));
-
-            wb.save_workspaces_to_settings(&appwindow.app_settings());
-        }
-
-    }));
-
-    workspace_listbox.bind_model(
-        Some(&wb.imp().workspace_list),
-        clone!(@strong appwindow => move |obj| {
-            let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
-            let workspace_row = WorkspaceRow::new(entry);
-            workspace_row.init(&appwindow);
-
-            workspace_row.upcast::<Widget>()
-        }),
-    );
-
-    wb.imp().add_workspace_button.get().connect_clicked(
-        clone!(@weak wb, @weak appwindow => move |_add_workspace_button| {
-            let dir = wb.selected_workspace_dir().unwrap_or_else(|| PathBuf::from("./"));
-            wb.add_workspace(dir);
-
-            // Popup the edit dialog after creation
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
-        }),
-    );
-
-    wb.imp().remove_workspace_button.get().connect_clicked(
-        clone!(@weak wb, @weak appwindow => move |_| {
-            wb.remove_current_workspace();
-        }),
-    );
-
-    wb.imp()
-        .edit_workspace_button
-        .get()
-        .connect_clicked(clone!(@weak appwindow => move |_| {
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "edit-workspace", None);
-        }));
 }
 
 fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
@@ -359,8 +179,8 @@ fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     dir_up_click_gesture.connect_released(clone!(@weak wb, @weak appwindow => move |_, n_press, _, _| {
         // Only activate on multi click
         if n_press > 1 {
-            if let Some(parent_dir) = wb.selected_workspace_dir().and_then(|p| p.parent().map(|p| p.to_path_buf())) {
-                wb.set_current_workspace_dir(parent_dir);
+            if let Some(parent_dir) = wb.workspacesbar().selected_workspacelistentry().and_then(|e| PathBuf::from(e.dir()).parent().map(|p| p.to_path_buf())) {
+                wb.workspacesbar().set_selected_workspace_dir(parent_dir);
             }
         }
     }));
@@ -570,10 +390,8 @@ fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
                     .expect("selected item in primary_listview does not exist.")
                     .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
-                if let Some(file) = fileinfo.attribute_object("standard::file") {
-                    let file = file.downcast::<gio::File>().unwrap();
-
-                    appwindow.open_file_w_dialogs(&file, None);
+                if let Some(input_file) = fileinfo.attribute_object("standard::file") {
+                    appwindow.open_file_w_dialogs(input_file.downcast::<gio::File>().unwrap(), None);
                 };
 
                 multisorter.changed(SorterChange::Different);

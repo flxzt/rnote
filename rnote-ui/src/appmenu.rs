@@ -7,17 +7,17 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appmenu.ui")]
-    pub struct AppMenu {
+    pub(crate) struct AppMenu {
         #[template_child]
-        pub menubutton: TemplateChild<MenuButton>,
+        pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub popovermenu: TemplateChild<PopoverMenu>,
+        pub(crate) popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
-        pub menu_model: TemplateChild<gio::MenuModel>,
+        pub(crate) menu_model: TemplateChild<gio::MenuModel>,
         #[template_child]
-        pub lefthanded_toggle: TemplateChild<ToggleButton>,
+        pub(crate) lefthanded_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub righthanded_toggle: TemplateChild<ToggleButton>,
+        pub(crate) righthanded_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -60,7 +60,7 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct AppMenu(ObjectSubclass<imp::AppMenu>)
+    pub(crate) struct AppMenu(ObjectSubclass<imp::AppMenu>)
     @extends Widget;
 }
 
@@ -71,44 +71,35 @@ impl Default for AppMenu {
 }
 
 impl AppMenu {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn menubutton(&self) -> MenuButton {
-        self.imp().menubutton.get()
-    }
-
-    pub fn popovermenu(&self) -> PopoverMenu {
+    pub(crate) fn popovermenu(&self) -> PopoverMenu {
         self.imp().popovermenu.get()
     }
 
-    pub fn menu_model(&self) -> gio::MenuModel {
-        self.imp().menu_model.get()
-    }
-
-    pub fn lefthanded_toggle(&self) -> ToggleButton {
+    pub(crate) fn lefthanded_toggle(&self) -> ToggleButton {
         self.imp().lefthanded_toggle.get()
     }
 
-    pub fn righthanded_toggle(&self) -> ToggleButton {
+    pub(crate) fn righthanded_toggle(&self) -> ToggleButton {
         self.imp().righthanded_toggle.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.imp()
             .lefthanded_toggle
             .bind_property("active", appwindow, "righthanded")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
+            .sync_create()
+            .bidirectional()
+            .invert_boolean()
             .build();
         self.imp()
             .righthanded_toggle
             .bind_property("active", appwindow, "righthanded")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .sync_create()
+            .bidirectional()
             .build();
     }
 }

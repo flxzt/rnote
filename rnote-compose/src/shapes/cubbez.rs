@@ -1,5 +1,5 @@
 use kurbo::Shape;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{KurboHelpers, Vector2Helpers};
@@ -54,11 +54,11 @@ impl TransformBehaviour for CubicBezier {
 }
 
 impl ShapeBehaviour for CubicBezier {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> p2d::bounding_volume::Aabb {
         self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         // TODO: should be depending on the actual curve length
         let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
 
@@ -96,7 +96,7 @@ impl CubicBezier {
             end,
         };
 
-        // returnsing None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
+        // returning None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
         if (cubbez.end - cubbez.start).magnitude() == 0.0 {
             return None;
         }
@@ -172,7 +172,7 @@ impl CubicBezier {
 }
 
 /// Calculates a point on a cubic curve given t ranging [0.0, 1.0]
-fn cubbez_calc(
+pub fn cubbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

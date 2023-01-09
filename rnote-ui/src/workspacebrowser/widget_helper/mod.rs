@@ -1,1 +1,1 @@
-pub mod entry_dialog;
+pub(crate) mod entry_dialog;

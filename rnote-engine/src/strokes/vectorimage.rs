@@ -7,14 +7,14 @@ use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{render, DrawBehaviour};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 
 use gtk4::glib;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,7 +73,7 @@ impl StrokeBehaviour for VectorImage {
 
     fn gen_images(
         &self,
-        _viewport: AABB,
+        _viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -93,7 +93,7 @@ impl StrokeBehaviour for VectorImage {
 // There we use a svg renderer to generate pixel images. In this way we ensure to export an actual svg when calling gen_svgs(), but can also draw it onto piet.
 impl DrawBehaviour for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let mut image =
             render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
@@ -103,17 +103,17 @@ impl DrawBehaviour for VectorImage {
         // image_scale does not have a meaning here, as the pixel image is already provided
         image.draw(cx, image_scale)?;
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
 impl ShapeBehaviour for VectorImage {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         vec![self.bounds()]
     }
 }
@@ -147,11 +147,9 @@ impl VectorImage {
             },
         };
 
-        let rtree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
-        let svg_data = rtree.to_string(&xml_options);
-
-        let svg_node = rtree.svg_node();
-        let intrinsic_size = na::vector![svg_node.size.width(), svg_node.size.height()];
+        let svg_tree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
+        let svg_data = svg_tree.to_string(&xml_options);
+        let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
 
         let rectangle = if let Some(size) = size {
             Rectangle {
@@ -222,10 +220,9 @@ impl VectorImage {
                     cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream)
                         .map_err(|e| {
                         anyhow::anyhow!(
-                            "create SvgSurface with dimensions ({}, {}) failed in vectorimage import_from_pdf_bytes with Err {}",
+                            "create SvgSurface with dimensions ({}, {}) failed in vectorimage import_from_pdf_bytes with Err: {e:?}",
                             intrinsic_size.0,
-                            intrinsic_size.1,
-                            e
+                            intrinsic_size.1
                         )
                     })?;
 
@@ -235,8 +232,7 @@ impl VectorImage {
                 {
                     let cx = cairo::Context::new(&svg_surface).map_err(|e| {
                         anyhow::anyhow!(
-                            "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err {}",
-                            e
+                            "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err: {e:?}"
                         )
                     })?;
 
@@ -263,7 +259,7 @@ impl VectorImage {
 
                 let svg_content = String::from_utf8(
                     *svg_surface.finish_output_stream()
-                        .map_err(|e| anyhow::anyhow!("{}", e))?
+                        .map_err(|e| anyhow::anyhow!("{e:?}"))?
                         .downcast::<Vec<u8>>()
                         .map_err(|_e| anyhow::anyhow!("failed to downcast svg surface content in VectorImage import_from_pdf_bytes()"))?)?;
 
@@ -273,10 +269,10 @@ impl VectorImage {
             match res() {
                 Ok(svg_data) => Some(render::Svg {
                     svg_data,
-                    bounds: AABB::new(na::point![x, y], na::point![x + width, y + height])
+                    bounds: Aabb::new(na::point![x, y], na::point![x + width, y + height])
                 }),
                 Err(e) => {
-                    log::error!("importing page {} from pdf failed with Err {}", page, e);
+                    log::error!("importing page {page} from pdf failed with Err: {e:?}");
                     None
                 }
             }
@@ -292,7 +288,7 @@ impl VectorImage {
                 ) {
                     Ok(vectorimage) => Some(vectorimage),
                     Err(e) => {
-                        log::error!("import_from_svg_data() failed failed in vectorimage import_from_pdf_bytes() with Err {}", e);
+                        log::error!("import_from_svg_data() failed failed in vectorimage import_from_pdf_bytes() with Err: {e:?}");
                         None
                     }
                 }

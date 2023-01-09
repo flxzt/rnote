@@ -1,21 +1,22 @@
 use std::cell::Cell;
 
 use gtk4::{
-    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Button, CssProvider,
-    PositionType, ToggleButton, Widget,
+    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Align, Button,
+    CssProvider, PositionType, ToggleButton, Widget,
 };
+
 use once_cell::sync::Lazy;
-use rnote_compose::Color;
+use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub struct ColorSetter {
-        pub css: CssProvider,
-        pub color: Cell<gdk::RGBA>,
-        pub position: Cell<PositionType>,
+    pub(crate) struct ColorSetter {
+        pub(crate) css: CssProvider,
+        pub(crate) color: Cell<gdk::RGBA>,
+        pub(crate) position: Cell<PositionType>,
     }
 
     #[glib::object_subclass]
@@ -40,19 +41,17 @@ mod imp {
     impl ObjectImpl for ColorSetter {
         fn constructed(&self) {
             let inst = self.instance();
-
             self.parent_constructed();
 
-            inst.set_height_request(38);
-            inst.set_css_classes(&["setter_button"]);
+            inst.set_hexpand(false);
+            inst.set_vexpand(false);
+            inst.set_halign(Align::Fill);
+            inst.set_valign(Align::Fill);
+            inst.set_width_request(34);
+            inst.set_height_request(34);
+            inst.set_css_classes(&["colorsetter"]);
 
-            self.css.load_from_data(
-                self.generate_css_string(
-                    &gdk::RGBA::from_compose_color(super::ColorSetter::COLOR_DEFAULT),
-                    self.position.get(),
-                )
-                .as_bytes(),
-            );
+            self.update_appearance(super::ColorSetter::COLOR_DEFAULT);
             inst.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
@@ -93,20 +92,15 @@ mod imp {
                         .get::<gdk::RGBA>()
                         .expect("value not of type `gdk::RGBA`");
                     self.color.set(color);
-                    self.css.load_from_data(
-                        self.generate_css_string(&color, self.position.get())
-                            .as_bytes(),
-                    );
+
+                    self.update_appearance(color.into_compose_color());
                 }
                 "position" => {
                     let position = value
                         .get::<PositionType>()
                         .expect("value not of type `PositionType`");
-                    let color = self.color.get();
 
                     self.position.replace(position);
-                    self.css
-                        .load_from_data(self.generate_css_string(&color, position).as_bytes());
                 }
                 _ => panic!("invalid property name"),
             }
@@ -128,80 +122,34 @@ mod imp {
     impl ToggleButtonImpl for ColorSetter {}
 
     impl ColorSetter {
-        fn generate_css_string(&self, rgba: &gdk::RGBA, position: PositionType) -> String {
-            // Watch out for inverse
-            let position_string: String = String::from(match position {
-                PositionType::Left => "-right",
-                PositionType::Right => "-left",
-                PositionType::Top => "-bottom",
-                PositionType::Bottom => "-top",
-                _ => "",
-            });
-            let properties_string: String = String::from(match position {
-                PositionType::Left => {
-                    "
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-"
-                }
-                PositionType::Right => {
-                    "
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-"
-                }
-                PositionType::Top => {
-                    "
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-"
-                }
-                PositionType::Bottom => {
-                    "
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-"
-                }
-                _ => "",
-            });
-            let properties_checked_string: String = String::from(match position {
-                PositionType::Left => "border-radius: 0px 4px 4px 0px;",
-                PositionType::Right => "border-radius: 4px 0px 0px 4px;",
-                PositionType::Top => "border-radius: 0px 0px 4px 4px;",
-                PositionType::Bottom => "border-radius: 4px 4px 0px 0px;",
-                _ => "",
-            });
-            let css_string = format!(
-                "
-.setter_button {{
-    margin{0}: 6px;
-    background-color: rgba({3}, {4}, {5}, {6:.3});
-    border-color: mix(mix(@theme_bg_color, rgba({3}, {4}, {5}, 1.0), {6:.3}), @theme_fg_color, 0.195);
-    transition: margin{0} 0.15s ease-out, border-radius 0.15s ease-out, filter 0.15s ease-out;
-    {1}
-}}
+        fn update_appearance(&self, color: Color) {
+            let css = CssProvider::new();
 
-.setter_button:checked {{
-    margin{0}: 0px;
-    {2}
-}}
-",
-                position_string,
-                properties_string,
-                properties_checked_string,
-                (rgba.red() * 255.0) as i32,
-                (rgba.green() * 255.0) as i32,
-                (rgba.blue() * 255.0) as i32,
-                (rgba.alpha() * 1000.0).round() / 1000.0
+            let colorsetter_color = color.to_css_color_attr();
+            let colorsetter_fg_color = if color == Color::TRANSPARENT {
+                String::from("@window_fg_color")
+            } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {
+                String::from("@light_1")
+            } else {
+                String::from("@dark_5")
+            };
+
+            let custom_css = format!(
+                "@define-color colorsetter_color {colorsetter_color}; @define-color colorsetter_fg_color {colorsetter_fg_color};",
             );
+            css.load_from_data(custom_css.as_bytes());
 
-            css_string
+            self.instance()
+                .style_context()
+                .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+            self.instance().queue_draw();
         }
     }
 }
 
 glib::wrapper! {
-    pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
+    pub(crate) struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
         @extends ToggleButton, Button, Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
@@ -213,25 +161,29 @@ impl Default for ColorSetter {
 }
 
 impl ColorSetter {
-    pub const COLOR_DEFAULT: Color = Color::BLACK;
+    pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub fn position(&self) -> PositionType {
+    #[allow(unused)]
+    pub(crate) fn position(&self) -> PositionType {
         self.property::<PositionType>("position")
     }
 
-    pub fn set_position(&self, position: PositionType) {
+    #[allow(unused)]
+    pub(crate) fn set_position(&self, position: PositionType) {
         self.set_property("position", position.to_value());
     }
 
-    pub fn color(&self) -> gdk::RGBA {
+    #[allow(unused)]
+    pub(crate) fn color(&self) -> gdk::RGBA {
         self.property::<gdk::RGBA>("color")
     }
 
-    pub fn set_color(&self, color: gdk::RGBA) {
+    #[allow(unused)]
+    pub(crate) fn set_color(&self, color: gdk::RGBA) {
         self.set_property("color", color.to_value());
     }
 }

@@ -5,17 +5,14 @@ use std::time::{self, Duration};
 
 use anyhow::Context;
 use rand::Rng;
-use rnote_compose::penhelpers::KeyboardKey;
+use rnote_compose::penevents::KeyboardKey;
 use rodio::source::Buffered;
 use rodio::{Decoder, Source};
 
 /// The audio player for pen sounds
 #[allow(missing_debug_implementations, dead_code)]
 pub struct AudioPlayer {
-    /// enables / disables the player
-    pub(super) enabled: bool,
-
-    // we need to hold the output streams too
+    // we need to hold the output streams
     marker_outputstream: rodio::OutputStream,
     marker_outputstream_handle: rodio::OutputStreamHandle,
     brush_outputstream: rodio::OutputStream,
@@ -37,8 +34,9 @@ impl AudioPlayer {
 
     pub const TYPEWRITER_N_FILES: usize = 30;
 
-    /// A new audioplayer for the given data dir.
-    pub fn new(mut data_dir: PathBuf) -> Result<Self, anyhow::Error> {
+    /// create and initialize new audioplayer.
+    /// data_dir specifies is the app data directory in which the sounds lie in the "sounds" subfolder
+    pub fn new_init(mut data_dir: PathBuf) -> Result<Self, anyhow::Error> {
         data_dir.push("sounds/");
 
         let mut sounds = HashMap::new();
@@ -97,8 +95,6 @@ impl AudioPlayer {
         }
 
         Ok(Self {
-            enabled: true,
-
             marker_outputstream,
             marker_outputstream_handle,
             brush_outputstream,
@@ -113,10 +109,6 @@ impl AudioPlayer {
     }
 
     pub fn play_random_marker_sound(&self) {
-        if !self.enabled {
-            return;
-        }
-
         let mut rng = rand::thread_rng();
         let marker_sound_index = rng.gen_range(0..Self::MARKER_N_FILES);
 
@@ -126,17 +118,13 @@ impl AudioPlayer {
                 sink.detach();
             }
             Err(e) => log::error!(
-                "failed to create sink in play_random_marker_sound(), Err {}",
+                "failed to create sink in play_random_marker_sound(), Err {:?}",
                 e
             ),
         }
     }
 
     pub fn start_random_brush_sound(&mut self) {
-        if !self.enabled {
-            return;
-        }
-
         let mut rng = rand::thread_rng();
         let brush_sound_seek_time_index = rng.gen_range(0..Self::BRUSH_SEEK_TIMES_SEC.len());
 
@@ -155,17 +143,13 @@ impl AudioPlayer {
                 self.brush_sink = Some(sink);
             }
             Err(e) => log::error!(
-                "failed to create sink in start_play_random_brush_sound(), Err {}",
+                "failed to create sink in start_play_random_brush_sound(), Err {:?}",
                 e
             ),
         }
     }
 
     pub fn stop_random_brush_sond(&mut self) {
-        if !self.enabled {
-            return;
-        }
-
         if let Some(brush_sink) = self.brush_sink.take() {
             brush_sink.stop();
         }
@@ -173,10 +157,6 @@ impl AudioPlayer {
 
     /// Play a typewriter sound that fits the given key type, or a generic sound when None
     pub fn play_typewriter_key_sound(&self, keyboard_key: Option<KeyboardKey>) {
-        if !self.enabled {
-            return;
-        }
-
         match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => match keyboard_key {
                 Some(KeyboardKey::CarriageReturn) | Some(KeyboardKey::Linefeed) => {
@@ -209,7 +189,7 @@ impl AudioPlayer {
                 }
             },
             Err(e) => log::error!(
-                "failed to create sink in play_typewriter_sound(), Err {}",
+                "failed to create sink in play_typewriter_sound(), Err {:?}",
                 e
             ),
         }
@@ -235,9 +215,9 @@ fn load_sound_from_path(
 
         Ok(buffered)
     } else {
-        return Err(anyhow::Error::msg(format!(
+        Err(anyhow::Error::msg(format!(
             "failed to init audioplayer. File `{:?}` is missing.",
             resource_path
-        )));
+        )))
     }
 }

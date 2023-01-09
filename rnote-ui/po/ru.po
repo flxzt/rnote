@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 13:50+0100\n"
-"PO-Revision-Date: 2022-11-10 11:14+0000\n"
+"POT-Creation-Date: 2023-01-08 13:19+0100\n"
+"PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 4.15-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs/mod.rs:23
+#: rnote-ui/src/dialogs/mod.rs:26
 msgid "Sketch and take handwritten notes"
 msgstr "Рисуйте наброски и рукописные заметки"
 
@@ -41,7 +41,7 @@ msgstr ""
 "Rnote - векторное приложение для создания набросков, рукописных заметок и "
 "аннотаций к документам и изображениям."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
@@ -49,315 +49,21 @@ msgstr ""
 "Внимание: Формат файла всё ещё нестабилен. Он может измениться и сломать "
 "обратную совместимость между версиями."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
 msgstr "Главное окно в светлых тонах"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:36
+#: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
 msgstr "Главное окно в тёмных тонах"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:40
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "Аннотация PDF"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
 msgstr "Выделение"
-
-#: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "Color scheme"
-msgid "_Color scheme"
-msgstr "Цветовая схема"
-
-#: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use system colors"
-msgid "Use _system colors"
-msgstr "Использовать цвета системы"
-
-#: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use light colors"
-msgid "Use _light colors"
-msgstr "Использовать светлые цвета"
-
-#: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use dark colors"
-msgid "Use _dark colors"
-msgstr "Использовать тёмные цвета"
-
-#: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "Developer mode"
-msgid "_Developer mode"
-msgstr "Режим разработчика"
-
-#: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer menu"
-msgid "Developer _menu"
-msgstr "Меню разработчика"
-
-#: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "Visual debugging"
-msgid "_Visual debugging"
-msgstr "Визуальная отладка"
-
-#: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine state"
-msgid "Export engine _state"
-msgstr "Экспортировать состояние движка"
-
-#: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine config"
-msgid "Export engine _config"
-msgstr "Экспорт конфигурации движка"
-
-#: rnote-ui/data/ui/appmenu.ui:68
-msgid "_New"
-msgstr ""
-
-#: rnote-ui/data/ui/appmenu.ui:72
-#, fuzzy
-#| msgid "Open"
-msgid "_Open"
-msgstr "Открыть"
-
-#: rnote-ui/data/ui/appmenu.ui:76
-#, fuzzy
-#| msgid "Save"
-msgid "_Save"
-msgstr "Сохранить"
-
-#: rnote-ui/data/ui/appmenu.ui:80
-#, fuzzy
-#| msgid "Save as"
-msgid "Save _as"
-msgstr "Сохранить как"
-
-#: rnote-ui/data/ui/appmenu.ui:86
-#, fuzzy
-#| msgid "Print"
-msgid "_Print"
-msgstr "Печать"
-
-#: rnote-ui/data/ui/appmenu.ui:90
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
-msgid "_Paste clipboard"
-msgstr "Вставить содержимое буфера обмена"
-
-#: rnote-ui/data/ui/appmenu.ui:94
-#, fuzzy
-#| msgid "Import file"
-msgid "_Import file"
-msgstr "Импортировать файл"
-
-#: rnote-ui/data/ui/appmenu.ui:98
-#, fuzzy
-#| msgid "Export…"
-msgid "_Export…"
-msgstr "Экспортировать…"
-
-#: rnote-ui/data/ui/appmenu.ui:100
-#, fuzzy
-#| msgid "Export document"
-msgid "Export _document"
-msgstr "Экспортировать документ"
-
-#: rnote-ui/data/ui/appmenu.ui:104
-#, fuzzy
-#| msgid "Export document as SVG"
-msgid "Export document _pages"
-msgstr "Экспортировать документ как SVG"
-
-#: rnote-ui/data/ui/appmenu.ui:108
-#, fuzzy
-#| msgid "Export selection"
-msgid "Export _selection"
-msgstr "Экспортировать выделение"
-
-#: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Settings"
-msgid "Se_ttings"
-msgstr "Настройки"
-
-#: rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "Keyboard shortcuts"
-msgid "_Keyboard shortcuts"
-msgstr "Комбинации клавиш"
-
-#: rnote-ui/data/ui/appmenu.ui:123
-#, fuzzy
-#| msgid "Donate 💝"
-msgid "_Donate 💝"
-msgstr "Пожертвование 💝"
-
-#: rnote-ui/data/ui/appmenu.ui:127
-#, fuzzy
-#| msgid "About Rnote"
-msgid "_About Rnote"
-msgstr "Про Rnote"
-
-#: rnote-ui/data/ui/appmenu.ui:158
-msgid "Sidebar on the left side"
-msgstr "Боковая панель слева"
-
-#: rnote-ui/data/ui/appmenu.ui:167
-msgid "Sidebar on the right side"
-msgstr "Боковая панель справа"
-
-#: rnote-ui/data/ui/appmenu.ui:177
-msgid "Toggle fullscreen"
-msgstr "Полноэкранный режим"
-
-#: rnote-ui/data/ui/appwindow.ui:67 rnote-ui/data/ui/mainheader.ui:77
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-msgid "Brush"
-msgstr "Кисточка"
-
-#: rnote-ui/data/ui/appwindow.ui:74 rnote-ui/data/ui/mainheader.ui:84
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-msgid "Shaper"
-msgstr "Фигуры"
-
-#: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-msgid "Typewriter"
-msgstr "Текст"
-
-#: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-msgid "Eraser"
-msgstr "Ластик"
-
-#: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-msgid "Selector"
-msgstr "Выделение"
-
-#: rnote-ui/data/ui/appwindow.ui:106 rnote-ui/data/ui/mainheader.ui:116
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-msgid "Tools"
-msgstr "Инструменты"
-
-#: rnote-ui/data/ui/appwindow.ui:164
-msgid "Add page"
-msgstr "Добавить страницу"
-
-#: rnote-ui/data/ui/appwindow.ui:176
-msgid "Resize document to fit the strokes"
-msgstr "Изменить размер документа в соответствии с содержимым"
-
-#: rnote-ui/data/ui/appwindow.ui:192 rnote-ui/data/ui/canvasmenu.ui:111
-msgid "Zoom in"
-msgstr "Приблизить"
-
-#: rnote-ui/data/ui/appwindow.ui:204 rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Zoom out"
-msgstr "Уменьшить"
-
-#: rnote-ui/data/ui/appwindow.ui:217
-msgid "Undo"
-msgstr "Отменить"
-
-#: rnote-ui/data/ui/appwindow.ui:230
-msgid "Redo"
-msgstr "Повторить"
-
-#: rnote-ui/data/ui/appwindow.ui:343
-msgid "Reveal / hide flap"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:413
-msgid "Close the folded flap"
-msgstr "Закрыть боковую панель"
-
-#: rnote-ui/data/ui/appwindow.ui:430
-msgid "Workspace"
-msgstr "Коллекция"
-
-#: rnote-ui/data/ui/appwindow.ui:441
-msgid "Settings"
-msgstr "Настройки"
-
-#: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document layout"
-msgid "Document _layout"
-msgstr "Компоновка документа"
-
-#: rnote-ui/data/ui/canvasmenu.ui:27
-#, fuzzy
-#| msgid "Fixed size"
-msgid "_Fixed size"
-msgstr "Фиксированный размер"
-
-#: rnote-ui/data/ui/canvasmenu.ui:32
-#, fuzzy
-#| msgid "Continuous vertical"
-msgid "_Continuous vertical"
-msgstr "Вертикальная многостраничная"
-
-#: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "Infinite"
-msgid "_Infinite"
-msgstr "Бесконечная"
-
-#: rnote-ui/data/ui/canvasmenu.ui:44
-#, fuzzy
-#| msgid "Show format borders"
-msgid "Show _format borders"
-msgstr "Показать границы страницы"
-
-#: rnote-ui/data/ui/canvasmenu.ui:49
-#, fuzzy
-#| msgid "Draw with touch input"
-msgid "Draw with _touch input"
-msgstr "Рисуйте при помощи сенсорного ввода"
-
-#: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Pen sounds"
-msgid "P_en sounds"
-msgstr "Звуки пера"
-
-#: rnote-ui/data/ui/canvasmenu.ui:61
-#, fuzzy
-#| msgid "Clear document"
-msgid "_Clear document"
-msgstr "Очистить документ"
-
-#: rnote-ui/data/ui/canvasmenu.ui:65
-#, fuzzy
-#| msgid "Return to the origin page"
-msgid "_Return to origin page"
-msgstr "Вернуться на начальную страницу"
-
-#: rnote-ui/data/ui/canvasmenu.ui:104
-msgid "Reset the zoom"
-msgstr "Сбросить масштаб"
-
-#: rnote-ui/data/ui/canvasmenu.ui:123
-msgid "Zoom to fit page width"
-msgstr "Масштабировать до ширины страницы"
-
-#: rnote-ui/data/ui/colorpicker.ui:64
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:220
-#: rnote-ui/src/dialogs/mod.rs:242 rnote-ui/src/dialogs/export.rs:220
-#: rnote-ui/src/dialogs/export.rs:495 rnote-ui/src/dialogs/export.rs:738
-msgid "Select"
-msgstr "Выбрать"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear document"
@@ -368,18 +74,19 @@ msgid "This clears the entire document. Please confirm."
 msgstr "Это очистит весь документ. Пожалуйста, подтвердите"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
-#: rnote-ui/data/ui/dialogs/dialogs.ui:21
-#: rnote-ui/data/ui/dialogs/dialogs.ui:33
-#: rnote-ui/data/ui/dialogs/dialogs.ui:45 rnote-ui/data/ui/dialogs/import.ui:10
+#: rnote-ui/data/ui/dialogs/dialogs.ui:22
+#: rnote-ui/data/ui/dialogs/dialogs.ui:34
+#: rnote-ui/data/ui/dialogs/dialogs.ui:51
+#: rnote-ui/data/ui/dialogs/dialogs.ui:63 rnote-ui/data/ui/dialogs/import.ui:10
 #: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:201
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:208
-#: rnote-ui/src/dialogs/mod.rs:243 rnote-ui/src/dialogs/import.rs:84
-#: rnote-ui/src/dialogs/import.rs:150 rnote-ui/src/dialogs/export.rs:26
-#: rnote-ui/src/dialogs/export.rs:221 rnote-ui/src/dialogs/export.rs:496
-#: rnote-ui/src/dialogs/export.rs:739 rnote-ui/src/dialogs/export.rs:816
-#: rnote-ui/src/dialogs/export.rs:880
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:186
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
+#: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
+#: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
+#: rnote-ui/src/dialogs/mod.rs:372
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "Отменить"
@@ -388,87 +95,114 @@ msgstr "Отменить"
 msgid "Clear"
 msgstr "Очистить"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/appwindow/mod.rs:895
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:755
 msgid "New Document"
 msgstr "Новый Документ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
+#, fuzzy
+#| msgid ""
+#| "Creating a new document will discard any unsaved changes. Do you want to "
+#| "save the current document?"
 msgid ""
-"Creating a new document will discard any unsaved changes. Do you want to "
-"save the current document?"
+"Creating a new document will discard any unsaved\n"
+"      changes. Do you want to save the current document?"
 msgstr ""
 "Создание нового документа удалит все несохранённые изменения. Хотите "
 "сохранить текущий документ?"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:22
-#: rnote-ui/data/ui/dialogs/dialogs.ui:34 rnote-ui/data/ui/dialogs/import.ui:11
+#: rnote-ui/data/ui/dialogs/dialogs.ui:23
+#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
 msgstr "Не сохранять"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:23
-#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:12
-#: rnote-ui/src/dialogs/export.rs:25
+#: rnote-ui/data/ui/dialogs/dialogs.ui:24
+#: rnote-ui/data/ui/dialogs/dialogs.ui:36
+#: rnote-ui/data/ui/dialogs/dialogs.ui:53 rnote-ui/data/ui/dialogs/import.ui:12
+#: rnote-ui/src/dialogs/export.rs:26
 msgid "Save"
 msgstr "Сохранить"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:28
-msgid "Quit Application"
-msgstr "Выйти из программы"
-
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close tab"
+msgstr "Закрыть активное окно"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
-"Any unsaved changes will be lost. Do you want to save the current document?"
+"This tab contains unsaved changes. Changes which are not saved will be "
+"permanently lost."
 msgstr ""
-"Все несохранённые изменения будут потеряны. Хотите сохранить текущий "
-"документ?"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "Close window"
+msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#: rnote-ui/data/ui/workspacebrowser.ui:173
+msgid ""
+"Some opened files contain unsaved changes. Changes which are not saved will "
+"be permanently lost."
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:52
+#, fuzzy
+#| msgid "Discard"
+msgid "Discard all"
+msgstr "Не сохранять"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
 msgstr "Редактировать коллекцию"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:50 rnote-ui/data/ui/settingspanel.ui:277
+#: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
 msgid "Apply"
 msgstr "Применить"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:92
+#: rnote-ui/data/ui/dialogs/dialogs.ui:110
 msgid "Workspace Name"
 msgstr "Имя коллекции"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:97
+#: rnote-ui/data/ui/dialogs/dialogs.ui:115
 msgid "Icon"
 msgstr "Значок"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:98
+#: rnote-ui/data/ui/dialogs/dialogs.ui:116
 msgid "Change the workspace icon"
 msgstr "Выбрать иконку коллекции"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:117
+#: rnote-ui/data/ui/dialogs/dialogs.ui:135
 #: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
 msgstr "Цвет"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:118
+#: rnote-ui/data/ui/dialogs/dialogs.ui:136
 msgid "Change the workspace color"
 msgstr "Выбрать цвет коллекции"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:131
+#: rnote-ui/data/ui/dialogs/dialogs.ui:149
 msgid "Directory"
 msgstr "Каталог"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:132
+#: rnote-ui/data/ui/dialogs/dialogs.ui:150
 msgid "Change the workspace directory"
 msgstr "Выбрать каталог коллекции"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/mod.rs:303
-#: rnote-ui/src/dialogs/export.rs:348 rnote-ui/src/dialogs/export.rs:385
+#: rnote-ui/data/ui/dialogs/dialogs.ui:159
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:340
+#: rnote-ui/src/dialogs/export.rs:378 rnote-ui/src/dialogs/mod.rs:433
 msgid "- no directory selected -"
 msgstr "- каталог не выбран -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:155 rnote-ui/src/dialogs/mod.rs:239
-msgid "Change workspace directory"
+#: rnote-ui/data/ui/dialogs/dialogs.ui:173
+#, fuzzy
+#| msgid "Change the workspace directory"
+msgid "Change the directory"
 msgstr "Выбрать каталог коллекции"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
@@ -488,7 +222,7 @@ msgid "Import PDF"
 msgstr "Импорт PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
-#: rnote-ui/src/dialogs/import.rs:149
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
 msgstr "Импортировать"
 
@@ -547,16 +281,12 @@ msgid "One per document page"
 msgstr "По одной на страницу документа"
 
 #: rnote-ui/data/ui/dialogs/import.ui:198
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ file"
-msgstr "Импортировать файл"
+msgstr "Импортировать файл Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:237
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ file import preferences"
-msgstr "Настройки импорта PDF"
+msgstr "Настройки импорта Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:241 rnote-ui/data/ui/settingspanel.ui:244
 msgid "DPI"
@@ -571,8 +301,8 @@ msgid "Export document"
 msgstr "Экспортировать документ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:815
-#: rnote-ui/src/dialogs/export.rs:879
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:811
+#: rnote-ui/src/dialogs/export.rs:875
 msgid "Export"
 msgstr "Экспорт"
 
@@ -586,9 +316,9 @@ msgstr "Выберите файл экспорта"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
-#: rnote-ui/src/dialogs/export.rs:122 rnote-ui/src/dialogs/export.rs:148
-#: rnote-ui/src/dialogs/export.rs:177 rnote-ui/src/dialogs/export.rs:619
-#: rnote-ui/src/dialogs/export.rs:645 rnote-ui/src/dialogs/export.rs:679
+#: rnote-ui/src/dialogs/export.rs:114 rnote-ui/src/dialogs/export.rs:140
+#: rnote-ui/src/dialogs/export.rs:169 rnote-ui/src/dialogs/export.rs:617
+#: rnote-ui/src/dialogs/export.rs:643 rnote-ui/src/dialogs/export.rs:678
 msgid "- no file selected -"
 msgstr "- файл не выбран -"
 
@@ -616,10 +346,8 @@ msgstr "Линовка"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
-#, fuzzy
-#| msgid "Set whether the background should be exported"
 msgid "Set whether the background pattern should be exported"
-msgstr "Укажите, следует ли экспортировать фон?"
+msgstr "Укажите, следует ли экспортировать линовку фона?"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
@@ -634,36 +362,32 @@ msgstr "Формат для экспорта"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:283
-#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:259
-#: rnote-ui/src/dialogs/export.rs:534 rnote-ui/src/dialogs/export.rs:777
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:250
+#: rnote-ui/src/dialogs/export.rs:529 rnote-ui/src/dialogs/export.rs:775
 msgid "Svg"
 msgstr "Svg"
 
-#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:264
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:255
 msgid "Pdf"
 msgstr "Pdf"
 
-#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:269
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:260
 msgid "Xopp"
 msgstr "Xopp"
 
-#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:492
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:490
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export document pages"
 msgstr "Экспортировать документ как SVG"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Create Directory"
 msgid "Export directory"
-msgstr "Создать Каталог"
+msgstr "Экспортировать каталог"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Select the export file"
 msgid "Select the export directory"
-msgstr "Выберите файл экспорта"
+msgstr "Выберите каталог экспорта"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy
@@ -672,14 +396,14 @@ msgid "Export files stem name"
 msgstr "Экспортировать состояние движка"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:539
-#: rnote-ui/src/dialogs/export.rs:782
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:534
+#: rnote-ui/src/dialogs/export.rs:780
 msgid "Png"
 msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285
-#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:545
-#: rnote-ui/src/dialogs/export.rs:788
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:540
+#: rnote-ui/src/dialogs/export.rs:786
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -705,7 +429,7 @@ msgstr "Качество Jpeg"
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Укажите качество Jpeg изображения (1 - 100)"
 
-#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:735
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:738
 msgid "Export selection"
 msgstr "Экспортировать выделение"
 
@@ -721,12 +445,652 @@ msgstr "Поля"
 msgid "Set the margin around the selected area"
 msgstr "Задать поля вокруг выбранной области"
 
-#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:83
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:20
+msgid "Brush style"
+msgstr "Стиль кисти"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:42
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:145
+msgid "Brush configuration"
+msgstr "Настройки кисти"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:75
+msgid "Brush styles"
+msgstr "Стили кисти"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+msgid "Marker"
+msgstr "Маркер"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
+#, fuzzy
+#| msgid "Mark underneath other brush strokes"
+msgid "Mark underneath other strokes"
+msgstr "Рисовать под мазками других кистей"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:196
+msgid "Solid"
+msgstr "Перо"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:106
+msgid "Draw solid color strokes"
+msgstr "Рисовать сплошным цветом"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:117
+msgid "Textured"
+msgstr "Текстурированная"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:118
+msgid "Draw textured strokes"
+msgstr "Рисовать текстурированные линии"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
+msgid "Path modelling"
+msgstr "Моделирование траектории"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:172
+msgid "Simple"
+msgstr "Простое"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:173
+msgid "Produces line segments from the raw input.\n"
+msgstr "Производит сегменты линии из необработанных входных данных.\n"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:179
+msgid "Curved"
+msgstr "Криволинейное"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:180
+msgid "Produces smooth, curved segments.\n"
+msgstr "Производит гладкие, изогнутые сегменты.\n"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:186
+msgid "Modeled"
+msgstr "Моделированное"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:187
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
+msgstr ""
+"Производит моделированные траектории на основе алгоритмов физики.\n"
+"Получается самый красивый почерк."
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:196
+msgid "Solid style"
+msgstr "Стиль пера"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:199
+msgid "Pressure curve"
+msgstr "Кривая давления"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:200
+msgid "Choose a pressure curve"
+msgstr "Выберите кривую давления"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:204
+msgid "Constant"
+msgstr "Постоянная"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:205
+msgid "Linear"
+msgstr "Линейная"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:206
+msgid "Square root"
+msgstr "Квадратный корень"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:207
+msgid "Cubic root"
+msgstr "Кубический корень"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:208
+msgid "Quadratic Parabola"
+msgstr "Квадратичная парабола"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:209
+msgid "Cubic Parabola"
+msgstr "Кубическая парабола"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:220
+msgid "Textured style"
+msgstr "Стиль текстурированной кисти"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:223
+msgid "Density"
+msgstr "Плотность"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:224
+msgid "The density is the amount of dots per 10x10 area"
+msgstr "Плотность - это количество точек на площади 10x10"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:239
+msgid "Stroke dots position distribution"
+msgstr "Распределение точек мазка кисти"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:240
+msgid "Choose a dots position probability distribution"
+msgstr "Выбрать распределение вероятности расположения точек"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:244
+msgid "Uniform"
+msgstr "Равномерное"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:245
+msgid "Normal"
+msgstr "Нормальное"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:246
+msgid "Exponential"
+msgstr "Экспоненциальное"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:247
+msgid "Reverse Exponential"
+msgstr "Обратное экспоненциальное"
+
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:22
+msgid "Trash strokes"
+msgstr "Удалить штрихи"
+
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:39
+msgid "Split strokes"
+msgstr "Разделять штрихи"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
+#: rnote-ui/data/ui/overlays.ui:66
+msgid "Brush"
+msgstr "Кисточка"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
+#: rnote-ui/data/ui/overlays.ui:73
+msgid "Shaper"
+msgstr "Фигуры"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
+#: rnote-ui/data/ui/overlays.ui:81
+msgid "Typewriter"
+msgstr "Текст"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
+#: rnote-ui/data/ui/overlays.ui:89
+msgid "Eraser"
+msgstr "Ластик"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
+#: rnote-ui/data/ui/overlays.ui:97
+msgid "Selector"
+msgstr "Выделение"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
+#: rnote-ui/data/ui/overlays.ui:105
+msgid "Tools"
+msgstr "Инструменты"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
+msgid "Select with a polygon"
+msgstr "Свободное выделение"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:39
+msgid "Select with a rectangle"
+msgstr "Прямоугольное выделение"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:55
+msgid "Select one by one"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:71
+msgid "Select intersecting path"
+msgstr "Выделить пересекающиеся элементы"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:98
+msgid "Lock aspectratio while resizing the selection"
+msgstr "Сохранять соотношение сторон при изменении размера выделения"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:115
+msgid "Select all strokes"
+msgstr "Выделить всё"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:133
+msgid "Deselect all strokes"
+msgstr "Снять все выделения"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:151
+msgid "Duplicate selection"
+msgstr "Дублировать выделение"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
+msgid "Delete selection"
+msgstr "Удалить выделенное"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:20
+msgid "Shaper style"
+msgstr "Стиль фигур"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:42
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+msgid "Shape configuration"
+msgstr "Настройка фигур"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:78
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:246
+msgid "Shape builders"
+msgstr "Фигуры"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:101
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:390
+msgid "Constraints"
+msgstr "Ограничения"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:121
+msgid "Shaper styles"
+msgstr "Стиль фигур"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:139
+msgid "Smooth"
+msgstr "Ровный"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:150
+msgid "Rough"
+msgstr "Грубый"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+msgid "Rough style"
+msgstr "Грубый стиль"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:191
+#, fuzzy
+#| msgid "Solid style"
+msgid "Fill style"
+msgstr "Стиль пера"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:192
+#, fuzzy
+#| msgid "Choose a format"
+msgid "Choose a fill style"
+msgstr "Выбрать формат"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:197
+msgid "Hachure"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:198
+msgid "Zig-Zag"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:199
+msgid "Zig-Zag Line"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:200
+msgid "Crosshatch"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:201
+#: rnote-ui/data/ui/settingspanel.ui:319
+msgid "Dots"
+msgstr "В точку"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:202
+msgid "Dashed"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:210
+msgid "Hachure angle"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:211
+#, fuzzy
+#| msgid "Set the drawing cursor"
+msgid "Set the angle of hachure fills"
+msgstr "Настроить курсор для рисования"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:264
+msgid "Line"
+msgstr "Прямая"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:275
+msgid "Rectangle"
+msgstr "Прямоугольник"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:286
+#: rnote-ui/data/ui/settingspanel.ui:318
+msgid "Grid"
+msgstr "В клетку"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:297
+msgid "2D coordinate system"
+msgstr "Двумерная система координат"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:308
+msgid "3D coordinate system"
+msgstr "Трёхмерная система координат"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:319
+msgid "2D single quadrant coordinate system"
+msgstr "Двухмерная одноквадрантая система координат"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:330
+msgid "Ellipse"
+msgstr "Эллипс"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:341
+msgid "Ellipse with foci"
+msgstr "Эллипс по фокусам"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:352
+msgid "Quadratic bezier curve"
+msgstr "Квадратичная кривая Безье"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:363
+msgid "Cubic bezier curve"
+msgstr "Кубическая кривая Безье"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:407
+msgid "Enabled"
+msgstr "Включено"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:408
+#, fuzzy
+#| msgid ""
+#| "Hold Ctrl to temporarily enable/disable constraints\n"
+#| "when this switch is off/on"
+msgid ""
+"Hold Ctrl to temporarily\n"
+"enable/disable constraints\n"
+"when this switch is off/on"
+msgstr ""
+"Удерживайте Ctrl чтобы временно активировать/деактивировать\n"
+"ограничения когда кнопка в положении выкл/вкл"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:420
+msgid "1:1"
+msgstr "1:1"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:430
+msgid "3:2"
+msgstr "3:2"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:440
+msgid "Golden ratio (1:1.618)"
+msgstr "Золотое сечение (1:1.618)"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:20
+msgid "Insert vertical space"
+msgstr "Добавить вертикальный пробел"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:39
+msgid "Offset the camera by dragging"
+msgstr "Перемещение камеры перетаскиванием"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
+msgid ""
+"Font chooser\n"
+"(double-click, click on select\n"
+"or press Enter to select a new font)"
+msgstr ""
+"Выбор шрифта\n"
+"(двойной клик мышью, кнопка Выбрать\n"
+"или нажатие Enter выбирает шрифт)"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:55
+msgid "Pick and insert an emoji"
+msgstr "Выбрать и вставить эмодзи"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:87
+msgid "Reset text attributes"
+msgstr "Очистить форматирование"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:96
+msgid "Bold"
+msgstr "Жирный"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:105
+msgid "Italic"
+msgstr "Курсив"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:114
+msgid "Underline"
+msgstr "Подчёркнутый"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:123
+msgid "Strikethrough"
+msgstr "Зачёркнутый"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
+msgid "Align left"
+msgstr "Выровнять влево"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
+msgid "Align center"
+msgstr "По центру"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:159
+msgid "Align right"
+msgstr "Выровнять вправо"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:166
+msgid "Fill"
+msgstr "По ширине"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:198
+#: rnote-ui/data/ui/colorpicker.ui:86 rnote-ui/src/dialogs/export.rs:220
+#: rnote-ui/src/dialogs/export.rs:493 rnote-ui/src/dialogs/export.rs:741
+#: rnote-ui/src/dialogs/mod.rs:371
+msgid "Select"
+msgstr "Выбрать"
+
+#: rnote-ui/data/ui/appmenu.ui:24
+#, fuzzy
+#| msgid "_Color scheme"
+msgid "Co_lor scheme"
+msgstr "_Цветовая схема"
+
+#: rnote-ui/data/ui/appmenu.ui:26
+msgid "Use _system colors"
+msgstr "Использовать цвета _системы"
+
+#: rnote-ui/data/ui/appmenu.ui:31
+msgid "Use _light colors"
+msgstr "Использовать _светлые цвета"
+
+#: rnote-ui/data/ui/appmenu.ui:36
+msgid "Use _dark colors"
+msgstr "Использовать _тёмные цвета"
+
+#: rnote-ui/data/ui/appmenu.ui:42
+#, fuzzy
+#| msgid "_Developer mode"
+msgid "De_veloper mode"
+msgstr "Режим _разработчика"
+
+#: rnote-ui/data/ui/appmenu.ui:47
+msgid "Developer _menu"
+msgstr "_Меню разработчика"
+
+#: rnote-ui/data/ui/appmenu.ui:52
+#, fuzzy
+#| msgid "_Visual debugging"
+msgid "Visual _debugging"
+msgstr "_Визуальная отладка"
+
+#: rnote-ui/data/ui/appmenu.ui:56
+msgid "Export engine _state"
+msgstr "Экспортировать _состояние движка"
+
+#: rnote-ui/data/ui/appmenu.ui:60
+msgid "Export engine _config"
+msgstr "Экспорт _конфигурации движка"
+
+#: rnote-ui/data/ui/appmenu.ui:68
+msgid "_New"
+msgstr "_Новый"
+
+#: rnote-ui/data/ui/appmenu.ui:72
+msgid "_Open"
+msgstr "_Открыть"
+
+#: rnote-ui/data/ui/appmenu.ui:76
+msgid "_Save"
+msgstr "_Сохранить"
+
+#: rnote-ui/data/ui/appmenu.ui:80
+msgid "Save _as"
+msgstr "Сохранить _как"
+
+#: rnote-ui/data/ui/appmenu.ui:86
+msgid "_Print"
+msgstr "_Печать"
+
+#: rnote-ui/data/ui/appmenu.ui:90
+msgid "_Import file"
+msgstr "_Импортировать файл"
+
+#: rnote-ui/data/ui/appmenu.ui:94
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard"
+msgid "_Clipboard"
+msgstr "Вставить содержимое буфера обмена"
+
+#: rnote-ui/data/ui/appmenu.ui:96
+msgid "_Copy"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:100
+msgid "C_ut"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:104
+msgid "_Paste"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:109
+msgid "_Export…"
+msgstr "_Экспортировать…"
+
+#: rnote-ui/data/ui/appmenu.ui:111
+msgid "Export _document"
+msgstr "Экспортировать _документ"
+
+#: rnote-ui/data/ui/appmenu.ui:115
+msgid "Export document _pages"
+msgstr "Экспортировать документ как _страницы"
+
+#: rnote-ui/data/ui/appmenu.ui:119
+msgid "Export _selection"
+msgstr "Экспортировать _выделение"
+
+#: rnote-ui/data/ui/appmenu.ui:126
+msgid "Se_ttings"
+msgstr "На_стройки"
+
+#: rnote-ui/data/ui/appmenu.ui:130
+msgid "_Keyboard shortcuts"
+msgstr "_Комбинации клавиш"
+
+#: rnote-ui/data/ui/appmenu.ui:134
+msgid "_Donate 💝"
+msgstr "_Пожертвование 💝"
+
+#: rnote-ui/data/ui/appmenu.ui:138
+#, fuzzy
+#| msgid "_About Rnote"
+msgid "A_bout Rnote"
+msgstr "_Про Rnote"
+
+#: rnote-ui/data/ui/appmenu.ui:169
+msgid "Sidebar on the left side"
+msgstr "Боковая панель слева"
+
+#: rnote-ui/data/ui/appmenu.ui:178
+msgid "Sidebar on the right side"
+msgstr "Боковая панель справа"
+
+#: rnote-ui/data/ui/appmenu.ui:188
+msgid "Toggle fullscreen"
+msgstr "Полноэкранный режим"
+
+#: rnote-ui/data/ui/appwindow.ui:105
+msgid "Reveal / hide flap"
+msgstr ""
+
+#: rnote-ui/data/ui/appwindow.ui:175
+msgid "Close the folded flap"
+msgstr "Закрыть боковую панель"
+
+#: rnote-ui/data/ui/appwindow.ui:192
+msgid "Workspace"
+msgstr "Коллекция"
+
+#: rnote-ui/data/ui/appwindow.ui:203
+msgid "Settings"
+msgstr "Настройки"
+
+#: rnote-ui/data/ui/canvasmenu.ui:24
+#, fuzzy
+#| msgid "Document _layout"
+msgid "_Document layout"
+msgstr "Компоновка _документа"
+
+#: rnote-ui/data/ui/canvasmenu.ui:27
+msgid "_Fixed size"
+msgstr "_Фиксированный размер"
+
+#: rnote-ui/data/ui/canvasmenu.ui:32
+msgid "_Continuous vertical"
+msgstr "_Вертикальная многостраничная"
+
+#: rnote-ui/data/ui/canvasmenu.ui:37
+msgid "_Infinite"
+msgstr "_Бесконечная"
+
+#: rnote-ui/data/ui/canvasmenu.ui:44
+msgid "Show _format borders"
+msgstr "_Показать границы страницы"
+
+#: rnote-ui/data/ui/canvasmenu.ui:49
+msgid "Draw with _touch input"
+msgstr "Рисуйте при помощи _сенсорного ввода"
+
+#: rnote-ui/data/ui/canvasmenu.ui:54
+#, fuzzy
+#| msgid "P_en sounds"
+msgid "_Pen sounds"
+msgstr "Звуки п_ера"
+
+#: rnote-ui/data/ui/canvasmenu.ui:61
+#, fuzzy
+#| msgid "Clear document"
+msgid "C_lear document"
+msgstr "Очистить документ"
+
+#: rnote-ui/data/ui/canvasmenu.ui:65
+msgid "_Return to origin page"
+msgstr "_Вернуться на начальную страницу"
+
+#: rnote-ui/data/ui/canvasmenu.ui:95
+msgid "Zoom out"
+msgstr "Уменьшить"
+
+#: rnote-ui/data/ui/canvasmenu.ui:104
+msgid "Reset the zoom"
+msgstr "Сбросить масштаб"
+
+#: rnote-ui/data/ui/canvasmenu.ui:111
+msgid "Zoom in"
+msgstr "Приблизить"
+
+#: rnote-ui/data/ui/canvasmenu.ui:123
+msgid "Zoom to fit page width"
+msgstr "Масштабировать до ширины страницы"
+
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
 msgstr "Открыть"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:59
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
 msgstr "Переименовать"
 
@@ -742,11 +1106,31 @@ msgstr "Дублировать"
 msgid "New document"
 msgstr "Новый документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:897
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:757
 msgid "Draft"
 msgstr "Черновик"
 
 #: rnote-ui/data/ui/mainheader.ui:37
+msgid "New tab"
+msgstr ""
+
+#: rnote-ui/data/ui/mainheader.ui:57
+msgid "Undo"
+msgstr "Отменить"
+
+#: rnote-ui/data/ui/mainheader.ui:65
+msgid "Redo"
+msgstr "Повторить"
+
+#: rnote-ui/data/ui/mainheader.ui:76
+msgid "Add page"
+msgstr "Добавить страницу"
+
+#: rnote-ui/data/ui/mainheader.ui:83
+msgid "Resize document to fit the strokes"
+msgstr "Изменить размер документа в соответствии с содержимым"
+
+#: rnote-ui/data/ui/mainheader.ui:98
 msgid "Save document"
 msgstr "Сохранить документ"
 
@@ -783,11 +1167,13 @@ msgid "Set the format border color"
 msgstr "Выбрать цвет границ страницы"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "Не показывать полосы прокрутки"
+msgid "Show scrollbars"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
+#, fuzzy
+#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
+msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
@@ -913,14 +1299,6 @@ msgstr "Нет"
 #: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Lines"
 msgstr "В линейку"
-
-#: rnote-ui/data/ui/settingspanel.ui:318
-msgid "Grid"
-msgstr "В клетку"
-
-#: rnote-ui/data/ui/settingspanel.ui:319
-msgid "Dots"
-msgstr "В точку"
 
 #: rnote-ui/data/ui/settingspanel.ui:327
 msgid "Pattern Color"
@@ -1102,21 +1480,32 @@ msgid "Drawing"
 msgstr "Рисование"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Copy into clipboard"
 msgctxt "shortcut window"
-msgid "Copy into clipboard"
+msgid "Copy to clipboard"
 msgstr "Скопировать в буфер обмена"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Copy into clipboard"
+msgctxt "shortcut window"
+msgid "Cut to clipboard"
+msgstr "Скопировать в буфер обмена"
+
+#: rnote-ui/data/ui/shortcuts.ui:189
 msgctxt "shortcut window"
 msgid "Paste clipboard"
 msgstr "Вставить содержимое буфера обмена"
 
-#: rnote-ui/data/ui/shortcuts.ui:189
+#: rnote-ui/data/ui/shortcuts.ui:195
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "Отменить"
 
-#: rnote-ui/data/ui/shortcuts.ui:195
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Повторить"
@@ -1129,610 +1518,358 @@ msgstr "Переместить каталог вверх"
 msgid "Workspace directory actions"
 msgstr "Действия над каталогом коллекции"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:154
+#: rnote-ui/data/ui/workspacebrowser.ui:121
+msgid "Create new folder"
+msgstr "Создать новый каталог"
+
+#: rnote-ui/data/ui/workspacesbar.ui:54
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Move selected workspace up"
+msgstr "Удалить коллекцию"
+
+#: rnote-ui/data/ui/workspacesbar.ui:63
+#, fuzzy
+#| msgid "Change the workspace icon"
+msgid "Move selected workspace down"
+msgstr "Выбрать иконку коллекции"
+
+#: rnote-ui/data/ui/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Добавить коллекцию"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:163
-msgid "Remove workspace"
+#: rnote-ui/data/ui/workspacesbar.ui:81
+#, fuzzy
+#| msgid "Remove workspace"
+msgid "Remove selected workspace"
 msgstr "Удалить коллекцию"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:190
+#: rnote-ui/data/ui/workspacesbar.ui:91
 #, fuzzy
-#| msgid "Create Directory"
-msgid "Create new folder"
-msgstr "Создать Каталог"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:32
-msgid "Brush style"
-msgstr "Стиль кисти"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:54
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
-msgid "Brush configuration"
-msgstr "Настройки кисти"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:97
-msgid "Brush styles"
-msgstr "Стили кисти"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:115
-msgid "Marker"
-msgstr "Маркер"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:116
-msgid "Mark underneath other brush strokes"
-msgstr "Рисовать под мазками других кистей"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:127
-msgid "Solid"
-msgstr "Перо"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:128
-msgid "Draw solid color strokes"
-msgstr "Рисовать сплошным цветом"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:139
-msgid "Textured"
-msgstr "Текстурированная"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:140
-msgid "Draw textured strokes"
-msgstr "Рисовать текстурированные линии"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:176
-msgid "Path modelling"
-msgstr "Моделирование траектории"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
-msgid "Simple"
-msgstr "Простое"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
-msgid "Produces line segments from the raw input.\n"
-msgstr "Производит сегменты линии из необработанных входных данных.\n"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:201
-msgid "Curved"
-msgstr "Криволинейное"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:202
-msgid "Produces smooth, curved segments.\n"
-msgstr "Производит гладкие, изогнутые сегменты.\n"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:208
-msgid "Modeled"
-msgstr "Моделированное"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:209
-msgid ""
-"Produces a modeled path with physics based algorithms.\n"
-"Results in the best looking handwriting."
-msgstr ""
-"Производит моделированные траектории на основе алгоритмов физики.\n"
-"Получается самый красивый почерк."
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:218
-msgid "Solid style"
-msgstr "Стиль пера"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:221
-msgid "Pressure curve"
-msgstr "Кривая давления"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:222
-msgid "Choose a pressure curve"
-msgstr "Выберите кривую давления"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:226
-msgid "Constant"
-msgstr "Постоянная"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:227
-msgid "Linear"
-msgstr "Линейная"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:228
-msgid "Square root"
-msgstr "Квадратный корень"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:229
-msgid "Cubic root"
-msgstr "Кубический корень"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:230
-msgid "Quadratic Parabola"
-msgstr "Квадратичная парабола"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:231
-msgid "Cubic Parabola"
-msgstr "Кубическая парабола"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:242
-msgid "Textured style"
-msgstr "Стиль текстурированной кисти"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:245
-msgid "Density"
-msgstr "Плотность"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:246
-msgid "The density is the amount of dots per 10x10 area"
-msgstr "Плотность - это количество точек на площади 10x10"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:261
-msgid "Stroke dots radii"
-msgstr "Радиусы точек мазка"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:262
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "Радиусы отдельных точек внутри мазка текстурированной кисти"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:320
-msgid "Stroke dots position distribution"
-msgstr "Распределение точек мазка кисти"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:321
-msgid "Choose a dots position probability distribution"
-msgstr "Выбрать распределение вероятности расположения точек"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:325
-msgid "Uniform"
-msgstr "Равномерное"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:326
-msgid "Normal"
-msgstr "Нормальное"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:327
-msgid "Exponential"
-msgstr "Экспоненциальное"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:328
-msgid "Reverse Exponential"
-msgstr "Обратное экспоненциальное"
-
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
-msgid "Trash strokes"
-msgstr "Удалить штрихи"
-
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
-msgid "Split strokes"
-msgstr "Разделять штрихи"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-#, fuzzy
-#| msgid "Selecting with a polygon"
-msgid "Select with a polygon"
-msgstr "Свободное выделение"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-#, fuzzy
-#| msgid "Selecting with a rectangle"
-msgid "Select with a rectangle"
-msgstr "Прямоугольное выделение"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-msgid "Select one by one"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-msgid "Select intersecting path"
-msgstr "Выделить пересекающиеся элементы"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
-msgid "Lock aspectratio while resizing the selection"
-msgstr "Сохранять соотношение сторон при изменении размера выделения"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:127
-msgid "Select all strokes"
-msgstr "Выделить всё"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:145
-msgid "Deselect all strokes"
-msgstr "Снять все выделения"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:163
-msgid "Duplicate selection"
-msgstr "Дублировать выделение"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:181
-msgid "Delete selection"
-msgstr "Удалить выделенное"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:32
-msgid "Shaper style"
-msgstr "Стиль фигур"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:54
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:223
-msgid "Shape configuration"
-msgstr "Настройка фигур"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:90
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:311
-msgid "Shape builders"
-msgstr "Фигуры"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:113
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:444
-msgid "Constraints"
-msgstr "Ограничения"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:167
-msgid "Shaper styles"
-msgstr "Стиль фигур"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:185
-msgid "Smooth"
-msgstr "Ровный"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:196
-msgid "Rough"
-msgstr "Грубый"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:233
-msgid "Rough style"
-msgstr "Грубый стиль"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:236
-msgid "Roughness"
-msgstr "Грубость"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:237
-msgid ""
-"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr ""
-"Указывает, насколько грубым является рисунок. 0,0 - плавная линия. По "
-"умолчанию 1,0"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:252
-msgid "Bowing"
-msgstr "Изгиб"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
-msgid ""
-"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
-"Defaults to 1.0"
-msgstr ""
-"Насколько криволинейными становятся линии при рисовании грубой фигуры. 0,0 - "
-"это прямая линия. По умолчанию 1,0"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:268
-msgid "Curve step count"
-msgstr "Количество шагов кривой"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:269
-msgid "How many steps make up a curve. Defaults to 12"
-msgstr "Сколько шагов составляет кривую. По умолчанию 12"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "Multistroke"
-msgstr "Мультиштрих"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:285
-msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr "Генерация нескольких штрихов для эскизного вида. Включено по умолчанию"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:329
-msgid "Line"
-msgstr "Прямая"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:340
-msgid "Rectangle"
-msgstr "Прямоугольник"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:351
-msgid "2D coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:362
-msgid "3D coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:373
-msgid "2D single quadrant coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
-msgid "Ellipse"
-msgstr "Эллипс"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:395
-msgid "Ellipse with foci"
-msgstr "Эллипс по фокусам"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
-msgid "Quadratic bezier curve"
-msgstr "Квадратичная кривая Безье"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:417
-msgid "Cubic bezier curve"
-msgstr "Кубическая кривая Безье"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:461
-msgid "Enabled"
-msgstr "Включено"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:462
-msgid ""
-"Hold Ctrl to temporarily enable/disable constraints\n"
-"when this switch is off/on"
-msgstr ""
-"Удерживайте Ctrl чтобы временно активировать/деактивировать\n"
-"ограничения когда кнопка в положении выкл/вкл"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:473
-msgid "1:1"
-msgstr "1:1"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:483
-msgid "3:2"
-msgstr "3:2"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:493
-msgid "Golden ratio (1:1.618)"
-msgstr "Золотое сечение (1:1.618)"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:32
-msgid "Insert vertical space"
-msgstr "Добавить вертикальный пробел"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:51
-msgid "Offset the camera by dragging"
-msgstr "Перемещение камеры перетаскиванием"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
-msgid ""
-"Font chooser\n"
-"(double-click, click on select\n"
-"or press Enter to select a new font)"
-msgstr ""
-"Выбор шрифта\n"
-"(двойной клик мышью, кнопка Выбрать\n"
-"или нажатие Enter выбирает шрифт)"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:67
-msgid "Pick and insert an emoji"
-msgstr "Выбрать и вставить эмодзи"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
-msgid "Reset text attributes"
-msgstr "Очистить форматирование"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:108
-msgid "Bold"
-msgstr "Жирный"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:117
-msgid "Italic"
-msgstr "Курсив"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:126
-msgid "Underline"
-msgstr "Подчёркнутый"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:135
-msgid "Strikethrough"
-msgstr "Зачёркнутый"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:167
-msgid "Align left"
-msgstr "Выровнять влево"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:174
-msgid "Align center"
-msgstr "По центру"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:181
-msgid "Align right"
-msgstr "Выровнять вправо"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:188
-msgid "Fill"
-msgstr "По ширине"
-
-#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs/mod.rs:35
-msgid "translator-credits"
-msgstr "Валерий Манжос <Manzhos.VA@gmail.com>"
-
-#: rnote-ui/src/dialogs/mod.rs:137 rnote-ui/src/dialogs/mod.rs:187
-#: rnote-ui/src/dialogs/import.rs:47 rnote-ui/src/dialogs/export.rs:68
-#: rnote-ui/src/appwindow/mod.rs:459
-#: rnote-ui/src/appwindow/appwindowactions.rs:642
+#| msgid "Edit workspace"
+msgid "Edit selected workspace"
+msgstr "Редактировать коллекцию"
+
+#: rnote-ui/src/appwindow/mod.rs:303
+#: rnote-ui/src/appwindow/appwindowactions.rs:683
+#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
+#: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
+#: rnote-ui/src/dialogs/mod.rs:316
 msgid "Saving document failed."
 msgstr "Не удалось сохранить документ."
 
-#: rnote-ui/src/dialogs/import.rs:29 rnote-ui/src/dialogs/import.rs:109
-msgid "Opening file failed."
-msgstr "Не удалось открыть файл."
+#: rnote-ui/src/appwindow/mod.rs:1113
+msgid "Opening .rnote file failed."
+msgstr "Не удалось открыть .rnote файл."
 
-#: rnote-ui/src/dialogs/import.rs:77 rnote-ui/src/dialogs/export.rs:19
-#, fuzzy
-#| msgid ".rnote file"
-msgid ".rnote"
-msgstr ".rnote файл"
+#: rnote-ui/src/appwindow/mod.rs:1124
+msgid "Opening vector image file failed."
+msgstr "Не удалось открыть векторное изображение."
 
-#: rnote-ui/src/dialogs/import.rs:80
-msgid "Open file"
-msgstr "Открыть файлы"
+#: rnote-ui/src/appwindow/mod.rs:1135
+msgid "Opening bitmap image file failed."
+msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/dialogs/import.rs:143
-msgid "JPG, PDF, PNG, SVG, Xopp"
-msgstr ""
+#: rnote-ui/src/appwindow/mod.rs:1146 rnote-ui/src/dialogs/import.rs:373
+msgid "Opening Xournal++ file failed."
+msgstr "Не удалось открыть Xournal++ файл."
 
-#: rnote-ui/src/dialogs/import.rs:146
-msgid "Import file"
-msgstr "Импортировать файл"
-
-#: rnote-ui/src/dialogs/import.rs:255
-msgid "- no file name -"
-msgstr "- нет имени файла -"
-
-#: rnote-ui/src/dialogs/import.rs:260
-msgid "- no title -"
-msgstr "- нет заголовка -"
-
-#: rnote-ui/src/dialogs/import.rs:263
-msgid "- no author -"
-msgstr "- нет автора -"
-
-#: rnote-ui/src/dialogs/import.rs:267
-msgid "- no date -"
-msgstr "- нет даты -"
-
-#: rnote-ui/src/dialogs/import.rs:274
-msgid "File name:"
-msgstr "Имя файла:"
-
-#: rnote-ui/src/dialogs/import.rs:278
-msgid "Title:"
-msgstr "Заголовок:"
-
-#: rnote-ui/src/dialogs/import.rs:282
-msgid "Author:"
-msgstr "Автор:"
-
-#: rnote-ui/src/dialogs/import.rs:286
-msgid "Modification date:"
-msgstr "Дата изменения:"
-
-#: rnote-ui/src/dialogs/import.rs:290
-msgid "Pages:"
-msgstr "Страницы:"
-
-#: rnote-ui/src/dialogs/import.rs:319 rnote-ui/src/appwindow/imexport.rs:152
+#: rnote-ui/src/appwindow/mod.rs:1157 rnote-ui/src/dialogs/import.rs:314
 msgid "Opening PDF file failed."
 msgstr "Не удалось открыть PDF файл."
 
-#: rnote-ui/src/dialogs/import.rs:386 rnote-ui/src/appwindow/imexport.rs:133
-#, fuzzy
-#| msgid "Opening .xopp file failed."
-msgid "Opening Xournal++ file failed."
-msgstr "Не удалось открыть .xopp файл."
+#: rnote-ui/src/appwindow/mod.rs:1166
+msgid "Error: Tried opening folder as file"
+msgstr "Ошибка: Невозможно открыть папку как файл"
 
-#: rnote-ui/src/dialogs/export.rs:22
+#: rnote-ui/src/appwindow/mod.rs:1171
+msgid "Failed to open file: Unsupported file type."
+msgstr "Не удалось открыть файл: формат файла не поддерживается."
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:801
+msgid "Printed document successfully"
+msgstr "Документ успешно распечатан"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:810
+msgid "Printing document failed"
+msgstr "Не удалось распечатать документ"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:838
+msgid "Export selection failed, nothing selected."
+msgstr "Не удалось экспортировать выделение, ничего не выделено."
+
+#: rnote-ui/src/canvas/mod.rs:950
+#, fuzzy
+#| msgid "- no file name -"
+msgid "- invalid file name -"
+msgstr "- нет имени файла -"
+
+#: rnote-ui/src/canvas/mod.rs:963
+msgid "- invalid folder path -"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:977
+msgid "Opened file was modified on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:978
+msgid "Reload"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:984
+#, fuzzy
+#| msgid "Opening .rnote file failed."
+msgid "Reloading .rnote file from disk failed."
+msgstr "Не удалось открыть .rnote файл."
+
+#: rnote-ui/src/canvas/mod.rs:1026
+msgid "Opened file was renamed on disk."
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:1039
+msgid "Opened file was moved or deleted on disk."
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
+msgid ".rnote"
+msgstr ".rnote"
+
+#: rnote-ui/src/dialogs/export.rs:23
 msgid "Save document as"
 msgstr "Сохранить документ как"
 
-#: rnote-ui/src/dialogs/export.rs:70
+#: rnote-ui/src/dialogs/export.rs:66
 msgid "Saved document successfully."
 msgstr "Документ успешно сохранён."
 
-#: rnote-ui/src/dialogs/export.rs:193
+#: rnote-ui/src/dialogs/export.rs:189
 msgid "Export document failed."
 msgstr "Не удалось экспортировать документ."
 
-#: rnote-ui/src/dialogs/export.rs:195
+#: rnote-ui/src/dialogs/export.rs:191
 msgid "Exported document successfully."
 msgstr "Документ успешно экспортирован."
 
-#: rnote-ui/src/dialogs/export.rs:201
+#: rnote-ui/src/dialogs/export.rs:197
 msgid "Export document failed, no file selected."
 msgstr "Не удалось экспортировать документ, не указан файл."
 
-#: rnote-ui/src/dialogs/export.rs:468
+#: rnote-ui/src/dialogs/export.rs:462
 #, fuzzy
 #| msgid "Export document failed."
 msgid "Export document pages failed."
 msgstr "Не удалось экспортировать документ."
 
-#: rnote-ui/src/dialogs/export.rs:470
+#: rnote-ui/src/dialogs/export.rs:464
 #, fuzzy
 #| msgid "Exported document successfully."
 msgid "Exported document pages successfully."
 msgstr "Документ успешно экспортирован."
 
-#: rnote-ui/src/dialogs/export.rs:476
+#: rnote-ui/src/dialogs/export.rs:470
 #, fuzzy
 #| msgid "Export document failed, no file selected."
 msgid "Export document pages failed, no directory selected."
 msgstr "Не удалось экспортировать документ, не указан файл."
 
-#: rnote-ui/src/dialogs/export.rs:711
+#: rnote-ui/src/dialogs/export.rs:710
 msgid "Export selection failed."
 msgstr "Не удалось экспортировать выделение."
 
-#: rnote-ui/src/dialogs/export.rs:713
+#: rnote-ui/src/dialogs/export.rs:712
 msgid "Exported selection successfully."
 msgstr "Выделение успешно экспортировано."
 
-#: rnote-ui/src/dialogs/export.rs:719
+#: rnote-ui/src/dialogs/export.rs:718
 msgid "Export selection failed, no file selected."
 msgstr "Не удалось экспортировать выделение, не указан файл."
 
-#: rnote-ui/src/dialogs/export.rs:809 rnote-ui/src/dialogs/export.rs:873
-#, fuzzy
-#| msgid "JSON file"
+#: rnote-ui/src/dialogs/export.rs:805 rnote-ui/src/dialogs/export.rs:869
 msgid "JSON"
-msgstr "JSON файл"
+msgstr "JSON"
 
-#: rnote-ui/src/dialogs/export.rs:812
+#: rnote-ui/src/dialogs/export.rs:808
 msgid "Export engine state"
 msgstr "Экспортировать состояние движка"
 
-#: rnote-ui/src/dialogs/export.rs:850
+#: rnote-ui/src/dialogs/export.rs:846
 msgid "Export engine state failed."
 msgstr "Не удалось экспортировать состояние движка."
 
-#: rnote-ui/src/dialogs/export.rs:852
+#: rnote-ui/src/dialogs/export.rs:848
 msgid "Exported engine state successfully."
 msgstr "Состояние движка успешно экспортировано."
 
-#: rnote-ui/src/dialogs/export.rs:876
+#: rnote-ui/src/dialogs/export.rs:872
 msgid "Export engine config"
 msgstr "Экспорт конфигурации движка"
 
-#: rnote-ui/src/dialogs/export.rs:914
+#: rnote-ui/src/dialogs/export.rs:910
 msgid "Export engine config failed."
 msgstr "Не удалось экспортировать конфиг движка."
 
-#: rnote-ui/src/dialogs/export.rs:916
+#: rnote-ui/src/dialogs/export.rs:912
 msgid "Exported engine config successfully."
 msgstr "Конфиг движка успешно экспортирован."
 
-#: rnote-ui/src/appwindow/imexport.rs:76
-msgid "Opening .rnote file failed."
-msgstr "Не удалось открыть .rnote файл."
+#: rnote-ui/src/dialogs/import.rs:34
+msgid "Opening file failed."
+msgstr "Не удалось открыть файл."
 
-#: rnote-ui/src/appwindow/imexport.rs:95
-msgid "Opening vector image file failed."
-msgstr "Не удалось открыть векторное изображение."
+#: rnote-ui/src/dialogs/import.rs:85
+msgid "Open file"
+msgstr "Открыть файлы"
 
-#: rnote-ui/src/appwindow/imexport.rs:114
-msgid "Opening bitmap image file failed."
-msgstr "Не удалось открыть растровое изображение."
+#: rnote-ui/src/dialogs/import.rs:135
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/appwindow/imexport.rs:169
-msgid "Error: Tried opening folder as file"
-msgstr "Ошибка: Невозможно открыть папку как файл"
+#: rnote-ui/src/dialogs/import.rs:138
+msgid "Import file"
+msgstr "Импортировать файл"
 
-#: rnote-ui/src/appwindow/imexport.rs:178
-msgid "Failed to open file: Unsupported file type."
-msgstr "Не удалось открыть файл: формат файла не поддерживается."
+#: rnote-ui/src/dialogs/import.rs:250
+msgid "- no file name -"
+msgstr "- нет имени файла -"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:759
-msgid "Printed document successfully"
-msgstr "Документ успешно распечатан"
+#: rnote-ui/src/dialogs/import.rs:255
+msgid "- no title -"
+msgstr "- нет заголовка -"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:768
-msgid "Printing document failed"
-msgstr "Не удалось распечатать документ"
+#: rnote-ui/src/dialogs/import.rs:258
+msgid "- no author -"
+msgstr "- нет автора -"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:794
-msgid "Export selection failed, nothing selected."
-msgstr "Не удалось экспортировать выделение, ничего не выделено."
+#: rnote-ui/src/dialogs/import.rs:262
+msgid "- no date -"
+msgstr "- нет даты -"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:56
-#, fuzzy
-#| msgid "File name:"
-msgid "Folder name"
+#: rnote-ui/src/dialogs/import.rs:269
+msgid "File name:"
 msgstr "Имя файла:"
 
-#: rnote-ui/src/workspacebrowser/workspace_action/create_folder.rs:64
-msgid "New folder"
+#: rnote-ui/src/dialogs/import.rs:273
+msgid "Title:"
+msgstr "Заголовок:"
+
+#: rnote-ui/src/dialogs/import.rs:277
+msgid "Author:"
+msgstr "Автор:"
+
+#: rnote-ui/src/dialogs/import.rs:281
+msgid "Modification date:"
+msgstr "Дата изменения:"
+
+#: rnote-ui/src/dialogs/import.rs:285
+msgid "Pages:"
+msgstr "Страницы:"
+
+#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+#: rnote-ui/src/dialogs/mod.rs:38
+msgid "translator-credits"
+msgstr "Валерий Манжос <Manzhos.VA@gmail.com>"
+
+#: rnote-ui/src/dialogs/mod.rs:272
+msgid "- unable to find a valid save folder -"
 msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:368
+msgid "Change workspace directory"
+msgstr "Выбрать каталог коллекции"
+
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
+msgid "Folder name"
+msgstr "Имя папки:"
+
+#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
+msgid "New folder"
+msgstr "Новая папка"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "Не показывать полосы прокрутки"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close the application window"
+#~ msgstr "Закрыть активное окно"
+
+#, fuzzy
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "Выбрать каталог коллекции"
+
+#~ msgid "Quit Application"
+#~ msgstr "Выйти из программы"
+
+#~ msgid ""
+#~ "Any unsaved changes will be lost. Do you want to save the current "
+#~ "document?"
+#~ msgstr ""
+#~ "Все несохранённые изменения будут потеряны. Хотите сохранить текущий "
+#~ "документ?"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "_Copy to clipboard"
+#~ msgstr "Скопировать в буфер обмена"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "C_ut to clipboard"
+#~ msgstr "Скопировать в буфер обмена"
+
+#~ msgid "_Paste clipboard"
+#~ msgstr "_Вставить содержимое буфера обмена"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "Скопировать в буфер обмена"
+
+#~ msgid "_Clear document"
+#~ msgstr "_Очистить документ"
+
+#~ msgid "Stroke dots radii"
+#~ msgstr "Радиусы точек мазка"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "Радиусы отдельных точек внутри мазка текстурированной кисти"
+
+#~ msgid "Roughness"
+#~ msgstr "Грубость"
+
+#~ msgid ""
+#~ "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+#~ msgstr ""
+#~ "Указывает, насколько грубым является рисунок. 0,0 - плавная линия. По "
+#~ "умолчанию 1,0"
+
+#~ msgid "Bowing"
+#~ msgstr "Изгиб"
+
+#~ msgid ""
+#~ "How curvy the lines are when drawing a rough shape. 0.0 is a straight "
+#~ "line. Defaults to 1.0"
+#~ msgstr ""
+#~ "Насколько криволинейными становятся линии при рисовании грубой фигуры. "
+#~ "0,0 - это прямая линия. По умолчанию 1,0"
+
+#~ msgid "Curve step count"
+#~ msgstr "Количество шагов кривой"
+
+#~ msgid "How many steps make up a curve. Defaults to 12"
+#~ msgstr "Сколько шагов составляет кривую. По умолчанию 12"
+
+#~ msgid "Multistroke"
+#~ msgstr "Мультиштрих"
+
+#~ msgid "Multiple stroke generation for a sketched look. Defaults to true"
+#~ msgstr ""
+#~ "Генерация нескольких штрихов для эскизного вида. Включено по умолчанию"
 
 #~ msgid "Selecting apiece"
 #~ msgstr "Выделение элементов"

@@ -2,11 +2,11 @@ use gtk4::Align;
 use gtk4::{
     glib::prelude::*, prelude::*, Image, Label, ListItem, Orientation, SignalListItemFactory,
 };
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Debug, Clone)]
-pub struct ChangePenStyleListModel(adw::EnumListModel);
+pub(crate) struct ChangePenStyleListModel(adw::EnumListModel);
 
 impl Default for ChangePenStyleListModel {
     fn default() -> Self {
@@ -29,7 +29,7 @@ impl DerefMut for ChangePenStyleListModel {
 }
 
 #[derive(Debug, Clone)]
-pub struct ChangePenStyleListFactory(SignalListItemFactory);
+pub(crate) struct ChangePenStyleListFactory(SignalListItemFactory);
 
 impl Default for ChangePenStyleListFactory {
     fn default() -> Self {
@@ -106,7 +106,7 @@ impl DerefMut for ChangePenStyleListFactory {
 }
 
 #[derive(Debug, Clone)]
-pub struct ChangePenStyleIconFactory(SignalListItemFactory);
+pub(crate) struct ChangePenStyleIconFactory(SignalListItemFactory);
 
 impl Default for ChangePenStyleIconFactory {
     fn default() -> Self {

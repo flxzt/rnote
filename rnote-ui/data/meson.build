@@ -84,7 +84,6 @@ if glib_compile_schemas.found()
         'validate-gschema',
         glib_compile_schemas,
         args: [
-            '--strict',
             '--dry-run',
             datadir / 'glib-2.0' / 'schemas',
         ],

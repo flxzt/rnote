@@ -15,68 +15,7 @@ use crate::shapes::ShapeBehaviour;
 use crate::PenPath;
 
 use kurbo::Shape;
-use p2d::bounding_volume::{BoundingVolume, AABB};
-
-// Composes a line with variable width. Must be drawn with only a fill
-fn compose_line_variable_width(
-    line: Line,
-    width_start: f64,
-    width_end: f64,
-    _options: &SmoothOptions,
-) -> kurbo::BezPath {
-    let start_offset_dist = width_start * 0.5;
-    let end_offset_dist = width_end * 0.5;
-
-    let direction_unit_norm = (line.end - line.start).orth_unit();
-    let end_arc_rotation = na::Vector2::y().angle_ahead(&(line.end - line.start));
-
-    let mut bez_path = kurbo::BezPath::new();
-
-    bez_path.extend(
-        kurbo::Arc {
-            center: line.start.to_kurbo_point(),
-            radii: kurbo::Vec2::new(start_offset_dist, start_offset_dist),
-            start_angle: 0.0,
-            sweep_angle: std::f64::consts::PI,
-            x_rotation: end_arc_rotation + std::f64::consts::PI,
-        }
-        .into_path(0.1)
-        .into_iter(),
-    );
-
-    bez_path.extend(
-        [
-            kurbo::PathEl::MoveTo(
-                (line.start + direction_unit_norm * start_offset_dist).to_kurbo_point(),
-            ),
-            kurbo::PathEl::LineTo(
-                (line.start - direction_unit_norm * start_offset_dist).to_kurbo_point(),
-            ),
-            kurbo::PathEl::LineTo(
-                (line.end - direction_unit_norm * end_offset_dist).to_kurbo_point(),
-            ),
-            kurbo::PathEl::LineTo(
-                (line.end + direction_unit_norm * end_offset_dist).to_kurbo_point(),
-            ),
-            kurbo::PathEl::ClosePath,
-        ]
-        .into_iter(),
-    );
-
-    bez_path.extend(
-        kurbo::Arc {
-            center: line.end.to_kurbo_point(),
-            radii: kurbo::Vec2::new(end_offset_dist, end_offset_dist),
-            start_angle: 0.0,
-            sweep_angle: std::f64::consts::PI,
-            x_rotation: end_arc_rotation,
-        }
-        .into_path(0.1)
-        .into_iter(),
-    );
-
-    bez_path
-}
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 
 // Composes lines with variable width. Must be drawn with only a fill
 fn compose_lines_variable_width(
@@ -179,7 +118,7 @@ fn compose_lines_variable_width(
 }
 
 impl Composer<SmoothOptions> for Line {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -196,7 +135,7 @@ impl Composer<SmoothOptions> for Line {
 }
 
 impl Composer<SmoothOptions> for Rectangle {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -218,7 +157,7 @@ impl Composer<SmoothOptions> for Rectangle {
 }
 
 impl Composer<SmoothOptions> for Ellipse {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -240,7 +179,7 @@ impl Composer<SmoothOptions> for Ellipse {
 }
 
 impl Composer<SmoothOptions> for QuadraticBezier {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -262,7 +201,7 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 }
 
 impl Composer<SmoothOptions> for CubicBezier {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
@@ -283,136 +222,118 @@ impl Composer<SmoothOptions> for CubicBezier {
     }
 }
 
-impl Composer<SmoothOptions> for Segment {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+impl Composer<SmoothOptions> for PenPath {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
 
-        let bez_path = {
-            match self {
-                Segment::Dot { element } => {
-                    let radii = na::Vector2::from_element(
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width * 0.5, element.pressure),
-                    );
+        let mut prev = self.start;
+        for seg in self.segments.iter() {
+            let bez_path = {
+                match seg {
+                    Segment::LineTo { end } => {
+                        let (width_start, width_end) = (
+                            options
+                                .pressure_curve
+                                .apply(options.stroke_width, prev.pressure),
+                            options
+                                .pressure_curve
+                                .apply(options.stroke_width, end.pressure),
+                        );
 
-                    kurbo::Ellipse::new(element.pos.to_kurbo_point(), radii.to_kurbo_vec(), 0.0)
-                        .into_path(0.1)
-                }
-                Segment::Line { start, end } => {
-                    let (width_start, width_end) = (
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width, start.pressure),
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width, end.pressure),
-                    );
+                        let bez_path = compose_lines_variable_width(
+                            &[Line {
+                                start: prev.pos,
+                                end: end.pos,
+                            }],
+                            width_start,
+                            width_end,
+                            options,
+                        );
 
-                    compose_line_variable_width(
-                        Line {
-                            start: start.pos,
+                        prev = *end;
+                        bez_path
+                    }
+                    Segment::QuadBezTo { cp, end } => {
+                        let (width_start, width_end) = (
+                            options
+                                .pressure_curve
+                                .apply(options.stroke_width, prev.pressure),
+                            options
+                                .pressure_curve
+                                .apply(options.stroke_width, end.pressure),
+                        );
+
+                        let n_splits = 5;
+
+                        let quadbez = QuadraticBezier {
+                            start: prev.pos,
+                            cp: *cp,
                             end: end.pos,
-                        },
-                        width_start,
-                        width_end,
-                        options,
-                    )
+                        };
+
+                        let lines = quadbez.approx_with_lines(n_splits);
+
+                        let bez_path =
+                            compose_lines_variable_width(&lines, width_start, width_end, options);
+
+                        prev = *end;
+                        bez_path
+                    }
+                    Segment::CubBezTo { cp1, cp2, end } => {
+                        let (width_start, width_end) = (
+                            options
+                                .pressure_curve
+                                .apply(options.stroke_width, prev.pressure),
+                            options
+                                .pressure_curve
+                                .apply(options.stroke_width, end.pressure),
+                        );
+
+                        let n_splits = 5;
+
+                        let cubbez = CubicBezier {
+                            start: prev.pos,
+                            cp1: *cp1,
+                            cp2: *cp2,
+                            end: end.pos,
+                        };
+                        let lines = cubbez.approx_with_lines(n_splits);
+
+                        let bez_path =
+                            compose_lines_variable_width(&lines, width_start, width_end, options);
+
+                        prev = *end;
+                        bez_path
+                    }
                 }
-                Segment::QuadBez { start, cp, end } => {
-                    let (width_start, width_end) = (
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width, start.pressure),
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width, end.pressure),
-                    );
+            };
 
-                    let n_splits = 5;
+            if let Some(fill_color) = options.stroke_color {
+                // Outlines for debugging
+                //let stroke_brush = cx.solid_brush(piet::Color::RED);
+                //cx.stroke(bez_path.clone(), &stroke_brush, 0.4);
 
-                    let quadbez = QuadraticBezier {
-                        start: start.pos,
-                        cp: *cp,
-                        end: end.pos,
-                    };
-
-                    let lines = quadbez.approx_with_lines(n_splits);
-
-                    compose_lines_variable_width(&lines, width_start, width_end, options)
-                }
-                Segment::CubBez {
-                    start,
-                    cp1,
-                    cp2,
-                    end,
-                } => {
-                    let (width_start, width_end) = (
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width, start.pressure),
-                        options
-                            .pressure_curve
-                            .apply(options.stroke_width, end.pressure),
-                    );
-
-                    let n_splits = 5;
-
-                    let cubbez = CubicBezier {
-                        start: start.pos,
-                        cp1: *cp1,
-                        cp2: *cp2,
-                        end: end.pos,
-                    };
-                    let lines = cubbez.approx_with_lines(n_splits);
-
-                    compose_lines_variable_width(&lines, width_start, width_end, options)
-                }
+                let fill_brush = cx.solid_brush(fill_color.into());
+                cx.fill(bez_path, &fill_brush);
             }
-        };
-
-        if let Some(fill_color) = options.stroke_color {
-            // Outlines for debugging
-            //let stroke_brush = cx.solid_brush(piet::Color::RED);
-            //cx.stroke(bez_path.clone(), &stroke_brush, 0.4);
-
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(bez_path, &fill_brush);
         }
 
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<SmoothOptions> for PenPath {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.iter()
-            .map(|segment| segment.composed_bounds(options))
-            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
-        for segment in self.iter() {
-            segment.draw_composed(cx, options);
-        }
         cx.restore().unwrap();
     }
 }
 
 impl Composer<SmoothOptions> for crate::Shape {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         match self {
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
             crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
-            crate::Shape::Segment(segment) => segment.composed_bounds(options),
         }
     }
 
@@ -423,7 +344,6 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
             crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
-            crate::Shape::Segment(segment) => segment.draw_composed(cx, options),
         }
     }
 }

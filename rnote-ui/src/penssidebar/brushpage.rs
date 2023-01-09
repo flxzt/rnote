@@ -224,36 +224,39 @@ impl BrushPage {
         imp.small_brush_preset.connect_toggled(clone!(@weak appwindow => move |small_brush_preset| {
             if small_brush_preset.is_active() {
                 let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
+                let mut engine = engine.borrow_mut();
 
                 engine.pens_config.brush_config.marker_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Small;
                 engine.pens_config.brush_config.solid_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Small;
                 engine.pens_config.brush_config.textured_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Small;
             }
+            appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
             }),
         );
 
         imp.medium_brush_preset.connect_toggled(clone!(@weak appwindow => move |small_brush_preset| {
             if small_brush_preset.is_active() {
                 let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
+                let mut engine = engine.borrow_mut();
 
                 engine.pens_config.brush_config.marker_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Medium;
                 engine.pens_config.brush_config.solid_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Medium;
                 engine.pens_config.brush_config.textured_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Medium;
             }
+            appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
             }),
         );
 
         imp.large_brush_preset.connect_toggled(clone!(@weak appwindow => move |small_brush_preset| {
             if small_brush_preset.is_active() {
                 let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
+                let mut engine = engine.borrow_mut();
 
                 engine.pens_config.brush_config.marker_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Large;
                 engine.pens_config.brush_config.solid_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Large;
                 engine.pens_config.brush_config.textured_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Large;
             }
+            appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
             }),
         );
 

@@ -215,8 +215,13 @@ impl Document {
 
         self.x = 0.0;
         self.y = 0.0;
-        self.width = new_bounds.extents()[0];
-        self.height = new_bounds.extents()[1];
+
+        if viewport.mins[0] > 0.0 {
+            self.width = new_bounds.extents()[0];
+        }
+        if viewport.mins[1] > 0.0 {
+            self.height = new_bounds.extents()[1];
+        }
     }
 
     pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {

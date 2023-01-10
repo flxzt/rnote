@@ -216,10 +216,10 @@ impl Document {
         self.x = 0.0;
         self.y = 0.0;
 
-        if viewport.mins[0] > 0.0 {
+        if viewport.mins[0] > 0.0 || viewport.maxs[0] + padding_horizontal >= self.width {
             self.width = new_bounds.extents()[0];
         }
-        if viewport.mins[1] > 0.0 {
+        if viewport.mins[1] > 0.0 || viewport.maxs[1] + padding_vertical >= self.height {
             self.height = new_bounds.extents()[1];
         }
     }

@@ -242,7 +242,7 @@ impl ShaperPage {
             clone!(@weak appwindow => move |width_spinbutton| {
                 let stroke_width = width_spinbutton.value();
                 let engine = appwindow.active_tab().canvas().engine();
-                let mut engine = engine.borrow_mut();
+                let engine = engine.borrow();
 
                 engine.pens_config.shaper_config.smooth_options.stroke_options.set_stroke_width(stroke_width);
                 engine.pens_config.shaper_config.rough_options.stroke_options.set_stroke_width(stroke_width);

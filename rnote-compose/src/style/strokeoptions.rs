@@ -48,7 +48,7 @@ impl StrokeOptions {
     }
 
     /// Sets a new stroke width to the selected preset
-    pub fn set_stroke_width(&mut self, value: f64) {
+    pub fn set_stroke_width(mut self, value: f64) {
         match self.stroke_width_preset {
             StrokeWidthPreset::Small => self.stroke_width_small = value,
             StrokeWidthPreset::Medium => self.stroke_width_medium = value,

@@ -119,11 +119,11 @@ impl ShapeBehaviour for VectorImage {
 }
 
 impl TransformBehaviour for VectorImage {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.rectangle.translate(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.rectangle.rotate(angle, center);
     }
 

@@ -73,21 +73,21 @@ impl ShapeBehaviour for PenPath {
 }
 
 impl TransformBehaviour for PenPath {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start.translate(offset);
         self.segments.iter_mut().for_each(|segment| {
             segment.translate(offset);
         });
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.start.rotate(angle, center);
         self.segments.iter_mut().for_each(|segment| {
             segment.rotate(angle, center);
         });
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         self.start.scale(scale);
         self.segments.iter_mut().for_each(|segment| {
             segment.scale(scale);

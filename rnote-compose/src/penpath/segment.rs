@@ -40,7 +40,7 @@ pub enum Segment {
 }
 
 impl TransformBehaviour for Segment {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::LineTo { end } => {
                 end.pos += offset;
@@ -57,7 +57,7 @@ impl TransformBehaviour for Segment {
         }
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
@@ -77,7 +77,7 @@ impl TransformBehaviour for Segment {
         }
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         match self {
             Self::LineTo { end } => {
                 end.pos = end.pos.component_mul(&scale);

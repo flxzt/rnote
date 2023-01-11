@@ -14,6 +14,8 @@ use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 
 mod imp {
+    use gtk4::ToggleButton;
+
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
@@ -21,6 +23,12 @@ mod imp {
     pub(crate) struct BrushPage {
         #[template_child]
         pub(crate) width_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
+        pub(crate) small_brush_preset: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) medium_brush_preset: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) large_brush_preset: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -203,12 +211,69 @@ impl BrushPage {
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
                 let stroke_width = brush_widthscale_spinbutton.value();
+
+                // TODO update active brush preset size
+
                 let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
                 engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
                 engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
                 engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+            }),
+        );
+
+        // preset toggle buttons
+
+        // TODO find a better way than hardcoded values for stroke_width that can be changed through the ui
+        imp.small_brush_preset.connect_toggled(
+            clone!(@weak appwindow => move |small_brush_preset| {
+            if small_brush_preset.is_active() {
+                let stroke_width = 1.0;
+                appwindow.penssidebar().brush_page().width_spinbutton().set_value(stroke_width);
+
+                let engine = appwindow.active_tab().canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+
+                engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+            }
+            }),
+        );
+
+        imp.medium_brush_preset.connect_toggled(
+            clone!(@weak appwindow => move |small_brush_preset| {
+            if small_brush_preset.is_active() {
+                let stroke_width = 2.0;
+                appwindow.penssidebar().brush_page().width_spinbutton().set_value(stroke_width);
+
+                let engine = appwindow.active_tab().canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+
+                engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+            }
+            }),
+        );
+
+        imp.large_brush_preset.connect_toggled(
+            clone!(@weak appwindow => move |small_brush_preset| {
+            if small_brush_preset.is_active() {
+                let stroke_width = 10.0;
+                appwindow.penssidebar().brush_page().width_spinbutton().set_value(stroke_width);
+
+                let engine = appwindow.active_tab().canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+
+                engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+            }
             }),
         );
 

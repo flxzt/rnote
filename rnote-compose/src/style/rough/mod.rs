@@ -16,7 +16,7 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
     let mut roughr_options = roughr::core::OptionsBuilder::default();
 
     roughr_options
-        .stroke_width(options.stroke_options.get_stroke_width() as f32)
+        .stroke_width(options.stroke_width as f32)
         .hachure_angle(options.hachure_angle.to_degrees() as f32)
         .fill_style(options.fill_style.into());
 
@@ -24,7 +24,7 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
         roughr_options.seed(seed);
     }
 
-    if let Some(stroke_color) = options.stroke_options.stroke_color {
+    if let Some(stroke_color) = options.stroke_color {
         roughr_options.stroke(stroke_color.into());
     }
 
@@ -43,9 +43,8 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
 
 impl Composer<RoughOptions> for Line {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds().loosened(
-            options.stroke_options.get_stroke_width() * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN,
-        )
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
@@ -66,9 +65,8 @@ impl Composer<RoughOptions> for Line {
 
 impl Composer<RoughOptions> for Rectangle {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds().loosened(
-            options.stroke_options.get_stroke_width() * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN,
-        )
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
@@ -93,9 +91,8 @@ impl Composer<RoughOptions> for Rectangle {
 
 impl Composer<RoughOptions> for Ellipse {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds().loosened(
-            options.stroke_options.get_stroke_width() * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN,
-        )
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
@@ -115,9 +112,8 @@ impl Composer<RoughOptions> for Ellipse {
 
 impl Composer<RoughOptions> for QuadraticBezier {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds().loosened(
-            options.stroke_options.get_stroke_width() * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN,
-        )
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
@@ -138,9 +134,8 @@ impl Composer<RoughOptions> for QuadraticBezier {
 
 impl Composer<RoughOptions> for CubicBezier {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds().loosened(
-            options.stroke_options.get_stroke_width() * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN,
-        )
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {

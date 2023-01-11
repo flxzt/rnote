@@ -5,8 +5,8 @@ use gtk4::{
 };
 use num_traits::cast::ToPrimitive;
 
+use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
-use rnote_compose::{builders::PenPathBuilderType, style::strokeoptions::StrokeWidthPreset};
 use rnote_engine::pens::pensconfig::BrushConfig;
 
 use crate::appwindow::RnoteAppWindow;
@@ -14,8 +14,6 @@ use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 
 mod imp {
-    use gtk4::ToggleButton;
-
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
@@ -23,12 +21,6 @@ mod imp {
     pub(crate) struct BrushPage {
         #[template_child]
         pub(crate) width_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub(crate) small_brush_preset: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) medium_brush_preset: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub(crate) large_brush_preset: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -206,7 +198,7 @@ impl BrushPage {
         // set value after the range!
         imp.width_spinbutton
             .get()
-            .set_value(SolidOptions::default().stroke_options.get_stroke_width());
+            .set_value(SolidOptions::default().stroke_width);
 
         imp.width_spinbutton.connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
@@ -214,46 +206,9 @@ impl BrushPage {
                 let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                engine.pens_config.brush_config.marker_options.stroke_options.set_stroke_width(stroke_width);
-                engine.pens_config.brush_config.solid_options.stroke_options.set_stroke_width(stroke_width);
-                engine.pens_config.brush_config.textured_options.stroke_options.set_stroke_width(stroke_width);
-            }),
-        );
-
-        // preset toggle buttons
-        imp.small_brush_preset.connect_toggled(clone!(@weak appwindow => move |small_brush_preset| {
-            if small_brush_preset.is_active() {
-                let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
-
-                engine.pens_config.brush_config.marker_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Small;
-                engine.pens_config.brush_config.solid_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Small;
-                engine.pens_config.brush_config.textured_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Small;
-            }
-            }),
-        );
-
-        imp.medium_brush_preset.connect_toggled(clone!(@weak appwindow => move |small_brush_preset| {
-            if small_brush_preset.is_active() {
-                let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
-
-                engine.pens_config.brush_config.marker_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Medium;
-                engine.pens_config.brush_config.solid_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Medium;
-                engine.pens_config.brush_config.textured_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Medium;
-            }
-            }),
-        );
-
-        imp.large_brush_preset.connect_toggled(clone!(@weak appwindow => move |small_brush_preset| {
-            if small_brush_preset.is_active() {
-                let engine = appwindow.active_tab().canvas().engine();
-                let engine = &mut *engine.borrow_mut();
-
-                engine.pens_config.brush_config.marker_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Large;
-                engine.pens_config.brush_config.solid_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Large;
-                engine.pens_config.brush_config.textured_options.stroke_options.stroke_width_preset = StrokeWidthPreset::Large;
-            }
+                engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
             }),
         );
 
@@ -333,27 +288,16 @@ impl BrushPage {
 
         match brush_config.style {
             BrushStyle::Marker => {
-                println!("setting marker size");
-                imp.width_spinbutton.set_value(
-                    brush_config
-                        .marker_options
-                        .stroke_options
-                        .get_stroke_width(),
-                );
+                imp.width_spinbutton
+                    .set_value(brush_config.marker_options.stroke_width);
             }
             BrushStyle::Solid => {
-                println!("setting solid size");
                 imp.width_spinbutton
-                    .set_value(brush_config.solid_options.stroke_options.get_stroke_width());
+                    .set_value(brush_config.solid_options.stroke_width);
             }
             BrushStyle::Textured => {
-                println!("setting textured size");
-                imp.width_spinbutton.set_value(
-                    brush_config
-                        .textured_options
-                        .stroke_options
-                        .get_stroke_width(),
-                );
+                imp.width_spinbutton
+                    .set_value(brush_config.textured_options.stroke_width);
             }
         }
     }

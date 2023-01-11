@@ -1,15 +1,18 @@
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
-use crate::{style::strokeoptions::StrokeOptions, Color};
+use crate::Color;
 
 /// The rough options
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "rough_options")]
 pub struct RoughOptions {
-    /// The stroke
-    #[serde(rename = "stroke_options")]
-    pub stroke_options: StrokeOptions,
+    /// the stroke color. When set to None, no stroke outline is produced
+    #[serde(rename = "stroke_color")]
+    pub stroke_color: Option<Color>,
+    /// the stroke width
+    #[serde(rename = "stroke_width")]
+    pub stroke_width: f64,
     /// an optional fill color. When set to None no fill is produced.
     #[serde(rename = "fill_color")]
     pub fill_color: Option<Color>,
@@ -28,7 +31,8 @@ pub struct RoughOptions {
 impl Default for RoughOptions {
     fn default() -> Self {
         Self {
-            stroke_options: StrokeOptions::default(),
+            stroke_color: Some(Color::BLACK),
+            stroke_width: 2.4,
             fill_color: None,
             fill_style: FillStyle::Hachure,
             // Default hachure angle (in rad). is -41 degrees

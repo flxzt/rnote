@@ -5,8 +5,6 @@ pub mod drawhelpers;
 pub mod rough;
 /// The smooth module for smooth styles
 pub mod smooth;
-/// The stroke options common to all stroke types
-pub mod strokeoptions;
 /// The textured module for textured styles
 pub mod textured;
 
@@ -46,20 +44,18 @@ impl Style {
     /// returns the stroke width. available on all styles
     pub fn stroke_width(&self) -> f64 {
         match self {
-            Style::Smooth(options) => options.stroke_options.get_stroke_width(),
-            Style::Rough(options) => options.stroke_options.get_stroke_width(),
-            Style::Textured(options) => options.stroke_options.get_stroke_width(),
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
         }
     }
 
     /// The margins for bounds in which the shape fits
     pub fn bounds_margin(&self) -> f64 {
         match self {
-            Style::Smooth(options) => options.stroke_options.get_stroke_width(),
-            Style::Rough(options) => {
-                options.stroke_options.get_stroke_width() + RoughOptions::ROUGH_BOUNDS_MARGIN
-            }
-            Style::Textured(options) => options.stroke_options.get_stroke_width(),
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width + RoughOptions::ROUGH_BOUNDS_MARGIN,
+            Style::Textured(options) => options.stroke_width,
         }
     }
 

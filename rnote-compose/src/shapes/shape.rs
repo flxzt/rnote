@@ -33,7 +33,7 @@ impl Default for Shape {
 }
 
 impl TransformBehaviour for Shape {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::Line(line) => {
                 line.translate(offset);
@@ -53,7 +53,7 @@ impl TransformBehaviour for Shape {
         }
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         match self {
             Self::Line(line) => {
                 line.rotate(angle, center);
@@ -73,7 +73,7 @@ impl TransformBehaviour for Shape {
         }
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         match self {
             Self::Line(line) => {
                 line.scale(scale);

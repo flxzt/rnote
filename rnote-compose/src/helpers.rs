@@ -233,7 +233,7 @@ impl AabbHelpers for Aabb {
         )
     }
 
-    fn extend_by(&self, extend_by: nalgebra::Vector2<f64>) -> Aabb {
+    fn extend_by(&self, extend_by: na::Vector2<f64>) -> Aabb {
         Aabb::new(
             na::Point2::from(self.mins.coords - extend_by),
             na::Point2::from(self.maxs.coords + extend_by),
@@ -275,7 +275,7 @@ impl AabbHelpers for Aabb {
         )
     }
 
-    fn scale_non_uniform(&self, scale: nalgebra::Vector2<f64>) -> Aabb {
+    fn scale_non_uniform(&self, scale: na::Vector2<f64>) -> Aabb {
         Aabb::new(
             na::Point2::from(self.mins.coords.component_mul(&scale)),
             na::Point2::from(self.maxs.coords.component_mul(&scale)),
@@ -305,7 +305,7 @@ impl AabbHelpers for Aabb {
         ]
     }
 
-    fn split(self, splitted_size: nalgebra::Vector2<f64>) -> Vec<Self> {
+    fn split(self, splitted_size: na::Vector2<f64>) -> Vec<Self> {
         let mut splitted_aabbs = vec![self];
 
         // Split them horizontally
@@ -436,8 +436,8 @@ impl Affine2Helpers for na::Affine2<f64> {
 
 /// Scale the source size with a specified max size, while keeping its aspect ratio
 pub fn scale_w_locked_aspectratio(
-    src_size: nalgebra::Vector2<f64>,
-    max_size: nalgebra::Vector2<f64>,
+    src_size: na::Vector2<f64>,
+    max_size: na::Vector2<f64>,
 ) -> na::Vector2<f64> {
     let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
 

@@ -20,12 +20,12 @@ pub struct Line {
 }
 
 impl TransformBehaviour for Line {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.end += offset;
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
@@ -33,7 +33,7 @@ impl TransformBehaviour for Line {
         self.end = (isometry * na::Point2::from(self.end)).coords;
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         self.start = self.start.component_mul(&scale);
         self.end = self.end.component_mul(&scale);
     }

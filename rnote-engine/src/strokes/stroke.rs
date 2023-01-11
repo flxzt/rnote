@@ -135,7 +135,7 @@ impl TransformBehaviour for Stroke {
         }
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         match self {
             Self::BrushStroke(brushstroke) => {
                 brushstroke.scale(scale);

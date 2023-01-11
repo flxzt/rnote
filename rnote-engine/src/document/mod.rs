@@ -209,17 +209,18 @@ impl Document {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
-        let new_bounds = self.bounds().merged(
-            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
-        );
+        let new_viewport_bounds =
+            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]);
+
+        let new_bounds = self.bounds().merged(new_viewport_bounds);
 
         self.x = 0.0;
         self.y = 0.0;
 
-        if viewport.mins[0] > 0.0 || viewport.maxs[0] + padding_horizontal >= self.width {
+        if new_viewport_bounds.maxs[0] >= self.bounds().maxs[0] {
             self.width = new_bounds.extents()[0];
         }
-        if viewport.mins[1] > 0.0 || viewport.maxs[1] + padding_vertical >= self.height {
+        if new_viewport_bounds.maxs[1] >= self.bounds().maxs[1] {
             self.height = new_bounds.extents()[1];
         }
     }

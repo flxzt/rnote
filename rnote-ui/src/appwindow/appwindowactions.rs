@@ -368,12 +368,12 @@ impl RnoteAppWindow {
             }
 
             // Update from / to the pen pages and settings panel
-            appwindow.penssidebar().brush_page().sync_ui_active_tab(&appwindow);
-            appwindow.penssidebar().shaper_page().sync_ui_active_tab(&appwindow);
-            appwindow.penssidebar().typewriter_page().sync_ui_active_tab(&appwindow);
-            appwindow.penssidebar().eraser_page().sync_ui_active_tab(&appwindow);
-            appwindow.penssidebar().selector_page().sync_ui_active_tab(&appwindow);
-            appwindow.penssidebar().tools_page().sync_ui_active_tab(&appwindow);
+            appwindow.overlays().penssidebar().brush_page().sync_ui_active_tab(&appwindow);
+            appwindow.overlays().penssidebar().shaper_page().sync_ui_active_tab(&appwindow);
+            appwindow.overlays().penssidebar().typewriter_page().sync_ui_active_tab(&appwindow);
+            appwindow.overlays().penssidebar().eraser_page().sync_ui_active_tab(&appwindow);
+            appwindow.overlays().penssidebar().selector_page().sync_ui_active_tab(&appwindow);
+            appwindow.overlays().penssidebar().tools_page().sync_ui_active_tab(&appwindow);
             appwindow.settings_panel().sync_state_active_tab(&appwindow);
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
@@ -411,7 +411,7 @@ impl RnoteAppWindow {
             match pen_style {
                 PenStyle::Brush => {
                     appwindow.overlays().brush_toggle().set_active(true);
-                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
+                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("brush_page");
 
                     let style = canvas.engine().borrow().pens_config.brush_config.style;
                     match style {
@@ -435,7 +435,7 @@ impl RnoteAppWindow {
                 }
                 PenStyle::Shaper => {
                     appwindow.overlays().shaper_toggle().set_active(true);
-                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
+                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
 
                     let style = canvas.engine().borrow().pens_config.shaper_config.style;
                     match style {
@@ -455,31 +455,31 @@ impl RnoteAppWindow {
                 }
                 PenStyle::Typewriter => {
                     appwindow.overlays().typewriter_toggle().set_active(true);
-                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
+                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
 
                     let text_color = canvas.engine().borrow().pens_config.typewriter_config.text_style.color;
                     appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(text_color));
                 }
                 PenStyle::Eraser => {
                     appwindow.overlays().eraser_toggle().set_active(true);
-                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
+                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                 }
                 PenStyle::Selector => {
                     appwindow.overlays().selector_toggle().set_active(true);
-                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
+                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 }
                 PenStyle::Tools => {
                     appwindow.overlays().tools_toggle().set_active(true);
-                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
+                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                 }
             }
 
-            appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
-            appwindow.penssidebar().shaper_page().refresh_ui(&appwindow);
-            appwindow.penssidebar().typewriter_page().refresh_ui(&appwindow);
-            appwindow.penssidebar().eraser_page().refresh_ui(&appwindow);
-            appwindow.penssidebar().selector_page().refresh_ui(&appwindow);
-            appwindow.penssidebar().tools_page().refresh_ui(&appwindow);
+            appwindow.overlays().penssidebar().brush_page().refresh_ui(&appwindow);
+            appwindow.overlays().penssidebar().shaper_page().refresh_ui(&appwindow);
+            appwindow.overlays().penssidebar().typewriter_page().refresh_ui(&appwindow);
+            appwindow.overlays().penssidebar().eraser_page().refresh_ui(&appwindow);
+            appwindow.overlays().penssidebar().selector_page().refresh_ui(&appwindow);
+            appwindow.overlays().penssidebar().tools_page().refresh_ui(&appwindow);
             appwindow.settings_panel().refresh_ui(&appwindow);
             appwindow.refresh_titles_active_tab();
         }));

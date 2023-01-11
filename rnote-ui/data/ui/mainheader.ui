@@ -41,7 +41,7 @@
               <object class="GtkSeparator">
                 <property name="orientation">vertical</property>
                 <style>
-                  <class name="spacer"/>
+                  <class name="spacer" />
                 </style>
               </object>
             </child>
@@ -80,7 +80,8 @@
                     <child>
                       <object class="GtkButton">
                         <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
+                        <property name="tooltip_text" translatable="yes">Resize document to fit the
+                          strokes</property>
                         <property name="action-name">win.resize-to-fit-strokes</property>
                       </object>
                     </child>
@@ -98,6 +99,12 @@
                 <property name="tooltip-text" translatable="yes">Save document</property>
                 <property name="icon-name">doc-save-symbolic</property>
                 <property name="action-name">win.save-doc</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="flapreveal_toggle">
+                <property name="icon_name">flap-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
               </object>
             </child>
             <child>

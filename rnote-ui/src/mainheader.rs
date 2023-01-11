@@ -1,5 +1,7 @@
 use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
-use gtk4::{glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, Widget};
+use gtk4::{
+    glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, ToggleButton, Widget,
+};
 
 mod imp {
     use super::*;
@@ -21,6 +23,8 @@ mod imp {
         pub(crate) undo_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) redo_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -88,6 +92,10 @@ impl MainHeader {
 
     pub(crate) fn fixedsize_quickactions_box(&self) -> gtk4::Box {
         self.imp().fixedsize_quickactions_box.get()
+    }
+
+    pub(crate) fn flapreveal_toggle(&self) -> ToggleButton {
+        self.imp().flapreveal_toggle.get()
     }
 
     pub(crate) fn undo_button(&self) -> Button {

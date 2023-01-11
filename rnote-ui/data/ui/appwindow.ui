@@ -25,7 +25,6 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
-                  <property name="column-span">3</property>
                 </layout>
               </object>
             </child>
@@ -34,7 +33,6 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>
-                  <property name="column-span">3</property>
                 </layout>
               </object>
             </child>
@@ -44,70 +42,8 @@
                 <property name="vexpand">true</property>
                 <layout>
                   <property name="column">0</property>
-                  <property name="row">3</property>
+                  <property name="row">2</property>
                 </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSeparator" id="sidebar_sep">
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">3</property>
-                </layout>
-                <property name="orientation">horizontal</property>
-                <property name="hexpand">false</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkGrid" id="sidebar_box">
-                <layout>
-                  <property name="column">2</property>
-                  <property name="row">3</property>
-                </layout>
-                <property name="orientation">vertical</property>
-                <property name="hexpand">false</property>
-                <property name="margin-top">3</property>
-                <child>
-                  <object class="GtkScrolledWindow" id="sidebar_scroller">
-                    <property name="propagate-natural-width">true</property>
-                    <property name="propagate-natural-height">true</property>
-                    <property name="overlay-scrolling">true</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="vscrollbar-policy">automatic</property>
-                    <property name="hexpand">false</property>
-                    <property name="halign">fill</property>
-                    <property name="vexpand">true</property>
-                    <property name="valign">fill</property>
-                    <property name="min-content-height">240</property>
-                    <property name="window-placement">top-left</property>
-                    <child>
-                      <object class="PensSideBar" id="penssidebar"></object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkSeparator">
-                    <property name="orientation">vertical</property>
-                    <property name="vexpand">false</property>
-                    <property name="valign">end</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="flapreveal_toggle">
-                    <property name="hexpand">true</property>
-                    <property name="halign">fill</property>
-                    <property name="valign">end</property>
-                    <property name="icon_name">flap-symbolic</property>
-                    <property name="margin_top">6</property>
-                    <property name="margin_bottom">6</property>
-                    <property name="margin_start">6</property>
-                    <property name="margin_end">6</property>
-                    <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
-                  </object>
-                </child>
               </object>
             </child>
           </object>

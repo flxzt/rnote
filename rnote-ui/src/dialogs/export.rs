@@ -57,13 +57,19 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow, canvas: &Rnote
                         glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                             appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = canvas.save_document_to_file(&file).await {
-                                canvas.set_output_file(None);
+                            match canvas.save_document_to_file(&file).await {
+                                Ok(true) => {
+                                    appwindow.overlays().dispatch_toast_text(&gettext("Saved document successfully."));
+                                }
+                                Ok(false) => {
+                                    // Saving was already in progress
+                                }
+                                Err(e) => {
+                                    canvas.set_output_file(None);
 
-                                log::error!("saving document failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
-                            } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Saved document successfully."));
+                                    log::error!("saving document failed with error `{e:?}`");
+                                    appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                                }
                             }
 
                             appwindow.overlays().finish_progressbar();

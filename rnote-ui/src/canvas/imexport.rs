@@ -174,11 +174,15 @@ impl RnoteCanvas {
         Ok(())
     }
 
-    pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+    /// Saves the document to the given file.
+    ///
+    /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were executed,
+    /// Err(e) when saving failed in any way.
+    pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
         if self.output_file_expect_write() {
             log::debug!("saving file already in progress.");
-            return Ok(());
+            return Ok(false);
         }
 
         let basename = file.basename().ok_or_else(|| {
@@ -208,7 +212,7 @@ impl RnoteCanvas {
         self.set_output_file(Some(file.to_owned()));
         self.set_unsaved_changes(false);
 
-        Ok(())
+        Ok(true)
     }
 
     pub(crate) async fn export_doc(

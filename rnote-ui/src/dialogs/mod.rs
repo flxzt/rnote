@@ -130,7 +130,6 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
                 new_doc(&appwindow, &canvas);
             },
             "save" => {
-
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
                     if let Some(output_file) = canvas.output_file() {
                         appwindow.overlays().start_pulsing_progressbar();

@@ -20,6 +20,14 @@ jobs:
         run: |
           sudo dnf upgrade --refresh -y
           sudo dnf install -y gcc gcc-c++ clang make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+      - name: Install toolchain
+        id: toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          components: rustfmt, clippy
+          override: true
       - name: Cache
         uses: actions/cache@v3
         with:
@@ -29,15 +37,8 @@ jobs:
             _mesonbuild/cargo-home/registry/cache/
             _mesonbuild/cargo-home/git/db/
             _mesonbuild/target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          components: rustfmt, clippy
-          override: true
+          key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}
       - name: Configure
         run: |
           meson setup --prefix=/usr _mesonbuild

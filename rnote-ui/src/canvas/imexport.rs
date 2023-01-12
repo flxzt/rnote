@@ -174,27 +174,55 @@ impl RnoteCanvas {
         Ok(())
     }
 
-    pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+    /// Saves the document to the given file.
+    ///
+    /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were executed,
+    /// Err(e) when saving failed in any way.
+    pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
+        // skip saving when it is already in progress
+        if self.output_file_expect_write() {
+            log::debug!("saving file already in progress.");
+            return Ok(false);
+        }
+
         let basename = file.basename().ok_or_else(|| {
             anyhow::anyhow!(
                 "save_document_to_file() failed, could not retreive basename for file: {file:?}"
             )
         })?;
 
-        let rnote_bytes_receiver = self
+        self.set_output_file_expect_write(true);
+
+        let rnote_bytes_receiver = match self
             .engine()
             .borrow()
-            .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string())
+        {
+            Ok(r) => r,
+            Err(e) => {
+                self.set_output_file_expect_write(false);
+                return Err(e);
+            }
+        };
 
-        self.set_output_file_expect_write(true);
         self.dismiss_output_file_modified_toast();
 
-        crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
+        let res = async move {
+            crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await
+        }
+        .await;
+
+        if let Err(e) = res {
+            // If the file operations failed in any way, we make sure to clear the flag
+            // because we can't know for sure if the output_file monitor will be able to clear it.
+            self.set_output_file_expect_write(false);
+            return Err(e);
+        }
 
         self.set_output_file(Some(file.to_owned()));
         self.set_unsaved_changes(false);
 
-        Ok(())
+        Ok(true)
     }
 
     pub(crate) async fn export_doc(

@@ -175,6 +175,12 @@ impl RnoteCanvas {
     }
 
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+        // skip saving when it is already in progress
+        if self.output_file_expect_write() {
+            log::debug!("saving file already in progress.");
+            return Ok(());
+        }
+
         let basename = file.basename().ok_or_else(|| {
             anyhow::anyhow!(
                 "save_document_to_file() failed, could not retreive basename for file: {file:?}"

@@ -207,7 +207,17 @@ impl RnoteCanvas {
 
         self.dismiss_output_file_modified_toast();
 
-        crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await?;
+        let res = async move {
+            crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await
+        }
+        .await;
+
+        if let Err(e) = res {
+            // If the file operations failed in any way, we make sure to clear the flag
+            // because we can't know for sure if the output_file monitor will be able to clear it.
+            self.set_output_file_expect_write(false);
+            return Err(e);
+        }
 
         self.set_output_file(Some(file.to_owned()));
         self.set_unsaved_changes(false);

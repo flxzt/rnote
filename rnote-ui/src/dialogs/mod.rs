@@ -18,11 +18,17 @@ use crate::{globals, IconPicker};
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnoteAppWindow) {
+    let app_icon_name = if config::PROFILE == "devel" {
+        config::APP_NAME.to_string() + "-devel"
+    } else {
+        config::APP_NAME.to_string()
+    };
+
     let aboutdialog = adw::AboutWindow::builder()
         .modal(true)
         .transient_for(appwindow)
         .application_name(config::APP_NAME_CAPITALIZED)
-        .application_icon(config::APP_ID)
+        .application_icon(&app_icon_name)
         .comments(&gettext("Sketch and take handwritten notes"))
         .website(config::APP_WEBSITE)
         .issue_url(config::APP_ISSUES_URL)

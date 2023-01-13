@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 13:19+0100\n"
-"PO-Revision-Date: 2022-12-25 17:47+0000\n"
+"PO-Revision-Date: 2023-01-14 07:23+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -99,16 +99,12 @@ msgid "New Document"
 msgstr "Yeni Belge"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved changes. Do you want to "
-#| "save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved\n"
 "      changes. Do you want to save the current document?"
 msgstr ""
-"Yeni bir belge oluşturmak kaydedilmemiş tüm değişiklikleri silecek. Geçerli "
-"belgeyi kaydetmek istiyor musunuz?"
+"Yeni bir belge oluşturmak kaydedilmemiş tüm değişiklikleri silecek. \n"
+"Geçerli belgeyi kaydetmek istiyor musunuz?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
@@ -123,36 +119,32 @@ msgid "Save"
 msgstr "Kaydet"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close tab"
-msgstr "Etkin pencereyi kapat"
+msgstr "Sekmeyi kapat"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Bu sekme kaydedilmemiş değişiklikleri içeriyor. Kaydedilmemiş değişiklikler "
+"kalıcı olarak kaybolacak."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close window"
-msgstr "Etkin pencereyi kapat"
+msgstr "Pencereyi kapat"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Açılan bazı dosyalar kaydedilmemiş değişiklikler içeriyor. Kaydedilmemiş "
+"değişiklikler kalıcı olarak kaybolacak."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard all"
-msgstr "Gözden çıkar"
+msgstr "Hepsini gözden çıkar"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
@@ -199,10 +191,8 @@ msgid "- no directory selected -"
 msgstr "- dizin seçilmedi -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "Çalışma alanı dizinini değiştir"
+msgstr "Dizini değiştir"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -779,17 +769,15 @@ msgid "Enabled"
 msgstr "Etkin"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:408
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Bu anahtar kapalı/açık olduğunda kısıtlamaları geçici olarak \n"
-"etkinleştirmek/devre dışı bırakmak için Ctrl tuşunu basılı tutun"
+"Bu anahtar kapalı/açık olduğunda \n"
+"kısıtlamaları geçici olarak \n"
+"etkinleştirmek/devre dışı bırakmak için \n"
+"Ctrl tuşunu basılı tutun"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:420
 msgid "1:1"
@@ -1083,7 +1071,7 @@ msgstr "Taslak"
 
 #: rnote-ui/data/ui/mainheader.ui:37
 msgid "New tab"
-msgstr ""
+msgstr "Yeni sekme"
 
 #: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
@@ -1139,14 +1127,11 @@ msgstr "Biçim kenarlık rengini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show scrollbars"
-msgstr ""
+msgstr "Kaydırma çubuklarını göster"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
-"Tuval üzerindeki kaydırma çubuklarının kalıcı olarak gizlenme durumunu ayarla"
+msgstr "Tuval üzerindeki kaydırma çubuklarının gösterilme durumunu ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
@@ -1557,14 +1542,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi."
 
 #: rnote-ui/src/canvas/mod.rs:950
-#, fuzzy
-#| msgid "- no file name -"
 msgid "- invalid file name -"
-msgstr "- adsız -"
+msgstr "- geçersiz dosya adı -"
 
 #: rnote-ui/src/canvas/mod.rs:963
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- geçersiz klasör yolu -"
 
 #: rnote-ui/src/canvas/mod.rs:977
 msgid "Opened file was modified on disk."
@@ -1575,10 +1558,8 @@ msgid "Reload"
 msgstr "Yeniden yükle"
 
 #: rnote-ui/src/canvas/mod.rs:984
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed."
-msgstr ".rnote dosyası açılamadı."
+msgstr ".rnote dosyasının diskten yeniden yüklenmesi başarısız oldu."
 
 #: rnote-ui/src/canvas/mod.rs:1026
 msgid "Opened file was renamed on disk."
@@ -1725,7 +1706,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:272
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- geçerli bir kayıt klasörü bulunamadı -"
 
 #: rnote-ui/src/dialogs/mod.rs:368
 msgid "Change workspace directory"

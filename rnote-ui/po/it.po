@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 13:19+0100\n"
-"PO-Revision-Date: 2023-01-09 11:36+0000\n"
+"PO-Revision-Date: 2023-01-14 07:23+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -99,15 +99,12 @@ msgid "New Document"
 msgstr "Nuovo Documento"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved changes. Do you want to "
-#| "save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved\n"
 "      changes. Do you want to save the current document?"
 msgstr ""
 "La creazione di un nuovo documento cancella tutte le modifiche non salvate. "
+"\n"
 "Vuoi salvare il documento corrente?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
@@ -131,25 +128,24 @@ msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Questa scheda contiene modifiche non salvate. Le modifiche non salvate "
+"andranno perse."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close window"
-msgstr "Chiudi la finestra attiva"
+msgstr "Chiudi la finestra"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Alcuni dei file aperti contengono modifiche non salvate. Le modifiche non "
+"salvate andranno perse."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard all"
-msgstr "Scarta"
+msgstr "Scarta tutto"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
@@ -196,10 +192,8 @@ msgid "- no directory selected -"
 msgstr "- nessuna cartella selezionata -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "Cambia la cartella dell'area di lavoro"
+msgstr "Cambia la cartella"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -776,16 +770,13 @@ msgid "Enabled"
 msgstr "Abilitato"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:408
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Tenere premuto Ctrl per attivare/disattivare le limitazioni\n"
+"Tenere premuto Ctrl per temporaneamente\n"
+"attivare/disattivare le limitazioni\n"
 "quando l'opzione è disattivata/attivata"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:420
@@ -1079,10 +1070,8 @@ msgid "Draft"
 msgstr "Bozza"
 
 #: rnote-ui/data/ui/mainheader.ui:37
-#, fuzzy
-#| msgid "New Sheet"
 msgid "New tab"
-msgstr "Nuovo Foglio"
+msgstr "Nuova scheda"
 
 #: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
@@ -1138,15 +1127,11 @@ msgstr "Scegli il colore del bordo"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show scrollbars"
-msgstr ""
+msgstr "Mostra le barre di scorrimento"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
-"Imposta se le barre di scorrimento sull'area di disegno sono nascoste in "
-"modo permanente"
+msgstr "Imposta se le barre di scorrimento sull'area di disegno sono mostrate"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
@@ -1557,14 +1542,12 @@ msgid "Export selection failed, nothing selected."
 msgstr "Esportazione della selezione fallita, non si è selezionato nulla."
 
 #: rnote-ui/src/canvas/mod.rs:950
-#, fuzzy
-#| msgid "- no file name -"
 msgid "- invalid file name -"
-msgstr "- nessun nome file -"
+msgstr "- nome del file invalido -"
 
 #: rnote-ui/src/canvas/mod.rs:963
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- percorso della cartella invalido -"
 
 #: rnote-ui/src/canvas/mod.rs:977
 msgid "Opened file was modified on disk."
@@ -1575,10 +1558,8 @@ msgid "Reload"
 msgstr "Ricarica"
 
 #: rnote-ui/src/canvas/mod.rs:984
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed."
-msgstr "Apertura file .rnote fallita."
+msgstr "Ricaricamento del file .rnote fallito."
 
 #: rnote-ui/src/canvas/mod.rs:1026
 msgid "Opened file was renamed on disk."
@@ -1725,7 +1706,7 @@ msgstr "Albano Battistella <albano_battistella@hotmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:272
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- non si riesce a trovare una cartella di salvataggio valida -"
 
 #: rnote-ui/src/dialogs/mod.rs:368
 msgid "Change workspace directory"

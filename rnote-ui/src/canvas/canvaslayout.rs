@@ -88,8 +88,8 @@ mod imp {
                         + super::CanvasLayout::OVERSHOOT_HORIZONTAL,
                 ),
                 Layout::SemiInfinite => (
-                    (engine.document.x - Document::SHADOW_WIDTH) * total_zoom,
-                    (engine.document.x + engine.document.width) * total_zoom,
+                    document.x * total_zoom - super::CanvasLayout::OVERSHOOT_HORIZONTAL,
+                    (document.x + document.width) * total_zoom,
                 ),
                 Layout::Infinite => (
                     document.x * total_zoom,
@@ -105,8 +105,8 @@ mod imp {
                         + super::CanvasLayout::OVERSHOOT_VERTICAL,
                 ),
                 Layout::SemiInfinite => (
-                    (engine.document.y - Document::SHADOW_WIDTH) * total_zoom,
-                    (engine.document.y + engine.document.height) * total_zoom,
+                    document.y * total_zoom - super::CanvasLayout::OVERSHOOT_VERTICAL,
+                    (document.y + document.height) * total_zoom,
                 ),
                 Layout::Infinite => (
                     document.y * total_zoom,

@@ -215,7 +215,6 @@ impl Document {
 
         self.x = 0.0;
         self.y = 0.0;
-
         self.width = new_bounds.maxs[0];
         self.height = new_bounds.maxs[1];
     }

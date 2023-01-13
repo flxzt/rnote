@@ -209,20 +209,15 @@ impl Document {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
-        let new_viewport_bounds =
-            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]);
-
-        let new_bounds = self.bounds().merged(new_viewport_bounds);
+        let new_bounds = self.bounds().merged(
+            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
+        );
 
         self.x = 0.0;
         self.y = 0.0;
 
-        if new_viewport_bounds.maxs[0] >= self.bounds().maxs[0] {
-            self.width = new_bounds.extents()[0];
-        }
-        if new_viewport_bounds.maxs[1] >= self.bounds().maxs[1] {
-            self.height = new_bounds.extents()[1];
-        }
+        self.width = new_bounds.maxs[0];
+        self.height = new_bounds.maxs[1];
     }
 
     pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: Aabb) {

@@ -243,12 +243,13 @@ pub(crate) async fn dialog_close_window(appwindow: &RnoteAppWindow) {
             .canvas();
 
         if canvas.unsaved_changes() {
-            let save_folder_path =
-                if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
-                    Some(p)
-                } else {
-                    directories::UserDirs::new().and_then(|u| u.document_dir().map(|p| p.to_path_buf()))
-                };
+            let save_folder_path = if let Some(p) =
+                canvas.output_file().and_then(|f| f.parent()?.path())
+            {
+                Some(p)
+            } else {
+                directories::UserDirs::new().and_then(|u| u.document_dir().map(|p| p.to_path_buf()))
+            };
 
             let mut doc_title = canvas.doc_title_display();
             // Ensuring we don't save with same file names by suffixing with a running index if it already exists
@@ -303,7 +304,6 @@ pub(crate) async fn dialog_close_window(appwindow: &RnoteAppWindow) {
                         .canvas();
 
                     if let Some(export_folder_path) = save_folder_path {
-
                         let save_file =
                             gio::File::for_path(export_folder_path.join(doc_title + ".rnote"));
 

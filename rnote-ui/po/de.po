@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2023-01-09 11:36+0000\n"
+"PO-Revision-Date: 2023-01-14 20:16+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -222,7 +222,7 @@ msgstr "PDF Importeinstellungen"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"
-msgstr "Anfangsseite"
+msgstr "Erste Seite"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
 msgid "End page"
@@ -1005,10 +1005,8 @@ msgid "_Continuous vertical"
 msgstr "_Kontinuierlich vertikal"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "_Infinite"
 msgid "_Semi infinite"
-msgstr "_Unendlich"
+msgstr "_Halb-unendlich"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"

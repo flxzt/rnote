@@ -132,6 +132,8 @@ where
     fn extend_top_by(&self, extend: f64) -> Self;
     /// extends on bottom side by the given size
     fn extend_bottom_by(&self, extend: f64) -> Self;
+    /// extends on bottom side by the given size
+    fn extend_right_and_bottom_by(&self, extend_by: na::Vector2<f64>) -> Self;
     /// Scales the Aabb by the scalefactor
     fn scale(&self, scale: f64) -> Self;
     /// Scales the Aabb by the scale vector
@@ -265,6 +267,13 @@ impl AabbHelpers for Aabb {
         Aabb::new(
             na::Point2::from(self.mins.coords),
             na::point![self.maxs.coords[0], self.maxs.coords[1] + extend],
+        )
+    }
+
+    fn extend_right_and_bottom_by(&self, extend_by: nalgebra::Vector2<f64>) -> Aabb {
+        Aabb::new(
+            na::Point2::from(self.mins.coords),
+            na::Point2::from(self.maxs.coords + extend_by),
         )
     }
 

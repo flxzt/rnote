@@ -142,59 +142,9 @@ impl RnoteOverlays {
     }
 
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
-        let imp = self.imp();
-
         self.setup_pens_toggles(appwindow);
         self.setup_colorpicker(appwindow);
-
-        imp.tabview
-            .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
-                let canvas = appwindow.active_tab().canvas();
-
-                appwindow.clear_rendering_inactive_tabs();
-                canvas.regenerate_background_pattern();
-                canvas.update_engine_rendering();
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
-            }));
-
-        imp.tabview
-            .connect_page_attached(clone!(@weak appwindow => move |_tabview, page, _| {
-                let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
-
-                canvaswrapper.init_reconnect(&appwindow);
-                canvaswrapper.connect_to_tab_page(page);
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
-            }));
-
-        imp.tabview
-            .connect_page_detached(clone!(@weak appwindow => move |_tabview, page, _| {
-                let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
-
-                canvaswrapper.disconnect_handlers(&appwindow);
-            }));
-
-        imp.tabview.connect_close_page(
-            clone!(@weak appwindow => @default-return true, move |tabview, page| {
-                if !page.is_pinned() {
-                    if page
-                        .child()
-                        .downcast::<RnoteCanvasWrapper>()
-                        .unwrap()
-                        .canvas()
-                        .unsaved_changes()
-                    {
-                        // We close after showing the dialog
-                        dialogs::dialog_close_tab(&appwindow, page);
-                    } else {
-                        tabview.close_page_finish(page, true);
-                    }
-                } else {
-                    tabview.close_page_finish(page, false);
-                }
-
-                true
-            }),
-        );
+        self.setup_tabview(appwindow);
     }
 
     fn setup_pens_toggles(&self, appwindow: &RnoteAppWindow) {
@@ -293,6 +243,55 @@ impl RnoteOverlays {
                 engine.pens_config.brush_config.solid_options.fill_color= Some(fill_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.rough_options.fill_color= Some(fill_color);
+            }),
+        );
+    }
+
+    fn setup_tabview(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
+        imp.tabview
+            .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
+                let canvas = appwindow.active_tab().canvas();
+
+                appwindow.clear_rendering_inactive_tabs();
+                canvas.regenerate_background_pattern();
+                canvas.update_engine_rendering();
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
+            }));
+
+        imp.tabview
+            .connect_page_attached(clone!(@weak appwindow => move |_tabview, page, _| {
+                let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+
+                canvaswrapper.init_reconnect(&appwindow);
+                canvaswrapper.connect_to_tab_page(page);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
+            }));
+
+        imp.tabview
+            .connect_page_detached(clone!(@weak appwindow => move |_tabview, page, _| {
+                let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+
+                canvaswrapper.disconnect_handlers(&appwindow);
+            }));
+
+        imp.tabview.connect_close_page(
+            clone!(@weak appwindow => @default-return true, move |tabview, page| {
+                if page
+                    .child()
+                    .downcast::<RnoteCanvasWrapper>()
+                    .unwrap()
+                    .canvas()
+                    .unsaved_changes()
+                {
+                    // close_tab_finish() is called in the dialog
+                    dialogs::dialog_close_tab(&appwindow, page);
+                } else {
+                    tabview.close_page_finish(page, true);
+                }
+
+                true
             }),
         );
     }

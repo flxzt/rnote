@@ -121,35 +121,6 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow" id="pdf_import_pages_type_row">
-                    <property name="title" translatable="yes">Pages type</property>
-                    <property name="subtitle" translatable="yes">Set whether PDFs should be imported as vector or bitmap images</property>
-                    <child type="suffix">
-                      <object class="GtkBox">
-                        <property name="orientation">horizontal</property>
-                        <property name="homogeneous">true</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
-                        <style>
-                          <class name="linked" />
-                        </style>
-                        <child>
-                          <object class="GtkToggleButton" id="pdf_import_as_vector_toggle">
-                            <property name="label" translatable="yes">Vector</property>
-                            <property name="active">true</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkToggleButton" id="pdf_import_as_bitmap_toggle">
-                            <property name="group">pdf_import_as_vector_toggle</property>
-                            <property name="label" translatable="yes">Bitmap</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
                   <object class="AdwActionRow" id="pdf_import_width_row">
                     <property name="title" translatable="yes">Page width (%)</property>
                     <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the format width</property>
@@ -182,6 +153,57 @@
                         </items>
                       </object>
                     </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="pdf_import_pages_type_row">
+                    <property name="title" translatable="yes">Pages type</property>
+                    <property name="subtitle" translatable="yes">Set whether PDFs should be imported as vector or bitmap images</property>
+                    <child type="suffix">
+                      <object class="GtkBox">
+                        <property name="orientation">horizontal</property>
+                        <property name="homogeneous">true</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <style>
+                          <class name="linked" />
+                        </style>
+                        <child>
+                          <object class="GtkToggleButton" id="pdf_import_as_vector_toggle">
+                            <property name="label" translatable="yes">Vector</property>
+                            <property name="active">true</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="pdf_import_as_bitmap_toggle">
+                            <property name="group">pdf_import_as_vector_toggle</property>
+                            <property name="label" translatable="yes">Bitmap</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow" id="pdf_import_bitmap_scalefactor_row">
+                    <property name="title" translatable="yes">Bitmap scale factor</property>
+                    <property name="subtitle" translatable="yes">Set the bitmap scale factor in relation
+to the actual size on the document</property>
+                    <child type="suffix">
+                      <object class="GtkAdjustment" id="pdf_import_bitmap_scalefactor_adj">
+                        <property name="step-increment">0.1</property>
+                        <property name="upper">10.0</property>
+                        <property name="lower">0.1</property>
+                        <property name="value">1.0</property>
+                      </object>
+                      <object class="GtkSpinButton" id="pdf_import_bitmap_scalefactor_spinbutton">
+                        <property name="adjustment">pdf_import_bitmap_scalefactor_adj</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="digits">1</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

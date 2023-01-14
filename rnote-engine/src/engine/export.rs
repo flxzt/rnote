@@ -138,7 +138,7 @@ impl Default for DocPagesExportPrefs {
             with_background: true,
             with_pattern: true,
             export_format: DocPagesExportFormat::default(),
-            bitmap_scalefactor: 1.0,
+            bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
         }
     }
@@ -242,7 +242,7 @@ impl Default for SelectionExportPrefs {
             with_background: true,
             with_pattern: false,
             export_format: SelectionExportFormat::Svg,
-            bitmap_scalefactor: 1.0,
+            bitmap_scalefactor: 1.8,
             jpeg_quality: 85,
             margin: 12.0,
         }

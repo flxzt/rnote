@@ -75,7 +75,7 @@ impl TryFrom<u32> for PdfImportPageSpacing {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(rename = "pdf_import_prefs")]
+#[serde(default, rename = "pdf_import_prefs")]
 pub struct PdfImportPrefs {
     /// The pdf page width in percentage to the format width
     #[serde(rename = "page_width_perc")]

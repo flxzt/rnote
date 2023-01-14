@@ -156,65 +156,58 @@ impl StrokeStore {
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
-                            if let Some(split_at) = brushstroke
+                            let mut splitted = Vec::new();
+
+                            let mut hits = brushstroke
                                 .path
                                 .hittest(&eraser_bounds, brushstroke.style.stroke_width() * 0.5)
-                            {
-                                let (first_split, second_split) =
-                                    brushstroke.path.segments[..].split_at(split_at);
-                                let first_split = first_split.to_vec();
-                                // We want to exclude the colliding segment, so +1
-                                let second_split =
-                                    second_split[1.min(second_split.len())..].to_vec();
+                                .into_iter();
 
-                                let first_empty = first_split.is_empty();
-                                let second_empty = second_split.is_empty()
-                                    || split_at == second_split.len().saturating_sub(1);
+                            if let Some(first_hit) = hits.next() {
+                                let mut prev = first_hit;
+                                for hit in hits {
+                                    let split = &brushstroke.path.segments[prev..hit];
 
-                                //log::debug!("split stroke, first_empty: {first_empty}, second_empty: {second_empty}, split_i: {split_at}");
+                                    // skip empty splits
+                                    if !split.is_empty() {
+                                        splitted.push(split.to_vec());
+                                    }
 
-                                match (first_empty, second_empty) {
-                                    (false, false) => {
-                                        // the first split is the original path until the hit, so we only need to replace the segments and can keep start
-                                        let first_start = brushstroke.path.start;
-                                        let second_start = first_split.last().unwrap().end();
+                                    prev = hit + 1;
+                                }
 
-                                        let first_split = first_split.to_vec();
-                                        brushstroke.replace_path(PenPath::new_w_segments(
-                                            first_start,
-                                            first_split,
-                                        ));
-                                        modified_keys.push(key);
+                                // Catch the last
+                                let last_split = &brushstroke.path.segments[prev..];
+                                if !last_split.is_empty() {
+                                    splitted.push(last_split.to_vec());
+                                }
+
+                                if !splitted.is_empty() {
+                                    for next_split in splitted {
+                                        let mut next_split_iter = next_split.into_iter();
+                                        let next_start = next_split_iter.next().unwrap().end();
 
                                         new_strokes.push((
                                             Stroke::BrushStroke(BrushStroke::from_penpath(
                                                 PenPath::new_w_segments(
-                                                    second_start,
-                                                    second_split.to_vec(),
+                                                    next_start,
+                                                    next_split_iter,
                                                 ),
                                                 brushstroke.style.clone(),
                                             )),
                                             chrono_comp.layer,
                                         ));
                                     }
-                                    (false, true) => {
-                                        brushstroke.replace_path(PenPath::new_w_segments(
-                                            brushstroke.path.start,
-                                            first_split.to_vec(),
-                                        ));
-                                        modified_keys.push(key);
-                                    }
-                                    (true, false) => {
-                                        let new_start = second_split.first().unwrap().end();
-                                        brushstroke.replace_path(PenPath::new_w_segments(
-                                            new_start,
-                                            second_split.to_vec(),
-                                        ));
-                                        modified_keys.push(key);
-                                    }
-                                    (true, true) => {
-                                        trash_current_stroke = true;
-                                    }
+
+                                    // Modify the original stroke at the end.
+                                    brushstroke.replace_path(PenPath::new_w_segments(
+                                        brushstroke.path.start,
+                                        brushstroke.path.segments[..first_hit].to_vec(),
+                                    ));
+
+                                    modified_keys.push(key);
+                                } else {
+                                    trash_current_stroke = true;
                                 }
                             }
                         }

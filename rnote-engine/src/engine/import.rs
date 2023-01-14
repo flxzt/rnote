@@ -77,15 +77,18 @@ impl TryFrom<u32> for PdfImportPageSpacing {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "pdf_import_prefs")]
 pub struct PdfImportPrefs {
-    /// The pdf pages type
-    #[serde(rename = "pages_type")]
-    pub pages_type: PdfImportPagesType,
     /// The pdf page width in percentage to the format width
     #[serde(rename = "page_width_perc")]
     pub page_width_perc: f64,
     /// The pdf page spacing
     #[serde(rename = "page_spacing")]
     pub page_spacing: PdfImportPageSpacing,
+    /// The pdf pages type
+    #[serde(rename = "pages_type")]
+    pub pages_type: PdfImportPagesType,
+    /// The scalefactor when importing as bitmap image
+    #[serde(rename = "bitmap_scalefactor")]
+    pub bitmap_scalefactor: f64,
 }
 
 impl Default for PdfImportPrefs {
@@ -94,6 +97,7 @@ impl Default for PdfImportPrefs {
             pages_type: PdfImportPagesType::default(),
             page_width_perc: 50.0,
             page_spacing: PdfImportPageSpacing::default(),
+            bitmap_scalefactor: 1.8,
         }
     }
 }
@@ -194,7 +198,7 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<BitmapImage> {
-                BitmapImage::import_from_image_bytes(&bytes, pos)
+                BitmapImage::import_from_image_bytes(&bytes, pos, None)
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {

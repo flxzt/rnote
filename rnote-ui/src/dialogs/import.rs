@@ -187,27 +187,38 @@ pub(crate) fn dialog_import_pdf_w_prefs(
     let pdf_info_label: Label = builder.object("pdf_info_label").unwrap();
     let pdf_import_width_perc_spinbutton: SpinButton =
         builder.object("pdf_import_width_perc_spinbutton").unwrap();
+    let pdf_import_page_spacing_row: adw::ComboRow =
+        builder.object("pdf_import_page_spacing_row").unwrap();
     let pdf_import_as_bitmap_toggle: ToggleButton =
         builder.object("pdf_import_as_bitmap_toggle").unwrap();
     let pdf_import_as_vector_toggle: ToggleButton =
         builder.object("pdf_import_as_vector_toggle").unwrap();
-    let pdf_import_page_spacing_row: adw::ComboRow =
-        builder.object("pdf_import_page_spacing_row").unwrap();
+    let pdf_import_bitmap_scalefactor_row: adw::ActionRow =
+        builder.object("pdf_import_bitmap_scalefactor_row").unwrap();
+    let pdf_import_bitmap_scalefactor_spinbutton: SpinButton = builder
+        .object("pdf_import_bitmap_scalefactor_spinbutton")
+        .unwrap();
 
     dialog.set_transient_for(Some(appwindow));
 
     let pdf_import_prefs = canvas.engine().borrow().import_prefs.pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
-    pdf_import_width_perc_spinbutton.set_value(pdf_import_prefs.page_width_perc);
-    match pdf_import_prefs.pages_type {
-        PdfImportPagesType::Bitmap => pdf_import_as_bitmap_toggle.set_active(true),
-        PdfImportPagesType::Vector => pdf_import_as_vector_toggle.set_active(true),
-    }
-    pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
-
     pdf_page_start_spinbutton.set_increments(1.0, 2.0);
     pdf_page_end_spinbutton.set_increments(1.0, 2.0);
+    pdf_import_width_perc_spinbutton.set_value(pdf_import_prefs.page_width_perc);
+    match pdf_import_prefs.pages_type {
+        PdfImportPagesType::Bitmap => {
+            pdf_import_as_bitmap_toggle.set_active(true);
+            pdf_import_bitmap_scalefactor_row.set_sensitive(true);
+        }
+        PdfImportPagesType::Vector => {
+            pdf_import_as_vector_toggle.set_active(true);
+            pdf_import_bitmap_scalefactor_row.set_sensitive(false);
+        }
+    }
+    pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
+    pdf_import_bitmap_scalefactor_spinbutton.set_value(pdf_import_prefs.bitmap_scalefactor);
 
     pdf_page_start_spinbutton
         .bind_property("value", &pdf_page_end_spinbutton.adjustment(), "lower")
@@ -219,17 +230,27 @@ pub(crate) fn dialog_import_pdf_w_prefs(
         .build();
 
     // Update preferences
-    pdf_import_as_bitmap_toggle.connect_toggled(
-        clone!(@weak canvas, @weak appwindow => move |toggle| {
-            let pages_type = if toggle.is_active() {
-                PdfImportPagesType::Bitmap
-            } else {
-                PdfImportPagesType::Vector
-            };
-
-            canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = pages_type;
+    pdf_import_as_vector_toggle.connect_toggled(
+        clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
+            if toggle.is_active() {
+                canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Vector;
+                pdf_import_bitmap_scalefactor_row.set_sensitive(false);
+            }
         }),
     );
+
+    pdf_import_as_bitmap_toggle.connect_toggled(
+        clone!(@weak pdf_import_bitmap_scalefactor_row, @weak canvas, @weak appwindow => move |toggle| {
+            if toggle.is_active() {
+                canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.pages_type = PdfImportPagesType::Bitmap;
+                pdf_import_bitmap_scalefactor_row.set_sensitive(true);
+            }
+        }),
+    );
+
+    pdf_import_bitmap_scalefactor_spinbutton.connect_value_changed(clone!(@weak canvas, @weak appwindow => move |spinbutton| {
+        canvas.engine().borrow_mut().import_prefs.pdf_import_prefs.bitmap_scalefactor = spinbutton.value();
+    }));
 
     pdf_import_page_spacing_row.connect_selected_notify(
         clone!(@weak canvas, @weak appwindow => move |row| {

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 13:19+0100\n"
+"POT-Creation-Date: 2023-01-14 14:10+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs/mod.rs:26
+#: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
 msgstr "素描與手寫筆記"
 
@@ -81,11 +81,11 @@ msgstr "這將清空整個文件。請確認。"
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:186
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
-#: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
-#: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:227
+#: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
+#: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:372
+#: rnote-ui/src/dialogs/mod.rs:379
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "取消"
@@ -191,8 +191,8 @@ msgid "Change the workspace directory"
 msgstr "更改工作區目錄"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:340
-#: rnote-ui/src/dialogs/export.rs:378 rnote-ui/src/dialogs/mod.rs:433
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
 msgid "- no directory selected -"
 msgstr "—— 沒有選擇目錄 ——"
 
@@ -289,13 +289,13 @@ msgstr "畫素密度(DPI)"
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "為Xournal++檔案設定推薦的DPI"
 
-#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export document"
 msgstr "匯出文件"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:811
-#: rnote-ui/src/dialogs/export.rs:875
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
+#: rnote-ui/src/dialogs/export.rs:881
 msgid "Export"
 msgstr "匯出"
 
@@ -309,9 +309,9 @@ msgstr "選擇匯出檔案"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
-#: rnote-ui/src/dialogs/export.rs:114 rnote-ui/src/dialogs/export.rs:140
-#: rnote-ui/src/dialogs/export.rs:169 rnote-ui/src/dialogs/export.rs:617
-#: rnote-ui/src/dialogs/export.rs:643 rnote-ui/src/dialogs/export.rs:678
+#: rnote-ui/src/dialogs/export.rs:120 rnote-ui/src/dialogs/export.rs:146
+#: rnote-ui/src/dialogs/export.rs:175 rnote-ui/src/dialogs/export.rs:623
+#: rnote-ui/src/dialogs/export.rs:649 rnote-ui/src/dialogs/export.rs:684
 msgid "- no file selected -"
 msgstr "— 沒有檔案被選中 —"
 
@@ -353,20 +353,20 @@ msgstr "匯出的格式"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:283
-#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:250
-#: rnote-ui/src/dialogs/export.rs:529 rnote-ui/src/dialogs/export.rs:775
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:256
+#: rnote-ui/src/dialogs/export.rs:535 rnote-ui/src/dialogs/export.rs:781
 msgid "Svg"
 msgstr "可縮放向量圖（SVG）"
 
-#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:255
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:261
 msgid "Pdf"
 msgstr "行動式文件格式（PDF）"
 
-#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:260
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:266
 msgid "Xopp"
 msgstr "Xournal++ 筆記本（Xopp）"
 
-#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:490
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 msgid "Export document pages"
 msgstr "匯出文件頁面"
 
@@ -383,14 +383,14 @@ msgid "Export files stem name"
 msgstr "匯出檔案主名稱"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:534
-#: rnote-ui/src/dialogs/export.rs:780
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
+#: rnote-ui/src/dialogs/export.rs:786
 msgid "Png"
 msgstr "行動式網路圖形（PNG）"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285
-#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:540
-#: rnote-ui/src/dialogs/export.rs:786
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:546
+#: rnote-ui/src/dialogs/export.rs:792
 msgid "Jpeg"
 msgstr "聯合影象標準（JPEG）"
 
@@ -418,7 +418,7 @@ msgstr "Jpeg影象質量"
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "設定Jpeg影象的質量(1-100)"
 
-#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:738
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
 msgid "Export selection"
 msgstr "匯出所選"
 
@@ -855,9 +855,9 @@ msgid "Fill"
 msgstr "填充"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:198
-#: rnote-ui/data/ui/colorpicker.ui:86 rnote-ui/src/dialogs/export.rs:220
-#: rnote-ui/src/dialogs/export.rs:493 rnote-ui/src/dialogs/export.rs:741
-#: rnote-ui/src/dialogs/mod.rs:371
+#: rnote-ui/data/ui/colorpicker.ui:86 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
+#: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
 msgstr "選擇"
 
@@ -1010,42 +1010,48 @@ msgid "_Continuous vertical"
 msgstr "垂直連續的頁面"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
+#, fuzzy
+#| msgid "_Infinite"
+msgid "_Semi infinite"
+msgstr "無限"
+
+#: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
 msgstr "無限"
 
-#: rnote-ui/data/ui/canvasmenu.ui:44
+#: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _format borders"
 msgstr "顯示格式邊框(F)"
 
-#: rnote-ui/data/ui/canvasmenu.ui:49
+#: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw with _touch input"
 msgstr "使用觸控繪製"
 
-#: rnote-ui/data/ui/canvasmenu.ui:54
+#: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Pen sounds"
 msgstr "手寫筆音效(P)"
 
-#: rnote-ui/data/ui/canvasmenu.ui:61
+#: rnote-ui/data/ui/canvasmenu.ui:66
 msgid "C_lear document"
 msgstr "清空文件"
 
-#: rnote-ui/data/ui/canvasmenu.ui:65
+#: rnote-ui/data/ui/canvasmenu.ui:70
 msgid "_Return to origin page"
 msgstr "返回到第一頁(R)"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:100
 msgid "Zoom out"
 msgstr "縮小"
 
-#: rnote-ui/data/ui/canvasmenu.ui:104
+#: rnote-ui/data/ui/canvasmenu.ui:109
 msgid "Reset the zoom"
 msgstr "重置縮放"
 
-#: rnote-ui/data/ui/canvasmenu.ui:111
+#: rnote-ui/data/ui/canvasmenu.ui:116
 msgid "Zoom in"
 msgstr "放大"
 
-#: rnote-ui/data/ui/canvasmenu.ui:123
+#: rnote-ui/data/ui/canvasmenu.ui:128
 msgid "Zoom to fit page width"
 msgstr "縮放以適合頁寬"
 
@@ -1501,10 +1507,10 @@ msgid "Edit selected workspace"
 msgstr "編輯選定的工作區"
 
 #: rnote-ui/src/appwindow/mod.rs:303
-#: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
-#: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
-#: rnote-ui/src/dialogs/mod.rs:316
+#: rnote-ui/src/appwindow/appwindowactions.rs:688
+#: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
+#: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
+#: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "文件儲存失敗。"
 
@@ -1536,15 +1542,15 @@ msgstr "錯誤：將資料夾作為檔案開啟"
 msgid "Failed to open file: Unsupported file type."
 msgstr "開啟檔案失敗：不支援的檔案型別。"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:801
+#: rnote-ui/src/appwindow/appwindowactions.rs:806
 msgid "Printed document successfully"
 msgstr "列印成功"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:810
+#: rnote-ui/src/appwindow/appwindowactions.rs:815
 msgid "Printing document failed"
 msgstr "列印失敗"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:838
+#: rnote-ui/src/appwindow/appwindowactions.rs:843
 msgid "Export selection failed, nothing selected."
 msgstr "匯出選擇內容失敗，沒有選擇內容。"
 
@@ -1588,71 +1594,71 @@ msgstr ".rnote"
 msgid "Save document as"
 msgstr "另存文件為"
 
-#: rnote-ui/src/dialogs/export.rs:66
+#: rnote-ui/src/dialogs/export.rs:62
 msgid "Saved document successfully."
 msgstr "文件儲存成功。"
 
-#: rnote-ui/src/dialogs/export.rs:189
+#: rnote-ui/src/dialogs/export.rs:195
 msgid "Export document failed."
 msgstr "匯出文件失敗。"
 
-#: rnote-ui/src/dialogs/export.rs:191
+#: rnote-ui/src/dialogs/export.rs:197
 msgid "Exported document successfully."
 msgstr "匯出文件成功。"
 
-#: rnote-ui/src/dialogs/export.rs:197
+#: rnote-ui/src/dialogs/export.rs:203
 msgid "Export document failed, no file selected."
 msgstr "匯出檔案失敗，沒有選擇檔案。"
 
-#: rnote-ui/src/dialogs/export.rs:462
+#: rnote-ui/src/dialogs/export.rs:468
 msgid "Export document pages failed."
 msgstr "匯出文件頁面失敗。"
 
-#: rnote-ui/src/dialogs/export.rs:464
+#: rnote-ui/src/dialogs/export.rs:470
 msgid "Exported document pages successfully."
 msgstr "匯出文件頁面成功。"
 
-#: rnote-ui/src/dialogs/export.rs:470
+#: rnote-ui/src/dialogs/export.rs:476
 msgid "Export document pages failed, no directory selected."
 msgstr "匯出文件頁面失敗，沒有選擇目錄。"
 
-#: rnote-ui/src/dialogs/export.rs:710
+#: rnote-ui/src/dialogs/export.rs:716
 msgid "Export selection failed."
 msgstr "匯出選擇內容失敗。"
 
-#: rnote-ui/src/dialogs/export.rs:712
+#: rnote-ui/src/dialogs/export.rs:718
 msgid "Exported selection successfully."
 msgstr "匯出選擇內容成功。"
 
-#: rnote-ui/src/dialogs/export.rs:718
+#: rnote-ui/src/dialogs/export.rs:724
 msgid "Export selection failed, no file selected."
 msgstr "匯出選擇內容失敗，沒有選擇檔案。"
 
-#: rnote-ui/src/dialogs/export.rs:805 rnote-ui/src/dialogs/export.rs:869
+#: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "JSON"
 msgstr "JSON"
 
-#: rnote-ui/src/dialogs/export.rs:808
+#: rnote-ui/src/dialogs/export.rs:814
 msgid "Export engine state"
 msgstr "匯出引擎狀態"
 
-#: rnote-ui/src/dialogs/export.rs:846
+#: rnote-ui/src/dialogs/export.rs:852
 msgid "Export engine state failed."
 msgstr "引擎狀態匯出失敗。"
 
-#: rnote-ui/src/dialogs/export.rs:848
+#: rnote-ui/src/dialogs/export.rs:854
 msgid "Exported engine state successfully."
 msgstr "引擎狀態匯出成功。"
 
-#: rnote-ui/src/dialogs/export.rs:872
+#: rnote-ui/src/dialogs/export.rs:878
 msgid "Export engine config"
 msgstr "匯出引擎配置"
 
-#: rnote-ui/src/dialogs/export.rs:910
+#: rnote-ui/src/dialogs/export.rs:916
 msgid "Export engine config failed."
 msgstr "引擎設定匯出失敗。"
 
-#: rnote-ui/src/dialogs/export.rs:912
+#: rnote-ui/src/dialogs/export.rs:918
 msgid "Exported engine config successfully."
 msgstr "引擎設定匯出成功。"
 
@@ -1709,15 +1715,15 @@ msgid "Pages:"
 msgstr "頁碼："
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs/mod.rs:38
+#: rnote-ui/src/dialogs/mod.rs:44
 msgid "translator-credits"
 msgstr "譯者注"
 
-#: rnote-ui/src/dialogs/mod.rs:272
+#: rnote-ui/src/dialogs/mod.rs:278
 msgid "- unable to find a valid save folder -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:368
+#: rnote-ui/src/dialogs/mod.rs:375
 msgid "Change workspace directory"
 msgstr "更改工作區目錄"
 

@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2023-01-14 07:23+0000\n"
+"PO-Revision-Date: 2023-01-14 20:16+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1004,10 +1004,8 @@ msgid "_Continuous vertical"
 msgstr "_Folyamatos függőleges"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "_Infinite"
 msgid "_Semi infinite"
-msgstr "_Végtelen"
+msgstr "_Félig végtelen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"

@@ -83,7 +83,7 @@ impl Camera {
 
     /// The scaling factor for generating pixel images with the current zoom. also takes the scale factor in account
     pub fn image_scale(&self) -> f64 {
-        self.zoom * self.temporary_zoom * self.scale_factor
+        self.zoom * self.scale_factor
     }
 
     /// the viewport in document coordinate space

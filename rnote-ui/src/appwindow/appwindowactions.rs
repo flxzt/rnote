@@ -1,4 +1,5 @@
 use super::RnoteAppWindow;
+use crate::canvas::CanvasLayout;
 use crate::config;
 use crate::{dialogs, RnoteCanvas};
 use piet::RenderContext;
@@ -9,7 +10,7 @@ use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::utils::GdkRGBAHelpers;
-use rnote_engine::{render, Camera, Document, DrawBehaviour, RnoteEngine, WidgetFlags};
+use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
 
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
@@ -597,7 +598,7 @@ impl RnoteAppWindow {
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvaswrapper = appwindow.active_tab();
 
-            let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * Document::SHADOW_WIDTH);
+            let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * CanvasLayout::OVERSHOOT_HORIZONTAL);
             let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);

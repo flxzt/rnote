@@ -7,7 +7,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 
 use crate::canvas::RnoteCanvas;
-use rnote_engine::{document::Layout, render, Document};
+use rnote_engine::{document::Layout, render};
 
 mod imp {
     use super::*;
@@ -185,8 +185,8 @@ impl Default for CanvasLayout {
 }
 
 impl CanvasLayout {
-    const OVERSHOOT_VERTICAL: f64 = 96.0;
-    const OVERSHOOT_HORIZONTAL: f64 = Document::SHADOW_WIDTH;
+    pub(crate) const OVERSHOOT_VERTICAL: f64 = 96.0;
+    pub(crate) const OVERSHOOT_HORIZONTAL: f64 = 32.0;
 
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2023-01-09 11:36+0000\n"
+"PO-Revision-Date: 2023-01-14 20:16+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -1004,10 +1004,8 @@ msgid "_Continuous vertical"
 msgstr "Vertical _continuo"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "_Infinite"
 msgid "_Semi infinite"
-msgstr "_Infinito"
+msgstr "_Semi-infinito"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"

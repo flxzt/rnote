@@ -131,6 +131,21 @@ impl StrokeStore {
         strokes_max_y - strokes_min_y
     }
 
+    /// Calculates the width needed to fit all strokes
+    pub fn calc_width(&self) -> f64 {
+        let strokes_iter = self
+            .stroke_keys_unordered()
+            .into_iter()
+            .filter_map(|key| self.stroke_components.get(key));
+
+        let strokes_min_x = strokes_iter
+            .clone()
+            .fold(0.0, |acc, stroke| stroke.bounds().mins[0].min(acc));
+        let strokes_max_x = strokes_iter.fold(0.0, |acc, stroke| stroke.bounds().maxs[0].max(acc));
+
+        strokes_max_x - strokes_min_x
+    }
+
     /// Generates the enclosing bounds for the given stroke keys
     pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<Aabb> {
         let mut keys_iter = keys.iter();

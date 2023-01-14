@@ -747,6 +747,11 @@ impl RnoteEngine {
             Layout::FixedSize | Layout::ContinuousVertical => {
                 // not resizing in these modes, the size is not dependent on the camera
             }
+            Layout::SemiInfinite => {
+                // only expand, don't resize to fit strokes
+                self.document
+                    .expand_doc_semi_infinite_layout(self.camera.viewport());
+            }
             Layout::Infinite => {
                 // only expand, don't resize to fit strokes
                 self.document

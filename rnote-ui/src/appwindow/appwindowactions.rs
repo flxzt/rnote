@@ -247,6 +247,10 @@ impl RnoteAppWindow {
                         canvas.engine().borrow_mut().document.layout = Layout::ContinuousVertical;
                         appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
                     },
+                    "semi-infinite" => {
+                        canvas.engine().borrow_mut().document.layout = Layout::SemiInfinite;
+                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                    },
                     "infinite" => {
                         canvas.engine().borrow_mut().document.layout = Layout::Infinite;
                         appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);

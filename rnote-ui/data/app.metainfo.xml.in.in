@@ -72,6 +72,21 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.13-beta" date="2022-12-27">
+      <description>
+        <p>this release changes: (BETA)</p>
+        <ul>
+          <li>feature: tabs!</li>
+          <li>feature: a global colorpicker</li>
+          <li>feature: Semi infinite canvas layout ( thanks @D0V4HKIIN !)</li>
+          <li>UI: floating toolbars</li>
+          <li>fix: lag when panning in "continuous-vertical" layout</li>
+          <li>fix: layers when erasing marker strokes in "split-stroke" mode</li>
+          <li>fix: freeze when saving multiple times in succession</li>
+          <li>fix: blurry vector images after zooming in</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.12" date="2022-12-27">
       <description>
         <p>this release changes:</p>

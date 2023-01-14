@@ -1,11 +1,11 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.5.12',
+    version: '0.5.13',
     meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
-patch = ''
+patch = '-beta1'
 
 i18n = import('i18n')
 gnome = import('gnome')

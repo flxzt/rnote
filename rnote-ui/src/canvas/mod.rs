@@ -1065,6 +1065,8 @@ impl RnoteCanvas {
     fn reinstall_output_file_monitor(&self, appwindow: &RnoteAppWindow) {
         if let Some(output_file) = self.output_file() {
             self.create_output_file_monitor(&output_file, appwindow);
+        } else {
+            self.clear_output_file_monitor();
         }
     }
 

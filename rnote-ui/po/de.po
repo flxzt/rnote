@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2023-01-14 20:16+0000\n"
+"PO-Revision-Date: 2023-01-15 17:37+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -214,7 +214,7 @@ msgstr "Importiere PDF"
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
 #: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
-msgstr "Importiere"
+msgstr "Importieren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"

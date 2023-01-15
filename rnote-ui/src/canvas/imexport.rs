@@ -197,21 +197,10 @@ impl RnoteCanvas {
             )
         })?;
 
-        self.set_output_file_expect_write(true);
-
-        let rnote_bytes_receiver = match self
+        let rnote_bytes_receiver = self
             .engine()
             .borrow()
-            .save_as_rnote_bytes(basename.to_string_lossy().to_string())
-        {
-            Ok(r) => r,
-            Err(e) => {
-                self.set_output_file_expect_write(false);
-                return Err(e);
-            }
-        };
-
-        self.dismiss_output_file_modified_toast();
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
 
         let mut skip_set_output_file = false;
         if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {
@@ -225,6 +214,9 @@ impl RnoteCanvas {
         if !skip_set_output_file {
             self.set_output_file(Some(file.to_owned()));
         }
+
+        self.dismiss_output_file_modified_toast();
+        self.set_output_file_expect_write(true);
 
         let res = async move {
             crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await

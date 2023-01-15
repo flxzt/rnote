@@ -65,7 +65,7 @@ impl ShapeBehaviour for PenPath {
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        self.hitboxes_priv()
+        self.hitboxes_w_segs_indices()
             .into_iter()
             .flat_map(|(_, hb)| hb)
             .collect()
@@ -142,21 +142,20 @@ impl PenPath {
         self.segments.extend(other.segments);
     }
 
-    /// Checks whether a bounds collides with the path. If it does, it returns the index of the colliding segment
-    pub fn hittest(&self, hit: &Aabb, loosened: f64) -> Option<usize> {
-        for (i, seg_hitboxes) in self.hitboxes_priv() {
-            if seg_hitboxes
-                .into_iter()
-                .any(|hitbox| hitbox.loosened(loosened).intersects(hit))
-            {
-                return Some(i);
-            }
-        }
-
-        None
+    /// Checks whether bounds collide with the path. If it does, it returns the indices of the colliding segments
+    pub fn hittest(&self, hit: &Aabb, loosened: f64) -> Vec<usize> {
+        self.hitboxes_w_segs_indices()
+            .into_iter()
+            .filter_map(|(i, seg_hitboxes)| {
+                seg_hitboxes
+                    .into_iter()
+                    .any(|hitbox| hitbox.loosened(loosened).intersects(hit))
+                    .then_some(i)
+            })
+            .collect()
     }
 
-    fn hitboxes_priv(&self) -> Vec<(usize, Vec<Aabb>)> {
+    fn hitboxes_w_segs_indices(&self) -> Vec<(usize, Vec<Aabb>)> {
         let mut hitboxes = Vec::with_capacity(self.segments.len());
 
         let mut prev = self.start;

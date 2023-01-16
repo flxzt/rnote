@@ -1163,7 +1163,7 @@ impl RnoteCanvas {
                     na::point![x,y]).coords;
 
                 if value.is::<gio::File>() {
-                    appwindow.open_file_w_dialogs(value.get::<gio::File>().unwrap(), Some(pos));
+                    appwindow.open_file_w_dialogs(value.get::<gio::File>().unwrap(), Some(pos), true);
 
                     return true;
                 } else if value.is::<String>() {

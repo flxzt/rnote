@@ -80,6 +80,7 @@ mod imp {
 
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
+        pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
@@ -178,6 +179,7 @@ mod imp {
 
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
+                output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
                 output_file_expect_write: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -911,6 +913,10 @@ impl RnoteCanvas {
 
     pub(crate) fn clear_output_file_monitor(&self) {
         if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
+            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
+                old_output_file_monitor.disconnect(handler);
+            }
+
             old_output_file_monitor.cancel();
         }
     }
@@ -959,7 +965,7 @@ impl RnoteCanvas {
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnoteAppWindow) {
-        let output_file_monitor =
+        let new_monitor =
             match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
                 Ok(output_file_monitor) => output_file_monitor,
                 Err(e) => {
@@ -971,7 +977,7 @@ impl RnoteCanvas {
                 }
             };
 
-        output_file_monitor.connect_changed(
+        let new_handler = new_monitor.connect_changed(
             glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
                 let dispatch_toast_reload_modified_file = || {
                     canvas.set_unsaved_changes(true);
@@ -1052,13 +1058,22 @@ impl RnoteCanvas {
             }),
         );
 
-        if let Some(old) = self
+        if let Some(old_monitor) = self
             .imp()
             .output_file_monitor
             .borrow_mut()
-            .replace(output_file_monitor)
+            .replace(new_monitor)
         {
-            old.cancel();
+            if let Some(old_handler) = self
+                .imp()
+                .output_file_monitor_changed_handler
+                .borrow_mut()
+                .replace(new_handler)
+            {
+                old_monitor.disconnect(old_handler);
+            }
+
+            old_monitor.cancel();
         }
     }
 

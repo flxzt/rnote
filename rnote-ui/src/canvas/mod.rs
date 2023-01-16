@@ -327,9 +327,6 @@ mod imp {
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             let inst = self.instance();
-            /*             let parent_scrolledwindow = obj
-            .parent()
-            .map(|parent| parent.downcast::<ScrolledWindow>().unwrap()); */
 
             match pspec.name() {
                 "output-file" => {
@@ -998,7 +995,7 @@ impl RnoteCanvas {
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                 };
 
-                //log::debug!("output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}", file.path(), other_file.map(|f| f.path()));
+                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}", canvas.doc_title_display(), file.path(), other_file.map(|f| f.path()));
 
                 match event {
                     gio::FileMonitorEvent::Changed => {
@@ -1349,10 +1346,12 @@ impl RnoteCanvas {
     /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
     // update_engine_rendering() then needs to be called.
     pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
-        let (parent_width, parent_height) = (
-            f64::from(self.parent().unwrap().width()),
-            f64::from(self.parent().unwrap().height()),
-        );
+        let Some(parent) = self.parent() else {
+            log::debug!("self.parent() is None in `center_around_coord_on_doc().");
+            return
+        };
+
+        let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
         let total_zoom = self.engine().borrow().camera.total_zoom();
 
         let new_offset = na::vector![
@@ -1367,22 +1366,25 @@ impl RnoteCanvas {
     // update_engine_rendering() then needs to be called.
     pub(crate) fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
-
-        let new_offset = if self.engine().borrow().document.format.width * zoom
-            <= f64::from(self.parent().unwrap().width())
-        {
-            na::vector![
-                (self.engine().borrow().document.format.width * 0.5 * zoom)
-                    - f64::from(self.parent().unwrap().width()) * 0.5,
-                -Document::SHADOW_WIDTH * zoom
-            ]
-        } else {
-            // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-            na::vector![
-                -Document::SHADOW_WIDTH * zoom,
-                -Document::SHADOW_WIDTH * zoom
-            ]
+        let Some(parent) = self.parent() else {
+            log::debug!("self.parent() is None in `return_to_origin_page().");
+            return
         };
+
+        let new_offset =
+            if self.engine().borrow().document.format.width * zoom <= f64::from(parent.width()) {
+                na::vector![
+                    (self.engine().borrow().document.format.width * 0.5 * zoom)
+                        - f64::from(parent.width()) * 0.5,
+                    -Document::SHADOW_WIDTH * zoom
+                ]
+            } else {
+                // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
+                na::vector![
+                    -Document::SHADOW_WIDTH * zoom,
+                    -Document::SHADOW_WIDTH * zoom
+                ]
+            };
 
         self.update_camera_offset(new_offset);
     }

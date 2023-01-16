@@ -1052,10 +1052,14 @@ impl RnoteCanvas {
             }),
         );
 
-        self.imp()
+        if let Some(old) = self
+            .imp()
             .output_file_monitor
             .borrow_mut()
-            .replace(output_file_monitor);
+            .replace(output_file_monitor)
+        {
+            old.cancel();
+        }
     }
 
     /// Replaces and installs a new file monitor when there is an output file present

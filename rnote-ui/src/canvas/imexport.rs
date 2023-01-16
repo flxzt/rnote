@@ -185,27 +185,38 @@ impl RnoteCanvas {
             return Ok(false);
         }
 
+        let file_path = file.path().ok_or_else(|| {
+            anyhow::anyhow!(
+                "save_document_to_file() failed, could not get a path for file: {file:?}"
+            )
+        })?;
+
         let basename = file.basename().ok_or_else(|| {
             anyhow::anyhow!(
                 "save_document_to_file() failed, could not retreive basename for file: {file:?}"
             )
         })?;
 
-        self.set_output_file_expect_write(true);
-
-        let rnote_bytes_receiver = match self
+        let rnote_bytes_receiver = self
             .engine()
             .borrow()
-            .save_as_rnote_bytes(basename.to_string_lossy().to_string())
-        {
-            Ok(r) => r,
-            Err(e) => {
-                self.set_output_file_expect_write(false);
-                return Err(e);
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
+
+        let mut skip_set_output_file = false;
+        if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {
+            if same_file::is_same_file(current_file_path, file_path).unwrap_or(false) {
+                skip_set_output_file = true;
             }
-        };
+        }
+
+        // this **must** come before actually saving the file to disk,
+        // else the event might not be catched by the monitor for new or changed files
+        if !skip_set_output_file {
+            self.set_output_file(Some(file.to_owned()));
+        }
 
         self.dismiss_output_file_modified_toast();
+        self.set_output_file_expect_write(true);
 
         let res = async move {
             crate::utils::create_replace_file_future(rnote_bytes_receiver.await??, file).await
@@ -219,7 +230,6 @@ impl RnoteCanvas {
             return Err(e);
         }
 
-        self.set_output_file(Some(file.to_owned()));
         self.set_unsaved_changes(false);
 
         Ok(true)

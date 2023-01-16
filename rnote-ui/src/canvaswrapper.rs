@@ -502,44 +502,58 @@ impl RnoteCanvasWrapper {
     /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved across appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
     pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
         self.imp().canvas.init_reconnect(appwindow);
 
-        if let Some(old) = self
-            .imp()
+        let appwindow_show_scrollbars_bind = appwindow
+            .settings_panel()
+            .general_show_scrollbars_switch()
+            .bind_property("state", self, "show-scrollbars")
+            .sync_create()
+            .build();
+
+        let appwindow_righthanded_bind = appwindow
+            .bind_property("righthanded", &self.scroller(), "window-placement")
+            .transform_to(|_, righthanded: bool| {
+                if righthanded {
+                    Some(CornerType::BottomRight)
+                } else {
+                    Some(CornerType::BottomLeft)
+                }
+            })
+            .sync_create()
+            .build();
+
+        if let Some(old) = imp
             .appwindow_show_scrollbars_bind
             .borrow_mut()
-            .replace(
-                appwindow
-                    .settings_panel()
-                    .general_show_scrollbars_switch()
-                    .bind_property("state", self, "show-scrollbars")
-                    .sync_create()
-                    .build(),
-            )
+            .replace(appwindow_show_scrollbars_bind)
         {
             old.unbind();
         }
 
-        if let Some(old) = self.imp().appwindow_righthanded_bind.borrow_mut().replace(
-            appwindow
-                .bind_property("righthanded", &self.scroller(), "window-placement")
-                .transform_to(|_, righthanded: bool| {
-                    if righthanded {
-                        Some(CornerType::BottomRight)
-                    } else {
-                        Some(CornerType::BottomLeft)
-                    }
-                })
-                .sync_create()
-                .build(),
-        ) {
+        if let Some(old) = imp
+            .appwindow_righthanded_bind
+            .borrow_mut()
+            .replace(appwindow_righthanded_bind)
+        {
             old.unbind();
         }
     }
 
     /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
     pub(crate) fn disconnect_handlers(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+
         self.canvas().disconnect_handlers(appwindow);
+
+        if let Some(old) = imp.appwindow_show_scrollbars_bind.borrow_mut().take() {
+            old.unbind();
+        }
+
+        if let Some(old) = imp.appwindow_righthanded_bind.borrow_mut().take() {
+            old.unbind();
+        }
     }
 
     /// When the widget is the child of a tab page, we want to connect their titles, icons, ..

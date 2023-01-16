@@ -72,7 +72,7 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
-    <release version="0.5.13-beta" date="2022-12-27">
+    <release version="0.5.13-beta2" date="2023-01-16">
       <description>
         <p>this release changes: (BETA)</p>
         <ul>

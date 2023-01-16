@@ -757,7 +757,7 @@ impl RnoteAppWindow {
     }
 
     // Must be called after application is associated with it else it fails
-    pub(crate) fn init(&self, input_file: Option<gio::File>) {
+    pub(crate) fn init(&self) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
@@ -800,11 +800,6 @@ impl RnoteAppWindow {
                     glib::source::Continue(true)
         }))) {
             removed_id.remove();
-        }
-
-        // Loading in input file, if Some
-        if let Some(input_file) = input_file {
-            self.open_file_w_dialogs(input_file, None);
         }
 
         self.init_misc();
@@ -1022,10 +1017,14 @@ impl RnoteAppWindow {
         self.mainheader().main_title().set_subtitle(&subtitle);
     }
 
+    /// Opens the file, with import dialogs when appropriate.
+    ///
+    /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened, or if it overwrites the current active one.
     pub(crate) fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
+        rnote_file_new_tab: bool,
     ) {
         match crate::utils::FileType::lookup_file_type(&input_file) {
             crate::utils::FileType::RnoteFile => {
@@ -1038,13 +1037,17 @@ impl RnoteAppWindow {
                 if let Some(page) = self.tabs_query_file_opened(input_file_path) {
                     self.overlays().tabview().set_selected_page(&page);
                 } else {
-                    // open a new tab for rnote files
-                    let new_tab = self.new_tab();
-                    let canvas = new_tab
-                        .child()
-                        .downcast::<RnoteCanvasWrapper>()
-                        .unwrap()
-                        .canvas();
+                    let canvas = if rnote_file_new_tab {
+                        // open a new tab for rnote files
+                        let new_tab = self.new_tab();
+                        new_tab
+                            .child()
+                            .downcast::<RnoteCanvasWrapper>()
+                            .unwrap()
+                            .canvas()
+                    } else {
+                        self.active_tab().canvas()
+                    };
 
                     if let Err(e) = self.load_in_file(input_file, target_pos, &canvas) {
                         log::error!(
@@ -1094,7 +1097,7 @@ impl RnoteAppWindow {
 
     /// Loads in a file of any supported type into the engine of the given canvas.
     ///
-    /// ! if the file is a rnote save file, it will overwrite the current state so there should be a user prompt to confirm before this is called
+    /// ! if the file is a rnote save file, it will overwrite the state in the active tab so there should be a user prompt to confirm before this is called
     pub(crate) fn load_in_file(
         &self,
         file: gio::File,

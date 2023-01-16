@@ -72,9 +72,14 @@ mod imp {
         /// Initializes and shows a new app window
         fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnoteAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
-            appwindow.init(input_file);
+            appwindow.init();
 
             appwindow.show();
+
+            // Loading in input file in the first tab, if Some
+            if let Some(input_file) = input_file {
+                appwindow.open_file_w_dialogs(input_file, None, false);
+            }
         }
 
         fn setup_logging(&self) {

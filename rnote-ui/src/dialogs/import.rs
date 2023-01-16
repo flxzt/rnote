@@ -105,7 +105,7 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
         match responsetype {
             ResponseType::Accept => {
                 if let Some(input_file) = filechooser.file() {
-                    appwindow.open_file_w_dialogs(input_file, None);
+                    appwindow.open_file_w_dialogs(input_file, None, true);
                 }
             },
             _ => {}
@@ -158,7 +158,7 @@ pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
         match responsetype {
             ResponseType::Accept => {
                 if let Some(input_file) = filechooser.file() {
-                    appwindow.open_file_w_dialogs(input_file, None);
+                    appwindow.open_file_w_dialogs(input_file, None, true);
                 }
             }
             _ => {

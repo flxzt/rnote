@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2022-12-23 16:27+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"PO-Revision-Date: 2023-01-18 16:52+0000\n"
+"Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -108,13 +108,14 @@ msgid ""
 "Creating a new document will discard any unsaved\n"
 "      changes. Do you want to save the current document?"
 msgstr ""
-"La création d’un nouveau document effacera toutes les modifications non "
-"enregistrées. Voulez-vous sauvegarder le document actuel ?"
+"La création d’un nouveau document effacera toutes les modifications\n"
+"non enregistrées. Voulez-vous sauvegarder le document actuel ?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
+#, fuzzy
 msgid "Discard"
-msgstr "Jeter"
+msgstr "Rejeter"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:36
@@ -127,32 +128,35 @@ msgstr "Sauvegarder"
 #, fuzzy
 #| msgid "New Sheet"
 msgid "Close tab"
-msgstr "Nouvelle page"
+msgstr "Fermer la note"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
+#, fuzzy
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Cette note contient des modifications non sauvegardées. Les modifications "
+"qui ne sont pas sauvegardées seront définitivement perdues."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close window"
-msgstr "Fermer la fenêtre active"
+msgstr "Fermer la fenêtre"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
+#, fuzzy
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Certains fichiers ouverts contiennent des modifications non sauvegardées. "
+"Les modifications qui ne sont pas sauvegardées seront définitivement perdues."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 #, fuzzy
 #| msgid "Discard"
 msgid "Discard all"
-msgstr "Jeter"
+msgstr "Rejeter tout"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
@@ -202,7 +206,7 @@ msgstr "- aucun répertoire sélectionné -"
 #, fuzzy
 #| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "Changer d’espace de travail"
+msgstr "Modifier le répertoire"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
@@ -390,7 +394,7 @@ msgstr "Sélectionnez le répertoire d’exportation"
 #, fuzzy
 #| msgid "Export engine state"
 msgid "Export files stem name"
-msgstr "Exporter le statut du moteur"
+msgstr "Nom de la racine des fichiers à exporter"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
@@ -791,7 +795,8 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Maintenez Ctrl pour activer / désactiver temporairement les contraintes \n"
+"Maintenez Ctrl pour activer/désactiver\n"
+"temporairement les contraintes\n"
 "selon la position de ce commutateur"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:420
@@ -1023,7 +1028,7 @@ msgstr "Vertical _continue"
 #, fuzzy
 #| msgid "_Infinite"
 msgid "_Semi infinite"
-msgstr "_Infini"
+msgstr "_Semi infini"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
@@ -1094,7 +1099,7 @@ msgstr "Brouillon"
 #, fuzzy
 #| msgid "New Sheet"
 msgid "New tab"
-msgstr "Nouvelle page"
+msgstr "Nouvelle note"
 
 #: rnote-ui/data/ui/mainheader.ui:57
 msgid "Undo"
@@ -1149,16 +1154,15 @@ msgid "Set the format border color"
 msgstr "Définir la couleur des bordures du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
+#, fuzzy
 msgid "Show scrollbars"
-msgstr ""
+msgstr "Affichez les barres de défilement"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 #, fuzzy
 #| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
-"Indique si les barres de défilement sur le canevas sont masquées de façon "
-"permanente"
+msgstr "Indique si les barres de défilement sur le canevas sont affichées"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
@@ -1572,11 +1576,12 @@ msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
-msgstr "- aucun nom de fichier -"
+msgstr "- nom de fichier invalide -"
 
 #: rnote-ui/src/canvas/mod.rs:963
+#, fuzzy
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- chemin d'accès au dossier invalide -"
 
 #: rnote-ui/src/canvas/mod.rs:977
 msgid "Opened file was modified on disk."
@@ -1590,7 +1595,7 @@ msgstr "Recharger"
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed."
-msgstr "L'ouverture du fichier .rnote a échoué."
+msgstr "Le rechargement du fichier .rnote à partir du disque a échoué."
 
 #: rnote-ui/src/canvas/mod.rs:1026
 msgid "Opened file was renamed on disk."
@@ -1640,7 +1645,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:716
 msgid "Export selection failed."
-msgstr "Échec de l'exportation de la sélection"
+msgstr "Échec de l'exportation de la sélection."
 
 #: rnote-ui/src/dialogs/export.rs:718
 msgid "Exported selection successfully."
@@ -1736,8 +1741,9 @@ msgid "translator-credits"
 msgstr "mbousq <mathieu.bousquet2@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:278
+#, fuzzy
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- impossible de trouver un dossier de sauvegarde valide -"
 
 #: rnote-ui/src/dialogs/mod.rs:375
 msgid "Change workspace directory"

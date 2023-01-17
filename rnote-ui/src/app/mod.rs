@@ -83,7 +83,7 @@ mod imp {
         }
 
         fn setup_logging(&self) {
-            pretty_env_logger::init();
+            pretty_env_logger::init_timed();
             log::debug!("... env_logger initialized");
         }
 

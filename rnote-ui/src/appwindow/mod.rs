@@ -28,6 +28,8 @@ use crate::{
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 
 mod imp {
+    use gtk4::PositionType;
+
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -536,6 +538,10 @@ mod imp {
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Right);
                 inst.penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .set_position(PositionType::Left);
+                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Right);
@@ -607,6 +613,10 @@ mod imp {
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Left);
+                inst.penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .set_position(PositionType::Right);
                 inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()

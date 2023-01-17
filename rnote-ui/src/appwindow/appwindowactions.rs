@@ -338,10 +338,9 @@ impl RnoteAppWindow {
 
                 engine.pens_config.brush_config.style = appwindow.penssidebar().brush_page().brush_style().unwrap_or_default();
                 engine.pens_config.brush_config.builder_type = appwindow.penssidebar().brush_page().buildertype().unwrap_or_default();
-                let brush_stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                engine.pens_config.brush_config.marker_options.stroke_width = brush_stroke_width;
-                engine.pens_config.brush_config.solid_options.stroke_width = brush_stroke_width;
-                engine.pens_config.brush_config.textured_options.stroke_width = brush_stroke_width;
+                engine.pens_config.brush_config.marker_options.stroke_width = appwindow.penssidebar().brush_page().marker_stroke_width();
+                engine.pens_config.brush_config.solid_options.stroke_width = appwindow.penssidebar().brush_page().solid_stroke_width();
+                engine.pens_config.brush_config.textured_options.stroke_width = appwindow.penssidebar().brush_page().textured_stroke_width();
                 engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
                 engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
                 engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);

@@ -4,6 +4,7 @@ use gtk4::{
     Popover, SpinButton,
 };
 use num_traits::cast::ToPrimitive;
+use std::cell::Cell;
 
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
@@ -19,6 +20,10 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub(crate) struct BrushPage {
+        pub(crate) marker_stroke_width: Cell<f64>,
+        pub(crate) solid_stroke_width: Cell<f64>,
+        pub(crate) textured_stroke_width: Cell<f64>,
+
         #[template_child]
         pub(crate) width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -97,10 +102,6 @@ impl Default for BrushPage {
 impl BrushPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
-    }
-
-    pub(crate) fn width_spinbutton(&self) -> SpinButton {
-        self.imp().width_spinbutton.get()
     }
 
     pub(crate) fn brushstyle_menubutton(&self) -> MenuButton {
@@ -188,6 +189,36 @@ impl BrushPage {
             .set_selected(position);
     }
 
+    #[allow(unused)]
+    pub(crate) fn marker_stroke_width(&self) -> f64 {
+        self.imp().marker_stroke_width.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_marker_stroke_width(&self, stroke_width: f64) {
+        self.imp().marker_stroke_width.set(stroke_width);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn solid_stroke_width(&self) -> f64 {
+        self.imp().solid_stroke_width.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_solid_stroke_width(&self, stroke_width: f64) {
+        self.imp().solid_stroke_width.set(stroke_width);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn textured_stroke_width(&self) -> f64 {
+        self.imp().textured_stroke_width.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_textured_stroke_width(&self, stroke_width: f64) {
+        self.imp().textured_stroke_width.set(stroke_width);
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
@@ -201,14 +232,25 @@ impl BrushPage {
             .set_value(SolidOptions::default().stroke_width);
 
         imp.width_spinbutton.connect_value_changed(
-            clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
+            clone!(@weak self as brushpage, @weak appwindow => move |brush_widthscale_spinbutton| {
                 let stroke_width = brush_widthscale_spinbutton.value();
                 let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
 
-                engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
-                engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
-                engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+                match engine.pens_config.brush_config.style {
+                    BrushStyle::Marker => {
+                        brushpage.imp().marker_stroke_width.set(stroke_width);
+                        engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
+                    },
+                    BrushStyle::Solid => {
+                        brushpage.imp().solid_stroke_width.set(stroke_width);
+                        engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
+                    },
+                    BrushStyle::Textured => {
+                        brushpage.imp().textured_stroke_width.set(stroke_width);
+                        engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
+                    },
+                }
             }),
         );
 
@@ -219,9 +261,24 @@ impl BrushPage {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.style = brush_style;
 
                     match brush_style {
-                        BrushStyle::Marker => brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-marker-symbolic")),
-                        BrushStyle::Solid => brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-solid-symbolic")),
-                        BrushStyle::Textured => brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-textured-symbolic")),
+                        BrushStyle::Marker => {
+                            let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.marker_options.stroke_width;
+                            brushpage.imp().marker_stroke_width.set(stroke_width);
+                            brushpage.imp().width_spinbutton.set_value(stroke_width);
+                            brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-marker-symbolic"))
+                        },
+                        BrushStyle::Solid => {
+                            let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.solid_options.stroke_width;
+                            brushpage.imp().solid_stroke_width.set(stroke_width);
+                            brushpage.imp().width_spinbutton.set_value(stroke_width);
+                            brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-solid-symbolic"))
+                        },
+                        BrushStyle::Textured => {
+                            let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.stroke_width;
+                            brushpage.imp().textured_stroke_width.set(stroke_width);
+                            brushpage.imp().width_spinbutton.set_value(stroke_width);
+                            brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-textured-symbolic"))
+                        },
                     }
                 }
             }),
@@ -285,6 +342,13 @@ impl BrushPage {
 
         self.set_brush_style(brush_config.style);
         self.set_buildertype(brush_config.builder_type);
+
+        imp.marker_stroke_width
+            .set(brush_config.marker_options.stroke_width);
+        imp.solid_stroke_width
+            .set(brush_config.solid_options.stroke_width);
+        imp.textured_stroke_width
+            .set(brush_config.textured_options.stroke_width);
 
         match brush_config.style {
             BrushStyle::Marker => {

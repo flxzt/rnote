@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2023-01-11 06:51+0000\n"
+"PO-Revision-Date: 2023-01-18 16:52+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1001,10 +1001,8 @@ msgid "_Continuous vertical"
 msgstr "_தொடர்ச்சியான செங்குத்து"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "_Infinite"
 msgid "_Semi infinite"
-msgstr "_எல்லையற்ற"
+msgstr "_அரை எல்லையற்றது"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"

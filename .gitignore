@@ -17,3 +17,4 @@
 *.code-workspace
 .idea/
 .toggletasks.json
+*.flatpak

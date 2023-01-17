@@ -21,7 +21,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 ** Console Output **
-Run the app in the terminal with `RUST_LOG=rnote=debug flatpak run com.github.flxzt.rnote` and post the output
+Run the app in the terminal with ` flatpak --env=RUST_LOG=rnote=debug run com.github.flxzt.rnote` and post the output
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.

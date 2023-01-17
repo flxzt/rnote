@@ -103,9 +103,7 @@
 
 .colorsetter:checked {
     filter: brightness(100%);
-    box-shadow:
-        0px 0px 2px alpha(@window_fg_color, 0.6),
-        inset 0px -3px 0px 0px @colorsetter_fg_color;
+    box-shadow: inset 0px -3px 0px 0px @colorsetter_fg_color;
 }
 
 .quickaction-button {

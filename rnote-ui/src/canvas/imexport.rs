@@ -180,7 +180,7 @@ impl RnoteCanvas {
     /// Err(e) when saving failed in any way.
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
-        if self.output_file_expect_write() {
+        if self.save_in_progress() {
             log::debug!("saving file already in progress.");
             return Ok(false);
         }
@@ -197,10 +197,19 @@ impl RnoteCanvas {
             )
         })?;
 
-        let rnote_bytes_receiver = self
+        self.set_save_in_progress(true);
+
+        let rnote_bytes_receiver = match self
             .engine()
             .borrow()
-            .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string())
+        {
+            Ok(r) => r,
+            Err(e) => {
+                self.set_save_in_progress(false);
+                return Err(e);
+            }
+        };
 
         let mut skip_set_output_file = false;
         if let Some(current_file_path) = self.output_file().and_then(|f| f.path()) {
@@ -224,13 +233,16 @@ impl RnoteCanvas {
         .await;
 
         if let Err(e) = res {
-            // If the file operations failed in any way, we make sure to clear the flag
-            // because we can't know for sure if the output_file monitor will be able to clear it.
+            self.set_save_in_progress(false);
+
+            // If the file operations failed in any way, we make sure to clear the expect_write flag
+            // because we can't know for sure if the output_file monitor will be able to.
             self.set_output_file_expect_write(false);
             return Err(e);
         }
 
         self.set_unsaved_changes(false);
+        self.set_save_in_progress(false);
 
         Ok(true)
     }

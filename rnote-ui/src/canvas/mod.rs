@@ -83,6 +83,7 @@ mod imp {
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
         pub(crate) output_file_expect_write: Cell<bool>,
+        pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
 
@@ -182,6 +183,7 @@ mod imp {
                 output_file_monitor_changed_handler: RefCell::new(None),
                 output_file_modified_toast_singleton: RefCell::new(None),
                 output_file_expect_write: Cell::new(false),
+                save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -791,13 +793,23 @@ impl RnoteCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn output_file_expect_write(&self) -> bool {
+        self.imp().output_file_expect_write.get()
+    }
+
+    #[allow(unused)]
     pub(crate) fn set_output_file_expect_write(&self, expect_write: bool) {
         self.imp().output_file_expect_write.set(expect_write);
     }
 
     #[allow(unused)]
-    pub(crate) fn output_file_expect_write(&self) -> bool {
-        self.imp().output_file_expect_write.get()
+    pub(crate) fn save_in_progress(&self) -> bool {
+        self.imp().save_in_progress.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
+        self.imp().save_in_progress.set(save_in_progress);
     }
 
     #[allow(unused)]
@@ -1001,7 +1013,12 @@ impl RnoteCanvas {
                     &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
                 };
 
-                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}", canvas.doc_title_display(), file.path(), other_file.map(|f| f.path()));
+                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
+                    canvas.doc_title_display(),
+                    file.path(),
+                    other_file.map(|f| f.path()),
+                    canvas.output_file_expect_write(),
+                );
 
                 match event {
                     gio::FileMonitorEvent::Changed => {

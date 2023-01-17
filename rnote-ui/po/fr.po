@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 13:19+0100\n"
+"POT-Creation-Date: 2023-01-14 14:10+0100\n"
 "PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Weblate 4.15.1-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs/mod.rs:26
+#: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
 msgstr "Dessinez et prenez des notes manuscrites"
 
@@ -82,11 +82,11 @@ msgstr "Ceci efface tout le document. Veuillez confirmer."
 #: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
 #: rnote-ui/data/ui/dialogs/export.ui:348
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:186
-#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:221
-#: rnote-ui/src/dialogs/export.rs:494 rnote-ui/src/dialogs/export.rs:742
-#: rnote-ui/src/dialogs/export.rs:812 rnote-ui/src/dialogs/export.rs:876
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:227
+#: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
+#: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:372
+#: rnote-ui/src/dialogs/mod.rs:379
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
 msgstr "Annuler"
@@ -193,8 +193,8 @@ msgid "Change the workspace directory"
 msgstr "Changer d’espace de travail"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
-#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:340
-#: rnote-ui/src/dialogs/export.rs:378 rnote-ui/src/dialogs/mod.rs:433
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
 msgid "- no directory selected -"
 msgstr "- aucun répertoire sélectionné -"
 
@@ -297,13 +297,13 @@ msgstr "DPI"
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Définir le DPI préféré pour le fichier Xournal++"
 
-#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:217
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export document"
 msgstr "Exporter document"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
-#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:811
-#: rnote-ui/src/dialogs/export.rs:875
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
+#: rnote-ui/src/dialogs/export.rs:881
 msgid "Export"
 msgstr "Exporter"
 
@@ -317,9 +317,9 @@ msgstr "Sélectionner le fichier d’exportation"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
-#: rnote-ui/src/dialogs/export.rs:114 rnote-ui/src/dialogs/export.rs:140
-#: rnote-ui/src/dialogs/export.rs:169 rnote-ui/src/dialogs/export.rs:617
-#: rnote-ui/src/dialogs/export.rs:643 rnote-ui/src/dialogs/export.rs:678
+#: rnote-ui/src/dialogs/export.rs:120 rnote-ui/src/dialogs/export.rs:146
+#: rnote-ui/src/dialogs/export.rs:175 rnote-ui/src/dialogs/export.rs:623
+#: rnote-ui/src/dialogs/export.rs:649 rnote-ui/src/dialogs/export.rs:684
 msgid "- no file selected -"
 msgstr "- aucun fichier sélectionné -"
 
@@ -361,20 +361,20 @@ msgstr "Le format d'exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:283
-#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:250
-#: rnote-ui/src/dialogs/export.rs:529 rnote-ui/src/dialogs/export.rs:775
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:256
+#: rnote-ui/src/dialogs/export.rs:535 rnote-ui/src/dialogs/export.rs:781
 msgid "Svg"
 msgstr "Svg"
 
-#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:255
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:261
 msgid "Pdf"
 msgstr "Pdf"
 
-#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:260
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:266
 msgid "Xopp"
 msgstr "Xopp"
 
-#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:490
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 msgid "Export document pages"
 msgstr "Exporter les pages"
 
@@ -393,14 +393,14 @@ msgid "Export files stem name"
 msgstr "Exporter le statut du moteur"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
-#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:534
-#: rnote-ui/src/dialogs/export.rs:780
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
+#: rnote-ui/src/dialogs/export.rs:786
 msgid "Png"
 msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285
-#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:540
-#: rnote-ui/src/dialogs/export.rs:786
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:546
+#: rnote-ui/src/dialogs/export.rs:792
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -428,7 +428,7 @@ msgstr "Qualité Jpeg"
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Définir la qualité de l'image Jpeg (1 - 100)"
 
-#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:738
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
 msgid "Export selection"
 msgstr "Exporter la sélection"
 
@@ -865,9 +865,9 @@ msgid "Fill"
 msgstr "Remplir"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:198
-#: rnote-ui/data/ui/colorpicker.ui:86 rnote-ui/src/dialogs/export.rs:220
-#: rnote-ui/src/dialogs/export.rs:493 rnote-ui/src/dialogs/export.rs:741
-#: rnote-ui/src/dialogs/mod.rs:371
+#: rnote-ui/data/ui/colorpicker.ui:86 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
+#: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
 msgstr "Sélectionner"
 
@@ -1020,42 +1020,48 @@ msgid "_Continuous vertical"
 msgstr "Vertical _continue"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
+#, fuzzy
+#| msgid "_Infinite"
+msgid "_Semi infinite"
+msgstr "_Infini"
+
+#: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
 msgstr "_Infini"
 
-#: rnote-ui/data/ui/canvasmenu.ui:44
+#: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _format borders"
 msgstr "Afficher les bordures du _format"
 
-#: rnote-ui/data/ui/canvasmenu.ui:49
+#: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw with _touch input"
 msgstr "Dessiner en mode _tactile"
 
-#: rnote-ui/data/ui/canvasmenu.ui:54
+#: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Pen sounds"
 msgstr "Sons du _stylo"
 
-#: rnote-ui/data/ui/canvasmenu.ui:61
+#: rnote-ui/data/ui/canvasmenu.ui:66
 msgid "C_lear document"
 msgstr "_Effacer le document"
 
-#: rnote-ui/data/ui/canvasmenu.ui:65
+#: rnote-ui/data/ui/canvasmenu.ui:70
 msgid "_Return to origin page"
 msgstr "_Retourner à la page d’origine"
 
-#: rnote-ui/data/ui/canvasmenu.ui:95
+#: rnote-ui/data/ui/canvasmenu.ui:100
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
-#: rnote-ui/data/ui/canvasmenu.ui:104
+#: rnote-ui/data/ui/canvasmenu.ui:109
 msgid "Reset the zoom"
 msgstr "Restaurer le zoom"
 
-#: rnote-ui/data/ui/canvasmenu.ui:111
+#: rnote-ui/data/ui/canvasmenu.ui:116
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: rnote-ui/data/ui/canvasmenu.ui:123
+#: rnote-ui/data/ui/canvasmenu.ui:128
 msgid "Zoom to fit page width"
 msgstr "Ajuster le zoom à la largeur de la page"
 
@@ -1515,10 +1521,10 @@ msgid "Edit selected workspace"
 msgstr "Modifier l’espace de travail sélectionné"
 
 #: rnote-ui/src/appwindow/mod.rs:303
-#: rnote-ui/src/appwindow/appwindowactions.rs:683
-#: rnote-ui/src/dialogs/export.rs:64 rnote-ui/src/dialogs/import.rs:51
-#: rnote-ui/src/dialogs/mod.rs:142 rnote-ui/src/dialogs/mod.rs:195
-#: rnote-ui/src/dialogs/mod.rs:316
+#: rnote-ui/src/appwindow/appwindowactions.rs:688
+#: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
+#: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
+#: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "Échec de l'enregistrement du document."
 
@@ -1550,15 +1556,15 @@ msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
 msgid "Failed to open file: Unsupported file type."
 msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:801
+#: rnote-ui/src/appwindow/appwindowactions.rs:806
 msgid "Printed document successfully"
 msgstr "Document imprimé avec succès"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:810
+#: rnote-ui/src/appwindow/appwindowactions.rs:815
 msgid "Printing document failed"
 msgstr "Échec de l'impression du document"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:838
+#: rnote-ui/src/appwindow/appwindowactions.rs:843
 msgid "Export selection failed, nothing selected."
 msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné."
 
@@ -1602,73 +1608,73 @@ msgstr ".rnote"
 msgid "Save document as"
 msgstr "Enregistrer document sous"
 
-#: rnote-ui/src/dialogs/export.rs:66
+#: rnote-ui/src/dialogs/export.rs:62
 msgid "Saved document successfully."
 msgstr "Document enregistrée avec succès."
 
-#: rnote-ui/src/dialogs/export.rs:189
+#: rnote-ui/src/dialogs/export.rs:195
 msgid "Export document failed."
 msgstr "Échec de l'exportation du document."
 
-#: rnote-ui/src/dialogs/export.rs:191
+#: rnote-ui/src/dialogs/export.rs:197
 msgid "Exported document successfully."
 msgstr "Document exporté avec succès."
 
-#: rnote-ui/src/dialogs/export.rs:197
+#: rnote-ui/src/dialogs/export.rs:203
 msgid "Export document failed, no file selected."
 msgstr "Échec de l’exportation du document, aucun fichier n’a été sélectionné."
 
-#: rnote-ui/src/dialogs/export.rs:462
+#: rnote-ui/src/dialogs/export.rs:468
 msgid "Export document pages failed."
 msgstr "Échec de l'exportation des pages du document."
 
-#: rnote-ui/src/dialogs/export.rs:464
+#: rnote-ui/src/dialogs/export.rs:470
 msgid "Exported document pages successfully."
 msgstr "Pages exportés avec succès."
 
-#: rnote-ui/src/dialogs/export.rs:470
+#: rnote-ui/src/dialogs/export.rs:476
 msgid "Export document pages failed, no directory selected."
 msgstr ""
 "Échec de l’exportation des pages du document, aucun répertoire n’a été "
 "sélectionné."
 
-#: rnote-ui/src/dialogs/export.rs:710
+#: rnote-ui/src/dialogs/export.rs:716
 msgid "Export selection failed."
 msgstr "Échec de l'exportation de la sélection"
 
-#: rnote-ui/src/dialogs/export.rs:712
+#: rnote-ui/src/dialogs/export.rs:718
 msgid "Exported selection successfully."
 msgstr "Sélection exportée avec succès."
 
-#: rnote-ui/src/dialogs/export.rs:718
+#: rnote-ui/src/dialogs/export.rs:724
 msgid "Export selection failed, no file selected."
 msgstr "Échec de l’exportation de la sélection, aucun fichier sélectionné."
 
-#: rnote-ui/src/dialogs/export.rs:805 rnote-ui/src/dialogs/export.rs:869
+#: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "JSON"
 msgstr "JSON"
 
-#: rnote-ui/src/dialogs/export.rs:808
+#: rnote-ui/src/dialogs/export.rs:814
 msgid "Export engine state"
 msgstr "Exporter le statut du moteur"
 
-#: rnote-ui/src/dialogs/export.rs:846
+#: rnote-ui/src/dialogs/export.rs:852
 msgid "Export engine state failed."
 msgstr "Échec de l'exportation du statut du moteur."
 
-#: rnote-ui/src/dialogs/export.rs:848
+#: rnote-ui/src/dialogs/export.rs:854
 msgid "Exported engine state successfully."
 msgstr "L'état du moteur a été exporté avec succès."
 
-#: rnote-ui/src/dialogs/export.rs:872
+#: rnote-ui/src/dialogs/export.rs:878
 msgid "Export engine config"
 msgstr "Exporter la configuration du moteur"
 
-#: rnote-ui/src/dialogs/export.rs:910
+#: rnote-ui/src/dialogs/export.rs:916
 msgid "Export engine config failed."
 msgstr "Échec de l'exportation de la configuration du moteur."
 
-#: rnote-ui/src/dialogs/export.rs:912
+#: rnote-ui/src/dialogs/export.rs:918
 msgid "Exported engine config successfully."
 msgstr "La configuration du moteur a été exportée avec succès."
 
@@ -1725,15 +1731,15 @@ msgid "Pages:"
 msgstr "Pages :"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs/mod.rs:38
+#: rnote-ui/src/dialogs/mod.rs:44
 msgid "translator-credits"
 msgstr "mbousq <mathieu.bousquet2@gmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:272
+#: rnote-ui/src/dialogs/mod.rs:278
 msgid "- unable to find a valid save folder -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:368
+#: rnote-ui/src/dialogs/mod.rs:375
 msgid "Change workspace directory"
 msgstr "Changer d'espace de travail"
 

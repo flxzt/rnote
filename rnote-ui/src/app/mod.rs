@@ -83,8 +83,11 @@ mod imp {
         }
 
         fn setup_logging(&self) {
-            pretty_env_logger::init_timed();
-            log::debug!("... env_logger initialized");
+            if let Err(e) = pretty_env_logger::try_init_timed() {
+                eprintln!("initializing logging failed, Err: {e:?}");
+            } else {
+                log::debug!("... env_logger initialized");
+            }
         }
 
         fn setup_i18n(&self) {

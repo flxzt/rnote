@@ -27,6 +27,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
+                <property name="halign">center</property>
                 <property name="icon_name">pen-eraser-trash-colliding-strokes-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -43,6 +44,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
+                <property name="halign">center</property>
                 <property name="icon_name">pen-eraser-split-colliding-strokes-symbolic</property>
                 <property name="icon-size">large</property>
               </object>

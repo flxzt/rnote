@@ -28,6 +28,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
+                <property name="halign">center</property>
                 <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -47,6 +48,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
+                <property name="halign">center</property>
                 <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>

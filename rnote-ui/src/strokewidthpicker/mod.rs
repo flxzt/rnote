@@ -1,6 +1,8 @@
+mod strokewidthpreview;
 mod strokewidthsetter;
 
 // Re-exports
+pub(crate) use strokewidthpreview::StrokeWidthPreview;
 pub(crate) use strokewidthsetter::StrokeWidthSetter;
 
 // Imports

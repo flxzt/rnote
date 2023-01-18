@@ -65,6 +65,7 @@ rnote_ui_sources = files(
     'colorpicker/mod.rs',
     'strokewidthpicker/mod.rs',
     'strokewidthpicker/strokewidthsetter.rs',
+    'strokewidthpicker/strokewidthpreview.rs',
     'penssidebar/brushpage.rs',
     'penssidebar/eraserpage.rs',
     'penssidebar/mod.rs',

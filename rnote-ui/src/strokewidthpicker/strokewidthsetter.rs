@@ -1,7 +1,6 @@
 // Imports
-use gtk4::{
-    glib, prelude::*, subclass::prelude::*, Align, Button, Image, Overflow, ToggleButton, Widget,
-};
+use super::StrokeWidthPreview;
+use gtk4::{glib, prelude::*, subclass::prelude::*, Align, Button, Overflow, ToggleButton, Widget};
 use once_cell::sync::Lazy;
 use std::cell::Cell;
 
@@ -10,14 +9,14 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct StrokeWidthSetter {
-        image: Image,
+        preview: StrokeWidthPreview,
         stroke_width: Cell<f64>,
     }
 
     impl Default for StrokeWidthSetter {
         fn default() -> Self {
             Self {
-                image: Image::default(),
+                preview: StrokeWidthPreview::default(),
                 stroke_width: Cell::new(1.0),
             }
         }
@@ -42,9 +41,11 @@ mod imp {
             inst.set_vexpand(false);
             inst.set_css_classes(&["strokewidthsetter"]);
 
-            self.image.add_css_class("strokewidthsetterimage");
-            self.image.set_icon_name(Some("strokewidthsetter-symbolic"));
-            inst.set_child(Some(&self.image));
+            inst.set_child(Some(&self.preview));
+
+            inst.bind_property("stroke-width", &self.preview, "stroke-width")
+                .sync_create()
+                .build();
 
             self.update_appearance(self.stroke_width.get());
         }
@@ -92,15 +93,6 @@ mod imp {
             let inst = self.instance();
 
             inst.set_tooltip_text(Some(&format!("{stroke_width:.1}")));
-
-            // The max size is 24
-            const IMAGE_MAX_SIZE: f64 = 24.0;
-
-            // Is asymptotic to IMAGE_MAX_SIZE
-            let pixel_size =
-                (IMAGE_MAX_SIZE * stroke_width) / (IMAGE_MAX_SIZE * 0.5 + stroke_width);
-            self.image
-                .set_pixel_size(pixel_size as i32 + pixel_size as i32 % 2);
         }
     }
 }

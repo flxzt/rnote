@@ -106,9 +106,8 @@
     box-shadow: inset 0px -3px 0px 0px @colorsetter_fg_color;
 }
 
-.strokewidthsetter > image {
-    margin-left: -4px;
-    margin-right: -4px;
+.strokewidthsetter {
+    padding: 5px;
 }
 
 .quickaction-button {

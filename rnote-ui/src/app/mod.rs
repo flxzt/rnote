@@ -10,10 +10,11 @@ use crate::{
     colorpicker::ColorPad, colorpicker::ColorSetter, config, penssidebar::BrushPage,
     penssidebar::EraserPage, penssidebar::SelectorPage, penssidebar::ShaperPage,
     penssidebar::ToolsPage, penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
-    strokewidthpicker::StrokeWidthSetter, workspacebrowser::workspacesbar::WorkspaceRow,
-    workspacebrowser::FileRow, workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker,
-    IconPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper,
-    RnoteOverlays, SettingsPanel, StrokeWidthPicker, UnitEntry, WorkspaceBrowser,
+    strokewidthpicker::StrokeWidthPreview, strokewidthpicker::StrokeWidthSetter,
+    workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::FileRow,
+    workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
+    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel,
+    StrokeWidthPicker, UnitEntry, WorkspaceBrowser,
 };
 
 mod imp {
@@ -129,6 +130,7 @@ mod imp {
             PenShortcutRow::static_type();
             StrokeWidthPicker::static_type();
             StrokeWidthSetter::static_type();
+            StrokeWidthPreview::static_type();
 
             self.instance()
                 .set_resource_base_path(Some(config::APP_IDPATH));

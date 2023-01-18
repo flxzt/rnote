@@ -10,7 +10,7 @@ use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 use std::cell::Cell;
 
-use crate::appwindow::RnoteAppWindow;
+use crate::{RnoteAppWindow, StrokeWidthPicker};
 
 mod imp {
     use super::*;
@@ -40,7 +40,7 @@ mod imp {
         #[template_child]
         pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub(crate) width_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) stroke_width_picker: TemplateChild<StrokeWidthPicker>,
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -244,23 +244,26 @@ impl ShaperPage {
         self.imp().rough_stroke_width.set(stroke_width);
     }
 
+    pub(crate) fn stroke_width_picker(&self) -> StrokeWidthPicker {
+        self.imp().stroke_width_picker.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
         // Stroke width
-        imp.width_spinbutton.set_increments(0.1, 2.0);
-        imp.width_spinbutton.set_range(
+        imp.stroke_width_picker.spinbutton().set_range(
             ShaperConfig::STROKE_WIDTH_MIN,
             ShaperConfig::STROKE_WIDTH_MAX,
         );
         // set value after the range!
-        imp.width_spinbutton
-            .get()
-            .set_value(SmoothOptions::default().stroke_width);
+        imp.stroke_width_picker
+            .set_stroke_width(SmoothOptions::default().stroke_width);
 
-        imp.width_spinbutton.connect_value_changed(
-            clone!(@weak self as shaperpage, @weak appwindow => move |width_spinbutton| {
-                let stroke_width = width_spinbutton.value();
+        imp.stroke_width_picker.connect_notify_local(
+            Some("stroke-width"),
+            clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
+                let stroke_width = picker.stroke_width();
                 let engine = appwindow.active_tab().canvas().engine();
                 let mut engine = engine.borrow_mut();
 
@@ -282,18 +285,19 @@ impl ShaperPage {
             clone!(@weak self as shaperpage, @weak appwindow => move |_, _| {
                 if let Some(shaper_style) = shaperpage.shaper_style() {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.style = shaper_style;
+                    shaperpage.stroke_width_picker().deselect_setters();
 
                     match shaper_style {
                         ShaperStyle::Smooth => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_width;
                             shaperpage.imp().smooth_stroke_width.set(stroke_width);
-                            shaperpage.imp().width_spinbutton.set_value(stroke_width);
+                            shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
                         },
                         ShaperStyle::Rough => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_width;
                             shaperpage.imp().rough_stroke_width.set(stroke_width);
-                            shaperpage.imp().width_spinbutton.set_value(stroke_width);
+                            shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                         },
                     }
@@ -397,12 +401,12 @@ impl ShaperPage {
 
         match shaper_config.style {
             ShaperStyle::Smooth => {
-                imp.width_spinbutton
-                    .set_value(shaper_config.smooth_options.stroke_width);
+                imp.stroke_width_picker
+                    .set_stroke_width(shaper_config.smooth_options.stroke_width);
             }
             ShaperStyle::Rough => {
-                imp.width_spinbutton
-                    .set_value(shaper_config.rough_options.stroke_width);
+                imp.stroke_width_picker
+                    .set_stroke_width(shaper_config.rough_options.stroke_width);
             }
         }
 

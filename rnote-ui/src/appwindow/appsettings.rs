@@ -123,7 +123,7 @@ impl RnoteAppWindow {
             })
             .build();
 
-        // Brush stroke widths
+        // brush stroke widths
         self.app_settings()
             .bind(
                 "brush-width-1",
@@ -152,6 +152,41 @@ impl RnoteAppWindow {
                 &self
                     .penssidebar()
                     .brush_page()
+                    .stroke_width_picker()
+                    .setter_3(),
+                "stroke-width",
+            )
+            .build();
+
+        // shaper stroke widths
+        self.app_settings()
+            .bind(
+                "shaper-width-1",
+                &self
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .setter_1(),
+                "stroke-width",
+            )
+            .build();
+        self.app_settings()
+            .bind(
+                "shaper-width-2",
+                &self
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .setter_2(),
+                "stroke-width",
+            )
+            .build();
+        self.app_settings()
+            .bind(
+                "shaper-width-3",
+                &self
+                    .penssidebar()
+                    .shaper_page()
                     .stroke_width_picker()
                     .setter_3(),
                 "stroke-width",

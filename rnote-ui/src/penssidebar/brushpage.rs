@@ -232,12 +232,11 @@ impl BrushPage {
             .set_range(BrushConfig::STROKE_WIDTH_MIN, BrushConfig::STROKE_WIDTH_MAX);
         // set value after the range!
         imp.stroke_width_picker
-            .spinbutton()
-            .set_value(SolidOptions::default().stroke_width);
+            .set_stroke_width(SolidOptions::default().stroke_width);
 
         imp.stroke_width_picker.connect_notify_local(
             Some("stroke-width"),
-            clone!(@weak self as brushpage, @weak appwindow => move |picker, _pspec| {
+            clone!(@weak self as brushpage, @weak appwindow => move |picker, _| {
                 let stroke_width = picker.stroke_width();
                 let engine = appwindow.active_tab().canvas().engine();
                 let engine = &mut *engine.borrow_mut();
@@ -264,7 +263,6 @@ impl BrushPage {
             clone!(@weak self as brushpage, @weak appwindow => move |_, _| {
                 if let Some(brush_style) = brushpage.brush_style() {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.style = brush_style;
-
                     brushpage.stroke_width_picker().deselect_setters();
 
                     match brush_style {

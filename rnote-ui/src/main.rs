@@ -21,6 +21,7 @@ mod mainheader;
 mod overlays;
 pub(crate) mod penssidebar;
 mod settingspanel;
+pub(crate) mod strokewidthpicker;
 mod unitentry;
 mod workspacebrowser;
 
@@ -37,6 +38,7 @@ pub(crate) use mainheader::MainHeader;
 pub(crate) use overlays::RnoteOverlays;
 pub(crate) use penssidebar::PensSideBar;
 pub(crate) use settingspanel::SettingsPanel;
+pub(crate) use strokewidthpicker::StrokeWidthPicker;
 pub(crate) use unitentry::UnitEntry;
 pub(crate) use workspacebrowser::WorkspaceBrowser;
 

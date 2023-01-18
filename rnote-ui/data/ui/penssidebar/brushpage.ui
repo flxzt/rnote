@@ -27,6 +27,7 @@
                 <style>
                   <class name="sidebar_action_image" />
                 </style>
+                <property name="halign">center</property>
                 <property name="icon-name">pen-brush-style-solid-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -54,11 +55,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkSpinButton" id="width_spinbutton">
-        <property name="orientation">vertical</property>
-        <property name="numeric">true</property>
-        <property name="digits">1</property>
-        <property name="climb-rate">0.5</property>
+      <object class="StrokeWidthPicker" id="stroke_width_picker">
       </object>
     </child>
 

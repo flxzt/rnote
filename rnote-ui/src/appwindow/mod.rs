@@ -28,6 +28,8 @@ use crate::{
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 
 mod imp {
+    use gtk4::PositionType;
+
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -536,6 +538,10 @@ mod imp {
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Right);
                 inst.penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .set_position(PositionType::Left);
+                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Right);
@@ -551,6 +557,10 @@ mod imp {
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Right);
+                inst.penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .set_position(PositionType::Left);
             } else {
                 inst.flap().set_flap_position(PackType::End);
                 inst.main_grid().remove(&inst.overlays());
@@ -608,6 +618,10 @@ mod imp {
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Left);
                 inst.penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .set_position(PositionType::Right);
+                inst.penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Left);
@@ -623,6 +637,10 @@ mod imp {
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Left);
+                inst.penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .set_position(PositionType::Right);
             }
         }
     }

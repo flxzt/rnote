@@ -16,6 +16,7 @@ rnote-ui/data/ui/appwindow.ui
 rnote-ui/data/ui/canvasmenu.ui
 rnote-ui/data/ui/canvaswrapper.ui
 rnote-ui/data/ui/colorpicker.ui
+rnote-ui/data/ui/strokewidthpicker.ui
 rnote-ui/data/ui/filerow.ui
 rnote-ui/data/ui/iconpicker.ui
 rnote-ui/data/ui/mainheader.ui

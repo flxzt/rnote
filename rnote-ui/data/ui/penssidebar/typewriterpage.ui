@@ -24,6 +24,7 @@ or press Enter to select a new font)</property>
             <style>
               <class name="sidebar_action_image" />
             </style>
+            <property name="halign">center</property>
             <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
             <property name="icon-size">large</property>
           </object>
@@ -61,6 +62,7 @@ or press Enter to select a new font)</property>
             <style>
               <class name="sidebar_action_image" />
             </style>
+            <property name="halign">center</property>
             <property name="icon-name">emojichooser-symbolic</property>
             <property name="icon-size">large</property>
           </object>

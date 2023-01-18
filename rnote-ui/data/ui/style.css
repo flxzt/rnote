@@ -106,6 +106,10 @@
     box-shadow: inset 0px -3px 0px 0px @colorsetter_fg_color;
 }
 
+.strokewidthsetter {
+    padding: 5px;
+}
+
 .quickaction-button {
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.2);
 }

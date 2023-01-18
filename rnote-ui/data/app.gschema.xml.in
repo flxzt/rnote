@@ -29,6 +29,30 @@
         Use the color scheme in the application's UI and in the text area.
       </description>
     </key>
+    <key name="brush-width-1" type="d">
+      <default>2.0</default>
+      <summary>the first brush stroke palette width</summary>
+    </key>
+    <key name="brush-width-2" type="d">
+      <default>6.0</default>
+      <summary>the second brush stroke palette width</summary>
+    </key>
+    <key name="brush-width-3" type="d">
+      <default>12.0</default>
+      <summary>the third brush stroke palette width</summary>
+    </key>
+    <key name="shaper-width-1" type="d">
+      <default>2.0</default>
+      <summary>the first shaper stroke palette width</summary>
+    </key>
+    <key name="shaper-width-2" type="d">
+      <default>6.0</default>
+      <summary>the second shaper stroke palette width</summary>
+    </key>
+    <key name="shaper-width-3" type="d">
+      <default>12.0</default>
+      <summary>the third shaper stroke palette width</summary>
+    </key>
     <key name="selected-workspace-index" type="u">
       <default>0</default>
       <summary>the selected workspace index</summary>

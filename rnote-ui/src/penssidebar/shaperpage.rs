@@ -1,6 +1,8 @@
 use adw::{prelude::*, subclass::prelude::*};
+use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, Switch,
+    glib, glib::clone, CompositeTemplate, Label, ListBox, MenuButton, Popover, SpinButton,
+    StringList, Switch,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
@@ -9,7 +11,7 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
+use crate::{globals, IconPicker, RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
 
 mod imp {
     use super::*;
@@ -38,27 +40,9 @@ mod imp {
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapebuildertype_listbox: TemplateChild<ListBox>,
+        pub(crate) shapebuildertype_picker: TemplateChild<IconPicker>,
         #[template_child]
-        pub(crate) shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_grid_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_coordsystem2d_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_coordsystem3d_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_quadrantcoordsystem2d_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_quadbez_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_label: TemplateChild<Label>,
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -151,56 +135,44 @@ impl ShaperPage {
     }
 
     pub(crate) fn shapebuildertype(&self) -> Option<ShapeBuilderType> {
-        ShapeBuilderType::try_from(
-            self.imp().shapebuildertype_listbox.selected_row()?.index() as u32
-        )
-        .ok()
+        let type_string = self.imp().shapebuildertype_picker.picked()?;
+
+        match type_string.as_str() {
+            "shapebuilder-line-symbolic" => Some(ShapeBuilderType::Line),
+            "shapebuilder-rectangle-symbolic" => Some(ShapeBuilderType::Rectangle),
+            "shapebuilder-grid-symbolic" => Some(ShapeBuilderType::Grid),
+            "shapebuilder-coordsystem2d-symbolic" => Some(ShapeBuilderType::CoordSystem2D),
+            "shapebuilder-coordsystem3d-symbolic" => Some(ShapeBuilderType::CoordSystem3D),
+            "shapebuilder-quadrantcoordsystem2d-symbolic" => {
+                Some(ShapeBuilderType::QuadrantCoordSystem2D)
+            }
+            "shapebuilder-ellipse-symbolic" => Some(ShapeBuilderType::Ellipse),
+            "shapebuilder-fociellipse-symbolic" => Some(ShapeBuilderType::FociEllipse),
+            "shapebuilder-quadbez-symbolic" => Some(ShapeBuilderType::QuadBez),
+            "shapebuilder-cubbez-symbolic" => Some(ShapeBuilderType::CubBez),
+            _ => None,
+        }
     }
 
     pub(crate) fn set_shapebuildertype(&self, buildertype: ShapeBuilderType) {
-        match buildertype {
-            ShapeBuilderType::Line => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_line_row)),
-            ShapeBuilderType::Rectangle => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_rectangle_row)),
-            ShapeBuilderType::Grid => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_grid_row)),
-            ShapeBuilderType::CoordSystem2D => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_coordsystem2d_row)),
-            ShapeBuilderType::CoordSystem3D => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_coordsystem3d_row)),
+        let type_string = match buildertype {
+            ShapeBuilderType::Line => "shapebuilder-line-symbolic",
+            ShapeBuilderType::Rectangle => "shapebuilder-rectangle-symbolic",
+            ShapeBuilderType::Grid => "shapebuilder-grid-symbolic",
+            ShapeBuilderType::CoordSystem2D => "shapebuilder-coordsystem2d-symbolic",
+            ShapeBuilderType::CoordSystem3D => "shapebuilder-coordsystem3d-symbolic",
             ShapeBuilderType::QuadrantCoordSystem2D => {
-                self.imp().shapebuildertype_listbox.select_row(Some(
-                    &*self.imp().shapebuildertype_quadrantcoordsystem2d_row,
-                ))
+                "shapebuilder-quadrantcoordsystem2d-symbolic"
             }
-            ShapeBuilderType::Ellipse => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_ellipse_row)),
-            ShapeBuilderType::FociEllipse => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_fociellipse_row)),
-            ShapeBuilderType::QuadBez => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_quadbez_row)),
-            ShapeBuilderType::CubBez => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_cubbez_row)),
-        }
+            ShapeBuilderType::Ellipse => "shapebuilder-ellipse-symbolic",
+            ShapeBuilderType::FociEllipse => "shapebuilder-fociellipse-symbolic",
+            ShapeBuilderType::QuadBez => "shapebuilder-quadbez-symbolic",
+            ShapeBuilderType::CubBez => "shapebuilder-cubbez-symbolic",
+        };
+
+        self.imp()
+            .shapebuildertype_picker
+            .set_picked(Some(type_string.to_string()));
     }
 
     pub(crate) fn roughstyle_fillstyle(&self) -> FillStyle {
@@ -285,23 +257,30 @@ impl ShaperPage {
         }));
 
         // shape builder type
-        imp.shapebuildertype_listbox.connect_row_selected(
-            clone!(@weak self as shaperpage, @weak appwindow => move |_, _| {
-                if let Some(buildertype) = shaperpage.shapebuildertype() {
+        imp.shapebuildertype_picker
+            .set_list(StringList::new(globals::SHAPEBUILDERTYPE_ICONS_LIST));
+
+        imp.shapebuildertype_picker.connect_notify_local(
+            Some("picked"),
+            clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
+                if let (Some(buildertype), Some(icon_name)) = (shaperpage.shapebuildertype(), picker.picked()) {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = buildertype;
 
-                    match buildertype {
-                        ShapeBuilderType::Line => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-line-symbolic"),
-                        ShapeBuilderType::Rectangle => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-rectangle-symbolic"),
-                        ShapeBuilderType::Grid => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-grid-symbolic"),
-                        ShapeBuilderType::CoordSystem2D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-coordsystem2d-symbolic"),
-                        ShapeBuilderType::CoordSystem3D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-coordsystem3d-symbolic"),
-                        ShapeBuilderType::QuadrantCoordSystem2D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-quadrantcoordsystem2d-symbolic"),
-                        ShapeBuilderType::Ellipse => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-ellipse-symbolic"),
-                        ShapeBuilderType::FociEllipse => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-fociellipse-symbolic"),
-                        ShapeBuilderType::QuadBez => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-quadbez-symbolic"),
-                        ShapeBuilderType::CubBez => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-cubbez-symbolic"),
-                    }
+                    let label_string = match buildertype {
+                        ShapeBuilderType::Line => gettext("Line"),
+                        ShapeBuilderType::Rectangle => gettext("Rectangle"),
+                        ShapeBuilderType::Grid => gettext("Grid"),
+                        ShapeBuilderType::CoordSystem2D => gettext("2D coordinate system"),
+                        ShapeBuilderType::CoordSystem3D => gettext("3D coordinate system"),
+                        ShapeBuilderType::QuadrantCoordSystem2D => gettext("2D single quadrant coordinate system"),
+                        ShapeBuilderType::Ellipse => gettext("Ellipse"),
+                        ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
+                        ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
+                        ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
+                    };
+
+                    shaperpage.imp().shapebuildertype_label.set_text(&label_string);
+                    shaperpage.imp().shapebuildertype_menubutton.set_icon_name(&icon_name);
                 }
             }),
         );

@@ -67,3 +67,16 @@ pub(crate) const CURSORS_LIST: &[&str] = &[
     "cursor-beam-medium",
     "cursor-beam-large",
 ];
+
+pub(crate) const SHAPEBUILDERTYPE_ICONS_LIST: &[&str] = &[
+    "shapebuilder-line-symbolic",
+    "shapebuilder-rectangle-symbolic",
+    "shapebuilder-grid-symbolic",
+    "shapebuilder-coordsystem2d-symbolic",
+    "shapebuilder-coordsystem3d-symbolic",
+    "shapebuilder-quadrantcoordsystem2d-symbolic",
+    "shapebuilder-ellipse-symbolic",
+    "shapebuilder-fociellipse-symbolic",
+    "shapebuilder-quadbez-symbolic",
+    "shapebuilder-cubbez-symbolic",
+];

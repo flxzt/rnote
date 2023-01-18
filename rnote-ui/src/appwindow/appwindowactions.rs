@@ -349,9 +349,8 @@ impl RnoteAppWindow {
 
                 engine.pens_config.shaper_config.style = appwindow.penssidebar().shaper_page().shaper_style().unwrap_or_default();
                 engine.pens_config.shaper_config.builder_type = appwindow.penssidebar().shaper_page().shapebuildertype().unwrap_or_default();
-                let shaper_stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
-                engine.pens_config.shaper_config.smooth_options.stroke_width = shaper_stroke_width;
-                engine.pens_config.shaper_config.rough_options.stroke_width = shaper_stroke_width;
+                engine.pens_config.shaper_config.smooth_options.stroke_width = appwindow.penssidebar().shaper_page().smooth_stroke_width();
+                engine.pens_config.shaper_config.rough_options.stroke_width = appwindow.penssidebar().shaper_page().rough_stroke_width();
                 engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);

@@ -1,22 +1,26 @@
-use crate::appwindow::RnoteAppWindow;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{
     glib, glib::clone, CompositeTemplate, Image, ListBox, MenuButton, Popover, SpinButton, Switch,
 };
 use num_traits::cast::ToPrimitive;
-
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
 use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
+use std::cell::Cell;
+
+use crate::appwindow::RnoteAppWindow;
 
 mod imp {
-
     use super::*;
+
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub(crate) struct ShaperPage {
+        pub(crate) smooth_stroke_width: Cell<f64>,
+        pub(crate) rough_stroke_width: Cell<f64>,
+
         #[template_child]
         pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -121,10 +125,6 @@ impl ShaperPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn width_spinbutton(&self) -> SpinButton {
-        self.imp().width_spinbutton.get()
-    }
-
     pub(crate) fn shaperstyle_menubutton(&self) -> MenuButton {
         self.imp().shaperstyle_menubutton.get()
     }
@@ -224,6 +224,26 @@ impl ShaperPage {
             .set_selected(position);
     }
 
+    #[allow(unused)]
+    pub(crate) fn smooth_stroke_width(&self) -> f64 {
+        self.imp().smooth_stroke_width.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_smooth_stroke_width(&self, stroke_width: f64) {
+        self.imp().smooth_stroke_width.set(stroke_width);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn rough_stroke_width(&self) -> f64 {
+        self.imp().rough_stroke_width.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_rough_stroke_width(&self, stroke_width: f64) {
+        self.imp().rough_stroke_width.set(stroke_width);
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
@@ -239,13 +259,21 @@ impl ShaperPage {
             .set_value(SmoothOptions::default().stroke_width);
 
         imp.width_spinbutton.connect_value_changed(
-            clone!(@weak appwindow => move |width_spinbutton| {
+            clone!(@weak self as shaperpage, @weak appwindow => move |width_spinbutton| {
                 let stroke_width = width_spinbutton.value();
                 let engine = appwindow.active_tab().canvas().engine();
                 let mut engine = engine.borrow_mut();
 
-                engine.pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
-                engine.pens_config.shaper_config.rough_options.stroke_width = stroke_width;
+                match engine.pens_config.shaper_config.style {
+                    ShaperStyle::Smooth => {
+                        shaperpage.imp().smooth_stroke_width.set(stroke_width);
+                        engine.pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
+                    },
+                    ShaperStyle::Rough => {
+                        shaperpage.imp().rough_stroke_width.set(stroke_width);
+                        engine.pens_config.shaper_config.rough_options.stroke_width = stroke_width;
+                    },
+                }
             }),
         );
 
@@ -256,8 +284,18 @@ impl ShaperPage {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.style = shaper_style;
 
                     match shaper_style {
-                        ShaperStyle::Smooth => shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-smooth-symbolic")),
-                        ShaperStyle::Rough => shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-rough-symbolic")),
+                        ShaperStyle::Smooth => {
+                            let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_width;
+                            shaperpage.imp().smooth_stroke_width.set(stroke_width);
+                            shaperpage.imp().width_spinbutton.set_value(stroke_width);
+                            shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
+                        },
+                        ShaperStyle::Rough => {
+                            let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_width;
+                            shaperpage.imp().rough_stroke_width.set(stroke_width);
+                            shaperpage.imp().width_spinbutton.set_value(stroke_width);
+                            shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-rough-symbolic"));
+                        },
                     }
                 }
             }),
@@ -351,6 +389,11 @@ impl ShaperPage {
             .clone();
 
         self.set_shaper_style(shaper_config.style);
+
+        imp.smooth_stroke_width
+            .set(shaper_config.smooth_options.stroke_width);
+        imp.rough_stroke_width
+            .set(shaper_config.rough_options.stroke_width);
 
         match shaper_config.style {
             ShaperStyle::Smooth => {

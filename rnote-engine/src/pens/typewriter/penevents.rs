@@ -435,6 +435,9 @@ impl Typewriter {
                             cursor,
                             pen_down: false,
                         };
+
+                        widget_flags.resize = true;
+                        widget_flags.indicate_changed_store = true;
                     }
                     _ => {}
                 }
@@ -784,6 +787,10 @@ impl Typewriter {
                     cursor,
                     pen_down: false,
                 };
+
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }

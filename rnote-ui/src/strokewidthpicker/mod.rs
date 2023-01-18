@@ -237,6 +237,18 @@ impl StrokeWidthPicker {
         self.imp().spinbutton.get()
     }
 
+    pub(crate) fn setter_1(&self) -> StrokeWidthSetter {
+        self.imp().setter_1.get()
+    }
+
+    pub(crate) fn setter_2(&self) -> StrokeWidthSetter {
+        self.imp().setter_2.get()
+    }
+
+    pub(crate) fn setter_3(&self) -> StrokeWidthSetter {
+        self.imp().setter_3.get()
+    }
+
     pub(crate) fn set_active_setter_stroke_width(&self, stroke_width: f64) {
         let imp = self.imp();
 

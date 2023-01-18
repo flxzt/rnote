@@ -122,6 +122,41 @@ impl RnoteAppWindow {
                 Some(u32::from(val.get::<gdk::RGBA>().unwrap().into_compose_color()).to_variant())
             })
             .build();
+
+        // Brush stroke widths
+        self.app_settings()
+            .bind(
+                "brush-width-1",
+                &self
+                    .penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .setter_1(),
+                "stroke-width",
+            )
+            .build();
+        self.app_settings()
+            .bind(
+                "brush-width-2",
+                &self
+                    .penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .setter_2(),
+                "stroke-width",
+            )
+            .build();
+        self.app_settings()
+            .bind(
+                "brush-width-3",
+                &self
+                    .penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .setter_3(),
+                "stroke-width",
+            )
+            .build();
     }
 
     /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts

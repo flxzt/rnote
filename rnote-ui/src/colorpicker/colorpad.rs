@@ -96,7 +96,7 @@ mod imp {
             let css = CssProvider::new();
 
             let colorpad_color = color.to_css_color_attr();
-            let colorpad_fg_color = if color == Color::TRANSPARENT {
+            let colorpad_fg_color = if color.a == 0.0 {
                 String::from("@window_fg_color")
             } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {
                 String::from("@light_1")

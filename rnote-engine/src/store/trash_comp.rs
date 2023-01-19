@@ -8,7 +8,6 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::PenPath;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use std::time::Instant;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "trash_component")]
@@ -117,8 +116,9 @@ impl StrokeStore {
                 }
 
                 if trash_current_stroke {
-                    widget_flags.merge(self.record(Instant::now()));
                     self.set_trashed(key, true);
+                    widget_flags.store_modified = true;
+                    widget_flags.resize = true;
                 }
             });
 
@@ -132,7 +132,8 @@ impl StrokeStore {
         &mut self,
         eraser_bounds: Aabb,
         viewport: Aabb,
-    ) -> Vec<StrokeKey> {
+    ) -> (Vec<StrokeKey>, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
         let mut modified_keys = vec![];
 
         let new_strokes = self
@@ -226,6 +227,8 @@ impl StrokeStore {
 
                 if trash_current_stroke {
                     self.set_trashed(key, true);
+                    widget_flags.store_modified = true;
+                    widget_flags.resize = true;
                 }
 
                 new_strokes
@@ -239,6 +242,6 @@ impl StrokeStore {
                 .collect(),
         );
 
-        modified_keys
+        (modified_keys, widget_flags)
     }
 }

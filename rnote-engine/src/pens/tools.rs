@@ -230,7 +230,6 @@ impl PenBehaviour for Tools {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -257,6 +256,8 @@ impl PenBehaviour for Tools {
                             );
 
                             self.verticalspace_tool.current_pos_y = element.pos[1];
+
+                            widget_flags.store_modified = true;
                         }
 
                         PenProgress::InProgress
@@ -289,7 +290,6 @@ impl PenBehaviour for Tools {
                 };
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -299,26 +299,27 @@ impl PenBehaviour for Tools {
                         engine_view
                             .store
                             .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
+
+                        widget_flags.store_modified = true;
                     }
                     ToolsStyle::OffsetCamera => {}
                 }
+
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );
-
-                self.reset(engine_view);
-                self.state = ToolsState::Idle;
-
                 engine_view
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
+                self.reset(engine_view);
+                self.state = ToolsState::Idle;
+
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }
@@ -328,13 +329,18 @@ impl PenBehaviour for Tools {
                 self.reset(engine_view);
                 self.state = ToolsState::Idle;
 
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
+                    false,
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
+                );
                 engine_view
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }

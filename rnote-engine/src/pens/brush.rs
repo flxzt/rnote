@@ -139,7 +139,7 @@ impl PenBehaviour for Brush {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 self.stop_audio(engine_view);
 
@@ -166,7 +166,7 @@ impl PenBehaviour for Brush {
                                 engine_view.store.get_stroke_mut(*current_stroke_key)
                             {
                                 brushstroke.extend_w_segments(segments);
-                                widget_flags.indicate_changed_store = true;
+                                widget_flags.store_modified = true;
                             }
 
                             engine_view.store.append_rendering_last_segments(
@@ -190,7 +190,7 @@ impl PenBehaviour for Brush {
                                 engine_view.store.get_stroke_mut(*current_stroke_key)
                             {
                                 brushstroke.extend_w_segments(segments);
-                                widget_flags.indicate_changed_store = true;
+                                widget_flags.store_modified = true;
                             }
 
                             // First we draw the last segments immediately,
@@ -225,7 +225,7 @@ impl PenBehaviour for Brush {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
 
                         PenProgress::Finished
                     }

@@ -18,7 +18,7 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
-    /// Imports the specified input file and saves it as a rnote save file.
+    /// Imports the specified input file and saves it as a rnote save file.{n}
     /// Currently only `.xopp` files can be imported.
     Import {
         /// the rnote save file
@@ -32,7 +32,8 @@ pub(crate) enum Commands {
         xopp_dpi: Option<f64>,
     },
     /// Exports the Rnote file(s) and saves it in the desired format.{n}
-    /// When using --output-file, only one input file can be given. The export format is recognized from the file extension of the output file.{n}
+    /// When using --output-file, only one input file can be given.{n}
+    /// The export format is recognized from the file extension of the output file.{n}
     /// When using --output-format, the same file name is used with the extension changed.{n}
     /// --output-file and --output-format are mutually exclusive but one of them is required.{n}
     /// Currently `.svg`, `.xopp` and `.pdf` are supported.{n}

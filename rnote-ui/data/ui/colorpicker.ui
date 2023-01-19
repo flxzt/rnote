@@ -31,7 +31,7 @@
       <object class="GtkSeparator"></object>
     </child>
     <child>
-      <object class="GtkBox" id="setterbox">
+      <object class="GtkBox" id="setter_box">
         <property name="orientation">vertical</property>
         <property name="homogeneous">true</property>
         <property name="spacing">6</property>
@@ -39,7 +39,35 @@
           <class name="linked" />
         </style>
         <child>
-          <object class="ColorSetter" id="first_colorsetter">
+          <object class="ColorSetter" id="setter_1">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_2">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_3">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_4">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_5">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_6">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_7">
+          </object>
+        </child>
+        <child>
+          <object class="ColorSetter" id="setter_8">
           </object>
         </child>
       </object>

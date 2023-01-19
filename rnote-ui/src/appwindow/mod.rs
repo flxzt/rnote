@@ -869,7 +869,7 @@ impl RnoteAppWindow {
         if widget_flags.refresh_ui {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
         }
-        if widget_flags.indicate_changed_store {
+        if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
             canvas.set_empty(false);
         }

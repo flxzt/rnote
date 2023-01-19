@@ -546,7 +546,7 @@ impl PenBehaviour for Typewriter {
 
                     widget_flags.redraw = true;
                     widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
 
                     // Back to modifying state
                     self.state = TypewriterState::Modifying {
@@ -789,7 +789,7 @@ impl Typewriter {
 
                     widget_flags.redraw = true;
                     widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
                 }
             }
             TypewriterState::Selecting {
@@ -827,7 +827,7 @@ impl Typewriter {
 
                     widget_flags.resize = true;
                     widget_flags.redraw = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
                 }
             }
             TypewriterState::Translating { .. } | TypewriterState::AdjustTextWidth { .. } => {}
@@ -867,7 +867,7 @@ impl Typewriter {
                 );
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
             }
         }
 
@@ -896,7 +896,7 @@ impl Typewriter {
                 );
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
             }
         }
 
@@ -932,7 +932,7 @@ impl Typewriter {
                 );
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
             }
         }
 

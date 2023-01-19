@@ -8,8 +8,8 @@ pub struct WidgetFlags {
     pub resize: bool,
     /// refresh the UI with the engine state
     pub refresh_ui: bool,
-    /// whether the store has changed, i.e. new strokes inserted, modified, etc.
-    pub indicate_changed_store: bool,
+    /// whether the store was modified, i.e. new strokes inserted, modified, etc.
+    pub store_modified: bool,
     /// update the current view offsets and size
     pub update_view: bool,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed
@@ -27,7 +27,7 @@ impl Default for WidgetFlags {
             redraw: false,
             resize: false,
             refresh_ui: false,
-            indicate_changed_store: false,
+            store_modified: false,
             update_view: false,
             hide_undo: None,
             hide_redo: None,
@@ -42,7 +42,7 @@ impl WidgetFlags {
         self.redraw |= other.redraw;
         self.resize |= other.resize;
         self.refresh_ui |= other.refresh_ui;
-        self.indicate_changed_store |= other.indicate_changed_store;
+        self.store_modified |= other.store_modified;
         self.update_view |= other.update_view;
         if other.hide_undo.is_some() {
             self.hide_undo = other.hide_undo

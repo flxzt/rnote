@@ -232,7 +232,7 @@ impl Typewriter {
                     *current_pos = element.pos;
 
                     widget_flags.redraw = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
                 }
 
                 PenProgress::InProgress
@@ -266,7 +266,7 @@ impl Typewriter {
                 *current_pos = element.pos;
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -323,7 +323,7 @@ impl Typewriter {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -351,7 +351,7 @@ impl Typewriter {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -437,7 +437,7 @@ impl Typewriter {
                         };
 
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
                     }
                     _ => {}
                 }
@@ -470,7 +470,7 @@ impl Typewriter {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
                     };
 
                     // Handling keyboard input
@@ -630,7 +630,7 @@ impl Typewriter {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
                     };
 
                     // Handle keyboard keys
@@ -790,7 +790,7 @@ impl Typewriter {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -823,7 +823,7 @@ impl Typewriter {
 
                     widget_flags.redraw = true;
                     widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
 
                     *pen_down = false;
                 }
@@ -863,7 +863,7 @@ impl Typewriter {
 
                     widget_flags.redraw = true;
                     widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
 
                     *finished = true
                 }

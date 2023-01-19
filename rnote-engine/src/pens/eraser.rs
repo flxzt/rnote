@@ -69,13 +69,15 @@ impl PenBehaviour for Eraser {
                         ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
-                        let new_strokes = engine_view.store.split_colliding_strokes(
-                            engine_view.pens_config.eraser_config.eraser_bounds(element),
-                            engine_view.camera.viewport(),
-                        );
+                        let (modified_strokes, new_widget_flags) =
+                            engine_view.store.split_colliding_strokes(
+                                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                                engine_view.camera.viewport(),
+                            );
+                        widget_flags.merge(new_widget_flags);
 
                         engine_view.store.regenerate_rendering_for_strokes(
-                            &new_strokes,
+                            &modified_strokes,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
@@ -85,7 +87,7 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Down(element);
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                // the store_modified flag is set in the `.trash_..()` methods
 
                 PenProgress::InProgress
             }
@@ -108,13 +110,15 @@ impl PenBehaviour for Eraser {
                         ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
-                        let new_strokes = engine_view.store.split_colliding_strokes(
-                            engine_view.pens_config.eraser_config.eraser_bounds(element),
-                            engine_view.camera.viewport(),
-                        );
+                        let (modified_strokes, new_widget_flags) =
+                            engine_view.store.split_colliding_strokes(
+                                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                                engine_view.camera.viewport(),
+                            );
+                        widget_flags.merge(new_widget_flags);
 
                         engine_view.store.regenerate_rendering_for_strokes(
-                            &new_strokes,
+                            &modified_strokes,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
@@ -124,7 +128,6 @@ impl PenBehaviour for Eraser {
                 *current_element = element;
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -137,13 +140,15 @@ impl PenBehaviour for Eraser {
                         ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
-                        let new_strokes = engine_view.store.split_colliding_strokes(
-                            engine_view.pens_config.eraser_config.eraser_bounds(element),
-                            engine_view.camera.viewport(),
-                        );
+                        let (modified_strokes, new_widget_flags) =
+                            engine_view.store.split_colliding_strokes(
+                                engine_view.pens_config.eraser_config.eraser_bounds(element),
+                                engine_view.camera.viewport(),
+                            );
+                        widget_flags.merge(new_widget_flags);
 
                         engine_view.store.regenerate_rendering_for_strokes(
-                            &new_strokes,
+                            &modified_strokes,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
@@ -153,7 +158,6 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Up;
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }
@@ -211,7 +215,7 @@ impl DrawOnDocBehaviour for Eraser {
             Lazy::new(|| color::GNOME_REDS[2].with_alpha(0.941));
         static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_REDS[0].with_alpha(0.627));
         static PROXIMITY_FILL_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_REDS[0].with_alpha(0.5));
+            Lazy::new(|| color::GNOME_REDS[0].with_alpha(0.2));
         let outline_width = 2.0 / engine_view.camera.total_zoom();
 
         match &self.state {

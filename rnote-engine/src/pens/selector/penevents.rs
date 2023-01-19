@@ -29,14 +29,16 @@ impl Selector {
 
                 // Deselect on start
                 let selection_keys = engine_view.store.selection_keys_as_rendered();
-                engine_view.store.set_selected_keys(&selection_keys, false);
+                if !selection_keys.is_empty() {
+                    engine_view.store.set_selected_keys(&selection_keys, false);
+                    widget_flags.store_modified = true;
+                }
 
                 self.state = SelectorState::Selecting {
                     path: vec![element],
                 };
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -282,7 +284,7 @@ impl Selector {
                 }
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 pen_progress
             }
@@ -319,6 +321,7 @@ impl Selector {
                                 );
                             if !new_keys.is_empty() {
                                 engine_view.store.set_selected_keys(&new_keys, true);
+                                widget_flags.store_modified = true;
                                 Some(new_keys)
                             } else {
                                 None
@@ -337,6 +340,7 @@ impl Selector {
                             );
                             if !new_keys.is_empty() {
                                 engine_view.store.set_selected_keys(&new_keys, true);
+                                widget_flags.store_modified = true;
                                 Some(new_keys)
                             } else {
                                 None
@@ -356,7 +360,7 @@ impl Selector {
                                 .last()
                             {
                                 engine_view.store.set_selected(new_key, true);
-
+                                widget_flags.store_modified = true;
                                 Some(vec![new_key])
                             } else {
                                 None
@@ -378,6 +382,7 @@ impl Selector {
                                 engine_view
                                     .store
                                     .set_selected_keys(&intersecting_keys, true);
+                                widget_flags.store_modified = true;
                                 Some(intersecting_keys)
                             } else {
                                 None
@@ -399,7 +404,6 @@ impl Selector {
                 self.state = state;
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -427,7 +431,7 @@ impl Selector {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -488,7 +492,7 @@ impl Selector {
 
                                 widget_flags.redraw = true;
                                 widget_flags.resize = true;
-                                widget_flags.indicate_changed_store = true;
+                                widget_flags.store_modified = true;
                             }
                         }
 
@@ -521,7 +525,7 @@ impl Selector {
 
                                 widget_flags.redraw = true;
                                 widget_flags.resize = true;
-                                widget_flags.indicate_changed_store = true;
+                                widget_flags.store_modified = true;
                             }
                         }
 
@@ -555,7 +559,7 @@ impl Selector {
 
                                 widget_flags.redraw = true;
                                 widget_flags.resize = true;
-                                widget_flags.indicate_changed_store = true;
+                                widget_flags.store_modified = true;
                             }
                         }
 
@@ -571,7 +575,7 @@ impl Selector {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
 
                         PenProgress::Finished
                     }
@@ -585,7 +589,7 @@ impl Selector {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
 
                         PenProgress::Finished
                     }
@@ -631,7 +635,8 @@ impl Selector {
                 engine_view.store.set_selected_keys(&selection_keys, false);
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.resize = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::Finished
             }
@@ -645,7 +650,7 @@ impl Selector {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::Finished
             }

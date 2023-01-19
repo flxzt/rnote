@@ -132,7 +132,7 @@ impl PenBehaviour for Shaper {
                         }
 
                         widget_flags.redraw = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
 
                         PenProgress::InProgress
                     }
@@ -153,7 +153,7 @@ impl PenBehaviour for Shaper {
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             widget_flags.resize = true;
-                            widget_flags.indicate_changed_store = true;
+                            widget_flags.store_modified = true;
                         }
 
                         for shape in shapes {

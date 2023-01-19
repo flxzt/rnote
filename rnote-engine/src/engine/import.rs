@@ -294,7 +294,7 @@ impl RnoteEngine {
 
         widget_flags.redraw = true;
         widget_flags.resize = true;
-        widget_flags.indicate_changed_store = true;
+        widget_flags.store_modified = true;
         widget_flags.refresh_ui = true;
 
         widget_flags

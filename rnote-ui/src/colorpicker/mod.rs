@@ -7,7 +7,6 @@ pub(crate) use colorsetter::ColorSetter;
 
 // Imports
 use std::cell::{Cell, RefCell};
-use std::rc::Rc;
 
 use gtk4::{
     gdk, glib, glib::clone, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, BoxLayout,
@@ -25,6 +24,10 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
     pub(crate) struct ColorPicker {
+        pub(crate) stroke_color: RefCell<gdk::RGBA>,
+        pub(crate) fill_color: RefCell<gdk::RGBA>,
+        pub(crate) position: Cell<PositionType>,
+
         #[template_child]
         pub(crate) active_colors_box: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -32,9 +35,23 @@ mod imp {
         #[template_child]
         pub(crate) fill_color_pad: TemplateChild<ColorPad>,
         #[template_child]
-        pub(crate) setterbox: TemplateChild<gtk4::Box>,
+        pub(crate) setter_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) first_colorsetter: TemplateChild<ColorSetter>,
+        pub(crate) setter_1: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_2: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_3: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_4: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_5: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_6: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_7: TemplateChild<ColorSetter>,
+        #[template_child]
+        pub(crate) setter_8: TemplateChild<ColorSetter>,
         #[template_child]
         pub(crate) colorpicker_button: TemplateChild<MenuButton>,
         #[template_child]
@@ -45,39 +62,34 @@ mod imp {
         pub(crate) colorchooser_editor_gobackbutton: TemplateChild<Button>,
         #[template_child]
         pub(crate) colorchooser_editor_selectbutton: TemplateChild<Button>,
-
-        pub(crate) stroke_color: RefCell<gdk::RGBA>,
-        pub(crate) fill_color: RefCell<gdk::RGBA>,
-        pub(crate) position: Cell<PositionType>,
-        pub(crate) selected: Cell<u32>,
-        pub(crate) amount_colorbuttons: Cell<u32>,
-        pub(crate) colorsetters: Rc<RefCell<Vec<ColorSetter>>>,
     }
 
     impl Default for ColorPicker {
         fn default() -> Self {
             Self {
-                active_colors_box: TemplateChild::<gtk4::Box>::default(),
-                stroke_color_pad: TemplateChild::<ColorPad>::default(),
-                fill_color_pad: TemplateChild::<ColorPad>::default(),
-                setterbox: TemplateChild::<gtk4::Box>::default(),
-                first_colorsetter: TemplateChild::<ColorSetter>::default(),
-                colorpicker_button: TemplateChild::<MenuButton>::default(),
-                colorpicker_popover: TemplateChild::<Popover>::default(),
-                colorchooser: TemplateChild::<ColorChooserWidget>::default(),
-                colorchooser_editor_gobackbutton: TemplateChild::<Button>::default(),
-                colorchooser_editor_selectbutton: TemplateChild::<Button>::default(),
-
                 stroke_color: RefCell::new(gdk::RGBA::from_compose_color(
                     *super::STROKE_COLOR_DEFAULT,
                 )),
                 fill_color: RefCell::new(gdk::RGBA::from_compose_color(*super::FILL_COLOR_DEFAULT)),
                 position: Cell::new(PositionType::Right),
-                selected: Cell::new(0),
-                amount_colorbuttons: Cell::new(super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT),
-                colorsetters: Rc::new(RefCell::new(Vec::with_capacity(
-                    super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT as usize,
-                ))),
+
+                active_colors_box: TemplateChild::default(),
+                stroke_color_pad: TemplateChild::default(),
+                fill_color_pad: TemplateChild::default(),
+                setter_box: TemplateChild::default(),
+                setter_1: TemplateChild::default(),
+                setter_2: TemplateChild::default(),
+                setter_3: TemplateChild::default(),
+                setter_4: TemplateChild::default(),
+                setter_5: TemplateChild::default(),
+                setter_6: TemplateChild::default(),
+                setter_7: TemplateChild::default(),
+                setter_8: TemplateChild::default(),
+                colorpicker_button: TemplateChild::default(),
+                colorpicker_popover: TemplateChild::default(),
+                colorchooser: TemplateChild::default(),
+                colorchooser_editor_gobackbutton: TemplateChild::default(),
+                colorchooser_editor_selectbutton: TemplateChild::default(),
             }
         }
     }
@@ -106,17 +118,25 @@ mod imp {
             let colorpicker_popover = self.colorpicker_popover.get();
             let colorchooser_editor_gobackbutton = self.colorchooser_editor_gobackbutton.get();
 
-            self.first_colorsetter.connect_clicked(
-                clone!(@weak inst as colorpicker => move |first_colorsetter| {
-                    let color = first_colorsetter.color();
+            self.setup_setters();
 
-                    if colorpicker.imp().stroke_color_pad.is_active() {
-                        colorpicker.set_stroke_color(color);
-                    } else if colorpicker.imp().fill_color_pad.is_active() {
-                        colorpicker.set_fill_color(color);
-                    }
-                }),
-            );
+            inst.connect_notify_local(Some("stroke-color"), move |colorpicker, _pspec| {
+                if colorpicker.imp().stroke_color_pad.is_active() {
+                    colorpicker
+                        .imp()
+                        .colorchooser
+                        .set_rgba(&colorpicker.stroke_color());
+                }
+            });
+
+            inst.connect_notify_local(Some("fill-color"), move |colorpicker, _pspec| {
+                if colorpicker.imp().fill_color_pad.is_active() {
+                    colorpicker
+                        .imp()
+                        .colorchooser
+                        .set_rgba(&colorpicker.fill_color());
+                }
+            });
 
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
@@ -144,12 +164,7 @@ mod imp {
                 clone!(@weak inst as colorpicker => move |colorchooser| {
                     let color = colorchooser.rgba();
 
-                    if colorpicker.imp().stroke_color_pad.is_active() {
-                        colorpicker.set_stroke_color(color);
-                    } else if colorpicker.imp().fill_color_pad.is_active() {
-                        colorpicker.set_fill_color(color);
-                    }
-
+                    colorpicker.set_color_active_pad(color);
                     colorpicker.set_color_active_setter(color);
                 }),
             );
@@ -159,11 +174,24 @@ mod imp {
                 .sync_create()
                 .bidirectional()
                 .build();
+
+            self.stroke_color_pad.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |_| {
+                    colorpicker.deselect_setters();
+                }),
+            );
+
             self.fill_color_pad
                 .bind_property("color", &*inst, "fill-color")
                 .sync_create()
                 .bidirectional()
                 .build();
+
+            self.fill_color_pad.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |_| {
+                    colorpicker.deselect_setters();
+                }),
+            );
         }
 
         fn dispose(&self) {
@@ -181,24 +209,6 @@ mod imp {
                         "position",
                         PositionType::static_type(),
                         PositionType::Right.into_glib(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecUInt::new(
-                        "selected",
-                        "selected",
-                        "selected",
-                        u32::MIN,
-                        u32::MAX,
-                        0,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecUInt::new(
-                        "amount-colorbuttons",
-                        "amount-colorbuttons",
-                        "The amount of colorbuttons shown",
-                        super::ColorPicker::AMOUNT_COLORBUTTONS_MIN,
-                        super::ColorPicker::AMOUNT_COLORBUTTONS_MAX,
-                        super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT,
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpecBoxed::new(
@@ -236,67 +246,46 @@ mod imp {
                         .expect("value not of type `PositionType`");
                     self.position.replace(position);
 
-                    self.first_colorsetter.set_position(position);
-
-                    for colorsetter in self.colorsetters.borrow().iter() {
-                        colorsetter.set_position(position);
-                    }
+                    self.setter_1.set_position(position);
+                    self.setter_2.set_position(position);
+                    self.setter_3.set_position(position);
+                    self.setter_4.set_position(position);
+                    self.setter_5.set_position(position);
+                    self.setter_6.set_position(position);
+                    self.setter_7.set_position(position);
+                    self.setter_8.set_position(position);
 
                     match position {
                         PositionType::Left => {
                             layout_manager.set_orientation(Orientation::Vertical);
                             self.active_colors_box
                                 .set_orientation(Orientation::Vertical);
-                            self.setterbox.set_orientation(Orientation::Vertical);
+                            self.setter_box.set_orientation(Orientation::Vertical);
                             self.colorpicker_popover.set_position(PositionType::Right);
                         }
                         PositionType::Right => {
                             layout_manager.set_orientation(Orientation::Vertical);
                             self.active_colors_box
                                 .set_orientation(Orientation::Vertical);
-                            self.setterbox.set_orientation(Orientation::Vertical);
+                            self.setter_box.set_orientation(Orientation::Vertical);
                             self.colorpicker_popover.set_position(PositionType::Left);
                         }
                         PositionType::Top => {
                             layout_manager.set_orientation(Orientation::Horizontal);
                             self.active_colors_box
                                 .set_orientation(Orientation::Horizontal);
-                            self.setterbox.set_orientation(Orientation::Horizontal);
+                            self.setter_box.set_orientation(Orientation::Horizontal);
                             self.colorpicker_popover.set_position(PositionType::Bottom);
                         }
                         PositionType::Bottom => {
                             layout_manager.set_orientation(Orientation::Horizontal);
                             self.active_colors_box
                                 .set_orientation(Orientation::Horizontal);
-                            self.setterbox.set_orientation(Orientation::Horizontal);
+                            self.setter_box.set_orientation(Orientation::Horizontal);
                             self.colorpicker_popover.set_position(PositionType::Top);
                         }
                         _ => {}
                     }
-                }
-                "selected" => {
-                    // Clamping to the current amount of colorbuttons
-                    let index = value
-                        .get::<u32>()
-                        .unwrap()
-                        .clamp(0, self.amount_colorbuttons.get());
-                    self.selected.set(index);
-
-                    if index == 0 {
-                        self.first_colorsetter.get().set_active(true);
-                    } else {
-                        // index - 1, because vec of colorsetters are not including the first
-                        if let Some(colorsetter) =
-                            self.colorsetters.borrow().get(index as usize - 1)
-                        {
-                            colorsetter.set_active(true);
-                        }
-                    }
-                }
-                "amount-colorbuttons" => {
-                    self.amount_colorbuttons
-                        .set(value.get::<u32>().expect("value not of type `u32`"));
-                    self.init_colorsetters();
                 }
                 "stroke-color" => {
                     self.stroke_color.replace(
@@ -319,8 +308,6 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "position" => self.position.get().to_value(),
-                "selected" => self.selected.get().to_value(),
-                "amount-colorbuttons" => self.amount_colorbuttons.get().to_value(),
                 "stroke-color" => self.stroke_color.borrow().to_value(),
                 "fill-color" => self.fill_color.borrow().to_value(),
                 _ => panic!("invalid property name"),
@@ -331,61 +318,152 @@ mod imp {
     impl WidgetImpl for ColorPicker {}
 
     impl ColorPicker {
-        fn init_colorsetters(&self) {
+        fn setup_setters(&self) {
             let inst = self.instance();
 
-            let setterbox = self.setterbox.get();
-            let first_colorsetter = self.first_colorsetter.get();
+            self.setter_1.set_color(Self::default_color(0, 8));
+            self.setter_2.set_color(Self::default_color(1, 8));
+            self.setter_3.set_color(Self::default_color(2, 8));
+            self.setter_4.set_color(Self::default_color(3, 8));
+            self.setter_5.set_color(Self::default_color(4, 8));
+            self.setter_6.set_color(Self::default_color(5, 8));
+            self.setter_7.set_color(Self::default_color(6, 8));
+            self.setter_8.set_color(Self::default_color(7, 8));
 
-            // Clearing previous
-            for colorsetter in &*self.colorsetters.borrow_mut() {
-                colorsetter.unparent();
-            }
-            self.colorsetters.borrow_mut().clear();
+            self.setter_1.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        // Must come after setting the other setters inactive
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
 
-            // init the colorsetters. Index starts at one to skip the first button
-            for _i in super::ColorPicker::AMOUNT_COLORBUTTONS_MIN..self.amount_colorbuttons.get() {
-                let colorsetter = ColorSetter::new();
+            self.setter_2.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
 
-                colorsetter.set_position(inst.position());
-                colorsetter.set_group(Some(&first_colorsetter));
-                setterbox.append(&colorsetter);
+            self.setter_3.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
 
-                colorsetter.connect_clicked(
-                    clone!(@weak inst as colorpicker => move |colorsetter| {
-                        let color = colorsetter.color();
+            self.setter_4.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
 
-                        if colorpicker.imp().stroke_color_pad.is_active() {
-                            colorpicker.set_stroke_color(color);
-                        } else if colorpicker.imp().fill_color_pad.is_active() {
-                            colorpicker.set_fill_color(color);
-                        }
-                    }),
-                );
+            self.setter_5.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
 
-                self.colorsetters.borrow_mut().push(colorsetter);
-            }
+            self.setter_6.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
 
-            self.apply_default_colors();
+            self.setter_7.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_8().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
+
+            self.setter_8.connect_active_notify(
+                clone!(@weak inst as colorpicker => move |setter| {
+                    if setter.is_active() {
+                        colorpicker.setter_1().set_active(false);
+                        colorpicker.setter_2().set_active(false);
+                        colorpicker.setter_3().set_active(false);
+                        colorpicker.setter_4().set_active(false);
+                        colorpicker.setter_5().set_active(false);
+                        colorpicker.setter_6().set_active(false);
+                        colorpicker.setter_7().set_active(false);
+                        colorpicker.set_color_active_pad(setter.color());
+                    }
+                }),
+            );
         }
 
-        fn apply_default_colors(&self) {
+        fn default_color(i: usize, amount_setters: usize) -> gdk::RGBA {
             let color_step =
-                (2.0 * std::f32::consts::PI) / ((self.amount_colorbuttons.get() - 1) as f32);
+                (2.0 * std::f32::consts::PI) / ((amount_setters.saturating_sub(1)) as f32);
             let rgb_offset = (2.0 / 3.0) * std::f32::consts::PI;
             let color_offset = (5.0 / 4.0) * std::f32::consts::PI + 0.4;
 
-            for (i, colorsetter) in self.colorsetters.borrow().iter().rev().enumerate() {
-                let i = i + 1;
-
-                let color = gdk::RGBA::new(
-                    0.5 * (i as f32 * color_step + 0.0 * rgb_offset + color_offset).sin() + 0.5,
-                    0.5 * (i as f32 * color_step + 1.0 * rgb_offset + color_offset).sin() + 0.5,
-                    0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
-                    1.0,
-                );
-                colorsetter.set_color(color);
-            }
+            gdk::RGBA::new(
+                0.5 * (i as f32 * color_step + 0.0 * rgb_offset + color_offset).sin() + 0.5,
+                0.5 * (i as f32 * color_step + 1.0 * rgb_offset + color_offset).sin() + 0.5,
+                0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
+                1.0,
+            )
         }
     }
 }
@@ -398,7 +476,7 @@ glib::wrapper! {
 
 impl Default for ColorPicker {
     fn default() -> Self {
-        Self::new(gdk::RGBA::from_compose_color(Color::BLACK))
+        Self::new()
     }
 }
 
@@ -408,12 +486,8 @@ pub(crate) static FILL_COLOR_DEFAULT: Lazy<Color> =
     Lazy::new(|| Color::from(color::GNOME_BLUES[1]));
 
 impl ColorPicker {
-    pub(crate) const AMOUNT_COLORBUTTONS_MIN: u32 = 1;
-    pub(crate) const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
-    pub(crate) const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
-
-    pub(crate) fn new(current_color: gdk::RGBA) -> Self {
-        glib::Object::new(&[("current-color", &current_color.to_value())])
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
     #[allow(unused)]
@@ -446,74 +520,78 @@ impl ColorPicker {
         self.set_property("fill-color", color.to_value());
     }
 
-    #[allow(unused)]
-    pub(crate) fn amount_colorbuttons(&self) -> u32 {
-        self.property::<u32>("amount-colorbuttons")
+    pub(crate) fn setter_1(&self) -> ColorSetter {
+        self.imp().setter_1.get()
     }
 
-    #[allow(unused)]
-    pub(crate) fn set_amount_colorbuttons(&self, amount: u32) {
-        self.set_property("amount-colorbuttons", amount.to_value());
+    pub(crate) fn setter_2(&self) -> ColorSetter {
+        self.imp().setter_2.get()
     }
 
-    #[allow(unused)]
-    pub(crate) fn selected(&self) -> u32 {
-        self.property::<u32>("selected")
+    pub(crate) fn setter_3(&self) -> ColorSetter {
+        self.imp().setter_3.get()
     }
 
-    #[allow(unused)]
-    pub(crate) fn set_selected(&self, selected: u32) {
-        self.set_property("selected", selected.to_value());
+    pub(crate) fn setter_4(&self) -> ColorSetter {
+        self.imp().setter_4.get()
     }
 
-    /// Returns a vector of the colors
-    pub(crate) fn fetch_all_colors(&self) -> Vec<Color> {
-        let mut all_colors = Vec::with_capacity(8);
-        all_colors.push(
-            self.imp()
-                .first_colorsetter
-                .get()
-                .color()
-                .into_compose_color(),
-        );
-        for colorsetter in self.imp().colorsetters.borrow().iter() {
-            all_colors.push(colorsetter.color().into_compose_color());
-        }
-
-        all_colors
+    pub(crate) fn setter_5(&self) -> ColorSetter {
+        self.imp().setter_5.get()
     }
 
-    pub(crate) fn load_colors(&self, all_colors: &[Color]) {
-        let mut all_colors_iter = all_colors.iter();
-        if let Some(&first_color) = all_colors_iter.next() {
-            self.imp()
-                .first_colorsetter
-                .set_color(gdk::RGBA::from_compose_color(first_color));
-        }
-        for (&color, colorsetter) in all_colors_iter.zip(self.imp().colorsetters.borrow().iter()) {
-            colorsetter.set_color(gdk::RGBA::from_compose_color(color));
-        }
+    pub(crate) fn setter_6(&self) -> ColorSetter {
+        self.imp().setter_6.get()
+    }
+
+    pub(crate) fn setter_7(&self) -> ColorSetter {
+        self.imp().setter_7.get()
+    }
+
+    pub(crate) fn setter_8(&self) -> ColorSetter {
+        self.imp().setter_8.get()
     }
 
     fn set_color_active_setter(&self, color: gdk::RGBA) {
         let imp = self.imp();
-        if imp.first_colorsetter.is_active() {
-            imp.first_colorsetter.set_color(color);
-        } else {
-            for setter in imp.colorsetters.borrow().iter() {
-                if setter.is_active() {
-                    setter.set_color(color);
-                    break;
-                }
-            }
+
+        if imp.setter_1.is_active() {
+            imp.setter_1.set_color(color);
+        } else if imp.setter_2.is_active() {
+            imp.setter_2.set_color(color);
+        } else if imp.setter_3.is_active() {
+            imp.setter_3.set_color(color);
+        } else if imp.setter_4.is_active() {
+            imp.setter_4.set_color(color);
+        } else if imp.setter_5.is_active() {
+            imp.setter_5.set_color(color);
+        } else if imp.setter_6.is_active() {
+            imp.setter_6.set_color(color);
+        } else if imp.setter_7.is_active() {
+            imp.setter_7.set_color(color);
+        } else if imp.setter_8.is_active() {
+            imp.setter_8.set_color(color);
         }
     }
 
-    #[allow(unused)]
-    pub(crate) fn deselect_setters(&self) {
-        self.imp().first_colorsetter.get().set_active(false);
-        for setter in self.imp().colorsetters.borrow().iter() {
-            setter.set_active(false);
+    fn set_color_active_pad(&self, color: gdk::RGBA) {
+        if self.imp().stroke_color_pad.is_active() {
+            self.set_stroke_color(color);
+        } else if self.imp().fill_color_pad.is_active() {
+            self.set_fill_color(color);
         }
+    }
+
+    pub(crate) fn deselect_setters(&self) {
+        let imp = self.imp();
+
+        imp.setter_1.set_active(false);
+        imp.setter_2.set_active(false);
+        imp.setter_3.set_active(false);
+        imp.setter_4.set_active(false);
+        imp.setter_5.set_active(false);
+        imp.setter_6.set_active(false);
+        imp.setter_7.set_active(false);
+        imp.setter_8.set_active(false);
     }
 }

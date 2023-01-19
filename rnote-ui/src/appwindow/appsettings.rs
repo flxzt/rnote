@@ -2,11 +2,9 @@ use std::path::PathBuf;
 
 use crate::appwindow::RnoteAppWindow;
 use crate::config;
-use gtk4::gdk;
-use rnote_compose::Color;
+use gtk4::{gdk, glib};
 
 use adw::prelude::*;
-use rnote_engine::utils::GdkRGBAHelpers;
 
 impl RnoteAppWindow {
     /// Settings binds
@@ -87,40 +85,103 @@ impl RnoteAppWindow {
             )
             .build();
 
-        // Active stroke color
-        self.app_settings()
-            .bind(
-                "active-stroke-color",
-                &self.overlays().colorpicker(),
-                "stroke-color",
-            )
-            .mapping(|val, _| {
-                Some(
-                    gdk::RGBA::from_compose_color(Color::from(val.get::<u32>().unwrap()))
-                        .to_value(),
+        // colorpicker palette
+        let colorsetter_mapping = |var: &glib::Variant, _: glib::Type| {
+            let color = var.get::<(f64, f64, f64, f64)>()?;
+            Some(
+                gdk::RGBA::new(
+                    color.0 as f32,
+                    color.1 as f32,
+                    color.2 as f32,
+                    color.3 as f32,
                 )
-            })
-            .set_mapping(|val, _| {
-                Some(u32::from(val.get::<gdk::RGBA>().unwrap().into_compose_color()).to_variant())
-            })
-            .build();
+                .to_value(),
+            )
+        };
+        let colorsetter_set_mapping = |val: &glib::Value, _: glib::VariantType| {
+            let color = val.get::<gdk::RGBA>().ok()?;
+            Some(
+                (
+                    color.red() as f64,
+                    color.green() as f64,
+                    color.blue() as f64,
+                    color.alpha() as f64,
+                )
+                    .to_variant(),
+            )
+        };
 
-        // Active fill color
         self.app_settings()
             .bind(
-                "active-fill-color",
-                &self.overlays().colorpicker(),
-                "fill-color",
+                "colorpicker-color-1",
+                &self.overlays().colorpicker().setter_1(),
+                "color",
             )
-            .mapping(|val, _| {
-                Some(
-                    gdk::RGBA::from_compose_color(Color::from(val.get::<u32>().unwrap()))
-                        .to_value(),
-                )
-            })
-            .set_mapping(|val, _| {
-                Some(u32::from(val.get::<gdk::RGBA>().unwrap().into_compose_color()).to_variant())
-            })
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-2",
+                &self.overlays().colorpicker().setter_2(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-3",
+                &self.overlays().colorpicker().setter_3(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-4",
+                &self.overlays().colorpicker().setter_4(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-5",
+                &self.overlays().colorpicker().setter_5(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-6",
+                &self.overlays().colorpicker().setter_6(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-7",
+                &self.overlays().colorpicker().setter_7(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-8",
+                &self.overlays().colorpicker().setter_8(),
+                "color",
+            )
+            .mapping(colorsetter_mapping)
+            .set_mapping(colorsetter_set_mapping)
             .build();
 
         // brush stroke widths
@@ -228,20 +289,6 @@ impl RnoteAppWindow {
         }
 
         {
-            // Colorpicker
-            let colors = self
-                .app_settings()
-                .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>("colorpicker-palette");
-            let colors = [
-                colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
-            ]
-            .into_iter()
-            .map(Color::from)
-            .collect::<Vec<Color>>();
-            self.overlays().colorpicker().load_colors(&colors);
-        }
-
-        {
             let canvas = self.active_tab().canvas();
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
@@ -278,26 +325,8 @@ impl RnoteAppWindow {
                 .set_int("window-height", self.height())?;
             self.app_settings()
                 .set_boolean("is-maximized", self.is_maximized())?;
-
             self.app_settings()
                 .set_int("flap-width", self.flap_box().width())?;
-        }
-
-        {
-            // Colorpicker
-            let colors = self
-                .overlays()
-                .colorpicker()
-                .fetch_all_colors()
-                .into_iter()
-                .map(|color| color.into())
-                .collect::<Vec<u32>>();
-            let colors = (
-                colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6],
-                colors[7],
-            );
-            self.app_settings()
-                .set_value("colorpicker-palette", &colors.to_variant())?;
         }
 
         {

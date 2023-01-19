@@ -37,7 +37,6 @@
         </child>
         <child>
           <object class="StrokeWidthSetter" id="setter_2">
-            <property name="group">setter_1</property>
             <style>
               <class name="flat" />
             </style>
@@ -45,7 +44,6 @@
         </child>
         <child>
           <object class="StrokeWidthSetter" id="setter_3">
-            <property name="group">setter_1</property>
             <style>
               <class name="flat" />
             </style>

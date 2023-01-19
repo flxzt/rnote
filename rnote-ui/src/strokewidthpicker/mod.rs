@@ -77,24 +77,37 @@ mod imp {
                 .build();
 
             self.setter_1.set_stroke_width(2.0);
-            self.setter_2.set_stroke_width(6.0);
-            self.setter_3.set_stroke_width(32.0);
+            self.setter_2.set_stroke_width(8.0);
+            self.setter_3.set_stroke_width(16.0);
 
-            self.setter_1.connect_clicked(
+            self.setter_1.connect_active_notify(
                 clone!(@weak inst as strokewidthpicker => move |setter| {
-                    strokewidthpicker.set_stroke_width(setter.stroke_width());
+                    if setter.is_active() {
+                        strokewidthpicker.setter_2().set_active(false);
+                        strokewidthpicker.setter_3().set_active(false);
+                        // Must come after setting the other toggles inactive
+                        strokewidthpicker.set_stroke_width(setter.stroke_width());
+                    }
                 }),
             );
 
-            self.setter_2.connect_clicked(
+            self.setter_2.connect_active_notify(
                 clone!(@weak inst as strokewidthpicker => move |setter| {
-                    strokewidthpicker.set_stroke_width(setter.stroke_width());
+                    if setter.is_active() {
+                        strokewidthpicker.setter_1().set_active(false);
+                        strokewidthpicker.setter_3().set_active(false);
+                        strokewidthpicker.set_stroke_width(setter.stroke_width());
+                    }
                 }),
             );
 
-            self.setter_3.connect_clicked(
+            self.setter_3.connect_active_notify(
                 clone!(@weak inst as strokewidthpicker => move |setter| {
-                    strokewidthpicker.set_stroke_width(setter.stroke_width());
+                    if setter.is_active() {
+                        strokewidthpicker.setter_1().set_active(false);
+                        strokewidthpicker.setter_2().set_active(false);
+                        strokewidthpicker.set_stroke_width(setter.stroke_width());
+                    }
                 }),
             );
 

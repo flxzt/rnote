@@ -1,8 +1,8 @@
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, CompositeTemplate, Label, ListBox, MenuButton, Popover, SpinButton,
-    StringList, Switch,
+    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, StringList,
+    Switch,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
@@ -41,8 +41,6 @@ mod imp {
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) shapebuildertype_picker: TemplateChild<IconPicker>,
-        #[template_child]
-        pub(crate) shapebuildertype_label: TemplateChild<Label>,
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -257,29 +255,32 @@ impl ShaperPage {
         }));
 
         // shape builder type
-        imp.shapebuildertype_picker
-            .set_list(StringList::new(globals::SHAPEBUILDERTYPE_ICONS_LIST));
+        imp.shapebuildertype_picker.set_list_localized(
+            StringList::new(globals::SHAPEBUILDERTYPE_ICONS_LIST),
+            |icon_name| match icon_name {
+                "shapebuilder-line-symbolic" => gettext("Line"),
+                "shapebuilder-rectangle-symbolic" => gettext("Rectangle"),
+                "shapebuilder-grid-symbolic" => gettext("Grid"),
+                "shapebuilder-coordsystem2d-symbolic" => gettext("2D coordinate system"),
+                "shapebuilder-coordsystem3d-symbolic" => gettext("3D coordinate system"),
+                "shapebuilder-quadrantcoordsystem2d-symbolic" => {
+                    gettext("2D single quadrant coordinate system")
+                }
+                "shapebuilder-ellipse-symbolic" => gettext("Ellipse"),
+                "shapebuilder-fociellipse-symbolic" => gettext("Ellipse with foci"),
+                "shapebuilder-quadbez-symbolic" => gettext("Quadratic bezier curve"),
+                "shapebuilder-cubbez-symbolic" => gettext("Cubic bezier curve"),
+                _ => panic!(
+                    "ShapeBuilderTypePicker failed, localization of unknown icon name requested"
+                ),
+            },
+        );
 
         imp.shapebuildertype_picker.connect_notify_local(
             Some("picked"),
             clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
                 if let (Some(buildertype), Some(icon_name)) = (shaperpage.shapebuildertype(), picker.picked()) {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = buildertype;
-
-                    let label_string = match buildertype {
-                        ShapeBuilderType::Line => gettext("Line"),
-                        ShapeBuilderType::Rectangle => gettext("Rectangle"),
-                        ShapeBuilderType::Grid => gettext("Grid"),
-                        ShapeBuilderType::CoordSystem2D => gettext("2D coordinate system"),
-                        ShapeBuilderType::CoordSystem3D => gettext("3D coordinate system"),
-                        ShapeBuilderType::QuadrantCoordSystem2D => gettext("2D single quadrant coordinate system"),
-                        ShapeBuilderType::Ellipse => gettext("Ellipse"),
-                        ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
-                        ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
-                        ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
-                    };
-
-                    shaperpage.imp().shapebuildertype_label.set_text(&label_string);
                     shaperpage.imp().shapebuildertype_menubutton.set_icon_name(&icon_name);
                 }
             }),

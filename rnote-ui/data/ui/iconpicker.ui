@@ -3,7 +3,10 @@
 <interface>
   <template class="IconPicker" parent="GtkWidget">
     <property name="layout-manager">
-      <object class="GtkBinLayout" />
+      <object class="GtkBoxLayout">
+        <property name="spacing">12</property>
+        <property name="orientation">vertical</property>
+      </object>
     </property>
     <style>
       <class name="iconpicker" />
@@ -22,6 +25,19 @@
             </style>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="selection_label">
+        <property name="visible">false</property>
+        <property name="valign">end</property>
+        <property name="justify">center</property>
+        <!-- wrap that respects the available space -->
+        <property name="max-width-chars">1</property>
+        <property name="wrap">true</property>
+        <style>
+          <class name="dim-label" />
+        </style>
       </object>
     </child>
   </template>

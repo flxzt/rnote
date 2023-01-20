@@ -231,18 +231,6 @@
           <child>
             <object class="IconPicker" id="shapebuildertype_picker"></object>
           </child>
-          <child>
-            <object class="GtkLabel" id="shapebuildertype_label">
-              <property name="label" translatable="yes">Shape builders</property>
-              <property name="justify">center</property>
-              <!-- wrap that respects the available space -->
-              <property name="max-width-chars">1</property>
-               <property name="wrap">true</property>
-              <style>
-                <class name="dim-label" />
-              </style>
-            </object>
-          </child>
         </object>
       </child>
     </object>

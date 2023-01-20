@@ -237,18 +237,6 @@ impl Composer<SmoothOptions> for crate::Shape {
     }
 }
 
-#[allow(unused)]
-fn debug_points(cx: &mut impl piet::RenderContext, points: &[(na::Vector2<f64>, f64)]) {
-    for point in points {
-        let stroke_brush = cx.solid_brush(piet::Color::RED);
-
-        cx.fill(
-            kurbo::Circle::new(point.0.to_kurbo_point(), 1.0),
-            &piet::Color::RED,
-        );
-    }
-}
-
 // draws a path with variable width.
 fn draw_path_variable_width(
     cx: &mut impl piet::RenderContext,
@@ -331,10 +319,33 @@ fn draw_path_variable_width(
     // Draw
     cx.fill(bez_path.clone(), &fill_brush);
 
-    // Outlines for debugging
+    // debugging
+    //draw_debug_points(cx, path_points);
     //let stroke_brush = cx.solid_brush(piet::Color::RED);
     //cx.stroke(bez_path.clone(), &stroke_brush, 0.2);
 
     cx.fill(start_cap, &fill_brush);
     cx.fill(end_cap, &fill_brush);
+}
+
+#[allow(unused)]
+fn draw_debug_points(cx: &mut impl piet::RenderContext, points: &[(na::Vector2<f64>, f64)]) {
+    let mut color = piet::Color::rgba(1.0, 1.0, 0.0, 1.0);
+    for (i, (point, _pressure)) in points.into_iter().enumerate() {
+        let stroke_brush = cx.solid_brush(piet::Color::RED);
+
+        cx.fill(kurbo::Circle::new(point.to_kurbo_point(), 0.5), &color);
+
+        // Shift the color so the point order becomes visible
+        let color_step = (2.0 * std::f64::consts::PI) / (8 as f64);
+        let rgb_offset = (2.0 / 3.0) * std::f64::consts::PI;
+        let color_offset = (5.0 / 4.0) * std::f64::consts::PI + 0.4;
+
+        color = piet::Color::rgba(
+            0.5 * (i as f64 * color_step + 0.0 * rgb_offset + color_offset).sin() + 0.5,
+            0.5 * (i as f64 * color_step + 1.0 * rgb_offset + color_offset).sin() + 0.5,
+            0.5 * (i as f64 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
+            1.0,
+        )
+    }
 }

@@ -1,8 +1,7 @@
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, Text, TextLayoutBuilder};
-use rnote_compose::helpers::Vector2Helpers;
-use rnote_compose::shapes::Rectangle;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{DrawOnDocBehaviour, RnoteEngine};
@@ -141,33 +140,36 @@ pub fn draw_statistics_overlay(
             .keys_unordered_intersecting_bounds(engine.camera.viewport());
         let selected_strokes = engine.store.selection_keys_unordered();
         let trashed_strokes = engine.store.trashed_keys_unordered();
+        let strokes_hold_image = strokes_total
+            .iter()
+            .filter(|&&key| engine.store.holds_images(key))
+            .count();
 
         let statistics_text_string = format!(
-            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}",
+            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}\nstrokes holding images: {}",
             strokes_total.len(),
             strokes_in_viewport.len(),
             selected_strokes.len(),
             trashed_strokes.len(),
+            strokes_hold_image,
         );
-
         let text_layout = piet_cx
             .text()
             .new_text_layout(statistics_text_string)
             .text_color(piet::Color::rgba(0.8, 1.0, 1.0, 1.0))
-            .max_width(300.0)
+            .max_width(text_bounds.extents()[0] - 20.0)
             .alignment(piet::TextAlignment::End)
             .font(piet::FontFamily::MONOSPACE, 10.0)
             .build()
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         piet_cx.fill(
-            Rectangle::from_p2d_aabb(text_bounds).to_kurbo(),
-            &piet::Color::rgba(0.1, 0.1, 0.1, 0.9),
+            text_bounds.to_kurbo_rect(),
+            &piet::Color::rgba(0.1, 0.1, 0.1, 0.8),
         );
-
         piet_cx.draw_text(
             &text_layout,
-            (text_bounds.mins.coords + na::vector![20.0, 10.0]).to_kurbo_point(),
+            (text_bounds.mins.coords + na::vector![10.0, 10.0]).to_kurbo_point(),
         );
         piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
     }

@@ -73,6 +73,13 @@ impl StrokeStore {
         keys.iter().for_each(|&key| self.set_rendering_dirty(key));
     }
 
+    pub fn holds_images(&self, key: StrokeKey) -> bool {
+        self.render_components
+            .get(key)
+            .map(|s| !s.images.is_empty())
+            .unwrap_or(false)
+    }
+
     pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<Aabb> {
         if let Some(render_comp) = self.render_components.get(key) {
             if render_comp.images.is_empty() {

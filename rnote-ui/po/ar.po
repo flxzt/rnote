@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-14 14:10+0100\n"
-"PO-Revision-Date: 2022-11-27 20:00+0000\n"
-"Last-Translator: Brian Polier <unknown989@proton.me>\n"
+"PO-Revision-Date: 2023-01-20 09:51+0000\n"
+"Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
-msgstr "الرسم مع الملاحظات المكتوبة يدوياً"
+msgstr "ارسم واكتب ملاحظات بيدك"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;أوفيس;رسومات;ملاحظات;"
+msgstr "جنوم;GTK;مكتب;رسوميات;ملاحظات;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -38,40 +38,40 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote هو تطبيق رسم قائم على الرسم بالمتجهات واخذ الملاحظات المكتوبة بخط اليد "
-"وللتعليق على المستندات والصور."
+"آرنوت هو تطبيق رسم بالمتجهات يُستعمل للرسم وكتابة الملاحظات والتعليق على "
+"المستندات والصور."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"إخلاء مسؤولية: تنسيق الملف لا يزال غير مستقر. قد يتغير ويكسر التوافق بين "
+"إخلاء مسؤولية: لا يزال تنسيق الملفِّ غير مستقرٍّ، قد يسبِّب هذا تعارضًا بين "
 "الإصدارات."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
-msgstr "النافذة الرئيسية \"وضع النهار\""
+msgstr "تلوين النافذة الرئيسة بألوان فاتحة"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
-msgstr "النافذة الرئيسية \"وضع الليل\""
+msgstr "تلوين النافذة الرئيسة بألوان داكنة"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
-msgstr "تعليق توضيحي بصيغة PDF"
+msgstr "تعليق توضيحيّ على ملفِّ PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
-msgstr "اختيار"
+msgstr "انتقاء"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear document"
-msgstr "تتظيف الصفحة"
+msgstr "امسح المستند"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr "هذا يمسح الصفحة بأكملها. هل أنت متأكد ."
+msgstr "يمسح هذا كامل المستند، عليك التأكيد."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -89,143 +89,136 @@ msgstr "هذا يمسح الصفحة بأكملها. هل أنت متأكد ."
 #: rnote-ui/src/dialogs/mod.rs:379
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
-msgstr "إلغاء"
+msgstr "ألغِ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr "تنظيف"
+msgstr "امسح"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:755
 msgid "New Document"
-msgstr "صفحة جديدة"
+msgstr "مستند جديد"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
 msgid ""
 "Creating a new document will discard any unsaved\n"
 "      changes. Do you want to save the current document?"
 msgstr ""
-"سيؤدي إنشاء صفحة جديدة إلى مسح أي تغييرات غير محفوظة. هل تريد حفظ الصفحة "
-"الحالية؟"
+"سوف يتجاهل إنشاء مستند جديد أيَّ تغييرات\n"
+"      غير محفوظة. هل تريد حفظ المستند الحاليّ؟"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr "تجاهل"
+msgstr "تجاهَل"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:36
 #: rnote-ui/data/ui/dialogs/dialogs.ui:53 rnote-ui/data/ui/dialogs/import.ui:12
 #: rnote-ui/src/dialogs/export.rs:26
 msgid "Save"
-msgstr "حفظ"
+msgstr "احفظ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close tab"
-msgstr "غلق النافذة الحالية"
+msgstr "أغلق اللسان"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"يحتوي هذا اللسان على تغييرات غير محفوظة. سوف تحذف التغييرات الغير محفوظة "
+"نهائيًّا."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close window"
-msgstr "غلق النافذة الحالية"
+msgstr "أغلق النافذة"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"في بعض الملفَّات المفتوحة تغييرات غير محفوظة. سوف تحذف التغييرات الغير "
+"محفوظة نهائيًّا."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard all"
-msgstr "تجاهل"
+msgstr "تجاهل الكلّ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
-msgstr "تعدبل مجلد العمل"
+msgstr "حرِّر مساحة العمل"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
 msgid "Apply"
-msgstr "تطبيق"
+msgstr "طبِّق"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:110
 msgid "Workspace Name"
-msgstr "عنوان مجلد العمل"
+msgstr "اسم مساحة العمل"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:115
 msgid "Icon"
-msgstr "أيقونة"
+msgstr "الأيقونة"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:116
 msgid "Change the workspace icon"
-msgstr "تغيير أيقونة مجلد العمل"
+msgstr "غيِّر أيقونة مساحة العمل"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:135
 #: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
-msgstr "وضع الألوان"
+msgstr "اللون"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:136
 msgid "Change the workspace color"
-msgstr "لون مجلد العمل"
+msgstr "لون ساحة العمل"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:149
 msgid "Directory"
-msgstr "مجلد"
+msgstr "مجلَّد"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:150
 msgid "Change the workspace directory"
-msgstr "تغيير مكان مجلد العمل"
+msgstr "غيِّر مجلَّد ساحة العمل"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
 #: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
 msgid "- no directory selected -"
-msgstr "لم يتم تحديد مجلد"
+msgstr "- لم يُحدَّد أيُّ مجلَّد -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "تغيير مكان مجلد العمل"
+msgstr "غيِّر المجلَّد"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
-msgstr "فتح ملف"
+msgstr "افتح ملفًّا"
 
 #: rnote-ui/data/ui/dialogs/import.ui:6
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
-"يؤدي فتح هذا الملف إلى الكتابة فوق أي تغييرات غير محفوظة. هل تريد حفظ الصفحة "
-"الحالية؟"
+"يؤدي فتح هذا الملفِّ إلى الكتابة فوق أي تغييرات غير محفوظة. هل تريد حفظ "
+"المستند الحاليِّ؟"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import PDF"
-msgstr "استيراد PDF"
+msgstr "استورد PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:206
 #: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
-msgstr "استيراد"
+msgstr "استورد"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
-msgstr "تفضيلات استيراد ملفات PDF"
+msgstr "تفضيلات استيراد ملفَّات PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"

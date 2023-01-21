@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-21 11:25+0100\n"
+"POT-Creation-Date: 2023-01-21 11:29+0100\n"
 "PO-Revision-Date: 2022-12-24 12:01+0000\n"
 "Last-Translator: Anggara Permana Putra <anggaraperpe@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
@@ -99,8 +99,8 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
-"Creating a new document will discard any\n"
-"unsaved changes. Do you want to save the current document?"
+"Creating a new document will discard any unsaved changes.\n"
+"Do you want to save the current document?"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
@@ -135,6 +135,10 @@ msgstr "Jendela Baru"
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+msgid "Unsaved documents"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52

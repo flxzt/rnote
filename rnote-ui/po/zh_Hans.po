@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-21 11:25+0100\n"
+"POT-Creation-Date: 2023-01-21 11:29+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -104,8 +104,8 @@ msgstr "新建文档"
 #| "Creating a new document will discard any unsaved changes. Do you want to "
 #| "save the current document?"
 msgid ""
-"Creating a new document will discard any\n"
-"unsaved changes. Do you want to save the current document?"
+"Creating a new document will discard any unsaved changes.\n"
+"Do you want to save the current document?"
 msgstr "创建新文档将会删除所有未保存的修改。你希望保存正在编辑的文档吗？"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
@@ -145,6 +145,12 @@ msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+#, fuzzy
+#| msgid "Save document"
+msgid "Unsaved documents"
+msgstr "保存文档"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 #, fuzzy

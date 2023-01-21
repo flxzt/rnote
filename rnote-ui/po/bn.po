@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-21 11:25+0100\n"
+"POT-Creation-Date: 2023-01-21 11:29+0100\n"
 "PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -104,8 +104,8 @@ msgstr "নতুন নথি"
 #| "Creating a new document will discard any unsaved changes. Do you want to "
 #| "save the current document?"
 msgid ""
-"Creating a new document will discard any\n"
-"unsaved changes. Do you want to save the current document?"
+"Creating a new document will discard any unsaved changes.\n"
+"Do you want to save the current document?"
 msgstr ""
 "একটি নতুন নথি তৈরি করলে অসংরক্ষিত পরিবর্তন বাতিল হয়ে যাবে। আপনি কি বর্তমান নথি "
 "সংরক্ষণ করতে চান?"
@@ -147,6 +147,12 @@ msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+#, fuzzy
+#| msgid "Save document"
+msgid "Unsaved documents"
+msgstr "নথি সংরক্ষণ করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 #, fuzzy

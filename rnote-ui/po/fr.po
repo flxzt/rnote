@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-21 11:25+0100\n"
+"POT-Creation-Date: 2023-01-21 11:29+0100\n"
 "PO-Revision-Date: 2023-01-18 16:52+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -105,8 +105,8 @@ msgstr "Nouveau document"
 #| "Creating a new document will discard any unsaved changes. Do you want to "
 #| "save the current document?"
 msgid ""
-"Creating a new document will discard any\n"
-"unsaved changes. Do you want to save the current document?"
+"Creating a new document will discard any unsaved changes.\n"
+"Do you want to save the current document?"
 msgstr ""
 "La création d’un nouveau document effacera toutes les modifications\n"
 "non enregistrées. Voulez-vous sauvegarder le document actuel ?"
@@ -151,6 +151,12 @@ msgid ""
 msgstr ""
 "Certains fichiers ouverts contiennent des modifications non sauvegardées. "
 "Les modifications qui ne sont pas sauvegardées seront définitivement perdues."
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+#, fuzzy
+#| msgid "Save document"
+msgid "Unsaved documents"
+msgstr "Enregistrer le document"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 #, fuzzy

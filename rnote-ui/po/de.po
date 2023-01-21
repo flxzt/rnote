@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-21 11:29+0100\n"
-"PO-Revision-Date: 2023-01-15 17:37+0000\n"
+"PO-Revision-Date: 2023-01-21 12:41+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.15.1\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -99,16 +99,12 @@ msgid "New Document"
 msgstr "Neues Dokument"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved\n"
-#| "      changes. Do you want to save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
-"Ein neues Dokument zu erstellen verwirft sämtliche ungespeicherte "
-"Änderungen.\n"
+"Ein neues Dokument zu erstellen verwirft sämtliche ungespeicherte Änderungen."
+"\n"
 "Möchtest du das aktuelle Dokument speichern?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
@@ -148,10 +144,8 @@ msgstr ""
 "nicht gesichert werden gehen unwiderruflich verloren."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Save document"
 msgid "Unsaved documents"
-msgstr "Dokument speichern"
+msgstr "Ungespeicherte Dokumente"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard all"

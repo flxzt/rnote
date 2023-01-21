@@ -141,11 +141,6 @@ impl Composer<SmoothOptions> for PenPath {
         for seg in self.segments.iter() {
             match seg {
                 Segment::LineTo { end } => {
-                    /*
-                                           let width_start = options
-                                               .pressure_curve
-                                               .apply(options.stroke_width, prev.pressure);
-                    */
                     let width_end = options
                         .pressure_curve
                         .apply(options.stroke_width, end.pressure);
@@ -318,14 +313,14 @@ fn draw_path_variable_width(
 
     // Draw
     cx.fill(bez_path.clone(), &fill_brush);
-
-    // debugging
-    //draw_debug_points(cx, path_points);
-    //let stroke_brush = cx.solid_brush(piet::Color::RED);
-    //cx.stroke(bez_path.clone(), &stroke_brush, 0.2);
-
     cx.fill(start_cap, &fill_brush);
     cx.fill(end_cap, &fill_brush);
+
+    // debugging
+    //draw_debug_path(cx, path_points);
+    //draw_debug_points(cx, path_points);
+    // outlines
+    //cx.stroke(bez_path.clone(), &piet::Color::RED, 0.2);
 }
 
 #[allow(unused)]
@@ -347,5 +342,21 @@ fn draw_debug_points(cx: &mut impl piet::RenderContext, points: &[(na::Vector2<f
             0.5 * (i as f64 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
             1.0,
         )
+    }
+}
+
+#[allow(unused)]
+fn draw_debug_path(cx: &mut impl piet::RenderContext, points: &[(na::Vector2<f64>, f64)]) {
+    let mut points_iter = points
+        .into_iter()
+        .map(|p| kurbo::Point::new(p.0[0], p.0[1]));
+
+    if let Some(prev) = points_iter.next() {
+        let bez_path = kurbo::BezPath::from_iter(
+            std::iter::once(kurbo::PathEl::MoveTo(prev))
+                .chain(points_iter.map(|p| kurbo::PathEl::LineTo(p))),
+        );
+
+        cx.stroke(bez_path, &piet::Color::FUCHSIA, 1.0);
     }
 }

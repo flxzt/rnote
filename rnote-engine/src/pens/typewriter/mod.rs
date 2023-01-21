@@ -129,7 +129,10 @@ impl DrawOnDocBehaviour for Typewriter {
             TypewriterState::Idle => {}
             TypewriterState::Start(pos) => {
                 if let Some(bounds) = self.bounds_on_doc(engine_view) {
-                    let rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
+                    let rect = bounds
+                        .tightened(outline_width * 0.5)
+                        .to_kurbo_rect()
+                        .to_rounded_rect(outline_corner_radius);
 
                     cx.stroke(rect, &*OUTLINE_COLOR, outline_width);
 

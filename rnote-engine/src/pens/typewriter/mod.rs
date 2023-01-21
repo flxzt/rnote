@@ -120,7 +120,7 @@ impl DrawOnDocBehaviour for Typewriter {
         let total_zoom = engine_view.camera.total_zoom();
 
         let outline_width = 1.5 / total_zoom;
-        let outline_corner_radius = 3.0 / total_zoom;
+        let outline_corner_radius = 1.0 / total_zoom;
 
         let text_width = engine_view.pens_config.typewriter_config.text_width;
         let text_style = engine_view.pens_config.typewriter_config.text_style.clone();
@@ -129,10 +129,7 @@ impl DrawOnDocBehaviour for Typewriter {
             TypewriterState::Idle => {}
             TypewriterState::Start(pos) => {
                 if let Some(bounds) = self.bounds_on_doc(engine_view) {
-                    let rect = bounds
-                        .tightened(outline_width * 0.5)
-                        .to_kurbo_rect()
-                        .to_rounded_rect(outline_corner_radius);
+                    let rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
 
                     cx.stroke(rect, &*OUTLINE_COLOR, outline_width);
 

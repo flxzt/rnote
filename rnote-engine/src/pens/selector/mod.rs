@@ -294,12 +294,11 @@ impl DrawOnDocBehaviour for Selector {
                 static SELECTED_BOUNDS_COLOR: Lazy<piet::Color> =
                     Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.376));
 
-                let selected_bounds_width = 1.5 / total_zoom;
                 for stroke in engine_view.store.get_strokes_ref(selection) {
                     cx.stroke(
                         stroke.bounds().to_kurbo_rect(),
                         &*SELECTED_BOUNDS_COLOR,
-                        selected_bounds_width,
+                        Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                     );
                 }
 

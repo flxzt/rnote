@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-21 11:29+0100\n"
-"PO-Revision-Date: 2022-12-24 12:01+0000\n"
-"Last-Translator: Anggara Permana Putra <anggaraperpe@gmail.com>\n"
+"PO-Revision-Date: 2023-01-23 18:19+0000\n"
+"Last-Translator: Hersa37 <bernardus.hersa37@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
 ">\n"
 "Language: id\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
-msgstr ""
+msgstr "Buat skesta dan catatan tulis tangan"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
@@ -39,7 +39,7 @@ msgid ""
 "annotate documents and pictures."
 msgstr ""
 "Rnote adalah aplikasi menggambar berbasis vektor untuk membuat sketsa, "
-"catatan tulis tangan dan untuk memberikan catata pada dokumen dan gambar"
+"catatan tulis tangan, dan anotasi pada dokumen dan gambar."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -53,7 +53,7 @@ msgstr "Jendela utama dalam warna cerah"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Main window in dark colors"
-msgstr "jendela utama dalam warna gelap"
+msgstr "Jendela utama dalam warna gelap"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -87,7 +87,7 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:379
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
@@ -95,7 +95,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:756
 msgid "New Document"
-msgstr ""
+msgstr "Dokumen Baru"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
@@ -106,14 +106,14 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr ""
+msgstr "Buang"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:36
 #: rnote-ui/data/ui/dialogs/dialogs.ui:53 rnote-ui/data/ui/dialogs/import.ui:12
 #: rnote-ui/src/dialogs/export.rs:26
 msgid "Save"
-msgstr ""
+msgstr "Simpan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close tab"
@@ -126,20 +126,20 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgid "New Window"
 msgid "Close window"
-msgstr "Jendela Baru"
+msgstr "Tutup jendela"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Beberapa file mengandung perubahan yang belum disimpan. Perubahan yang tidak "
+"disimpan akan hilang secara permanen."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Unsaved documents"
-msgstr ""
+msgstr "Dokumen belum tersimpan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard all"
@@ -147,7 +147,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
-msgstr ""
+msgstr "Ubah ruang kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:277
 #: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
@@ -156,24 +156,24 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:110
 msgid "Workspace Name"
-msgstr ""
+msgstr "Nama Ruang Kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:115
 msgid "Icon"
-msgstr ""
+msgstr "Ikon"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:116
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "Ubah ikon ruang kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:135
 #: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Color"
-msgstr ""
+msgstr "Warna"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:136
 msgid "Change the workspace color"
-msgstr ""
+msgstr "Ubah warna ruang kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:149
 msgid "Directory"
@@ -191,7 +191,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 msgid "Change the directory"
-msgstr ""
+msgstr "Ubah direktori"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"

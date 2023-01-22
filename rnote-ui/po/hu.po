@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-21 11:29+0100\n"
-"PO-Revision-Date: 2023-01-14 20:16+0000\n"
+"PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -100,16 +100,12 @@ msgid "New Document"
 msgstr "Új dokumentum"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved\n"
-#| "      changes. Do you want to save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
-"Új dokumentum létrehozása elveti a nem mentett\n"
-"módosításokat. Menti a jelenlegi dokumentumot?"
+"Új dokumentum létrehozása elveti a nem mentett módosításokat.\n"
+"Menti a jelenlegi dokumentumot?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
@@ -148,10 +144,8 @@ msgstr ""
 "mentett módosítások véglegesen elvesznek."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Save document"
 msgid "Unsaved documents"
-msgstr "Dokumentum mentése"
+msgstr "Nem mentett dokumentumok"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard all"

@@ -133,7 +133,7 @@ impl IconPicker {
         self.set_property("picked", picked.to_value());
     }
 
-    /// Internal function to retreive the picked icon from the selection
+    /// Internal function to retrieve the picked icon from the selection
     fn picked_intern(&self) -> Option<String> {
         self.imp()
             .selection

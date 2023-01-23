@@ -193,7 +193,7 @@ impl RnoteCanvas {
 
         let basename = file.basename().ok_or_else(|| {
             anyhow::anyhow!(
-                "save_document_to_file() failed, could not retreive basename for file: {file:?}"
+                "save_document_to_file() failed, could not retrieve basename for file: {file:?}"
             )
         })?;
 
@@ -219,7 +219,7 @@ impl RnoteCanvas {
         }
 
         // this **must** come before actually saving the file to disk,
-        // else the event might not be catched by the monitor for new or changed files
+        // else the event might not be caught by the monitor for new or changed files
         if !skip_set_output_file {
             self.set_output_file(Some(file.to_owned()));
         }

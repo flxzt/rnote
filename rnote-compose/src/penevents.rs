@@ -118,11 +118,17 @@ pub enum ShortcutKey {
     /// the secondary mouse button, usually right click
     #[serde(rename = "mouse_secondary_button")]
     MouseSecondaryButton,
+    /// Touch two finger long press gesture
+    #[serde(rename = "touch_two_finger_long_press")]
+    TouchTwoFingerLongPress,
     /// Shift
+    #[serde(rename = "keyboard_shift")]
     KeyboardShift,
     /// Ctrl
+    #[serde(rename = "keyboard_ctrl")]
     KeyboardCtrl,
     /// Alt
+    #[serde(rename = "keyboard_alt")]
     KeyboardAlt,
 }
 

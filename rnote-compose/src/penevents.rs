@@ -122,10 +122,13 @@ pub enum ShortcutKey {
     #[serde(rename = "touch_two_finger_long_press")]
     TouchTwoFingerLongPress,
     /// Shift
+    #[serde(rename = "keyboard_shift")]
     KeyboardShift,
     /// Ctrl
+    #[serde(rename = "keyboard_ctrl")]
     KeyboardCtrl,
     /// Alt
+    #[serde(rename = "keyboard_alt")]
     KeyboardAlt,
 }
 

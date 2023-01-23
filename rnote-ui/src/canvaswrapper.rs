@@ -156,6 +156,10 @@ mod imp {
             self.scroller
                 .add_controller(&self.touch_two_finger_long_press_gesture);
 
+            // group
+            self.touch_two_finger_long_press_gesture
+                .group_with(&self.canvas_zoom_gesture);
+
             self.setup_input();
 
             self.canvas.connect_notify_local(
@@ -341,7 +345,7 @@ mod imp {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak inst as canvaswrapper => move |gesture, _| {
-
+                    gesture.set_state(EventSequenceState::Claimed);
                     let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
                     zoom_begin.set(current_zoom);
@@ -362,9 +366,6 @@ mod imp {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak inst as canvaswrapper => move |gesture, scale| {
-                    // Only claim here, to allow the long press gesture to activate
-                    gesture.set_state(EventSequenceState::Claimed);
-
                     if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&(zoom_begin.get() * scale)) {
                         new_zoom.set(zoom_begin.get() * scale);
                         prev_scale.set(scale);
@@ -488,6 +489,18 @@ mod imp {
 
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                 }));
+
+                self.touch_two_finger_long_press_gesture.connect_end(
+                    clone!(@weak inst as canvaswrapper => move |gesture, _| {
+                        gesture.set_state(EventSequenceState::Denied);
+                    }),
+                );
+
+                self.touch_two_finger_long_press_gesture.connect_cancel(
+                    clone!(@weak inst as canvaswrapper => move |gesture, _| {
+                        gesture.set_state(EventSequenceState::Denied);
+                    }),
+                );
             }
         }
     }

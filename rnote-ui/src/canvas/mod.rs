@@ -853,7 +853,7 @@ impl RnoteCanvas {
     }
 
     #[allow(unused)]
-    fn emit_handle_widget_flags(&self, widget_flags: WidgetFlags) {
+    pub(super) fn emit_handle_widget_flags(&self, widget_flags: WidgetFlags) {
         self.emit_by_name::<()>("handle-widget-flags", &[&WidgetFlagsBoxed(widget_flags)]);
     }
 

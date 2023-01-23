@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-21 11:29+0100\n"
+"POT-Creation-Date: 2023-01-23 23:21+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Nguyen Phi Truong <Nguyenairport56@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -1314,6 +1314,14 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:415
+msgid "Touch two-finger long-press action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:416
+msgid "Set the action for the touch two-finger long-press gesture"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:11

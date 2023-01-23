@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-21 11:29+0100\n"
+"POT-Creation-Date: 2023-01-23 23:21+0100\n"
 "PO-Revision-Date: 2023-01-21 12:41+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -103,8 +103,8 @@ msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
-"Ein neues Dokument zu erstellen verwirft sämtliche ungespeicherte Änderungen."
-"\n"
+"Ein neues Dokument zu erstellen verwirft sämtliche ungespeicherte "
+"Änderungen.\n"
 "Möchtest du das aktuelle Dokument speichern?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
@@ -1317,6 +1317,16 @@ msgstr "Maus sekundäre Taste Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:404
 msgid "Set the action for the secondary mouse button"
+msgstr "Ändere die Aktion für die sekundäre Taste der Maus"
+
+#: rnote-ui/data/ui/settingspanel.ui:415
+msgid "Touch two-finger long-press action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:416
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid "Set the action for the touch two-finger long-press gesture"
 msgstr "Ändere die Aktion für die sekundäre Taste der Maus"
 
 #: rnote-ui/data/ui/shortcuts.ui:11

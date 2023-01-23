@@ -47,6 +47,13 @@ impl Default for Shortcuts {
                 permanent: false,
             },
         );
+        map.insert(
+            ShortcutKey::TouchTwoFingerLongPress,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Eraser,
+                permanent: false,
+            },
+        );
 
         Self(map)
     }

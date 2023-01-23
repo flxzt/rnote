@@ -1,18 +1,20 @@
-use std::cell::{Cell, RefCell};
-use std::rc::Rc;
-
 use gtk4::CornerType;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate,
     EventControllerScroll, EventControllerScrollFlags, EventSequenceState, GestureDrag,
-    GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
+    GestureLongPress, GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::Camera;
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
+use std::time::Instant;
 
 use crate::{RnoteAppWindow, RnoteCanvas};
 
 mod imp {
+
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -31,6 +33,7 @@ mod imp {
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
         pub(crate) canvas_alt_drag_gesture: GestureDrag,
         pub(crate) canvas_alt_shift_drag_gesture: GestureDrag,
+        pub(crate) touch_two_finger_long_press_gesture: GestureLongPress,
 
         #[template_child]
         pub(crate) scroller: TemplateChild<ScrolledWindow>,
@@ -87,6 +90,15 @@ mod imp {
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
+            let touch_two_finger_long_press_gesture = GestureLongPress::builder()
+                .name("touch_two_finger_long_press_gesture")
+                .touch_only(true)
+                .n_points(2)
+                // activate a bit quicker
+                .delay_factor(0.8)
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
             Self {
                 show_scrollbars: Cell::new(false),
 
@@ -100,6 +112,7 @@ mod imp {
                 canvas_mouse_drag_middle_gesture,
                 canvas_alt_drag_gesture,
                 canvas_alt_shift_drag_gesture,
+                touch_two_finger_long_press_gesture,
 
                 scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<RnoteCanvas>::default(),
@@ -140,6 +153,8 @@ mod imp {
             self.scroller.add_controller(&self.canvas_alt_drag_gesture);
             self.scroller
                 .add_controller(&self.canvas_alt_shift_drag_gesture);
+            self.scroller
+                .add_controller(&self.touch_two_finger_long_press_gesture);
 
             self.setup_input();
 
@@ -326,7 +341,6 @@ mod imp {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak inst as canvaswrapper => move |gesture, _| {
-                    gesture.set_state(EventSequenceState::Claimed);
 
                     let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
@@ -348,11 +362,13 @@ mod imp {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak inst as canvaswrapper => move |gesture, scale| {
+                    // Only claim here, to allow the long press gesture to activate
+                    gesture.set_state(EventSequenceState::Claimed);
+
                     if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&(zoom_begin.get() * scale)) {
                         new_zoom.set(zoom_begin.get() * scale);
                         prev_scale.set(scale);
                     }
-
                     canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom.get());
 
                     if let Some(bbcenter_current) = gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
@@ -460,6 +476,18 @@ mod imp {
 
                     prev_offset.set(new_offset);
             }));
+            }
+
+            {
+                // Shortcut with touch two-finger long-press.
+                self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak inst as canvaswrapper => move |_, _, _| {
+                    let widget_flags = canvaswrapper.canvas()
+                        .engine()
+                        .borrow_mut()
+                        .handle_pen_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
+
+                    canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
+                }));
             }
         }
     }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-23 23:21+0100\n"
-"PO-Revision-Date: 2023-01-21 12:41+0000\n"
+"PO-Revision-Date: 2023-01-24 23:39+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -1320,13 +1320,13 @@ msgstr "Establecer la acción para el botón secundario del ratón"
 
 #: rnote-ui/data/ui/settingspanel.ui:415
 msgid "Touch two-finger long-press action"
-msgstr ""
+msgstr "Pulsación larga con dos dedos"
 
 #: rnote-ui/data/ui/settingspanel.ui:416
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "Establecer la acción para el botón secundario del ratón"
+msgstr ""
+"Establecer la acción para el gesto táctil de pulsación prolongada con dos "
+"dedos"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"

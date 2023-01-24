@@ -29,12 +29,23 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox" id="quickactions_box">
-            <property name="spacing">6</property>
+            <property name="spacing">3</property>
             <child>
-              <object class="GtkButton">
-                <property name="icon-name">tab-new-filled-symbolic</property>
-                <property name="action-name">win.new-tab</property>
-                <property name="tooltip-text" translatable="yes">New tab</property>
+              <object class="GtkBox">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="GtkToggleButton" id="left_flapreveal_toggle">
+                    <property name="icon_name">flap-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="icon-name">tab-new-filled-symbolic</property>
+                    <property name="action-name">win.new-tab</property>
+                    <property name="tooltip-text" translatable="yes">New tab</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -102,7 +113,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkToggleButton" id="flapreveal_toggle">
+              <object class="GtkToggleButton" id="right_flapreveal_toggle">
                 <property name="icon_name">flap-symbolic</property>
                 <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
               </object>

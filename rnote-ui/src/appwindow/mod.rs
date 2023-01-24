@@ -307,20 +307,35 @@ mod imp {
             let flap_resizer = self.flap_resizer.get();
             let flap_resizer_box = self.flap_resizer_box.get();
             let workspace_headerbar = self.flap_header.get();
-            let flapreveal_toggle = inst.mainheader().flapreveal_toggle();
+            let left_flapreveal_toggle = inst.mainheader().left_flapreveal_toggle();
+            let right_flapreveal_toggle = inst.mainheader().right_flapreveal_toggle();
 
             flap.set_locked(true);
             flap.set_fold_policy(adw::FlapFoldPolicy::Auto);
 
             let expanded_revealed = Rc::new(Cell::new(flap.reveals_flap()));
 
-            flapreveal_toggle
+            left_flapreveal_toggle
+                .bind_property("active", &flap, "reveal-flap")
+                .sync_create()
+                .bidirectional()
+                .build();
+            right_flapreveal_toggle
                 .bind_property("active", &flap, "reveal-flap")
                 .sync_create()
                 .bidirectional()
                 .build();
 
-            flapreveal_toggle.connect_toggled(
+            left_flapreveal_toggle.connect_toggled(
+                clone!(@weak flap, @strong expanded_revealed => move |flapreveal_toggle| {
+                    flap.set_reveal_flap(flapreveal_toggle.is_active());
+                    if !flap.is_folded() {
+                        expanded_revealed.set(flapreveal_toggle.is_active());
+                    }
+                }),
+            );
+
+            right_flapreveal_toggle.connect_toggled(
                 clone!(@weak flap, @strong expanded_revealed => move |flapreveal_toggle| {
                     flap.set_reveal_flap(flapreveal_toggle.is_active());
                     if !flap.is_folded() {
@@ -330,7 +345,7 @@ mod imp {
             );
 
             self.flap
-                .connect_folded_notify(clone!(@weak inst as appwindow, @strong expanded_revealed, @weak flapreveal_toggle, @weak workspace_headerbar => move |flap| {
+                .connect_folded_notify(clone!(@weak inst as appwindow, @strong expanded_revealed, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle, @weak workspace_headerbar => move |flap| {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
@@ -347,10 +362,12 @@ mod imp {
                     }
 
                     if flap.is_folded() {
-                        flapreveal_toggle.set_active(false);
+                        left_flapreveal_toggle.set_active(false);
+                        right_flapreveal_toggle.set_active(false);
                     } else if expanded_revealed.get() || flap.reveals_flap() {
                         expanded_revealed.set(true);
-                        flapreveal_toggle.set_active(true);
+                        left_flapreveal_toggle.set_active(true);
+                        right_flapreveal_toggle.set_active(true);
                     }
 
                     if flap.flap_position() == PackType::Start {
@@ -425,7 +442,7 @@ mod imp {
                     prev_folded.set(flap.is_folded());
             }));
 
-            resizer_drag_gesture.connect_drag_update(clone!(@weak inst as appwindow, @strong prev_folded, @weak flap, @weak flap_box, @weak flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
+            resizer_drag_gesture.connect_drag_update(clone!(@weak inst as appwindow, @strong prev_folded, @weak flap, @weak flap_box, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
                 if flap.is_folded() == prev_folded.get() {
                     // Set BEFORE new width request
                     prev_folded.set(flap.is_folded());
@@ -440,7 +457,8 @@ mod imp {
                         flap_box.set_width_request(new_width);
                     }
                 } else if flap.is_folded() {
-                    flapreveal_toggle.set_active(true);
+                    left_flapreveal_toggle.set_active(true);
+                    right_flapreveal_toggle.set_active(true);
                 }
             }));
 
@@ -466,7 +484,10 @@ mod imp {
 
             if righthanded {
                 inst.flap().set_flap_position(PackType::Start);
-                inst.mainheader().quickactions_box().set_halign(Align::End);
+                inst.mainheader().left_flapreveal_toggle().set_visible(true);
+                inst.mainheader()
+                    .right_flapreveal_toggle()
+                    .set_visible(false);
                 inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
@@ -549,8 +570,11 @@ mod imp {
             } else {
                 inst.flap().set_flap_position(PackType::End);
                 inst.mainheader()
-                    .quickactions_box()
-                    .set_halign(Align::Start);
+                    .left_flapreveal_toggle()
+                    .set_visible(false);
+                inst.mainheader()
+                    .right_flapreveal_toggle()
+                    .set_visible(true);
                 inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-23 23:21+0100\n"
-"PO-Revision-Date: 2023-01-23 18:19+0000\n"
+"PO-Revision-Date: 2023-01-24 12:45+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1321,13 +1321,11 @@ msgstr "Imposta l'azione per il pulsante secondario del mouse"
 
 #: rnote-ui/data/ui/settingspanel.ui:415
 msgid "Touch two-finger long-press action"
-msgstr ""
+msgstr "Pressione prolungata con due dita"
 
 #: rnote-ui/data/ui/settingspanel.ui:416
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "Imposta l'azione per il pulsante secondario del mouse"
+msgstr "Imposta l'azione per il gesto di pressione prolungata con due dita"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"

@@ -5,7 +5,7 @@ project(
     meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
-patch = '-beta2'
+patch = '-beta3'
 
 i18n = import('i18n')
 gnome = import('gnome')

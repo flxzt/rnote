@@ -1,6 +1,6 @@
 use crate::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
-use rnote_engine::pens::pensconfig::toolsconfig::ToolsStyle;
+use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
 
 mod imp {
     use super::*;
@@ -60,25 +60,44 @@ impl ToolsPage {
         glib::Object::new(&[])
     }
 
+    pub(crate) fn tool_style(&self) -> Option<ToolStyle> {
+        let imp = self.imp();
+
+        if imp.toolstyle_verticalspace_toggle.is_active() {
+            Some(ToolStyle::VerticalSpace)
+        } else if imp.toolstyle_offsetcamera_toggle.is_active() {
+            Some(ToolStyle::OffsetCamera)
+        } else {
+            None
+        }
+    }
+
+    pub(crate) fn set_tool_style(&self, style: ToolStyle) {
+        let imp = self.imp();
+
+        match style {
+            ToolStyle::VerticalSpace => imp.toolstyle_verticalspace_toggle.set_active(true),
+            ToolStyle::OffsetCamera => imp.toolstyle_offsetcamera_toggle.set_active(true),
+        }
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         let imp = self.imp();
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::VerticalSpace;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
             }
         }));
 
         imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
             if toolstyle_offsetcamera_toggle.is_active() {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolsStyle::OffsetCamera;
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
             }
         }));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        let imp = self.imp();
-
         let tools_config = appwindow
             .active_tab()
             .canvas()
@@ -88,14 +107,13 @@ impl ToolsPage {
             .tools_config
             .clone();
 
-        match tools_config.style {
-            ToolsStyle::VerticalSpace => imp.toolstyle_verticalspace_toggle.set_active(true),
-            ToolsStyle::OffsetCamera => imp.toolstyle_offsetcamera_toggle.set_active(true),
-        }
+        self.set_tool_style(tools_config.style);
     }
 
-    pub(crate) fn sync_ui_active_tab(&self, _appwindow: &RnoteAppWindow) {
-        //let engine = appwindow.active_tab().canvas().engine();
-        //let mut engine = engine.borrow_mut();
+    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
+        let engine = appwindow.active_tab().canvas().engine();
+        let mut engine = engine.borrow_mut();
+
+        engine.pens_config.tools_config.style = self.tool_style().unwrap_or_default();
     }
 }

@@ -12,7 +12,7 @@ use rnote_compose::penevents::PenEvent;
 use p2d::bounding_volume::Aabb;
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::pensconfig::toolsconfig::ToolsStyle;
+use super::pensconfig::toolsconfig::ToolStyle;
 use super::PenStyle;
 
 #[derive(Clone, Debug)]
@@ -209,7 +209,7 @@ impl PenBehaviour for Tools {
                 widget_flags.merge(engine_view.store.record(Instant::now()));
 
                 match engine_view.pens_config.tools_config.style {
-                    ToolsStyle::VerticalSpace => {
+                    ToolStyle::VerticalSpace => {
                         self.verticalspace_tool.start_pos_y = element.pos[1];
                         self.verticalspace_tool.current_pos_y = element.pos[1];
 
@@ -217,7 +217,7 @@ impl PenBehaviour for Tools {
                             .store
                             .keys_below_y_pos(self.verticalspace_tool.current_pos_y);
                     }
-                    ToolsStyle::OffsetCamera => {
+                    ToolStyle::OffsetCamera => {
                         self.offsetcamera_tool.start = element.pos;
                     }
                 }
@@ -242,7 +242,7 @@ impl PenBehaviour for Tools {
                 },
             ) => {
                 let pen_progress = match engine_view.pens_config.tools_config.style {
-                    ToolsStyle::VerticalSpace => {
+                    ToolStyle::VerticalSpace => {
                         let y_offset = element.pos[1] - self.verticalspace_tool.current_pos_y;
 
                         if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {
@@ -262,7 +262,7 @@ impl PenBehaviour for Tools {
 
                         PenProgress::InProgress
                     }
-                    ToolsStyle::OffsetCamera => {
+                    ToolStyle::OffsetCamera => {
                         let offset = engine_view
                             .camera
                             .transform()
@@ -295,14 +295,14 @@ impl PenBehaviour for Tools {
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 match engine_view.pens_config.tools_config.style {
-                    ToolsStyle::VerticalSpace => {
+                    ToolStyle::VerticalSpace => {
                         engine_view
                             .store
                             .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
 
                         widget_flags.store_modified = true;
                     }
-                    ToolsStyle::OffsetCamera => {}
+                    ToolStyle::OffsetCamera => {}
                 }
 
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
@@ -355,8 +355,8 @@ impl DrawOnDocBehaviour for Tools {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         match self.state {
             ToolsState::Active => match engine_view.pens_config.tools_config.style {
-                ToolsStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
-                ToolsStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
+                ToolStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
+                ToolStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
             },
             ToolsState::Idle => None,
         }
@@ -370,10 +370,10 @@ impl DrawOnDocBehaviour for Tools {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &engine_view.pens_config.tools_config.style {
-            ToolsStyle::VerticalSpace => {
+            ToolStyle::VerticalSpace => {
                 self.verticalspace_tool.draw_on_doc(cx, engine_view)?;
             }
-            ToolsStyle::OffsetCamera => {
+            ToolStyle::OffsetCamera => {
                 self.offsetcamera_tool.draw_on_doc(cx, engine_view)?;
             }
         }
@@ -386,11 +386,11 @@ impl DrawOnDocBehaviour for Tools {
 impl Tools {
     fn reset(&mut self, engine_view: &mut EngineViewMut) {
         match engine_view.pens_config.tools_config.style {
-            ToolsStyle::VerticalSpace => {
+            ToolStyle::VerticalSpace => {
                 self.verticalspace_tool.start_pos_y = 0.0;
                 self.verticalspace_tool.current_pos_y = 0.0;
             }
-            ToolsStyle::OffsetCamera => {
+            ToolStyle::OffsetCamera => {
                 self.offsetcamera_tool.start = na::Vector2::zeros();
             }
         }

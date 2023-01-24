@@ -13,26 +13,26 @@ use serde::{Deserialize, Serialize};
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
-#[serde(rename = "tools_style")]
-pub enum ToolsStyle {
+#[serde(rename = "tool_style")]
+pub enum ToolStyle {
     #[serde(rename = "verticalspace")]
     VerticalSpace,
     #[serde(rename = "offsetcamera")]
     OffsetCamera,
 }
 
-impl Default for ToolsStyle {
+impl Default for ToolStyle {
     fn default() -> Self {
         Self::VerticalSpace
     }
 }
 
-impl TryFrom<u32> for ToolsStyle {
+impl TryFrom<u32> for ToolStyle {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("ToolsStyle try_from::<u32>() for value {} failed", value)
+            anyhow::anyhow!("ToolStyle try_from::<u32>() for value {} failed", value)
         })
     }
 }
@@ -41,5 +41,5 @@ impl TryFrom<u32> for ToolsStyle {
 #[serde(default, rename = "tools_config")]
 pub struct ToolsConfig {
     #[serde(rename = "style")]
-    pub style: ToolsStyle,
+    pub style: ToolStyle,
 }

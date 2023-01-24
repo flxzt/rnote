@@ -93,4 +93,9 @@ impl ToolsPage {
             ToolsStyle::OffsetCamera => imp.toolstyle_offsetcamera_toggle.set_active(true),
         }
     }
+
+    pub(crate) fn sync_ui_active_tab(&self, _appwindow: &RnoteAppWindow) {
+        //let engine = appwindow.active_tab().canvas().engine();
+        //let mut engine = engine.borrow_mut();
+    }
 }

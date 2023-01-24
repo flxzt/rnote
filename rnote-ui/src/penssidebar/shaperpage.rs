@@ -425,22 +425,66 @@ impl ShaperPage {
             shaper_config
                 .constraints
                 .ratios
-                .get(&ConstraintRatio::OneToOne)
-                .is_some(),
+                .contains(&ConstraintRatio::OneToOne),
         );
         imp.constraint_three_to_two_switch.set_state(
             shaper_config
                 .constraints
                 .ratios
-                .get(&ConstraintRatio::ThreeToTwo)
-                .is_some(),
+                .contains(&ConstraintRatio::ThreeToTwo),
         );
         imp.constraint_golden_switch.set_state(
             shaper_config
                 .constraints
                 .ratios
-                .get(&ConstraintRatio::Golden)
-                .is_some(),
+                .contains(&ConstraintRatio::Golden),
         );
+    }
+
+    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        let engine = appwindow.active_tab().canvas().engine();
+        let mut engine = engine.borrow_mut();
+
+        engine.pens_config.shaper_config.style = self.shaper_style().unwrap_or_default();
+        engine.pens_config.shaper_config.builder_type = self.shapebuildertype().unwrap_or_default();
+
+        // smooth options
+        engine.pens_config.shaper_config.smooth_options.stroke_width = self.smooth_stroke_width();
+
+        // rough options
+        engine.pens_config.shaper_config.rough_options.stroke_width = self.rough_stroke_width();
+        engine.pens_config.shaper_config.rough_options.fill_style = self.roughstyle_fillstyle();
+        engine.pens_config.shaper_config.rough_options.hachure_angle =
+            imp.roughstyle_hachure_angle_spinbutton.value();
+
+        // constraints
+        engine.pens_config.shaper_config.constraints.enabled =
+            imp.constraint_enabled_switch.state();
+        engine.pens_config.shaper_config.constraints.ratios.clear();
+        if imp.constraint_one_to_one_switch.state() {
+            engine
+                .pens_config
+                .shaper_config
+                .constraints
+                .ratios
+                .insert(ConstraintRatio::OneToOne);
+        }
+        if imp.constraint_three_to_two_switch.state() {
+            engine
+                .pens_config
+                .shaper_config
+                .constraints
+                .ratios
+                .insert(ConstraintRatio::ThreeToTwo);
+        }
+        if imp.constraint_golden_switch.state() {
+            engine
+                .pens_config
+                .shaper_config
+                .constraints
+                .ratios
+                .insert(ConstraintRatio::Golden);
+        }
     }
 }

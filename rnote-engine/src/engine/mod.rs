@@ -678,6 +678,18 @@ impl RnoteEngine {
         )
     }
 
+    pub fn reinstall_pen_current_style(&mut self) -> WidgetFlags {
+        self.penholder
+            .reinstall_pen_current_style(&mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                pens_config: &mut self.pens_config,
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            })
+    }
+
     // Generates bounds for each page on the document which contains content
     pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();

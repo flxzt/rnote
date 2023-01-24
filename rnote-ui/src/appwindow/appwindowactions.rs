@@ -334,36 +334,23 @@ impl RnoteAppWindow {
                 let mut engine = engine.borrow_mut();
 
                 widget_flags.merge(engine.change_pen_style(pen_style));
+                // ensures a clean state for the current pen
+                widget_flags.merge(engine.reinstall_pen_current_style());
                 engine.set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKGDATADIR)));
 
-                engine.pens_config.brush_config.style = appwindow.penssidebar().brush_page().brush_style().unwrap_or_default();
-                engine.pens_config.brush_config.builder_type = appwindow.penssidebar().brush_page().buildertype().unwrap_or_default();
-                engine.pens_config.brush_config.marker_options.stroke_width = appwindow.penssidebar().brush_page().marker_stroke_width();
-                engine.pens_config.brush_config.solid_options.stroke_width = appwindow.penssidebar().brush_page().solid_stroke_width();
-                engine.pens_config.brush_config.textured_options.stroke_width = appwindow.penssidebar().brush_page().textured_stroke_width();
                 engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
                 engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
                 engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
                 engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
                 engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
 
-                engine.pens_config.shaper_config.style = appwindow.penssidebar().shaper_page().shaper_style().unwrap_or_default();
-                engine.pens_config.shaper_config.builder_type = appwindow.penssidebar().shaper_page().shapebuildertype().unwrap_or_default();
-                engine.pens_config.shaper_config.smooth_options.stroke_width = appwindow.penssidebar().shaper_page().smooth_stroke_width();
-                engine.pens_config.shaper_config.rough_options.stroke_width = appwindow.penssidebar().shaper_page().rough_stroke_width();
                 engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
                 engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
 
-                engine.pens_config.typewriter_config.text_style = appwindow.penssidebar().typewriter_page().text_style();
                 engine.pens_config.typewriter_config.text_style.color = stroke_color;
 
-                engine.pens_config.eraser_config.style = appwindow.penssidebar().eraser_page().eraser_style().unwrap_or_default();
-                engine.pens_config.eraser_config.width = appwindow.penssidebar().eraser_page().width_spinbutton().value();
-
-                engine.pens_config.selector_config.style = appwindow.penssidebar().selector_page().selector_style().unwrap_or_default();
-                engine.pens_config.selector_config.resize_lock_aspectratio = appwindow.penssidebar().selector_page().resize_lock_aspectratio_togglebutton().is_active();
             }
 
             {
@@ -380,7 +367,13 @@ impl RnoteAppWindow {
                 appwindow.refresh_titles_active_tab();
             }
 
-            // Update the settings
+            // Update from / to the pen pages and settings panel
+            appwindow.penssidebar().brush_page().sync_ui_active_tab(&appwindow);
+            appwindow.penssidebar().shaper_page().sync_ui_active_tab(&appwindow);
+            appwindow.penssidebar().typewriter_page().sync_ui_active_tab(&appwindow);
+            appwindow.penssidebar().eraser_page().sync_ui_active_tab(&appwindow);
+            appwindow.penssidebar().selector_page().sync_ui_active_tab(&appwindow);
+            appwindow.penssidebar().tools_page().sync_ui_active_tab(&appwindow);
             appwindow.settings_panel().sync_state_active_tab(&appwindow);
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));

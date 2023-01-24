@@ -507,4 +507,11 @@ impl TypewriterPage {
 
         self.set_alignment(typewriter_config.text_style.alignment);
     }
+
+    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
+        let engine = appwindow.active_tab().canvas().engine();
+        let mut engine = engine.borrow_mut();
+
+        engine.pens_config.typewriter_config.text_style = self.text_style();
+    }
 }

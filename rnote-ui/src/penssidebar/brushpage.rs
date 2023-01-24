@@ -370,4 +370,35 @@ impl BrushPage {
             }
         }
     }
+
+    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        let engine = appwindow.active_tab().canvas().engine();
+        let mut engine = engine.borrow_mut();
+
+        engine.pens_config.brush_config.style = self.brush_style().unwrap_or_default();
+        engine.pens_config.brush_config.builder_type = self.buildertype().unwrap_or_default();
+
+        // marker options
+        engine.pens_config.brush_config.marker_options.stroke_width = self.marker_stroke_width();
+
+        // solid options
+        engine.pens_config.brush_config.solid_options.stroke_width = self.solid_stroke_width();
+        engine.pens_config.brush_config.solid_options.pressure_curve =
+            self.solidstyle_pressure_curve();
+
+        // textured options
+        engine
+            .pens_config
+            .brush_config
+            .textured_options
+            .stroke_width = self.textured_stroke_width();
+        engine.pens_config.brush_config.textured_options.density =
+            imp.texturedstyle_density_spinbutton.value();
+        engine
+            .pens_config
+            .brush_config
+            .textured_options
+            .distribution = self.texturedstyle_dots_distribution();
+    }
 }

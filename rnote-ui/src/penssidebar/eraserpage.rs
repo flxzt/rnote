@@ -142,4 +142,12 @@ impl EraserPage {
 
         self.set_eraser_style(eraser_config.style);
     }
+
+    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
+        let engine = appwindow.active_tab().canvas().engine();
+        let mut engine = engine.borrow_mut();
+
+        engine.pens_config.eraser_config.style = self.eraser_style().unwrap_or_default();
+        engine.pens_config.eraser_config.width = self.width_spinbutton().value();
+    }
 }

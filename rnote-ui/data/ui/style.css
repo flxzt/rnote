@@ -135,6 +135,10 @@
 from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 */
 .workspacerow {
+    min-width: 32px;
+    min-height: 48px;
+    margin: 3px;
+    padding: 3px;
     transition: opacity .1s;
     opacity: 0.75;
     background-image:
@@ -143,30 +147,36 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
             alpha(mix(@workspacerow_color, #fff, 0.05), 0.6) 75%,
             alpha(@workspacerow_color, 0) 100%),
         linear-gradient(mix(@workspacerow_color, #fff, 0.2), @workspacerow_color);
-
     border-radius: 0 3px 3px 0;
-
-    min-width: 32px;
-    min-height: 32px;
-
     color: @workspacerow_fg_color;
-
     box-shadow:
         inset 0 .5px 0px 0px rgba(255, 255, 255, 0.2),
-
         inset 3px 0 0 0 shade(@workspacerow_color, 0.8),
-
         inset 0 -2px 0px 0px #f0f3f8,
         inset 0 -1px 0px 0px @workspacerow_color,
-
         inset 1px 0 0 0 shade(@workspacerow_color, 0.8),
         inset 0 -3px 0px 0px rgba(0, 0, 0, 0.2);
 }
 
+.workspacerow > label {
+    font-size: 11px;
+}
+.workspacerow > image {
+    -gtk-icon-size: 16px;
+}
+
 .workspacerow.preview {
-    transform: scale(2.0);
-    margin-top: 24px;
-    margin-bottom: 24px;
+    min-width: 64px;
+    min-height: 96px;
+    margin: 6px;
+    padding: 9px;
+}
+
+.workspacerow.preview > image {
+    -gtk-icon-size: 42px;
+}
+.workspacerow.preview > label {
+    font-size: 22px;
 }
 
 .iconpicker_gridview {

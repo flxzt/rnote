@@ -7,34 +7,25 @@
         <property name="orientation">vertical</property>
       </object>
     </property>
-    <property name="margin-top">6</property>
-    <property name="margin-bottom">6</property>
-    <property name="margin-start">3</property>
-    <property name="margin-end">3</property>
     <child>
       <object class="GtkImage" id="folder_image">
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
         <property name="halign">center</property>
+        <property name="valign">center</property>
         <property name="icon_name">workspacelistentryicon-folder-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">3</property>
-        <property name="margin-start">3</property>
-        <property name="margin-end">3</property>
       </object>
     </child>
     <child>
       <object class="GtkLabel" id="name_label">
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
         <property name="halign">center</property>
+        <property name="valign">center</property>
         <property name="label"></property>
         <property name="selectable">false</property>
         <property name="ellipsize">end</property>
         <property name="max-width-chars">4</property>
-        <property name="margin-top">3</property>
-        <property name="margin-bottom">3</property>
-        <property name="margin-start">3</property>
-        <property name="margin-end">3</property>
-        <style>
-          <class name="caption" />
-        </style>
       </object>
     </child>
   </template>

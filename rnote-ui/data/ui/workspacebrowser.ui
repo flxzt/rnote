@@ -65,7 +65,7 @@
                         <child>
                           <object class="GtkMenuButton" id="dir_controls_actions_menubutton">
                             <property name="direction">down</property>
-                            <property name="icon_name">misc-menu-symbolic</property>
+                            <property name="icon_name">dir-actions-symbolic</property>
                             <property name="popover">dir_controls_actions_popover</property>
                             <property name="tooltip_text" translatable="yes">Workspace directory actions</property>
                             <style>

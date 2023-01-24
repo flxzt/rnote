@@ -1,6 +1,6 @@
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay, ProgressBar,
-    ToggleButton, Widget,
+    ScrolledWindow, ToggleButton, Widget,
 };
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::{Pen, PenStyle};
@@ -8,6 +8,7 @@ use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 
 use crate::canvaswrapper::RnoteCanvasWrapper;
+use crate::PensSideBar;
 use crate::{dialogs, ColorPicker, RnoteAppWindow};
 
 mod imp {
@@ -43,6 +44,12 @@ mod imp {
         pub(crate) colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
         pub(crate) tabview: TemplateChild<adw::TabView>,
+        #[template_child]
+        pub(crate) sidebar_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) sidebar_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
+        pub(crate) penssidebar: TemplateChild<PensSideBar>,
     }
 
     #[glib::object_subclass]
@@ -81,6 +88,8 @@ mod imp {
                 .set_measure_overlay(&*self.colorpicker, true);
             self.toolbar_overlay
                 .set_measure_overlay(&*self.pens_toggles_box, true);
+            self.toolbar_overlay
+                .set_measure_overlay(&*self.sidebar_box, true);
         }
     }
 }
@@ -141,7 +150,28 @@ impl RnoteOverlays {
         self.imp().tabview.get()
     }
 
+    pub(crate) fn sidebar_box(&self) -> gtk4::Box {
+        self.imp().sidebar_box.get()
+    }
+
+    pub(crate) fn sidebar_scroller(&self) -> ScrolledWindow {
+        self.imp().sidebar_scroller.get()
+    }
+
+    pub(crate) fn penssidebar(&self) -> PensSideBar {
+        self.imp().penssidebar.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+        let imp = self.imp();
+        imp.penssidebar.get().init(appwindow);
+        imp.penssidebar.get().brush_page().init(appwindow);
+        imp.penssidebar.get().shaper_page().init(appwindow);
+        imp.penssidebar.get().typewriter_page().init(appwindow);
+        imp.penssidebar.get().eraser_page().init(appwindow);
+        imp.penssidebar.get().selector_page().init(appwindow);
+        imp.penssidebar.get().tools_page().init(appwindow);
+
         self.setup_pens_toggles(appwindow);
         self.setup_colorpicker(appwindow);
         self.setup_tabview(appwindow);

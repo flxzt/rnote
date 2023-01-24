@@ -26,29 +26,13 @@
           </object>
         </child>
         <child type="overlay">
-          <object class="ColorPicker" id="colorpicker">
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-            <property name="halign">center</property>
-            <property name="valign">start</property>
-            <property name="margin-top">18</property>
-            <property name="margin-bottom">6</property>
-            <property name="margin-start">6</property>
-            <property name="margin-end">6</property>
-            <property name="position">top</property>
-            <style>
-              <class name="overlay-toolbar" />
-            </style>
-          </object>
-        </child>
-        <child type="overlay">
           <object class="GtkBox" id="pens_toggles_box">
             <property name="hexpand">false</property>
             <property name="vexpand">false</property>
             <property name="halign">center</property>
             <property name="valign">end</property>
             <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
+            <property name="margin-bottom">18</property>
             <property name="margin-start">6</property>
             <property name="margin-end">6</property>
             <property name="width-request">400</property>
@@ -104,6 +88,58 @@
                 <property name="tooltip_text" translatable="yes">Tools</property>
                 <property name="hexpand">true</property>
                 <property name="group">brush_toggle</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="ColorPicker" id="colorpicker">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+            <property name="margin-top">18</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">18</property>
+            <property name="margin-end">18</property>
+            <property name="position">top</property>
+            <style>
+              <class name="overlay-toolbar" />
+            </style>
+          </object>
+        </child>
+        <child type="overlay">
+          <object class="GtkBox" id="sidebar_box">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="halign">end</property>
+            <property name="valign">center</property>
+            <property name="margin-top">78</property>
+            <property name="margin-bottom">72</property>
+            <property name="margin-start">18</property>
+            <property name="margin-end">18</property>
+            <style>
+              <class name="overlay-toolbar" />
+            </style>
+            <child>
+              <object class="GtkScrolledWindow" id="sidebar_scroller">
+                <property name="propagate-natural-width">true</property>
+                <property name="propagate-natural-height">true</property>
+                <property name="overlay-scrolling">true</property>
+                <property name="hscrollbar-policy">never</property>
+                <property name="vscrollbar-policy">automatic</property>
+                <property name="hexpand">false</property>
+                <property name="halign">fill</property>
+                <property name="vexpand">true</property>
+                <property name="valign">fill</property>
+                <property name="min-content-height">240</property>
+                <property name="window-placement">top-left</property>
+                <child>
+                  <object class="PensSideBar" id="penssidebar">
+                    <property name="margin-top">3</property>
+                    <property name="margin-bottom">3</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

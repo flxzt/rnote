@@ -207,6 +207,7 @@ impl RnoteAppWindow {
             .bind(
                 "brush-width-1",
                 &self
+                    .overlays()
                     .penssidebar()
                     .brush_page()
                     .stroke_width_picker()
@@ -218,6 +219,7 @@ impl RnoteAppWindow {
             .bind(
                 "brush-width-2",
                 &self
+                    .overlays()
                     .penssidebar()
                     .brush_page()
                     .stroke_width_picker()
@@ -229,6 +231,7 @@ impl RnoteAppWindow {
             .bind(
                 "brush-width-3",
                 &self
+                    .overlays()
                     .penssidebar()
                     .brush_page()
                     .stroke_width_picker()
@@ -242,6 +245,7 @@ impl RnoteAppWindow {
             .bind(
                 "shaper-width-1",
                 &self
+                    .overlays()
                     .penssidebar()
                     .shaper_page()
                     .stroke_width_picker()
@@ -253,6 +257,7 @@ impl RnoteAppWindow {
             .bind(
                 "shaper-width-2",
                 &self
+                    .overlays()
                     .penssidebar()
                     .shaper_page()
                     .stroke_width_picker()
@@ -264,6 +269,7 @@ impl RnoteAppWindow {
             .bind(
                 "shaper-width-3",
                 &self
+                    .overlays()
                     .penssidebar()
                     .shaper_page()
                     .stroke_width_picker()

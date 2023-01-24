@@ -12,18 +12,14 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, Application, ArrowType, Box, Button, CompositeTemplate,
     CornerType, CssProvider, FileChooserNative, GestureDrag, Grid, IconTheme, Inhibit, PackType,
-    PropagationPhase, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    PropagationPhase, StyleContext,
 };
 use once_cell::sync::Lazy;
 
 use crate::canvas::RnoteCanvas;
 use crate::{
-    config,
-    penssidebar::PensSideBar,
-    settingspanel::SettingsPanel,
-    workspacebrowser::WorkspaceBrowser,
-    RnoteApp, RnoteCanvasWrapper, RnoteOverlays,
-    {dialogs, mainheader::MainHeader},
+    config, RnoteApp, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel, WorkspaceBrowser,
+    {dialogs, MainHeader},
 };
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 
@@ -55,12 +51,6 @@ mod imp {
         #[template_child]
         pub(crate) settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
-        pub(crate) sidebar_scroller: TemplateChild<ScrolledWindow>,
-        #[template_child]
-        pub(crate) sidebar_box: TemplateChild<Grid>,
-        #[template_child]
-        pub(crate) sidebar_sep: TemplateChild<Separator>,
-        #[template_child]
         pub(crate) flap: TemplateChild<adw::Flap>,
         #[template_child]
         pub(crate) flap_box: TemplateChild<gtk4::Box>,
@@ -77,13 +67,9 @@ mod imp {
         #[template_child]
         pub(crate) workspacebrowser: TemplateChild<WorkspaceBrowser>,
         #[template_child]
-        pub(crate) flapreveal_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
         pub(crate) flap_menus_box: TemplateChild<Box>,
         #[template_child]
         pub(crate) mainheader: TemplateChild<MainHeader>,
-        #[template_child]
-        pub(crate) penssidebar: TemplateChild<PensSideBar>,
     }
 
     impl Default for RnoteAppWindow {
@@ -103,9 +89,6 @@ mod imp {
                 overlays: TemplateChild::<RnoteOverlays>::default(),
                 tabbar: TemplateChild::<adw::TabBar>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
-                sidebar_scroller: TemplateChild::<ScrolledWindow>::default(),
-                sidebar_box: TemplateChild::<Grid>::default(),
-                sidebar_sep: TemplateChild::<Separator>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
                 flap_box: TemplateChild::<gtk4::Box>::default(),
                 flap_header: TemplateChild::<adw::HeaderBar>::default(),
@@ -114,10 +97,8 @@ mod imp {
                 flap_close_button: TemplateChild::<Button>::default(),
                 flap_stack: TemplateChild::<adw::ViewStack>::default(),
                 workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
-                flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
-                penssidebar: TemplateChild::<PensSideBar>::default(),
             }
         }
     }
@@ -326,20 +307,35 @@ mod imp {
             let flap_resizer = self.flap_resizer.get();
             let flap_resizer_box = self.flap_resizer_box.get();
             let workspace_headerbar = self.flap_header.get();
-            let flapreveal_toggle = self.flapreveal_toggle.get();
+            let left_flapreveal_toggle = inst.mainheader().left_flapreveal_toggle();
+            let right_flapreveal_toggle = inst.mainheader().right_flapreveal_toggle();
 
             flap.set_locked(true);
             flap.set_fold_policy(adw::FlapFoldPolicy::Auto);
 
             let expanded_revealed = Rc::new(Cell::new(flap.reveals_flap()));
 
-            self.flapreveal_toggle
+            left_flapreveal_toggle
+                .bind_property("active", &flap, "reveal-flap")
+                .sync_create()
+                .bidirectional()
+                .build();
+            right_flapreveal_toggle
                 .bind_property("active", &flap, "reveal-flap")
                 .sync_create()
                 .bidirectional()
                 .build();
 
-            self.flapreveal_toggle.connect_toggled(
+            left_flapreveal_toggle.connect_toggled(
+                clone!(@weak flap, @strong expanded_revealed => move |flapreveal_toggle| {
+                    flap.set_reveal_flap(flapreveal_toggle.is_active());
+                    if !flap.is_folded() {
+                        expanded_revealed.set(flapreveal_toggle.is_active());
+                    }
+                }),
+            );
+
+            right_flapreveal_toggle.connect_toggled(
                 clone!(@weak flap, @strong expanded_revealed => move |flapreveal_toggle| {
                     flap.set_reveal_flap(flapreveal_toggle.is_active());
                     if !flap.is_folded() {
@@ -349,7 +345,7 @@ mod imp {
             );
 
             self.flap
-                .connect_folded_notify(clone!(@weak inst as appwindow, @strong expanded_revealed, @weak flapreveal_toggle, @weak workspace_headerbar => move |flap| {
+                .connect_folded_notify(clone!(@weak inst as appwindow, @strong expanded_revealed, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle, @weak workspace_headerbar => move |flap| {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
@@ -366,10 +362,12 @@ mod imp {
                     }
 
                     if flap.is_folded() {
-                        flapreveal_toggle.set_active(false);
+                        left_flapreveal_toggle.set_active(false);
+                        right_flapreveal_toggle.set_active(false);
                     } else if expanded_revealed.get() || flap.reveals_flap() {
                         expanded_revealed.set(true);
-                        flapreveal_toggle.set_active(true);
+                        left_flapreveal_toggle.set_active(true);
+                        right_flapreveal_toggle.set_active(true);
                     }
 
                     if flap.flap_position() == PackType::Start {
@@ -444,7 +442,7 @@ mod imp {
                     prev_folded.set(flap.is_folded());
             }));
 
-            resizer_drag_gesture.connect_drag_update(clone!(@weak inst as appwindow, @strong prev_folded, @weak flap, @weak flap_box, @weak flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
+            resizer_drag_gesture.connect_drag_update(clone!(@weak inst as appwindow, @strong prev_folded, @weak flap, @weak flap_box, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
                 if flap.is_folded() == prev_folded.get() {
                     // Set BEFORE new width request
                     prev_folded.set(flap.is_folded());
@@ -459,7 +457,8 @@ mod imp {
                         flap_box.set_width_request(new_width);
                     }
                 } else if flap.is_folded() {
-                    flapreveal_toggle.set_active(true);
+                    left_flapreveal_toggle.set_active(true);
+                    right_flapreveal_toggle.set_active(true);
                 }
             }));
 
@@ -485,13 +484,10 @@ mod imp {
 
             if righthanded {
                 inst.flap().set_flap_position(PackType::Start);
-                inst.main_grid().remove(&inst.overlays());
-                inst.main_grid().remove(&inst.sidebar_sep());
-                inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.overlays(), 2, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_box(), 0, 3, 1, 1);
-                inst.mainheader().quickactions_box().set_halign(Align::End);
+                inst.mainheader().left_flapreveal_toggle().set_visible(true);
+                inst.mainheader()
+                    .right_flapreveal_toggle()
+                    .set_visible(false);
                 inst.mainheader()
                     .appmenu()
                     .righthanded_toggle()
@@ -524,54 +520,61 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopRight);
 
-                inst.sidebar_scroller()
+                inst.overlays().sidebar_box().set_halign(Align::Start);
+                inst.overlays()
+                    .sidebar_scroller()
                     .set_window_placement(CornerType::TopRight);
                 inst.settings_panel()
                     .settings_scroller()
                     .set_window_placement(CornerType::TopRight);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .brush_page()
                     .brushconfig_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .brush_page()
                     .stroke_width_picker()
                     .set_position(PositionType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .shapeconfig_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .shapebuildertype_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .stroke_width_picker()
                     .set_position(PositionType::Left);
             } else {
                 inst.flap().set_flap_position(PackType::End);
-                inst.main_grid().remove(&inst.overlays());
-                inst.main_grid().remove(&inst.sidebar_sep());
-                inst.main_grid().remove(&inst.sidebar_box());
-                inst.main_grid().attach(&inst.overlays(), 0, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_sep(), 1, 3, 1, 1);
-                inst.main_grid().attach(&inst.sidebar_box(), 2, 3, 1, 1);
                 inst.mainheader()
-                    .quickactions_box()
-                    .set_halign(Align::Start);
+                    .left_flapreveal_toggle()
+                    .set_visible(false);
+                inst.mainheader()
+                    .right_flapreveal_toggle()
+                    .set_visible(true);
                 inst.mainheader()
                     .appmenu()
                     .lefthanded_toggle()
@@ -604,40 +607,50 @@ mod imp {
                     .workspaces_scroller()
                     .set_window_placement(CornerType::TopLeft);
 
-                inst.sidebar_scroller()
+                inst.overlays().sidebar_box().set_halign(Align::End);
+                inst.overlays()
+                    .sidebar_scroller()
                     .set_window_placement(CornerType::TopLeft);
                 inst.settings_panel()
                     .settings_scroller()
                     .set_window_placement(CornerType::TopLeft);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .brush_page()
                     .brushconfig_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .brush_page()
                     .brushstyle_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .brush_page()
                     .stroke_width_picker()
                     .set_position(PositionType::Right);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .shaperstyle_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .shapeconfig_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .shapebuildertype_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .constraint_menubutton()
                     .set_direction(ArrowType::Left);
-                inst.penssidebar()
+                inst.overlays()
+                    .penssidebar()
                     .shaper_page()
                     .stroke_width_picker()
                     .set_position(PositionType::Right);
@@ -714,28 +727,12 @@ impl RnoteAppWindow {
         self.imp().filechoosernative.clone()
     }
 
-    pub(crate) fn main_grid(&self) -> Grid {
-        self.imp().main_grid.get()
-    }
-
     pub(crate) fn overlays(&self) -> RnoteOverlays {
         self.imp().overlays.get()
     }
 
     pub(crate) fn settings_panel(&self) -> SettingsPanel {
         self.imp().settings_panel.get()
-    }
-
-    pub(crate) fn sidebar_scroller(&self) -> ScrolledWindow {
-        self.imp().sidebar_scroller.get()
-    }
-
-    pub(crate) fn sidebar_box(&self) -> Grid {
-        self.imp().sidebar_box.get()
-    }
-
-    pub(crate) fn sidebar_sep(&self) -> Separator {
-        self.imp().sidebar_sep.get()
     }
 
     pub(crate) fn flap_box(&self) -> gtk4::Box {
@@ -770,10 +767,6 @@ impl RnoteAppWindow {
         self.imp().mainheader.get()
     }
 
-    pub(crate) fn penssidebar(&self) -> PensSideBar {
-        self.imp().penssidebar.get()
-    }
-
     // Must be called after application is associated with it else it fails
     pub(crate) fn init(&self) {
         let imp = self.imp();
@@ -784,13 +777,6 @@ impl RnoteAppWindow {
         imp.mainheader.get().init(self);
         imp.mainheader.get().canvasmenu().init(self);
         imp.mainheader.get().appmenu().init(self);
-        imp.penssidebar.get().init(self);
-        imp.penssidebar.get().brush_page().init(self);
-        imp.penssidebar.get().shaper_page().init(self);
-        imp.penssidebar.get().typewriter_page().init(self);
-        imp.penssidebar.get().eraser_page().init(self);
-        imp.penssidebar.get().selector_page().init(self);
-        imp.penssidebar.get().tools_page().init(self);
 
         // A first canvas. Must! come before binding the settings
         self.new_tab();

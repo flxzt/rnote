@@ -29,6 +29,14 @@
         Use the color scheme in the application's UI and in the text area.
       </description>
     </key>
+    <key name="active-stroke-color" type="(dddd)">
+      <default>(0.0, 0.0, 0.0, 1.0)</default>
+      <summary>the active stroke color (default: black)</summary>
+    </key>
+    <key name="active-fill-color" type="(dddd)">
+      <default>(0.0, 0.0, 0.0, 0.0)</default>
+      <summary>the active fill color (default: transparent)</summary>
+    </key>
     <key name="colorpicker-color-1" type="(dddd)">
       <default>(0.0, 0.0, 0.0, 1.0)</default>
       <summary>the colorpicker palette color 1 (default: black)</summary>

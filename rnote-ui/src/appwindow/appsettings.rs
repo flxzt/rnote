@@ -86,7 +86,7 @@ impl RnoteAppWindow {
             .build();
 
         // colorpicker palette
-        let colorsetter_mapping = |var: &glib::Variant, _: glib::Type| {
+        let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
             let color = var.get::<(f64, f64, f64, f64)>()?;
             Some(
                 gdk::RGBA::new(
@@ -98,7 +98,7 @@ impl RnoteAppWindow {
                 .to_value(),
             )
         };
-        let colorsetter_set_mapping = |val: &glib::Value, _: glib::VariantType| {
+        let gdk_color_set_mapping = |val: &glib::Value, _: glib::VariantType| {
             let color = val.get::<gdk::RGBA>().ok()?;
             Some(
                 (
@@ -113,12 +113,30 @@ impl RnoteAppWindow {
 
         self.app_settings()
             .bind(
+                "active-stroke-color",
+                &self.overlays().colorpicker(),
+                "stroke-color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
+                "active-fill-color",
+                &self.overlays().colorpicker(),
+                "fill-color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .build();
+        self.app_settings()
+            .bind(
                 "colorpicker-color-1",
                 &self.overlays().colorpicker().setter_1(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -126,8 +144,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_2(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -135,8 +153,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_3(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -144,8 +162,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_4(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -153,8 +171,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_5(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -162,8 +180,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_6(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -171,8 +189,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_7(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
         self.app_settings()
             .bind(
@@ -180,8 +198,8 @@ impl RnoteAppWindow {
                 &self.overlays().colorpicker().setter_8(),
                 "color",
             )
-            .mapping(colorsetter_mapping)
-            .set_mapping(colorsetter_set_mapping)
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
             .build();
 
         // brush stroke widths

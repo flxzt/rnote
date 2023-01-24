@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
+"POT-Creation-Date: 2023-01-25 00:38+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -593,32 +593,32 @@ msgid "Split strokes"
 msgstr "分割畫筆"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "刷子"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr "形狀工具"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr "文字"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "橡皮"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr "選擇"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "工具"
 
@@ -989,19 +989,15 @@ msgstr "右側側邊欄"
 msgid "Toggle fullscreen"
 msgstr "切換全屏"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr "顯示/隱藏翻頁選單"
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr "關閉摺疊"
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr "工作區"
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "設定"
 
@@ -1088,27 +1084,31 @@ msgstr "新建文件"
 msgid "Draft"
 msgstr "草稿"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr "顯示/隱藏翻頁選單"
+
+#: rnote-ui/data/ui/mainheader.ui:46
 msgid "New tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr "撤銷"
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr "重做"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "新建頁面"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 msgid "Resize document to fit the strokes"
 msgstr "調整文件大小以適應畫筆"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr "儲存文件"
 
@@ -1524,51 +1524,51 @@ msgstr "移除選定的工作區"
 msgid "Edit selected workspace"
 msgstr "編輯選定的工作區"
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:286
+#: rnote-ui/src/appwindow/appwindowactions.rs:679
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "文件儲存失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1134
+#: rnote-ui/src/appwindow/mod.rs:1120
 msgid "Opening .rnote file failed."
 msgstr ".rnote 檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1145
+#: rnote-ui/src/appwindow/mod.rs:1131
 msgid "Opening vector image file failed."
 msgstr "向量圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1156
+#: rnote-ui/src/appwindow/mod.rs:1142
 msgid "Opening bitmap image file failed."
 msgstr "點陣圖檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ 檔案開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "PDF開啟失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1187
+#: rnote-ui/src/appwindow/mod.rs:1173
 msgid "Error: Tried opening folder as file"
 msgstr "錯誤：將資料夾作為檔案開啟"
 
-#: rnote-ui/src/appwindow/mod.rs:1192
+#: rnote-ui/src/appwindow/mod.rs:1178
 msgid "Failed to open file: Unsupported file type."
 msgstr "開啟檔案失敗：不支援的檔案型別。"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:797
 msgid "Printed document successfully"
 msgstr "列印成功"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:806
 msgid "Printing document failed"
 msgstr "列印失敗"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:834
 msgid "Export selection failed, nothing selected."
 msgstr "匯出選擇內容失敗，沒有選擇內容。"
 

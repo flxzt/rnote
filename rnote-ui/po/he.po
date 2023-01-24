@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
+"POT-Creation-Date: 2023-01-25 00:38+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -635,32 +635,32 @@ msgid "Split strokes"
 msgstr "בחירת כל המשיכות"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "מברשת"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr "מעצב צורות"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "מוחק"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr "בוחר"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "כלים"
 
@@ -1074,19 +1074,15 @@ msgstr ""
 msgid "Toggle fullscreen"
 msgstr "החלפת מצב מסך מלא"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr "סגירת הדש המקופל"
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr "סביבת עבודה"
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "הגדרות"
 
@@ -1187,30 +1183,34 @@ msgstr "מסמך חדש"
 msgid "Draft"
 msgstr "טיוטה"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr ""
+
+#: rnote-ui/data/ui/mainheader.ui:46
 #, fuzzy
 #| msgid "New Sheet"
 msgid "New tab"
 msgstr "גיליון חדש"
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "הוספת עמוד"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 #, fuzzy
 msgid "Resize document to fit the strokes"
 msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 #, fuzzy
 msgid "Save document"
 msgstr "מסמך חדש"
@@ -1650,8 +1650,8 @@ msgstr "פתיחת סביבת עבודה"
 msgid "Edit selected workspace"
 msgstr "פתיחת סביבת עבודה"
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:286
+#: rnote-ui/src/appwindow/appwindowactions.rs:679
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
@@ -1659,50 +1659,50 @@ msgstr "פתיחת סביבת עבודה"
 msgid "Saving document failed."
 msgstr "שמירת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1134
+#: rnote-ui/src/appwindow/mod.rs:1120
 #, fuzzy
 msgid "Opening .rnote file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1145
+#: rnote-ui/src/appwindow/mod.rs:1131
 #, fuzzy
 msgid "Opening vector image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1156
+#: rnote-ui/src/appwindow/mod.rs:1142
 #, fuzzy
 msgid "Opening bitmap image file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 msgid "Opening Xournal++ file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
 #, fuzzy
 msgid "Opening PDF file failed."
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/mod.rs:1187
+#: rnote-ui/src/appwindow/mod.rs:1173
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1192
+#: rnote-ui/src/appwindow/mod.rs:1178
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:797
 #, fuzzy
 msgid "Printed document successfully"
 msgstr "הגיליון נשמר בהצלחה"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:806
 #, fuzzy
 msgid "Printing document failed"
 msgstr "פתיחת הגיליון נכשלה"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:834
 #, fuzzy
 msgid "Export selection failed, nothing selected."
 msgstr "ייצוא הבחירה ל־SVG נכשל"

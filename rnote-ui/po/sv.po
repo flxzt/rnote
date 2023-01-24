@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
+"POT-Creation-Date: 2023-01-25 00:38+0100\n"
 "PO-Revision-Date: 2022-12-08 18:13+0000\n"
 "Last-Translator: D0V4HKIIN <jonas.bonnaudet@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -629,32 +629,32 @@ msgid "Split strokes"
 msgstr "Multistroke"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "Pensel"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr "Form"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr "Skrivmaskin"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "Suddgummi"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr "Väljare"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "Verktyg"
 
@@ -1066,19 +1066,15 @@ msgstr "Sidofält på höger sida"
 msgid "Toggle fullscreen"
 msgstr "Byt till fullskärm"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr "Stäng den överlappande sidomenyn"
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr "Arbetsyta"
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "Inställningar"
 
@@ -1187,30 +1183,34 @@ msgstr "Nytt dokument"
 msgid "Draft"
 msgstr "Utkast"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr ""
+
+#: rnote-ui/data/ui/mainheader.ui:46
 #, fuzzy
 #| msgid "New Sheet"
 msgid "New tab"
 msgstr "Nytt Blad"
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr "Ångra"
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr "Göra om"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "Lägg till sida"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 #, fuzzy
 msgid "Resize document to fit the strokes"
 msgstr "Ändra storlek så att det passar bladformat"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr "Spara dokument"
 
@@ -1646,52 +1646,52 @@ msgstr "Öppna arbetsyta"
 msgid "Edit selected workspace"
 msgstr "Redigera arbetsyta"
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:286
+#: rnote-ui/src/appwindow/appwindowactions.rs:679
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "Spara dokumentet misslyckades."
 
-#: rnote-ui/src/appwindow/mod.rs:1134
+#: rnote-ui/src/appwindow/mod.rs:1120
 msgid "Opening .rnote file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1145
+#: rnote-ui/src/appwindow/mod.rs:1131
 msgid "Opening vector image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1156
+#: rnote-ui/src/appwindow/mod.rs:1142
 msgid "Opening bitmap image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 msgid "Opening Xournal++ file failed."
 msgstr "Öppna fil"
 
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "Det gick inte att öppna PDF-filen."
 
-#: rnote-ui/src/appwindow/mod.rs:1187
+#: rnote-ui/src/appwindow/mod.rs:1173
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1192
+#: rnote-ui/src/appwindow/mod.rs:1178
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:797
 msgid "Printed document successfully"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:806
 msgid "Printing document failed"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:834
 #, fuzzy
 msgid "Export selection failed, nothing selected."
 msgstr "Exportera val som SVG"

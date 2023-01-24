@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
+"POT-Creation-Date: 2023-01-25 00:38+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Nguyen Phi Truong <Nguyenairport56@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -578,32 +578,32 @@ msgid "Split strokes"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "Cọ"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "Tẩy"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "Công cụ"
 
@@ -975,19 +975,15 @@ msgstr "Sidebar phía bên phải"
 msgid "Toggle fullscreen"
 msgstr "Bật/Tắt toàn màn hình"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr ""
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "Các cài đặt"
 
@@ -1076,27 +1072,31 @@ msgstr ""
 msgid "Draft"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr ""
+
+#: rnote-ui/data/ui/mainheader.ui:46
 msgid "New tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "Thêm trang"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 msgid "Resize document to fit the strokes"
 msgstr "Thay đổi kích thước tài liệu cho vừa nét"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr ""
 
@@ -1512,51 +1512,51 @@ msgstr ""
 msgid "Edit selected workspace"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:286
+#: rnote-ui/src/appwindow/appwindowactions.rs:679
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1134
+#: rnote-ui/src/appwindow/mod.rs:1120
 msgid "Opening .rnote file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1145
+#: rnote-ui/src/appwindow/mod.rs:1131
 msgid "Opening vector image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1156
+#: rnote-ui/src/appwindow/mod.rs:1142
 msgid "Opening bitmap image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1187
+#: rnote-ui/src/appwindow/mod.rs:1173
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1192
+#: rnote-ui/src/appwindow/mod.rs:1178
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:797
 msgid "Printed document successfully"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:806
 msgid "Printing document failed"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:834
 msgid "Export selection failed, nothing selected."
 msgstr ""
 

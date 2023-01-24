@@ -173,7 +173,7 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 }
 
 .workspacerow.preview > image {
-    -gtk-icon-size: 42px;
+    -gtk-icon-size: 32px;
 }
 .workspacerow.preview > label {
     font-size: 22px;

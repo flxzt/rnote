@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-23 23:21+0100\n"
-"PO-Revision-Date: 2023-01-23 18:19+0000\n"
+"PO-Revision-Date: 2023-01-24 12:45+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1320,13 +1320,11 @@ msgstr "A másodlagos egérgomb műveletének beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:415
 msgid "Touch two-finger long-press action"
-msgstr ""
+msgstr "Kétujjas, hosszan megnyomott érintési művelet"
 
 #: rnote-ui/data/ui/settingspanel.ui:416
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "A másodlagos egérgomb műveletének beállítása"
+msgstr "Állítsa be a kétujjas, hosszan megnyomott érintési mozdulat műveletét"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"

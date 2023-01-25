@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-25 13:33+0100\n"
-"PO-Revision-Date: 2023-01-24 23:39+0000\n"
-"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"PO-Revision-Date: 2023-01-25 14:32+0000\n"
+"Last-Translator: Óscar Fernández Díaz <oscfdezdz@users.noreply.hosted.weblate"
+".org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -1339,12 +1340,9 @@ msgid "Show keyboard shortcuts"
 msgstr "Mostrar Atajos del teclado"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgctxt "shortcut window"
 msgid "Close the active tab"
-msgstr "Cerrar la ventana activa"
+msgstr "Cerrar la pestaña activa"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"

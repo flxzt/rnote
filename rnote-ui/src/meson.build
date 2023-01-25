@@ -55,6 +55,7 @@ rnote_ui_sources = files(
     'app/mod.rs',
     'appwindow/appsettings.rs',
     'appwindow/appwindowactions.rs',
+    'appwindow/imp.rs',
     'appwindow/mod.rs',
     'canvas/mod.rs',
     'canvas/canvaslayout.rs',

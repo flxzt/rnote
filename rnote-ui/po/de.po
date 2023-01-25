@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 00:38+0100\n"
+"POT-Creation-Date: 2023-01-25 13:33+0100\n"
 "PO-Revision-Date: 2023-01-21 12:41+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -1340,9 +1340,11 @@ msgid "Show keyboard shortcuts"
 msgstr "Zeige Tastaturkürzel"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgid "Close the active tab"
 msgctxt "shortcut window"
-msgid "Close the active window"
-msgstr "Schließe das aktive Fenster"
+msgid "Close the active tab"
+msgstr "Schließe den aktiven Tab"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
@@ -1521,31 +1523,31 @@ msgstr "Bearbeite ausgewählte Arbeitsfläche"
 msgid "Saving document failed."
 msgstr "Dokument speichern gescheitert."
 
-#: rnote-ui/src/appwindow/mod.rs:1120
+#: rnote-ui/src/appwindow/mod.rs:1165
 msgid "Opening .rnote file failed."
 msgstr ".rnote Datei öffnen gescheitert."
 
-#: rnote-ui/src/appwindow/mod.rs:1131
+#: rnote-ui/src/appwindow/mod.rs:1176
 msgid "Opening vector image file failed."
 msgstr "Vektorbild öffnen gescheitert."
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening bitmap image file failed."
 msgstr "Bitmapbild öffnen gescheitert."
 
-#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ Datei öffnen gescheitert."
 
-#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "PDF Datei öffnen gescheitert."
 
-#: rnote-ui/src/appwindow/mod.rs:1173
+#: rnote-ui/src/appwindow/mod.rs:1218
 msgid "Error: Tried opening folder as file"
 msgstr "Fehler: Versucht, einen Ordner als Datei zu öffnen"
 
-#: rnote-ui/src/appwindow/mod.rs:1178
+#: rnote-ui/src/appwindow/mod.rs:1223
 msgid "Failed to open file: Unsupported file type."
 msgstr "Datei öffnen gescheitert: Nicht unterstützter Dateityp."
 
@@ -1738,11 +1740,12 @@ msgstr "Ordnername"
 msgid "New folder"
 msgstr "Neuer Ordner"
 
+#~ msgctxt "shortcut window"
+#~ msgid "Close the active window"
+#~ msgstr "Schließe das aktive Fenster"
+
 #~ msgid "Permanently hidden scrollbars"
 #~ msgstr "Dauerhaft versteckte Scrollbalken"
-
-#~ msgid "Close the active tab"
-#~ msgstr "Schließe den aktiven Tab"
 
 #~ msgid "Close the application window"
 #~ msgstr "Schließe das App-Fenster"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 00:38+0100\n"
+"POT-Creation-Date: 2023-01-25 13:33+0100\n"
 "PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -1363,8 +1363,11 @@ msgid "Show keyboard shortcuts"
 msgstr "কীবোর্ড শর্টকাটগুলি দেখান"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
 msgctxt "shortcut window"
-msgid "Close the active window"
+msgid "Close the active tab"
 msgstr "সক্রিয় উইন্ডোটি বন্ধ করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
@@ -1544,33 +1547,33 @@ msgstr "নির্বাচিত কর্মক্ষেত্র সম্�
 msgid "Saving document failed."
 msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1120
+#: rnote-ui/src/appwindow/mod.rs:1165
 msgid "Opening .rnote file failed."
 msgstr ".rnote ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1131
+#: rnote-ui/src/appwindow/mod.rs:1176
 msgid "Opening vector image file failed."
 msgstr "ভেক্টর ইমেজ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening bitmap image file failed."
 msgstr "বিটম্যাপ ইমেজ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr "জার্নাল++ ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "PDF ফাইল খোলা ব্যর্থ হয়েছে।"
 
-#: rnote-ui/src/appwindow/mod.rs:1173
+#: rnote-ui/src/appwindow/mod.rs:1218
 msgid "Error: Tried opening folder as file"
 msgstr "ত্রুটি: ফাইল হিসাবে ফোল্ডার খোলার চেষ্টা করা হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:1178
+#: rnote-ui/src/appwindow/mod.rs:1223
 msgid "Failed to open file: Unsupported file type."
 msgstr "ফাইল খুলতে ব্যর্থ: অসমর্থিত ফাইল প্রকার।"
 

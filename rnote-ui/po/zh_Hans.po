@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 00:38+0100\n"
+"POT-Creation-Date: 2023-01-25 13:33+0100\n"
 "PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: Coned Zot <conedcm@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1349,8 +1349,11 @@ msgid "Show keyboard shortcuts"
 msgstr "显示快捷键"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
 msgctxt "shortcut window"
-msgid "Close the active window"
+msgid "Close the active tab"
 msgstr "关闭活动窗口"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
@@ -1530,31 +1533,31 @@ msgstr "编辑选定的工作区"
 msgid "Saving document failed."
 msgstr "文档保存失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:1120
+#: rnote-ui/src/appwindow/mod.rs:1165
 msgid "Opening .rnote file failed."
 msgstr ".rnote 文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:1131
+#: rnote-ui/src/appwindow/mod.rs:1176
 msgid "Opening vector image file failed."
 msgstr "矢量图文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening bitmap image file failed."
 msgstr "位图文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ 文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "PDF打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:1173
+#: rnote-ui/src/appwindow/mod.rs:1218
 msgid "Error: Tried opening folder as file"
 msgstr "错误：将文件夹作为文件打开"
 
-#: rnote-ui/src/appwindow/mod.rs:1178
+#: rnote-ui/src/appwindow/mod.rs:1223
 msgid "Failed to open file: Unsupported file type."
 msgstr "打开文件失败：不支持的文件类型。"
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 00:38+0100\n"
+"POT-Creation-Date: 2023-01-25 13:33+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Gabriel Gian <gabrielgian@live.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -1459,8 +1459,11 @@ msgid "Show keyboard shortcuts"
 msgstr "Mostrar atalhos do teclado"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
 msgctxt "shortcut window"
-msgid "Close the active window"
+msgid "Close the active tab"
 msgstr "Fechar janela ativa"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
@@ -1658,33 +1661,33 @@ msgstr "Editar área de trabalho"
 msgid "Saving document failed."
 msgstr "Falha ao salvar documento."
 
-#: rnote-ui/src/appwindow/mod.rs:1120
+#: rnote-ui/src/appwindow/mod.rs:1165
 msgid "Opening .rnote file failed."
 msgstr "Falha ao abrir arquivo .rnote."
 
-#: rnote-ui/src/appwindow/mod.rs:1131
+#: rnote-ui/src/appwindow/mod.rs:1176
 msgid "Opening vector image file failed."
 msgstr "Falha ao abrir arquivo de imagem de vetor."
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening bitmap image file failed."
 msgstr "Falha ao abrir arquivo de imagem de mapa de bits (\"bitmap\")."
 
-#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr "Falha ao abrir arquivo .xopp."
 
-#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "Falha ao abrir arquivo PDF."
 
-#: rnote-ui/src/appwindow/mod.rs:1173
+#: rnote-ui/src/appwindow/mod.rs:1218
 msgid "Error: Tried opening folder as file"
 msgstr "Erro: tentou abrir diretório como arquivo"
 
-#: rnote-ui/src/appwindow/mod.rs:1178
+#: rnote-ui/src/appwindow/mod.rs:1223
 #, fuzzy
 msgid "Failed to open file: Unsupported file type."
 msgstr "Falha ao abrir arquivo, é um tipo de arquivo não suportado."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 00:38+0100\n"
+"POT-Creation-Date: 2023-01-25 13:33+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: fredrikrab <fredrrbo@stud.ntnu.no>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/rnote/"
@@ -1419,9 +1419,11 @@ msgid "Show keyboard shortcuts"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgid "New Window"
 msgctxt "shortcut window"
-msgid "Close the active window"
-msgstr ""
+msgid "Close the active tab"
+msgstr "Nytt vindu"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
@@ -1610,33 +1612,33 @@ msgstr "Åpne arbeidsområde"
 msgid "Saving document failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1120
+#: rnote-ui/src/appwindow/mod.rs:1165
 msgid "Opening .rnote file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1131
+#: rnote-ui/src/appwindow/mod.rs:1176
 msgid "Opening vector image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening bitmap image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening PDF file failed."
 msgid "Opening Xournal++ file failed."
 msgstr "Åpning av PDF-fil mislyktes."
 
-#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "Åpning av PDF-fil mislyktes."
 
-#: rnote-ui/src/appwindow/mod.rs:1173
+#: rnote-ui/src/appwindow/mod.rs:1218
 msgid "Error: Tried opening folder as file"
 msgstr "Feil: Prøvde å åpne mappe som fil"
 
-#: rnote-ui/src/appwindow/mod.rs:1178
+#: rnote-ui/src/appwindow/mod.rs:1223
 msgid "Failed to open file: Unsupported file type."
 msgstr ""
 
@@ -1851,11 +1853,6 @@ msgstr "Filnavn:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr ""
-
-#, fuzzy
-#~| msgid "New Window"
-#~ msgid "Close the application window"
-#~ msgstr "Nytt vindu"
 
 #~ msgid "Quit Application"
 #~ msgstr "Avslutt program"

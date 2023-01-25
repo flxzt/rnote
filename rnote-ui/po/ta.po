@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 00:38+0100\n"
+"POT-Creation-Date: 2023-01-25 13:33+0100\n"
 "PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1336,8 +1336,11 @@ msgid "Show keyboard shortcuts"
 msgstr "விசைப்பலகை குறுக்குவழிகளைக் காட்டு"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
 msgctxt "shortcut window"
-msgid "Close the active window"
+msgid "Close the active tab"
 msgstr "செயலில் உள்ள சாளரத்தை மூடு"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
@@ -1517,31 +1520,31 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட பணிய�
 msgid "Saving document failed."
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/mod.rs:1120
+#: rnote-ui/src/appwindow/mod.rs:1165
 msgid "Opening .rnote file failed."
 msgstr ".rnote கோப்பை திறக்க முடியவில்லை."
 
-#: rnote-ui/src/appwindow/mod.rs:1131
+#: rnote-ui/src/appwindow/mod.rs:1176
 msgid "Opening vector image file failed."
 msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening bitmap image file failed."
 msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/mod.rs:1153 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed."
 msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/mod.rs:1164 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "PDF கோப்பை திறக்க முடியவில்லை."
 
-#: rnote-ui/src/appwindow/mod.rs:1173
+#: rnote-ui/src/appwindow/mod.rs:1218
 msgid "Error: Tried opening folder as file"
 msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
 
-#: rnote-ui/src/appwindow/mod.rs:1178
+#: rnote-ui/src/appwindow/mod.rs:1223
 msgid "Failed to open file: Unsupported file type."
 msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
 

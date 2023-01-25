@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-25 20:10+0100\n"
-"PO-Revision-Date: 2023-01-24 12:45+0000\n"
+"PO-Revision-Date: 2023-01-26 12:24+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -41,9 +41,9 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote is een eenvoudig te gebruiken vector-gebaseerde toepassing voor het "
-"maken van schetsen, handgeschreven notities en aantekeningen, ook op "
-"documenten en bestaande afbeeldingen."
+"Rnote is een eenvoudig te gebruiken vector-gebaseerde app voor het maken van "
+"schetsen, handgeschreven notities en aantekeningen, ook op documenten en "
+"bestaande afbeeldingen."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -1340,35 +1340,32 @@ msgstr "Algemeen"
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgctxt "shortcut window"
 msgid "Show keyboard shortcuts"
-msgstr "Toon de sneltoetsen"
+msgstr "Sneltoetsen tonen"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgctxt "shortcut window"
 msgid "Close the active tab"
-msgstr "Sluit het huidige venster"
+msgstr "Huidige tabblad sluiten"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "Sluit de toepassing af"
+msgstr "App sluiten"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
 msgctxt "shortcut window"
 msgid "Open the canvas menu"
-msgstr "Open het canvasmenu"
+msgstr "Canvasmenu openen"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
 msgctxt "shortcut window"
 msgid "Open the app menu"
-msgstr "Open het toepassingsmenu"
+msgstr "App-menu openen"
 
 #: rnote-ui/data/ui/shortcuts.ui:44
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr "Schermvullende weergave aan/uit"
+msgstr "Volledig scherm omschakelen"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
 msgctxt "shortcut window"

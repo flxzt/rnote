@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-25 13:33+0100\n"
-"PO-Revision-Date: 2023-01-21 12:41+0000\n"
+"PO-Revision-Date: 2023-01-25 12:42+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -868,7 +868,7 @@ msgstr "_Farbschema"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _system colors"
-msgstr "Verwende die Farben des _Systems"
+msgstr "Verwende _Systemfarben"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _light colors"
@@ -1321,13 +1321,11 @@ msgstr "Ändere die Aktion für die sekundäre Taste der Maus"
 
 #: rnote-ui/data/ui/settingspanel.ui:415
 msgid "Touch two-finger long-press action"
-msgstr ""
+msgstr "Touch Zwei-Finger Lange-Drücken Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:416
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "Ändere die Aktion für die sekundäre Taste der Maus"
+msgstr "Ändere die Aktion für die Touch Zwei-Finger Lange-Drücken Geste"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"
@@ -1340,8 +1338,6 @@ msgid "Show keyboard shortcuts"
 msgstr "Zeige Tastaturkürzel"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgid "Close the active tab"
 msgctxt "shortcut window"
 msgid "Close the active tab"
 msgstr "Schließe den aktiven Tab"

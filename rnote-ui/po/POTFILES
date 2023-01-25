@@ -31,6 +31,7 @@ rnote-ui/data/ui/workspacesbar.ui
 
 rnote-ui/src/app/mod.rs
 rnote-ui/src/appwindow/mod.rs
+rnote-ui/src/appwindow/imp.rs
 rnote-ui/src/appwindow/appwindowactions.rs
 rnote-ui/src/canvas/mod.rs
 rnote-ui/src/canvas/imexport.rs

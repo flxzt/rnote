@@ -23,8 +23,8 @@ impl RnoteAppWindow {
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
     /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
     pub(crate) fn setup_actions(&self) {
-        let action_close_active = gio::SimpleAction::new("close-active", None);
-        self.add_action(&action_close_active);
+        let action_close_active_tab = gio::SimpleAction::new("close-active-tab", None);
+        self.add_action(&action_close_active_tab);
         let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
         self.add_action(&action_fullscreen);
         let action_open_settings = gio::SimpleAction::new("open-settings", None);
@@ -142,9 +142,9 @@ impl RnoteAppWindow {
         let action_refresh_ui_from_engine = gio::SimpleAction::new("refresh-ui-from-engine", None);
         self.add_action(&action_refresh_ui_from_engine);
 
-        // Close active window
-        action_close_active.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.close();
+        // Close active tab
+        action_close_active_tab.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            appwindow.close_active_tab();
         }));
 
         // Open settings
@@ -1001,7 +1001,7 @@ impl RnoteAppWindow {
     pub(crate) fn setup_action_accels(&self) {
         let app = self.app();
 
-        app.set_accels_for_action("win.close-active", &["<Ctrl>w"]);
+        app.set_accels_for_action("win.close-active-tab", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);

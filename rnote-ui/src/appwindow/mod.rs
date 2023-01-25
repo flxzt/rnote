@@ -951,6 +951,17 @@ impl RnoteAppWindow {
         page
     }
 
+    /// Requests to close the active tab, or if only one tab is left, the active appwindow
+    pub(crate) fn close_active_tab(&self) {
+        let active_tab_page = self.active_tab_page();
+        if self.overlays().tabview().n_pages() <= 1 {
+            // If there is only one tab left, request to close the entire window.
+            self.close();
+        } else {
+            self.overlays().tabview().close_page(&active_tab_page);
+        }
+    }
+
     pub(crate) fn tab_pages_snapshot(&self) -> Vec<adw::TabPage> {
         self.overlays()
             .tabview()

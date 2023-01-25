@@ -521,51 +521,6 @@ impl SettingsPanel {
             });
     }
 
-    pub(crate) fn sync_state_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
-
-        // update the UI from the engine
-        self.refresh_general_ui(appwindow);
-        self.refresh_format_ui(appwindow);
-        self.refresh_background_ui(appwindow);
-
-        // update the engine from UI
-        canvas.engine().borrow_mut().penholder.clear_shortcuts();
-        canvas
-            .engine()
-            .borrow_mut()
-            .penholder
-            .register_new_shortcut(
-                ShortcutKey::MouseSecondaryButton,
-                imp.penshortcut_mouse_button_secondary_row.action(),
-            );
-        canvas
-            .engine()
-            .borrow_mut()
-            .penholder
-            .register_new_shortcut(
-                ShortcutKey::StylusPrimaryButton,
-                imp.penshortcut_stylus_button_primary_row.action(),
-            );
-        canvas
-            .engine()
-            .borrow_mut()
-            .penholder
-            .register_new_shortcut(
-                ShortcutKey::StylusSecondaryButton,
-                imp.penshortcut_stylus_button_secondary_row.action(),
-            );
-        canvas
-            .engine()
-            .borrow_mut()
-            .penholder
-            .register_new_shortcut(
-                ShortcutKey::TouchTwoFingerLongPress,
-                imp.penshortcut_touch_two_finger_long_press_row.action(),
-            );
-    }
-
     pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_general(appwindow);
         self.setup_format(appwindow);

@@ -64,10 +64,7 @@ impl EraserPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn width_spinbutton(&self) -> SpinButton {
-        self.imp().width_spinbutton.get()
-    }
-
+    #[allow(unused)]
     pub(crate) fn eraser_style(&self) -> Option<EraserStyle> {
         if self
             .imp()
@@ -86,6 +83,7 @@ impl EraserPage {
         }
     }
 
+    #[allow(unused)]
     pub(crate) fn set_eraser_style(&self, style: EraserStyle) {
         match style {
             EraserStyle::TrashCollidingStrokes => self
@@ -141,13 +139,5 @@ impl EraserPage {
         imp.width_spinbutton.set_value(eraser_config.width);
 
         self.set_eraser_style(eraser_config.style);
-    }
-
-    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let engine = appwindow.active_tab().canvas().engine();
-        let mut engine = engine.borrow_mut();
-
-        engine.pens_config.eraser_config.style = self.eraser_style().unwrap_or_default();
-        engine.pens_config.eraser_config.width = self.width_spinbutton().value();
     }
 }

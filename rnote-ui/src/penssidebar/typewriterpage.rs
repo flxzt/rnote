@@ -124,6 +124,7 @@ impl TypewriterPage {
         }
     }
 
+    #[allow(unused)]
     pub(crate) fn text_style(&self) -> TextStyle {
         let mut text_style = TextStyle::default();
         if let Some(font_desc) = self.imp().fontchooser.font_desc() {
@@ -506,12 +507,5 @@ impl TypewriterPage {
             .set_value(typewriter_config.text_style.font_size);
 
         self.set_alignment(typewriter_config.text_style.alignment);
-    }
-
-    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let engine = appwindow.active_tab().canvas().engine();
-        let mut engine = engine.borrow_mut();
-
-        engine.pens_config.typewriter_config.text_style = self.text_style();
     }
 }

@@ -4,7 +4,6 @@ use gtk4::{
     Popover, SpinButton,
 };
 use num_traits::cast::ToPrimitive;
-use std::cell::Cell;
 
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
@@ -20,10 +19,6 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub(crate) struct BrushPage {
-        pub(crate) marker_stroke_width: Cell<f64>,
-        pub(crate) solid_stroke_width: Cell<f64>,
-        pub(crate) textured_stroke_width: Cell<f64>,
-
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -189,36 +184,6 @@ impl BrushPage {
             .set_selected(position);
     }
 
-    #[allow(unused)]
-    pub(crate) fn marker_stroke_width(&self) -> f64 {
-        self.imp().marker_stroke_width.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_marker_stroke_width(&self, stroke_width: f64) {
-        self.imp().marker_stroke_width.set(stroke_width);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn solid_stroke_width(&self) -> f64 {
-        self.imp().solid_stroke_width.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_solid_stroke_width(&self, stroke_width: f64) {
-        self.imp().solid_stroke_width.set(stroke_width);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn textured_stroke_width(&self) -> f64 {
-        self.imp().textured_stroke_width.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_textured_stroke_width(&self, stroke_width: f64) {
-        self.imp().textured_stroke_width.set(stroke_width);
-    }
-
     pub(crate) fn stroke_width_picker(&self) -> StrokeWidthPicker {
         self.imp().stroke_width_picker.get()
     }
@@ -243,15 +208,12 @@ impl BrushPage {
 
                 match engine.pens_config.brush_config.style {
                     BrushStyle::Marker => {
-                        brushpage.imp().marker_stroke_width.set(stroke_width);
                         engine.pens_config.brush_config.marker_options.stroke_width = stroke_width;
                     },
                     BrushStyle::Solid => {
-                        brushpage.imp().solid_stroke_width.set(stroke_width);
                         engine.pens_config.brush_config.solid_options.stroke_width = stroke_width;
                     },
                     BrushStyle::Textured => {
-                        brushpage.imp().textured_stroke_width.set(stroke_width);
                         engine.pens_config.brush_config.textured_options.stroke_width = stroke_width;
                     },
                 }
@@ -268,19 +230,16 @@ impl BrushPage {
                     match brush_style {
                         BrushStyle::Marker => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.marker_options.stroke_width;
-                            brushpage.imp().marker_stroke_width.set(stroke_width);
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-marker-symbolic"))
                         },
                         BrushStyle::Solid => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.solid_options.stroke_width;
-                            brushpage.imp().solid_stroke_width.set(stroke_width);
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-solid-symbolic"))
                         },
                         BrushStyle::Textured => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.stroke_width;
-                            brushpage.imp().textured_stroke_width.set(stroke_width);
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-textured-symbolic"))
                         },
@@ -348,13 +307,6 @@ impl BrushPage {
         self.set_brush_style(brush_config.style);
         self.set_buildertype(brush_config.builder_type);
 
-        imp.marker_stroke_width
-            .set(brush_config.marker_options.stroke_width);
-        imp.solid_stroke_width
-            .set(brush_config.solid_options.stroke_width);
-        imp.textured_stroke_width
-            .set(brush_config.textured_options.stroke_width);
-
         match brush_config.style {
             BrushStyle::Marker => {
                 imp.stroke_width_picker
@@ -369,36 +321,5 @@ impl BrushPage {
                     .set_stroke_width(brush_config.textured_options.stroke_width);
             }
         }
-    }
-
-    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let imp = self.imp();
-        let engine = appwindow.active_tab().canvas().engine();
-        let mut engine = engine.borrow_mut();
-
-        engine.pens_config.brush_config.style = self.brush_style().unwrap_or_default();
-        engine.pens_config.brush_config.builder_type = self.buildertype().unwrap_or_default();
-
-        // marker options
-        engine.pens_config.brush_config.marker_options.stroke_width = self.marker_stroke_width();
-
-        // solid options
-        engine.pens_config.brush_config.solid_options.stroke_width = self.solid_stroke_width();
-        engine.pens_config.brush_config.solid_options.pressure_curve =
-            self.solidstyle_pressure_curve();
-
-        // textured options
-        engine
-            .pens_config
-            .brush_config
-            .textured_options
-            .stroke_width = self.textured_stroke_width();
-        engine.pens_config.brush_config.textured_options.density =
-            imp.texturedstyle_density_spinbutton.value();
-        engine
-            .pens_config
-            .brush_config
-            .textured_options
-            .distribution = self.texturedstyle_dots_distribution();
     }
 }

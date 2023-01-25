@@ -8,7 +8,6 @@ use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
-use std::cell::Cell;
 
 use crate::{RnoteAppWindow, StrokeWidthPicker};
 
@@ -18,9 +17,6 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub(crate) struct ShaperPage {
-        pub(crate) smooth_stroke_width: Cell<f64>,
-        pub(crate) rough_stroke_width: Cell<f64>,
-
         #[template_child]
         pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -224,26 +220,6 @@ impl ShaperPage {
             .set_selected(position);
     }
 
-    #[allow(unused)]
-    pub(crate) fn smooth_stroke_width(&self) -> f64 {
-        self.imp().smooth_stroke_width.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_smooth_stroke_width(&self, stroke_width: f64) {
-        self.imp().smooth_stroke_width.set(stroke_width);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn rough_stroke_width(&self) -> f64 {
-        self.imp().rough_stroke_width.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_rough_stroke_width(&self, stroke_width: f64) {
-        self.imp().rough_stroke_width.set(stroke_width);
-    }
-
     pub(crate) fn stroke_width_picker(&self) -> StrokeWidthPicker {
         self.imp().stroke_width_picker.get()
     }
@@ -269,11 +245,9 @@ impl ShaperPage {
 
                 match engine.pens_config.shaper_config.style {
                     ShaperStyle::Smooth => {
-                        shaperpage.imp().smooth_stroke_width.set(stroke_width);
                         engine.pens_config.shaper_config.smooth_options.stroke_width = stroke_width;
                     },
                     ShaperStyle::Rough => {
-                        shaperpage.imp().rough_stroke_width.set(stroke_width);
                         engine.pens_config.shaper_config.rough_options.stroke_width = stroke_width;
                     },
                 }
@@ -290,13 +264,11 @@ impl ShaperPage {
                     match shaper_style {
                         ShaperStyle::Smooth => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_width;
-                            shaperpage.imp().smooth_stroke_width.set(stroke_width);
                             shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
                         },
                         ShaperStyle::Rough => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_width;
-                            shaperpage.imp().rough_stroke_width.set(stroke_width);
                             shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
                             shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                         },
@@ -394,11 +366,6 @@ impl ShaperPage {
 
         self.set_shaper_style(shaper_config.style);
 
-        imp.smooth_stroke_width
-            .set(shaper_config.smooth_options.stroke_width);
-        imp.rough_stroke_width
-            .set(shaper_config.rough_options.stroke_width);
-
         match shaper_config.style {
             ShaperStyle::Smooth => {
                 imp.stroke_width_picker
@@ -439,52 +406,5 @@ impl ShaperPage {
                 .ratios
                 .contains(&ConstraintRatio::Golden),
         );
-    }
-
-    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let imp = self.imp();
-        let engine = appwindow.active_tab().canvas().engine();
-        let mut engine = engine.borrow_mut();
-
-        engine.pens_config.shaper_config.style = self.shaper_style().unwrap_or_default();
-        engine.pens_config.shaper_config.builder_type = self.shapebuildertype().unwrap_or_default();
-
-        // smooth options
-        engine.pens_config.shaper_config.smooth_options.stroke_width = self.smooth_stroke_width();
-
-        // rough options
-        engine.pens_config.shaper_config.rough_options.stroke_width = self.rough_stroke_width();
-        engine.pens_config.shaper_config.rough_options.fill_style = self.roughstyle_fillstyle();
-        engine.pens_config.shaper_config.rough_options.hachure_angle =
-            imp.roughstyle_hachure_angle_spinbutton.value();
-
-        // constraints
-        engine.pens_config.shaper_config.constraints.enabled =
-            imp.constraint_enabled_switch.state();
-        engine.pens_config.shaper_config.constraints.ratios.clear();
-        if imp.constraint_one_to_one_switch.state() {
-            engine
-                .pens_config
-                .shaper_config
-                .constraints
-                .ratios
-                .insert(ConstraintRatio::OneToOne);
-        }
-        if imp.constraint_three_to_two_switch.state() {
-            engine
-                .pens_config
-                .shaper_config
-                .constraints
-                .ratios
-                .insert(ConstraintRatio::ThreeToTwo);
-        }
-        if imp.constraint_golden_switch.state() {
-            engine
-                .pens_config
-                .shaper_config
-                .constraints
-                .ratios
-                .insert(ConstraintRatio::Golden);
-        }
     }
 }

@@ -17,7 +17,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Close the active window</property>
+                <property name="title" context="shortcut window" translatable="yes">Close the active tab</property>
                 <property name="accelerator">&lt;ctrl&gt;w</property>
               </object>
             </child>

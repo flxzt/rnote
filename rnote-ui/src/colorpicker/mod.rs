@@ -120,23 +120,8 @@ mod imp {
 
             self.setup_setters();
 
-            inst.connect_notify_local(Some("stroke-color"), move |colorpicker, _pspec| {
-                if colorpicker.imp().stroke_color_pad.is_active() {
-                    colorpicker
-                        .imp()
-                        .colorchooser
-                        .set_rgba(&colorpicker.stroke_color());
-                }
-            });
-
-            inst.connect_notify_local(Some("fill-color"), move |colorpicker, _pspec| {
-                if colorpicker.imp().fill_color_pad.is_active() {
-                    colorpicker
-                        .imp()
-                        .colorchooser
-                        .set_rgba(&colorpicker.fill_color());
-                }
-            });
+            // we could theoretically update the colorchooser rgba property when stroke-color and fill-color changes,
+            // but that would result in the active paletter setter being changed. So we don't do that.
 
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {

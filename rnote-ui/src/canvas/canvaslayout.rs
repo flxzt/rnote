@@ -98,7 +98,6 @@ mod imp {
             };
 
             let (v_lower, v_upper) = match document.layout {
-                // Scroll beyond the document by half the widget size
                 Layout::FixedSize | Layout::ContinuousVertical => (
                     document.y * total_zoom - super::CanvasLayout::OVERSHOOT_VERTICAL,
                     (document.y + document.height) * total_zoom
@@ -114,8 +113,11 @@ mod imp {
                 ),
             };
 
+            let hadj_val = hadj.value().clamp(h_lower, h_upper);
+            let vadj_val = vadj.value().clamp(v_lower, v_upper);
+
             hadj.configure(
-                hadj.value(),
+                hadj_val,
                 h_lower,
                 h_upper,
                 0.1 * canvas_size[0],
@@ -124,7 +126,7 @@ mod imp {
             );
 
             vadj.configure(
-                vadj.value(),
+                vadj_val,
                 v_lower,
                 v_upper,
                 0.1 * canvas_size[1],
@@ -133,7 +135,7 @@ mod imp {
             );
 
             // Update the camera
-            engine.camera.offset = na::vector![hadj.value(), vadj.value()];
+            engine.camera.offset = na::vector![hadj_val, vadj_val];
             engine.camera.size = canvas_size;
 
             // always update the background rendering

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-25 18:51+0100\n"
-"PO-Revision-Date: 2023-01-24 12:45+0000\n"
+"PO-Revision-Date: 2023-01-25 19:11+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -1335,12 +1335,9 @@ msgid "Show keyboard shortcuts"
 msgstr "أظهر اختصارات لوحة المفاتيح"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgctxt "shortcut window"
 msgid "Close the active tab"
-msgstr "أغلق النافذة الحاليَّة"
+msgstr "أغلق اللسان الحاليَّ"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"

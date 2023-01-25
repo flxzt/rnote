@@ -60,6 +60,7 @@ impl ToolsPage {
         glib::Object::new(&[])
     }
 
+    #[allow(unused)]
     pub(crate) fn tool_style(&self) -> Option<ToolStyle> {
         let imp = self.imp();
 
@@ -72,6 +73,7 @@ impl ToolsPage {
         }
     }
 
+    #[allow(unused)]
     pub(crate) fn set_tool_style(&self, style: ToolStyle) {
         let imp = self.imp();
 
@@ -108,12 +110,5 @@ impl ToolsPage {
             .clone();
 
         self.set_tool_style(tools_config.style);
-    }
-
-    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let engine = appwindow.active_tab().canvas().engine();
-        let mut engine = engine.borrow_mut();
-
-        engine.pens_config.tools_config.style = self.tool_style().unwrap_or_default();
     }
 }

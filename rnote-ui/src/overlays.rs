@@ -19,6 +19,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnoteOverlays {
         pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
+        pub(super) prev_active_tab_page: RefCell<Option<adw::TabPage>>,
 
         #[template_child]
         pub(crate) toolbar_overlay: TemplateChild<Overlay>,
@@ -225,7 +226,7 @@ impl RnoteOverlays {
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let canvas = appwindow.active_tab().canvas();
-                    let stroke_style = canvas.engine().borrow().penholder.current_style_w_override();
+                    let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
                     let engine = canvas.engine();
                     let engine = &mut *engine.borrow_mut();
 
@@ -281,30 +282,49 @@ impl RnoteOverlays {
         let imp = self.imp();
 
         imp.tabview
-            .connect_selected_page_notify(clone!(@weak appwindow => move |_tabview| {
-                let canvas = appwindow.active_tab().canvas();
-
+            .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_tabview| {
+                let active_tab_page = appwindow.active_tab_page();
+                let active_canvaswrapper = active_tab_page.child().downcast::<RnoteCanvasWrapper>().unwrap();
                 appwindow.clear_rendering_inactive_tabs();
-                canvas.regenerate_background_pattern();
-                canvas.update_engine_rendering();
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
+
+                if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.borrow_mut().replace(active_tab_page.clone()){
+                    if prev_active_tab_page != active_tab_page {
+                        appwindow.sync_state_between_tabs(&prev_active_tab_page, &active_tab_page);
+                    }
+                }
+
+                active_canvaswrapper.canvas().regenerate_background_pattern();
+                active_canvaswrapper.canvas().update_engine_rendering();
+                appwindow.refresh_ui_from_engine(&active_canvaswrapper);
             }));
 
-        imp.tabview
-            .connect_page_attached(clone!(@weak appwindow => move |_tabview, page, _| {
+        imp.tabview.connect_page_attached(
+            clone!(@weak self as overlays, @weak appwindow => move |_tabview, page, _| {
                 let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
-
                 canvaswrapper.init_reconnect(&appwindow);
                 canvaswrapper.connect_to_tab_page(page);
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "sync-state-active-tab", None);
-            }));
+            }),
+        );
 
-        imp.tabview
-            .connect_page_detached(clone!(@weak appwindow => move |_tabview, page, _| {
+        imp.tabview.connect_page_detached(
+            clone!(@weak self as overlays, @weak appwindow => move |_tabview, page, _| {
                 let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
 
+                let mut remove_saved_prev_page = false;
+                // If the detached page is the selected one, we must remove it here.
+                if let Some(prev_active_tab_page) = &*overlays.imp().prev_active_tab_page.borrow() {
+                    if prev_active_tab_page == page {
+                        remove_saved_prev_page = true;
+                    }
+                }
+                if remove_saved_prev_page {
+                    overlays.imp().prev_active_tab_page.take();
+                }
+
                 canvaswrapper.disconnect_handlers(&appwindow);
-            }));
+                canvaswrapper.canvas().engine().borrow_mut().clear_rendering();
+            }),
+        );
 
         imp.tabview.connect_close_page(
             clone!(@weak appwindow => @default-return true, move |tabview, page| {

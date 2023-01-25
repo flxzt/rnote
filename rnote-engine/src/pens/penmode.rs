@@ -15,7 +15,7 @@ pub enum PenMode {
 }
 
 /// the pen mode state, holding the current mode and pen styles for all pen modes
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "pen_mode_state")]
 pub struct PenModeState {
     #[serde(rename = "pen_mode")]

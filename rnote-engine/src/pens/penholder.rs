@@ -24,9 +24,9 @@ use super::{
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
     #[serde(rename = "shortcuts")]
-    shortcuts: Shortcuts,
+    pub shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
-    pen_mode_state: PenModeState,
+    pub pen_mode_state: PenModeState,
 
     #[serde(skip)]
     pub(super) current_pen: Pen,
@@ -73,8 +73,13 @@ impl PenHolder {
             .collect()
     }
 
+    /// Gets the style without the temporary override.
+    pub fn pen_style(&self) -> PenStyle {
+        self.pen_mode_state.style()
+    }
+
     /// Gets the current style, or the override if it is set.
-    pub fn current_style_w_override(&self) -> PenStyle {
+    pub fn current_pen_style_w_override(&self) -> PenStyle {
         self.pen_mode_state.current_style_w_override()
     }
 
@@ -105,7 +110,6 @@ impl PenHolder {
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style(new_style);
-
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
         }
 
@@ -159,10 +163,11 @@ impl PenHolder {
     /// Installs the pen for the current style
     pub fn reinstall_pen_current_style(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
         let (new_pen, mut widget_flags) =
-            new_pen_for_style(self.current_style_w_override(), engine_view);
+            new_pen_for_style(self.current_pen_style_w_override(), engine_view);
         self.current_pen = new_pen;
         widget_flags.merge(self.current_pen.update_state(engine_view));
         widget_flags.merge(self.handle_changed_pen_style());
+        self.pen_progress = PenProgress::Idle;
 
         widget_flags
     }

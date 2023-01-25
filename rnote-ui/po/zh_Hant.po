@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 13:33+0100\n"
+"POT-Creation-Date: 2023-01-25 18:51+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -1527,51 +1527,50 @@ msgstr "移除選定的工作區"
 msgid "Edit selected workspace"
 msgstr "編輯選定的工作區"
 
-#: rnote-ui/src/appwindow/mod.rs:286
-#: rnote-ui/src/appwindow/appwindowactions.rs:679
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr ".rnote 檔案開啟失敗。"
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "向量圖檔案開啟失敗。"
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "點陣圖檔案開啟失敗。"
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "Xournal++ 檔案開啟失敗。"
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "PDF開啟失敗。"
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "錯誤：將資料夾作為檔案開啟"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "開啟檔案失敗：不支援的檔案型別。"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "文件儲存失敗。"
 
-#: rnote-ui/src/appwindow/mod.rs:1165
-msgid "Opening .rnote file failed."
-msgstr ".rnote 檔案開啟失敗。"
-
-#: rnote-ui/src/appwindow/mod.rs:1176
-msgid "Opening vector image file failed."
-msgstr "向量圖檔案開啟失敗。"
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Opening bitmap image file failed."
-msgstr "點陣圖檔案開啟失敗。"
-
-#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "Xournal++ 檔案開啟失敗。"
-
-#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "PDF開啟失敗。"
-
-#: rnote-ui/src/appwindow/mod.rs:1218
-msgid "Error: Tried opening folder as file"
-msgstr "錯誤：將資料夾作為檔案開啟"
-
-#: rnote-ui/src/appwindow/mod.rs:1223
-msgid "Failed to open file: Unsupported file type."
-msgstr "開啟檔案失敗：不支援的檔案型別。"
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:797
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "列印成功"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:806
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "列印失敗"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:834
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "匯出選擇內容失敗，沒有選擇內容。"
 

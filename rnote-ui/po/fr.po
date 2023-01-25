@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 13:33+0100\n"
+"POT-Creation-Date: 2023-01-25 18:51+0100\n"
 "PO-Revision-Date: 2023-01-18 16:52+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -1545,51 +1545,50 @@ msgstr "Supprimer l’espace de travail sélectionné"
 msgid "Edit selected workspace"
 msgstr "Modifier l’espace de travail sélectionné"
 
-#: rnote-ui/src/appwindow/mod.rs:286
-#: rnote-ui/src/appwindow/appwindowactions.rs:679
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr "L'ouverture du fichier .rnote a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "L'ouverture du fichier image vectorielle a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "L'ouverture du fichier image matricielle a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "L'ouverture du fichier Xournal++ a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "L'ouverture du fichier PDF a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge."
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "Échec de l'enregistrement du document."
 
-#: rnote-ui/src/appwindow/mod.rs:1165
-msgid "Opening .rnote file failed."
-msgstr "L'ouverture du fichier .rnote a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1176
-msgid "Opening vector image file failed."
-msgstr "L'ouverture du fichier image vectorielle a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Opening bitmap image file failed."
-msgstr "L'ouverture du fichier image matricielle a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "L'ouverture du fichier Xournal++ a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "L'ouverture du fichier PDF a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1218
-msgid "Error: Tried opening folder as file"
-msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
-
-#: rnote-ui/src/appwindow/mod.rs:1223
-msgid "Failed to open file: Unsupported file type."
-msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge."
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:797
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "Document imprimé avec succès"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:806
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "Échec de l'impression du document"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:834
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné."
 

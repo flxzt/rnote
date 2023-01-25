@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 13:33+0100\n"
+"POT-Creation-Date: 2023-01-25 18:51+0100\n"
 "PO-Revision-Date: 2023-01-14 07:23+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -1524,51 +1524,50 @@ msgstr "Çalışma alanı kaldır"
 msgid "Edit selected workspace"
 msgstr "Çalışma alanını düzenle"
 
-#: rnote-ui/src/appwindow/mod.rs:286
-#: rnote-ui/src/appwindow/appwindowactions.rs:679
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr ".rnote dosyası açılamadı."
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "Vektör görüntü dosyası açılamadı."
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "Biteşlem görüntü dosyası açılamadı."
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "Xournal++ dosyası açılamadı."
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "PDF dosyası açılamadı."
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "Dosya açılamadı: Desteklenmeyen dosya türü."
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "Belge kaydedilemedi."
 
-#: rnote-ui/src/appwindow/mod.rs:1165
-msgid "Opening .rnote file failed."
-msgstr ".rnote dosyası açılamadı."
-
-#: rnote-ui/src/appwindow/mod.rs:1176
-msgid "Opening vector image file failed."
-msgstr "Vektör görüntü dosyası açılamadı."
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Opening bitmap image file failed."
-msgstr "Biteşlem görüntü dosyası açılamadı."
-
-#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "Xournal++ dosyası açılamadı."
-
-#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "PDF dosyası açılamadı."
-
-#: rnote-ui/src/appwindow/mod.rs:1218
-msgid "Error: Tried opening folder as file"
-msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
-
-#: rnote-ui/src/appwindow/mod.rs:1223
-msgid "Failed to open file: Unsupported file type."
-msgstr "Dosya açılamadı: Desteklenmeyen dosya türü."
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:797
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "Belge yazdırıldı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:806
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "Belge yazdırılamadı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:834
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi."
 

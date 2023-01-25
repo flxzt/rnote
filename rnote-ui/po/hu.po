@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-25 13:33+0100\n"
+"POT-Creation-Date: 2023-01-25 18:51+0100\n"
 "PO-Revision-Date: 2023-01-24 12:45+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -1513,51 +1513,50 @@ msgstr "Kijelölt munkaterület eltávolítása"
 msgid "Edit selected workspace"
 msgstr "Kijelölt munkaterület szerkesztése"
 
-#: rnote-ui/src/appwindow/mod.rs:286
-#: rnote-ui/src/appwindow/appwindowactions.rs:679
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr "A .rnote fájl megnyitása sikertelen."
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "A vektoros képfájl megnyitása sikertelen."
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "A pontképes képfájl megnyitása sikertelen."
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "A Xournal++ fájl megnyitása sikertelen."
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "A PDF fájl megnyitása sikertelen."
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "Hiba: Mappa fájlként való megnyitása"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "A dokumentum mentése sikertelen."
 
-#: rnote-ui/src/appwindow/mod.rs:1165
-msgid "Opening .rnote file failed."
-msgstr "A .rnote fájl megnyitása sikertelen."
-
-#: rnote-ui/src/appwindow/mod.rs:1176
-msgid "Opening vector image file failed."
-msgstr "A vektoros képfájl megnyitása sikertelen."
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Opening bitmap image file failed."
-msgstr "A pontképes képfájl megnyitása sikertelen."
-
-#: rnote-ui/src/appwindow/mod.rs:1198 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "A Xournal++ fájl megnyitása sikertelen."
-
-#: rnote-ui/src/appwindow/mod.rs:1209 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "A PDF fájl megnyitása sikertelen."
-
-#: rnote-ui/src/appwindow/mod.rs:1218
-msgid "Error: Tried opening folder as file"
-msgstr "Hiba: Mappa fájlként való megnyitása"
-
-#: rnote-ui/src/appwindow/mod.rs:1223
-msgid "Failed to open file: Unsupported file type."
-msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:797
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "A dokumentum sikeresen ki lett nyomtatva"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:806
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:834
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "A kijelölés exportálása sikertelen, nincs kijelölve semmi."
 

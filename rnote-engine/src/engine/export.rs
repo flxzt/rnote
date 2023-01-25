@@ -290,8 +290,8 @@ impl RnoteEngine {
         Ok(oneshot_receiver)
     }
 
-    /// Exports the current engine config as JSON string
-    pub fn save_engine_config(&self) -> anyhow::Result<String> {
+    /// Extracts the current engine config
+    pub fn extract_engine_config(&self) -> anyhow::Result<EngineConfig> {
         let engine_config = EngineConfig {
             document: serde_json::to_value(self.document)?,
             pens_config: serde_json::to_value(&self.pens_config)?,
@@ -301,7 +301,12 @@ impl RnoteEngine {
             pen_sounds: serde_json::to_value(self.pen_sounds())?,
         };
 
-        Ok(serde_json::to_string(&engine_config)?)
+        Ok(engine_config)
+    }
+
+    /// Exports the current engine config as JSON string
+    pub fn export_engine_config_as_json(&self) -> anyhow::Result<String> {
+        Ok(serde_json::to_string(&self.extract_engine_config()?)?)
     }
 
     /// Exports the entire engine state as JSON string

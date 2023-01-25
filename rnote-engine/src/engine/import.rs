@@ -126,15 +126,13 @@ pub struct ImportPrefs {
 }
 
 impl RnoteEngine {
-    /// Imports and replace the engine config. If pen sounds should be enabled the rnote data dir must be provided
-    /// NOT for opening files
+    /// Loads the engine config
     pub fn load_engine_config(
         &mut self,
-        serialized_config: &str,
+        engine_config: EngineConfig,
         data_dir: Option<PathBuf>,
     ) -> anyhow::Result<WidgetFlags> {
         let mut widget_flags = WidgetFlags::default();
-        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.document = serde_json::from_value(engine_config.document)?;
         self.pens_config = serde_json::from_value(engine_config.pens_config)?;
@@ -163,6 +161,17 @@ impl RnoteEngine {
         widget_flags.refresh_ui = true;
 
         Ok(widget_flags)
+    }
+
+    /// Imports and replaces the engine config. If pen sounds should be enabled the rnote data dir must be provided
+    /// NOT for opening files
+    pub fn import_engine_config_from_json(
+        &mut self,
+        serialized_config: &str,
+        data_dir: Option<PathBuf>,
+    ) -> anyhow::Result<WidgetFlags> {
+        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
+        self.load_engine_config(engine_config, data_dir)
     }
 
     /// generates a vectorimage for the bytes ( from a SVG file )

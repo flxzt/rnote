@@ -93,7 +93,7 @@ pub enum EngineTask {
 #[allow(missing_debug_implementations)]
 #[derive(Serialize, Deserialize)]
 #[serde(default, rename = "engine_config")]
-struct EngineConfig {
+pub struct EngineConfig {
     #[serde(rename = "document")]
     document: serde_json::Value,
     #[serde(rename = "pens_config")]

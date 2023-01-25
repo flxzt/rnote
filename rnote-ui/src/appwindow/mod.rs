@@ -779,7 +779,7 @@ impl RnoteAppWindow {
         imp.mainheader.get().appmenu().init(self);
 
         // A first canvas. Must! come before binding the settings
-        self.new_tab();
+        self.add_initial_tab();
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
         let app_icon_theme = IconTheme::for_display(&self.display());
@@ -881,7 +881,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow()
-            .save_engine_config()?;
+            .export_engine_config_as_json()?;
         self.app_settings()
             .set_string("engine-config", engine_config.as_str())?;
 
@@ -906,9 +906,40 @@ impl RnoteAppWindow {
             .unwrap()
     }
 
+    /// adds the initial tab to the tabview
+    fn add_initial_tab(&self) -> adw::TabPage {
+        let new_wrapper = RnoteCanvasWrapper::new();
+        let page = self.overlays().tabview().append(&new_wrapper);
+        self.overlays().tabview().set_selected_page(&page);
+        page
+    }
+
     /// Creates a new tab and set it as selected
     pub(crate) fn new_tab(&self) -> adw::TabPage {
+        let current_engine_config = match self
+            .active_tab()
+            .canvas()
+            .engine()
+            .borrow()
+            .extract_engine_config()
+        {
+            Ok(c) => Some(c),
+            Err(e) => {
+                log::error!("failed to extract engine config from active tab, Err: {e:?}");
+                None
+            }
+        };
         let new_wrapper = RnoteCanvasWrapper::new();
+        if let Some(current_engine_config) = current_engine_config {
+            if let Err(e) = new_wrapper
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .load_engine_config(current_engine_config, Some(config::DATADIR.into()))
+            {
+                log::error!("failed to load current engine config into new tab, Err: {e:?}");
+            }
+        }
 
         // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview
         let page = self.overlays().tabview().append(&new_wrapper);

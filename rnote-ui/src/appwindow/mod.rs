@@ -931,13 +931,16 @@ impl RnoteAppWindow {
         };
         let new_wrapper = RnoteCanvasWrapper::new();
         if let Some(current_engine_config) = current_engine_config {
-            if let Err(e) = new_wrapper
+            match new_wrapper
                 .canvas()
                 .engine()
                 .borrow_mut()
                 .load_engine_config(current_engine_config, Some(config::DATADIR.into()))
             {
-                log::error!("failed to load current engine config into new tab, Err: {e:?}");
+                Ok(wf) => self.handle_widget_flags(wf, &new_wrapper.canvas()),
+                Err(e) => {
+                    log::error!("failed to load current engine config into new tab, Err: {e:?}")
+                }
             }
         }
 

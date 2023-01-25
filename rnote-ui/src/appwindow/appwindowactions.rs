@@ -4,13 +4,9 @@ use crate::config;
 use crate::{dialogs, RnoteCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
-use rnote_compose::Color;
 use rnote_engine::document::Layout;
-use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
-use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::utils::GdkRGBAHelpers;
-use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
+use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
@@ -137,10 +133,6 @@ impl RnoteAppWindow {
             &PenStyle::Brush.to_variant(),
         );
         self.add_action(&action_pen_style);
-        let action_sync_state_active_tab = gio::SimpleAction::new("sync-state-active-tab", None);
-        self.add_action(&action_sync_state_active_tab);
-        let action_refresh_ui_from_engine = gio::SimpleAction::new("refresh-ui-from-engine", None);
-        self.add_action(&action_refresh_ui_from_engine);
 
         // Close active tab
         action_close_active_tab.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -298,7 +290,7 @@ impl RnoteAppWindow {
                 let canvas = appwindow.active_tab().canvas();
 
                 // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
-                if new_pen_style != canvas.engine().borrow().penholder.current_style_w_override() {
+                if new_pen_style != canvas.engine().borrow().penholder.current_pen_style_w_override() {
                     let mut widget_flags = canvas.engine().borrow_mut().change_pen_style(
                         new_pen_style,
                     );
@@ -310,179 +302,6 @@ impl RnoteAppWindow {
                 }
             }),
         );
-
-        // sync active tab engine state with the UI. The UI is generally the source of truth for things like the pens config.
-        // Other things like the format is per-engine, so they are updating the UI
-        action_sync_state_active_tab.connect_activate(clone!(
-        @weak self as appwindow,
-        @weak action_pen_sounds,
-        @weak action_doc_layout,
-        @weak action_format_borders,
-        @weak action_pen_style,
-        => move |_, _| {
-            let canvas = appwindow.active_tab().canvas();
-            let mut widget_flags = WidgetFlags::default();
-
-            {
-                // state changes from the UI to the engine
-                let pen_style = action_pen_style.state().unwrap().get::<PenStyle>().unwrap();
-                let pen_sounds = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
-                let stroke_color = appwindow.overlays().colorpicker().stroke_color().into_compose_color();
-                let fill_color = appwindow.overlays().colorpicker().fill_color().into_compose_color();
-
-                let engine = canvas.engine();
-                let mut engine = engine.borrow_mut();
-
-                widget_flags.merge(engine.change_pen_style(pen_style));
-                // ensures a clean state for the current pen
-                widget_flags.merge(engine.reinstall_pen_current_style());
-                engine.set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKGDATADIR)));
-
-                engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-
-                engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
-
-                engine.pens_config.typewriter_config.text_style.color = stroke_color;
-
-            }
-
-            {
-                // state changes from the engine to the UI
-                let format_show_borders = canvas.engine().borrow().document.format.show_borders;
-                let doc_layout = canvas.engine().borrow().document.layout;
-                let can_undo = canvas.engine().borrow().can_undo();
-                let can_redo = canvas.engine().borrow().can_redo();
-
-                action_format_borders.change_state(&format_show_borders.to_variant());
-                action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
-                appwindow.mainheader().undo_button().set_sensitive(can_undo);
-                appwindow.mainheader().redo_button().set_sensitive(can_redo);
-                appwindow.refresh_titles_active_tab();
-            }
-
-            // Update from / to the pen pages and settings panel
-            appwindow.overlays().penssidebar().brush_page().sync_ui_active_tab(&appwindow);
-            appwindow.overlays().penssidebar().shaper_page().sync_ui_active_tab(&appwindow);
-            appwindow.overlays().penssidebar().typewriter_page().sync_ui_active_tab(&appwindow);
-            appwindow.overlays().penssidebar().eraser_page().sync_ui_active_tab(&appwindow);
-            appwindow.overlays().penssidebar().selector_page().sync_ui_active_tab(&appwindow);
-            appwindow.overlays().penssidebar().tools_page().sync_ui_active_tab(&appwindow);
-            appwindow.settings_panel().sync_state_active_tab(&appwindow);
-            appwindow.handle_widget_flags(widget_flags, &canvas);
-        }));
-
-        // Refresh UI state from the active tab engine. The engine is considered to be the source of truth
-        action_refresh_ui_from_engine.connect_activate(clone!(
-            @weak self as appwindow,
-            @weak action_pen_sounds,
-            @weak action_doc_layout,
-            @weak action_format_borders,
-            @weak action_pen_style,
-            => move |_, _| {
-            let canvas = appwindow.active_tab().canvas();
-
-            // Avoids already borrowed
-            let format = canvas.engine().borrow().document.format;
-            let doc_layout = canvas.engine().borrow().document.layout;
-            let pen_sounds = canvas.engine().borrow().pen_sounds();
-            let pen_style = canvas.engine().borrow().penholder.current_style_w_override();
-
-            // Undo / redo
-            let can_undo = canvas.engine().borrow().can_undo();
-            let can_redo = canvas.engine().borrow().can_redo();
-
-            appwindow.mainheader().undo_button().set_sensitive(can_undo);
-            appwindow.mainheader().redo_button().set_sensitive(can_redo);
-
-            // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
-            action_doc_layout.activate(Some(&doc_layout.nick().to_variant()));
-            action_pen_sounds.change_state(&pen_sounds.to_variant());
-            action_format_borders.change_state(&format.show_borders.to_variant());
-            action_pen_style.activate(Some(&pen_style.to_variant()));
-
-            // Current pen
-            match pen_style {
-                PenStyle::Brush => {
-                    appwindow.overlays().brush_toggle().set_active(true);
-                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("brush_page");
-
-                    let style = canvas.engine().borrow().pens_config.brush_config.style;
-                    match style {
-                        BrushStyle::Marker => {
-                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.marker_options.stroke_color.unwrap_or(Color::TRANSPARENT);
-                            let fill_color = canvas.engine().borrow().pens_config.brush_config.marker_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                        }
-                        BrushStyle::Solid => {
-                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.solid_options.stroke_color.unwrap_or(Color::TRANSPARENT);
-                            let fill_color = canvas.engine().borrow().pens_config.brush_config.solid_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                        }
-                        BrushStyle::Textured => {
-                            let stroke_color = canvas.engine().borrow().pens_config.brush_config.textured_options.stroke_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                        }
-                    }
-                }
-                PenStyle::Shaper => {
-                    appwindow.overlays().shaper_toggle().set_active(true);
-                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
-
-                    let style = canvas.engine().borrow().pens_config.shaper_config.style;
-                    match style {
-                        ShaperStyle::Smooth => {
-                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.stroke_color.unwrap_or(Color::TRANSPARENT);
-                            let fill_color = canvas.engine().borrow().pens_config.shaper_config.smooth_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                        }
-                        ShaperStyle::Rough => {
-                            let stroke_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.stroke_color.unwrap_or(Color::TRANSPARENT);
-                            let fill_color = canvas.engine().borrow().pens_config.shaper_config.rough_options.fill_color.unwrap_or(Color::TRANSPARENT);
-                            appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            appwindow.overlays().colorpicker().set_fill_color(gdk::RGBA::from_compose_color(fill_color));
-                        }
-                    }
-                }
-                PenStyle::Typewriter => {
-                    appwindow.overlays().typewriter_toggle().set_active(true);
-                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
-
-                    let text_color = canvas.engine().borrow().pens_config.typewriter_config.text_style.color;
-                    appwindow.overlays().colorpicker().set_stroke_color(gdk::RGBA::from_compose_color(text_color));
-                }
-                PenStyle::Eraser => {
-                    appwindow.overlays().eraser_toggle().set_active(true);
-                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
-                }
-                PenStyle::Selector => {
-                    appwindow.overlays().selector_toggle().set_active(true);
-                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("selector_page");
-                }
-                PenStyle::Tools => {
-                    appwindow.overlays().tools_toggle().set_active(true);
-                    appwindow.overlays().penssidebar().sidebar_stack().set_visible_child_name("tools_page");
-                }
-            }
-
-            appwindow.overlays().penssidebar().brush_page().refresh_ui(&appwindow);
-            appwindow.overlays().penssidebar().shaper_page().refresh_ui(&appwindow);
-            appwindow.overlays().penssidebar().typewriter_page().refresh_ui(&appwindow);
-            appwindow.overlays().penssidebar().eraser_page().refresh_ui(&appwindow);
-            appwindow.overlays().penssidebar().selector_page().refresh_ui(&appwindow);
-            appwindow.overlays().penssidebar().tools_page().refresh_ui(&appwindow);
-            appwindow.settings_panel().refresh_ui(&appwindow);
-            appwindow.refresh_titles_active_tab();
-        }));
 
         // Trash Selection
         action_selection_trash.connect_activate(

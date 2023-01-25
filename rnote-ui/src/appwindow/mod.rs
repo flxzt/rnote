@@ -4,7 +4,13 @@ mod imp;
 
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
+use gtk4::gdk;
 use gtk4::{gio, glib, glib::clone, Application, Box, Button, FileChooserNative, IconTheme};
+use rnote_compose::Color;
+use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
+use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
+use rnote_engine::pens::PenStyle;
+use rnote_engine::utils::GdkRGBAHelpers;
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 use std::cell::RefCell;
 use std::path::Path;
@@ -134,7 +140,7 @@ impl RnoteAppWindow {
         imp.mainheader.get().canvasmenu().init(self);
         imp.mainheader.get().appmenu().init(self);
 
-        // A first canvas. Must! come before binding the settings
+        // An initial tab. Must! come before setting up the settings binds and import
         self.add_initial_tab();
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
@@ -171,11 +177,9 @@ impl RnoteAppWindow {
         self.mainheader().undo_button().set_sensitive(false);
         self.mainheader().redo_button().set_sensitive(false);
 
-        // rerender the canvas
         self.active_tab().canvas().regenerate_background_pattern();
         self.active_tab().canvas().update_engine_rendering();
-
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
+        self.refresh_ui_from_engine(&self.active_tab());
     }
 
     /// Called to close the window
@@ -209,7 +213,7 @@ impl RnoteAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.refresh_ui {
-            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-from-engine", None);
+            self.refresh_ui_from_engine(&self.active_tab());
         }
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
@@ -244,9 +248,9 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    /// Get the active (selected) tab page. If there is none (which should only be the case on appwindow startup), we create one
+    /// Get the active (selected) tab page, or create one if there is None.
+    /// (should never be the the case, since we add a initial page on startup the last tab cannot be closed in the UI. But making sure)
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
-        // We always create a single page, if there is none initially
         self.imp()
             .overlays
             .tabview()
@@ -265,9 +269,7 @@ impl RnoteAppWindow {
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
         let new_wrapper = RnoteCanvasWrapper::new();
-        let page = self.overlays().tabview().append(&new_wrapper);
-        self.overlays().tabview().set_selected_page(&page);
-        page
+        self.overlays().tabview().append(&new_wrapper)
     }
 
     /// Creates a new tab and set it as selected
@@ -584,5 +586,275 @@ impl RnoteAppWindow {
         }));
 
         Ok(())
+    }
+
+    /// Refreshes the UI from the engine state from the given tab page.
+    pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnoteCanvasWrapper) {
+        let canvas = active_tab.canvas();
+
+        // Avoids already borrowed
+        let format = canvas.engine().borrow().document.format;
+        let doc_layout = canvas.engine().borrow().document.layout;
+        let pen_sounds = canvas.engine().borrow().pen_sounds();
+        let pen_style = canvas
+            .engine()
+            .borrow()
+            .penholder
+            .current_pen_style_w_override();
+
+        // Undo / redo
+        let can_undo = canvas.engine().borrow().can_undo();
+        let can_redo = canvas.engine().borrow().can_redo();
+
+        self.mainheader().undo_button().set_sensitive(can_undo);
+        self.mainheader().redo_button().set_sensitive(can_redo);
+
+        // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
+        adw::prelude::ActionGroupExt::activate_action(
+            self,
+            "doc-layout",
+            Some(&doc_layout.nick().to_variant()),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "pen-sounds",
+            &pen_sounds.to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "format-borders",
+            &format.show_borders.to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
+            "pen-style",
+            &pen_style.to_variant(),
+        );
+
+        // Current pen
+        match pen_style {
+            PenStyle::Brush => {
+                self.overlays().brush_toggle().set_active(true);
+                self.overlays()
+                    .penssidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("brush_page");
+
+                let style = canvas.engine().borrow().pens_config.brush_config.style;
+                match style {
+                    BrushStyle::Marker => {
+                        let stroke_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .brush_config
+                            .marker_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        let fill_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .brush_config
+                            .marker_options
+                            .fill_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        self.overlays()
+                            .colorpicker()
+                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        self.overlays()
+                            .colorpicker()
+                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                    }
+                    BrushStyle::Solid => {
+                        let stroke_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .brush_config
+                            .solid_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        let fill_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .brush_config
+                            .solid_options
+                            .fill_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        self.overlays()
+                            .colorpicker()
+                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        self.overlays()
+                            .colorpicker()
+                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                    }
+                    BrushStyle::Textured => {
+                        let stroke_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .brush_config
+                            .textured_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        self.overlays()
+                            .colorpicker()
+                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                    }
+                }
+            }
+            PenStyle::Shaper => {
+                self.overlays().shaper_toggle().set_active(true);
+                self.overlays()
+                    .penssidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("shaper_page");
+
+                let style = canvas.engine().borrow().pens_config.shaper_config.style;
+                match style {
+                    ShaperStyle::Smooth => {
+                        let stroke_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .shaper_config
+                            .smooth_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        let fill_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .shaper_config
+                            .smooth_options
+                            .fill_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        self.overlays()
+                            .colorpicker()
+                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        self.overlays()
+                            .colorpicker()
+                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                    }
+                    ShaperStyle::Rough => {
+                        let stroke_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .shaper_config
+                            .rough_options
+                            .stroke_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        let fill_color = canvas
+                            .engine()
+                            .borrow()
+                            .pens_config
+                            .shaper_config
+                            .rough_options
+                            .fill_color
+                            .unwrap_or(Color::TRANSPARENT);
+                        self.overlays()
+                            .colorpicker()
+                            .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        self.overlays()
+                            .colorpicker()
+                            .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                    }
+                }
+            }
+            PenStyle::Typewriter => {
+                self.overlays().typewriter_toggle().set_active(true);
+                self.overlays()
+                    .penssidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("typewriter_page");
+
+                let text_color = canvas
+                    .engine()
+                    .borrow()
+                    .pens_config
+                    .typewriter_config
+                    .text_style
+                    .color;
+                self.overlays()
+                    .colorpicker()
+                    .set_stroke_color(gdk::RGBA::from_compose_color(text_color));
+            }
+            PenStyle::Eraser => {
+                self.overlays().eraser_toggle().set_active(true);
+                self.overlays()
+                    .penssidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("eraser_page");
+            }
+            PenStyle::Selector => {
+                self.overlays().selector_toggle().set_active(true);
+                self.overlays()
+                    .penssidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("selector_page");
+            }
+            PenStyle::Tools => {
+                self.overlays().tools_toggle().set_active(true);
+                self.overlays()
+                    .penssidebar()
+                    .sidebar_stack()
+                    .set_visible_child_name("tools_page");
+            }
+        }
+
+        self.overlays().penssidebar().brush_page().refresh_ui(self);
+        self.overlays().penssidebar().shaper_page().refresh_ui(self);
+        self.overlays()
+            .penssidebar()
+            .typewriter_page()
+            .refresh_ui(self);
+        self.overlays().penssidebar().eraser_page().refresh_ui(self);
+        self.overlays()
+            .penssidebar()
+            .selector_page()
+            .refresh_ui(self);
+        self.overlays().penssidebar().tools_page().refresh_ui(self);
+        self.settings_panel().refresh_ui(self);
+        self.refresh_titles_active_tab();
+    }
+
+    /// Syncs the state from the previous active tab and the current one. Used when the selected tab changes.
+    pub(crate) fn sync_state_between_tabs(
+        &self,
+        prev_tab: &adw::TabPage,
+        active_tab: &adw::TabPage,
+    ) {
+        if prev_tab == active_tab {
+            return;
+        }
+        let prev_canvas_wrapper = prev_tab.child().downcast::<RnoteCanvasWrapper>().unwrap();
+        let prev_canvas = prev_canvas_wrapper.canvas();
+        let active_canvas_wrapper = active_tab.child().downcast::<RnoteCanvasWrapper>().unwrap();
+        let active_canvas = active_canvas_wrapper.canvas();
+        let mut widget_flags = WidgetFlags::default();
+
+        // extra scope for engine borrow
+        {
+            let prev_engine = prev_canvas.engine();
+            let prev_engine = prev_engine.borrow();
+            let active_engine = active_canvas.engine();
+            let mut active_engine = active_engine.borrow_mut();
+
+            active_engine.pens_config = prev_engine.pens_config.clone();
+            active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();
+            active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
+            widget_flags.merge(active_engine.change_pen_style(prev_engine.penholder.pen_style()));
+            // ensures a clean state for the current pen
+            widget_flags.merge(active_engine.reinstall_pen_current_style());
+            active_engine.import_prefs = prev_engine.import_prefs;
+            active_engine.export_prefs = prev_engine.export_prefs;
+            active_engine.set_pen_sounds(prev_engine.pen_sounds(), Some(config::DATADIR.into()));
+            active_engine.visual_debug = prev_engine.visual_debug;
+        }
+
+        self.handle_widget_flags(widget_flags, &active_canvas);
     }
 }

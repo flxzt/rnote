@@ -67,10 +67,7 @@ impl SelectorPage {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
-        self.imp().resize_lock_aspectratio_togglebutton.get()
-    }
-
+    #[allow(unused)]
     pub(crate) fn selector_style(&self) -> Option<SelectorStyle> {
         if self.imp().selectorstyle_polygon_toggle.is_active() {
             Some(SelectorStyle::Polygon)
@@ -85,6 +82,7 @@ impl SelectorPage {
         }
     }
 
+    #[allow(unused)]
     pub(crate) fn set_selector_style(&self, style: SelectorStyle) {
         match style {
             SelectorStyle::Polygon => self.imp().selectorstyle_polygon_toggle.set_active(true),
@@ -145,14 +143,5 @@ impl SelectorPage {
 
         imp.resize_lock_aspectratio_togglebutton
             .set_active(selector_config.resize_lock_aspectratio);
-    }
-
-    pub(crate) fn sync_ui_active_tab(&self, appwindow: &RnoteAppWindow) {
-        let engine = appwindow.active_tab().canvas().engine();
-        let mut engine = engine.borrow_mut();
-
-        engine.pens_config.selector_config.style = self.selector_style().unwrap_or_default();
-        engine.pens_config.selector_config.resize_lock_aspectratio =
-            self.resize_lock_aspectratio_togglebutton().is_active();
     }
 }

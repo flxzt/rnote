@@ -316,11 +316,10 @@ impl RnoteAppWindow {
             let canvas = self.active_tab().canvas();
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
-            let widget_flags = match canvas
-                .engine()
-                .borrow_mut()
-                .load_engine_config(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
-            {
+            let widget_flags = match canvas.engine().borrow_mut().import_engine_config_from_json(
+                &engine_config,
+                Some(PathBuf::from(config::PKGDATADIR)),
+            ) {
                 Err(e) => {
                     // On first app startup the engine config is empty, so we don't log an error
                     if engine_config.is_empty() {

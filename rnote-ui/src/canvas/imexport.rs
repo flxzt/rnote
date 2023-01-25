@@ -337,7 +337,7 @@ impl RnoteCanvas {
     /// exports and writes the engine config as json into the file.
     /// Only for debugging!
     pub(crate) async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
-        let exported_engine_config = self.engine().borrow().save_engine_config()?;
+        let exported_engine_config = self.engine().borrow().export_engine_config_as_json()?;
 
         crate::utils::create_replace_file_future(exported_engine_config.into_bytes(), file).await?;
 

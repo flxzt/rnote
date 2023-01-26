@@ -13,6 +13,10 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
+    <key name="flap-reveal" type="b">
+      <default>true</default>
+      <summary>Whether the flap is revealed or not</summary>
+    </key>
     <key name="flap-width" type="i">
       <default>500</default>
       <summary>flap width</summary>
@@ -132,10 +136,6 @@
     <key name="resize-lock-aspectratio" type="b">
       <default>false</default>
       <summary>if the aspect ratio while resizing is locked</summary>
-    </key>
-    <key name="reveal-flap" type="b">
-      <default>true</default>
-      <summary>Whether the flap is revealed or not</summary>
     </key>
     <key name="engine-config" type="s">
       <default>''</default>

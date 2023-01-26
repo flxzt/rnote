@@ -85,11 +85,6 @@ impl RnoteAppWindow {
             )
             .build();
 
-        // flap revealed
-        self.app_settings()
-            .bind("reveal-flap", &self.flap(), "reveal-flap")
-            .build();
-
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
             let color = var.get::<(f64, f64, f64, f64)>()?;
@@ -295,11 +290,13 @@ impl RnoteAppWindow {
             let is_maximized = self.app_settings().boolean("is-maximized");
 
             self.set_default_size(window_width, window_height);
-
             if is_maximized {
                 self.maximize();
             }
-
+            // flap revealed (can't bind it, because it would sync across app windows)
+            self.flap()
+                .set_reveal_flap(self.app_settings().boolean("flap-reveal"));
+            // flap width
             self.flap_box()
                 .set_width_request(self.app_settings().int("flap-width"));
         }
@@ -353,6 +350,8 @@ impl RnoteAppWindow {
                 .set_int("window-height", self.height())?;
             self.app_settings()
                 .set_boolean("is-maximized", self.is_maximized())?;
+            self.app_settings()
+                .set_boolean("flap-reveal", self.flap().reveals_flap())?;
             self.app_settings()
                 .set_int("flap-width", self.flap_box().width())?;
         }

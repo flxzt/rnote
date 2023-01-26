@@ -39,10 +39,6 @@
     color: @destructive_color;
 }
 
-.topbar_box {
-    background: linear-gradient(to right, #0000000a 0%, #00000000 6%, #00000000 94%, #0000000a 100%);
-}
-
 .colorpad {
     padding: 0px;
     margin: 1px;
@@ -195,7 +191,7 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 }
 
 .overlay-toolbar.colorpicker {
-    padding: 9px;
+    padding: 6px;
 }
 
 toast {

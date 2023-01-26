@@ -195,11 +195,12 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
     font-size: 22px;
 }
 
-.iconpicker_gridview {
+.iconpicker_gridview, .groupediconpicker_listbox {
     border-radius: 6px;
+    padding: 6px 12px;
 }
 
-.iconpicker_gridview child {
+.iconpicker_gridview child, .groupediconpickergroup_flowbox > flowboxchild {
     margin: 2px;
 }
 

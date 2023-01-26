@@ -229,7 +229,7 @@
             </object>
           </child>
           <child>
-            <object class="IconPicker" id="shapebuildertype_picker"></object>
+            <object class="GroupedIconPicker" id="shapebuildertype_picker"></object>
           </child>
         </object>
       </child>

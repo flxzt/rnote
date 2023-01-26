@@ -11,7 +11,10 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
-use crate::{globals, IconPicker, RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
+use crate::{
+    GroupedIconPicker, GroupedIconPickerGroupData, RnoteAppWindow, RnoteCanvasWrapper,
+    StrokeWidthPicker,
+};
 
 mod imp {
     use super::*;
@@ -40,7 +43,7 @@ mod imp {
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapebuildertype_picker: TemplateChild<IconPicker>,
+        pub(crate) shapebuildertype_picker: TemplateChild<GroupedIconPicker>,
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -133,44 +136,14 @@ impl ShaperPage {
     }
 
     pub(crate) fn shapebuildertype(&self) -> Option<ShapeBuilderType> {
-        let type_string = self.imp().shapebuildertype_picker.picked()?;
-
-        match type_string.as_str() {
-            "shapebuilder-line-symbolic" => Some(ShapeBuilderType::Line),
-            "shapebuilder-rectangle-symbolic" => Some(ShapeBuilderType::Rectangle),
-            "shapebuilder-grid-symbolic" => Some(ShapeBuilderType::Grid),
-            "shapebuilder-coordsystem2d-symbolic" => Some(ShapeBuilderType::CoordSystem2D),
-            "shapebuilder-coordsystem3d-symbolic" => Some(ShapeBuilderType::CoordSystem3D),
-            "shapebuilder-quadrantcoordsystem2d-symbolic" => {
-                Some(ShapeBuilderType::QuadrantCoordSystem2D)
-            }
-            "shapebuilder-ellipse-symbolic" => Some(ShapeBuilderType::Ellipse),
-            "shapebuilder-fociellipse-symbolic" => Some(ShapeBuilderType::FociEllipse),
-            "shapebuilder-quadbez-symbolic" => Some(ShapeBuilderType::QuadBez),
-            "shapebuilder-cubbez-symbolic" => Some(ShapeBuilderType::CubBez),
-            _ => None,
-        }
+        let icon_name = self.imp().shapebuildertype_picker.picked()?;
+        ShapeBuilderType::from_icon_name(icon_name.as_str())
     }
 
-    pub(crate) fn set_shapebuildertype(&self, buildertype: ShapeBuilderType) {
-        let type_string = match buildertype {
-            ShapeBuilderType::Line => "shapebuilder-line-symbolic",
-            ShapeBuilderType::Rectangle => "shapebuilder-rectangle-symbolic",
-            ShapeBuilderType::Grid => "shapebuilder-grid-symbolic",
-            ShapeBuilderType::CoordSystem2D => "shapebuilder-coordsystem2d-symbolic",
-            ShapeBuilderType::CoordSystem3D => "shapebuilder-coordsystem3d-symbolic",
-            ShapeBuilderType::QuadrantCoordSystem2D => {
-                "shapebuilder-quadrantcoordsystem2d-symbolic"
-            }
-            ShapeBuilderType::Ellipse => "shapebuilder-ellipse-symbolic",
-            ShapeBuilderType::FociEllipse => "shapebuilder-fociellipse-symbolic",
-            ShapeBuilderType::QuadBez => "shapebuilder-quadbez-symbolic",
-            ShapeBuilderType::CubBez => "shapebuilder-cubbez-symbolic",
-        };
-
+    pub(crate) fn set_shapebuildertype(&self, builder_type: ShapeBuilderType) {
         self.imp()
             .shapebuildertype_picker
-            .set_picked(Some(type_string.to_string()));
+            .set_picked(Some(builder_type.to_icon_name()));
     }
 
     pub(crate) fn roughstyle_fillstyle(&self) -> FillStyle {
@@ -255,24 +228,54 @@ impl ShaperPage {
         }));
 
         // shape builder type
-        imp.shapebuildertype_picker.set_list_localized(
-            StringList::new(globals::SHAPEBUILDERTYPE_ICONS_LIST),
-            |icon_name| match icon_name {
-                "shapebuilder-line-symbolic" => gettext("Line"),
-                "shapebuilder-rectangle-symbolic" => gettext("Rectangle"),
-                "shapebuilder-grid-symbolic" => gettext("Grid"),
-                "shapebuilder-coordsystem2d-symbolic" => gettext("2D coordinate system"),
-                "shapebuilder-coordsystem3d-symbolic" => gettext("3D coordinate system"),
-                "shapebuilder-quadrantcoordsystem2d-symbolic" => {
+        imp.shapebuildertype_picker.set_groups(
+            vec![
+                GroupedIconPickerGroupData {
+                    name: gettext("Miscellaneous"),
+                    icons: StringList::new(&[
+                        "shapebuilder-line-symbolic",
+                        "shapebuilder-rectangle-symbolic",
+                        "shapebuilder-grid-symbolic",
+                    ]),
+                },
+                GroupedIconPickerGroupData {
+                    name: gettext("Coordinate System"),
+                    icons: StringList::new(&[
+                        "shapebuilder-coordsystem2d-symbolic",
+                        "shapebuilder-coordsystem3d-symbolic",
+                        "shapebuilder-quadrantcoordsystem2d-symbolic",
+                    ]),
+                },
+                GroupedIconPickerGroupData {
+                    name: gettext("Ellipse"),
+                    icons: StringList::new(&[
+                        "shapebuilder-ellipse-symbolic",
+                        "shapebuilder-fociellipse-symbolic",
+                    ]),
+                },
+                GroupedIconPickerGroupData {
+                    name: gettext("Curve"),
+                    icons: StringList::new(&[
+                        "shapebuilder-quadbez-symbolic",
+                        "shapebuilder-cubbez-symbolic",
+                    ]),
+                },
+            ],
+            |icon_name| match ShapeBuilderType::from_icon_name(icon_name).expect(
+                "ShapeBuilderTypePicker failed, display name of unknown icon name requested",
+            ) {
+                ShapeBuilderType::Line => gettext("Line"),
+                ShapeBuilderType::Rectangle => gettext("Rectangle"),
+                ShapeBuilderType::Grid => gettext("Grid"),
+                ShapeBuilderType::CoordSystem2D => gettext("2D coordinate system"),
+                ShapeBuilderType::CoordSystem3D => gettext("3D coordinate system"),
+                ShapeBuilderType::QuadrantCoordSystem2D => {
                     gettext("2D single quadrant coordinate system")
                 }
-                "shapebuilder-ellipse-symbolic" => gettext("Ellipse"),
-                "shapebuilder-fociellipse-symbolic" => gettext("Ellipse with foci"),
-                "shapebuilder-quadbez-symbolic" => gettext("Quadratic bezier curve"),
-                "shapebuilder-cubbez-symbolic" => gettext("Cubic bezier curve"),
-                _ => panic!(
-                    "ShapeBuilderTypePicker failed, localization of unknown icon name requested"
-                ),
+                ShapeBuilderType::Ellipse => gettext("Ellipse"),
+                ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
+                ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
+                ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
             },
         );
 

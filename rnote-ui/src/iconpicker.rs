@@ -2,8 +2,8 @@ use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, GridView, Widget,
 };
 use gtk4::{
-    Align, IconSize, Image, Label, ListItem, SignalListItemFactory, SingleSelection, StringList,
-    StringObject,
+    Align, ConstantExpression, IconSize, Image, ListItem, PropertyExpression,
+    SignalListItemFactory, SingleSelection, StringList, StringObject,
 };
 use once_cell::sync::Lazy;
 
@@ -22,8 +22,6 @@ mod imp {
 
         #[template_child]
         pub(crate) gridview: TemplateChild<GridView>,
-        #[template_child]
-        pub(crate) selection_label: TemplateChild<Label>,
     }
 
     impl Default for IconPicker {
@@ -35,7 +33,6 @@ mod imp {
                 picked: RefCell::new(None),
 
                 gridview: TemplateChild::<GridView>::default(),
-                selection_label: TemplateChild::<Label>::default(),
             }
         }
     }
@@ -136,10 +133,6 @@ impl IconPicker {
         self.set_property("picked", picked.to_value());
     }
 
-    fn set_selection_label_text(&self, text: String) {
-        self.imp().selection_label.get().set_text(text.as_str());
-    }
-
     /// Internal function to retrieve the picked icon from the selection
     fn picked_intern(&self) -> Option<String> {
         self.imp()
@@ -179,69 +172,6 @@ impl IconPicker {
         }
     }
 
-    /// Binds a list containing the icon names, using a function that returns the i18n string for a given icon name
-    pub(crate) fn set_list_localized(&self, list: StringList, localize: fn(&str) -> String) {
-        let single_selection = SingleSelection::builder()
-            .model(&list)
-            // Ensures nothing is selected when initially setting the list
-            .selected(gtk4::INVALID_LIST_POSITION)
-            .can_unselect(true)
-            .build();
-
-        if let Some(old_id) = self.imp().selected_handlerid.borrow_mut().take() {
-            self.disconnect(old_id);
-        }
-
-        self.imp().selected_handlerid.borrow_mut().replace(
-            single_selection.connect_selected_item_notify(
-                clone!(@weak self as iconpicker => move |_| {
-                    let pick = iconpicker.picked_intern();
-
-                    if let Some(icon_name) = &pick {
-                        iconpicker.set_selection_label_text(localize(icon_name.as_str()));
-                    }
-
-                    iconpicker.set_picked(pick);
-                }),
-            ),
-        );
-
-        // Factory
-        let icon_factory = SignalListItemFactory::new();
-        icon_factory.connect_bind(move |_factory, list_item| {
-            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
-
-            let string = list_item
-                .item()
-                .expect("IconPickerListFactory bind() failed, item is None")
-                .downcast_ref::<StringObject>()
-                .expect(
-                    "IconPickerListFactory bind() failed, item has to be of type `StringObject`",
-                )
-                .string();
-
-            let icon_image = Image::builder()
-                .halign(Align::Center)
-                .valign(Align::Center)
-                .icon_size(IconSize::Large)
-                .icon_name(string.as_str())
-                .tooltip_text(localize(string.as_str()).as_str())
-                .margin_top(3)
-                .margin_bottom(3)
-                .margin_start(3)
-                .margin_end(3)
-                .build();
-
-            list_item.set_child(Some(&icon_image));
-        });
-
-        self.imp().selection_label.get().set_visible(true);
-        self.imp().gridview.get().set_model(Some(&single_selection));
-        self.imp().gridview.get().set_factory(Some(&icon_factory));
-        self.imp().list.borrow_mut().replace(list);
-        self.imp().selection.borrow_mut().replace(single_selection);
-    }
-
     /// Binds a list containing the icon names
     pub(crate) fn set_list(&self, list: StringList) {
         let single_selection = SingleSelection::builder()
@@ -265,23 +195,13 @@ impl IconPicker {
 
         // Factory
         let icon_factory = SignalListItemFactory::new();
-        icon_factory.connect_bind(move |_factory, list_item| {
+        icon_factory.connect_setup(move |_factory, list_item| {
             let list_item = list_item.downcast_ref::<ListItem>().unwrap();
-
-            let string = list_item
-                .item()
-                .expect("IconPickerListFactory bind() failed, item is None")
-                .downcast_ref::<StringObject>()
-                .expect(
-                    "IconPickerListFactory bind() failed, item has to be of type `StringObject`",
-                )
-                .string();
 
             let icon_image = Image::builder()
                 .halign(Align::Center)
                 .valign(Align::Center)
                 .icon_size(IconSize::Large)
-                .icon_name(string.as_str())
                 .margin_top(3)
                 .margin_bottom(3)
                 .margin_start(3)
@@ -289,9 +209,16 @@ impl IconPicker {
                 .build();
 
             list_item.set_child(Some(&icon_image));
+
+            let list_item_expr = ConstantExpression::new(&list_item);
+            let string_expr =
+                PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item")
+                    .chain_property::<StringObject>("string");
+
+            string_expr.bind(&icon_image, "icon-name", Widget::NONE);
+            string_expr.bind(&icon_image, "tooltip-text", Widget::NONE);
         });
 
-        self.imp().selection_label.get().set_visible(false);
         self.imp().gridview.get().set_model(Some(&single_selection));
         self.imp().gridview.get().set_factory(Some(&icon_factory));
         self.imp().list.borrow_mut().replace(list);

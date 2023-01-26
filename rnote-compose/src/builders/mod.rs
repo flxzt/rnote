@@ -92,6 +92,43 @@ pub enum ShapeBuilderType {
     CubBez,
 }
 
+impl ShapeBuilderType {
+    /// Converts an icon name into the represented shape builder type. Returns None for invalid strings.
+    pub fn from_icon_name(icon_name: &str) -> Option<Self> {
+        match icon_name {
+            "shapebuilder-line-symbolic" => Some(Self::Line),
+            "shapebuilder-rectangle-symbolic" => Some(Self::Rectangle),
+            "shapebuilder-grid-symbolic" => Some(Self::Grid),
+            "shapebuilder-coordsystem2d-symbolic" => Some(Self::CoordSystem2D),
+            "shapebuilder-coordsystem3d-symbolic" => Some(Self::CoordSystem3D),
+            "shapebuilder-quadrantcoordsystem2d-symbolic" => Some(Self::QuadrantCoordSystem2D),
+            "shapebuilder-ellipse-symbolic" => Some(Self::Ellipse),
+            "shapebuilder-fociellipse-symbolic" => Some(Self::FociEllipse),
+            "shapebuilder-quadbez-symbolic" => Some(Self::QuadBez),
+            "shapebuilder-cubbez-symbolic" => Some(Self::CubBez),
+            _ => None,
+        }
+    }
+
+    /// Converts a shape builder type into the icon name that represents it.
+    pub fn to_icon_name(self) -> String {
+        match self {
+            Self::Line => String::from("shapebuilder-line-symbolic"),
+            Self::Rectangle => String::from("shapebuilder-rectangle-symbolic"),
+            Self::Grid => String::from("shapebuilder-grid-symbolic"),
+            Self::CoordSystem2D => String::from("shapebuilder-coordsystem2d-symbolic"),
+            Self::CoordSystem3D => String::from("shapebuilder-coordsystem3d-symbolic"),
+            Self::QuadrantCoordSystem2D => {
+                String::from("shapebuilder-quadrantcoordsystem2d-symbolic")
+            }
+            Self::Ellipse => String::from("shapebuilder-ellipse-symbolic"),
+            Self::FociEllipse => String::from("shapebuilder-fociellipse-symbolic"),
+            Self::QuadBez => String::from("shapebuilder-quadbez-symbolic"),
+            Self::CubBez => String::from("shapebuilder-cubbez-symbolic"),
+        }
+    }
+}
+
 impl Default for ShapeBuilderType {
     fn default() -> Self {
         Self::Line

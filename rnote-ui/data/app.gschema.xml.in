@@ -133,6 +133,10 @@
       <default>false</default>
       <summary>if the aspect ratio while resizing is locked</summary>
     </key>
+    <key name="reveal-flap" type="b">
+      <default>true</default>
+      <summary>Whether the flap is revealed or not</summary>
+    </key>
     <key name="engine-config" type="s">
       <default>''</default>
       <summary>the engine configuration</summary>

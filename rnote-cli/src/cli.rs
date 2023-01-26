@@ -183,9 +183,11 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         progresses[i].enable_steady_tick(Duration::from_millis(8));
 
                         if let Err(e) = export_to_file(&mut engine, &file, &output).await {
-                            progresses[i].abandon();
+                            for pb in progresses.iter().skip(i) {
+                                pb.finish_and_clear();
+                            }
                             println!("Export failed, Err: {e:?}");
-                            continue;
+                            return Err(e);
                         } else {
                             progresses[i].finish();
                         }

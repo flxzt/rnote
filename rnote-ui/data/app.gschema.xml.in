@@ -14,7 +14,7 @@
       <summary>Default window maximized behaviour</summary>
     </key>
     <key name="flap-reveal" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Whether the flap is revealed or not</summary>
     </key>
     <key name="flap-width" type="i">

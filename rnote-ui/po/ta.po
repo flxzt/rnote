@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
+"POT-Creation-Date: 2023-01-26 13:31+0100\n"
 "PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -585,32 +585,32 @@ msgid "Split strokes"
 msgstr "பிளவு பக்கவாதம்"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "பிரஷ்"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr "வடிவமைப்பவர்"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr "தட்டச்சுப்பொறி"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "அழிப்பான்"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr "தேர்வாளர்"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "கருவிகள்"
 
@@ -978,19 +978,15 @@ msgstr "வலது பக்கத்தில் பக்கப்பட்�
 msgid "Toggle fullscreen"
 msgstr "முழுத்திரையை நிலைமாற்றவும்"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr "மடிந்த மடலை மூடு"
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr "பணியிடம்"
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "அமைப்புகள்"
 
@@ -1075,27 +1071,31 @@ msgstr "புதிய ஆவணம்"
 msgid "Draft"
 msgstr "வரைவு"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
+
+#: rnote-ui/data/ui/mainheader.ui:46
 msgid "New tab"
 msgstr "புதிய தாவல்"
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr "செயல்தவிர்"
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr "மீண்டும் செய்"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "பக்கத்தைச் சேர்"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 msgid "Resize document to fit the strokes"
 msgstr "ஸ்ட்ரோக்குகளுக்கு ஏற்றவாறு ஆவணத்தின் அளவை மாற்றவும்"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr "ஆவணத்தைச் சேமி"
 
@@ -1336,8 +1336,11 @@ msgid "Show keyboard shortcuts"
 msgstr "விசைப்பலகை குறுக்குவழிகளைக் காட்டு"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
 msgctxt "shortcut window"
-msgid "Close the active window"
+msgid "Close the active tab"
 msgstr "செயலில் உள்ள சாளரத்தை மூடு"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
@@ -1509,51 +1512,51 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட பணிய�
 msgid "Edit selected workspace"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தைத் திருத்தவும்"
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr ".rnote கோப்பை திறக்க முடியவில்லை."
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி."
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி."
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "PDF கோப்பை திறக்க முடியவில்லை."
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
+
+#: rnote-ui/src/appwindow/imp.rs:272
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
 
-#: rnote-ui/src/appwindow/mod.rs:1134
-msgid "Opening .rnote file failed."
-msgstr ".rnote கோப்பை திறக்க முடியவில்லை."
-
-#: rnote-ui/src/appwindow/mod.rs:1145
-msgid "Opening vector image file failed."
-msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி."
-
-#: rnote-ui/src/appwindow/mod.rs:1156
-msgid "Opening bitmap image file failed."
-msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
-
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி."
-
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "PDF கோப்பை திறக்க முடியவில்லை."
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Error: Tried opening folder as file"
-msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
-
-#: rnote-ui/src/appwindow/mod.rs:1192
-msgid "Failed to open file: Unsupported file type."
-msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "ஆவணம் வெற்றிகரமாக அச்சிடப்பட்டது"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "ஏற்றுமதி தேர்வு தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
 

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
-"PO-Revision-Date: 2023-01-24 12:45+0000\n"
+"POT-Creation-Date: 2023-01-26 13:31+0100\n"
+"PO-Revision-Date: 2023-01-26 12:24+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -586,32 +586,32 @@ msgid "Split strokes"
 msgstr "خطوط التقسيم"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "فرشاة"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr "مشكِّل"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr "آلة كاتبة"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "ممحاة"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr "محدِّد"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "أدوات"
 
@@ -979,19 +979,15 @@ msgstr "الشريط الجانبيُّ يمينًا"
 msgid "Toggle fullscreen"
 msgstr "بدِّل وضع ملء الشاشة"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr "أظهر أو أخفِ الجنيح"
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr "أغلق الجنيح المطويَّ"
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr "مساحة العمل"
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "الإعدادات"
 
@@ -1076,27 +1072,31 @@ msgstr "مستند جديد"
 msgid "Draft"
 msgstr "مسودَّة"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr "أظهر أو أخفِ الجنيح"
+
+#: rnote-ui/data/ui/mainheader.ui:46
 msgid "New tab"
 msgstr "لسان جديد"
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr "تراجَع"
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr "أعِد"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "أضف صفحةً"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 msgid "Resize document to fit the strokes"
 msgstr "غيّر حجم الصفحة لتناسب الخطوط المرسومة"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr "احفظ المستند"
 
@@ -1336,8 +1336,8 @@ msgstr "أظهر اختصارات لوحة المفاتيح"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
 msgctxt "shortcut window"
-msgid "Close the active window"
-msgstr "أغلق النافذة الحاليَّة"
+msgid "Close the active tab"
+msgstr "أغلق اللسان الحاليَّ"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
@@ -1508,51 +1508,51 @@ msgstr "أزل مساحة العمل المحدَّدة"
 msgid "Edit selected workspace"
 msgstr "حرِّر مساحة العمل المحدَّدة"
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr "فشل فتح ملفِّ .rnote."
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "فشل فتح ملفِّ الصورة المتَّجهيَّة."
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "فشل فتح ملفِّ صورة نقطيَّة."
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "فشل فتح ملفِّ Xournal++."
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "فشل فتح ملفِّ PDF."
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "خطأ: تمَّت محاولة فتح مجلَّد ملفًّا"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "فشل فتح الملفِّ: نوع الملفِّ غير مدعوم."
+
+#: rnote-ui/src/appwindow/imp.rs:272
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "فشل حفظ المستند."
 
-#: rnote-ui/src/appwindow/mod.rs:1134
-msgid "Opening .rnote file failed."
-msgstr "فشل فتح ملفِّ .rnote."
-
-#: rnote-ui/src/appwindow/mod.rs:1145
-msgid "Opening vector image file failed."
-msgstr "فشل فتح ملفِّ الصورة المتَّجهيَّة."
-
-#: rnote-ui/src/appwindow/mod.rs:1156
-msgid "Opening bitmap image file failed."
-msgstr "فشل فتح ملفِّ صورة نقطيَّة."
-
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "فشل فتح ملفِّ Xournal++."
-
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "فشل فتح ملفِّ PDF."
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Error: Tried opening folder as file"
-msgstr "خطأ: تمَّت محاولة فتح مجلَّد ملفًّا"
-
-#: rnote-ui/src/appwindow/mod.rs:1192
-msgid "Failed to open file: Unsupported file type."
-msgstr "فشل فتح الملفِّ: نوع الملفِّ غير مدعوم."
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "طُبع المستند بنجاح"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "فشلت طباعة المستند"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "فشل تصدير المحدَّد، لم يحدَّد أيُّ شيء."
 
@@ -1734,6 +1734,9 @@ msgstr "اسم المجلَّد"
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
 msgid "New folder"
 msgstr "مجلَّد جديد"
+
+#~ msgid "@APP_NAME_CAPITALIZED@"
+#~ msgstr "@APP_NAME_CAPITALIZED@"
 
 #~ msgid "Permanently hidden scrollbars"
 #~ msgstr "إخفاء أشرطة التمرير بشكل دائم"

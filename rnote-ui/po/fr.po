@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 23:21+0100\n"
+"POT-Creation-Date: 2023-01-26 13:31+0100\n"
 "PO-Revision-Date: 2023-01-18 16:52+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -607,32 +607,32 @@ msgid "Split strokes"
 msgstr "Diviser les traits"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-#: rnote-ui/data/ui/overlays.ui:65
+#: rnote-ui/data/ui/overlays.ui:49
 msgid "Brush"
 msgstr "Pinceau"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:56
 msgid "Shaper"
 msgstr "Formes"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:64
 msgid "Typewriter"
 msgstr "Machine à écrire"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:72
 msgid "Eraser"
 msgstr "Effaceur"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-#: rnote-ui/data/ui/overlays.ui:96
+#: rnote-ui/data/ui/overlays.ui:80
 msgid "Selector"
 msgstr "Sélecteur"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-#: rnote-ui/data/ui/overlays.ui:104
+#: rnote-ui/data/ui/overlays.ui:88
 msgid "Tools"
 msgstr "Outils"
 
@@ -1004,19 +1004,15 @@ msgstr "Bar latéral à droite"
 msgid "Toggle fullscreen"
 msgstr "Basculer en plein écran"
 
-#: rnote-ui/data/ui/appwindow.ui:105
-msgid "Reveal / hide flap"
-msgstr "Afficher / masquer le rabat"
-
-#: rnote-ui/data/ui/appwindow.ui:175
+#: rnote-ui/data/ui/appwindow.ui:111
 msgid "Close the folded flap"
 msgstr "Fermer le rabat plié"
 
-#: rnote-ui/data/ui/appwindow.ui:192
+#: rnote-ui/data/ui/appwindow.ui:128
 msgid "Workspace"
 msgstr "Espace de travail"
 
-#: rnote-ui/data/ui/appwindow.ui:203
+#: rnote-ui/data/ui/appwindow.ui:139
 msgid "Settings"
 msgstr "Paramètres"
 
@@ -1103,29 +1099,33 @@ msgstr "Nouveau document"
 msgid "Draft"
 msgstr "Brouillon"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr "Afficher / masquer le rabat"
+
+#: rnote-ui/data/ui/mainheader.ui:46
 #, fuzzy
 #| msgid "New Sheet"
 msgid "New tab"
 msgstr "Nouvelle note"
 
-#: rnote-ui/data/ui/mainheader.ui:57
+#: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
 msgstr "Annuler"
 
-#: rnote-ui/data/ui/mainheader.ui:65
+#: rnote-ui/data/ui/mainheader.ui:76
 msgid "Redo"
 msgstr "Rétablir"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add page"
 msgstr "Ajouter une page"
 
-#: rnote-ui/data/ui/mainheader.ui:83
+#: rnote-ui/data/ui/mainheader.ui:94
 msgid "Resize document to fit the strokes"
 msgstr "Redimensionner le document pour l’adapter aux traits"
 
-#: rnote-ui/data/ui/mainheader.ui:98
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr "Enregistrer le document"
 
@@ -1369,8 +1369,11 @@ msgid "Show keyboard shortcuts"
 msgstr "Afficher les raccourcis clavier"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
 msgctxt "shortcut window"
-msgid "Close the active window"
+msgid "Close the active tab"
 msgstr "Fermer la fenêtre active"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
@@ -1542,51 +1545,51 @@ msgstr "Supprimer l’espace de travail sélectionné"
 msgid "Edit selected workspace"
 msgstr "Modifier l’espace de travail sélectionné"
 
-#: rnote-ui/src/appwindow/mod.rs:305
-#: rnote-ui/src/appwindow/appwindowactions.rs:686
+#: rnote-ui/src/appwindow/mod.rs:523
+msgid "Opening .rnote file failed."
+msgstr "L'ouverture du fichier .rnote a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:534
+msgid "Opening vector image file failed."
+msgstr "L'ouverture du fichier image vectorielle a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:545
+msgid "Opening bitmap image file failed."
+msgstr "L'ouverture du fichier image matricielle a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "L'ouverture du fichier Xournal++ a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "L'ouverture du fichier PDF a échoué."
+
+#: rnote-ui/src/appwindow/mod.rs:576
+msgid "Error: Tried opening folder as file"
+msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
+
+#: rnote-ui/src/appwindow/mod.rs:581
+msgid "Failed to open file: Unsupported file type."
+msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge."
+
+#: rnote-ui/src/appwindow/imp.rs:272
+#: rnote-ui/src/appwindow/appwindowactions.rs:498
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "Échec de l'enregistrement du document."
 
-#: rnote-ui/src/appwindow/mod.rs:1134
-msgid "Opening .rnote file failed."
-msgstr "L'ouverture du fichier .rnote a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1145
-msgid "Opening vector image file failed."
-msgstr "L'ouverture du fichier image vectorielle a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1156
-msgid "Opening bitmap image file failed."
-msgstr "L'ouverture du fichier image matricielle a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1167 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
-msgstr "L'ouverture du fichier Xournal++ a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1178 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr "L'ouverture du fichier PDF a échoué."
-
-#: rnote-ui/src/appwindow/mod.rs:1187
-msgid "Error: Tried opening folder as file"
-msgstr "Erreur : tentative d'ouverture d'un dossier en tant que fichier"
-
-#: rnote-ui/src/appwindow/mod.rs:1192
-msgid "Failed to open file: Unsupported file type."
-msgstr "Impossible d’ouvrir le fichier : type de fichier non pris en charge."
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:804
+#: rnote-ui/src/appwindow/appwindowactions.rs:616
 msgid "Printed document successfully"
 msgstr "Document imprimé avec succès"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:813
+#: rnote-ui/src/appwindow/appwindowactions.rs:625
 msgid "Printing document failed"
 msgstr "Échec de l'impression du document"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:841
+#: rnote-ui/src/appwindow/appwindowactions.rs:653
 msgid "Export selection failed, nothing selected."
 msgstr "Échec de l’exportation de la sélection, rien n'a été sélectionné."
 
@@ -1775,14 +1778,12 @@ msgstr "Nom du dossier"
 msgid "New folder"
 msgstr "Nouveau dossier"
 
+#~ msgctxt "shortcut window"
+#~ msgid "Close the active window"
+#~ msgstr "Fermer la fenêtre active"
+
 #~ msgid "Permanently hidden scrollbars"
 #~ msgstr "Barres de défilement masquées en permanence"
-
-#, fuzzy
-#~| msgctxt "shortcut window"
-#~| msgid "Close the active window"
-#~ msgid "Close the active tab"
-#~ msgstr "Fermer la fenêtre active"
 
 #, fuzzy
 #~| msgctxt "shortcut window"

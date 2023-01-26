@@ -15,4 +15,4 @@ log = "0.4"
 anyhow = "1"
 smol = "1"
 clap = {version = "4", features = ["derive"] }
-#indicatif = "0.17"
+indicatif = "0.17"

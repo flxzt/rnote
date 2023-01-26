@@ -3,6 +3,7 @@ use rnote_engine::engine::EngineSnapshot;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 use clap::{Parser, Subcommand};
 
@@ -69,14 +70,30 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             input_file,
             xopp_dpi,
         } => {
-            println!("Importing..");
-
             // apply given arguments to import prefs
             if let Some(xopp_dpi) = xopp_dpi {
                 engine.import_prefs.xopp_import_prefs.dpi = xopp_dpi;
             }
 
-            import_file(&mut engine, input_file, rnote_file).await?;
+            // setup progress bar
+            let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
+                "Importing \"{}\" to: \"{}\"",
+                input_file.display(),
+                rnote_file.display()
+            ));
+            pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
+
+            // import file
+            println!("Importing..");
+            pb.enable_steady_tick(Duration::from_millis(8));
+            if let Err(e) = import_file(&mut engine, input_file, rnote_file).await {
+                pb.abandon();
+                println!("Import failed, Err: {e:?}");
+                return Err(e);
+            } else {
+                pb.finish();
+                println!("Import finished!");
+            }
         }
         Commands::Export {
             rnote_files,
@@ -85,8 +102,6 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             with_background,
             with_pattern,
         } => {
-            println!("Exporting..");
-
             // apply given arguments to export prefs
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
@@ -101,30 +116,85 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         if rnote_files.len() > 1 {
                             return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
                         }
-                        export_to_file(&mut engine, file, output).await?
+
+                        // setup progress bar
+                        let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
+                            "Exporting \"{}\" to: \"{}\"",
+                            file.display(),
+                            output.display()
+                        ));
+                        pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
+
+                        // export file
+                        println!("Exporting..");
+                        pb.enable_steady_tick(Duration::from_millis(8));
+                        if let Err(e) = export_to_file(&mut engine, file, output).await {
+                            pb.abandon();
+                            println!("Export failed, Err: {e:?}");
+                            return Err(e);
+                        } else {
+                            pb.finish();
+                            println!("Export finished!");
+                        }
                     }
                     None => {
                         return Err(anyhow::anyhow!("Failed to get filename from rnote_files."))
                     }
                 },
                 None => {
-                    for file in rnote_files {
-                        let mut output = file.clone();
-                        output.set_extension(
-                            engine
-                                .export_prefs
-                                .doc_export_prefs
-                                .export_format
-                                .file_ext(),
-                        );
-                        println!("exporting `{}`", file.to_string_lossy());
-                        export_to_file(&mut engine, &file, &output).await?
+                    let output_files = rnote_files
+                        .iter()
+                        .map(|file| {
+                            let mut output = file.clone();
+                            output.set_extension(
+                                engine
+                                    .export_prefs
+                                    .doc_export_prefs
+                                    .export_format
+                                    .file_ext(),
+                            );
+                            output
+                        })
+                        .collect::<Vec<PathBuf>>();
+
+                    // setup progress bars
+                    let multiprogress = indicatif::MultiProgress::with_draw_target(
+                        indicatif::ProgressDrawTarget::stdout(),
+                    );
+                    let progresses = rnote_files
+                        .iter()
+                        .zip(output_files.iter())
+                        .map(|(file, output)| {
+                            multiprogress
+                                .add(indicatif::ProgressBar::new_spinner())
+                                .with_message(format!(
+                                    "Exporting \"{}\" to: \"{}\"",
+                                    file.display(),
+                                    output.display()
+                                ))
+                        })
+                        .collect::<Vec<indicatif::ProgressBar>>();
+
+                    // export files
+                    println!("Exporting..");
+                    for (i, (file, output)) in
+                        rnote_files.iter().zip(output_files.iter()).enumerate()
+                    {
+                        progresses[i].enable_steady_tick(Duration::from_millis(8));
+
+                        if let Err(e) = export_to_file(&mut engine, &file, &output).await {
+                            progresses[i].abandon();
+                            println!("Export failed, Err: {e:?}");
+                            continue;
+                        } else {
+                            progresses[i].finish();
+                        }
                     }
+                    println!("Export finished!");
                 }
             }
         }
     }
-    println!("Finished!");
 
     Ok(())
 }

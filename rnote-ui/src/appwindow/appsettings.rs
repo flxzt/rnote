@@ -85,6 +85,11 @@ impl RnoteAppWindow {
             )
             .build();
 
+        // flap revealed
+        self.app_settings()
+            .bind("reveal-flap", &self.flap(), "reveal-flap")
+            .build();
+
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
             let color = var.get::<(f64, f64, f64, f64)>()?;

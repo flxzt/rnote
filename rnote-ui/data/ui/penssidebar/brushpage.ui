@@ -157,20 +157,21 @@
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_simple">
                   <property name="title" translatable="yes">Simple</property>
-                  <property name="subtitle" translatable="yes">Produces line segments from the raw input.</property>
+                  <property name="subtitle" translatable="yes">Produces line segments from the raw input.
+</property>
                 </object>
               </child>
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_curved">
                   <property name="title" translatable="yes">Curved</property>
-                  <property name="subtitle" translatable="yes">Produces smooth, curved segments.</property>
+                  <property name="subtitle" translatable="yes">Produces smooth, curved segments.
+</property>
                 </object>
               </child>
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_modeled">
                   <property name="title" translatable="yes">Modeled</property>
-                  <property name="subtitle" translatable="yes">Produces a modeled path with physics
-based algorithms.
+                  <property name="subtitle" translatable="yes">Produces a modeled path with physics based algorithms.
 Results in the best looking handwriting.</property>
                 </object>
               </child>

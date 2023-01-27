@@ -36,26 +36,36 @@ impl RnoteAppWindow {
                 adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
                 _ => None,
             })
+            .get_no_changes()
+            .build();
+
+        self.app_settings()
+            .bind("flap-reveal", &self.flap(), "reveal-flap")
+            .get_no_changes()
             .build();
 
         // autosave
         self.app_settings()
             .bind("autosave", self, "autosave")
+            .get_no_changes()
             .build();
 
         // autosave interval secs
         self.app_settings()
             .bind("autosave-interval-secs", self, "autosave-interval-secs")
+            .get_no_changes()
             .build();
 
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")
+            .get_no_changes()
             .build();
 
         // touch drawing
         self.app_settings()
             .bind("touch-drawing", self, "touch-drawing")
+            .get_no_changes()
             .build();
 
         // permanently hide canvas scrollbars
@@ -65,6 +75,7 @@ impl RnoteAppWindow {
                 &self.settings_panel().general_show_scrollbars_switch(),
                 "active",
             )
+            .get_no_changes()
             .build();
 
         // regular cursor
@@ -74,6 +85,7 @@ impl RnoteAppWindow {
                 &self.settings_panel().general_regular_cursor_picker(),
                 "picked",
             )
+            .get_no_changes()
             .build();
 
         // drawing cursor
@@ -83,6 +95,7 @@ impl RnoteAppWindow {
                 &self.settings_panel().general_drawing_cursor_picker(),
                 "picked",
             )
+            .get_no_changes()
             .build();
 
         // colorpicker palette
@@ -119,6 +132,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -128,6 +142,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -137,6 +152,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -146,6 +162,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -155,6 +172,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -164,6 +182,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -173,6 +192,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -182,6 +202,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -191,6 +212,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -200,6 +222,7 @@ impl RnoteAppWindow {
             )
             .mapping(gdk_color_mapping)
             .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
 
         // brush stroke widths
@@ -214,6 +237,7 @@ impl RnoteAppWindow {
                     .setter_1(),
                 "stroke-width",
             )
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -226,6 +250,7 @@ impl RnoteAppWindow {
                     .setter_2(),
                 "stroke-width",
             )
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -238,6 +263,7 @@ impl RnoteAppWindow {
                     .setter_3(),
                 "stroke-width",
             )
+            .get_no_changes()
             .build();
 
         // shaper stroke widths
@@ -252,6 +278,7 @@ impl RnoteAppWindow {
                     .setter_1(),
                 "stroke-width",
             )
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -264,6 +291,7 @@ impl RnoteAppWindow {
                     .setter_2(),
                 "stroke-width",
             )
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
@@ -276,6 +304,7 @@ impl RnoteAppWindow {
                     .setter_3(),
                 "stroke-width",
             )
+            .get_no_changes()
             .build();
     }
 
@@ -293,9 +322,6 @@ impl RnoteAppWindow {
             if is_maximized {
                 self.maximize();
             }
-            // flap revealed (can't bind it, because it would sync across app windows)
-            self.flap()
-                .set_reveal_flap(self.app_settings().boolean("flap-reveal"));
             // flap width
             self.flap_box()
                 .set_width_request(self.app_settings().int("flap-width"));
@@ -350,8 +376,6 @@ impl RnoteAppWindow {
                 .set_int("window-height", self.height())?;
             self.app_settings()
                 .set_boolean("is-maximized", self.is_maximized())?;
-            self.app_settings()
-                .set_boolean("flap-reveal", self.flap().reveals_flap())?;
             self.app_settings()
                 .set_int("flap-width", self.flap_box().width())?;
         }

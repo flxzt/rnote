@@ -59,8 +59,7 @@ impl ShapeBehaviour for CubicBezier {
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        // TODO: should be depending on the actual curve length
-        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
+        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.25));
 
         self.approx_with_lines(n_splits)
             .into_iter()

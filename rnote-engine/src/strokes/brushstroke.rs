@@ -176,6 +176,7 @@ impl DrawBehaviour for BrushStroke {
             Style::Smooth(options) => self.path.draw_composed(cx, options),
             Style::Rough(_) => {
                 // Rough style currently unsupported for pen paths
+                unimplemented!()
             }
             Style::Textured(options) => self.path.draw_composed(cx, options),
         };
@@ -189,8 +190,7 @@ impl ShapeBehaviour for BrushStroke {
     fn bounds(&self) -> Aabb {
         match &self.style {
             Style::Smooth(options) => self.path.composed_bounds(options),
-            // TODO: Needs fixing
-            Style::Rough(_options) => self.path.bounds(),
+            Style::Rough(_options) => unimplemented!(),
             Style::Textured(options) => self.path.composed_bounds(options),
         }
     }

@@ -328,7 +328,8 @@ impl RnoteAppWindow {
         }
 
         // color scheme
-        // Set the action menu, as the style manager colorscheme property may not be changed from the binding at startup when opening a second window (FIXME: why?)
+        // Set the action menu, as the style manager colorscheme property may not be updated
+        // from the binding at startup when opening a second window (TODO: why?)
         let color_scheme = self.app_settings().string("color-scheme");
         self.app()
             .activate_action("color-scheme", Some(&color_scheme.to_variant()));

@@ -14,24 +14,14 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuButton" id="brushstyle_menubutton">
-            <property name="hexpand">true</property>
-            <property name="halign">fill</property>
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Brush style</property>
             <property name="popover">brushstyle_popover</property>
+            <property name="icon-name">pen-brush-style-solid-symbolic</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage" id="brushstyle_image">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon-name">pen-brush-style-solid-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
@@ -167,21 +157,20 @@
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_simple">
                   <property name="title" translatable="yes">Simple</property>
-                  <property name="subtitle" translatable="yes">Produces line segments from the raw input.
-</property>
+                  <property name="subtitle" translatable="yes">Produces line segments from the raw input.</property>
                 </object>
               </child>
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_curved">
                   <property name="title" translatable="yes">Curved</property>
-                  <property name="subtitle" translatable="yes">Produces smooth, curved segments.
-</property>
+                  <property name="subtitle" translatable="yes">Produces smooth, curved segments.</property>
                 </object>
               </child>
               <child>
                 <object class="AdwActionRow" id="brush_buildertype_modeled">
                   <property name="title" translatable="yes">Modeled</property>
-                  <property name="subtitle" translatable="yes">Produces a modeled path with physics based algorithms.
+                  <property name="subtitle" translatable="yes">Produces a modeled path with physics
+based algorithms.
 Results in the best looking handwriting.</property>
                 </object>
               </child>

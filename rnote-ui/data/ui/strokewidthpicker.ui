@@ -22,6 +22,7 @@
         <property name="numeric">true</property>
         <property name="digits">1</property>
         <property name="climb-rate">0.5</property>
+        <property name="width-chars">4</property>
       </object>
     </child>
     <child>
@@ -30,6 +31,7 @@
         <property name="spacing">3</property>
         <child>
           <object class="StrokeWidthSetter" id="setter_1">
+            <property name="halign">fill</property>
             <style>
               <class name="flat" />
             </style>
@@ -37,6 +39,7 @@
         </child>
         <child>
           <object class="StrokeWidthSetter" id="setter_2">
+            <property name="halign">fill</property>
             <style>
               <class name="flat" />
             </style>
@@ -44,6 +47,7 @@
         </child>
         <child>
           <object class="StrokeWidthSetter" id="setter_3">
+            <property name="halign">fill</property>
             <style>
               <class name="flat" />
             </style>

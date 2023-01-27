@@ -113,15 +113,10 @@
                                 <property name="valign">center</property>
                                 <property name="halign">end</property>
                                 <property name="popover">general_regular_cursor_picker_popover</property>
-                                <child>
-                                  <object class="GtkImage" id="general_regular_cursor_picker_image">
-                                    <style>
-                                      <class name="settings_row_image" />
-                                    </style>
                                     <property name="icon-name">cursor-dot-medium</property>
-                                    <property name="icon-size">large</property>
-                                  </object>
-                                </child>
+                                <style>
+                                  <class name="cursor_picker_button" />
+                                </style>
                               </object>
                             </child>
                           </object>
@@ -141,15 +136,10 @@
                                 <property name="valign">center</property>
                                 <property name="halign">end</property>
                                 <property name="popover">general_drawing_cursor_picker_popover</property>
-                                <child>
-                                  <object class="GtkImage" id="general_drawing_cursor_picker_image">
-                                    <style>
-                                      <class name="settings_row_image" />
-                                    </style>
-                                    <property name="icon-name">cursor-dot-small</property>
-                                    <property name="icon-size">large</property>
-                                  </object>
-                                </child>
+                                <property name="icon-name">cursor-dot-small</property>
+                                <style>
+                                  <class name="cursor_picker_button" />
+                                </style>
                               </object>
                             </child>
                           </object>

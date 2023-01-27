@@ -1,6 +1,6 @@
 // Imports
 use super::StrokeWidthPreview;
-use gtk4::{glib, prelude::*, subclass::prelude::*, Align, Button, Overflow, ToggleButton, Widget};
+use gtk4::{glib, prelude::*, subclass::prelude::*, Button, Overflow, ToggleButton, Widget};
 use once_cell::sync::Lazy;
 use std::cell::Cell;
 
@@ -35,18 +35,11 @@ mod imp {
             let inst = self.instance();
 
             inst.set_overflow(Overflow::Hidden);
-            inst.set_halign(Align::Center);
-            inst.set_valign(Align::Center);
-            inst.set_hexpand(false);
-            inst.set_vexpand(false);
             inst.set_css_classes(&["strokewidthsetter"]);
-
             inst.set_child(Some(&self.preview));
-
             inst.bind_property("stroke-width", &self.preview, "stroke-width")
                 .sync_create()
                 .build();
-
             self.update_appearance(self.stroke_width.get());
         }
 

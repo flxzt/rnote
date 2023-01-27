@@ -13,46 +13,26 @@
       <object class="GtkBox" id="toolstyle_togglebox">
         <property name="orientation">vertical</property>
         <property name="homogeneous">true</property>
-        <property name="vexpand">false</property>
         <property name="spacing">6</property>
         <child>
           <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
             <property name="tooltip_text" translatable="yes">Insert vertical space</property>
-            <property name="vexpand">true</property>
-            <property name="active">true</property>
+            <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="toolstyle_offsetcamera_toggle">
             <property name="tooltip_text" translatable="yes">Offset the camera by dragging</property>
+            <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
             <property name="group">toolstyle_verticalspace_toggle</property>
-            <property name="vexpand">true</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
       </object>

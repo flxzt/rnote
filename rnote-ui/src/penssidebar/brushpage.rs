@@ -1,7 +1,7 @@
 use adw::prelude::*;
 use gtk4::{
-    glib, glib::clone, subclass::prelude::*, CompositeTemplate, Image, ListBox, MenuButton,
-    Popover, SpinButton,
+    glib, glib::clone, subclass::prelude::*, CompositeTemplate, ListBox, MenuButton, Popover,
+    SpinButton,
 };
 use num_traits::cast::ToPrimitive;
 
@@ -21,8 +21,6 @@ mod imp {
     pub(crate) struct BrushPage {
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) brushstyle_image: TemplateChild<Image>,
         #[template_child]
         pub(crate) brushstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
@@ -231,17 +229,17 @@ impl BrushPage {
                         BrushStyle::Marker => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.marker_options.stroke_width;
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
-                            brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-marker-symbolic"))
+                            brushpage.imp().brushstyle_menubutton.set_icon_name("pen-brush-style-marker-symbolic");
                         },
                         BrushStyle::Solid => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.solid_options.stroke_width;
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
-                            brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-solid-symbolic"))
+                            brushpage.imp().brushstyle_menubutton.set_icon_name("pen-brush-style-solid-symbolic");
                         },
                         BrushStyle::Textured => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.stroke_width;
                             brushpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
-                            brushpage.imp().brushstyle_image.set_icon_name(Some("pen-brush-style-textured-symbolic"))
+                            brushpage.imp().brushstyle_menubutton.set_icon_name("pen-brush-style-textured-symbolic");
                         },
                     }
                 }
@@ -277,8 +275,8 @@ impl BrushPage {
             .set_value(TexturedOptions::default().density);
 
         imp.texturedstyle_density_spinbutton.get().connect_value_changed(
-            clone!(@weak appwindow => move |texturedstyle_density_adj| {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.density = texturedstyle_density_adj.value();
+            clone!(@weak appwindow => move |spinbutton| {
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.brush_config.textured_options.density = spinbutton.value();
             }),
         );
 

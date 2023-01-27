@@ -16,19 +16,11 @@
         <property name="tooltip_text" translatable="yes">Font chooser
 (double-click, click on select
 or press Enter to select a new font)</property>
+            <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
         <style>
           <class name="flat" />
+          <class name="sidebar_action_button" />
         </style>
-        <child>
-          <object class="GtkImage" id="fontchooser_buttonimage">
-            <style>
-              <class name="sidebar_action_image" />
-            </style>
-            <property name="halign">center</property>
-            <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
-            <property name="icon-size">large</property>
-          </object>
-        </child>
       </object>
     </child>
     <child>
@@ -54,19 +46,11 @@ or press Enter to select a new font)</property>
         <property name="direction">left</property>
         <property name="popover">emojichooser</property>
         <property name="tooltip_text" translatable="yes">Pick and insert an emoji</property>
+        <property name="icon-name">emojichooser-symbolic</property>
         <style>
           <class name="flat" />
+          <class name="sidebar_action_button" />
         </style>
-        <child>
-          <object class="GtkImage" id="emojichooser_buttonimage">
-            <style>
-              <class name="sidebar_action_image" />
-            </style>
-            <property name="halign">center</property>
-            <property name="icon-name">emojichooser-symbolic</property>
-            <property name="icon-size">large</property>
-          </object>
-        </child>
       </object>
     </child>
     <object class="GtkEmojiChooser" id="emojichooser">

@@ -20,69 +20,40 @@
         <child>
           <object class="GtkToggleButton" id="selectorstyle_polygon_toggle">
             <property name="tooltip_text" translatable="yes">Select with a polygon</property>
-            <property name="vexpand">true</property>
-            <property name="active">true</property>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">pen-selector-polygon-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="icon_name">pen-selector-polygon-symbolic</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_rect_toggle">
             <property name="group">selectorstyle_polygon_toggle</property>
             <property name="tooltip_text" translatable="yes">Select with a rectangle</property>
-            <property name="vexpand">true</property>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">pen-selector-rectangle-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="icon_name">pen-selector-rectangle-symbolic</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_single_toggle">
             <property name="group">selectorstyle_polygon_toggle</property>
             <property name="tooltip_text" translatable="yes">Select one by one</property>
-            <property name="vexpand">true</property>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">pen-selector-single-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="icon_name">pen-selector-single-symbolic</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_intersectingpath_toggle">
             <property name="group">selectorstyle_polygon_toggle</property>
             <property name="tooltip_text" translatable="yes">Select intersecting path</property>
-            <property name="vexpand">true</property>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">pen-selector-intersectingpath-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="icon_name">pen-selector-intersectingpath-symbolic</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
           </object>
         </child>
       </object>
@@ -100,96 +71,56 @@
         <child>
           <object class="GtkToggleButton" id="resize_lock_aspectratio_togglebutton">
             <property name="tooltip_text" translatable="yes">Lock aspectratio while resizing the selection</property>
+            <property name="icon_name">selection-resize-lock-aspectratio-symbolic</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">selection-resize-lock-aspectratio-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="selection_select_all_button">
             <property name="tooltip_text" translatable="yes">Select all strokes</property>
             <property name="action-name">win.selection-select-all</property>
+            <property name="icon_name">selection-select-all-symbolic</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">selection-select-all-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="selection_deselect_all_button">
             <property name="tooltip_text" translatable="yes">Deselect all strokes</property>
             <property name="action-name">win.selection-deselect-all</property>
+            <property name="icon_name">selection-deselect-all-symbolic</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">selection-deselect-all-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="selection_duplicate_button">
             <property name="tooltip_text" translatable="yes">Duplicate selection</property>
             <property name="action-name">win.selection-duplicate</property>
+            <property name="icon_name">selection-duplicate-symbolic</property>
             <style>
               <class name="flat" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">selection-duplicate-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="selection_delete_button">
             <property name="tooltip_text" translatable="yes">Delete selection</property>
             <property name="action-name">win.selection-trash</property>
+            <property name="icon_name">selection-trash-symbolic</property>
             <style>
               <class name="flat" />
               <class name="flat-destructive-action" />
+              <class name="sidebar_action_button" />
             </style>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="halign">center</property>
-                <property name="icon_name">selection-trash-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
           </object>
         </child>
       </object>

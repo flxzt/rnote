@@ -1,11 +1,29 @@
-.sidebar_action_image {
-    margin-left: -4px;
-    margin-right: -4px;
+.sidebar_action_button {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0px;
+    margin: 0px;
 }
 
-.settings_row_image {
-    margin-left: -4px;
-    margin-right: -4px;
+.sidebar_action_button > image,
+.sidebar_action_button > box > image,
+.sidebar_action_button > button > box > image
+{
+    -gtk-icon-size: 32px;
+}
+
+.cursor_picker_button {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.cursor_picker_button > image,
+.cursor_picker_button > box image,
+.cursor_picker_button > button > box > image
+{
+    -gtk-icon-size: 32px;
 }
 
 .main_title.unsaved_changes .title {
@@ -41,7 +59,7 @@
 
 .colorpad {
     padding: 0px;
-    margin: 1px;
+    margin: 0px;
     background-blend-mode: screen;
     background-image:
         linear-gradient(45deg, #0a0a0a88 25%, transparent 25%, transparent 75%, #0a0a0a88 75%, #0a0a0a88),
@@ -74,7 +92,10 @@
 }
 
 .colorsetter {
+    min-width: 32px;
+    min-height: 32px;
     padding: 0px;
+    margin: 0px;
     background-blend-mode: screen;
     background-image:
         linear-gradient(45deg, #0a0a0a88 25%, transparent 25%, transparent 75%, #0a0a0a88 75%, #0a0a0a88),
@@ -103,11 +124,10 @@
 }
 
 .strokewidthsetter {
-    padding: 5px;
-}
-
-.quickaction-button {
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.2);
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0px;
+    margin: 0px;
 }
 
 .workspace-listbox {

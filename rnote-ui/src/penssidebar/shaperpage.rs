@@ -1,6 +1,6 @@
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{
-    glib, glib::clone, CompositeTemplate, Image, ListBox, MenuButton, Popover, SpinButton, Switch,
+    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, Switch,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
@@ -20,8 +20,6 @@ mod imp {
         #[template_child]
         pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shaperstyle_image: TemplateChild<Image>,
-        #[template_child]
         pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
         pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
@@ -39,8 +37,6 @@ mod imp {
         pub(crate) stroke_width_picker: TemplateChild<StrokeWidthPicker>,
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) shapebuildertype_image: TemplateChild<Image>,
         #[template_child]
         pub(crate) shapebuildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
@@ -265,12 +261,12 @@ impl ShaperPage {
                         ShaperStyle::Smooth => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.smooth_options.stroke_width;
                             shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
-                            shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
+                            shaperpage.imp().shaperstyle_menubutton.set_icon_name("pen-shaper-style-smooth-symbolic");
                         },
                         ShaperStyle::Rough => {
                             let stroke_width = appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.rough_options.stroke_width;
                             shaperpage.imp().stroke_width_picker.set_stroke_width(stroke_width);
-                            shaperpage.imp().shaperstyle_image.set_icon_name(Some("pen-shaper-style-rough-symbolic"));
+                            shaperpage.imp().shaperstyle_menubutton.set_icon_name("pen-shaper-style-rough-symbolic");
                         },
                     }
                 }
@@ -295,16 +291,16 @@ impl ShaperPage {
                     appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = buildertype;
 
                     match buildertype {
-                        ShapeBuilderType::Line => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-line-symbolic")),
-                        ShapeBuilderType::Rectangle => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-rectangle-symbolic")),
-                        ShapeBuilderType::Grid => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-grid-symbolic")),
-                        ShapeBuilderType::CoordSystem2D => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-coordsystem2d-symbolic")),
-                        ShapeBuilderType::CoordSystem3D => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-coordsystem3d-symbolic")),
-                        ShapeBuilderType::QuadrantCoordSystem2D => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-quadrantcoordsystem2d-symbolic")),
-                        ShapeBuilderType::Ellipse => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-ellipse-symbolic")),
-                        ShapeBuilderType::FociEllipse => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-fociellipse-symbolic")),
-                        ShapeBuilderType::QuadBez => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-quadbez-symbolic")),
-                        ShapeBuilderType::CubBez => shaperpage.imp().shapebuildertype_image.set_icon_name(Some("shapebuilder-cubbez-symbolic")),
+                        ShapeBuilderType::Line => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-line-symbolic"),
+                        ShapeBuilderType::Rectangle => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-rectangle-symbolic"),
+                        ShapeBuilderType::Grid => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-grid-symbolic"),
+                        ShapeBuilderType::CoordSystem2D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-coordsystem2d-symbolic"),
+                        ShapeBuilderType::CoordSystem3D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-coordsystem3d-symbolic"),
+                        ShapeBuilderType::QuadrantCoordSystem2D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-quadrantcoordsystem2d-symbolic"),
+                        ShapeBuilderType::Ellipse => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-ellipse-symbolic"),
+                        ShapeBuilderType::FociEllipse => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-fociellipse-symbolic"),
+                        ShapeBuilderType::QuadBez => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-quadbez-symbolic"),
+                        ShapeBuilderType::CubBez => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-cubbez-symbolic"),
                     }
                 }
             }),

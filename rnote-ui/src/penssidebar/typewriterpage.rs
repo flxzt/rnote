@@ -2,7 +2,7 @@ use crate::appwindow::RnoteAppWindow;
 use gtk4::pango;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, EmojiChooser,
-    FontChooserLevel, FontChooserWidget, Image, MenuButton, Popover, SpinButton, ToggleButton,
+    FontChooserLevel, FontChooserWidget, MenuButton, Popover, SpinButton, ToggleButton,
 };
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::Pen;
@@ -17,8 +17,6 @@ mod imp {
     pub(crate) struct TypewriterPage {
         #[template_child]
         pub(crate) fontchooser_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) fontchooser_buttonimage: TemplateChild<Image>,
         #[template_child]
         pub(crate) fontchooser_popover: TemplateChild<Popover>,
         #[template_child]

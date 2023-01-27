@@ -1,16 +1,20 @@
 pub(crate) mod penshortcutmodels;
 mod penshortcutrow;
 
-use gtk4::{Image, StringList};
 // Re-exports
 pub(crate) use penshortcutrow::PenShortcutRow;
 
+// Imports
 use adw::prelude::*;
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
-    CompositeTemplate, ScrolledWindow, SpinButton, Switch, ToggleButton, Widget,
+    CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
+    Widget,
 };
 use num_traits::ToPrimitive;
+use rnote_engine::document::background::PatternStyle;
+use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -19,9 +23,6 @@ use crate::globals;
 use crate::unitentry::UnitEntry;
 use crate::IconPicker;
 use rnote_compose::penevents::ShortcutKey;
-use rnote_engine::document::background::PatternStyle;
-use rnote_engine::document::format::{self, Format, PredefinedFormat};
-use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
     use super::*;
@@ -46,11 +47,11 @@ mod imp {
         #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<IconPicker>,
         #[template_child]
-        pub(crate) general_regular_cursor_picker_image: TemplateChild<Image>,
+        pub(crate) general_regular_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) general_drawing_cursor_picker: TemplateChild<IconPicker>,
         #[template_child]
-        pub(crate) general_drawing_cursor_picker_image: TemplateChild<Image>,
+        pub(crate) general_drawing_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -564,10 +565,9 @@ impl SettingsPanel {
         imp.general_regular_cursor_picker
             .bind_property(
                 "picked",
-                &*imp.general_regular_cursor_picker_image,
+                &*imp.general_regular_cursor_picker_menubutton,
                 "icon-name",
             )
-            .transform_to(|_, v: Option<String>| v)
             .sync_create()
             .build();
 
@@ -578,10 +578,9 @@ impl SettingsPanel {
         imp.general_drawing_cursor_picker
             .bind_property(
                 "picked",
-                &*imp.general_drawing_cursor_picker_image,
+                &*imp.general_drawing_cursor_picker_menubutton,
                 "icon-name",
             )
-            .transform_to(|_, v: Option<String>| v)
             .sync_create()
             .build();
     }

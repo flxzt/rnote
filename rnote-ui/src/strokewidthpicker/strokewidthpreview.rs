@@ -1,7 +1,7 @@
 // Imports
 use gtk4::{
-    glib, graphene, prelude::*, subclass::prelude::*, Orientation, Overflow, SizeRequestMode,
-    Widget,
+    glib, graphene, prelude::*, subclass::prelude::*, Align, Orientation, Overflow,
+    SizeRequestMode, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;
@@ -35,6 +35,8 @@ mod imp {
             let inst = self.instance();
 
             inst.set_overflow(Overflow::Hidden);
+            inst.set_halign(Align::Center);
+            inst.set_valign(Align::Center);
         }
 
         fn properties() -> &'static [glib::ParamSpec] {

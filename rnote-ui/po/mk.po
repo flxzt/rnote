@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-27 16:32+0100\n"
+"POT-Creation-Date: 2023-01-28 20:19+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -95,7 +95,7 @@ msgstr "Одкажи"
 msgid "Clear"
 msgstr "Избриши"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:756
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
 msgstr "Нов документ"
 
@@ -1195,7 +1195,7 @@ msgstr "Удвои"
 msgid "New document"
 msgstr "Нов документ"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:758
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
 msgid "Draft"
 msgstr "Урнек"
 
@@ -1226,6 +1226,28 @@ msgstr "Предимензионирај го документот за да с�
 #: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
 msgstr "Зачувај документ"
+
+#: rnote-ui/data/ui/overlays.ui:156
+msgid "Move _left"
+msgstr ""
+
+#: rnote-ui/data/ui/overlays.ui:160
+msgid "Move _right"
+msgstr ""
+
+#: rnote-ui/data/ui/overlays.ui:166
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "_Close all other tabs"
+msgstr "Затвори го активниот прозорец"
+
+#: rnote-ui/data/ui/overlays.ui:170
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the active window"
+msgid "_Close"
+msgstr "Затвори го активниот прозорец"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1659,87 +1681,87 @@ msgstr "Одстрани работна површина"
 msgid "Edit selected workspace"
 msgstr "Уреди ја работната површина"
 
-#: rnote-ui/src/appwindow/mod.rs:523
+#: rnote-ui/src/appwindow/mod.rs:505
 msgid "Opening .rnote file failed."
 msgstr "Неуспешно отворање на .rnote датотеката."
 
-#: rnote-ui/src/appwindow/mod.rs:534
+#: rnote-ui/src/appwindow/mod.rs:516
 msgid "Opening vector image file failed."
 msgstr "Неуспешно отворање на векторската датотека."
 
-#: rnote-ui/src/appwindow/mod.rs:545
+#: rnote-ui/src/appwindow/mod.rs:527
 msgid "Opening bitmap image file failed."
 msgstr "Неуспешно отворање на сликата."
 
-#: rnote-ui/src/appwindow/mod.rs:556 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed."
 msgstr "Неуспешно отворање на .xopp датотеката."
 
-#: rnote-ui/src/appwindow/mod.rs:567 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed."
 msgstr "Отворањето на PDF-от беше неуспешно."
 
-#: rnote-ui/src/appwindow/mod.rs:576
+#: rnote-ui/src/appwindow/mod.rs:558
 msgid "Error: Tried opening folder as file"
 msgstr "Грешка: Папка не може да се отвора како датотека"
 
-#: rnote-ui/src/appwindow/mod.rs:581
+#: rnote-ui/src/appwindow/mod.rs:563
 msgid "Failed to open file: Unsupported file type."
 msgstr "Неуспех: Неподдржан датотечен вид."
 
 #: rnote-ui/src/appwindow/imp.rs:272
-#: rnote-ui/src/appwindow/appwindowactions.rs:498
+#: rnote-ui/src/appwindow/appwindowactions.rs:525
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:322
 msgid "Saving document failed."
 msgstr "Зачувувањето на документот беше неуспешно."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:616
+#: rnote-ui/src/appwindow/appwindowactions.rs:643
 msgid "Printed document successfully"
 msgstr "Документот беше успешно испечатен"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:625
+#: rnote-ui/src/appwindow/appwindowactions.rs:652
 msgid "Printing document failed"
 msgstr "Печатењето на документот беше неуспешно"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:653
+#: rnote-ui/src/appwindow/appwindowactions.rs:680
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Export selection failed, nothing selected."
 msgstr "Неуспешно вадење на одбраното како SVG."
 
-#: rnote-ui/src/canvas/mod.rs:961
+#: rnote-ui/src/canvas/mod.rs:994
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
 msgstr "- нема име на датотека -"
 
-#: rnote-ui/src/canvas/mod.rs:974
+#: rnote-ui/src/canvas/mod.rs:1007
 msgid "- invalid folder path -"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:998
+#: rnote-ui/src/canvas/mod.rs:1031
 msgid "Opened file was modified on disk."
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:999
+#: rnote-ui/src/canvas/mod.rs:1032
 msgid "Reload"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:1005
+#: rnote-ui/src/canvas/mod.rs:1038
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed."
 msgstr "Неуспешно отворање на .rnote датотеката."
 
-#: rnote-ui/src/canvas/mod.rs:1054
+#: rnote-ui/src/canvas/mod.rs:1087
 msgid "Opened file was renamed on disk."
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:1067
+#: rnote-ui/src/canvas/mod.rs:1100
 msgid "Opened file was moved or deleted on disk."
 msgstr ""
 

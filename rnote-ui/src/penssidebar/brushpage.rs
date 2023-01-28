@@ -4,14 +4,13 @@ use gtk4::{
     SpinButton,
 };
 use num_traits::cast::ToPrimitive;
-
 use rnote_compose::builders::PenPathBuilderType;
+use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_compose::style::PressureCurve;
+use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 use rnote_engine::pens::pensconfig::BrushConfig;
 
-use crate::{RnoteAppWindow, StrokeWidthPicker};
-use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
-use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
+use crate::{RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
 
 mod imp {
     use super::*;
@@ -286,10 +285,9 @@ impl BrushPage {
         }));
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
-        let brush_config = appwindow
-            .active_tab()
+        let brush_config = active_tab
             .canvas()
             .engine()
             .borrow()

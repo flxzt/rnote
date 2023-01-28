@@ -1,6 +1,7 @@
-use crate::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
 use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
+
+use crate::{RnoteAppWindow, RnoteCanvasWrapper};
 
 mod imp {
     use super::*;
@@ -99,9 +100,8 @@ impl ToolsPage {
         }));
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        let tools_config = appwindow
-            .active_tab()
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+        let tools_config = active_tab
             .canvas()
             .engine()
             .borrow()

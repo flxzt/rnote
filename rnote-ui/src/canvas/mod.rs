@@ -9,6 +9,7 @@ use rnote_engine::pens::PenMode;
 
 // Imports
 use std::cell::{Cell, RefCell};
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use crate::config;
@@ -923,6 +924,38 @@ impl RnoteCanvas {
         }
     }
 
+    pub(crate) fn save_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
+        let engine_config = self.engine().borrow().export_engine_config_as_json()?;
+        Ok(settings.set_string("engine-config", engine_config.as_str())?)
+    }
+
+    pub(crate) fn load_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
+        // load engine config
+        let engine_config = settings.string("engine-config");
+        let widget_flags = match self
+            .engine()
+            .borrow_mut()
+            .import_engine_config_from_json(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
+        {
+            Err(e) => {
+                if engine_config.is_empty() {
+                    // On first app startup the engine config is empty, so we don't log an error
+                    log::debug!("did not load `engine-config` from settings, was empty");
+                } else {
+                    return Err(e);
+                }
+                None
+            }
+            Ok(widget_flags) => Some(widget_flags),
+        };
+
+        // Avoiding already borrowed
+        if let Some(widget_flags) = widget_flags {
+            self.emit_handle_widget_flags(widget_flags);
+        }
+        Ok(())
+    }
+
     pub(crate) fn clear_output_file_monitor(&self) {
         if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
             if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
@@ -1119,7 +1152,7 @@ impl RnoteCanvas {
                     canvas.dismiss_output_file_modified_toast();
                 }
 
-                appwindow.refresh_titles_active_tab();
+                appwindow.refresh_titles(&appwindow.active_tab());
             }),
         );
 
@@ -1146,7 +1179,7 @@ impl RnoteCanvas {
         let appwindow_unsaved_changes = self.connect_notify_local(
             Some("unsaved-changes"),
             clone!(@weak appwindow => move |_canvas, _pspec| {
-                appwindow.refresh_titles_active_tab();
+                appwindow.refresh_titles(&appwindow.active_tab());
             }),
         );
 

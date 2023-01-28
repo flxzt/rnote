@@ -12,17 +12,14 @@ use gtk4::{
     Widget,
 };
 use num_traits::ToPrimitive;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use super::appwindow::RnoteAppWindow;
-use crate::globals;
-use crate::unitentry::UnitEntry;
-use crate::IconPicker;
-use rnote_compose::penevents::ShortcutKey;
+use crate::{globals, IconPicker, RnoteAppWindow, RnoteCanvasWrapper, UnitEntry};
 
 mod imp {
     use super::*;
@@ -429,16 +426,16 @@ impl SettingsPanel {
         self.imp().general_show_scrollbars_switch.clone()
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        self.refresh_general_ui(appwindow);
-        self.refresh_format_ui(appwindow);
-        self.refresh_background_ui(appwindow);
-        self.refresh_shortcuts_ui(appwindow);
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+        self.refresh_general_ui(active_tab);
+        self.refresh_format_ui(active_tab);
+        self.refresh_background_ui(active_tab);
+        self.refresh_shortcuts_ui(active_tab);
     }
 
-    fn refresh_general_ui(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_general_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
+        let canvas = active_tab.canvas();
 
         let format_border_color = canvas.engine().borrow().document.format.border_color;
 
@@ -446,9 +443,9 @@ impl SettingsPanel {
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
-    fn refresh_format_ui(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_format_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
+        let canvas = active_tab.canvas();
 
         let format = canvas.engine().borrow().document.format;
 
@@ -466,9 +463,9 @@ impl SettingsPanel {
         imp.format_height_unitentry.set_value(format.height);
     }
 
-    fn refresh_background_ui(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_background_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
+        let canvas = active_tab.canvas();
 
         let background = canvas.engine().borrow().document.background;
         let format = canvas.engine().borrow().document.format;
@@ -494,9 +491,9 @@ impl SettingsPanel {
             .set_value(background.pattern_size[1]);
     }
 
-    fn refresh_shortcuts_ui(&self, appwindow: &RnoteAppWindow) {
+    fn refresh_shortcuts_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
-        let canvas = appwindow.active_tab().canvas();
+        let canvas = active_tab.canvas();
 
         let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
 

@@ -1,10 +1,7 @@
-use std::path::PathBuf;
-
-use crate::appwindow::RnoteAppWindow;
-use crate::config;
+use adw::prelude::*;
 use gtk4::{gdk, glib};
 
-use adw::prelude::*;
+use crate::appwindow::RnoteAppWindow;
 
 impl RnoteAppWindow {
     /// Settings binds
@@ -308,7 +305,7 @@ impl RnoteAppWindow {
             .build();
     }
 
-    /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
+    /// load settings at startup that are not bound as binding. Setting changes through gsettings / dconf might not be applied until app restarts
     pub(crate) fn load_settings(&self) {
         let _app = self.app();
 
@@ -340,32 +337,6 @@ impl RnoteAppWindow {
                 .workspacesbar()
                 .load_from_settings(&self.app_settings());
         }
-
-        {
-            let canvas = self.active_tab().canvas();
-            // load engine config
-            let engine_config = self.app_settings().string("engine-config");
-            let widget_flags = match canvas.engine().borrow_mut().import_engine_config_from_json(
-                &engine_config,
-                Some(PathBuf::from(config::PKGDATADIR)),
-            ) {
-                Err(e) => {
-                    // On first app startup the engine config is empty, so we don't log an error
-                    if engine_config.is_empty() {
-                        log::debug!("did not load `engine-config` from settings, was empty");
-                    } else {
-                        log::error!("failed to load `engine-config` from settings, Err: {e:?}");
-                    }
-                    None
-                }
-                Ok(widget_flags) => Some(widget_flags),
-            };
-
-            // Avoiding already borrowed
-            if let Some(widget_flags) = widget_flags {
-                self.handle_widget_flags(widget_flags, &canvas);
-            }
-        }
     }
 
     /// Save all settings at shutdown that are not bound in setup_settings
@@ -382,8 +353,10 @@ impl RnoteAppWindow {
         }
 
         {
-            // Save engine config
-            self.save_engine_config_active_tab()?;
+            // Save engine config of the last active tab
+            self.active_tab()
+                .canvas()
+                .save_engine_config(&self.app_settings())?;
         }
 
         Ok(())

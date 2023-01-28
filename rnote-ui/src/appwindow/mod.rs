@@ -151,15 +151,13 @@ impl RnoteAppWindow {
         self.setup_actions();
         self.setup_action_accels();
         self.setup_settings_binds();
-
-        // Load settings
         self.load_settings();
 
         // Periodically save engine config
         if let Some(removed_id) = self.imp().periodic_configsave_source_id.borrow_mut().replace(
             glib::source::timeout_add_seconds_local(
                 Self::PERIODIC_CONFIGSAVE_INTERVAL, clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
-                    if let Err(e) = appwindow.save_engine_config_active_tab() {
+                    if let Err(e) = appwindow.active_tab().canvas().save_engine_config(&appwindow.app_settings()) {
                         log::error!("saving engine config in periodic task failed with Err: {e:?}");
                     }
 
@@ -168,17 +166,11 @@ impl RnoteAppWindow {
             removed_id.remove();
         }
 
-        self.init_misc();
-    }
+        // Anything that needs to be done right before showing the appwindow
 
-    // Anything that needs to be done right before showing the appwindow
-    pub(crate) fn init_misc(&self) {
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
         self.mainheader().undo_button().set_sensitive(false);
         self.mainheader().redo_button().set_sensitive(false);
-
-        self.active_tab().canvas().regenerate_background_pattern();
-        self.active_tab().canvas().update_engine_rendering();
         self.refresh_ui_from_engine(&self.active_tab());
     }
 
@@ -189,16 +181,24 @@ impl RnoteAppWindow {
             log::error!("Failed to save appwindow to settings, with Err: {e:?}");
         }
 
-        // Closing the state tasks channel receiver
-        if let Err(e) = self
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .tasks_tx()
-            .unbounded_send(EngineTask::Quit)
+        // Closing the state tasks channel receiver for all tabs
+        for tab in self
+            .tab_pages_snapshot()
+            .into_iter()
+            .map(|p| p.child().downcast::<RnoteCanvasWrapper>().unwrap())
         {
-            log::error!("failed to send StateTask::Quit on store tasks_tx, Err: {e:?}");
+            if let Err(e) = tab
+                .canvas()
+                .engine()
+                .borrow()
+                .tasks_tx()
+                .unbounded_send(EngineTask::Quit)
+            {
+                log::error!(
+                    "failed to send StateTask::Quit to tab with title `{}`, Err: {e:?}",
+                    tab.canvas().doc_title_display()
+                );
+            }
         }
 
         self.destroy();
@@ -235,19 +235,6 @@ impl RnoteAppWindow {
         }
     }
 
-    pub(crate) fn save_engine_config_active_tab(&self) -> anyhow::Result<()> {
-        let engine_config = self
-            .active_tab()
-            .canvas()
-            .engine()
-            .borrow()
-            .export_engine_config_as_json()?;
-        self.app_settings()
-            .set_string("engine-config", engine_config.as_str())?;
-
-        Ok(())
-    }
-
     /// Get the active (selected) tab page, or create one if there is None.
     /// (should never be the the case, since we add a initial page on startup and the last tab cannot be closed in the UI. But making sure)
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
@@ -269,6 +256,12 @@ impl RnoteAppWindow {
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
         let new_wrapper = RnoteCanvasWrapper::new();
+        if let Err(e) = new_wrapper
+            .canvas()
+            .load_engine_config(&self.app_settings())
+        {
+            log::debug!("failed to load engine config for initial tab, Err: {e:?}");
+        }
         self.overlays().tabview().append(&new_wrapper)
     }
 

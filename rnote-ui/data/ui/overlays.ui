@@ -4,16 +4,12 @@
     <property name="layout-manager">
       <object class="GtkBoxLayout" />
     </property>
-    <property name="can-target">true</property>
-    <property name="can-focus">true</property>
-    <property name="focusable">true</property>
     <property name="hexpand">true</property>
     <property name="vexpand">true</property>
     <property name="halign">fill</property>
     <property name="valign">fill</property>
     <child>
       <object class="GtkOverlay" id="toolbar_overlay">
-        <property name="focusable">true</property>
         <property name="overflow">hidden</property>
         <child type="overlay">
           <object class="GtkProgressBar" id="progressbar">
@@ -144,7 +140,6 @@
         </child>
         <child>
           <object class="AdwToastOverlay" id="toast_overlay">
-            <property name="focusable">true</property>
             <property name="child">
               <object class="AdwTabView" id="tabview">
                 <property name="hexpand">true</property>

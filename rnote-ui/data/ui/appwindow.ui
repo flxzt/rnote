@@ -9,7 +9,6 @@
         <property name="swipe-to-open">false</property>
         <property name="swipe-to-close">false</property>
         <property name="fold-threshold-policy">minimum</property>
-        <property name="focusable">true</property>
         <child type="separator">
           <object class="GtkSeparator">
             <property name="orientation">vertical</property>
@@ -19,7 +18,6 @@
         </child>
         <child type="content">
           <object class="GtkGrid" id="main_grid">
-            <property name="focusable">true</property>
             <child>
               <object class="MainHeader" id="mainheader">
                 <layout>

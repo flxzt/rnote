@@ -249,7 +249,7 @@ impl RnoteAppWindow {
     }
 
     /// Get the active (selected) tab page, or create one if there is None.
-    /// (should never be the the case, since we add a initial page on startup the last tab cannot be closed in the UI. But making sure)
+    /// (should never be the the case, since we add a initial page on startup and the last tab cannot be closed in the UI. But making sure)
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
         self.imp()
             .overlays
@@ -258,7 +258,7 @@ impl RnoteAppWindow {
             .unwrap_or_else(|| self.new_tab())
     }
 
-    /// Get the active (selected) tab page child. If there is none (which should only be the case on appwindow startup), we create one
+    /// Get the active (selected) tab page child.
     pub(crate) fn active_tab(&self) -> RnoteCanvasWrapper {
         self.active_tab_page()
             .child()
@@ -396,8 +396,8 @@ impl RnoteAppWindow {
         }
     }
 
-    pub(crate) fn refresh_titles_active_tab(&self) {
-        let canvas = self.active_tab().canvas();
+    pub(crate) fn refresh_titles(&self, active_tab: &RnoteCanvasWrapper) {
+        let canvas = active_tab.canvas();
 
         // Titles
         let title = canvas.doc_title_display();
@@ -805,20 +805,32 @@ impl RnoteAppWindow {
             }
         }
 
-        self.overlays().penssidebar().brush_page().refresh_ui(self);
-        self.overlays().penssidebar().shaper_page().refresh_ui(self);
+        self.overlays()
+            .penssidebar()
+            .brush_page()
+            .refresh_ui(active_tab);
+        self.overlays()
+            .penssidebar()
+            .shaper_page()
+            .refresh_ui(active_tab);
         self.overlays()
             .penssidebar()
             .typewriter_page()
-            .refresh_ui(self);
-        self.overlays().penssidebar().eraser_page().refresh_ui(self);
+            .refresh_ui(active_tab);
+        self.overlays()
+            .penssidebar()
+            .eraser_page()
+            .refresh_ui(active_tab);
         self.overlays()
             .penssidebar()
             .selector_page()
-            .refresh_ui(self);
-        self.overlays().penssidebar().tools_page().refresh_ui(self);
-        self.settings_panel().refresh_ui(self);
-        self.refresh_titles_active_tab();
+            .refresh_ui(active_tab);
+        self.overlays()
+            .penssidebar()
+            .tools_page()
+            .refresh_ui(active_tab);
+        self.settings_panel().refresh_ui(active_tab);
+        self.refresh_titles(active_tab);
     }
 
     /// Syncs the state from the previous active tab and the current one. Used when the selected tab changes.

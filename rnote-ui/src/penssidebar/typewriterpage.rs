@@ -1,4 +1,3 @@
-use crate::appwindow::RnoteAppWindow;
 use gtk4::pango;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, EmojiChooser,
@@ -8,6 +7,8 @@ use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::Pen;
 use rnote_engine::strokes::textstroke::TextStyle;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
+
+use crate::{RnoteAppWindow, RnoteCanvasWrapper};
 
 mod imp {
     use super::*;
@@ -487,11 +488,10 @@ impl TypewriterPage {
         );
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
 
-        let typewriter_config = appwindow
-            .active_tab()
+        let typewriter_config = active_tab
             .canvas()
             .engine()
             .borrow()

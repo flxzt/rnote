@@ -1,7 +1,7 @@
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
-use crate::appwindow::RnoteAppWindow;
+use crate::{RnoteAppWindow, RnoteCanvasWrapper};
 
 mod imp {
     use super::*;
@@ -127,11 +127,10 @@ impl SelectorPage {
         }));
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
 
-        let selector_config = appwindow
-            .active_tab()
+        let selector_config = active_tab
             .canvas()
             .engine()
             .borrow()

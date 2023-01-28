@@ -1,8 +1,9 @@
-use crate::appwindow::RnoteAppWindow;
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton, ToggleButton};
 use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
 use rnote_engine::pens::pensconfig::EraserConfig;
+
+use crate::{RnoteAppWindow, RnoteCanvasWrapper};
 
 mod imp {
     use super::*;
@@ -124,11 +125,10 @@ impl EraserPage {
         );
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
 
-        let eraser_config = appwindow
-            .active_tab()
+        let eraser_config = active_tab
             .canvas()
             .engine()
             .borrow()

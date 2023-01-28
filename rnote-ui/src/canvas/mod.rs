@@ -1119,7 +1119,7 @@ impl RnoteCanvas {
                     canvas.dismiss_output_file_modified_toast();
                 }
 
-                appwindow.refresh_titles_active_tab();
+                appwindow.refresh_titles(&appwindow.active_tab());
             }),
         );
 
@@ -1146,7 +1146,7 @@ impl RnoteCanvas {
         let appwindow_unsaved_changes = self.connect_notify_local(
             Some("unsaved-changes"),
             clone!(@weak appwindow => move |_canvas, _pspec| {
-                appwindow.refresh_titles_active_tab();
+                appwindow.refresh_titles(&appwindow.active_tab());
             }),
         );
 

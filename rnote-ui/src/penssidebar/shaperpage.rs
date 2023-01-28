@@ -9,7 +9,7 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
-use crate::{RnoteAppWindow, StrokeWidthPicker};
+use crate::{RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
 
 mod imp {
     use super::*;
@@ -348,11 +348,10 @@ impl ShaperPage {
             }));
     }
 
-    pub(crate) fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
         let imp = self.imp();
 
-        let shaper_config = appwindow
-            .active_tab()
+        let shaper_config = active_tab
             .canvas()
             .engine()
             .borrow()

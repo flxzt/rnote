@@ -217,9 +217,6 @@ mod imp {
 
             inst.set_hexpand(false);
             inst.set_vexpand(false);
-            inst.set_can_target(true);
-            inst.set_focusable(true);
-            inst.set_can_focus(true);
 
             inst.set_cursor(Some(&*self.regular_cursor.borrow()));
 

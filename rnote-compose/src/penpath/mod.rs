@@ -184,8 +184,7 @@ impl PenPath {
                         end: end.pos,
                     };
 
-                    // TODO: basing this off of the actual curve len
-                    let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.1));
+                    let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.25));
 
                     hitboxes.push((
                         i,
@@ -205,8 +204,7 @@ impl PenPath {
                         end: end.pos,
                     };
 
-                    // TODO: basing this off of the actual curve len
-                    let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.1));
+                    let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.25));
 
                     hitboxes.push((
                         i,

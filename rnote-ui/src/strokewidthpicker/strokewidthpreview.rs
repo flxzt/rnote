@@ -84,7 +84,7 @@ mod imp {
             match orientation {
                 Orientation::Horizontal => (0, 32, -1, -1),
                 Orientation::Vertical => (0, 32, -1, -1),
-                _ => todo!(),
+                _ => unimplemented!(),
             }
         }
 

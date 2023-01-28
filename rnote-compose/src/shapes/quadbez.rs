@@ -53,8 +53,7 @@ impl ShapeBehaviour for QuadraticBezier {
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        // TODO: should be depending on the actual curve length
-        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
+        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.25));
 
         self.approx_with_lines(n_splits)
             .into_iter()
@@ -64,17 +63,6 @@ impl ShapeBehaviour for QuadraticBezier {
 }
 
 impl QuadraticBezier {
-    /// Returns offset distance of a quadratic bezier at t with range [0.0, 1.0]. Currently a linear interpolation between the start and end offset.
-    /// TODO: finding a better algorithm based on the actual curve length
-    pub fn quadbez_calc_offset_dist_at_t(
-        &self,
-        start_offset_dist: f64,
-        end_offset_dist: f64,
-        t: f64,
-    ) -> f64 {
-        start_offset_dist + (end_offset_dist - start_offset_dist) * t
-    }
-
     /// Split a quadratic bezier curve into two quadratics, at interpolation value z: between 0.0 and 1.0
     pub fn split(&self, z: f64) -> (QuadraticBezier, QuadraticBezier) {
         let p0 = self.start;

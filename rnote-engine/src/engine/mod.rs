@@ -823,7 +823,7 @@ impl RnoteEngine {
         &mut self,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
         /*
-        // FIXME: Until svg import is broken, we don't want users being able to cut the selection without the possibility to insert it again.
+        // TODO: Until the current broken svg import is fixed, we don't want users being able to cut the selection without the possibility to insert it again.
 
                 let export_bytes = self.export_selection(Some(SelectionExportPrefs {
                     with_background: true,

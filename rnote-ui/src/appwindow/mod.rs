@@ -235,14 +235,14 @@ impl RnoteAppWindow {
         }
     }
 
-    /// Get the active (selected) tab page, or create one if there is None.
-    /// (should never be the the case, since we add a initial page on startup and the last tab cannot be closed in the UI. But making sure)
+    /// Get the active (selected) tab page.
+    /// Panics if there is none (but should never be the case, since we add one initially and the UI hides closing the last tab)
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
         self.imp()
             .overlays
             .tabview()
             .selected_page()
-            .unwrap_or_else(|| self.new_tab())
+            .expect("there must always be one active tab")
     }
 
     /// Get the active (selected) tab page child.
@@ -300,17 +300,6 @@ impl RnoteAppWindow {
         self.overlays().tabview().set_selected_page(&page);
 
         page
-    }
-
-    /// Requests to close the active tab, or if only one tab is left, the active appwindow
-    pub(crate) fn close_active_tab(&self) {
-        let active_tab_page = self.active_tab_page();
-        if self.overlays().tabview().n_pages() <= 1 {
-            // If there is only one tab left, request to close the entire window.
-            self.close();
-        } else {
-            self.overlays().tabview().close_page(&active_tab_page);
-        }
     }
 
     pub(crate) fn tab_pages_snapshot(&self) -> Vec<adw::TabPage> {

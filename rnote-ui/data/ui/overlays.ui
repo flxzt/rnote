@@ -149,6 +149,29 @@
               <object class="AdwTabView" id="tabview">
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
+                <property name="menu-model">tab_cx_menu_model</property>
+                <menu id="tab_cx_menu_model">
+                  <section>
+                    <item>
+                      <attribute name="label" translatable="yes">Move _left</attribute>
+                      <attribute name="action">win.active-tab-move-left</attribute>
+                    </item>
+                    <item>
+                      <attribute name="label" translatable="yes">Move _right</attribute>
+                      <attribute name="action">win.active-tab-move-right</attribute>
+                    </item>
+                  </section>
+                  <section>
+                    <item>
+                      <attribute name="label" translatable="yes">_Close all other tabs</attribute>
+                      <attribute name="action">win.other-tabs-close</attribute>
+                    </item>
+                    <item>
+                      <attribute name="label" translatable="yes">_Close</attribute>
+                      <attribute name="action">win.active-tab-close</attribute>
+                    </item>
+                  </section>
+                </menu>
               </object>
             </property>
           </object>

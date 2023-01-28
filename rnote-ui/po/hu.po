@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-28 20:19+0100\n"
-"PO-Revision-Date: 2023-01-26 12:24+0000\n"
+"PO-Revision-Date: 2023-01-28 21:22+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1104,24 +1104,19 @@ msgstr "Dokumentum mentése"
 
 #: rnote-ui/data/ui/overlays.ui:156
 msgid "Move _left"
-msgstr ""
+msgstr "Áthelyezés _balra"
 
 #: rnote-ui/data/ui/overlays.ui:160
 msgid "Move _right"
-msgstr ""
+msgstr "Áthelyezés _jobbra"
 
 #: rnote-ui/data/ui/overlays.ui:166
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active tab"
 msgid "_Close all other tabs"
-msgstr "Aktív lap bezárása"
+msgstr "Összes többi lap _bezárása"
 
 #: rnote-ui/data/ui/overlays.ui:170
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "Lap bezárása"
+msgstr "_Bezárás"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."

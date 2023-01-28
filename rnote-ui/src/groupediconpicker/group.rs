@@ -19,7 +19,7 @@ mod imp {
     use std::cell::RefCell;
 
     #[derive(Default, Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpickergroup.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpickergroup.ui")]
     pub struct GroupedIconPickerGroup {
         pub name: RefCell<String>,
         pub icons: RefCell<StringList>,

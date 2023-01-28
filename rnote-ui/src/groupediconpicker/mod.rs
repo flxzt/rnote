@@ -1,8 +1,12 @@
+mod group;
+
+// Re-exports
+pub(crate) use group::GroupedIconPickerGroup;
+pub(crate) use group::GroupedIconPickerGroupData;
+
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Widget};
 use gtk4::{Label, StringList, StringObject};
 use once_cell::sync::Lazy;
-
-use crate::{GroupedIconPickerGroup, GroupedIconPickerGroupData};
 
 mod imp {
     use std::cell::RefCell;
@@ -12,7 +16,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpicker.ui")]
     pub(crate) struct GroupedIconPicker {
         pub(crate) picked: RefCell<Option<String>>,
 

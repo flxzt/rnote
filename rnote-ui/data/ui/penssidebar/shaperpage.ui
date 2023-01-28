@@ -89,16 +89,17 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Shaper styles</property>
               <property name="halign">center</property>
-              <property name="margin-bottom">12</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
@@ -143,10 +144,10 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
@@ -214,22 +215,24 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
+          <property name="margin-top">6</property>
           <property name="margin-bottom">6</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Shape builders</property>
               <property name="halign">center</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
           <child>
-            <object class="GroupedIconPicker" id="shapebuildertype_picker"></object>
+            <object class="GroupedIconPicker" id="shapebuildertype_picker">
+              <property name="width-request">300</property>
+            </object>
           </child>
         </object>
       </child>
@@ -240,17 +243,17 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Constraints</property>
               <property name="halign">center</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>

@@ -239,7 +239,7 @@ impl ShaperPage {
                     ]),
                 },
                 GroupedIconPickerGroupData {
-                    name: gettext("Coordinate System"),
+                    name: gettext("Coordinate Systems"),
                     icons: StringList::new(&[
                         "shapebuilder-coordsystem2d-symbolic",
                         "shapebuilder-coordsystem3d-symbolic",
@@ -247,14 +247,14 @@ impl ShaperPage {
                     ]),
                 },
                 GroupedIconPickerGroupData {
-                    name: gettext("Ellipse"),
+                    name: gettext("Ellipses"),
                     icons: StringList::new(&[
                         "shapebuilder-ellipse-symbolic",
                         "shapebuilder-fociellipse-symbolic",
                     ]),
                 },
                 GroupedIconPickerGroupData {
-                    name: gettext("Curve"),
+                    name: gettext("Curves"),
                     icons: StringList::new(&[
                         "shapebuilder-quadbez-symbolic",
                         "shapebuilder-cubbez-symbolic",

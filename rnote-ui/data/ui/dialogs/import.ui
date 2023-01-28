@@ -70,7 +70,7 @@
                     <style>
                       <class name="title-4" />
                     </style>
-                    <property name="label">Info</property>
+                    <property name="label" translatable="yes">Info</property>
                     <property name="halign">center</property>
                   </object>
                 </child>

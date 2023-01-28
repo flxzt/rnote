@@ -189,7 +189,7 @@
                     <child>
                       <object class="GtkLabel">
                         <property name="margin-end">12</property>
-                        <property name="label">Page files naming:</property>
+                        <property name="label" translatable="yes">Page files naming:</property>
                       </object>
                     </child>
                     <child>

@@ -19,8 +19,6 @@ impl RnoteAppWindow {
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
     /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
     pub(crate) fn setup_actions(&self) {
-        let action_close_active_tab = gio::SimpleAction::new("close-active-tab", None);
-        self.add_action(&action_close_active_tab);
         let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
         self.add_action(&action_fullscreen);
         let action_open_settings = gio::SimpleAction::new("open-settings", None);
@@ -62,13 +60,19 @@ impl RnoteAppWindow {
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
-        // Couldn't make enums as state together with activation from menu items work, so am using strings instead
+        // Couldn't make it work with enums as state together with activating from menu model, so using strings instead
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
             Some(&String::static_variant_type()),
             &String::from("infinite").to_variant(),
         );
         self.add_action(&action_doc_layout);
+        let action_pen_style = gio::SimpleAction::new_stateful(
+            "pen-style",
+            Some(&PenStyle::static_variant_type()),
+            &PenStyle::Brush.to_variant(),
+        );
+        self.add_action(&action_pen_style);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
         self.add_action(&action_undo_stroke);
         let action_redo_stroke = gio::SimpleAction::new("redo", None);
@@ -90,7 +94,6 @@ impl RnoteAppWindow {
         self.add_action(&action_resize_to_fit_strokes);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
         self.add_action(&action_return_origin_page);
-
         let action_selection_trash = gio::SimpleAction::new("selection-trash", None);
         self.add_action(&action_selection_trash);
         let action_selection_duplicate = gio::SimpleAction::new("selection-duplicate", None);
@@ -127,17 +130,14 @@ impl RnoteAppWindow {
         self.add_action(&action_clipboard_cut);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
         self.add_action(&action_clipboard_paste);
-        let action_pen_style = gio::SimpleAction::new_stateful(
-            "pen-style",
-            Some(&PenStyle::static_variant_type()),
-            &PenStyle::Brush.to_variant(),
-        );
-        self.add_action(&action_pen_style);
-
-        // Close active tab
-        action_close_active_tab.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.close_active_tab();
-        }));
+        let action_active_tab_move_left = gio::SimpleAction::new("active-tab-move-left", None);
+        self.add_action(&action_active_tab_move_left);
+        let action_active_tab_move_right = gio::SimpleAction::new("active-tab-move-right", None);
+        self.add_action(&action_active_tab_move_right);
+        let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
+        self.add_action(&action_active_tab_close);
+        let action_other_tabs_close = gio::SimpleAction::new("other-tabs-close", None);
+        self.add_action(&action_other_tabs_close);
 
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -302,6 +302,33 @@ impl RnoteAppWindow {
                 }
             }),
         );
+
+        // Tab actions
+        action_active_tab_move_left.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                let active_tab_page = appwindow.active_tab_page();
+                appwindow.overlays().tabview().reorder_backward(&active_tab_page);
+            }),
+        );
+        action_active_tab_move_right.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                let active_tab_page = appwindow.active_tab_page();
+                appwindow.overlays().tabview().reorder_forward(&active_tab_page);
+            }),
+        );
+        action_active_tab_close.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let active_tab_page = appwindow.active_tab_page();
+            if appwindow.overlays().tabview().n_pages() <= 1 {
+                // If there is only one tab left, request to close the entire window.
+                appwindow.close();
+            } else {
+                appwindow.overlays().tabview().close_page(&active_tab_page);
+            }
+        }));
+        action_other_tabs_close.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let active_tab_page = appwindow.active_tab_page();
+            appwindow.overlays().tabview().close_other_pages(&active_tab_page);
+        }));
 
         // Trash Selection
         action_selection_trash.connect_activate(
@@ -820,7 +847,7 @@ impl RnoteAppWindow {
     pub(crate) fn setup_action_accels(&self) {
         let app = self.app();
 
-        app.set_accels_for_action("win.close-active-tab", &["<Ctrl>w"]);
+        app.set_accels_for_action("win.active-tab-close", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);

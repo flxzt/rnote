@@ -1,6 +1,6 @@
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay, ProgressBar,
-    ScrolledWindow, ToggleButton, Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
+    ProgressBar, ScrolledWindow, ToggleButton, Widget,
 };
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::{Pen, PenStyle};
@@ -344,6 +344,22 @@ impl RnoteOverlays {
                 true
             }),
         );
+
+        imp.tabview.connect_setup_menu(clone!(@weak appwindow => move |tabview, page| {
+            if let Some(page) = page {
+                let action_active_tab_move_left = appwindow.lookup_action("active-tab-move-left").unwrap().downcast::<gio::SimpleAction>().unwrap();
+                let action_active_tab_move_right = appwindow.lookup_action("active-tab-move-right").unwrap().downcast::<gio::SimpleAction>().unwrap();
+                let action_active_tab_close = appwindow.lookup_action("active-tab-close").unwrap().downcast::<gio::SimpleAction>().unwrap();
+
+                tabview.set_selected_page(page);
+
+                let n_pages = tabview.n_pages();
+                let pos = tabview.page_position(page);
+                action_active_tab_move_left.set_enabled(pos > 0);
+                action_active_tab_move_right.set_enabled(pos + 1 < n_pages);
+                action_active_tab_close.set_enabled(n_pages > 1);
+            }
+        }));
     }
 
     pub(crate) fn start_pulsing_progressbar(&self) {

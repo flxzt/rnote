@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-28 20:19+0100\n"
+"POT-Creation-Date: 2023-01-29 12:14+0100\n"
 "PO-Revision-Date: 2023-01-26 12:24+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -218,6 +218,10 @@ msgstr "Importar PDF"
 msgid "Import"
 msgstr "Importar"
 
+#: rnote-ui/data/ui/dialogs/import.ui:73
+msgid "Info"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
 msgstr "Preferencias de importación de PDF"
@@ -387,6 +391,12 @@ msgstr "Xopp"
 msgid "Export document pages"
 msgstr "Exportar páginas del documento"
 
+#: rnote-ui/data/ui/dialogs/export.ui:192
+#, fuzzy
+#| msgid "Page spacing"
+msgid "Page files naming:"
+msgstr "Espacio entre páginas"
+
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
 msgstr "Exportar directorio"
@@ -459,7 +469,7 @@ msgid "Mark underneath other strokes"
 msgstr "Marcar debajo de otros trazos"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:92
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "Sólido"
 
@@ -588,32 +598,32 @@ msgid "Split strokes"
 msgstr "Trazos discontinuos"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:49
+#: rnote-ui/data/ui/overlays.ui:45
 msgid "Brush"
 msgstr "Pincel"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:56
+#: rnote-ui/data/ui/overlays.ui:52
 msgid "Shaper"
 msgstr "Formas"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:64
+#: rnote-ui/data/ui/overlays.ui:60
 msgid "Typewriter"
 msgstr "Máquina de escribir"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:68
 msgid "Eraser"
 msgstr "Borrador"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:76
 msgid "Selector"
 msgstr "Seleccionador"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:84
 msgid "Tools"
 msgstr "Herramientas"
 
@@ -658,123 +668,82 @@ msgid "Shaper style"
 msgstr "Estilo del modelador"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:153
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape configuration"
 msgstr "Configuración de forma"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape builders"
 msgstr "Constructores de forma"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:366
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
 msgstr "Restricciones"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:97
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper styles"
 msgstr "Estilos del modelador"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:115
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
 msgstr "Suave"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
 msgstr "Rugoso"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:163
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
 msgstr "Estilo rugoso"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:167
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 msgid "Fill style"
 msgstr "Estilo de relleno"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
 msgstr "Elegir un estilo de relleno"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
 msgstr "Plumeado"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
 msgstr "Zigzag"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
 msgstr "Línea en Zig-Zag"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
 msgstr "Rayas cruzadas"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
 msgstr "Puntos"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
 msgstr "Rayada"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure angle"
 msgstr "Ángulo de plumeado"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
 msgstr "Establecer el ángulo de los rellenos del plumeado"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:240
-msgid "Line"
-msgstr "Línea"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:251
-msgid "Rectangle"
-msgstr "Rectángulo"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:262
-#: rnote-ui/data/ui/settingspanel.ui:308
-msgid "Grid"
-msgstr "Cuadrícula"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:273
-msgid "2D coordinate system"
-msgstr "Sistema de coordenadas 2D"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "3D coordinate system"
-msgstr "Sistema de coordenadas 3D"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:295
-msgid "2D single quadrant coordinate system"
-msgstr "Sistema de coordenadas de un cuadrante en 2D"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:306
-msgid "Ellipse"
-msgstr "Elipse"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:317
-msgid "Ellipse with foci"
-msgstr "Elipse con focos"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:328
-msgid "Quadratic bezier curve"
-msgstr "Curva cuadrática de Bézier"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:339
-msgid "Cubic bezier curve"
-msgstr "Curva cúbica de Bézier"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:383
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
 msgstr "Activado"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
@@ -784,15 +753,15 @@ msgstr ""
 "habilitar/deshabilitar restricciones\n"
 "cuando este interruptor está apagado/encendido"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:416
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden ratio (1:1.618)"
 msgstr "Proporción áurea (1:1.618)"
 
@@ -855,7 +824,7 @@ msgid "Fill"
 msgstr "Rellenar"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
-#: rnote-ui/data/ui/colorpicker.ui:114 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
@@ -981,15 +950,15 @@ msgstr "Barra lateral a la derecha"
 msgid "Toggle fullscreen"
 msgstr "Conmutar la pantalla completa"
 
-#: rnote-ui/data/ui/appwindow.ui:111
+#: rnote-ui/data/ui/appwindow.ui:109
 msgid "Close the folded flap"
 msgstr "Cerrar la solapa plegada"
 
-#: rnote-ui/data/ui/appwindow.ui:128
+#: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
 msgstr "Área de trabajo"
 
-#: rnote-ui/data/ui/appwindow.ui:139
+#: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
 msgstr "Configuración"
 
@@ -1049,6 +1018,18 @@ msgstr "Ampliar"
 msgid "Zoom to fit page width"
 msgstr "Zoom para ajustar el ancho de la página"
 
+#: rnote-ui/data/ui/colorpicker.ui:19
+#, fuzzy
+#| msgid "Stroke dots radii"
+msgid "Stroke color"
+msgstr "Radios de los puntos de la traza"
+
+#: rnote-ui/data/ui/colorpicker.ui:26
+#, fuzzy
+#| msgid "Fill style"
+msgid "Fill color"
+msgstr "Estilo de relleno"
+
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
 msgstr "Abrir"
@@ -1102,22 +1083,22 @@ msgstr "Redimensionar el documento para adaptarlo a los trazos"
 msgid "Save document"
 msgstr "Guardar documento"
 
-#: rnote-ui/data/ui/overlays.ui:156
+#: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:160
+#: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:166
+#: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active tab"
 msgid "_Close all other tabs"
 msgstr "Cerrar la pestaña activa"
 
-#: rnote-ui/data/ui/overlays.ui:170
+#: rnote-ui/data/ui/overlays.ui:165
 #, fuzzy
 #| msgid "Close tab"
 msgid "_Close"
@@ -1286,6 +1267,11 @@ msgstr "Ninguno"
 #: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
 msgstr "Líneas"
+
+#: rnote-ui/data/ui/settingspanel.ui:308
+#: rnote-ui/src/penssidebar/shaperpage.rs:269
+msgid "Grid"
+msgstr "Cuadrícula"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
@@ -1755,6 +1741,64 @@ msgstr "- No se puede encontrar una carpeta para las copias de seguridad -"
 msgid "Change workspace directory"
 msgstr "Cambiar el directorio del área de trabajo"
 
+#: rnote-ui/src/penssidebar/shaperpage.rs:234
+msgid "Miscellaneous"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:242
+#, fuzzy
+#| msgid "2D coordinate system"
+msgid "Coordinate Systems"
+msgstr "Sistema de coordenadas 2D"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:250
+#, fuzzy
+#| msgid "Ellipse"
+msgid "Ellipses"
+msgstr "Elipse"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:257
+#, fuzzy
+#| msgid "Curved"
+msgid "Curves"
+msgstr "Curvado"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:267
+msgid "Line"
+msgstr "Línea"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:268
+msgid "Rectangle"
+msgstr "Rectángulo"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:270
+msgid "2D coordinate system"
+msgstr "Sistema de coordenadas 2D"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:271
+msgid "3D coordinate system"
+msgstr "Sistema de coordenadas 3D"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:273
+msgid "2D single quadrant coordinate system"
+msgstr "Sistema de coordenadas de un cuadrante en 2D"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:275
+msgid "Ellipse"
+msgstr "Elipse"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:276
+msgid "Ellipse with foci"
+msgstr "Elipse con focos"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:277
+msgid "Quadratic bezier curve"
+msgstr "Curva cuadrática de Bézier"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:278
+msgid "Cubic bezier curve"
+msgstr "Curva cúbica de Bézier"
+
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 msgid "Folder name"
 msgstr "Nombre de la carpeta"
@@ -1807,9 +1851,6 @@ msgstr "Carpeta nueva"
 
 #~ msgid "_Clear document"
 #~ msgstr "_Limpiar documento"
-
-#~ msgid "Stroke dots radii"
-#~ msgstr "Radios de los puntos de la traza"
 
 #~ msgid "The radii of the individual dots in the textured stroke"
 #~ msgstr "Los radios de los puntos individuales en el trazo texturizado"

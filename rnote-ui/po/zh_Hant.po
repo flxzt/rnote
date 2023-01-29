@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-28 20:19+0100\n"
+"POT-Creation-Date: 2023-01-29 12:14+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -227,6 +227,10 @@ msgstr "匯入 PDF"
 msgid "Import"
 msgstr "匯入"
 
+#: rnote-ui/data/ui/dialogs/import.ui:73
+msgid "Info"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
 msgstr "PDF 匯入偏好"
@@ -392,6 +396,12 @@ msgstr "Xournal++ 筆記本（Xopp）"
 msgid "Export document pages"
 msgstr "匯出文件頁面"
 
+#: rnote-ui/data/ui/dialogs/export.ui:192
+#, fuzzy
+#| msgid "Page spacing"
+msgid "Page files naming:"
+msgstr "頁間距"
+
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
 msgstr "匯出目錄"
@@ -464,7 +474,7 @@ msgid "Mark underneath other strokes"
 msgstr "在其他筆畫下方標記"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:92
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "硬筆"
 
@@ -593,32 +603,32 @@ msgid "Split strokes"
 msgstr "分割畫筆"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:49
+#: rnote-ui/data/ui/overlays.ui:45
 msgid "Brush"
 msgstr "刷子"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:56
+#: rnote-ui/data/ui/overlays.ui:52
 msgid "Shaper"
 msgstr "形狀工具"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:64
+#: rnote-ui/data/ui/overlays.ui:60
 msgid "Typewriter"
 msgstr "文字"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:68
 msgid "Eraser"
 msgstr "橡皮"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:76
 msgid "Selector"
 msgstr "選擇"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:84
 msgid "Tools"
 msgstr "工具"
 
@@ -663,123 +673,82 @@ msgid "Shaper style"
 msgstr "形狀工具樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:153
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape configuration"
 msgstr "形狀設定"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape builders"
 msgstr "形狀構建工具"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:366
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
 msgstr "約束條件"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:97
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper styles"
 msgstr "形狀工具樣式"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:115
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
 msgstr "平滑"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
 msgstr "粗糙"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:163
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
 msgstr "粗糙樣式"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:167
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 msgid "Fill style"
 msgstr "填充樣式"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
 msgstr "選擇填充樣式"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
 msgstr "陰影線"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
 msgstr "鋸齒"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
 msgstr "鋸齒線"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
 msgstr "交叉陰影線"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
 msgstr "點"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
 msgstr "虛線"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure angle"
 msgstr "帶角度的陰影線"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
 msgstr "設定陰影線的角度"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:240
-msgid "Line"
-msgstr "直線"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:251
-msgid "Rectangle"
-msgstr "矩形"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:262
-#: rnote-ui/data/ui/settingspanel.ui:308
-msgid "Grid"
-msgstr "方格"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:273
-msgid "2D coordinate system"
-msgstr "2維座標系"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "3D coordinate system"
-msgstr "3維座標系"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:295
-msgid "2D single quadrant coordinate system"
-msgstr "2維單象限座標系"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:306
-msgid "Ellipse"
-msgstr "橢圓"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:317
-msgid "Ellipse with foci"
-msgstr "焦點橢圓"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:328
-msgid "Quadratic bezier curve"
-msgstr "二次貝塞爾曲線"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:339
-msgid "Cubic bezier curve"
-msgstr "三次貝塞爾曲線"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:383
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
 msgstr "啟用"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 #, fuzzy
 #| msgid ""
 #| "Hold Ctrl to temporarily enable/disable constraints\n"
@@ -792,15 +761,15 @@ msgstr ""
 "按住Ctrl鍵可暫時啟用/禁用約束條件\n"
 "當此開關被關閉/開啟時"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:416
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden ratio (1:1.618)"
 msgstr "黃金比例(1:1.618)"
 
@@ -863,7 +832,7 @@ msgid "Fill"
 msgstr "填充"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
-#: rnote-ui/data/ui/colorpicker.ui:114 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
@@ -989,15 +958,15 @@ msgstr "右側側邊欄"
 msgid "Toggle fullscreen"
 msgstr "切換全屏"
 
-#: rnote-ui/data/ui/appwindow.ui:111
+#: rnote-ui/data/ui/appwindow.ui:109
 msgid "Close the folded flap"
 msgstr "關閉摺疊"
 
-#: rnote-ui/data/ui/appwindow.ui:128
+#: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
 msgstr "工作區"
 
-#: rnote-ui/data/ui/appwindow.ui:139
+#: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
 msgstr "設定"
 
@@ -1059,6 +1028,18 @@ msgstr "放大"
 msgid "Zoom to fit page width"
 msgstr "縮放以適合頁寬"
 
+#: rnote-ui/data/ui/colorpicker.ui:19
+#, fuzzy
+#| msgid "Stroke dots radii"
+msgid "Stroke color"
+msgstr "筆畫點陣半徑"
+
+#: rnote-ui/data/ui/colorpicker.ui:26
+#, fuzzy
+#| msgid "Fill style"
+msgid "Fill color"
+msgstr "填充樣式"
+
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
 msgstr "開啟"
@@ -1112,22 +1093,22 @@ msgstr "調整文件大小以適應畫筆"
 msgid "Save document"
 msgstr "儲存文件"
 
-#: rnote-ui/data/ui/overlays.ui:156
+#: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:160
+#: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:166
+#: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
 msgid "_Close all other tabs"
 msgstr "關閉活動視窗"
 
-#: rnote-ui/data/ui/overlays.ui:170
+#: rnote-ui/data/ui/overlays.ui:165
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
@@ -1299,6 +1280,11 @@ msgstr "無"
 #: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
 msgstr "線"
+
+#: rnote-ui/data/ui/settingspanel.ui:308
+#: rnote-ui/src/penssidebar/shaperpage.rs:269
+msgid "Grid"
+msgstr "方格"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
@@ -1770,6 +1756,64 @@ msgstr ""
 msgid "Change workspace directory"
 msgstr "更改工作區目錄"
 
+#: rnote-ui/src/penssidebar/shaperpage.rs:234
+msgid "Miscellaneous"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:242
+#, fuzzy
+#| msgid "2D coordinate system"
+msgid "Coordinate Systems"
+msgstr "2維座標系"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:250
+#, fuzzy
+#| msgid "Ellipse"
+msgid "Ellipses"
+msgstr "橢圓"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:257
+#, fuzzy
+#| msgid "Curved"
+msgid "Curves"
+msgstr "曲線"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:267
+msgid "Line"
+msgstr "直線"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:268
+msgid "Rectangle"
+msgstr "矩形"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:270
+msgid "2D coordinate system"
+msgstr "2維座標系"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:271
+msgid "3D coordinate system"
+msgstr "3維座標系"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:273
+msgid "2D single quadrant coordinate system"
+msgstr "2維單象限座標系"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:275
+msgid "Ellipse"
+msgstr "橢圓"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:276
+msgid "Ellipse with foci"
+msgstr "焦點橢圓"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:277
+msgid "Quadratic bezier curve"
+msgstr "二次貝塞爾曲線"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:278
+msgid "Cubic bezier curve"
+msgstr "三次貝塞爾曲線"
+
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 msgid "Folder name"
 msgstr "資料夾名稱"
@@ -1817,9 +1861,6 @@ msgstr "新建資料夾"
 
 #~ msgid "_Clear document"
 #~ msgstr "清空文件"
-
-#~ msgid "Stroke dots radii"
-#~ msgstr "筆畫點陣半徑"
 
 #~ msgid "The radii of the individual dots in the textured stroke"
 #~ msgstr "紋理筆畫中各個點的半徑"

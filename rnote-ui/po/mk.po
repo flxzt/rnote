@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-28 20:19+0100\n"
+"POT-Creation-Date: 2023-01-29 12:14+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -232,6 +232,10 @@ msgstr "Внеси PDF"
 msgid "Import"
 msgstr "Внеси"
 
+#: rnote-ui/data/ui/dialogs/import.ui:73
+msgid "Info"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
 msgstr "Нагодувања при внес на PDF"
@@ -422,6 +426,12 @@ msgstr ""
 msgid "Export document pages"
 msgstr "Извади го документот во SVG"
 
+#: rnote-ui/data/ui/dialogs/export.ui:192
+#, fuzzy
+#| msgid "Page spacing"
+msgid "Page files naming:"
+msgstr "Проред"
+
 #: rnote-ui/data/ui/dialogs/export.ui:213
 #, fuzzy
 #| msgid "Create Directory"
@@ -504,7 +514,7 @@ msgid "Mark underneath other strokes"
 msgstr "Означи под другите потези со четка"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:92
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "Полно"
 
@@ -633,32 +643,32 @@ msgid "Split strokes"
 msgstr "Подели црти"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:49
+#: rnote-ui/data/ui/overlays.ui:45
 msgid "Brush"
 msgstr "Четка"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:56
+#: rnote-ui/data/ui/overlays.ui:52
 msgid "Shaper"
 msgstr "Оформувач"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:64
+#: rnote-ui/data/ui/overlays.ui:60
 msgid "Typewriter"
 msgstr "Печатно"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:68
 msgid "Eraser"
 msgstr "Бришач"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:76
 msgid "Selector"
 msgstr "Одбирач"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:84
 msgid "Tools"
 msgstr "Алатки"
 
@@ -707,129 +717,88 @@ msgid "Shaper style"
 msgstr "Вид на оформувач"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:153
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape configuration"
 msgstr "Распоред на форма"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape builders"
 msgstr "Создавање на форма"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:366
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
 msgstr "Ограничувања"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:97
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper styles"
 msgstr "Видови на оформувач(и)"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:115
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
 msgstr "Мазно"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
 msgstr "Грубо"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:163
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
 msgstr "Груб вид"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:167
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 #, fuzzy
 #| msgid "Solid style"
 msgid "Fill style"
 msgstr "Полна линија"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a fill style"
 msgstr "Одбери форма"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
 msgstr "Точки"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure angle"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 #, fuzzy
 #| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
 msgstr "Одбери го покажувачот за цртање"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:240
-msgid "Line"
-msgstr "Линија"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:251
-msgid "Rectangle"
-msgstr "Правоаголник"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:262
-#: rnote-ui/data/ui/settingspanel.ui:308
-msgid "Grid"
-msgstr "Мрежа"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:273
-msgid "2D coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "3D coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:295
-msgid "2D single quadrant coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:306
-msgid "Ellipse"
-msgstr "Елипса"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:317
-msgid "Ellipse with foci"
-msgstr "Елипса со фокус"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:328
-msgid "Quadratic bezier curve"
-msgstr "Квадратна безиерна кривула"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:339
-msgid "Cubic bezier curve"
-msgstr "Кубна безиерна кривула"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:383
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
 msgstr "Овозможено"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 #, fuzzy
 #| msgid ""
 #| "Hold Ctrl to temporarily enable/disable constraints\n"
@@ -842,15 +811,15 @@ msgstr ""
 "Држи CTRL за да привремено овозможиш / оневозможиш \n"
 "ограничувања кога оваа опција е исклучена / вклучена"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:416
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden ratio (1:1.618)"
 msgstr "Златен пресек (1:1,618)"
 
@@ -913,7 +882,7 @@ msgid "Fill"
 msgstr "Порамни по двата раба"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
-#: rnote-ui/data/ui/colorpicker.ui:114 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
@@ -1086,15 +1055,15 @@ msgstr "Странична лента на десна страна"
 msgid "Toggle fullscreen"
 msgstr "Влези на цел екран"
 
-#: rnote-ui/data/ui/appwindow.ui:111
+#: rnote-ui/data/ui/appwindow.ui:109
 msgid "Close the folded flap"
 msgstr "Затвори ја свитканата клапа"
 
-#: rnote-ui/data/ui/appwindow.ui:128
+#: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
 msgstr "Работна површина"
 
-#: rnote-ui/data/ui/appwindow.ui:139
+#: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
 msgstr "Поставки"
 
@@ -1174,6 +1143,18 @@ msgstr "Доближи"
 msgid "Zoom to fit page width"
 msgstr "Поклопи далечина со ширина на страница"
 
+#: rnote-ui/data/ui/colorpicker.ui:19
+#, fuzzy
+#| msgid "Stroke dots radii"
+msgid "Stroke color"
+msgstr "Радиус на точките"
+
+#: rnote-ui/data/ui/colorpicker.ui:26
+#, fuzzy
+#| msgid "Solid style"
+msgid "Fill color"
+msgstr "Полна линија"
+
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
 msgstr "Отвори"
@@ -1227,22 +1208,22 @@ msgstr "Предимензионирај го документот за да с�
 msgid "Save document"
 msgstr "Зачувај документ"
 
-#: rnote-ui/data/ui/overlays.ui:156
+#: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:160
+#: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:166
+#: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
 msgid "_Close all other tabs"
 msgstr "Затвори го активниот прозорец"
 
-#: rnote-ui/data/ui/overlays.ui:170
+#: rnote-ui/data/ui/overlays.ui:165
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
@@ -1415,6 +1396,11 @@ msgstr "Ништо"
 #: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
 msgstr "Линии"
+
+#: rnote-ui/data/ui/settingspanel.ui:308
+#: rnote-ui/src/penssidebar/shaperpage.rs:269
+msgid "Grid"
+msgstr "Мрежа"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
@@ -1928,6 +1914,62 @@ msgstr ""
 msgid "Change workspace directory"
 msgstr "Промени ја папката на раб. површина"
 
+#: rnote-ui/src/penssidebar/shaperpage.rs:234
+msgid "Miscellaneous"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:242
+msgid "Coordinate Systems"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:250
+#, fuzzy
+#| msgid "Ellipse"
+msgid "Ellipses"
+msgstr "Елипса"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:257
+#, fuzzy
+#| msgid "Curved"
+msgid "Curves"
+msgstr "Закривено"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:267
+msgid "Line"
+msgstr "Линија"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:268
+msgid "Rectangle"
+msgstr "Правоаголник"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:270
+msgid "2D coordinate system"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:271
+msgid "3D coordinate system"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:273
+msgid "2D single quadrant coordinate system"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:275
+msgid "Ellipse"
+msgstr "Елипса"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:276
+msgid "Ellipse with foci"
+msgstr "Елипса со фокус"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:277
+msgid "Quadratic bezier curve"
+msgstr "Квадратна безиерна кривула"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:278
+msgid "Cubic bezier curve"
+msgstr "Кубна безиерна кривула"
+
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 #, fuzzy
 #| msgid "File name:"
@@ -1990,9 +2032,6 @@ msgstr ""
 #~| msgid "Clear document"
 #~ msgid "_Clear document"
 #~ msgstr "Избриши го документот"
-
-#~ msgid "Stroke dots radii"
-#~ msgstr "Радиус на точките"
 
 #~ msgid "The radii of the individual dots in the textured stroke"
 #~ msgstr "Радиусот на поединечните точки во текстурираната црта"

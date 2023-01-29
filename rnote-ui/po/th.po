@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-28 20:19+0100\n"
+"POT-Creation-Date: 2023-01-29 12:14+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -225,6 +225,10 @@ msgstr "นำเข้า PDF"
 msgid "Import"
 msgstr "นำเข้า"
 
+#: rnote-ui/data/ui/dialogs/import.ui:73
+msgid "Info"
+msgstr ""
+
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
 msgstr "ตั้งค่าการนำเข้า PDF"
@@ -415,6 +419,12 @@ msgstr ""
 msgid "Export document pages"
 msgstr "ส่งออกเอกสารไปเป็นไฟล์ SVG"
 
+#: rnote-ui/data/ui/dialogs/export.ui:192
+#, fuzzy
+#| msgid "Page spacing"
+msgid "Page files naming:"
+msgstr "ระยะห่างหน้ากระดาษ"
+
 #: rnote-ui/data/ui/dialogs/export.ui:213
 #, fuzzy
 msgid "Export directory"
@@ -496,7 +506,7 @@ msgid "Mark underneath other strokes"
 msgstr "มาร์คใต้เส้นของพู่กันแบบอื่น ๆ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:92
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "เส้นทึบ"
 
@@ -623,32 +633,32 @@ msgid "Split strokes"
 msgstr "ลบเป็นส่วน ๆ"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:49
+#: rnote-ui/data/ui/overlays.ui:45
 msgid "Brush"
 msgstr "พู่กัน"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:56
+#: rnote-ui/data/ui/overlays.ui:52
 msgid "Shaper"
 msgstr "รูปทรง"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:64
+#: rnote-ui/data/ui/overlays.ui:60
 msgid "Typewriter"
 msgstr "พิมพ์ตัวอักษร"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:72
+#: rnote-ui/data/ui/overlays.ui:68
 msgid "Eraser"
 msgstr "ยางลบ"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:80
+#: rnote-ui/data/ui/overlays.ui:76
 msgid "Selector"
 msgstr "รูปแบบการเลือก"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:88
+#: rnote-ui/data/ui/overlays.ui:84
 msgid "Tools"
 msgstr "เครื่องมือต่าง ๆ"
 
@@ -697,128 +707,87 @@ msgid "Shaper style"
 msgstr "รูปแบบของรูปทรง"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:153
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape configuration"
 msgstr "กำหนดค่ารูปทรง"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape builders"
 msgstr "ตัวสร้างรูปทรง"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:366
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
 msgstr "เงื่อนไขบังคับ"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:97
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper styles"
 msgstr "รูปแบบต่าง ๆ ของรูปทรง"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:115
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
 msgstr "เรียบ"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
 msgstr "หยาบ"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:163
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
 msgstr "รูปแบบของความหยาบ"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:167
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 #, fuzzy
 #| msgid "Solid style"
 msgid "Fill style"
 msgstr "รูปแบบเส้นทึบ"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a fill style"
 msgstr "เลือกขนาด"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
 msgstr "จุด"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure angle"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 #, fuzzy
 msgid "Set the angle of hachure fills"
 msgstr "ตั้งสีพื้นหลัง"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:240
-msgid "Line"
-msgstr "เส้นตรง"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:251
-msgid "Rectangle"
-msgstr "สี่เหลี่ยม"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:262
-#: rnote-ui/data/ui/settingspanel.ui:308
-msgid "Grid"
-msgstr "ตาราง"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:273
-msgid "2D coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:284
-msgid "3D coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:295
-msgid "2D single quadrant coordinate system"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:306
-msgid "Ellipse"
-msgstr "วงรี"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:317
-msgid "Ellipse with foci"
-msgstr "วงรีด้วยจุดโฟกัส"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:328
-msgid "Quadratic bezier curve"
-msgstr "เส้นโค้งเบซิเยร์สองจังหวะ"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:339
-msgid "Cubic bezier curve"
-msgstr "เส้นโค้งเบซิเยร์สามจังหวะ"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:383
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
 msgstr "เปิดใช้งาน"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 #, fuzzy
 msgid ""
 "Hold Ctrl to temporarily\n"
@@ -826,15 +795,15 @@ msgid ""
 "when this switch is off/on"
 msgstr "กด Ctrl ค้างไว้ เพื่อเปิด/ปิดการใช้งานเงื่อนไขบังคับชั่วคราว เมื่อสวิตช์นี้ปิด/เปิด"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
 msgstr "1:1"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
 msgstr "3:2"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:416
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden ratio (1:1.618)"
 msgstr "อัตราส่วนทองคำ (1:1.618)"
 
@@ -897,7 +866,7 @@ msgid "Fill"
 msgstr "เต็มบรรทัด"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
-#: rnote-ui/data/ui/colorpicker.ui:114 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
@@ -1067,15 +1036,15 @@ msgstr "แถบข้างอยู่ด้านขวา"
 msgid "Toggle fullscreen"
 msgstr "สลับโหมดเต็มหน้าจอ"
 
-#: rnote-ui/data/ui/appwindow.ui:111
+#: rnote-ui/data/ui/appwindow.ui:109
 msgid "Close the folded flap"
 msgstr "ปิดแถบหน้าต่างด้านข้าง"
 
-#: rnote-ui/data/ui/appwindow.ui:128
+#: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
 msgstr "พื้นที่ทำงาน"
 
-#: rnote-ui/data/ui/appwindow.ui:139
+#: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
 msgstr "การตั้งค่า"
 
@@ -1155,6 +1124,18 @@ msgstr "ซูมเข้า"
 msgid "Zoom to fit page width"
 msgstr "ซูมให้พอดีกับความกว้างของหน้ากระดาษ"
 
+#: rnote-ui/data/ui/colorpicker.ui:19
+#, fuzzy
+#| msgid "Stroke dots radii"
+msgid "Stroke color"
+msgstr "รัศมีของจุดต่าง ๆ บนเส้น"
+
+#: rnote-ui/data/ui/colorpicker.ui:26
+#, fuzzy
+#| msgid "Solid style"
+msgid "Fill color"
+msgstr "รูปแบบเส้นทึบ"
+
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
 msgstr "เปิด"
@@ -1209,22 +1190,22 @@ msgstr "ปรับขนาดของเอกสารให้พอดี
 msgid "Save document"
 msgstr "บันทึกเอกสาร"
 
-#: rnote-ui/data/ui/overlays.ui:156
+#: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:160
+#: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:166
+#: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
 msgid "_Close all other tabs"
 msgstr "ปิดหน้าต่างที่กำลังใช้งานอยู่"
 
-#: rnote-ui/data/ui/overlays.ui:170
+#: rnote-ui/data/ui/overlays.ui:165
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
@@ -1398,6 +1379,11 @@ msgstr "ไม่มี"
 #: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
 msgstr "เส้นบรรทัด"
+
+#: rnote-ui/data/ui/settingspanel.ui:308
+#: rnote-ui/src/penssidebar/shaperpage.rs:269
+msgid "Grid"
+msgstr "ตาราง"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
@@ -1911,6 +1897,60 @@ msgstr ""
 msgid "Change workspace directory"
 msgstr "เปลี่ยนไดเรกทอรีของพื้นที่ทำงาน"
 
+#: rnote-ui/src/penssidebar/shaperpage.rs:234
+msgid "Miscellaneous"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:242
+msgid "Coordinate Systems"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:250
+#, fuzzy
+#| msgid "Ellipse"
+msgid "Ellipses"
+msgstr "วงรี"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:257
+msgid "Curves"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:267
+msgid "Line"
+msgstr "เส้นตรง"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:268
+msgid "Rectangle"
+msgstr "สี่เหลี่ยม"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:270
+msgid "2D coordinate system"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:271
+msgid "3D coordinate system"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:273
+msgid "2D single quadrant coordinate system"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:275
+msgid "Ellipse"
+msgstr "วงรี"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:276
+msgid "Ellipse with foci"
+msgstr "วงรีด้วยจุดโฟกัส"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:277
+msgid "Quadratic bezier curve"
+msgstr "เส้นโค้งเบซิเยร์สองจังหวะ"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:278
+msgid "Cubic bezier curve"
+msgstr "เส้นโค้งเบซิเยร์สามจังหวะ"
+
 #: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
 #, fuzzy
 #| msgid "File name:"
@@ -1971,9 +2011,6 @@ msgstr ""
 #~| msgid "Clear document"
 #~ msgid "_Clear document"
 #~ msgstr "ล้างเอกสาร"
-
-#~ msgid "Stroke dots radii"
-#~ msgstr "รัศมีของจุดต่าง ๆ บนเส้น"
 
 #~ msgid "The radii of the individual dots in the textured stroke"
 #~ msgstr "รัศมีของแต่ละจุดที่อยู่ในเส้นเทกเจอร์"

@@ -70,9 +70,9 @@
     <binary>@APP_NAME@</binary>
   </provides>
 
-  <!-- /// Translators: Don't translate the changelog -->
+  <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.5.13-beta3" date="2023-01-25">
+    <release version="0.5.13-beta4" date="2023-01-29">
       <description>
         <p>this release changes: (BETA)</p>
         <ul>
@@ -83,11 +83,14 @@
           <li>feature: added two-finger long-press touch gesture that switches the active pen (like stylus buttons)</li>
           <li>feature: added pdf import bitmap scaling preference</li>
           <li>UI: floating toolbars</li>
+          <li>improvement: shape builder picker is now a categorized grid (thanks a lot @Kneemund !)</li>
+          <li>improvement: flap revealed state is now remembered across app launches</li>
           <li>fix: lag when panning in "continuous-vertical" layout</li>
           <li>fix: layers when erasing marker strokes in "split-stroke" mode</li>
           <li>fix: "split-stroke" mode only eraser one segment at a time</li>
           <li>fix: freeze when saving multiple times in succession</li>
           <li>fix: blurry vector images after zooming in</li>
+          <li>fix: some blurry icons</li>
         </ul>
       </description>
     </release>

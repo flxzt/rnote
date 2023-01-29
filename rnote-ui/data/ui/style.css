@@ -73,10 +73,6 @@
     transition: all 0.15s ease-out;
 }
 
-.colorpad > image {
-    -gtk-icon-size: 14px;
-}
-
 .colorpad:hover {
     filter: brightness(93%);
 }

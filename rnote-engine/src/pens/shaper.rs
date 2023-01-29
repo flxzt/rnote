@@ -16,7 +16,7 @@ use rnote_compose::builders::{
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
-use rnote_compose::penevents::{PenEvent, ShortcutKey};
+use rnote_compose::penevents::{KeyboardKey, PenEvent, ShortcutKey};
 use rnote_compose::penpath::Element;
 
 #[derive(Debug)]
@@ -76,7 +76,6 @@ impl PenBehaviour for Shaper {
             (ShaperState::Idle, _) => PenProgress::Idle,
             (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
-
                 widget_flags.redraw = true;
                 PenProgress::Finished
             }
@@ -99,7 +98,7 @@ impl PenBehaviour for Shaper {
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
 
-                match builder.handle_event(event, now, constraints) {
+                let mut pen_progress = match builder.handle_event(event.clone(), now, constraints) {
                     ShapeBuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 
@@ -177,7 +176,22 @@ impl PenBehaviour for Shaper {
 
                         PenProgress::Finished
                     }
+                };
+
+                // When esc is pressed, reset state
+                if let PenEvent::KeyPressed {
+                    keyboard_key,
+                    shortcut_keys,
+                } = event
+                {
+                    if keyboard_key == KeyboardKey::Escape && shortcut_keys.is_empty() {
+                        self.state = ShaperState::Idle;
+                        widget_flags.redraw = true;
+                        pen_progress = PenProgress::Finished;
+                    }
                 }
+
+                pen_progress
             }
         };
 

@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-28 21:22+0000\n"
+"PO-Revision-Date: 2023-01-31 01:46+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -222,7 +222,7 @@ msgstr "Importálás"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Adat"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -392,10 +392,8 @@ msgid "Export document pages"
 msgstr "Dokumentumoldalak exportálása"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "Oldaltávolság"
+msgstr "Oldalfájlok elnevezése:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -1019,16 +1017,12 @@ msgid "Zoom to fit page width"
 msgstr "Nagyítás az oldal szélességéhez"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "Körvonalpontok sugarai"
+msgstr "Körvonal színe"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "Kitöltés típusa"
+msgstr "Kitöltőszín"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1092,10 +1086,8 @@ msgid "Move _right"
 msgstr "Áthelyezés _jobbra"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgid "_Close all other tabs"
 msgid "Close all _other tabs"
-msgstr "Összes többi lap _bezárása"
+msgstr "Összes _többi lap bezárása"
 
 #: rnote-ui/data/ui/overlays.ui:165
 msgid "_Close"
@@ -1733,25 +1725,19 @@ msgstr "Munkaterület-könyvtár módosítása"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Egyéb"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "Kétdimenziós koordinátarendszer"
+msgstr "Koordinátarendszerek"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
-msgstr "Ellipszis"
+msgstr "Ellipszisek"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "Íves"
+msgstr "Ívek"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

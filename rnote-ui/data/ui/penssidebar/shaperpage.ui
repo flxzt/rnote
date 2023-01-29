@@ -231,7 +231,7 @@
           </child>
           <child>
             <object class="GroupedIconPicker" id="shapebuildertype_picker">
-              <property name="width-request">300</property>
+              <property name="width-request">250</property>
             </object>
           </child>
         </object>

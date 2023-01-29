@@ -4,7 +4,7 @@
   <template class="GroupedIconPicker" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
-        <property name="spacing">12</property>
+        <property name="spacing">6</property>
         <property name="orientation">vertical</property>
       </object>
     </property>
@@ -15,7 +15,7 @@
       <object class="GtkScrolledWindow">
         <property name="propagate-natural-width">true</property>
         <property name="propagate-natural-height">true</property>
-        <property name="max-content-height">240</property>
+        <property name="max-content-height">280</property>
         <style>
           <class name="groupediconpicker_scrolledwindow" />
         </style>

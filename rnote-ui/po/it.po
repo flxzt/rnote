@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2023-01-29 18:55+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -1728,7 +1728,7 @@ msgstr "Cambia cartella dell'area di lavoro"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Varie"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
 msgid "Coordinate Systems"

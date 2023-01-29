@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-26 12:24+0000\n"
+"PO-Revision-Date: 2023-01-29 14:10+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -222,7 +222,7 @@ msgstr "استورد"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "معلومات"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -390,10 +390,8 @@ msgid "Export document pages"
 msgstr "صدِّر صفحات المستند"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "تباعد الصفحات"
+msgstr "تسمية ملفَّات الصفحات:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -1017,16 +1015,12 @@ msgid "Zoom to fit page width"
 msgstr "كبِّر حتَّى عرض الصفحة"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "عدد النقط في الخط المقطع"
+msgstr "لون الشوط"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "أسلوب الملء"
+msgstr "لون الملء"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1083,24 +1077,19 @@ msgstr "احفظ المستند"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
-msgstr ""
+msgstr "حرِّك يسارًا"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
-msgstr ""
+msgstr "حرِّك يمينًا"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active tab"
 msgid "Close all _other tabs"
-msgstr "أغلق اللسان الحاليَّ"
+msgstr "أغلق بقيَّة الألسنة"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "أغلق اللسان"
+msgstr "أغلق"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1736,25 +1725,19 @@ msgstr "غيِّر مجلَّد العمل"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "متنوِّعات"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "نظام إحداثيَّات ثنائيُّ الأبعاد"
+msgstr "أنظمة الإحداثيَّات"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "إهليلج"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "منحنٍ"
+msgstr "المنحنيات"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

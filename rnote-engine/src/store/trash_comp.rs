@@ -204,11 +204,11 @@ impl StrokeStore {
                                         brushstroke.path.start,
                                         first_split.to_vec(),
                                     ));
-
-                                    modified_keys.push(key);
                                 } else {
                                     trash_current_stroke = true;
                                 }
+
+                                modified_keys.push(key);
                             }
                         }
                     }
@@ -217,6 +217,7 @@ impl StrokeStore {
                             for hitbox_elem in stroke.hitboxes().iter() {
                                 if eraser_bounds.intersects(hitbox_elem) {
                                     trash_current_stroke = true;
+                                    modified_keys.push(key);
                                 }
                             }
                         }
@@ -241,6 +242,11 @@ impl StrokeStore {
                 .map(|(new_stroke, layer)| self.insert_stroke(new_stroke, Some(layer)))
                 .collect(),
         );
+
+        if !modified_keys.is_empty() {
+            widget_flags.store_modified = true;
+            widget_flags.resize = true;
+        }
 
         (modified_keys, widget_flags)
     }

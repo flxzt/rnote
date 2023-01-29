@@ -40,7 +40,7 @@
         <property name="max-width-chars">1</property>
         <property name="wrap">true</property>
         <style>
-          <class name="subtitle" />
+          <class name="dim-label" />
           <class name="groupediconpicker_label" />
         </style>
       </object>

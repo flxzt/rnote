@@ -158,7 +158,7 @@
                   </section>
                   <section>
                     <item>
-                      <attribute name="label" translatable="yes">_Close all other tabs</attribute>
+                      <attribute name="label" translatable="yes">Close all _other tabs</attribute>
                       <attribute name="action">win.other-tabs-close</attribute>
                     </item>
                     <item>

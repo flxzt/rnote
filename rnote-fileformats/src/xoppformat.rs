@@ -772,14 +772,14 @@ impl XmlWritable for XoppStroke {
         w.write_attribute("tool", &self.tool.as_xml_attr_value());
         w.write_attribute("color", &self.color.as_xml_attr_value());
         if let Some(fill) = self.fill {
-            w.write_attribute("fill", format!("{}", fill).as_str());
+            w.write_attribute("fill", format!("{fill}").as_str());
         }
         w.write_attribute(
             "width",
             &self
                 .width
                 .iter()
-                .map(|&width| format!("{}", width))
+                .map(|&width| format!("{width}"))
                 .collect::<Vec<String>>()
                 .join(" "),
         );

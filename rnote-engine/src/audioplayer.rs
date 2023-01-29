@@ -48,7 +48,7 @@ impl AudioPlayer {
 
         // Init marker sounds
         for i in 0..Self::MARKER_N_FILES {
-            let name = format!("marker_{:02}", i);
+            let name = format!("marker_{i:02}");
             let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
 
             sounds.insert(name, buffered);
@@ -64,7 +64,7 @@ impl AudioPlayer {
         // Init typewriter sounds
         // the enumerated key sounds
         for i in 0..Self::TYPEWRITER_N_FILES {
-            let name = format!("typewriter_{:02}", i);
+            let name = format!("typewriter_{i:02}");
             let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
@@ -114,7 +114,7 @@ impl AudioPlayer {
 
         match rodio::Sink::try_new(&self.marker_outputstream_handle) {
             Ok(sink) => {
-                sink.append(self.sounds[&format!("marker_{:02}", marker_sound_index)].clone());
+                sink.append(self.sounds[&format!("marker_{marker_sound_index:02}")].clone());
                 sink.detach();
             }
             Err(e) => log::error!(
@@ -179,7 +179,7 @@ impl AudioPlayer {
                     let typewriter_sound_index = rng.gen_range(0..Self::TYPEWRITER_N_FILES);
 
                     sink.append(
-                        self.sounds[&format!("typewriter_{:02}", typewriter_sound_index)].clone(),
+                        self.sounds[&format!("typewriter_{typewriter_sound_index:02}")].clone(),
                     );
                     sink.detach();
                 }
@@ -216,8 +216,7 @@ fn load_sound_from_path(
         Ok(buffered)
     } else {
         Err(anyhow::Error::msg(format!(
-            "failed to init audioplayer. File `{:?}` is missing.",
-            resource_path
+            "failed to init audioplayer. File `{resource_path:?}` is missing."
         )))
     }
 }

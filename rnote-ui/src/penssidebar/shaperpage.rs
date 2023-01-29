@@ -12,8 +12,8 @@ use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
 use crate::{
-    GroupedIconPicker, GroupedIconPickerGroupData, RnoteAppWindow, RnoteCanvasWrapper,
-    StrokeWidthPicker,
+    groupediconpicker::GroupedIconPickerGroupData, GroupedIconPicker, RnoteAppWindow,
+    RnoteCanvasWrapper, StrokeWidthPicker,
 };
 
 mod imp {

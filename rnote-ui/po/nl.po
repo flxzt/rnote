@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:14+0100\n"
+"POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2023-01-26 12:24+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1094,7 +1094,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active tab"
-msgid "_Close all other tabs"
+msgid "Close all _other tabs"
 msgstr "Huidige tabblad sluiten"
 
 #: rnote-ui/data/ui/overlays.ui:165

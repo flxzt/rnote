@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:14+0100\n"
+"POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2022-11-28 19:41+0000\n"
 "Last-Translator: Mirza <mirza.arnaut45@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/rnote/repo/bs/>\n"
@@ -1088,7 +1088,7 @@ msgstr ""
 #: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
 #| msgid "Close the folded flap"
-msgid "_Close all other tabs"
+msgid "Close all _other tabs"
 msgstr "Zatvorite preklopljeni poklopac"
 
 #: rnote-ui/data/ui/overlays.ui:165

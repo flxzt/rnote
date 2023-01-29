@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:14+0100\n"
+"POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -1141,7 +1141,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "_Close all other tabs"
+msgid "Close all _other tabs"
 msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/overlays.ui:165

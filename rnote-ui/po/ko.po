@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:14+0100\n"
+"POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2022-11-16 10:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1085,7 +1085,7 @@ msgstr ""
 #: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
 #| msgid "Close the folded flap"
-msgid "_Close all other tabs"
+msgid "Close all _other tabs"
 msgstr "접힌 플랩 닫기"
 
 #: rnote-ui/data/ui/overlays.ui:165

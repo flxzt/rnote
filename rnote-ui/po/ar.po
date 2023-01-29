@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:14+0100\n"
+"POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2023-01-26 12:24+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -1093,7 +1093,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active tab"
-msgid "_Close all other tabs"
+msgid "Close all _other tabs"
 msgstr "أغلق اللسان الحاليَّ"
 
 #: rnote-ui/data/ui/overlays.ui:165

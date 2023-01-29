@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:14+0100\n"
+"POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2023-01-29 11:22+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -1087,7 +1087,9 @@ msgid "Move _right"
 msgstr "Nach _rechts verschieben"
 
 #: rnote-ui/data/ui/overlays.ui:161
-msgid "_Close all other tabs"
+#, fuzzy
+#| msgid "_Close all other tabs"
+msgid "Close all _other tabs"
 msgstr "_Schließe alle anderen Tabs"
 
 #: rnote-ui/data/ui/overlays.ui:165

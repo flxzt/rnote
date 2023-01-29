@@ -217,6 +217,9 @@ mod imp {
 
             inst.set_hexpand(false);
             inst.set_vexpand(false);
+            // keyboard focus needed for typewriter
+            inst.set_can_focus(true);
+            inst.set_focusable(true);
 
             inst.set_cursor(Some(&*self.regular_cursor.borrow()));
 

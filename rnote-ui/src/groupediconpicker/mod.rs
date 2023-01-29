@@ -146,7 +146,7 @@ impl GroupedIconPicker {
 
             let icon_names = &groups.iter().find(|x| x.name.as_str() == group_name.as_str()).unwrap().icons;
 
-            let group = GroupedIconPickerGroup::new(&group_name.to_string(), &icon_names, &iconpicker, generate_display_name);
+            let group = GroupedIconPickerGroup::new(&group_name.to_string(), icon_names, &iconpicker, generate_display_name);
             group.upcast::<Widget>()
         }));
     }

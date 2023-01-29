@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:14+0100\n"
-"PO-Revision-Date: 2023-01-25 12:42+0000\n"
+"PO-Revision-Date: 2023-01-29 11:22+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -222,7 +222,7 @@ msgstr "Importieren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -393,10 +393,8 @@ msgid "Export document pages"
 msgstr "Exportiere Dokumentseiten"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "Seitenabstand"
+msgstr "Seiten Dateien-Benennung:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -1020,16 +1018,12 @@ msgid "Zoom to fit page width"
 msgstr "Zoom auf die Seitenbreite"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "Strichpunkte Radien"
+msgstr "Strichfarbe"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "Füllstil"
+msgstr "Füllfarbe"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1086,18 +1080,15 @@ msgstr "Dokument speichern"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
-msgstr ""
+msgstr "Nach _links verschieben"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
-msgstr ""
+msgstr "Nach _rechts verschieben"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active tab"
 msgid "_Close all other tabs"
-msgstr "Schließe den aktiven Tab"
+msgstr "_Schließe alle anderen Tabs"
 
 #: rnote-ui/data/ui/overlays.ui:165
 #, fuzzy

@@ -89,16 +89,17 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Shaper styles</property>
               <property name="halign">center</property>
-              <property name="margin-bottom">12</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
@@ -143,10 +144,10 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
@@ -214,137 +215,23 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Shape builders</property>
               <property name="halign">center</property>
-              <property name="margin-bottom">12</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
           <child>
-            <object class="GtkListBox" id="shapebuildertype_listbox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">browse</property>
-              <style>
-                <class name="content" />
-                <class name="large" />
-              </style>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_line_row">
-                  <property name="title" translatable="yes">Line</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-line-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_rectangle_row">
-                  <property name="title" translatable="yes">Rectangle</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-rectangle-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_grid_row">
-                  <property name="title" translatable="yes">Grid</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-grid-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_coordsystem2d_row">
-                  <property name="title" translatable="yes">2D coordinate system</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-coordsystem2d-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_coordsystem3d_row">
-                  <property name="title" translatable="yes">3D coordinate system</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-coordsystem3d-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_quadrantcoordsystem2d_row">
-                  <property name="title" translatable="yes">2D single quadrant coordinate system</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-quadrantcoordsystem2d-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_ellipse_row">
-                  <property name="title" translatable="yes">Ellipse</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-ellipse-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_fociellipse_row">
-                  <property name="title" translatable="yes">Ellipse with foci</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-fociellipse-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_quadbez_row">
-                  <property name="title" translatable="yes">Quadratic bezier curve</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-quadbez-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_cubbez_row">
-                  <property name="title" translatable="yes">Cubic bezier curve</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shapebuilder-cubbez-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
+            <object class="GroupedIconPicker" id="shapebuildertype_picker">
+              <property name="width-request">250</property>
             </object>
           </child>
         </object>
@@ -356,17 +243,17 @@
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Constraints</property>
               <property name="halign">center</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>

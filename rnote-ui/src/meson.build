@@ -102,6 +102,8 @@ rnote_ui_sources = files(
     'config.rs',
     'globals.rs',
     'iconpicker.rs',
+    'groupediconpicker/mod.rs',
+    'groupediconpicker/group.rs',
     'main.rs',
     'mainheader.rs',
     'unitentry.rs',

@@ -195,12 +195,45 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
     font-size: 22px;
 }
 
-.iconpicker_gridview {
+.groupediconpicker_listbox {
+    padding: 8px 12px;
+}
+
+.groupediconpicker_label {
+    line-height: 1.25em; /* close to the default line height */
+    min-height: 2.5em; /* 2 lines, i.e. 1.25em * 2 */
+}
+
+.iconpicker_gridview,
+.groupediconpicker_scrolledwindow viewport {
     border-radius: 6px;
 }
 
-.iconpicker_gridview child {
+.iconpicker_gridview child,
+.groupediconpickergroup_flowbox flowboxchild {
     margin: 2px;
+}
+
+/* https://gitlab.gnome.org/GNOME/libadwaita/-/blob/main/src/stylesheet/_common.scss#L1 */
+.groupediconpickergroup_flowbox flowboxchild {
+    transition: background 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* https://gitlab.gnome.org/GNOME/libadwaita/-/blob/main/src/stylesheet/_colors.scss#L62-L66 */
+.groupediconpickergroup_flowbox flowboxchild:hover {
+    background: alpha(currentColor, 0.07);
+}
+.groupediconpickergroup_flowbox flowboxchild:active {
+    background: alpha(currentColor, 0.16);
+}
+.groupediconpickergroup_flowbox flowboxchild:selected {
+    background: alpha(currentColor, 0.1);
+}
+.groupediconpickergroup_flowbox flowboxchild:selected:hover {
+    background: alpha(currentColor, 0.13);
+}
+.groupediconpickergroup_flowbox flowboxchild:selected:active {
+    background: alpha(currentColor, 0.19);
 }
 
 .overlay-toolbar {

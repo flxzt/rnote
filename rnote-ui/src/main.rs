@@ -3,12 +3,6 @@
 // Hides console window on windows
 #![windows_subsystem = "windows"]
 
-pub(crate) mod config;
-pub(crate) mod dialogs;
-pub(crate) mod globals;
-pub(crate) mod utils;
-
-/// Widgets
 mod app;
 mod appmenu;
 mod appwindow;
@@ -16,6 +10,10 @@ mod canvas;
 mod canvasmenu;
 mod canvaswrapper;
 mod colorpicker;
+pub(crate) mod config;
+pub(crate) mod dialogs;
+pub(crate) mod globals;
+pub(crate) mod groupediconpicker;
 mod iconpicker;
 mod mainheader;
 mod overlays;
@@ -23,6 +21,7 @@ pub(crate) mod penssidebar;
 mod settingspanel;
 pub(crate) mod strokewidthpicker;
 mod unitentry;
+pub(crate) mod utils;
 mod workspacebrowser;
 
 // Re-exports
@@ -33,6 +32,7 @@ pub(crate) use canvas::RnoteCanvas;
 pub(crate) use canvasmenu::CanvasMenu;
 pub(crate) use canvaswrapper::RnoteCanvasWrapper;
 pub(crate) use colorpicker::ColorPicker;
+pub(crate) use groupediconpicker::GroupedIconPicker;
 pub(crate) use iconpicker::IconPicker;
 pub(crate) use mainheader::MainHeader;
 pub(crate) use overlays::RnoteOverlays;

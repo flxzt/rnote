@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-26 12:24+0000\n"
+"PO-Revision-Date: 2023-01-29 14:10+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -220,7 +220,7 @@ msgstr "Importar"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Información"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -392,10 +392,8 @@ msgid "Export document pages"
 msgstr "Exportar páginas del documento"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "Espacio entre páginas"
+msgstr "Nombre del archivo de las páginas:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -1019,16 +1017,12 @@ msgid "Zoom to fit page width"
 msgstr "Zoom para ajustar el ancho de la página"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "Radios de los puntos de la traza"
+msgstr "Color de los trazos"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "Estilo de relleno"
+msgstr "Color del relleno"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1085,24 +1079,19 @@ msgstr "Guardar documento"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
-msgstr ""
+msgstr "Mover a la izquierda"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
-msgstr ""
+msgstr "Mover a la derecha"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active tab"
 msgid "Close all _other tabs"
-msgstr "Cerrar la pestaña activa"
+msgstr "Cerrar todas las otras pestañas"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "Cerrar la pestaña"
+msgstr "Cerrar"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1743,25 +1732,19 @@ msgstr "Cambiar el directorio del área de trabajo"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Varios"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "Sistema de coordenadas 2D"
+msgstr "Sistemas de coordenadas"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
-msgstr "Elipse"
+msgstr "Elipsis"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "Curvado"
+msgstr "Curvas"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

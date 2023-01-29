@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-29 11:22+0000\n"
+"PO-Revision-Date: 2023-01-29 11:32+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1087,16 +1087,12 @@ msgid "Move _right"
 msgstr "Nach _rechts verschieben"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgid "_Close all other tabs"
 msgid "Close all _other tabs"
-msgstr "_Schließe alle anderen Tabs"
+msgstr "Schließe alle _anderen Tabs"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "Tab schließen"
+msgstr "_Schließen"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1730,25 +1726,19 @@ msgstr "Ändere das Arbeitsflächenverzeichnis"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Verschiedenes"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "2D Koordinatensystem"
+msgstr "Koordinatensysteme"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
-msgstr "Ellipse"
+msgstr "Ellipsen"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "Geschwungen"
+msgstr "Kurven"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

@@ -76,7 +76,7 @@ pub fn gen_hline_pattern(
             ),
     );
 
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
 
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
@@ -127,7 +127,7 @@ pub fn gen_grid_pattern(
             ),
     );
 
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
 
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
@@ -169,7 +169,7 @@ pub fn gen_dots_pattern(
             ),
     );
 
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
     rect.assign("width", format!("{}px", bounds.extents()[0]));

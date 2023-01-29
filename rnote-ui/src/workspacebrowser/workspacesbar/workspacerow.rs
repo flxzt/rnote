@@ -162,7 +162,7 @@ mod imp {
             self.name_label
                 .set_label(name.graphemes(true).take(2).collect::<String>().as_str());
             self.instance()
-                .set_tooltip_text(Some(format!("{}\n{}", name, dir).as_str()));
+                .set_tooltip_text(Some(format!("{name}\n{dir}").as_str()));
 
             self.folder_image.set_icon_name(Some(&icon));
 

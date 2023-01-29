@@ -1,6 +1,8 @@
 use adw::{prelude::*, subclass::prelude::*};
+use gettextrs::gettext;
 use gtk4::{
-    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, Switch,
+    glib, glib::clone, CompositeTemplate, ListBox, MenuButton, Popover, SpinButton, StringList,
+    Switch,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
@@ -9,7 +11,10 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
+use crate::{
+    groupediconpicker::GroupedIconPickerGroupData, GroupedIconPicker, RnoteAppWindow,
+    RnoteCanvasWrapper, StrokeWidthPicker,
+};
 
 mod imp {
     use super::*;
@@ -38,27 +43,7 @@ mod imp {
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapebuildertype_listbox: TemplateChild<ListBox>,
-        #[template_child]
-        pub(crate) shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_grid_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_coordsystem2d_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_coordsystem3d_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_quadrantcoordsystem2d_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_quadbez_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shapebuildertype_picker: TemplateChild<GroupedIconPicker>,
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -151,56 +136,14 @@ impl ShaperPage {
     }
 
     pub(crate) fn shapebuildertype(&self) -> Option<ShapeBuilderType> {
-        ShapeBuilderType::try_from(
-            self.imp().shapebuildertype_listbox.selected_row()?.index() as u32
-        )
-        .ok()
+        let icon_name = self.imp().shapebuildertype_picker.picked()?;
+        ShapeBuilderType::from_icon_name(icon_name.as_str())
     }
 
-    pub(crate) fn set_shapebuildertype(&self, buildertype: ShapeBuilderType) {
-        match buildertype {
-            ShapeBuilderType::Line => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_line_row)),
-            ShapeBuilderType::Rectangle => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_rectangle_row)),
-            ShapeBuilderType::Grid => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_grid_row)),
-            ShapeBuilderType::CoordSystem2D => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_coordsystem2d_row)),
-            ShapeBuilderType::CoordSystem3D => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_coordsystem3d_row)),
-            ShapeBuilderType::QuadrantCoordSystem2D => {
-                self.imp().shapebuildertype_listbox.select_row(Some(
-                    &*self.imp().shapebuildertype_quadrantcoordsystem2d_row,
-                ))
-            }
-            ShapeBuilderType::Ellipse => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_ellipse_row)),
-            ShapeBuilderType::FociEllipse => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_fociellipse_row)),
-            ShapeBuilderType::QuadBez => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_quadbez_row)),
-            ShapeBuilderType::CubBez => self
-                .imp()
-                .shapebuildertype_listbox
-                .select_row(Some(&*self.imp().shapebuildertype_cubbez_row)),
-        }
+    pub(crate) fn set_shapebuildertype(&self, builder_type: ShapeBuilderType) {
+        self.imp()
+            .shapebuildertype_picker
+            .set_picked(Some(builder_type.to_icon_name()));
     }
 
     pub(crate) fn roughstyle_fillstyle(&self) -> FillStyle {
@@ -285,23 +228,63 @@ impl ShaperPage {
         }));
 
         // shape builder type
-        imp.shapebuildertype_listbox.connect_row_selected(
-            clone!(@weak self as shaperpage, @weak appwindow => move |_, _| {
-                if let Some(buildertype) = shaperpage.shapebuildertype() {
-                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = buildertype;
+        imp.shapebuildertype_picker.set_groups(
+            vec![
+                GroupedIconPickerGroupData {
+                    name: gettext("Miscellaneous"),
+                    icons: StringList::new(&[
+                        "shapebuilder-line-symbolic",
+                        "shapebuilder-rectangle-symbolic",
+                        "shapebuilder-grid-symbolic",
+                    ]),
+                },
+                GroupedIconPickerGroupData {
+                    name: gettext("Coordinate Systems"),
+                    icons: StringList::new(&[
+                        "shapebuilder-coordsystem2d-symbolic",
+                        "shapebuilder-coordsystem3d-symbolic",
+                        "shapebuilder-quadrantcoordsystem2d-symbolic",
+                    ]),
+                },
+                GroupedIconPickerGroupData {
+                    name: gettext("Ellipses"),
+                    icons: StringList::new(&[
+                        "shapebuilder-ellipse-symbolic",
+                        "shapebuilder-fociellipse-symbolic",
+                    ]),
+                },
+                GroupedIconPickerGroupData {
+                    name: gettext("Curves"),
+                    icons: StringList::new(&[
+                        "shapebuilder-quadbez-symbolic",
+                        "shapebuilder-cubbez-symbolic",
+                    ]),
+                },
+            ],
+            |icon_name| match ShapeBuilderType::from_icon_name(icon_name).expect(
+                "ShapeBuilderTypePicker failed, display name of unknown icon name requested",
+            ) {
+                ShapeBuilderType::Line => gettext("Line"),
+                ShapeBuilderType::Rectangle => gettext("Rectangle"),
+                ShapeBuilderType::Grid => gettext("Grid"),
+                ShapeBuilderType::CoordSystem2D => gettext("2D coordinate system"),
+                ShapeBuilderType::CoordSystem3D => gettext("3D coordinate system"),
+                ShapeBuilderType::QuadrantCoordSystem2D => {
+                    gettext("2D single quadrant coordinate system")
+                }
+                ShapeBuilderType::Ellipse => gettext("Ellipse"),
+                ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
+                ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
+                ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
+            },
+        );
 
-                    match buildertype {
-                        ShapeBuilderType::Line => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-line-symbolic"),
-                        ShapeBuilderType::Rectangle => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-rectangle-symbolic"),
-                        ShapeBuilderType::Grid => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-grid-symbolic"),
-                        ShapeBuilderType::CoordSystem2D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-coordsystem2d-symbolic"),
-                        ShapeBuilderType::CoordSystem3D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-coordsystem3d-symbolic"),
-                        ShapeBuilderType::QuadrantCoordSystem2D => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-quadrantcoordsystem2d-symbolic"),
-                        ShapeBuilderType::Ellipse => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-ellipse-symbolic"),
-                        ShapeBuilderType::FociEllipse => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-fociellipse-symbolic"),
-                        ShapeBuilderType::QuadBez => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-quadbez-symbolic"),
-                        ShapeBuilderType::CubBez => shaperpage.imp().shapebuildertype_menubutton.set_icon_name("shapebuilder-cubbez-symbolic"),
-                    }
+        imp.shapebuildertype_picker.connect_notify_local(
+            Some("picked"),
+            clone!(@weak self as shaperpage, @weak appwindow => move |picker, _| {
+                if let (Some(buildertype), Some(icon_name)) = (shaperpage.shapebuildertype(), picker.picked()) {
+                    appwindow.active_tab().canvas().engine().borrow_mut().pens_config.shaper_config.builder_type = buildertype;
+                    shaperpage.imp().shapebuildertype_menubutton.set_icon_name(&icon_name);
                 }
             }),
         );

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2023-01-31 01:46+0000\n"
-"Last-Translator: Larix_45 <milarczek2004@gmail.com>\n"
+"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
@@ -617,7 +617,7 @@ msgstr "Jednolity"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:232
 msgid "Normal"
-msgstr "Normalna"
+msgstr "Normalne"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:233
 msgid "Exponential"
@@ -919,10 +919,8 @@ msgid "Visual _debugging"
 msgstr "Debugowanie wizualne"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Import file"
 msgid "Export engine _state"
-msgstr "Importuj plik"
+msgstr "Eksportuj _stan silnika"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 #, fuzzy

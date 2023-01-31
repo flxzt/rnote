@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
 "PO-Revision-Date: 2023-02-01 05:31+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -144,10 +144,8 @@ msgstr ""
 "Les modifications qui ne sont pas sauvegardées seront définitivement perdues."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Save document"
 msgid "Unsaved documents"
-msgstr "Enregistrer le document"
+msgstr "Documents non sauvegardés"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard all"

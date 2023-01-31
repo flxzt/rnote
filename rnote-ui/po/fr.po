@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-18 16:52+0000\n"
-"Last-Translator: Steph Ma <Stephma@pm.me>\n"
+"PO-Revision-Date: 2023-02-01 05:31+0000\n"
+"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -100,10 +100,6 @@ msgid "New Document"
 msgstr "Nouveau document"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved changes. Do you want to "
-#| "save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
@@ -113,9 +109,8 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
-#, fuzzy
 msgid "Discard"
-msgstr "Rejeter"
+msgstr "Effacer"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:36
@@ -125,18 +120,15 @@ msgid "Save"
 msgstr "Sauvegarder"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "New Sheet"
 msgid "Close tab"
-msgstr "Fermer la note"
+msgstr "Fermer l’onglet"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
-#, fuzzy
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
-"Cette note contient des modifications non sauvegardées. Les modifications "
+"Cet onglet contient des modifications non sauvegardées. Les modifications "
 "qui ne sont pas sauvegardées seront définitivement perdues."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
@@ -144,7 +136,6 @@ msgid "Close window"
 msgstr "Fermer la fenêtre"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
-#, fuzzy
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
@@ -159,10 +150,8 @@ msgid "Unsaved documents"
 msgstr "Enregistrer le document"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard all"
-msgstr "Rejeter tout"
+msgstr "Abandonner tout"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit workspace"
@@ -209,8 +198,6 @@ msgid "- no directory selected -"
 msgstr "- aucun répertoire sélectionné -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
 msgstr "Modifier le répertoire"
 
@@ -237,7 +224,7 @@ msgstr "Importer"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Informations"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -763,10 +750,6 @@ msgid "Enabled"
 msgstr "Activé"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable constraints\n"
-#| "when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily\n"
 "enable/disable constraints\n"
@@ -998,8 +981,6 @@ msgid "_Continuous vertical"
 msgstr "Vertical _continue"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "_Infinite"
 msgid "_Semi infinite"
 msgstr "_Semi infini"
 
@@ -1050,10 +1031,8 @@ msgid "Stroke color"
 msgstr "Rayons des points"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "Style de remplissage"
+msgstr "Couleur de remplissage"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1085,10 +1064,8 @@ msgid "Reveal / hide flap"
 msgstr "Afficher / masquer le rabat"
 
 #: rnote-ui/data/ui/mainheader.ui:46
-#, fuzzy
-#| msgid "New Sheet"
 msgid "New tab"
-msgstr "Nouvelle note"
+msgstr "Nouvel onglet"
 
 #: rnote-ui/data/ui/mainheader.ui:68
 msgid "Undo"
@@ -1119,17 +1096,12 @@ msgid "Move _right"
 msgstr ""
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close all _other tabs"
-msgstr "Fermer la fenêtre active"
+msgstr "Fermer tous les _autres onglets"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "New Sheet"
 msgid "_Close"
-msgstr "Fermer la note"
+msgstr "_Fermer"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1164,13 +1136,10 @@ msgid "Set the format border color"
 msgstr "Définir la couleur des bordures du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-#, fuzzy
 msgid "Show scrollbars"
-msgstr "Affichez les barres de défilement"
+msgstr "Afficher les barres de défilement"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are hidden permanently"
 msgid "Set whether the scrollbars on the canvas are shown"
 msgstr "Indique si les barres de défilement sur le canevas sont affichées"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-23 18:19+0000\n"
+"PO-Revision-Date: 2023-02-01 05:31+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -220,7 +220,7 @@ msgstr "இறக்குமதி"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "தகவல்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -389,10 +389,8 @@ msgid "Export document pages"
 msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்யவும்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "பக்க இடைவெளி"
+msgstr "பக்க கோப்புகள் பெயரிடுதல்:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -463,7 +461,7 @@ msgstr "குறிப்பான்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Mark underneath other strokes"
-msgstr "மற்ற ஸ்ட்ரோக்குகளின் அடியில் குறிக்கவும்"
+msgstr "மற்ற பக்கவாதங்களின் அடியில் குறிக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:92
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
@@ -472,7 +470,7 @@ msgstr "திடமான"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 msgid "Draw solid color strokes"
-msgstr "திட வண்ண ஸ்ட்ரோக்குகளை வரையவும்"
+msgstr "திட வண்ண பக்கவாதங்களை வரையவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:104
 msgid "Textured"
@@ -480,7 +478,7 @@ msgstr "டெக்ஸ்சர்டு"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Draw textured strokes"
-msgstr "டெக்ஸ்சர்டு ஸ்ட்ரோக்குகளை வரையவும்"
+msgstr "டெக்ஸ்சர்டு பக்கவாதங்களை வரையவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:141
 msgid "Path modelling"
@@ -564,7 +562,7 @@ msgstr "அடர்த்தி என்பது 10x10 பகுதிக்�
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
 msgid "Stroke dots position distribution"
-msgstr "ஸ்ட்ரோக் புள்ளிகளின் நிலைப் பரவல்"
+msgstr "பக்கவாதம் புள்ளிகளின் நிலைப் பரவல்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:227
 msgid "Choose a dots position probability distribution"
@@ -650,7 +648,7 @@ msgstr "அனைத்து பக்கவாதம் தேர்ந்த�
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect all strokes"
-msgstr "அனைத்து ஸ்ட்ரோக்குகளையும் தேர்வுநீக்கு"
+msgstr "அனைத்து பக்கவாதங்களையும் தேர்வுநீக்கு"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 msgid "Duplicate selection"
@@ -1016,16 +1014,12 @@ msgid "Zoom to fit page width"
 msgstr "பக்க அகலத்திற்கு ஏற்றவாறு பெரிதாக்கவும்"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "ஸ்ட்ரோக் புள்ளிகள் ஆரங்கள்"
+msgstr "பக்கவாதம் நிறம்"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "நிரப்பு பாணி"
+msgstr "வண்ணத்தை நிரப்பவும்"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1074,7 +1068,7 @@ msgstr "பக்கத்தைச் சேர்"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Resize document to fit the strokes"
-msgstr "ஸ்ட்ரோக்குகளுக்கு ஏற்றவாறு ஆவணத்தின் அளவை மாற்றவும்"
+msgstr "பக்கவாதங்களுக்கு ஏற்றவாறு ஆவணத்தின் அளவை மாற்றவும்"
 
 #: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
@@ -1082,24 +1076,19 @@ msgstr "ஆவணத்தைச் சேமி"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
-msgstr ""
+msgstr "நகர்த்து _இடதுபுறம்"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
-msgstr ""
+msgstr "நகர்த்து _வலதுபுறம்"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close all _other tabs"
-msgstr "செயலில் உள்ள சாளரத்தை மூடு"
+msgstr "_மற்ற எல்லா தாவல்களையும் மூடுங்கள்"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "தாவலை மூடவும்"
+msgstr "_ மூடவும்"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1324,13 +1313,11 @@ msgstr "இரண்டாம் நிலை சுட்டி பொத்த
 
 #: rnote-ui/data/ui/settingspanel.ui:405
 msgid "Touch two-finger long-press action"
-msgstr ""
+msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:406
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "இரண்டாம் நிலை சுட்டி பொத்தானின் செயலை அமைக்கவும்"
+msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"
@@ -1343,12 +1330,9 @@ msgid "Show keyboard shortcuts"
 msgstr "விசைப்பலகை குறுக்குவழிகளைக் காட்டு"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgctxt "shortcut window"
 msgid "Close the active tab"
-msgstr "செயலில் உள்ள சாளரத்தை மூடு"
+msgstr "செயலில் உள்ள தாவலை மூடு"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
@@ -1739,25 +1723,19 @@ msgstr "பணியிட கோப்பகத்தை மாற்றவு�
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "இதர"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "2D (இரு பரிமாண) ஒருங்கிணைப்பு அமைப்பு"
+msgstr "ஒருங்கிணைப்பு அமைப்புகள்"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
-msgstr "எலிப்ஸ்"
+msgstr "நீள்வட்டங்கள்"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "வளைந்த"
+msgstr "வளைவுகள்"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

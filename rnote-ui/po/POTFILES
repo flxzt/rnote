@@ -42,6 +42,7 @@ rnote-ui/src/dialogs/export.rs
 rnote-ui/src/dialogs/import.rs
 rnote-ui/src/dialogs/mod.rs
 rnote-ui/src/overlays.rs
+rnote-ui/src/globals.rs
 rnote-ui/src/penssidebar/shaperpage.rs
 rnote-ui/src/workspacebrowser/widgethelper.rs
 rnote-ui/src/workspacebrowser/filerow/actions/rename.rs

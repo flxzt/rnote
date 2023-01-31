@@ -1,5 +1,5 @@
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, GridView, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, GridView, Label, Widget,
 };
 use gtk4::{
     Align, ConstantExpression, IconSize, Image, ListItem, PropertyExpression,
@@ -22,6 +22,8 @@ mod imp {
 
         #[template_child]
         pub(crate) gridview: TemplateChild<GridView>,
+        #[template_child]
+        pub(crate) selection_label: TemplateChild<Label>,
     }
 
     impl Default for RnIconPicker {
@@ -33,6 +35,7 @@ mod imp {
                 picked: RefCell::new(None),
 
                 gridview: TemplateChild::<GridView>::default(),
+                selection_label: TemplateChild::<Label>::default(),
             }
         }
     }
@@ -133,6 +136,16 @@ impl RnIconPicker {
         self.set_property("picked", picked.to_value());
     }
 
+    #[allow(unused)]
+    fn set_selection_label_text(&self, text: String) {
+        self.imp().selection_label.get().set_text(text.as_str());
+    }
+
+    #[allow(unused)]
+    fn set_selection_label_visible(&self, visible: bool) {
+        self.imp().selection_label.get().set_visible(visible);
+    }
+
     /// Internal function to retrieve the picked icon from the selection
     fn picked_intern(&self) -> Option<String> {
         self.imp()
@@ -172,8 +185,13 @@ impl RnIconPicker {
         }
     }
 
-    /// Binds a list containing the icon names
-    pub(crate) fn set_list(&self, list: StringList) {
+    /// Binds a list containing the icon names, optionally using a function that returns the i18n string for a given icon name
+    pub(crate) fn set_list(
+        &self,
+        list: StringList,
+        generate_display_name_option: Option<fn(&str) -> String>,
+        show_selection_label: bool,
+    ) {
         let single_selection = SingleSelection::builder()
             .model(&list)
             // Ensures nothing is selected when initially setting the list
@@ -185,10 +203,24 @@ impl RnIconPicker {
             self.disconnect(old_id);
         }
 
+        let show_display_name = generate_display_name_option.is_some();
+        let generate_display_name = generate_display_name_option.unwrap_or(|_| String::new());
+
         self.imp().selected_handlerid.borrow_mut().replace(
             single_selection.connect_selected_item_notify(
                 clone!(@weak self as iconpicker => move |_| {
-                    iconpicker.set_picked(iconpicker.picked_intern());
+                    let pick = iconpicker.picked_intern();
+
+                    if show_display_name && show_selection_label {
+                        if let Some(icon_name) = &pick {
+                            iconpicker.set_selection_label_visible(true);
+                            iconpicker.set_selection_label_text(generate_display_name(icon_name.as_str()));
+                        } else {
+                            iconpicker.set_selection_label_visible(false);
+                        }
+                    }
+
+                    iconpicker.set_picked(pick);
                 }),
             ),
         );
@@ -216,8 +248,25 @@ impl RnIconPicker {
                     .chain_property::<StringObject>("string");
 
             string_expr.bind(&icon_image, "icon-name", Widget::NONE);
-            string_expr.bind(&icon_image, "tooltip-text", Widget::NONE);
         });
+
+        if show_display_name {
+            icon_factory.connect_bind(move |_factory, list_item| {
+                let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+
+                let icon = list_item
+                    .child()
+                    .expect("IconPickerListFactory bind() failed, child is None")
+                    .downcast::<Image>()
+                    .expect("IconPickerListFactory bind() failed, child has to be of type `Image`");
+
+                let icon_name = icon
+                    .icon_name()
+                    .expect("IconPickerListFactory bind() failed, child icon name is None");
+
+                icon.set_tooltip_text(Some(generate_display_name(icon_name.as_str()).as_str()));
+            });
+        }
 
         self.imp().gridview.get().set_model(Some(&single_selection));
         self.imp().gridview.get().set_factory(Some(&icon_factory));

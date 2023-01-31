@@ -1,3 +1,5 @@
+use gettextrs::gettext;
+
 pub(crate) const APP_LICENSE: gtk4::License = gtk4::License::Gpl30;
 
 // Make sure the icons are actually installed
@@ -47,6 +49,55 @@ pub(crate) const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[
     "workspacelistentryicon-weight-symbolic",
 ];
 
+pub(crate) fn workspace_icons_list_to_display_name(icon_name: &str) -> String {
+    match icon_name {
+        "workspacelistentryicon-bank-symbolic" => gettext("Bank"),
+        "workspacelistentryicon-bookmark-symbolic" => gettext("Bookmark"),
+        "workspacelistentryicon-book-symbolic" => gettext("Book"),
+        "workspacelistentryicon-bread-symbolic" => gettext("Bread"),
+        "workspacelistentryicon-build-symbolic" => gettext("Hammer"),
+        "workspacelistentryicon-calendar-symbolic" => gettext("Calendar"),
+        "workspacelistentryicon-camera-symbolic" => gettext("Camera"),
+        "workspacelistentryicon-chip-symbolic" => gettext("Chip"),
+        "workspacelistentryicon-code-symbolic" => gettext("Code"),
+        "workspacelistentryicon-compose-symbolic" => gettext("Compose"),
+        "workspacelistentryicon-drinks-symbolic" => gettext("Drinks"),
+        "workspacelistentryicon-feet-symbolic" => gettext("Footprints"),
+        "workspacelistentryicon-flag-symbolic" => gettext("Flag"),
+        "workspacelistentryicon-folder-symbolic" => gettext("Folder"),
+        "workspacelistentryicon-gamepad-symbolic" => gettext("Gamepad"),
+        "workspacelistentryicon-gear-symbolic" => gettext("Gear"),
+        "workspacelistentryicon-heal-symbolic" => gettext("Band-Aid"),
+        "workspacelistentryicon-heart-symbolic" => gettext("Heart"),
+        "workspacelistentryicon-help-symbolic" => gettext("Speech Bubble"),
+        "workspacelistentryicon-hourglass-symbolic" => gettext("Hourglass"),
+        "workspacelistentryicon-key-symbolic" => gettext("Key"),
+        "workspacelistentryicon-language-symbolic" => gettext("Language"),
+        "workspacelistentryicon-lightbulb-symbolic" => gettext("Lightbulb"),
+        "workspacelistentryicon-math-symbolic" => gettext("Math"),
+        "workspacelistentryicon-meeting-symbolic" => gettext("Meeting"),
+        "workspacelistentryicon-money-symbolic" => gettext("Money"),
+        "workspacelistentryicon-musicnote-symbolic" => gettext("Musical Note"),
+        "workspacelistentryicon-paintbrush-symbolic" => gettext("Paintbrush"),
+        "workspacelistentryicon-pencilandpaper-symbolic" => gettext("Pencil and Paper"),
+        "workspacelistentryicon-people-symbolic" => gettext("People"),
+        "workspacelistentryicon-person-symbolic" => gettext("Person"),
+        "workspacelistentryicon-present-symbolic" => gettext("Projector"),
+        "workspacelistentryicon-richtext-symbolic" => gettext("Document"),
+        "workspacelistentryicon-scratchpad-symbolic" => gettext("Scratchpad"),
+        "workspacelistentryicon-shapes-symbolic" => gettext("Shapes"),
+        "workspacelistentryicon-shopping-symbolic" => gettext("Shopping"),
+        "workspacelistentryicon-speedometer-symbolic" => gettext("Speedometer"),
+        "workspacelistentryicon-star-symbolic" => gettext("Star"),
+        "workspacelistentryicon-terminal-symbolic" => gettext("Terminal"),
+        "workspacelistentryicon-text-symbolic" => gettext("Text"),
+        "workspacelistentryicon-travel-symbolic" => gettext("Travel"),
+        "workspacelistentryicon-weather-symbolic" => gettext("Weather"),
+        "workspacelistentryicon-weight-symbolic" => gettext("Weight"),
+        _ => unimplemented!(),
+    }
+}
+
 pub(crate) const CURSORS_LIST: &[&str] = &[
     "cursor-crosshair-small",
     "cursor-crosshair-medium",
@@ -67,3 +118,27 @@ pub(crate) const CURSORS_LIST: &[&str] = &[
     "cursor-beam-medium",
     "cursor-beam-large",
 ];
+
+pub(crate) fn cursors_list_to_display_name(icon_name: &str) -> String {
+    match icon_name {
+        "cursor-crosshair-small" => gettext("Crosshair (Small)"),
+        "cursor-crosshair-medium" => gettext("Crosshair (Medium)"),
+        "cursor-crosshair-large" => gettext("Crosshair (Large)"),
+        "cursor-dot-small" => gettext("Dot (Small)"),
+        "cursor-dot-medium" => gettext("Dot (Medium)"),
+        "cursor-dot-large" => gettext("Dot (Large)"),
+        "cursor-teardrop-nw-small" => gettext("Teardrop North-West (Small)"),
+        "cursor-teardrop-nw-medium" => gettext("Teardrop North-West (Medium)"),
+        "cursor-teardrop-nw-large" => gettext("Teardrop North-West (Large)"),
+        "cursor-teardrop-ne-small" => gettext("Teardrop North-East (Small)"),
+        "cursor-teardrop-ne-medium" => gettext("Teardrop North-East (Medium)"),
+        "cursor-teardrop-ne-large" => gettext("Teardrop North-East (Large)"),
+        "cursor-teardrop-n-small" => gettext("Teardrop North (Small)"),
+        "cursor-teardrop-n-medium" => gettext("Teardrop North (Medium)"),
+        "cursor-teardrop-n-large" => gettext("Teardrop North (Large)"),
+        "cursor-beam-small" => gettext("Beam (Small)"),
+        "cursor-beam-medium" => gettext("Beam (Medium)"),
+        "cursor-beam-large" => gettext("Beam (Large)"),
+        _ => unimplemented!(),
+    }
+}

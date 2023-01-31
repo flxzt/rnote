@@ -365,7 +365,11 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     dialog.set_transient_for(Some(appwindow));
 
     // Sets the icons
-    icon_picker.set_list(StringList::new(globals::WORKSPACELISTENTRY_ICONS_LIST));
+    icon_picker.set_list(
+        StringList::new(globals::WORKSPACELISTENTRY_ICONS_LIST),
+        Some(globals::workspace_icons_list_to_display_name),
+        false,
+    );
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Change workspace directory"))

@@ -556,8 +556,11 @@ impl RnSettingsPanel {
             .build();
 
         // Regular cursor picker
-        imp.general_regular_cursor_picker
-            .set_list(StringList::new(globals::CURSORS_LIST));
+        imp.general_regular_cursor_picker.set_list(
+            StringList::new(globals::CURSORS_LIST),
+            Some(globals::cursors_list_to_display_name),
+            true,
+        );
 
         imp.general_regular_cursor_picker
             .bind_property(
@@ -569,8 +572,11 @@ impl RnSettingsPanel {
             .build();
 
         // Drawing cursor picker
-        imp.general_drawing_cursor_picker
-            .set_list(StringList::new(globals::CURSORS_LIST));
+        imp.general_drawing_cursor_picker.set_list(
+            StringList::new(globals::CURSORS_LIST),
+            Some(globals::cursors_list_to_display_name),
+            true,
+        );
 
         imp.general_drawing_cursor_picker
             .bind_property(

@@ -1,3 +1,4 @@
+use cairo::glib::closure;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, GridView, Label, Widget,
 };
@@ -243,30 +244,21 @@ impl RnIconPicker {
             list_item.set_child(Some(&icon_image));
 
             let list_item_expr = ConstantExpression::new(&list_item);
-            let string_expr =
+
+            let icon_name_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item")
                     .chain_property::<StringObject>("string");
 
-            string_expr.bind(&icon_image, "icon-name", Widget::NONE);
+            icon_name_expr.bind(&icon_image, "icon-name", Widget::NONE);
+
+            if show_display_name {
+                let tooltip_expr = icon_name_expr.chain_closure::<String>(closure!(
+                    |_: Option<glib::Object>, icon_name: &str| generate_display_name(icon_name)
+                ));
+
+                tooltip_expr.bind(&icon_image, "tooltip-text", Widget::NONE);
+            }
         });
-
-        if show_display_name {
-            icon_factory.connect_bind(move |_factory, list_item| {
-                let list_item = list_item.downcast_ref::<ListItem>().unwrap();
-
-                let icon = list_item
-                    .child()
-                    .expect("IconPickerListFactory bind() failed, child is None")
-                    .downcast::<Image>()
-                    .expect("IconPickerListFactory bind() failed, child has to be of type `Image`");
-
-                let icon_name = icon
-                    .icon_name()
-                    .expect("IconPickerListFactory bind() failed, child icon name is None");
-
-                icon.set_tooltip_text(Some(generate_display_name(icon_name.as_str()).as_str()));
-            });
-        }
 
         self.imp().gridview.get().set_model(Some(&single_selection));
         self.imp().gridview.get().set_factory(Some(&icon_factory));

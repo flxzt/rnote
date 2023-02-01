@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-29 12:21+0100\n"
-"PO-Revision-Date: 2023-01-26 12:24+0000\n"
+"PO-Revision-Date: 2023-02-01 16:45+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -221,7 +221,7 @@ msgstr "Importeren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -241,7 +241,7 @@ msgstr "Paginabreedte (in %)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr "Stel de breedte van geïmporteerde pdf-bestanden in (in procenten)"
+msgstr "Stelt de breedte in van geïmporteerde pdf-bestanden (in procenten)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page spacing"
@@ -391,10 +391,8 @@ msgid "Export document pages"
 msgstr "Pagina's exporteren"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "Pagina-opvulling"
+msgstr "Benoeming van paginabestanden:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -1018,16 +1016,12 @@ msgid "Zoom to fit page width"
 msgstr "Aanpassen aan paginabreedte"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "Omvang van aangestipte punten"
+msgstr "Lijnkleur"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "Opvulstijl"
+msgstr "Opvulkleur"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1084,24 +1078,19 @@ msgstr "Document opslaan"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
-msgstr ""
+msgstr "Naar _links verplaatsen"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
-msgstr ""
+msgstr "Naar _rechts verplaatsen"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active tab"
 msgid "Close all _other tabs"
-msgstr "Huidige tabblad sluiten"
+msgstr "Alle _andere tabbladen sluiten"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "Tabblad sluiten"
+msgstr "_Sluiten"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1556,7 +1545,7 @@ msgstr "Het document kan niet worden opgeslagen."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:643
 msgid "Printed document successfully"
-msgstr "Het werkblad is afgedrukt."
+msgstr "Document succesvol afgedrukt"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:652
 msgid "Printing document failed"
@@ -1716,7 +1705,7 @@ msgstr "Auteur:"
 
 #: rnote-ui/src/dialogs/import.rs:302
 msgid "Modification date:"
-msgstr "Bewerkt op"
+msgstr "Bewerkt op:"
 
 #: rnote-ui/src/dialogs/import.rs:306
 msgid "Pages:"
@@ -1737,25 +1726,19 @@ msgstr "Werkbladmap wijzigen"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diversen"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "2D-coördinaten"
+msgstr "Coördinaatsystemen"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
-msgstr "Ellips"
+msgstr "Ellipsen"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "Met kromming"
+msgstr "Krommingen"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

@@ -524,6 +524,13 @@ impl Selector {
                     KeyboardKey::Unicode('a') => {
                         self.select_all(shortcut_keys, engine_view, &mut widget_flags)
                     }
+                    KeyboardKey::Unicode('d') => {
+                        //Duplicate selection
+                        if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                            engine_view.store.duplicate_selection();
+                        }
+                        PenProgress::Finished
+                    }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
                         engine_view.store.set_trashed_keys(selection, true);
                         self.state = SelectorState::Idle;

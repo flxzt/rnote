@@ -192,6 +192,12 @@
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window" translatable="yes">Duplicate selection</property>
+                    <property name="accelerator">&lt;ctrl&gt;d</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
                     <property name="title" context="shortcut window" translatable="yes">Undo</property>
                     <property name="accelerator">&lt;ctrl&gt;z</property>
                   </object>

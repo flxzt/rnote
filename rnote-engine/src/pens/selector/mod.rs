@@ -12,8 +12,7 @@ use kurbo::Shape;
 use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-use rnote_compose::penevents::PenEvent;
-use rnote_compose::penevents::PenState;
+use rnote_compose::penevents::{PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::drawhelpers;
@@ -602,5 +601,36 @@ impl Selector {
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         Ok(())
+    }
+
+    fn select_all(
+        &mut self,
+        shortcut_keys: Vec<ShortcutKey>,
+        engine_view: &mut EngineViewMut,
+        widget_flags: &mut WidgetFlags,
+    ) -> PenProgress {
+        if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+            // Select all keys
+            let all_strokes = engine_view.store.keys_sorted_chrono();
+
+            if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
+                engine_view.store.set_selected_keys(&all_strokes, true);
+
+                self.state = SelectorState::ModifySelection {
+                    modify_state: ModifyState::default(),
+                    selection: all_strokes,
+                    selection_bounds: new_bounds,
+                };
+
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.store_modified = true;
+            }
+        }
+        PenProgress::InProgress
     }
 }

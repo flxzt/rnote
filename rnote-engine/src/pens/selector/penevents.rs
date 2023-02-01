@@ -458,40 +458,6 @@ impl Selector {
         (progress, widget_flags)
     }
 
-    fn select_all(
-        &mut self,
-        shortcut_keys: Vec<ShortcutKey>,
-        engine_view: &mut EngineViewMut,
-        widget_flags: &mut WidgetFlags
-        ) -> PenProgress {
-        if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-            // Select all keys
-            let all_strokes = engine_view.store.keys_sorted_chrono();
-
-            if let Some(new_bounds) =
-                engine_view.store.bounds_for_strokes(&all_strokes)
-            {
-                engine_view.store.set_selected_keys(&all_strokes, true);
-
-                self.state = SelectorState::ModifySelection {
-                    modify_state: ModifyState::default(),
-                    selection: all_strokes,
-                    selection_bounds: new_bounds,
-                };
-
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                widget_flags.redraw = true;
-                widget_flags.resize = true;
-                widget_flags.store_modified = true;
-            }
-        }
-
-        PenProgress::InProgress
-    }
-
     pub(super) fn handle_pen_event_keypressed(
         &mut self,
         keyboard_key: KeyboardKey,
@@ -502,23 +468,18 @@ impl Selector {
         let mut widget_flags = WidgetFlags::default();
 
         let progress = match &mut self.state {
-            SelectorState::Idle => {
-                match keyboard_key {
-                    KeyboardKey::Unicode('a') => {
-                        self.select_all(shortcut_keys, engine_view, &mut widget_flags)
-                    }
-                    _ => PenProgress::InProgress,
+            SelectorState::Idle => match keyboard_key {
+                KeyboardKey::Unicode('a') => {
+                    self.select_all(shortcut_keys, engine_view, &mut widget_flags)
                 }
-            }
-            SelectorState::Selecting { .. } => {
-                match keyboard_key {
-                    KeyboardKey::Unicode('a') => {
-                        self.select_all(shortcut_keys, engine_view, &mut widget_flags)
-                    }
-                    _ => PenProgress::InProgress,
+                _ => PenProgress::InProgress,
+            },
+            SelectorState::Selecting { .. } => match keyboard_key {
+                KeyboardKey::Unicode('a') => {
+                    self.select_all(shortcut_keys, engine_view, &mut widget_flags)
                 }
-            }
-
+                _ => PenProgress::InProgress,
+            },
             SelectorState::ModifySelection { selection, .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {

@@ -7,14 +7,14 @@ use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::path::PathBuf;
 
-use self::imp::WorkspaceListEntryInner;
+use self::imp::RnWorkspaceListEntryInner;
 
 mod imp {
     use super::*;
 
     #[derive(Debug, Clone, glib::Variant, serde::Serialize, serde::Deserialize)]
     #[serde(default, rename = "workspacelistentryinner")]
-    pub(crate) struct WorkspaceListEntryInner {
+    pub(crate) struct RnWorkspaceListEntryInner {
         #[serde(rename = "dir")]
         pub(crate) dir: PathBuf,
         #[serde(rename = "icon")]
@@ -25,29 +25,29 @@ mod imp {
         pub(crate) name: String,
     }
 
-    impl Default for WorkspaceListEntryInner {
+    impl Default for RnWorkspaceListEntryInner {
         fn default() -> Self {
             Self {
                 dir: PathBuf::from("./"),
                 icon: String::from("workspacelistentryicon-folder-symbolic"),
-                color: super::WorkspaceListEntry::COLOR_DEFAULT.as_rgba_u32(),
+                color: super::RnWorkspaceListEntry::COLOR_DEFAULT.as_rgba_u32(),
                 name: String::from("default"),
             }
         }
     }
 
     #[derive(Debug, Default)]
-    pub(crate) struct WorkspaceEntry {
-        pub(crate) inner: RefCell<WorkspaceListEntryInner>,
+    pub(crate) struct RnWorkspaceEntry {
+        pub(crate) inner: RefCell<RnWorkspaceListEntryInner>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for WorkspaceEntry {
-        const NAME: &'static str = "WorkspaceListEntry";
-        type Type = super::WorkspaceListEntry;
+    impl ObjectSubclass for RnWorkspaceEntry {
+        const NAME: &'static str = "RnWorkspaceListEntry";
+        type Type = super::RnWorkspaceListEntry;
     }
 
-    impl ObjectImpl for WorkspaceEntry {
+    impl ObjectImpl for RnWorkspaceEntry {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
@@ -133,19 +133,19 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct WorkspaceListEntry(ObjectSubclass<imp::WorkspaceEntry>);
+    pub(crate) struct RnWorkspaceListEntry(ObjectSubclass<imp::RnWorkspaceEntry>);
 }
 
-impl Default for WorkspaceListEntry {
+impl Default for RnWorkspaceListEntry {
     fn default() -> Self {
-        Self::new(WorkspaceListEntryInner::default())
+        Self::new(RnWorkspaceListEntryInner::default())
     }
 }
 
-impl WorkspaceListEntry {
+impl RnWorkspaceListEntry {
     pub(crate) const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
 
-    pub(crate) fn new(inner: WorkspaceListEntryInner) -> Self {
+    pub(crate) fn new(inner: RnWorkspaceListEntryInner) -> Self {
         glib::Object::new(&[
             ("dir", &inner.dir.to_string_lossy().to_string().to_value()),
             ("icon", &inner.icon.to_value()),
@@ -197,22 +197,22 @@ impl WorkspaceListEntry {
     }
 }
 
-impl glib::StaticVariantType for WorkspaceListEntry {
+impl glib::StaticVariantType for RnWorkspaceListEntry {
     fn static_variant_type() -> std::borrow::Cow<'static, glib::VariantTy> {
-        let ty = WorkspaceListEntryInner::static_variant_type();
+        let ty = RnWorkspaceListEntryInner::static_variant_type();
         let variant_type = glib::VariantType::new(ty.as_str()).unwrap();
         std::borrow::Cow::from(variant_type)
     }
 }
 
-impl glib::ToVariant for WorkspaceListEntry {
+impl glib::ToVariant for RnWorkspaceListEntry {
     fn to_variant(&self) -> glib::Variant {
         self.imp().inner.borrow().to_variant()
     }
 }
 
-impl glib::FromVariant for WorkspaceListEntry {
+impl glib::FromVariant for RnWorkspaceListEntry {
     fn from_variant(variant: &glib::Variant) -> Option<Self> {
-        Some(Self::new(WorkspaceListEntryInner::from_variant(variant)?))
+        Some(Self::new(RnWorkspaceListEntryInner::from_variant(variant)?))
     }
 }

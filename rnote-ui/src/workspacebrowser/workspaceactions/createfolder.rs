@@ -10,10 +10,10 @@ use gtk4::{
     Align, Button, Entry, Label, Popover,
 };
 
-use crate::{workspacebrowser::widgethelper, WorkspaceBrowser};
+use crate::{workspacebrowser::widgethelper, RnWorkspaceBrowser};
 
 /// Creates a new `create_folder` action
-pub(crate) fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
+pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::SimpleAction {
     let new_folder_action = gio::SimpleAction::new("create-folder", None);
 
     new_folder_action.connect_activate(clone!(@weak workspacebrowser as workspacebrowser => move |_, _| {

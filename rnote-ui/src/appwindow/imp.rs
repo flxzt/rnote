@@ -12,7 +12,7 @@ use std::{
 };
 
 use crate::{
-    config, RnOverlays, RnSettingsPanel, WorkspaceBrowser, {dialogs, RnMainHeader},
+    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
 };
 
 #[allow(missing_debug_implementations)]
@@ -52,7 +52,7 @@ pub(crate) struct RnAppWindow {
     #[template_child]
     pub(crate) flap_stack: TemplateChild<adw::ViewStack>,
     #[template_child]
-    pub(crate) workspacebrowser: TemplateChild<WorkspaceBrowser>,
+    pub(crate) workspacebrowser: TemplateChild<RnWorkspaceBrowser>,
     #[template_child]
     pub(crate) flap_menus_box: TemplateChild<Box>,
     #[template_child]
@@ -83,7 +83,7 @@ impl Default for RnAppWindow {
             flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
             flap_close_button: TemplateChild::<Button>::default(),
             flap_stack: TemplateChild::<adw::ViewStack>::default(),
-            workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
+            workspacebrowser: TemplateChild::<RnWorkspaceBrowser>::default(),
             flap_menus_box: TemplateChild::<Box>::default(),
             mainheader: TemplateChild::<RnMainHeader>::default(),
         }

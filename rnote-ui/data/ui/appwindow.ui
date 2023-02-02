@@ -126,7 +126,7 @@
                         <property name="title" translatable="yes">Workspace</property>
                         <property name="icon-name">workspacebrowser-symbolic</property>
                         <property name="child">
-                          <object class="WorkspaceBrowser" id="workspacebrowser"></object>
+                          <object class="RnWorkspaceBrowser" id="workspacebrowser"></object>
                         </property>
                       </object>
                     </child>

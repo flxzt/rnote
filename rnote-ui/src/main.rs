@@ -40,7 +40,7 @@ pub(crate) use penssidebar::RnPensSideBar;
 pub(crate) use settingspanel::RnSettingsPanel;
 pub(crate) use strokewidthpicker::RnStrokeWidthPicker;
 pub(crate) use unitentry::RnUnitEntry;
-pub(crate) use workspacebrowser::WorkspaceBrowser;
+pub(crate) use workspacebrowser::RnWorkspaceBrowser;
 
 use gtk4::prelude::*;
 extern crate nalgebra as na;

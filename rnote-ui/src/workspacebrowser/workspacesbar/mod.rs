@@ -4,9 +4,9 @@ mod workspacerow;
 
 use gtk4::ConstantExpression;
 // Re-exports
-pub(crate) use workspacelist::WorkspaceList;
-pub(crate) use workspacelistentry::WorkspaceListEntry;
-pub(crate) use workspacerow::WorkspaceRow;
+pub(crate) use workspacelist::RnWorkspaceList;
+pub(crate) use workspacelistentry::RnWorkspaceListEntry;
+pub(crate) use workspacerow::RnWorkspaceRow;
 
 // Imports
 use crate::appwindow::RnAppWindow;
@@ -22,10 +22,10 @@ mod imp {
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/workspacesbar.ui")]
-    pub(crate) struct WorkspacesBar {
+    #[template(resource = "/com/github/flxzt/rnote/ui/workspacesbar/workspacesbar.ui")]
+    pub(crate) struct RnWorkspacesBar {
         pub(crate) action_group: gio::SimpleActionGroup,
-        pub(crate) workspace_list: WorkspaceList,
+        pub(crate) workspace_list: RnWorkspaceList,
 
         #[template_child]
         pub(crate) workspaces_scroller: TemplateChild<ScrolledWindow>,
@@ -43,11 +43,11 @@ mod imp {
         pub(crate) edit_selected_workspace_button: TemplateChild<Button>,
     }
 
-    impl Default for WorkspacesBar {
+    impl Default for RnWorkspacesBar {
         fn default() -> Self {
             Self {
                 action_group: gio::SimpleActionGroup::new(),
-                workspace_list: WorkspaceList::default(),
+                workspace_list: RnWorkspaceList::default(),
 
                 workspaces_scroller: Default::default(),
                 workspaces_listbox: Default::default(),
@@ -61,9 +61,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for WorkspacesBar {
-        const NAME: &'static str = "WorkspacesBar";
-        type Type = super::WorkspacesBar;
+    impl ObjectSubclass for RnWorkspacesBar {
+        const NAME: &'static str = "RnWorkspacesBar";
+        type Type = super::RnWorkspacesBar;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -75,7 +75,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for WorkspacesBar {
+    impl ObjectImpl for RnWorkspacesBar {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -90,21 +90,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for WorkspacesBar {}
+    impl WidgetImpl for RnWorkspacesBar {}
 }
 
 glib::wrapper! {
-    pub(crate) struct WorkspacesBar(ObjectSubclass<imp::WorkspacesBar>)
+    pub(crate) struct RnWorkspacesBar(ObjectSubclass<imp::RnWorkspacesBar>)
         @extends gtk4::Widget;
 }
 
-impl Default for WorkspacesBar {
+impl Default for RnWorkspacesBar {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl WorkspacesBar {
+impl RnWorkspacesBar {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -117,14 +117,14 @@ impl WorkspacesBar {
         self.imp().workspaces_scroller.clone()
     }
 
-    pub(crate) fn push_workspace(&self, entry: WorkspaceListEntry) {
+    pub(crate) fn push_workspace(&self, entry: RnWorkspaceListEntry) {
         self.imp().workspace_list.push(entry);
 
         let n_items = self.imp().workspace_list.n_items();
         self.select_workspace_by_index(n_items.saturating_sub(1));
     }
 
-    pub(crate) fn insert_workspace(&self, i: u32, entry: WorkspaceListEntry) {
+    pub(crate) fn insert_workspace(&self, i: u32, entry: RnWorkspaceListEntry) {
         self.imp().workspace_list.insert(i as usize, entry);
 
         self.select_workspace_by_index(i);
@@ -193,16 +193,16 @@ impl WorkspacesBar {
             .map(|r| r.index() as u32)
     }
 
-    pub(crate) fn selected_workspacelistentry(&self) -> Option<WorkspaceListEntry> {
+    pub(crate) fn selected_workspacelistentry(&self) -> Option<RnWorkspaceListEntry> {
         self.selected_workspace_index().and_then(|i| {
             self.imp()
                 .workspace_list
                 .item(i)
-                .map(|o| o.downcast::<WorkspaceListEntry>().unwrap())
+                .map(|o| o.downcast::<RnWorkspaceListEntry>().unwrap())
         })
     }
 
-    pub(crate) fn replace_selected_workspacelistentry(&self, entry: WorkspaceListEntry) {
+    pub(crate) fn replace_selected_workspacelistentry(&self, entry: RnWorkspaceListEntry) {
         if let Some(i) = self.selected_workspace_index() {
             self.imp().workspace_list.replace(i as usize, entry);
 
@@ -268,7 +268,7 @@ impl WorkspacesBar {
     }
 
     pub(crate) fn load_from_settings(&self, settings: &gio::Settings) {
-        let workspace_list = settings.get::<WorkspaceList>("workspace-list");
+        let workspace_list = settings.get::<RnWorkspaceList>("workspace-list");
         // Be sure to get the index before loading the workspaces, else the setting gets overridden
         let selected_workspace_index = settings.uint("selected-workspace-index");
 
@@ -304,8 +304,8 @@ impl WorkspacesBar {
         workspace_listbox.bind_model(
             Some(&self.imp().workspace_list),
             clone!(@strong appwindow => move |obj| {
-                let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
-                let workspace_row = WorkspaceRow::new(&entry);
+                let entry = obj.to_owned().downcast::<RnWorkspaceListEntry>().unwrap();
+                let workspace_row = RnWorkspaceRow::new(&entry);
                 workspace_row.init(&appwindow);
 
                 let entry_expr = ConstantExpression::new(&entry);

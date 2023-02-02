@@ -13,7 +13,7 @@ use crate::appwindow::RnAppWindow;
 use crate::canvas::RnCanvas;
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
-use crate::workspacebrowser::workspacesbar::WorkspaceRow;
+use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
 use crate::{globals, RnIconPicker};
 
 // About Dialog
@@ -341,7 +341,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
     let dialog: Dialog = builder.object("dialog_edit_selected_workspace").unwrap();
-    let preview_row: WorkspaceRow = builder
+    let preview_row: RnWorkspaceRow = builder
         .object("edit_selected_workspace_preview_row")
         .unwrap();
     let name_entryrow: adw::EntryRow = builder

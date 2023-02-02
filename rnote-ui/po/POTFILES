@@ -28,8 +28,8 @@ rnote-ui/data/ui/settingspanel.ui
 rnote-ui/data/ui/shortcuts.ui
 rnote-ui/data/ui/unitentry.ui
 rnote-ui/data/ui/workspacebrowser.ui
-rnote-ui/data/ui/workspacerow.ui
-rnote-ui/data/ui/workspacesbar.ui
+rnote-ui/data/ui/workspacesbar/workspacesbar.ui
+rnote-ui/data/ui/workspacesbar/workspacerow.ui
 
 rnote-ui/src/app/mod.rs
 rnote-ui/src/appwindow/mod.rs

@@ -11,10 +11,10 @@ use crate::{
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
     penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
     strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
-    workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::RnFileRow,
-    workspacebrowser::WorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
+    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
+    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
     RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
-    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, WorkspaceBrowser,
+    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 
 mod imp {
@@ -119,10 +119,10 @@ mod imp {
             RnTypewriterPage::static_type();
             RnToolsPage::static_type();
             PenStyle::static_type();
-            WorkspaceBrowser::static_type();
-            WorkspacesBar::static_type();
+            RnWorkspaceBrowser::static_type();
+            RnWorkspacesBar::static_type();
             RnFileRow::static_type();
-            WorkspaceRow::static_type();
+            RnWorkspaceRow::static_type();
             MeasureUnit::static_type();
             RnUnitEntry::static_type();
             RnIconPicker::static_type();

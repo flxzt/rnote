@@ -95,7 +95,7 @@ Do you want to save the current document?</property>
               <class name="background" />
             </style>
             <child>
-              <object class="WorkspaceRow" id="edit_selected_workspace_preview_row">
+              <object class="RnWorkspaceRow" id="edit_selected_workspace_preview_row">
                 <property name="halign">center</property>
                 <style>
                   <class name="preview" />

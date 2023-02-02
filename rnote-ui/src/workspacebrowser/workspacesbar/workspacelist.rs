@@ -2,28 +2,28 @@ use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
 use std::cell::{Cell, RefCell};
 
-use super::WorkspaceListEntry;
+use super::RnWorkspaceListEntry;
 
 mod imp {
     use super::*;
 
     #[derive(Debug, Default)]
-    pub(crate) struct WorkspaceList {
-        pub(crate) list: RefCell<Vec<WorkspaceListEntry>>,
+    pub(crate) struct RnWorkspaceList {
+        pub(crate) list: RefCell<Vec<RnWorkspaceListEntry>>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for WorkspaceList {
-        const NAME: &'static str = "WorkspaceList";
-        type Type = super::WorkspaceList;
+    impl ObjectSubclass for RnWorkspaceList {
+        const NAME: &'static str = "RnWorkspaceList";
+        type Type = super::RnWorkspaceList;
         type Interfaces = (gio::ListModel,);
     }
 
-    impl ObjectImpl for WorkspaceList {}
+    impl ObjectImpl for RnWorkspaceList {}
 
-    impl ListModelImpl for WorkspaceList {
+    impl ListModelImpl for RnWorkspaceList {
         fn item_type(&self) -> glib::Type {
-            WorkspaceListEntry::static_type()
+            RnWorkspaceListEntry::static_type()
         }
 
         fn n_items(&self) -> u32 {
@@ -41,22 +41,22 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct WorkspaceList(ObjectSubclass<imp::WorkspaceList>)
+    pub(crate) struct RnWorkspaceList(ObjectSubclass<imp::RnWorkspaceList>)
         @implements gio::ListModel;
 }
 
-impl Default for WorkspaceList {
+impl Default for RnWorkspaceList {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl WorkspaceList {
+impl RnWorkspaceList {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
 
-    pub(crate) fn from_vec(vec: Vec<WorkspaceListEntry>) -> Self {
+    pub(crate) fn from_vec(vec: Vec<RnWorkspaceListEntry>) -> Self {
         let list = Self::new();
         list.append(vec);
 
@@ -72,14 +72,14 @@ impl WorkspaceList {
         Iter::new(self.clone())
     }
 
-    pub(crate) fn push(&self, item: WorkspaceListEntry) {
+    pub(crate) fn push(&self, item: RnWorkspaceListEntry) {
         self.imp().list.borrow_mut().push(item);
 
         self.items_changed(self.n_items().saturating_sub(1), 0, 1);
     }
 
     #[allow(unused)]
-    pub(crate) fn pop(&self) -> Option<WorkspaceListEntry> {
+    pub(crate) fn pop(&self) -> Option<RnWorkspaceListEntry> {
         let popped = self.imp().list.borrow_mut().pop();
 
         self.items_changed(self.n_items().saturating_sub(1), 1, 0);
@@ -88,14 +88,14 @@ impl WorkspaceList {
     }
 
     /// Inserts at position i. Panics if i is OOB
-    pub(crate) fn insert(&self, i: usize, el: WorkspaceListEntry) {
+    pub(crate) fn insert(&self, i: usize, el: RnWorkspaceListEntry) {
         self.imp().list.borrow_mut().insert(i, el);
 
         self.items_changed(i as u32, 0, 1);
     }
 
     /// Removes at position i. Panics if i is OOB
-    pub(crate) fn remove(&self, i: usize) -> WorkspaceListEntry {
+    pub(crate) fn remove(&self, i: usize) -> RnWorkspaceListEntry {
         let removed = self.imp().list.borrow_mut().remove(i);
 
         self.items_changed(i as u32, 1, 0);
@@ -103,13 +103,13 @@ impl WorkspaceList {
     }
 
     /// Replaces entry at position i. Panics if i is OOB
-    pub(crate) fn replace(&self, i: usize, entry: WorkspaceListEntry) {
+    pub(crate) fn replace(&self, i: usize, entry: RnWorkspaceListEntry) {
         self.imp().list.borrow_mut()[i] = entry;
 
         self.items_changed(i as u32, 1, 1);
     }
 
-    pub(crate) fn append(&self, mut items: Vec<WorkspaceListEntry>) {
+    pub(crate) fn append(&self, mut items: Vec<RnWorkspaceListEntry>) {
         let amount = items.len() as u32;
 
         if amount > 0 {
@@ -130,12 +130,12 @@ impl WorkspaceList {
 
 #[derive(Debug, Clone)]
 pub(crate) struct Iter {
-    model: WorkspaceList,
+    model: RnWorkspaceList,
     i: Cell<u32>,
 }
 
 impl Iter {
-    const fn new(model: WorkspaceList) -> Self {
+    const fn new(model: RnWorkspaceList) -> Self {
         Self {
             model,
             i: Cell::new(0),
@@ -144,39 +144,39 @@ impl Iter {
 }
 
 impl Iterator for Iter {
-    type Item = WorkspaceListEntry;
+    type Item = RnWorkspaceListEntry;
 
     fn next(&mut self) -> Option<Self::Item> {
         let index = self.i.get();
 
         let item = self.model.item(index);
         self.i.set(index + 1);
-        item.map(|x| x.downcast::<WorkspaceListEntry>().unwrap())
+        item.map(|x| x.downcast::<RnWorkspaceListEntry>().unwrap())
     }
 }
 
-impl glib::StaticVariantType for WorkspaceList {
+impl glib::StaticVariantType for RnWorkspaceList {
     fn static_variant_type() -> std::borrow::Cow<'static, glib::VariantTy> {
-        let ty = WorkspaceListEntry::static_variant_type();
+        let ty = RnWorkspaceListEntry::static_variant_type();
         let variant_type = glib::VariantType::new(format!("a({})", ty.as_str()).as_str()).unwrap();
         std::borrow::Cow::from(variant_type)
     }
 }
 
-impl glib::ToVariant for WorkspaceList {
+impl glib::ToVariant for RnWorkspaceList {
     fn to_variant(&self) -> glib::Variant {
         self.iter()
-            .collect::<Vec<WorkspaceListEntry>>()
+            .collect::<Vec<RnWorkspaceListEntry>>()
             .to_variant()
     }
 }
 
-impl glib::FromVariant for WorkspaceList {
+impl glib::FromVariant for RnWorkspaceList {
     fn from_variant(variant: &glib::Variant) -> Option<Self> {
         let mut vec = Vec::new();
 
         for ref el in variant.iter() {
-            if let Some(e) = WorkspaceListEntry::from_variant(el) {
+            if let Some(e) = RnWorkspaceListEntry::from_variant(el) {
                 vec.push(e);
             }
         }

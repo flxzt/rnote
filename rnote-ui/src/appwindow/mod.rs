@@ -18,7 +18,7 @@ use std::rc::Rc;
 
 use crate::canvas::RnCanvas;
 use crate::{
-    config, RnApp, RnCanvasWrapper, RnOverlays, RnSettingsPanel, WorkspaceBrowser,
+    config, RnApp, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
     {dialogs, RnMainHeader},
 };
 
@@ -105,7 +105,7 @@ impl RnAppWindow {
         self.imp().flap_header.get()
     }
 
-    pub(crate) fn workspacebrowser(&self) -> WorkspaceBrowser {
+    pub(crate) fn workspacebrowser(&self) -> RnWorkspaceBrowser {
         self.imp().workspacebrowser.get()
     }
 

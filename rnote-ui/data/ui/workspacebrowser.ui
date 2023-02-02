@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="WorkspaceBrowser" parent="GtkWidget">
+  <template class="RnWorkspaceBrowser" parent="GtkWidget">
     <property name="hexpand">false</property>
     <property name="vexpand">true</property>
     <property name="valign">fill</property>
@@ -104,7 +104,7 @@
           </object>
         </child>
         <child>
-          <object class="WorkspacesBar" id="workspacesbar">
+          <object class="RnWorkspacesBar" id="workspacesbar">
             <layout>
               <property name="column">2</property>
               <property name="row">0</property>

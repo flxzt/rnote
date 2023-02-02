@@ -158,10 +158,6 @@
                   </section>
                   <section>
                     <item>
-                      <attribute name="label" translatable="yes">Close all _other tabs</attribute>
-                      <attribute name="action">win.other-tabs-close</attribute>
-                    </item>
-                    <item>
                       <attribute name="label" translatable="yes">_Close</attribute>
                       <attribute name="action">win.active-tab-close</attribute>
                     </item>

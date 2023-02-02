@@ -1,4 +1,4 @@
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{gio, glib, CompositeTemplate, MenuButton, PopoverMenu, ToggleButton, Widget};
 
@@ -7,7 +7,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appmenu.ui")]
-    pub(crate) struct AppMenu {
+    pub(crate) struct RnAppMenu {
         #[template_child]
         pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -21,9 +21,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for AppMenu {
-        const NAME: &'static str = "AppMenu";
-        type Type = super::AppMenu;
+    impl ObjectSubclass for RnAppMenu {
+        const NAME: &'static str = "RnAppMenu";
+        type Type = super::RnAppMenu;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -35,7 +35,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for AppMenu {
+    impl ObjectImpl for RnAppMenu {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -51,7 +51,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for AppMenu {
+    impl WidgetImpl for RnAppMenu {
         fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
             self.parent_size_allocate(width, height, baseline);
             self.popovermenu.get().present();
@@ -60,17 +60,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct AppMenu(ObjectSubclass<imp::AppMenu>)
+    pub(crate) struct RnAppMenu(ObjectSubclass<imp::RnAppMenu>)
     @extends Widget;
 }
 
-impl Default for AppMenu {
+impl Default for RnAppMenu {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl AppMenu {
+impl RnAppMenu {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -87,7 +87,7 @@ impl AppMenu {
         self.imp().righthanded_toggle.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp()
             .lefthanded_toggle
             .bind_property("active", appwindow, "righthanded")

@@ -10,7 +10,7 @@ mod imp {
     use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/unitentry.ui")]
-    pub(crate) struct UnitEntry {
+    pub(crate) struct RnUnitEntry {
         pub(crate) value: Cell<f64>,
         pub(crate) unit: Cell<format::MeasureUnit>,
         pub(crate) dpi: Cell<f64>,
@@ -22,7 +22,7 @@ mod imp {
         pub(crate) unit_dropdown: TemplateChild<DropDown>,
     }
 
-    impl Default for UnitEntry {
+    impl Default for RnUnitEntry {
         fn default() -> Self {
             Self {
                 value: Cell::new(1.0),
@@ -36,9 +36,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for UnitEntry {
-        const NAME: &'static str = "UnitEntry";
-        type Type = super::UnitEntry;
+    impl ObjectSubclass for RnUnitEntry {
+        const NAME: &'static str = "RnUnitEntry";
+        type Type = super::RnUnitEntry;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -50,7 +50,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for UnitEntry {
+    impl ObjectImpl for RnUnitEntry {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -197,22 +197,22 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for UnitEntry {}
+    impl WidgetImpl for RnUnitEntry {}
 }
 
 glib::wrapper! {
-    pub(crate) struct UnitEntry(ObjectSubclass<imp::UnitEntry>)
+    pub(crate) struct RnUnitEntry(ObjectSubclass<imp::RnUnitEntry>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for UnitEntry {
+impl Default for RnUnitEntry {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl UnitEntry {
+impl RnUnitEntry {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

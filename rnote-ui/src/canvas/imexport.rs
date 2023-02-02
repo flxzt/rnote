@@ -6,9 +6,9 @@ use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, Selectio
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::strokes::Stroke;
 
-use super::RnoteCanvas;
+use super::RnCanvas;
 
-impl RnoteCanvas {
+impl RnCanvas {
     pub(crate) async fn load_in_rnote_bytes<P>(
         &self,
         bytes: Vec<u8>,

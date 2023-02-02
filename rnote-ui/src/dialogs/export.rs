@@ -10,10 +10,10 @@ use rnote_engine::engine::export::{
     SelectionExportFormat, SelectionExportPrefs,
 };
 
-use crate::canvas::{self, RnoteCanvas};
-use crate::{config, RnoteAppWindow};
+use crate::canvas::{self, RnCanvas};
+use crate::{config, RnAppWindow};
 
-pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn filechooser_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_suffix("rnote");
@@ -87,7 +87,7 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnoteAppWindow, canvas: &Rnote
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
     );
@@ -215,7 +215,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnoteAppWindow, canvas: &Rno
 }
 
 fn create_filechooser_export_doc(
-    appwindow: &RnoteAppWindow,
+    appwindow: &RnAppWindow,
     output_file: Option<gio::File>,
     doc_export_prefs: &DocExportPrefs,
 ) -> FileChooserNative {
@@ -278,7 +278,7 @@ fn update_export_doc_filechooser_with_prefs(
     filechooser.set_current_name(&file_name);
 }
 
-pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
     );
@@ -488,7 +488,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnoteAppWindow, canvas
 }
 
 fn create_filechooser_export_doc_pages(
-    appwindow: &RnoteAppWindow,
+    appwindow: &RnAppWindow,
     output_file: Option<gio::File>,
     doc_pages_export_prefs: &DocPagesExportPrefs,
 ) -> FileChooserNative {
@@ -550,7 +550,7 @@ fn update_export_doc_pages_filechooser_with_prefs(
     filechooser.set_filter(&filter);
 }
 
-pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/export.ui").as_str(),
     );
@@ -736,7 +736,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnoteAppWindow, canvas
 }
 
 fn create_filechooser_export_selection(
-    appwindow: &RnoteAppWindow,
+    appwindow: &RnAppWindow,
     output_file: Option<gio::File>,
     selection_export_prefs: &SelectionExportPrefs,
 ) -> FileChooserNative {
@@ -804,7 +804,7 @@ fn update_export_selection_filechooser_with_prefs(
     filechooser.set_current_name(&file_name);
 }
 
-pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
@@ -868,7 +868,7 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnoteAppWindow, canvas
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub(crate) fn filechooser_export_engine_config(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_suffix("json");

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="ShaperPage" parent="GtkWidget">
+  <template class="RnShaperPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="spacing">6</property>
@@ -43,7 +43,7 @@
       </object>
     </child>
     <child>
-      <object class="StrokeWidthPicker" id="stroke_width_picker">
+      <object class="RnStrokeWidthPicker" id="stroke_width_picker">
       </object>
     </child>
     <child>
@@ -230,7 +230,7 @@
             </object>
           </child>
           <child>
-            <object class="GroupedIconPicker" id="shapebuildertype_picker">
+            <object class="RnGroupedIconPicker" id="shapebuildertype_picker">
               <property name="width-request">250</property>
             </object>
           </child>

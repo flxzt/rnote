@@ -13,32 +13,32 @@ mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub(crate) struct ColorSetter {
+    pub(crate) struct RnColorSetter {
         pub(crate) css: CssProvider,
         pub(crate) color: Cell<gdk::RGBA>,
         pub(crate) position: Cell<PositionType>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ColorSetter {
-        const NAME: &'static str = "ColorSetter";
-        type Type = super::ColorSetter;
+    impl ObjectSubclass for RnColorSetter {
+        const NAME: &'static str = "RnColorSetter";
+        type Type = super::RnColorSetter;
         type ParentType = ToggleButton;
     }
 
-    impl Default for ColorSetter {
+    impl Default for RnColorSetter {
         fn default() -> Self {
             Self {
                 css: CssProvider::new(),
                 color: Cell::new(gdk::RGBA::from_compose_color(
-                    super::ColorSetter::COLOR_DEFAULT,
+                    super::RnColorSetter::COLOR_DEFAULT,
                 )),
                 position: Cell::new(PositionType::Right),
             }
         }
     }
 
-    impl ObjectImpl for ColorSetter {
+    impl ObjectImpl for RnColorSetter {
         fn constructed(&self) {
             let inst = self.instance();
             self.parent_constructed();
@@ -51,7 +51,7 @@ mod imp {
             inst.set_height_request(34);
             inst.set_css_classes(&["colorsetter"]);
 
-            self.update_appearance(super::ColorSetter::COLOR_DEFAULT);
+            self.update_appearance(super::RnColorSetter::COLOR_DEFAULT);
             inst.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
@@ -115,13 +115,13 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ColorSetter {}
+    impl WidgetImpl for RnColorSetter {}
 
-    impl ButtonImpl for ColorSetter {}
+    impl ButtonImpl for RnColorSetter {}
 
-    impl ToggleButtonImpl for ColorSetter {}
+    impl ToggleButtonImpl for RnColorSetter {}
 
-    impl ColorSetter {
+    impl RnColorSetter {
         fn update_appearance(&self, color: Color) {
             let css = CssProvider::new();
 
@@ -149,18 +149,18 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
+    pub(crate) struct RnColorSetter(ObjectSubclass<imp::RnColorSetter>)
         @extends ToggleButton, Button, Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for ColorSetter {
+impl Default for RnColorSetter {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl ColorSetter {
+impl RnColorSetter {
     pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {

@@ -14,7 +14,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/iconpicker.ui")]
-    pub(crate) struct IconPicker {
+    pub(crate) struct RnIconPicker {
         pub(crate) list: RefCell<Option<StringList>>,
         pub(crate) selection: RefCell<Option<SingleSelection>>,
         pub(crate) selected_handlerid: RefCell<Option<glib::SignalHandlerId>>,
@@ -24,7 +24,7 @@ mod imp {
         pub(crate) gridview: TemplateChild<GridView>,
     }
 
-    impl Default for IconPicker {
+    impl Default for RnIconPicker {
         fn default() -> Self {
             Self {
                 list: RefCell::new(None),
@@ -38,9 +38,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for IconPicker {
-        const NAME: &'static str = "IconPicker";
-        type Type = super::IconPicker;
+    impl ObjectSubclass for RnIconPicker {
+        const NAME: &'static str = "RnIconPicker";
+        type Type = super::RnIconPicker;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -52,7 +52,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for IconPicker {
+    impl ObjectImpl for RnIconPicker {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -99,22 +99,22 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for IconPicker {}
+    impl WidgetImpl for RnIconPicker {}
 }
 
 glib::wrapper! {
-    pub(crate) struct IconPicker(ObjectSubclass<imp::IconPicker>)
+    pub(crate) struct RnIconPicker(ObjectSubclass<imp::RnIconPicker>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for IconPicker {
+impl Default for RnIconPicker {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl IconPicker {
+impl RnIconPicker {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

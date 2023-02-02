@@ -11,7 +11,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;
 
-use crate::{RnoteAppWindow, RnoteCanvas};
+use crate::{RnAppWindow, RnCanvas};
 
 mod imp {
 
@@ -20,7 +20,7 @@ mod imp {
     #[allow(missing_debug_implementations)]
     #[derive(CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
-    pub(crate) struct RnoteCanvasWrapper {
+    pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,
 
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
@@ -38,10 +38,10 @@ mod imp {
         #[template_child]
         pub(crate) scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub(crate) canvas: TemplateChild<RnoteCanvas>,
+        pub(crate) canvas: TemplateChild<RnCanvas>,
     }
 
-    impl Default for RnoteCanvasWrapper {
+    impl Default for RnCanvasWrapper {
         fn default() -> Self {
             let canvas_touch_drag_gesture = GestureDrag::builder()
                 .name("canvas_touch_drag_gesture")
@@ -115,15 +115,15 @@ mod imp {
                 touch_two_finger_long_press_gesture,
 
                 scroller: TemplateChild::<ScrolledWindow>::default(),
-                canvas: TemplateChild::<RnoteCanvas>::default(),
+                canvas: TemplateChild::<RnCanvas>::default(),
             }
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for RnoteCanvasWrapper {
-        const NAME: &'static str = "RnoteCanvasWrapper";
-        type Type = super::RnoteCanvasWrapper;
+    impl ObjectSubclass for RnCanvasWrapper {
+        const NAME: &'static str = "RnCanvasWrapper";
+        type Type = super::RnCanvasWrapper;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -135,7 +135,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for RnoteCanvasWrapper {
+    impl ObjectImpl for RnCanvasWrapper {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -235,9 +235,9 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for RnoteCanvasWrapper {}
+    impl WidgetImpl for RnCanvasWrapper {}
 
-    impl RnoteCanvasWrapper {
+    impl RnCanvasWrapper {
         fn setup_input(&self) {
             let inst = self.instance();
 
@@ -245,7 +245,7 @@ mod imp {
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(@weak inst as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
+                        let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
 
                         let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
                         canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
@@ -531,17 +531,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct RnoteCanvasWrapper(ObjectSubclass<imp::RnoteCanvasWrapper>)
+    pub(crate) struct RnCanvasWrapper(ObjectSubclass<imp::RnCanvasWrapper>)
     @extends Widget;
 }
 
-impl Default for RnoteCanvasWrapper {
+impl Default for RnCanvasWrapper {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl RnoteCanvasWrapper {
+impl RnCanvasWrapper {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -560,13 +560,13 @@ impl RnoteCanvasWrapper {
         self.imp().scroller.get()
     }
 
-    pub(crate) fn canvas(&self) -> RnoteCanvas {
+    pub(crate) fn canvas(&self) -> RnCanvas {
         self.imp().canvas.get()
     }
 
     /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved across appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
-    pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         self.imp().canvas.init_reconnect(appwindow);
 
@@ -607,7 +607,7 @@ impl RnoteCanvasWrapper {
     }
 
     /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
-    pub(crate) fn disconnect_handlers(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn disconnect_handlers(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         self.canvas().disconnect_handlers(appwindow);

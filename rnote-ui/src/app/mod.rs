@@ -7,14 +7,14 @@ use rnote_engine::pens::PenStyle;
 use std::path::Path;
 
 use crate::{
-    colorpicker::ColorPad, colorpicker::ColorSetter, config, penssidebar::BrushPage,
-    penssidebar::EraserPage, penssidebar::SelectorPage, penssidebar::ShaperPage,
-    penssidebar::ToolsPage, penssidebar::TypewriterPage, settingspanel::PenShortcutRow,
-    strokewidthpicker::StrokeWidthPreview, strokewidthpicker::StrokeWidthSetter,
-    workspacebrowser::workspacesbar::WorkspaceRow, workspacebrowser::FileRow,
-    workspacebrowser::WorkspacesBar, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
-    PensSideBar, RnoteAppWindow, RnoteCanvas, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel,
-    StrokeWidthPicker, UnitEntry, WorkspaceBrowser,
+    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, penssidebar::RnBrushPage,
+    penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
+    penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
+    strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
+    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
+    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
+    RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
+    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 
 mod imp {
@@ -22,18 +22,18 @@ mod imp {
 
     #[allow(missing_debug_implementations)]
     #[derive(Default)]
-    pub(crate) struct RnoteApp {}
+    pub(crate) struct RnApp {}
 
     #[glib::object_subclass]
-    impl ObjectSubclass for RnoteApp {
-        const NAME: &'static str = "RnoteApp";
-        type Type = super::RnoteApp;
+    impl ObjectSubclass for RnApp {
+        const NAME: &'static str = "RnApp";
+        type Type = super::RnApp;
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for RnoteApp {}
+    impl ObjectImpl for RnApp {}
 
-    impl ApplicationImpl for RnoteApp {
+    impl ApplicationImpl for RnApp {
         fn startup(&self) {
             self.parent_startup();
 
@@ -55,11 +55,11 @@ mod imp {
         }
     }
 
-    impl GtkApplicationImpl for RnoteApp {}
+    impl GtkApplicationImpl for RnApp {}
 
-    impl AdwApplicationImpl for RnoteApp {}
+    impl AdwApplicationImpl for RnApp {}
 
-    impl RnoteApp {
+    impl RnApp {
         fn init(&self) {
             let inst = self.instance();
 
@@ -72,7 +72,7 @@ mod imp {
 
         /// Initializes and shows a new app window
         fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
-            let appwindow = RnoteAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
+            let appwindow = RnAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
             appwindow.init();
             appwindow.show();
 
@@ -100,36 +100,36 @@ mod imp {
 
         fn setup_gresources(&self) {
             // Custom buildable Widgets need to register
-            RnoteAppWindow::static_type();
-            RnoteOverlays::static_type();
-            RnoteCanvasWrapper::static_type();
-            RnoteCanvas::static_type();
-            ColorPicker::static_type();
-            ColorSetter::static_type();
-            ColorPad::static_type();
-            CanvasMenu::static_type();
-            SettingsPanel::static_type();
-            AppMenu::static_type();
-            MainHeader::static_type();
-            PensSideBar::static_type();
-            BrushPage::static_type();
-            ShaperPage::static_type();
-            EraserPage::static_type();
-            SelectorPage::static_type();
-            TypewriterPage::static_type();
-            ToolsPage::static_type();
+            RnAppWindow::static_type();
+            RnOverlays::static_type();
+            RnCanvasWrapper::static_type();
+            RnCanvas::static_type();
+            RnColorPicker::static_type();
+            RnColorSetter::static_type();
+            RnColorPad::static_type();
+            RnCanvasMenu::static_type();
+            RnSettingsPanel::static_type();
+            RnAppMenu::static_type();
+            RnMainHeader::static_type();
+            RnPensSideBar::static_type();
+            RnBrushPage::static_type();
+            RnShaperPage::static_type();
+            RnEraserPage::static_type();
+            RnSelectorPage::static_type();
+            RnTypewriterPage::static_type();
+            RnToolsPage::static_type();
             PenStyle::static_type();
-            WorkspaceBrowser::static_type();
-            WorkspacesBar::static_type();
-            FileRow::static_type();
-            WorkspaceRow::static_type();
+            RnWorkspaceBrowser::static_type();
+            RnWorkspacesBar::static_type();
+            RnFileRow::static_type();
+            RnWorkspaceRow::static_type();
             MeasureUnit::static_type();
-            UnitEntry::static_type();
-            IconPicker::static_type();
-            PenShortcutRow::static_type();
-            StrokeWidthPicker::static_type();
-            StrokeWidthSetter::static_type();
-            StrokeWidthPreview::static_type();
+            RnUnitEntry::static_type();
+            RnIconPicker::static_type();
+            RnPenShortcutRow::static_type();
+            RnStrokeWidthPicker::static_type();
+            RnStrokeWidthSetter::static_type();
+            RnStrokeWidthPreview::static_type();
 
             self.instance()
                 .set_resource_base_path(Some(config::APP_IDPATH));
@@ -141,18 +141,18 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
+    pub(crate) struct RnApp(ObjectSubclass<imp::RnApp>)
         @extends gio::Application, gtk4::Application, adw::Application,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
-impl Default for RnoteApp {
+impl Default for RnApp {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl RnoteApp {
+impl RnApp {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[
             ("application-id", &config::APP_ID),

@@ -2,8 +2,8 @@ mod colorpad;
 mod colorsetter;
 
 // Re-exports
-pub(crate) use colorpad::ColorPad;
-pub(crate) use colorsetter::ColorSetter;
+pub(crate) use colorpad::RnColorPad;
+pub(crate) use colorsetter::RnColorSetter;
 
 // Imports
 use std::cell::{Cell, RefCell};
@@ -23,7 +23,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
-    pub(crate) struct ColorPicker {
+    pub(crate) struct RnColorPicker {
         pub(crate) stroke_color: RefCell<gdk::RGBA>,
         pub(crate) fill_color: RefCell<gdk::RGBA>,
         pub(crate) position: Cell<PositionType>,
@@ -31,27 +31,27 @@ mod imp {
         #[template_child]
         pub(crate) active_colors_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) stroke_color_pad: TemplateChild<ColorPad>,
+        pub(crate) stroke_color_pad: TemplateChild<RnColorPad>,
         #[template_child]
-        pub(crate) fill_color_pad: TemplateChild<ColorPad>,
+        pub(crate) fill_color_pad: TemplateChild<RnColorPad>,
         #[template_child]
         pub(crate) setter_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) setter_1: TemplateChild<ColorSetter>,
+        pub(crate) setter_1: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_2: TemplateChild<ColorSetter>,
+        pub(crate) setter_2: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_3: TemplateChild<ColorSetter>,
+        pub(crate) setter_3: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_4: TemplateChild<ColorSetter>,
+        pub(crate) setter_4: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_5: TemplateChild<ColorSetter>,
+        pub(crate) setter_5: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_6: TemplateChild<ColorSetter>,
+        pub(crate) setter_6: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_7: TemplateChild<ColorSetter>,
+        pub(crate) setter_7: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) setter_8: TemplateChild<ColorSetter>,
+        pub(crate) setter_8: TemplateChild<RnColorSetter>,
         #[template_child]
         pub(crate) colorpicker_button: TemplateChild<MenuButton>,
         #[template_child]
@@ -64,7 +64,7 @@ mod imp {
         pub(crate) colorchooser_editor_selectbutton: TemplateChild<Button>,
     }
 
-    impl Default for ColorPicker {
+    impl Default for RnColorPicker {
         fn default() -> Self {
             Self {
                 stroke_color: RefCell::new(gdk::RGBA::from_compose_color(
@@ -95,9 +95,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ColorPicker {
-        const NAME: &'static str = "ColorPicker";
-        type Type = super::ColorPicker;
+    impl ObjectSubclass for RnColorPicker {
+        const NAME: &'static str = "RnColorPicker";
+        type Type = super::RnColorPicker;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -109,7 +109,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ColorPicker {
+    impl ObjectImpl for RnColorPicker {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -300,9 +300,9 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ColorPicker {}
+    impl WidgetImpl for RnColorPicker {}
 
-    impl ColorPicker {
+    impl RnColorPicker {
         fn setup_setters(&self) {
             let inst = self.instance();
 
@@ -454,12 +454,12 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
+    pub(crate) struct RnColorPicker(ObjectSubclass<imp::RnColorPicker>)
         @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for ColorPicker {
+impl Default for RnColorPicker {
     fn default() -> Self {
         Self::new()
     }
@@ -470,7 +470,7 @@ pub(crate) static STROKE_COLOR_DEFAULT: Lazy<Color> =
 pub(crate) static FILL_COLOR_DEFAULT: Lazy<Color> =
     Lazy::new(|| Color::from(color::GNOME_BLUES[1]));
 
-impl ColorPicker {
+impl RnColorPicker {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -505,35 +505,35 @@ impl ColorPicker {
         self.set_property("fill-color", color.to_value());
     }
 
-    pub(crate) fn setter_1(&self) -> ColorSetter {
+    pub(crate) fn setter_1(&self) -> RnColorSetter {
         self.imp().setter_1.get()
     }
 
-    pub(crate) fn setter_2(&self) -> ColorSetter {
+    pub(crate) fn setter_2(&self) -> RnColorSetter {
         self.imp().setter_2.get()
     }
 
-    pub(crate) fn setter_3(&self) -> ColorSetter {
+    pub(crate) fn setter_3(&self) -> RnColorSetter {
         self.imp().setter_3.get()
     }
 
-    pub(crate) fn setter_4(&self) -> ColorSetter {
+    pub(crate) fn setter_4(&self) -> RnColorSetter {
         self.imp().setter_4.get()
     }
 
-    pub(crate) fn setter_5(&self) -> ColorSetter {
+    pub(crate) fn setter_5(&self) -> RnColorSetter {
         self.imp().setter_5.get()
     }
 
-    pub(crate) fn setter_6(&self) -> ColorSetter {
+    pub(crate) fn setter_6(&self) -> RnColorSetter {
         self.imp().setter_6.get()
     }
 
-    pub(crate) fn setter_7(&self) -> ColorSetter {
+    pub(crate) fn setter_7(&self) -> RnColorSetter {
         self.imp().setter_7.get()
     }
 
-    pub(crate) fn setter_8(&self) -> ColorSetter {
+    pub(crate) fn setter_8(&self) -> RnColorSetter {
         self.imp().setter_8.get()
     }
 

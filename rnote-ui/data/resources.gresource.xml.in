@@ -12,9 +12,9 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar/workspacesbar.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/iconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpicker.ui</file>

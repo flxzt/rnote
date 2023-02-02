@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### Canvas Settings ### -->
 <interface>
-  <template class="SettingsPanel" parent="GtkWidget">
+  <template class="RnSettingsPanel" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout"></object>
     </property>
@@ -206,7 +206,7 @@
                         <property name="title" translatable="yes">Width</property>
                         <property name="subtitle" translatable="yes">Set the format width</property>
                         <child type="suffix">
-                          <object class="UnitEntry" id="format_width_unitentry">
+                          <object class="RnUnitEntry" id="format_width_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="halign">end</property>
@@ -220,7 +220,7 @@
                         <property name="title" translatable="yes">Height</property>
                         <property name="subtitle" translatable="yes">Set the format height</property>
                         <child type="suffix">
-                          <object class="UnitEntry" id="format_height_unitentry">
+                          <object class="RnUnitEntry" id="format_height_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="halign">end</property>
@@ -335,7 +335,7 @@
                         <property name="title" translatable="yes">Pattern Width</property>
                         <property name="subtitle" translatable="yes">Set the background pattern width</property>
                         <child type="suffix">
-                          <object class="UnitEntry" id="background_pattern_width_unitentry">
+                          <object class="RnUnitEntry" id="background_pattern_width_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="halign">end</property>
@@ -349,7 +349,7 @@
                         <property name="title" translatable="yes">Pattern Height</property>
                         <property name="subtitle" translatable="yes">Set the background pattern height</property>
                         <child type="suffix">
-                          <object class="UnitEntry" id="background_pattern_height_unitentry">
+                          <object class="RnUnitEntry" id="background_pattern_height_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="halign">end</property>
@@ -365,7 +365,7 @@
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">Button Shortcuts</property>
                     <child>
-                      <object class="PenShortcutRow" id="penshortcut_stylus_button_primary_row">
+                      <object class="RnPenShortcutRow" id="penshortcut_stylus_button_primary_row">
                         <property name="title" translatable="yes">Stylus primary button action</property>
                         <property name="subtitle" translatable="yes">Set the action for the primary stylus button</property>
                         <child type="prefix">
@@ -377,7 +377,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="PenShortcutRow" id="penshortcut_stylus_button_secondary_row">
+                      <object class="RnPenShortcutRow" id="penshortcut_stylus_button_secondary_row">
                         <property name="title" translatable="yes">Stylus secondary button action</property>
                         <property name="subtitle" translatable="yes">Set the action for the secondary stylus button</property>
                         <child type="prefix">
@@ -389,7 +389,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="PenShortcutRow" id="penshortcut_mouse_button_secondary_row">
+                      <object class="RnPenShortcutRow" id="penshortcut_mouse_button_secondary_row">
                         <property name="title" translatable="yes">Mouse secondary button action</property>
                         <property name="subtitle" translatable="yes">Set the action for the secondary mouse button</property>
                         <child type="prefix">
@@ -401,7 +401,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="PenShortcutRow" id="penshortcut_touch_two_finger_long_press_row">
+                      <object class="RnPenShortcutRow" id="penshortcut_touch_two_finger_long_press_row">
                         <property name="title" translatable="yes">Touch two-finger long-press action</property>
                         <property name="subtitle" translatable="yes">Set the action for the touch two-finger long-press gesture</property>
                         <child type="prefix">
@@ -422,14 +422,14 @@
     </child>
     <object class="GtkPopover" id="general_regular_cursor_picker_popover">
       <child>
-        <object class="IconPicker" id="general_regular_cursor_picker">
+        <object class="RnIconPicker" id="general_regular_cursor_picker">
           <property name="valign">center</property>
         </object>
       </child>
     </object>
     <object class="GtkPopover" id="general_drawing_cursor_picker_popover">
       <child>
-        <object class="IconPicker" id="general_drawing_cursor_picker">
+        <object class="RnIconPicker" id="general_drawing_cursor_picker">
           <property name="valign">center</property>
         </object>
       </child>

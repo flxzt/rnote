@@ -7,9 +7,9 @@ use rnote_engine::pens::{Pen, PenStyle};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 
-use crate::canvaswrapper::RnoteCanvasWrapper;
-use crate::PensSideBar;
-use crate::{dialogs, ColorPicker, RnoteAppWindow};
+use crate::canvaswrapper::RnCanvasWrapper;
+use crate::RnPensSideBar;
+use crate::{dialogs, RnAppWindow, RnColorPicker};
 
 mod imp {
     use super::*;
@@ -17,7 +17,7 @@ mod imp {
     #[allow(missing_debug_implementations)]
     #[derive(Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
-    pub(crate) struct RnoteOverlays {
+    pub(crate) struct RnOverlays {
         pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,
         pub(super) prev_active_tab_page: RefCell<Option<adw::TabPage>>,
 
@@ -42,7 +42,7 @@ mod imp {
         #[template_child]
         pub(crate) tools_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) colorpicker: TemplateChild<ColorPicker>,
+        pub(crate) colorpicker: TemplateChild<RnColorPicker>,
         #[template_child]
         pub(crate) tabview: TemplateChild<adw::TabView>,
         #[template_child]
@@ -50,13 +50,13 @@ mod imp {
         #[template_child]
         pub(crate) sidebar_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub(crate) penssidebar: TemplateChild<PensSideBar>,
+        pub(crate) penssidebar: TemplateChild<RnPensSideBar>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for RnoteOverlays {
-        const NAME: &'static str = "RnoteOverlays";
-        type Type = super::RnoteOverlays;
+    impl ObjectSubclass for RnOverlays {
+        const NAME: &'static str = "RnOverlays";
+        type Type = super::RnOverlays;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -68,7 +68,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for RnoteOverlays {
+    impl ObjectImpl for RnOverlays {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -82,8 +82,8 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for RnoteOverlays {}
-    impl RnoteOverlays {
+    impl WidgetImpl for RnOverlays {}
+    impl RnOverlays {
         fn setup_toolbar_overlay(&self) {
             self.toolbar_overlay
                 .set_measure_overlay(&*self.colorpicker, true);
@@ -96,17 +96,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct RnoteOverlays(ObjectSubclass<imp::RnoteOverlays>)
+    pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
     @extends Widget;
 }
 
-impl Default for RnoteOverlays {
+impl Default for RnOverlays {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl RnoteOverlays {
+impl RnOverlays {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -135,7 +135,7 @@ impl RnoteOverlays {
         self.imp().tools_toggle.get()
     }
 
-    pub(crate) fn colorpicker(&self) -> ColorPicker {
+    pub(crate) fn colorpicker(&self) -> RnColorPicker {
         self.imp().colorpicker.get()
     }
 
@@ -159,11 +159,11 @@ impl RnoteOverlays {
         self.imp().sidebar_scroller.get()
     }
 
-    pub(crate) fn penssidebar(&self) -> PensSideBar {
+    pub(crate) fn penssidebar(&self) -> RnPensSideBar {
         self.imp().penssidebar.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         imp.penssidebar.get().init(appwindow);
         imp.penssidebar.get().brush_page().init(appwindow);
@@ -178,7 +178,7 @@ impl RnoteOverlays {
         self.setup_tabview(appwindow);
     }
 
-    fn setup_pens_toggles(&self, appwindow: &RnoteAppWindow) {
+    fn setup_pens_toggles(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.brush_toggle.connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
@@ -218,7 +218,7 @@ impl RnoteOverlays {
             }));
     }
 
-    fn setup_colorpicker(&self, appwindow: &RnoteAppWindow) {
+    fn setup_colorpicker(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.colorpicker.connect_notify_local(
@@ -278,13 +278,13 @@ impl RnoteOverlays {
         );
     }
 
-    fn setup_tabview(&self, appwindow: &RnoteAppWindow) {
+    fn setup_tabview(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.tabview
             .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_tabview| {
                 let active_tab_page = appwindow.active_tab_page();
-                let active_canvaswrapper = active_tab_page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+                let active_canvaswrapper = active_tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
                 appwindow.clear_rendering_inactive_tabs();
 
                 if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.borrow_mut().replace(active_tab_page.clone()){
@@ -300,7 +300,7 @@ impl RnoteOverlays {
 
         imp.tabview.connect_page_attached(
             clone!(@weak self as overlays, @weak appwindow => move |_tabview, page, _| {
-                let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+                let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
                 canvaswrapper.init_reconnect(&appwindow);
                 canvaswrapper.connect_to_tab_page(page);
             }),
@@ -308,7 +308,7 @@ impl RnoteOverlays {
 
         imp.tabview.connect_page_detached(
             clone!(@weak self as overlays, @weak appwindow => move |_tabview, page, _| {
-                let canvaswrapper = page.child().downcast::<RnoteCanvasWrapper>().unwrap();
+                let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
 
                 let mut remove_saved_prev_page = false;
                 // If the detached page is the selected one, we must remove it here.
@@ -330,7 +330,7 @@ impl RnoteOverlays {
             clone!(@weak appwindow => @default-return true, move |tabview, page| {
                 if page
                     .child()
-                    .downcast::<RnoteCanvasWrapper>()
+                    .downcast::<RnCanvasWrapper>()
                     .unwrap()
                     .canvas()
                     .unsaved_changes()

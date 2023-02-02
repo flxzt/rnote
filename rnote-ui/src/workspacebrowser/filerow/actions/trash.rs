@@ -1,9 +1,9 @@
 use gtk4::{gio, glib, glib::clone, prelude::FileExt};
 
-use crate::workspacebrowser::FileRow;
+use crate::workspacebrowser::RnFileRow;
 
 /// Creates a new `trash` action
-pub(crate) fn trash(filerow: &FileRow) -> gio::SimpleAction {
+pub(crate) fn trash(filerow: &RnFileRow) -> gio::SimpleAction {
     let action_trash_file = gio::SimpleAction::new("trash-file", None);
     action_trash_file.connect_activate(clone!(@weak filerow => move |_action_trash_file, _| {
         if let Some(current_file) = filerow.current_file() {

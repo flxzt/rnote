@@ -132,7 +132,7 @@ pub(crate) fn filechooser_import_file(appwindow: &RnAppWindow) {
     filter.add_suffix("png");
     filter.add_suffix("jpg");
     filter.add_suffix("jpeg");
-    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Ssvg, Xopp")));
+    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Import File"))

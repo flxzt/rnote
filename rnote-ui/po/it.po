@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-02 13:26+0100\n"
-"PO-Revision-Date: 2023-01-29 18:55+0000\n"
+"PO-Revision-Date: 2023-02-02 17:41+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1466,11 +1466,9 @@ msgid "Paste clipboard"
 msgstr "Incolla gli appunti"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-#, fuzzy
-#| msgid "Duplicate selection"
 msgctxt "shortcut window"
 msgid "Duplicate selection"
-msgstr "Duplica selezione"
+msgstr "Duplica la selezione"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"

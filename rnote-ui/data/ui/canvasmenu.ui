@@ -21,20 +21,20 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">_Document layout</attribute>
+            <attribute name="label" translatable="yes">_Document Layout</attribute>
             <section>
               <item>
-                <attribute name="label" translatable="yes">_Fixed size</attribute>
+                <attribute name="label" translatable="yes">_Fixed Size</attribute>
                 <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">fixed-size</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">_Continuous vertical</attribute>
+                <attribute name="label" translatable="yes">_Continuous Vertical</attribute>
                 <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">continuous-vertical</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">_Semi infinite</attribute>
+                <attribute name="label" translatable="yes">_Semi Infinite</attribute>
                 <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">semi-infinite</attribute>
               </item>
@@ -46,28 +46,28 @@
             </section>
           </submenu>
           <item>
-            <attribute name="label" translatable="yes">Show _format borders</attribute>
+            <attribute name="label" translatable="yes">Show _Format Borders</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.format-borders</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Draw with _touch input</attribute>
+            <attribute name="label" translatable="yes">Draw With _Touch Input</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.touch-drawing</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">_Pen sounds</attribute>
+            <attribute name="label" translatable="yes">_Pen Sounds</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.pen-sounds</attribute>
           </item>
         </section>
         <section>
           <item>
-            <attribute name="label" translatable="yes">C_lear document</attribute>
+            <attribute name="label" translatable="yes">C_lear Document</attribute>
             <attribute name="action">win.clear-doc</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">_Return to origin page</attribute>
+            <attribute name="label" translatable="yes">_Return to Origin Page</attribute>
             <attribute name="action">win.return-origin-page</attribute>
           </item>
         </section>
@@ -106,7 +106,7 @@
                   <child>
                     <object class="GtkButton" id="zoom_reset_button">
                       <property name="action-name">win.zoom-reset</property>
-                      <property name="tooltip_text" translatable="yes">Reset the zoom</property>
+                      <property name="tooltip_text" translatable="yes">Reset the Zoom</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -125,7 +125,7 @@
                 <object class="GtkButton" id="zoom_fit_width_button">
                   <property name="hexpand">false</property>
                   <property name="icon_name">zoom-fit-width-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Zoom to fit page width</property>
+                  <property name="tooltip_text" translatable="yes">Zoom to Fit Page Width</property>
                   <property name="action-name">win.zoom-fit-width</property>
                 </object>
               </child>

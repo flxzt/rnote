@@ -13,7 +13,7 @@
       <object class="GtkMenuButton" id="fontchooser_menubutton">
         <property name="direction">left</property>
         <property name="popover">fontchooser_popover</property>
-        <property name="tooltip_text" translatable="yes">Font chooser
+        <property name="tooltip_text" translatable="yes">Font Chooser
 (double-click, click on select
 or press Enter to select a new font)</property>
             <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
@@ -45,7 +45,7 @@ or press Enter to select a new font)</property>
       <object class="GtkMenuButton" id="emojichooser_menubutton">
         <property name="direction">left</property>
         <property name="popover">emojichooser</property>
-        <property name="tooltip_text" translatable="yes">Pick and insert an emoji</property>
+        <property name="tooltip_text" translatable="yes">Pick And Insert Emoji</property>
         <property name="icon-name">emojichooser-symbolic</property>
         <style>
           <class name="flat" />
@@ -70,7 +70,7 @@ or press Enter to select a new font)</property>
         <child>
           <object class="GtkButton" id="text_reset_button">
             <property name="icon-name">reset-state-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Reset text attributes</property>
+            <property name="tooltip_text" translatable="yes">Reset Text Attributes</property>
             <style>
               <class name="flat" />
             </style>
@@ -128,21 +128,21 @@ or press Enter to select a new font)</property>
         <child>
           <object class="GtkToggleButton" id="text_align_start_togglebutton">
             <property name="icon-name">text-align-start-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Align left</property>
+            <property name="tooltip_text" translatable="yes">Align Left</property>
             <property name="active">true</property>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="text_align_center_togglebutton">
             <property name="icon-name">text-align-center-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Align center</property>
+            <property name="tooltip_text" translatable="yes">Align Center</property>
             <property name="group">text_align_start_togglebutton</property>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="text_align_end_togglebutton">
             <property name="icon-name">text-align-end-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Align right</property>
+            <property name="tooltip_text" translatable="yes">Align Right</property>
             <property name="group">text_align_start_togglebutton</property>
           </object>
         </child>

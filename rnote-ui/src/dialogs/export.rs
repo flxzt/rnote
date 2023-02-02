@@ -20,7 +20,7 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas
     filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Save document as"))
+        .title(&gettext("Save Document As"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Save"))
@@ -192,7 +192,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanv
 
                             if let Err(e) = canvas.export_doc(&file, file_title, None).await {
                                 log::error!("exporting document failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Export document failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed."));
                             } else {
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully."));
                             }
@@ -200,7 +200,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanv
                             appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Export document failed, no file selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -220,7 +220,7 @@ fn create_filechooser_export_doc(
     doc_export_prefs: &DocExportPrefs,
 ) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export document"))
+        .title(&gettext("Export Document"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Select"))
@@ -465,7 +465,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, canvas: &
 
                             if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
                                 log::error!("exporting document pages failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Export document pages failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed."));
                             } else {
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully."));
                             }
@@ -473,7 +473,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, canvas: &
                             appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Export document pages failed, no directory selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed, no directory selected."));
                     }
                 }
                 _ => {}
@@ -493,7 +493,7 @@ fn create_filechooser_export_doc_pages(
     doc_pages_export_prefs: &DocPagesExportPrefs,
 ) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export document pages"))
+        .title(&gettext("Export Document Pages"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Select"))
@@ -713,7 +713,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, canvas: &
 
                             if let Err(e) = canvas.export_selection(&file, None).await {
                                 log::error!("exporting selection failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Export selection failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed."));
                             } else {
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported selection successfully."));
                             }
@@ -721,7 +721,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, canvas: &
                             appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Export selection failed, no file selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, no file selected."));
                     }
                 }
                 _ => {}
@@ -741,7 +741,7 @@ fn create_filechooser_export_selection(
     selection_export_prefs: &SelectionExportPrefs,
 ) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export selection"))
+        .title(&gettext("Export Selection"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Select"))
@@ -808,10 +808,10 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
-    filter.set_name(Some(&gettext("JSON")));
+    filter.set_name(Some(&gettext("Json")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export engine state"))
+        .title(&gettext("Export Engine State"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Export"))
@@ -849,7 +849,7 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &
 
                             if let Err(e) = canvas.export_engine_state(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Export engine state failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting engine state failed."));
                             } else {
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported engine state successfully."));
                             }
@@ -872,10 +872,10 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: 
     let filter = FileFilter::new();
     filter.add_mime_type("application/json");
     filter.add_suffix("json");
-    filter.set_name(Some(&gettext("JSON")));
+    filter.set_name(Some(&gettext("Json")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export engine config"))
+        .title(&gettext("Export Engine Config"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Export"))
@@ -913,7 +913,7 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: 
 
                             if let Err(e) = canvas.export_engine_config(&file).await {
                                 log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Export engine config failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting engine config failed."));
                             } else {
                                 appwindow.overlays().dispatch_toast_text(&gettext("Exported engine config successfully."));
                             }

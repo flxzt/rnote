@@ -148,11 +148,11 @@
                 <menu id="tab_cx_menu_model">
                   <section>
                     <item>
-                      <attribute name="label" translatable="yes">Move _left</attribute>
+                      <attribute name="label" translatable="yes">Move _Left</attribute>
                       <attribute name="action">win.active-tab-move-left</attribute>
                     </item>
                     <item>
-                      <attribute name="label" translatable="yes">Move _right</attribute>
+                      <attribute name="label" translatable="yes">Move _Right</attribute>
                       <attribute name="action">win.active-tab-move-right</attribute>
                     </item>
                   </section>

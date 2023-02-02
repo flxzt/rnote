@@ -52,7 +52,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_autosave_interval_secs_row">
-                        <property name="title" translatable="yes">Autosave interval (secs)</property>
+                        <property name="title" translatable="yes">Autosave Interval (secs)</property>
                         <property name="subtitle" translatable="yes">Set the autosave interval in seconds</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="general_autosave_interval_secs_adj">
@@ -73,7 +73,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_format_border_color_row">
-                        <property name="title" translatable="yes">Format border color</property>
+                        <property name="title" translatable="yes">Format Border Color</property>
                         <property name="subtitle" translatable="yes">Set the format border color</property>
                         <child type="suffix">
                           <object class="GtkBox">
@@ -91,7 +91,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_show_scrollbars_row">
-                        <property name="title" translatable="yes">Show scrollbars</property>
+                        <property name="title" translatable="yes">Show Scrollbars</property>
                         <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>
                         <child type="suffix">
                           <object class="GtkSwitch" id="general_show_scrollbars_switch">
@@ -102,7 +102,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_regular_cursor_picker_row">
-                        <property name="title" translatable="yes">Regular cursor</property>
+                        <property name="title" translatable="yes">Regular Cursor</property>
                         <property name="subtitle" translatable="yes">Set the regular cursor</property>
                         <child type="suffix">
                           <object class="GtkBox">
@@ -125,7 +125,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_drawing_cursor_picker_row">
-                        <property name="title" translatable="yes">Drawing cursor</property>
+                        <property name="title" translatable="yes">Drawing Cursor</property>
                         <property name="subtitle" translatable="yes">Set the drawing cursor</property>
                         <child type="suffix">
                           <object class="GtkBox">
@@ -151,7 +151,7 @@
                 <!-- Format Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Page format</property>
+                    <property name="title" translatable="yes">Page Format</property>
                     <child>
                       <object class="AdwComboRow" id="format_predefined_formats_row">
                         <property name="title" translatable="yes">Format</property>
@@ -231,8 +231,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="format_dpi_row">
-                        <property name="title" translatable="yes">DPI</property>
-                        <property name="subtitle" translatable="yes">Set the DPI (dots per inch). Defaults to 96</property>
+                        <property name="title" translatable="yes">Dpi</property>
+                        <property name="subtitle" translatable="yes">Set the Dpi (dots per inch). Defaults to 96</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="format_dpi_adj">
                             <property name="step-increment">1</property>
@@ -277,7 +277,7 @@
                 <!-- Background Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Document background</property>
+                    <property name="title" translatable="yes">Document Background</property>
                     <child>
                       <object class="AdwActionRow" id="background_color_row">
                         <property name="title" translatable="yes">Color</property>
@@ -366,7 +366,7 @@
                     <property name="title" translatable="yes">Button Shortcuts</property>
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_stylus_button_primary_row">
-                        <property name="title" translatable="yes">Stylus primary button action</property>
+                        <property name="title" translatable="yes">Stylus Primary Button Action</property>
                         <property name="subtitle" translatable="yes">Set the action for the primary stylus button</property>
                         <child type="prefix">
                           <object class="GtkImage">
@@ -378,7 +378,7 @@
                     </child>
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_stylus_button_secondary_row">
-                        <property name="title" translatable="yes">Stylus secondary button action</property>
+                        <property name="title" translatable="yes">Stylus Secondary Button Action</property>
                         <property name="subtitle" translatable="yes">Set the action for the secondary stylus button</property>
                         <child type="prefix">
                           <object class="GtkImage">
@@ -390,7 +390,7 @@
                     </child>
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_mouse_button_secondary_row">
-                        <property name="title" translatable="yes">Mouse secondary button action</property>
+                        <property name="title" translatable="yes">Mouse Secondary Button Action</property>
                         <property name="subtitle" translatable="yes">Set the action for the secondary mouse button</property>
                         <child type="prefix">
                           <object class="GtkImage">
@@ -402,7 +402,7 @@
                     </child>
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_touch_two_finger_long_press_row">
-                        <property name="title" translatable="yes">Touch two-finger long-press action</property>
+                        <property name="title" translatable="yes">Touch Two-Finger Long-Press Action</property>
                         <property name="subtitle" translatable="yes">Set the action for the touch two-finger long-press gesture</property>
                         <child type="prefix">
                           <object class="GtkImage">

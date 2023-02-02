@@ -54,7 +54,7 @@ pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::Simpl
 
 fn create_folder_name_entry() -> Entry {
     Entry::builder()
-        .placeholder_text(&gettext("Folder name"))
+        .placeholder_text(&gettext("Folder Name"))
         .build()
 }
 
@@ -62,7 +62,7 @@ fn create_dialog_title_label() -> Label {
     let label = Label::builder()
         .margin_bottom(12)
         .halign(Align::Center)
-        .label(&gettext("New folder"))
+        .label(&gettext("New Folder"))
         .width_chars(24)
         .ellipsize(pango::EllipsizeMode::End)
         .build();

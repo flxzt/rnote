@@ -372,7 +372,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Change workspace directory"))
+        .title(&gettext("Change Workspace Directory"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Select"))

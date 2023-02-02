@@ -555,7 +555,7 @@ impl RnAppWindow {
                 crate::utils::FileType::Folder => {
                     log::error!("tried to open a folder as a file.");
                     appwindow.overlays()
-                        .dispatch_toast_error(&gettext("Error: Tried opening folder as file"));
+                        .dispatch_toast_error(&gettext("Failed to open file: Tried to open folder as file"));
                 }
                 crate::utils::FileType::Unsupported => {
                     log::error!("tried to open a unsupported file type.");

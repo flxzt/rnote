@@ -16,14 +16,14 @@
         <child>
           <object class="RnColorPad" id="stroke_color_pad">
             <property name="icon_name">stroke-color-symbolic</property>
-            <property name="tooltip-text" translatable="yes">Stroke color</property>
+            <property name="tooltip-text" translatable="yes">Stroke Color</property>
             <property name="active">true</property>
           </object>
         </child>
         <child>
           <object class="RnColorPad" id="fill_color_pad">
             <property name="icon_name">fill-color-symbolic</property>
-            <property name="tooltip-text" translatable="yes">Fill color</property>
+            <property name="tooltip-text" translatable="yes">Fill Color</property>
             <property name="group">stroke_color_pad</property>
           </object>
         </child>

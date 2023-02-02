@@ -18,7 +18,7 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="eraserstyle_trash_colliding_strokes_toggle">
-            <property name="tooltip_text" translatable="yes">Trash strokes</property>
+            <property name="tooltip_text" translatable="yes">Trash Strokes</property>
             <property name="icon_name">pen-eraser-trash-colliding-strokes-symbolic</property>
             <style>
               <class name="sidebar_action_button" />
@@ -28,7 +28,7 @@
         <child>
           <object class="GtkToggleButton" id="eraserstyle_split_colliding_strokes_toggle">
             <property name="group">eraserstyle_trash_colliding_strokes_toggle</property>
-            <property name="tooltip_text" translatable="yes">Split strokes</property>
+            <property name="tooltip_text" translatable="yes">Split Strokes</property>
             <property name="icon_name">pen-eraser-split-colliding-strokes-symbolic</property>
             <style>
               <class name="sidebar_action_button" />

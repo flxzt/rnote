@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-02 13:26+0100\n"
-"PO-Revision-Date: 2023-01-29 11:32+0000\n"
+"PO-Revision-Date: 2023-02-02 17:41+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1466,8 +1466,6 @@ msgid "Paste clipboard"
 msgstr "Zwischenablage einfügen"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-#, fuzzy
-#| msgid "Duplicate selection"
 msgctxt "shortcut window"
 msgid "Duplicate selection"
 msgstr "Dupliziere die Auswahl"

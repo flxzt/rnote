@@ -136,8 +136,6 @@ impl RnAppWindow {
         self.add_action(&action_active_tab_move_right);
         let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
         self.add_action(&action_active_tab_close);
-        let action_other_tabs_close = gio::SimpleAction::new("other-tabs-close", None);
-        self.add_action(&action_other_tabs_close);
 
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -324,10 +322,6 @@ impl RnAppWindow {
             } else {
                 appwindow.overlays().tabview().close_page(&active_tab_page);
             }
-        }));
-        action_other_tabs_close.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            let active_tab_page = appwindow.active_tab_page();
-            appwindow.overlays().tabview().close_other_pages(&active_tab_page);
         }));
 
         // Trash Selection

@@ -10,14 +10,14 @@ use rnote_compose::style::PressureCurve;
 use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 use rnote_engine::pens::pensconfig::BrushConfig;
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper, StrokeWidthPicker};
+use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 
 mod imp {
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
-    pub(crate) struct BrushPage {
+    pub(crate) struct RnBrushPage {
         #[template_child]
         pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -47,13 +47,13 @@ mod imp {
         #[template_child]
         pub(crate) texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) stroke_width_picker: TemplateChild<StrokeWidthPicker>,
+        pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for BrushPage {
-        const NAME: &'static str = "BrushPage";
-        type Type = super::BrushPage;
+    impl ObjectSubclass for RnBrushPage {
+        const NAME: &'static str = "RnBrushPage";
+        type Type = super::RnBrushPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -65,7 +65,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for BrushPage {
+    impl ObjectImpl for RnBrushPage {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -77,21 +77,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for BrushPage {}
+    impl WidgetImpl for RnBrushPage {}
 }
 
 glib::wrapper! {
-    pub(crate) struct BrushPage(ObjectSubclass<imp::BrushPage>)
+    pub(crate) struct RnBrushPage(ObjectSubclass<imp::RnBrushPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for BrushPage {
+impl Default for RnBrushPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl BrushPage {
+impl RnBrushPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -181,11 +181,11 @@ impl BrushPage {
             .set_selected(position);
     }
 
-    pub(crate) fn stroke_width_picker(&self) -> StrokeWidthPicker {
+    pub(crate) fn stroke_width_picker(&self) -> RnStrokeWidthPicker {
         self.imp().stroke_width_picker.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         // Stroke width
@@ -285,7 +285,7 @@ impl BrushPage {
         }));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let brush_config = active_tab
             .canvas()

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### Headerbar ### -->
 <interface>
-  <template class="MainHeader" parent="GtkWidget">
+  <template class="RnMainHeader" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
@@ -121,10 +121,10 @@
               <object class="GtkBox" id="menus_box">
                 <property name="spacing">3</property>
                 <child>
-                  <object class="CanvasMenu" id="canvasmenu"></object>
+                  <object class="RnCanvasMenu" id="canvasmenu"></object>
                 </child>
                 <child>
-                  <object class="AppMenu" id="appmenu"></object>
+                  <object class="RnAppMenu" id="appmenu"></object>
                 </child>
               </object>
             </child>

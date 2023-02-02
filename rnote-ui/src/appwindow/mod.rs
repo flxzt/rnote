@@ -16,19 +16,19 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
 
-use crate::canvas::RnoteCanvas;
+use crate::canvas::RnCanvas;
 use crate::{
-    config, RnoteApp, RnoteCanvasWrapper, RnoteOverlays, SettingsPanel, WorkspaceBrowser,
-    {dialogs, MainHeader},
+    config, RnApp, RnCanvasWrapper, RnOverlays, RnSettingsPanel, WorkspaceBrowser,
+    {dialogs, RnMainHeader},
 };
 
 glib::wrapper! {
-    pub(crate) struct RnoteAppWindow(ObjectSubclass<imp::RnoteAppWindow>)
+    pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
         @implements gio::ActionMap, gio::ActionGroup;
 }
 
-impl RnoteAppWindow {
+impl RnAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 30;
     const PERIODIC_CONFIGSAVE_INTERVAL: u32 = 10;
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
@@ -77,8 +77,8 @@ impl RnoteAppWindow {
         self.set_property("touch-drawing", touch_drawing.to_value());
     }
 
-    pub(crate) fn app(&self) -> RnoteApp {
-        self.application().unwrap().downcast::<RnoteApp>().unwrap()
+    pub(crate) fn app(&self) -> RnApp {
+        self.application().unwrap().downcast::<RnApp>().unwrap()
     }
 
     pub(crate) fn app_settings(&self) -> gio::Settings {
@@ -89,11 +89,11 @@ impl RnoteAppWindow {
         self.imp().filechoosernative.clone()
     }
 
-    pub(crate) fn overlays(&self) -> RnoteOverlays {
+    pub(crate) fn overlays(&self) -> RnOverlays {
         self.imp().overlays.get()
     }
 
-    pub(crate) fn settings_panel(&self) -> SettingsPanel {
+    pub(crate) fn settings_panel(&self) -> RnSettingsPanel {
         self.imp().settings_panel.get()
     }
 
@@ -125,7 +125,7 @@ impl RnoteAppWindow {
         self.imp().flap_stack.get()
     }
 
-    pub(crate) fn mainheader(&self) -> MainHeader {
+    pub(crate) fn mainheader(&self) -> RnMainHeader {
         self.imp().mainheader.get()
     }
 
@@ -185,7 +185,7 @@ impl RnoteAppWindow {
         for tab in self
             .tab_pages_snapshot()
             .into_iter()
-            .map(|p| p.child().downcast::<RnoteCanvasWrapper>().unwrap())
+            .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
             if let Err(e) = tab
                 .canvas()
@@ -205,7 +205,7 @@ impl RnoteAppWindow {
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
-    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnoteCanvas) {
+    pub(crate) fn handle_widget_flags(&self, widget_flags: WidgetFlags, canvas: &RnCanvas) {
         if widget_flags.redraw {
             canvas.queue_draw();
         }
@@ -246,16 +246,16 @@ impl RnoteAppWindow {
     }
 
     /// Get the active (selected) tab page child.
-    pub(crate) fn active_tab(&self) -> RnoteCanvasWrapper {
+    pub(crate) fn active_tab(&self) -> RnCanvasWrapper {
         self.active_tab_page()
             .child()
-            .downcast::<RnoteCanvasWrapper>()
+            .downcast::<RnCanvasWrapper>()
             .unwrap()
     }
 
     /// adds the initial tab to the tabview
     fn add_initial_tab(&self) -> adw::TabPage {
-        let new_wrapper = RnoteCanvasWrapper::new();
+        let new_wrapper = RnCanvasWrapper::new();
         if let Err(e) = new_wrapper
             .canvas()
             .load_engine_config(&self.app_settings())
@@ -280,7 +280,7 @@ impl RnoteAppWindow {
                 None
             }
         };
-        let new_wrapper = RnoteCanvasWrapper::new();
+        let new_wrapper = RnCanvasWrapper::new();
         if let Some(current_engine_config) = current_engine_config {
             match new_wrapper
                 .canvas()
@@ -322,7 +322,7 @@ impl RnoteAppWindow {
                 o.downcast_ref::<adw::TabPage>()
                     .unwrap()
                     .child()
-                    .downcast_ref::<RnoteCanvasWrapper>()
+                    .downcast_ref::<RnCanvasWrapper>()
                     .unwrap()
                     .canvas()
             })
@@ -344,7 +344,7 @@ impl RnoteAppWindow {
                     tab_page.clone(),
                     tab_page
                         .child()
-                        .downcast_ref::<RnoteCanvasWrapper>()
+                        .downcast_ref::<RnCanvasWrapper>()
                         .unwrap()
                         .canvas()
                         .output_file()?
@@ -369,7 +369,7 @@ impl RnoteAppWindow {
         {
             inactive_page
                 .child()
-                .downcast::<RnoteCanvasWrapper>()
+                .downcast::<RnCanvasWrapper>()
                 .unwrap()
                 .canvas()
                 .engine()
@@ -378,7 +378,7 @@ impl RnoteAppWindow {
         }
     }
 
-    pub(crate) fn refresh_titles(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_titles(&self, active_tab: &RnCanvasWrapper) {
         let canvas = active_tab.canvas();
 
         // Titles
@@ -431,7 +431,7 @@ impl RnoteAppWindow {
                         let new_tab = self.new_tab();
                         new_tab
                             .child()
-                            .downcast::<RnoteCanvasWrapper>()
+                            .downcast::<RnCanvasWrapper>()
                             .unwrap()
                             .canvas()
                     } else {
@@ -457,7 +457,7 @@ impl RnoteAppWindow {
                 let new_tab = self.new_tab();
                 let canvas = new_tab
                     .child()
-                    .downcast::<RnoteCanvasWrapper>()
+                    .downcast::<RnCanvasWrapper>()
                     .unwrap()
                     .canvas();
 
@@ -491,7 +491,7 @@ impl RnoteAppWindow {
         &self,
         file: gio::File,
         target_pos: Option<na::Vector2<f64>>,
-        canvas: &RnoteCanvas,
+        canvas: &RnCanvas,
     ) -> anyhow::Result<()> {
         glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak self as appwindow => async move {
             appwindow.overlays().start_pulsing_progressbar();
@@ -571,7 +571,7 @@ impl RnoteAppWindow {
     }
 
     /// Refreshes the UI from the engine state from the given tab page.
-    pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui_from_engine(&self, active_tab: &RnCanvasWrapper) {
         let canvas = active_tab.canvas();
 
         // Avoids already borrowed
@@ -824,9 +824,9 @@ impl RnoteAppWindow {
         if prev_tab == active_tab {
             return;
         }
-        let prev_canvas_wrapper = prev_tab.child().downcast::<RnoteCanvasWrapper>().unwrap();
+        let prev_canvas_wrapper = prev_tab.child().downcast::<RnCanvasWrapper>().unwrap();
         let prev_canvas = prev_canvas_wrapper.canvas();
-        let active_canvas_wrapper = active_tab.child().downcast::<RnoteCanvasWrapper>().unwrap();
+        let active_canvas_wrapper = active_tab.child().downcast::<RnCanvasWrapper>().unwrap();
         let active_canvas = active_canvas_wrapper.canvas();
         let mut widget_flags = WidgetFlags::default();
 

@@ -9,7 +9,7 @@ pub(crate) use workspacelistentry::WorkspaceListEntry;
 pub(crate) use workspacerow::WorkspaceRow;
 
 // Imports
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 use crate::dialogs;
 
 use gtk4::{
@@ -277,7 +277,7 @@ impl WorkspacesBar {
         self.select_workspace_by_index(selected_workspace_index);
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_actions(appwindow);
 
         self.imp().workspace_list.connect_items_changed(
@@ -341,7 +341,7 @@ impl WorkspacesBar {
             }));
     }
 
-    fn setup_actions(&self, appwindow: &RnoteAppWindow) {
+    fn setup_actions(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         let action_move_selected_workspace_up =

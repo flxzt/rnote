@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="CanvasMenu" parent="GtkWidget">
+  <template class="RnCanvasMenu" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>

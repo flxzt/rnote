@@ -25,21 +25,21 @@ pub(crate) mod utils;
 mod workspacebrowser;
 
 // Re-exports
-pub(crate) use app::RnoteApp;
-pub(crate) use appmenu::AppMenu;
-pub(crate) use appwindow::RnoteAppWindow;
-pub(crate) use canvas::RnoteCanvas;
-pub(crate) use canvasmenu::CanvasMenu;
-pub(crate) use canvaswrapper::RnoteCanvasWrapper;
-pub(crate) use colorpicker::ColorPicker;
-pub(crate) use groupediconpicker::GroupedIconPicker;
-pub(crate) use iconpicker::IconPicker;
-pub(crate) use mainheader::MainHeader;
-pub(crate) use overlays::RnoteOverlays;
-pub(crate) use penssidebar::PensSideBar;
-pub(crate) use settingspanel::SettingsPanel;
-pub(crate) use strokewidthpicker::StrokeWidthPicker;
-pub(crate) use unitentry::UnitEntry;
+pub(crate) use app::RnApp;
+pub(crate) use appmenu::RnAppMenu;
+pub(crate) use appwindow::RnAppWindow;
+pub(crate) use canvas::RnCanvas;
+pub(crate) use canvasmenu::RnCanvasMenu;
+pub(crate) use canvaswrapper::RnCanvasWrapper;
+pub(crate) use colorpicker::RnColorPicker;
+pub(crate) use groupediconpicker::RnGroupedIconPicker;
+pub(crate) use iconpicker::RnIconPicker;
+pub(crate) use mainheader::RnMainHeader;
+pub(crate) use overlays::RnOverlays;
+pub(crate) use penssidebar::RnPensSideBar;
+pub(crate) use settingspanel::RnSettingsPanel;
+pub(crate) use strokewidthpicker::RnStrokeWidthPicker;
+pub(crate) use unitentry::RnUnitEntry;
 pub(crate) use workspacebrowser::WorkspaceBrowser;
 
 use gtk4::prelude::*;
@@ -50,7 +50,7 @@ fn main() -> anyhow::Result<()> {
     #[cfg(target_os = "windows")]
     setup_windows_env();
 
-    let app = RnoteApp::new();
+    let app = RnApp::new();
     app.run();
 
     Ok(())

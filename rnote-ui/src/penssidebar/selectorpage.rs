@@ -1,14 +1,14 @@
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper};
+use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
-    pub(crate) struct SelectorPage {
+    pub(crate) struct RnSelectorPage {
         #[template_child]
         pub(crate) selectorstyle_polygon_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -22,9 +22,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for SelectorPage {
-        const NAME: &'static str = "SelectorPage";
-        type Type = super::SelectorPage;
+    impl ObjectSubclass for RnSelectorPage {
+        const NAME: &'static str = "RnSelectorPage";
+        type Type = super::RnSelectorPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -36,7 +36,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for SelectorPage {
+    impl ObjectImpl for RnSelectorPage {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -48,21 +48,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for SelectorPage {}
+    impl WidgetImpl for RnSelectorPage {}
 }
 
 glib::wrapper! {
-    pub(crate) struct SelectorPage(ObjectSubclass<imp::SelectorPage>)
+    pub(crate) struct RnSelectorPage(ObjectSubclass<imp::RnSelectorPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for SelectorPage {
+impl Default for RnSelectorPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl SelectorPage {
+impl RnSelectorPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -95,7 +95,7 @@ impl SelectorPage {
         }
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.selectorstyle_polygon_toggle.connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
@@ -127,7 +127,7 @@ impl SelectorPage {
         }));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
 
         let selector_config = active_tab

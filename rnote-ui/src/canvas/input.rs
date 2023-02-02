@@ -8,7 +8,7 @@ use rnote_engine::WidgetFlags;
 use std::collections::VecDeque;
 use std::time::Instant;
 
-use super::RnoteCanvas;
+use super::RnCanvas;
 
 /// Returns true if input should be rejected
 pub(crate) fn filter_mouse_input(mouse_drawing_gesture: &GestureDrag) -> bool {
@@ -199,7 +199,7 @@ pub(crate) fn retrieve_stylus_elements(
 
 /// Process "Pen down"
 pub(crate) fn process_pen_down(
-    canvas: &RnoteCanvas,
+    canvas: &RnCanvas,
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
@@ -248,7 +248,7 @@ pub(crate) fn process_pen_down(
 
 /// Process "Pen up"
 pub(crate) fn process_pen_up(
-    canvas: &RnoteCanvas,
+    canvas: &RnCanvas,
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
@@ -297,7 +297,7 @@ pub(crate) fn process_pen_up(
 
 /// Process "Pen proximity"
 pub(crate) fn process_pen_proximity(
-    canvas: &RnoteCanvas,
+    canvas: &RnCanvas,
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
     pen_mode: Option<PenMode>,
@@ -320,7 +320,7 @@ pub(crate) fn process_pen_proximity(
 /// Process shortcut key pressed
 #[allow(unused)]
 pub(crate) fn process_shortcut_key_pressed(
-    canvas: &RnoteCanvas,
+    canvas: &RnCanvas,
     shortcut_key: ShortcutKey,
     now: Instant,
 ) -> WidgetFlags {
@@ -334,7 +334,7 @@ pub(crate) fn process_shortcut_key_pressed(
 
 /// Process keyboard key pressed
 pub(crate) fn process_keyboard_key_pressed(
-    canvas: &RnoteCanvas,
+    canvas: &RnCanvas,
     keyboard_key: KeyboardKey,
     shortcut_keys: Vec<ShortcutKey>,
     now: Instant,
@@ -352,11 +352,7 @@ pub(crate) fn process_keyboard_key_pressed(
 }
 
 /// Process keyboard text
-pub(crate) fn process_keyboard_text(
-    canvas: &RnoteCanvas,
-    text: String,
-    now: Instant,
-) -> WidgetFlags {
+pub(crate) fn process_keyboard_text(canvas: &RnCanvas, text: String, now: Instant) -> WidgetFlags {
     let widget_flags =
         canvas
             .engine()

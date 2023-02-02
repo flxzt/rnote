@@ -13,7 +13,7 @@ mod imp {
     use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penshortcutrow.ui")]
-    pub(crate) struct PenShortcutRow {
+    pub(crate) struct RnPenShortcutRow {
         pub(crate) key: RefCell<Option<ShortcutKey>>,
         pub(crate) action: RefCell<ShortcutAction>,
         pub(crate) changepenstyle_model: ChangePenStyleListModel,
@@ -22,7 +22,7 @@ mod imp {
         pub(crate) permanent_checker: TemplateChild<CheckButton>,
     }
 
-    impl Default for PenShortcutRow {
+    impl Default for RnPenShortcutRow {
         fn default() -> Self {
             Self {
                 key: RefCell::new(None),
@@ -37,9 +37,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for PenShortcutRow {
-        const NAME: &'static str = "PenShortcutRow";
-        type Type = super::PenShortcutRow;
+    impl ObjectSubclass for RnPenShortcutRow {
+        const NAME: &'static str = "RnPenShortcutRow";
+        type Type = super::RnPenShortcutRow;
         type ParentType = adw::ComboRow;
         type Interfaces = ();
 
@@ -52,7 +52,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for PenShortcutRow {
+    impl ObjectImpl for RnPenShortcutRow {
         fn constructed(&self) {
             let inst = self.instance();
 
@@ -133,22 +133,22 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for PenShortcutRow {}
-    impl ListBoxRowImpl for PenShortcutRow {}
-    impl PreferencesRowImpl for PenShortcutRow {}
-    impl ActionRowImpl for PenShortcutRow {}
-    impl ComboRowImpl for PenShortcutRow {}
+    impl WidgetImpl for RnPenShortcutRow {}
+    impl ListBoxRowImpl for RnPenShortcutRow {}
+    impl PreferencesRowImpl for RnPenShortcutRow {}
+    impl ActionRowImpl for RnPenShortcutRow {}
+    impl ComboRowImpl for RnPenShortcutRow {}
 
-    impl PenShortcutRow {}
+    impl RnPenShortcutRow {}
 }
 
 glib::wrapper! {
-    pub(crate) struct PenShortcutRow(ObjectSubclass<imp::PenShortcutRow>)
+    pub(crate) struct RnPenShortcutRow(ObjectSubclass<imp::RnPenShortcutRow>)
         @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
 }
 
-impl PenShortcutRow {
+impl RnPenShortcutRow {
     #[allow(clippy::new_without_default)]
     #[allow(unused)]
     pub(crate) fn new() -> Self {

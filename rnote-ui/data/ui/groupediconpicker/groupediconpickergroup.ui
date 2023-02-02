@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="GroupedIconPickerGroup" parent="GtkListBoxRow">
+  <template class="RnGroupedIconPickerGroup" parent="GtkListBoxRow">
     <property name="activatable">false</property>
     <property name="focusable">false</property>
     <property name="margin-top">4</property>
@@ -33,4 +33,3 @@
     </child>
   </template>
 </interface>
-

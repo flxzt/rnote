@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### IconPicker ### -->
 <interface>
-  <template class="IconPicker" parent="GtkWidget">
+  <template class="RnIconPicker" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>

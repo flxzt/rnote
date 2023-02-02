@@ -9,15 +9,15 @@ use gtk4::{
     FileChooserNative, Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
 
-use crate::appwindow::RnoteAppWindow;
-use crate::canvas::RnoteCanvas;
-use crate::canvaswrapper::RnoteCanvasWrapper;
+use crate::appwindow::RnAppWindow;
+use crate::canvas::RnCanvas;
+use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
 use crate::workspacebrowser::workspacesbar::WorkspaceRow;
-use crate::{globals, IconPicker};
+use crate::{globals, RnIconPicker};
 
 // About Dialog
-pub(crate) fn dialog_about(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
     let app_icon_name = if config::PROFILE == "devel" {
         config::APP_NAME.to_string() + "-devel"
     } else {
@@ -53,7 +53,7 @@ pub(crate) fn dialog_about(appwindow: &RnoteAppWindow) {
     aboutdialog.show();
 }
 
-pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
     let dialog_shortcuts: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
@@ -66,7 +66,7 @@ pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
     dialog_shortcuts.show();
 }
 
-pub(crate) fn dialog_clear_doc(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
+pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -103,8 +103,8 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas)
     dialog_clear_doc.show();
 }
 
-pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
-    let new_doc = |appwindow: &RnoteAppWindow, canvas: &RnoteCanvas| {
+pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
+    let new_doc = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
         let widget_flags = canvas.engine().borrow_mut().clear();
         appwindow.handle_widget_flags(widget_flags, canvas);
 
@@ -171,7 +171,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnoteAppWindow, canvas: &RnoteCanvas) {
 }
 
 /// Only to be called from the tabview close-page handler
-pub(crate) fn dialog_close_tab(appwindow: &RnoteAppWindow, tab_page: &adw::TabPage) {
+pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -182,7 +182,7 @@ pub(crate) fn dialog_close_tab(appwindow: &RnoteAppWindow, tab_page: &adw::TabPa
     dialog.connect_response(
         None,
         clone!(@weak tab_page, @weak appwindow => move |_, response| {
-            let canvas = tab_page.child().downcast::<RnoteCanvasWrapper>().unwrap().canvas();
+            let canvas = tab_page.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
 
             match response {
                 "discard" => {
@@ -228,7 +228,7 @@ pub(crate) fn dialog_close_tab(appwindow: &RnoteAppWindow, tab_page: &adw::TabPa
     dialog.show();
 }
 
-pub(crate) async fn dialog_close_window(appwindow: &RnoteAppWindow) {
+pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -242,11 +242,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnoteAppWindow) {
     let mut prev_doc_title = String::new();
 
     for (i, tab) in tabs.iter().enumerate() {
-        let canvas = tab
-            .child()
-            .downcast::<RnoteCanvasWrapper>()
-            .unwrap()
-            .canvas();
+        let canvas = tab.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
 
         if canvas.unsaved_changes() {
             let save_folder_path = if let Some(p) =
@@ -305,7 +301,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnoteAppWindow) {
                 if check.is_active() {
                     let canvas = tabs[i]
                         .child()
-                        .downcast::<RnoteCanvasWrapper>()
+                        .downcast::<RnCanvasWrapper>()
                         .unwrap()
                         .canvas();
 
@@ -340,7 +336,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnoteAppWindow) {
     }
 }
 
-pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnoteAppWindow) {
+pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
@@ -361,7 +357,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnoteAppWindow) {
     let icon_menubutton: MenuButton = builder
         .object("edit_selected_workspace_icon_menubutton")
         .unwrap();
-    let icon_picker: IconPicker = builder
+    let icon_picker: RnIconPicker = builder
         .object("edit_selected_workspace_icon_picker")
         .unwrap();
 

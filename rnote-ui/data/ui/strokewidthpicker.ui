@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="StrokeWidthPicker" parent="GtkWidget">
+  <template class="RnStrokeWidthPicker" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="orientation">vertical</property>
@@ -30,7 +30,7 @@
         <property name="orientation">vertical</property>
         <property name="spacing">3</property>
         <child>
-          <object class="StrokeWidthSetter" id="setter_1">
+          <object class="RnStrokeWidthSetter" id="setter_1">
             <property name="halign">fill</property>
             <style>
               <class name="flat" />
@@ -38,7 +38,7 @@
           </object>
         </child>
         <child>
-          <object class="StrokeWidthSetter" id="setter_2">
+          <object class="RnStrokeWidthSetter" id="setter_2">
             <property name="halign">fill</property>
             <style>
               <class name="flat" />
@@ -46,7 +46,7 @@
           </object>
         </child>
         <child>
-          <object class="StrokeWidthSetter" id="setter_3">
+          <object class="RnStrokeWidthSetter" id="setter_3">
             <property name="halign">fill</property>
             <style>
               <class name="flat" />

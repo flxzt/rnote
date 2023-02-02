@@ -10,7 +10,7 @@ use gtk4::{
     Align, Button, Entry, Label, Popover,
 };
 
-use crate::{workspacebrowser::widget_helper, WorkspaceBrowser};
+use crate::{workspacebrowser::widgethelper, WorkspaceBrowser};
 
 /// Creates a new `create_folder` action
 pub(crate) fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleAction {
@@ -20,7 +20,7 @@ pub(crate) fn create_folder(workspacebrowser: &WorkspaceBrowser) -> gio::SimpleA
         if let Some(parent_path) = workspacebrowser.dirlist_file().and_then(|f| f.path()) {
             let folder_name_entry = create_folder_name_entry();
             let dialog_title_label = create_dialog_title_label();
-            let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&folder_name_entry, &dialog_title_label);
+            let (apply_button, popover) = widgethelper::create_entry_dialog(&folder_name_entry, &dialog_title_label);
 
             // at first don't allow applying, since the user did not enter any text yet.
             apply_button.set_sensitive(false);

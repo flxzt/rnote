@@ -3,14 +3,14 @@ use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButto
 use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
 use rnote_engine::pens::pensconfig::EraserConfig;
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper};
+use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
-    pub(crate) struct EraserPage {
+    pub(crate) struct RnEraserPage {
         #[template_child]
         pub(crate) eraserstyle_trash_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -20,9 +20,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for EraserPage {
-        const NAME: &'static str = "EraserPage";
-        type Type = super::EraserPage;
+    impl ObjectSubclass for RnEraserPage {
+        const NAME: &'static str = "RnEraserPage";
+        type Type = super::RnEraserPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -34,7 +34,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for EraserPage {
+    impl ObjectImpl for RnEraserPage {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -46,21 +46,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for EraserPage {}
+    impl WidgetImpl for RnEraserPage {}
 }
 
 glib::wrapper! {
-    pub(crate) struct EraserPage(ObjectSubclass<imp::EraserPage>)
+    pub(crate) struct RnEraserPage(ObjectSubclass<imp::RnEraserPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for EraserPage {
+impl Default for RnEraserPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl EraserPage {
+impl RnEraserPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -98,7 +98,7 @@ impl EraserPage {
         }
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.eraserstyle_trash_colliding_strokes_toggle.connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
@@ -125,7 +125,7 @@ impl EraserPage {
         );
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
 
         let eraser_config = active_tab

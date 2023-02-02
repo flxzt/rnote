@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="PenShortcutRow" parent="AdwComboRow">
+  <template class="RnPenShortcutRow" parent="AdwComboRow">
     <child type="suffix">
       <object class="GtkBox">
         <child>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### GroupedIconPicker ### -->
 <interface>
-  <template class="GroupedIconPicker" parent="GtkWidget">
+  <template class="RnGroupedIconPicker" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="spacing">6</property>

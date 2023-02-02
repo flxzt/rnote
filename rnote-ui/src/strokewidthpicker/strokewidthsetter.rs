@@ -1,5 +1,5 @@
 // Imports
-use super::StrokeWidthPreview;
+use super::RnStrokeWidthPreview;
 use gtk4::{glib, prelude::*, subclass::prelude::*, Button, Overflow, ToggleButton, Widget};
 use once_cell::sync::Lazy;
 use std::cell::Cell;
@@ -8,28 +8,28 @@ mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub(crate) struct StrokeWidthSetter {
-        preview: StrokeWidthPreview,
+    pub(crate) struct RnStrokeWidthSetter {
+        preview: RnStrokeWidthPreview,
         stroke_width: Cell<f64>,
     }
 
-    impl Default for StrokeWidthSetter {
+    impl Default for RnStrokeWidthSetter {
         fn default() -> Self {
             Self {
-                preview: StrokeWidthPreview::default(),
+                preview: RnStrokeWidthPreview::default(),
                 stroke_width: Cell::new(1.0),
             }
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for StrokeWidthSetter {
-        const NAME: &'static str = "StrokeWidthSetter";
-        type Type = super::StrokeWidthSetter;
+    impl ObjectSubclass for RnStrokeWidthSetter {
+        const NAME: &'static str = "RnStrokeWidthSetter";
+        type Type = super::RnStrokeWidthSetter;
         type ParentType = ToggleButton;
     }
 
-    impl ObjectImpl for StrokeWidthSetter {
+    impl ObjectImpl for RnStrokeWidthSetter {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -77,11 +77,11 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for StrokeWidthSetter {}
-    impl ButtonImpl for StrokeWidthSetter {}
-    impl ToggleButtonImpl for StrokeWidthSetter {}
+    impl WidgetImpl for RnStrokeWidthSetter {}
+    impl ButtonImpl for RnStrokeWidthSetter {}
+    impl ToggleButtonImpl for RnStrokeWidthSetter {}
 
-    impl StrokeWidthSetter {
+    impl RnStrokeWidthSetter {
         fn update_appearance(&self, stroke_width: f64) {
             let inst = self.instance();
 
@@ -91,18 +91,18 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct StrokeWidthSetter(ObjectSubclass<imp::StrokeWidthSetter>)
+    pub(crate) struct RnStrokeWidthSetter(ObjectSubclass<imp::RnStrokeWidthSetter>)
         @extends ToggleButton, Button, Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for StrokeWidthSetter {
+impl Default for RnStrokeWidthSetter {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl StrokeWidthSetter {
+impl RnStrokeWidthSetter {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

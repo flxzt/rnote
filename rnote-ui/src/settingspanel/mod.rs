@@ -2,7 +2,7 @@ pub(crate) mod penshortcutmodels;
 mod penshortcutrow;
 
 // Re-exports
-pub(crate) use penshortcutrow::PenShortcutRow;
+pub(crate) use penshortcutrow::RnPenShortcutRow;
 
 // Imports
 use adw::prelude::*;
@@ -19,14 +19,14 @@ use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::{globals, IconPicker, RnoteAppWindow, RnoteCanvasWrapper, UnitEntry};
+use crate::{globals, RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 
 mod imp {
     use super::*;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
-    pub(crate) struct SettingsPanel {
+    pub(crate) struct RnSettingsPanel {
         pub(crate) temporary_format: Rc<RefCell<Format>>,
 
         #[template_child]
@@ -42,11 +42,11 @@ mod imp {
         #[template_child]
         pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
         #[template_child]
-        pub(crate) general_regular_cursor_picker: TemplateChild<IconPicker>,
+        pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
         pub(crate) general_regular_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) general_drawing_cursor_picker: TemplateChild<IconPicker>,
+        pub(crate) general_drawing_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
         pub(crate) general_drawing_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -60,11 +60,11 @@ mod imp {
         #[template_child]
         pub(crate) format_width_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub(crate) format_width_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) format_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) format_height_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub(crate) format_height_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) format_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) format_dpi_row: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -80,23 +80,23 @@ mod imp {
         #[template_child]
         pub(crate) background_pattern_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
-        pub(crate) background_pattern_width_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
-        pub(crate) background_pattern_height_unitentry: TemplateChild<UnitEntry>,
+        pub(crate) background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
-        pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
-        pub(crate) penshortcut_stylus_button_secondary_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_stylus_button_secondary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
-        pub(crate) penshortcut_mouse_button_secondary_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_mouse_button_secondary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
-        pub(crate) penshortcut_touch_two_finger_long_press_row: TemplateChild<PenShortcutRow>,
+        pub(crate) penshortcut_touch_two_finger_long_press_row: TemplateChild<RnPenShortcutRow>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for SettingsPanel {
-        const NAME: &'static str = "SettingsPanel";
-        type Type = super::SettingsPanel;
+    impl ObjectSubclass for RnSettingsPanel {
+        const NAME: &'static str = "RnSettingsPanel";
+        type Type = super::RnSettingsPanel;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -108,7 +108,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for SettingsPanel {
+    impl ObjectImpl for RnSettingsPanel {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -226,9 +226,9 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for SettingsPanel {}
+    impl WidgetImpl for RnSettingsPanel {}
 
-    impl SettingsPanel {
+    impl RnSettingsPanel {
         pub(crate) fn update_temporary_format_from_rows(&self) {
             // border color
             self.temporary_format.borrow_mut().border_color = self
@@ -353,17 +353,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
+    pub(crate) struct RnSettingsPanel(ObjectSubclass<imp::RnSettingsPanel>)
     @extends Widget;
 }
 
-impl Default for SettingsPanel {
+impl Default for RnSettingsPanel {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl SettingsPanel {
+impl RnSettingsPanel {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -414,11 +414,11 @@ impl SettingsPanel {
         self.imp().settings_scroller.clone()
     }
 
-    pub(crate) fn general_regular_cursor_picker(&self) -> IconPicker {
+    pub(crate) fn general_regular_cursor_picker(&self) -> RnIconPicker {
         self.imp().general_regular_cursor_picker.clone()
     }
 
-    pub(crate) fn general_drawing_cursor_picker(&self) -> IconPicker {
+    pub(crate) fn general_drawing_cursor_picker(&self) -> RnIconPicker {
         self.imp().general_drawing_cursor_picker.clone()
     }
 
@@ -426,14 +426,14 @@ impl SettingsPanel {
         self.imp().general_show_scrollbars_switch.clone()
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         self.refresh_general_ui(active_tab);
         self.refresh_format_ui(active_tab);
         self.refresh_background_ui(active_tab);
         self.refresh_shortcuts_ui(active_tab);
     }
 
-    fn refresh_general_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    fn refresh_general_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
 
@@ -443,7 +443,7 @@ impl SettingsPanel {
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
-    fn refresh_format_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
 
@@ -463,7 +463,7 @@ impl SettingsPanel {
         imp.format_height_unitentry.set_value(format.height);
     }
 
-    fn refresh_background_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    fn refresh_background_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
 
@@ -491,7 +491,7 @@ impl SettingsPanel {
             .set_value(background.pattern_size[1]);
     }
 
-    fn refresh_shortcuts_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
 
@@ -519,14 +519,14 @@ impl SettingsPanel {
             });
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_general(appwindow);
         self.setup_format(appwindow);
         self.setup_background(appwindow);
         self.setup_shortcuts(appwindow);
     }
 
-    fn setup_general(&self, appwindow: &RnoteAppWindow) {
+    fn setup_general(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         // autosave enable switch
@@ -582,7 +582,7 @@ impl SettingsPanel {
             .build();
     }
 
-    fn setup_format(&self, appwindow: &RnoteAppWindow) {
+    fn setup_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let temporary_format = imp.temporary_format.clone();
 
@@ -618,7 +618,7 @@ impl SettingsPanel {
         }));
     }
 
-    fn setup_background(&self, appwindow: &RnoteAppWindow) {
+    fn setup_background(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
@@ -699,7 +699,7 @@ impl SettingsPanel {
         );
     }
 
-    fn setup_shortcuts(&self, appwindow: &RnoteAppWindow) {
+    fn setup_shortcuts(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let penshortcut_stylus_button_primary_row = imp.penshortcut_stylus_button_primary_row.get();
         let penshortcut_stylus_button_secondary_row =
@@ -742,7 +742,7 @@ impl SettingsPanel {
         }));
     }
 
-    fn revert_format(&self, appwindow: &RnoteAppWindow) {
+    fn revert_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let canvas = appwindow.active_tab().canvas();
 

@@ -12,8 +12,8 @@ use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
 
 use crate::{
-    groupediconpicker::GroupedIconPickerGroupData, GroupedIconPicker, RnoteAppWindow,
-    RnoteCanvasWrapper, StrokeWidthPicker,
+    groupediconpicker::GroupedIconPickerGroupData, RnAppWindow, RnCanvasWrapper,
+    RnGroupedIconPicker, RnStrokeWidthPicker,
 };
 
 mod imp {
@@ -21,7 +21,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
-    pub(crate) struct ShaperPage {
+    pub(crate) struct RnShaperPage {
         #[template_child]
         pub(crate) shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -39,11 +39,11 @@ mod imp {
         #[template_child]
         pub(crate) roughstyle_hachure_angle_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub(crate) stroke_width_picker: TemplateChild<StrokeWidthPicker>,
+        pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
         #[template_child]
         pub(crate) shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapebuildertype_picker: TemplateChild<GroupedIconPicker>,
+        pub(crate) shapebuildertype_picker: TemplateChild<RnGroupedIconPicker>,
         #[template_child]
         pub(crate) constraint_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -57,9 +57,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ShaperPage {
-        const NAME: &'static str = "ShaperPage";
-        type Type = super::ShaperPage;
+    impl ObjectSubclass for RnShaperPage {
+        const NAME: &'static str = "RnShaperPage";
+        type Type = super::RnShaperPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -71,7 +71,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ShaperPage {
+    impl ObjectImpl for RnShaperPage {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -83,21 +83,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ShaperPage {}
+    impl WidgetImpl for RnShaperPage {}
 }
 
 glib::wrapper! {
-    pub(crate) struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
+    pub(crate) struct RnShaperPage(ObjectSubclass<imp::RnShaperPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for ShaperPage {
+impl Default for RnShaperPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl ShaperPage {
+impl RnShaperPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -159,11 +159,11 @@ impl ShaperPage {
             .set_selected(position);
     }
 
-    pub(crate) fn stroke_width_picker(&self) -> StrokeWidthPicker {
+    pub(crate) fn stroke_width_picker(&self) -> RnStrokeWidthPicker {
         self.imp().stroke_width_picker.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         // Stroke width
@@ -331,7 +331,7 @@ impl ShaperPage {
             }));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
 
         let shaper_config = active_tab

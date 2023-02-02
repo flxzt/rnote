@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="RnoteAppWindow" parent="AdwApplicationWindow">
+  <template class="RnAppWindow" parent="AdwApplicationWindow">
     <child>
       <object class="AdwFlap" id="flap">
         <property name="flap-position">end</property>
@@ -19,7 +19,7 @@
         <child type="content">
           <object class="GtkGrid" id="main_grid">
             <child>
-              <object class="MainHeader" id="mainheader">
+              <object class="RnMainHeader" id="mainheader">
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
@@ -35,7 +35,7 @@
               </object>
             </child>
             <child>
-              <object class="RnoteOverlays" id="overlays">
+              <object class="RnOverlays" id="overlays">
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
                 <layout>
@@ -137,7 +137,7 @@
                         <property name="title" translatable="yes">Settings</property>
                         <property name="icon-name">settings-symbolic</property>
                         <property name="child">
-                          <object class="SettingsPanel" id="settings_panel"></object>
+                          <object class="RnSettingsPanel" id="settings_panel"></object>
                         </property>
                       </object>
                     </child>

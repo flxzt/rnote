@@ -6,18 +6,18 @@ use gtk4::{
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 
-use crate::canvas::RnoteCanvas;
+use crate::canvas::RnCanvas;
 use rnote_engine::{document::Layout, render};
 
 mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub(crate) struct CanvasLayout {
+    pub(crate) struct RnCanvasLayout {
         pub(crate) old_viewport: Cell<Aabb>,
     }
 
-    impl Default for CanvasLayout {
+    impl Default for RnCanvasLayout {
         fn default() -> Self {
             Self {
                 old_viewport: Cell::new(Aabb::new_zero()),
@@ -26,15 +26,15 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for CanvasLayout {
-        const NAME: &'static str = "CanvasLayout";
-        type Type = super::CanvasLayout;
+    impl ObjectSubclass for RnCanvasLayout {
+        const NAME: &'static str = "RnCanvasLayout";
+        type Type = super::RnCanvasLayout;
         type ParentType = LayoutManager;
     }
 
-    impl ObjectImpl for CanvasLayout {}
+    impl ObjectImpl for RnCanvasLayout {}
 
-    impl LayoutManagerImpl for CanvasLayout {
+    impl LayoutManagerImpl for RnCanvasLayout {
         fn request_mode(&self, _widget: &Widget) -> SizeRequestMode {
             SizeRequestMode::ConstantSize
         }
@@ -45,7 +45,7 @@ mod imp {
             orientation: Orientation,
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
-            let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
+            let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
             let document = canvas.engine().borrow().document;
 
@@ -53,7 +53,7 @@ mod imp {
                 // let canvas_width = canvas.width() as f64;
 
                 let natural_width = (document.width * total_zoom
-                    + 2.0 * super::CanvasLayout::OVERSHOOT_HORIZONTAL)
+                    + 2.0 * super::RnCanvasLayout::OVERSHOOT_HORIZONTAL)
                     .ceil() as i32;
 
                 (0, natural_width, -1, -1)
@@ -61,7 +61,7 @@ mod imp {
                 // let canvas_height = canvas.height() as f64;
 
                 let natural_height = (document.height * total_zoom
-                    + 2.0 * super::CanvasLayout::OVERSHOOT_VERTICAL)
+                    + 2.0 * super::RnCanvasLayout::OVERSHOOT_VERTICAL)
                     .ceil() as i32;
 
                 (0, natural_height, -1, -1)
@@ -69,7 +69,7 @@ mod imp {
         }
 
         fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
-            let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
+            let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
 
@@ -83,12 +83,12 @@ mod imp {
             // Update the adjustments
             let (h_lower, h_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.x * total_zoom - super::CanvasLayout::OVERSHOOT_HORIZONTAL,
+                    document.x * total_zoom - super::RnCanvasLayout::OVERSHOOT_HORIZONTAL,
                     (document.x + document.width) * total_zoom
-                        + super::CanvasLayout::OVERSHOOT_HORIZONTAL,
+                        + super::RnCanvasLayout::OVERSHOOT_HORIZONTAL,
                 ),
                 Layout::SemiInfinite => (
-                    document.x * total_zoom - super::CanvasLayout::OVERSHOOT_HORIZONTAL,
+                    document.x * total_zoom - super::RnCanvasLayout::OVERSHOOT_HORIZONTAL,
                     (document.x + document.width) * total_zoom,
                 ),
                 Layout::Infinite => (
@@ -99,12 +99,12 @@ mod imp {
 
             let (v_lower, v_upper) = match document.layout {
                 Layout::FixedSize | Layout::ContinuousVertical => (
-                    document.y * total_zoom - super::CanvasLayout::OVERSHOOT_VERTICAL,
+                    document.y * total_zoom - super::RnCanvasLayout::OVERSHOOT_VERTICAL,
                     (document.y + document.height) * total_zoom
-                        + super::CanvasLayout::OVERSHOOT_VERTICAL,
+                        + super::RnCanvasLayout::OVERSHOOT_VERTICAL,
                 ),
                 Layout::SemiInfinite => (
-                    document.y * total_zoom - super::CanvasLayout::OVERSHOOT_VERTICAL,
+                    document.y * total_zoom - super::RnCanvasLayout::OVERSHOOT_VERTICAL,
                     (document.y + document.height) * total_zoom,
                 ),
                 Layout::Infinite => (
@@ -176,17 +176,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
+    pub(crate) struct RnCanvasLayout(ObjectSubclass<imp::RnCanvasLayout>)
         @extends LayoutManager;
 }
 
-impl Default for CanvasLayout {
+impl Default for RnCanvasLayout {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl CanvasLayout {
+impl RnCanvasLayout {
     pub(crate) const OVERSHOOT_VERTICAL: f64 = 96.0;
     pub(crate) const OVERSHOOT_HORIZONTAL: f64 = 32.0;
 
@@ -195,7 +195,7 @@ impl CanvasLayout {
     }
 
     // needs to be called after zooming
-    pub(crate) fn update_state(&self, canvas: &RnoteCanvas) {
+    pub(crate) fn update_state(&self, canvas: &RnCanvas) {
         self.imp()
             .old_viewport
             .set(canvas.engine().borrow().camera.viewport());

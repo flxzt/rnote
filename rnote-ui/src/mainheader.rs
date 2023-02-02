@@ -1,4 +1,4 @@
-use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
+use crate::{appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu};
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, ToggleButton, Widget,
 };
@@ -8,7 +8,7 @@ mod imp {
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
-    pub(crate) struct MainHeader {
+    pub(crate) struct RnMainHeader {
         #[template_child]
         pub(crate) headerbar: TemplateChild<adw::HeaderBar>,
         #[template_child]
@@ -28,15 +28,15 @@ mod imp {
         #[template_child]
         pub(crate) menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) canvasmenu: TemplateChild<CanvasMenu>,
+        pub(crate) canvasmenu: TemplateChild<RnCanvasMenu>,
         #[template_child]
-        pub(crate) appmenu: TemplateChild<AppMenu>,
+        pub(crate) appmenu: TemplateChild<RnAppMenu>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for MainHeader {
-        const NAME: &'static str = "MainHeader";
-        type Type = super::MainHeader;
+    impl ObjectSubclass for RnMainHeader {
+        const NAME: &'static str = "RnMainHeader";
+        type Type = super::RnMainHeader;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -48,7 +48,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for MainHeader {
+    impl ObjectImpl for RnMainHeader {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -59,21 +59,21 @@ mod imp {
             }
         }
     }
-    impl WidgetImpl for MainHeader {}
+    impl WidgetImpl for RnMainHeader {}
 }
 
 glib::wrapper! {
-    pub(crate) struct MainHeader(ObjectSubclass<imp::MainHeader>)
+    pub(crate) struct RnMainHeader(ObjectSubclass<imp::RnMainHeader>)
         @extends Widget;
 }
 
-impl Default for MainHeader {
+impl Default for RnMainHeader {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl MainHeader {
+impl RnMainHeader {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -110,15 +110,15 @@ impl MainHeader {
         self.imp().menus_box.get()
     }
 
-    pub(crate) fn canvasmenu(&self) -> CanvasMenu {
+    pub(crate) fn canvasmenu(&self) -> RnCanvasMenu {
         self.imp().canvasmenu.get()
     }
 
-    pub(crate) fn appmenu(&self) -> AppMenu {
+    pub(crate) fn appmenu(&self) -> RnAppMenu {
         self.imp().appmenu.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp()
             .headerbar
             .get()

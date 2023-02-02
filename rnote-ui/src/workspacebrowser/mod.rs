@@ -1,16 +1,16 @@
 mod filerow;
-mod widget_helper;
+mod widgethelper;
 mod workspaceactions;
 pub(crate) mod workspacesbar;
 
 use std::path::PathBuf;
 
 // Re-exports
-pub(crate) use filerow::FileRow;
+pub(crate) use filerow::RnFileRow;
 pub(crate) use workspacesbar::WorkspacesBar;
 
 // Imports
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
@@ -126,7 +126,7 @@ impl WorkspaceBrowser {
         self.imp().dir_controls_actions_box.clone()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().workspacesbar.get().init(appwindow);
 
         setup_dir_controls(self, appwindow);
@@ -159,14 +159,14 @@ impl WorkspaceBrowser {
         }
     }
 
-    fn setup_actions(&self, _appwindow: &RnoteAppWindow) {
+    fn setup_actions(&self, _appwindow: &RnAppWindow) {
         self.imp()
             .action_group
             .add_action(&workspaceactions::create_folder(self));
     }
 }
 
-fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
+fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnAppWindow) {
     let dir_up_click_gesture = GestureClick::builder()
         .propagation_phase(PropagationPhase::Capture)
         .button(gdk::BUTTON_PRIMARY)
@@ -186,13 +186,13 @@ fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     }));
 }
 
-fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
+fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnAppWindow) {
     let primary_list_factory = SignalListItemFactory::new();
 
     primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
         let list_item = list_item.downcast_ref::<ListItem>().unwrap();
 
-        let filerow = FileRow::new();
+        let filerow = RnFileRow::new();
         filerow.init(&appwindow);
 
         list_item.set_child(Some(&filerow));

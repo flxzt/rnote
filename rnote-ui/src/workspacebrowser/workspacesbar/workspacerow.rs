@@ -1,4 +1,4 @@
-use crate::RnoteAppWindow;
+use crate::RnAppWindow;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider, Image,
     Label, Widget,
@@ -207,7 +207,7 @@ impl WorkspaceRow {
         self.set_property("entry", entry.to_value());
     }
 
-    pub(crate) fn init(&self, _appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {
         // TODO: add gestures / menu for editing the row
     }
 }

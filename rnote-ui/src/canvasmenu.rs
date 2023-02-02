@@ -1,4 +1,4 @@
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 
 use gtk4::{
     gio, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, MenuButton,
@@ -10,7 +10,7 @@ mod imp {
     use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
-    pub(crate) struct CanvasMenu {
+    pub(crate) struct RnCanvasMenu {
         #[template_child]
         pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -28,9 +28,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for CanvasMenu {
-        const NAME: &'static str = "CanvasMenu";
-        type Type = super::CanvasMenu;
+    impl ObjectSubclass for RnCanvasMenu {
+        const NAME: &'static str = "RnCanvasMenu";
+        type Type = super::RnCanvasMenu;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -42,7 +42,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for CanvasMenu {
+    impl ObjectImpl for RnCanvasMenu {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -58,7 +58,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for CanvasMenu {
+    impl WidgetImpl for RnCanvasMenu {
         fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
             self.parent_size_allocate(width, height, baseline);
             self.popovermenu.get().present();
@@ -67,17 +67,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
+    pub(crate) struct RnCanvasMenu(ObjectSubclass<imp::RnCanvasMenu>)
     @extends Widget;
 }
 
-impl Default for CanvasMenu {
+impl Default for RnCanvasMenu {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl CanvasMenu {
+impl RnCanvasMenu {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -90,7 +90,7 @@ impl CanvasMenu {
         self.imp().zoom_reset_button.get()
     }
 
-    pub(crate) fn init(&self, _appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {
         self.imp()
             .zoom_reset_button
             .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());

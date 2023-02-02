@@ -1,14 +1,14 @@
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
 use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper};
+use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
-    pub(crate) struct ToolsPage {
+    pub(crate) struct RnToolsPage {
         #[template_child]
         pub(crate) toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -16,9 +16,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ToolsPage {
-        const NAME: &'static str = "ToolsPage";
-        type Type = super::ToolsPage;
+    impl ObjectSubclass for RnToolsPage {
+        const NAME: &'static str = "RnToolsPage";
+        type Type = super::RnToolsPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -30,7 +30,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ToolsPage {
+    impl ObjectImpl for RnToolsPage {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -42,21 +42,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ToolsPage {}
+    impl WidgetImpl for RnToolsPage {}
 }
 
 glib::wrapper! {
-    pub(crate) struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
+    pub(crate) struct RnToolsPage(ObjectSubclass<imp::RnToolsPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for ToolsPage {
+impl Default for RnToolsPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl ToolsPage {
+impl RnToolsPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -84,7 +84,7 @@ impl ToolsPage {
         }
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
@@ -100,7 +100,7 @@ impl ToolsPage {
         }));
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let tools_config = active_tab
             .canvas()
             .engine()

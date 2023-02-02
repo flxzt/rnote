@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Sidebar -->
 <interface>
-  <template class="PensSideBar" parent="GtkWidget">
+  <template class="RnPensSideBar" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
@@ -16,7 +16,7 @@
             <property name="name">brush_page</property>
             <property name="title" translatable="yes">Brush</property>
             <property name="child">
-              <object class="BrushPage" id="brush_page">
+              <object class="RnBrushPage" id="brush_page">
                 <property name="margin_top">9</property>
                 <property name="margin_bottom">9</property>
                 <property name="margin_start">9</property>
@@ -32,7 +32,7 @@
             <property name="name">shaper_page</property>
             <property name="title" translatable="yes">Shaper</property>
             <property name="child">
-              <object class="ShaperPage" id="shaper_page">
+              <object class="RnShaperPage" id="shaper_page">
                 <property name="margin_top">9</property>
                 <property name="margin_bottom">9</property>
                 <property name="margin_start">9</property>
@@ -48,7 +48,7 @@
             <property name="name">typewriter_page</property>
             <property name="title" translatable="yes">Typewriter</property>
             <property name="child">
-              <object class="TypewriterPage" id="typewriter_page">
+              <object class="RnTypewriterPage" id="typewriter_page">
                 <property name="margin_top">9</property>
                 <property name="margin_bottom">9</property>
                 <property name="margin_start">9</property>
@@ -64,7 +64,7 @@
             <property name="name">eraser_page</property>
             <property name="title" translatable="yes">Eraser</property>
             <property name="child">
-              <object class="EraserPage" id="eraser_page">
+              <object class="RnEraserPage" id="eraser_page">
                 <property name="margin_top">9</property>
                 <property name="margin_bottom">9</property>
                 <property name="margin_start">9</property>
@@ -80,7 +80,7 @@
             <property name="name">selector_page</property>
             <property name="title" translatable="yes">Selector</property>
             <property name="child">
-              <object class="SelectorPage" id="selector_page">
+              <object class="RnSelectorPage" id="selector_page">
                 <property name="margin_top">9</property>
                 <property name="margin_bottom">9</property>
                 <property name="margin_start">9</property>
@@ -96,7 +96,7 @@
             <property name="name">tools_page</property>
             <property name="title" translatable="yes">Tools</property>
             <property name="child">
-              <object class="ToolsPage" id="tools_page">
+              <object class="RnToolsPage" id="tools_page">
                 <property name="margin_top">9</property>
                 <property name="margin_bottom">9</property>
                 <property name="margin_start">9</property>

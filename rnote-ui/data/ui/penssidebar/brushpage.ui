@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="BrushPage" parent="GtkWidget">
+  <template class="RnBrushPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="spacing">6</property>
@@ -45,7 +45,7 @@
       </object>
     </child>
     <child>
-      <object class="StrokeWidthPicker" id="stroke_width_picker">
+      <object class="RnStrokeWidthPicker" id="stroke_width_picker">
       </object>
     </child>
 

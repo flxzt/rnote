@@ -6,7 +6,7 @@ use gtk4::{
     TemplateChild, Widget,
 };
 
-use crate::GroupedIconPicker;
+use crate::RnGroupedIconPicker;
 
 pub(crate) struct GroupedIconPickerGroupData {
     pub(crate) name: String,
@@ -20,7 +20,7 @@ mod imp {
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpickergroup.ui")]
-    pub struct GroupedIconPickerGroup {
+    pub struct RnGroupedIconPickerGroup {
         pub name: RefCell<String>,
         pub icons: RefCell<StringList>,
 
@@ -31,9 +31,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for GroupedIconPickerGroup {
-        const NAME: &'static str = "GroupedIconPickerGroup";
-        type Type = super::GroupedIconPickerGroup;
+    impl ObjectSubclass for RnGroupedIconPickerGroup {
+        const NAME: &'static str = "RnGroupedIconPickerGroup";
+        type Type = super::RnGroupedIconPickerGroup;
         type ParentType = ListBoxRow;
 
         fn class_init(klass: &mut Self::Class) {
@@ -46,7 +46,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for GroupedIconPickerGroup {
+    impl ObjectImpl for RnGroupedIconPickerGroup {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
@@ -79,22 +79,22 @@ mod imp {
             }
         }
     }
-    impl WidgetImpl for GroupedIconPickerGroup {}
-    impl BoxImpl for GroupedIconPickerGroup {}
-    impl ListBoxRowImpl for GroupedIconPickerGroup {}
+    impl WidgetImpl for RnGroupedIconPickerGroup {}
+    impl BoxImpl for RnGroupedIconPickerGroup {}
+    impl ListBoxRowImpl for RnGroupedIconPickerGroup {}
 }
 
 glib::wrapper! {
-    pub struct GroupedIconPickerGroup(ObjectSubclass<imp::GroupedIconPickerGroup>)
+    pub struct RnGroupedIconPickerGroup(ObjectSubclass<imp::RnGroupedIconPickerGroup>)
         @extends Widget, Box, ListBoxRow;
 }
 
 #[gtk4::template_callbacks]
-impl GroupedIconPickerGroup {
+impl RnGroupedIconPickerGroup {
     pub(crate) fn new(
         name: &String,
         icons: &StringList,
-        grouped_icon_picker: &GroupedIconPicker,
+        grouped_icon_picker: &RnGroupedIconPicker,
         generate_display_name: fn(&str) -> String,
     ) -> Self {
         let widget = glib::Object::new::<Self>(&[("name", name), ("icons", icons)]);
@@ -114,7 +114,7 @@ impl GroupedIconPickerGroup {
 
     fn init(
         &self,
-        grouped_icon_picker: &GroupedIconPicker,
+        grouped_icon_picker: &RnGroupedIconPicker,
         generate_display_name: fn(&str) -> String,
     ) {
         let imp = self.imp();

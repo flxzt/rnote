@@ -1,9 +1,9 @@
 use adw::prelude::*;
 use gtk4::{gdk, glib};
 
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 
-impl RnoteAppWindow {
+impl RnAppWindow {
     /// Settings binds
     pub(crate) fn setup_settings_binds(&self) {
         let app = self.app();

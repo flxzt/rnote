@@ -1,7 +1,7 @@
-use super::RnoteAppWindow;
-use crate::canvas::CanvasLayout;
+use super::RnAppWindow;
+use crate::canvas::RnCanvasLayout;
 use crate::config;
-use crate::{dialogs, RnoteCanvas};
+use crate::{dialogs, RnCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
@@ -14,7 +14,7 @@ use gtk4::{PrintStatus, Window};
 use std::path::PathBuf;
 use std::time::Instant;
 
-impl RnoteAppWindow {
+impl RnAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
     /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
@@ -435,7 +435,7 @@ impl RnoteAppWindow {
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvaswrapper = appwindow.active_tab();
 
-            let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * CanvasLayout::OVERSHOOT_HORIZONTAL);
+            let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * RnCanvasLayout::OVERSHOOT_HORIZONTAL);
             let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
@@ -445,7 +445,7 @@ impl RnoteAppWindow {
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvas = appwindow.active_tab().canvas();
 
-            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnoteCanvas::ZOOM_STEP);
+            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_STEP);
             let current_doc_center = canvas.current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_around_coord_on_doc(current_doc_center);
@@ -455,7 +455,7 @@ impl RnoteAppWindow {
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvas = appwindow.active_tab().canvas();
 
-            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnoteCanvas::ZOOM_STEP);
+            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_STEP);
             let current_doc_center = canvas.current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_around_coord_on_doc(current_doc_center);

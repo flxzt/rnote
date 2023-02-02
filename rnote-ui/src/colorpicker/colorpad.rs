@@ -11,30 +11,30 @@ mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub(crate) struct ColorPad {
+    pub(crate) struct RnColorPad {
         pub(crate) css: CssProvider,
         pub(crate) color: Cell<gdk::RGBA>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ColorPad {
-        const NAME: &'static str = "ColorPad";
-        type Type = super::ColorPad;
+    impl ObjectSubclass for RnColorPad {
+        const NAME: &'static str = "RnColorPad";
+        type Type = super::RnColorPad;
         type ParentType = ToggleButton;
     }
 
-    impl Default for ColorPad {
+    impl Default for RnColorPad {
         fn default() -> Self {
             Self {
                 css: CssProvider::new(),
                 color: Cell::new(gdk::RGBA::from_compose_color(
-                    super::ColorPad::COLOR_DEFAULT,
+                    super::RnColorPad::COLOR_DEFAULT,
                 )),
             }
         }
     }
 
-    impl ObjectImpl for ColorPad {
+    impl ObjectImpl for RnColorPad {
         fn constructed(&self) {
             let inst = self.instance();
             self.parent_constructed();
@@ -47,7 +47,7 @@ mod imp {
             inst.set_height_request(34);
             inst.set_css_classes(&["colorpad"]);
 
-            self.update_appearance(super::ColorPad::COLOR_DEFAULT);
+            self.update_appearance(super::RnColorPad::COLOR_DEFAULT);
             inst.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
@@ -87,11 +87,11 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ColorPad {}
-    impl ButtonImpl for ColorPad {}
-    impl ToggleButtonImpl for ColorPad {}
+    impl WidgetImpl for RnColorPad {}
+    impl ButtonImpl for RnColorPad {}
+    impl ToggleButtonImpl for RnColorPad {}
 
-    impl ColorPad {
+    impl RnColorPad {
         fn update_appearance(&self, color: Color) {
             let css = CssProvider::new();
 
@@ -119,18 +119,18 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct ColorPad(ObjectSubclass<imp::ColorPad>)
+    pub(crate) struct RnColorPad(ObjectSubclass<imp::RnColorPad>)
         @extends ToggleButton, Button, Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for ColorPad {
+impl Default for RnColorPad {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl ColorPad {
+impl RnColorPad {
     pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {

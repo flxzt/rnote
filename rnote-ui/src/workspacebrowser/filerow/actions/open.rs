@@ -1,10 +1,10 @@
 use gtk4::{gio, glib, glib::clone};
 
-use crate::workspacebrowser::FileRow;
-use crate::RnoteAppWindow;
+use crate::workspacebrowser::RnFileRow;
+use crate::RnAppWindow;
 
 /// Creates a new `open` action
-pub(crate) fn open(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
+pub(crate) fn open(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action_open_file = gio::SimpleAction::new("open-file", None);
     action_open_file.connect_activate(
         clone!(@weak filerow as filerow, @weak appwindow => move |_action_open_file, _| {

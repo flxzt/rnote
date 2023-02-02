@@ -1,8 +1,8 @@
-use crate::RnoteApp;
+use crate::RnApp;
 use adw::prelude::*;
 use gtk4::{gio, glib, glib::clone};
 
-impl RnoteApp {
+impl RnApp {
     pub(crate) fn setup_actions(&self) {
         let action_quit = gio::SimpleAction::new("quit", None);
         self.add_action(&action_quit);

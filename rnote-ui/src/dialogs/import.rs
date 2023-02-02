@@ -7,14 +7,14 @@ use gtk4::{
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 
-use crate::canvas::RnoteCanvas;
-use crate::{config, RnoteAppWindow};
+use crate::canvas::RnCanvas;
+use crate::{config, RnAppWindow};
 
 /// Asks to open the given file as rnote file and overwrites the current document.
 #[allow(unused)]
 pub(crate) fn dialog_open_overwrite(
-    appwindow: &RnoteAppWindow,
-    canvas: &RnoteCanvas,
+    appwindow: &RnAppWindow,
+    canvas: &RnCanvas,
     input_file: gio::File,
 ) {
     let builder = Builder::from_resource(
@@ -28,7 +28,7 @@ pub(crate) fn dialog_open_overwrite(
         None,
         clone!(@weak canvas, @weak appwindow => move |_dialog_open_input_file, response| {
             let input_file = input_file.clone();
-            let open_overwrite = |appwindow: &RnoteAppWindow, canvas: &RnoteCanvas| {
+            let open_overwrite = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
                 if let Err(e) = appwindow.load_in_file(input_file, None, canvas) {
                     log::error!("failed to load in input file, {e:?}");
                     appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
@@ -75,7 +75,7 @@ pub(crate) fn dialog_open_overwrite(
 }
 
 /// Opens a new rnote save file in a new tab
-pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_open_doc(appwindow: &RnAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_suffix("rnote");
@@ -119,7 +119,7 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnoteAppWindow) {
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 
-pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
+pub(crate) fn filechooser_import_file(appwindow: &RnAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/x-xopp");
     filter.add_mime_type("application/pdf");
@@ -172,8 +172,8 @@ pub(crate) fn filechooser_import_file(appwindow: &RnoteAppWindow) {
 }
 
 pub(crate) fn dialog_import_pdf_w_prefs(
-    appwindow: &RnoteAppWindow,
-    canvas: &RnoteCanvas,
+    appwindow: &RnAppWindow,
+    canvas: &RnCanvas,
     input_file: gio::File,
     target_pos: Option<na::Vector2<f64>>,
 ) {
@@ -356,8 +356,8 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 }
 
 pub(crate) fn dialog_import_xopp_w_prefs(
-    appwindow: &RnoteAppWindow,
-    canvas: &RnoteCanvas,
+    appwindow: &RnAppWindow,
+    canvas: &RnCanvas,
     input_file: gio::File,
 ) {
     let builder = Builder::from_resource(

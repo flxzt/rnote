@@ -11,10 +11,10 @@ use gtk4::{
 
 use gettextrs::gettext;
 
-use crate::workspacebrowser::{widget_helper, FileRow};
+use crate::workspacebrowser::{widgethelper, RnFileRow};
 
 /// Creates a new `rename` action
-pub(crate) fn rename(filerow: &FileRow) -> gio::SimpleAction {
+pub(crate) fn rename(filerow: &RnFileRow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 
     rename_action.connect_activate(clone!(@weak filerow as filerow => move |_action_rename_file, _| {
@@ -23,7 +23,7 @@ pub(crate) fn rename(filerow: &FileRow) -> gio::SimpleAction {
                 if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
                     let entry = create_entry(&current_path);
                     let label = create_label();
-                    let (apply_button, popover) = widget_helper::entry_dialog::create_entry_dialog(&entry, &label);
+                    let (apply_button, popover) = widgethelper::create_entry_dialog(&entry, &label);
 
                     filerow.menubutton_box().append(&popover);
 

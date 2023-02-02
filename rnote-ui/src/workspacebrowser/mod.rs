@@ -1,16 +1,16 @@
 mod filerow;
-mod widget_helper;
+mod widgethelper;
 mod workspaceactions;
 pub(crate) mod workspacesbar;
 
 use std::path::PathBuf;
 
 // Re-exports
-pub(crate) use filerow::FileRow;
-pub(crate) use workspacesbar::WorkspacesBar;
+pub(crate) use filerow::RnFileRow;
+pub(crate) use workspacesbar::RnWorkspacesBar;
 
 // Imports
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
@@ -24,7 +24,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
-    pub(crate) struct WorkspaceBrowser {
+    pub(crate) struct RnWorkspaceBrowser {
         pub(crate) action_group: gio::SimpleActionGroup,
         pub(crate) files_dirlist: DirectoryList,
 
@@ -39,10 +39,10 @@ mod imp {
         #[template_child]
         pub(crate) dir_controls_actions_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) workspacesbar: TemplateChild<WorkspacesBar>,
+        pub(crate) workspacesbar: TemplateChild<RnWorkspacesBar>,
     }
 
-    impl Default for WorkspaceBrowser {
+    impl Default for RnWorkspaceBrowser {
         fn default() -> Self {
             let files_dirlist = DirectoryList::new(Some("standard::*"), None as Option<&gio::File>);
             files_dirlist.set_monitored(true);
@@ -56,15 +56,15 @@ mod imp {
                 files_listview: TemplateChild::<ListView>::default(),
                 dir_controls_dir_up_button: TemplateChild::<Button>::default(),
                 dir_controls_actions_box: TemplateChild::<gtk4::Box>::default(),
-                workspacesbar: TemplateChild::<WorkspacesBar>::default(),
+                workspacesbar: TemplateChild::<RnWorkspacesBar>::default(),
             }
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for WorkspaceBrowser {
-        const NAME: &'static str = "WorkspaceBrowser";
-        type Type = super::WorkspaceBrowser;
+    impl ObjectSubclass for RnWorkspaceBrowser {
+        const NAME: &'static str = "RnWorkspaceBrowser";
+        type Type = super::RnWorkspaceBrowser;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -76,7 +76,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for WorkspaceBrowser {
+    impl ObjectImpl for RnWorkspaceBrowser {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -91,21 +91,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for WorkspaceBrowser {}
+    impl WidgetImpl for RnWorkspaceBrowser {}
 }
 
 glib::wrapper! {
-    pub(crate) struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
+    pub(crate) struct RnWorkspaceBrowser(ObjectSubclass<imp::RnWorkspaceBrowser>)
         @extends gtk4::Widget;
 }
 
-impl Default for WorkspaceBrowser {
+impl Default for RnWorkspaceBrowser {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl WorkspaceBrowser {
+impl RnWorkspaceBrowser {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -118,7 +118,7 @@ impl WorkspaceBrowser {
         self.imp().files_scroller.clone()
     }
 
-    pub(crate) fn workspacesbar(&self) -> WorkspacesBar {
+    pub(crate) fn workspacesbar(&self) -> RnWorkspacesBar {
         self.imp().workspacesbar.clone()
     }
 
@@ -126,7 +126,7 @@ impl WorkspaceBrowser {
         self.imp().dir_controls_actions_box.clone()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp().workspacesbar.get().init(appwindow);
 
         setup_dir_controls(self, appwindow);
@@ -159,14 +159,14 @@ impl WorkspaceBrowser {
         }
     }
 
-    fn setup_actions(&self, _appwindow: &RnoteAppWindow) {
+    fn setup_actions(&self, _appwindow: &RnAppWindow) {
         self.imp()
             .action_group
             .add_action(&workspaceactions::create_folder(self));
     }
 }
 
-fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
+fn setup_dir_controls(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
     let dir_up_click_gesture = GestureClick::builder()
         .propagation_phase(PropagationPhase::Capture)
         .button(gdk::BUTTON_PRIMARY)
@@ -186,13 +186,13 @@ fn setup_dir_controls(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
     }));
 }
 
-fn setup_file_rows(wb: &WorkspaceBrowser, appwindow: &RnoteAppWindow) {
+fn setup_file_rows(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
     let primary_list_factory = SignalListItemFactory::new();
 
     primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
         let list_item = list_item.downcast_ref::<ListItem>().unwrap();
 
-        let filerow = FileRow::new();
+        let filerow = RnFileRow::new();
         filerow.init(&appwindow);
 
         list_item.set_child(Some(&filerow));

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="RnoteOverlays" parent="GtkWidget">
+  <template class="RnOverlays" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout" />
     </property>
@@ -89,7 +89,7 @@
           </object>
         </child>
         <child type="overlay">
-          <object class="ColorPicker" id="colorpicker">
+          <object class="RnColorPicker" id="colorpicker">
             <property name="hexpand">false</property>
             <property name="vexpand">false</property>
             <property name="halign">center</property>
@@ -131,7 +131,7 @@
                 <property name="min-content-height">240</property>
                 <property name="window-placement">top-left</property>
                 <child>
-                  <object class="PensSideBar" id="penssidebar">
+                  <object class="RnPensSideBar" id="penssidebar">
                   </object>
                 </child>
               </object>

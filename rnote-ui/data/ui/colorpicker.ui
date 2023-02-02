@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="ColorPicker" parent="GtkWidget">
+  <template class="RnColorPicker" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="orientation">vertical</property>
@@ -14,14 +14,14 @@
       <object class="GtkBox" id="active_colors_box">
         <property name="spacing">3</property>
         <child>
-          <object class="ColorPad" id="stroke_color_pad">
+          <object class="RnColorPad" id="stroke_color_pad">
             <property name="icon_name">stroke-color-symbolic</property>
             <property name="tooltip-text" translatable="yes">Stroke color</property>
             <property name="active">true</property>
           </object>
         </child>
         <child>
-          <object class="ColorPad" id="fill_color_pad">
+          <object class="RnColorPad" id="fill_color_pad">
             <property name="icon_name">fill-color-symbolic</property>
             <property name="tooltip-text" translatable="yes">Fill color</property>
             <property name="group">stroke_color_pad</property>
@@ -41,35 +41,35 @@
           <class name="linked" />
         </style>
         <child>
-          <object class="ColorSetter" id="setter_1">
+          <object class="RnColorSetter" id="setter_1">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_2">
+          <object class="RnColorSetter" id="setter_2">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_3">
+          <object class="RnColorSetter" id="setter_3">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_4">
+          <object class="RnColorSetter" id="setter_4">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_5">
+          <object class="RnColorSetter" id="setter_5">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_6">
+          <object class="RnColorSetter" id="setter_6">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_7">
+          <object class="RnColorSetter" id="setter_7">
           </object>
         </child>
         <child>
-          <object class="ColorSetter" id="setter_8">
+          <object class="RnColorSetter" id="setter_8">
           </object>
         </child>
       </object>

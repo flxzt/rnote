@@ -12,13 +12,13 @@ use std::{
 };
 
 use crate::{
-    config, RnoteOverlays, SettingsPanel, WorkspaceBrowser, {dialogs, MainHeader},
+    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
 };
 
 #[allow(missing_debug_implementations)]
 #[derive(CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
-pub(crate) struct RnoteAppWindow {
+pub(crate) struct RnAppWindow {
     pub(crate) app_settings: gio::Settings,
     pub(crate) filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
@@ -32,11 +32,11 @@ pub(crate) struct RnoteAppWindow {
     #[template_child]
     pub(crate) main_grid: TemplateChild<Grid>,
     #[template_child]
-    pub(crate) overlays: TemplateChild<RnoteOverlays>,
+    pub(crate) overlays: TemplateChild<RnOverlays>,
     #[template_child]
     pub(crate) tabbar: TemplateChild<adw::TabBar>,
     #[template_child]
-    pub(crate) settings_panel: TemplateChild<SettingsPanel>,
+    pub(crate) settings_panel: TemplateChild<RnSettingsPanel>,
     #[template_child]
     pub(crate) flap: TemplateChild<adw::Flap>,
     #[template_child]
@@ -52,14 +52,14 @@ pub(crate) struct RnoteAppWindow {
     #[template_child]
     pub(crate) flap_stack: TemplateChild<adw::ViewStack>,
     #[template_child]
-    pub(crate) workspacebrowser: TemplateChild<WorkspaceBrowser>,
+    pub(crate) workspacebrowser: TemplateChild<RnWorkspaceBrowser>,
     #[template_child]
     pub(crate) flap_menus_box: TemplateChild<Box>,
     #[template_child]
-    pub(crate) mainheader: TemplateChild<MainHeader>,
+    pub(crate) mainheader: TemplateChild<RnMainHeader>,
 }
 
-impl Default for RnoteAppWindow {
+impl Default for RnAppWindow {
     fn default() -> Self {
         Self {
             app_settings: gio::Settings::new(config::APP_ID),
@@ -68,14 +68,14 @@ impl Default for RnoteAppWindow {
             periodic_configsave_source_id: RefCell::new(None),
 
             autosave: Cell::new(true),
-            autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
+            autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
             righthanded: Cell::new(true),
             touch_drawing: Cell::new(false),
 
             main_grid: TemplateChild::<Grid>::default(),
-            overlays: TemplateChild::<RnoteOverlays>::default(),
+            overlays: TemplateChild::<RnOverlays>::default(),
             tabbar: TemplateChild::<adw::TabBar>::default(),
-            settings_panel: TemplateChild::<SettingsPanel>::default(),
+            settings_panel: TemplateChild::<RnSettingsPanel>::default(),
             flap: TemplateChild::<adw::Flap>::default(),
             flap_box: TemplateChild::<gtk4::Box>::default(),
             flap_header: TemplateChild::<adw::HeaderBar>::default(),
@@ -83,17 +83,17 @@ impl Default for RnoteAppWindow {
             flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
             flap_close_button: TemplateChild::<Button>::default(),
             flap_stack: TemplateChild::<adw::ViewStack>::default(),
-            workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
+            workspacebrowser: TemplateChild::<RnWorkspaceBrowser>::default(),
             flap_menus_box: TemplateChild::<Box>::default(),
-            mainheader: TemplateChild::<MainHeader>::default(),
+            mainheader: TemplateChild::<RnMainHeader>::default(),
         }
     }
 }
 
 #[glib::object_subclass]
-impl ObjectSubclass for RnoteAppWindow {
-    const NAME: &'static str = "RnoteAppWindow";
-    type Type = super::RnoteAppWindow;
+impl ObjectSubclass for RnAppWindow {
+    const NAME: &'static str = "RnAppWindow";
+    type Type = super::RnAppWindow;
     type ParentType = adw::ApplicationWindow;
 
     fn class_init(klass: &mut Self::Class) {
@@ -105,7 +105,7 @@ impl ObjectSubclass for RnoteAppWindow {
     }
 }
 
-impl ObjectImpl for RnoteAppWindow {
+impl ObjectImpl for RnAppWindow {
     fn constructed(&self) {
         self.parent_constructed();
         let inst = self.instance();
@@ -148,7 +148,7 @@ impl ObjectImpl for RnoteAppWindow {
                     "autosave-interval-secs",
                     5,
                     u32::MAX,
-                    super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT,
+                    super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT,
                     glib::ParamFlags::READWRITE,
                 ),
                 // righthanded
@@ -228,9 +228,9 @@ impl ObjectImpl for RnoteAppWindow {
     }
 }
 
-impl WidgetImpl for RnoteAppWindow {}
+impl WidgetImpl for RnAppWindow {}
 
-impl WindowImpl for RnoteAppWindow {
+impl WindowImpl for RnAppWindow {
     // Save window state right before the window will be closed
     fn close_request(&self) -> Inhibit {
         let inst = self.instance().to_owned();
@@ -251,11 +251,11 @@ impl WindowImpl for RnoteAppWindow {
     }
 }
 
-impl ApplicationWindowImpl for RnoteAppWindow {}
-impl AdwWindowImpl for RnoteAppWindow {}
-impl AdwApplicationWindowImpl for RnoteAppWindow {}
+impl ApplicationWindowImpl for RnAppWindow {}
+impl AdwWindowImpl for RnAppWindow {}
+impl AdwApplicationWindowImpl for RnAppWindow {}
 
-impl RnoteAppWindow {
+impl RnAppWindow {
     fn update_autosave_handler(&self) {
         let inst = self.instance();
 
@@ -440,7 +440,7 @@ impl RnoteAppWindow {
                         flap_box.width() - x.floor() as i32
                     };
 
-                    if new_width > 0 && new_width < appwindow.mainheader().width() - super::RnoteAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
+                    if new_width > 0 && new_width < appwindow.mainheader().width() - super::RnAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
                         flap_box.set_width_request(new_width);
                     }
                 } else if flap.is_folded() {

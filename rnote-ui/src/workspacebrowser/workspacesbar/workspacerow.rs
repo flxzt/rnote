@@ -1,4 +1,4 @@
-use crate::RnoteAppWindow;
+use crate::RnAppWindow;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider, Image,
     Label, Widget,
@@ -8,7 +8,7 @@ use rnote_compose::{color, Color};
 use std::cell::RefCell;
 use unicode_segmentation::UnicodeSegmentation;
 
-use super::WorkspaceListEntry;
+use super::RnWorkspaceListEntry;
 
 mod imp {
     use rnote_engine::utils::GdkRGBAHelpers;
@@ -16,19 +16,19 @@ mod imp {
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/workspacerow.ui")]
-    pub(crate) struct WorkspaceRow {
-        pub(crate) entry: RefCell<WorkspaceListEntry>,
+    #[template(resource = "/com/github/flxzt/rnote/ui/workspacesbar/workspacerow.ui")]
+    pub(crate) struct RnWorkspaceRow {
+        pub(crate) entry: RefCell<RnWorkspaceListEntry>,
         #[template_child]
         pub(crate) folder_image: TemplateChild<Image>,
         #[template_child]
         pub(crate) name_label: TemplateChild<Label>,
     }
 
-    impl Default for WorkspaceRow {
+    impl Default for RnWorkspaceRow {
         fn default() -> Self {
             Self {
-                entry: RefCell::new(WorkspaceListEntry::default()),
+                entry: RefCell::new(RnWorkspaceListEntry::default()),
                 folder_image: TemplateChild::<Image>::default(),
                 name_label: TemplateChild::<Label>::default(),
             }
@@ -36,9 +36,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for WorkspaceRow {
-        const NAME: &'static str = "WorkspaceRow";
-        type Type = super::WorkspaceRow;
+    impl ObjectSubclass for RnWorkspaceRow {
+        const NAME: &'static str = "RnWorkspaceRow";
+        type Type = super::RnWorkspaceRow;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -50,7 +50,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for WorkspaceRow {
+    impl ObjectImpl for RnWorkspaceRow {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -70,7 +70,7 @@ mod imp {
                     "entry",
                     "entry",
                     "entry",
-                    WorkspaceListEntry::static_type(),
+                    RnWorkspaceListEntry::static_type(),
                     glib::ParamFlags::READWRITE,
                 )]
             });
@@ -81,7 +81,7 @@ mod imp {
             match pspec.name() {
                 "entry" => {
                     let entry = value
-                        .get::<WorkspaceListEntry>()
+                        .get::<RnWorkspaceListEntry>()
                         .expect("The value needs to be of type `WorkspaceListEntry`.");
 
                     self.entry.replace(entry);
@@ -100,9 +100,9 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for WorkspaceRow {}
+    impl WidgetImpl for RnWorkspaceRow {}
 
-    impl WorkspaceRow {
+    impl RnWorkspaceRow {
         fn connect_entry(&self) {
             let inst = self.instance();
 
@@ -182,32 +182,32 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct WorkspaceRow(ObjectSubclass<imp::WorkspaceRow>)
+    pub(crate) struct RnWorkspaceRow(ObjectSubclass<imp::RnWorkspaceRow>)
         @extends gtk4::Widget;
 }
 
-impl Default for WorkspaceRow {
+impl Default for RnWorkspaceRow {
     fn default() -> Self {
-        Self::new(&WorkspaceListEntry::default())
+        Self::new(&RnWorkspaceListEntry::default())
     }
 }
 
-impl WorkspaceRow {
-    pub(crate) fn new(entry: &WorkspaceListEntry) -> Self {
+impl RnWorkspaceRow {
+    pub(crate) fn new(entry: &RnWorkspaceListEntry) -> Self {
         glib::Object::new(&[("entry", &entry.to_value())])
     }
 
     #[allow(unused)]
-    pub(crate) fn entry(&self) -> WorkspaceListEntry {
-        self.property::<WorkspaceListEntry>("entry")
+    pub(crate) fn entry(&self) -> RnWorkspaceListEntry {
+        self.property::<RnWorkspaceListEntry>("entry")
     }
 
     #[allow(unused)]
-    pub(crate) fn set_entry(&self, entry: WorkspaceListEntry) {
+    pub(crate) fn set_entry(&self, entry: RnWorkspaceListEntry) {
         self.set_property("entry", entry.to_value());
     }
 
-    pub(crate) fn init(&self, _appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {
         // TODO: add gestures / menu for editing the row
     }
 }

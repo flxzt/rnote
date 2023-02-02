@@ -8,14 +8,14 @@ use rnote_engine::pens::Pen;
 use rnote_engine::strokes::textstroke::TextStyle;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
 
-use crate::{RnoteAppWindow, RnoteCanvasWrapper};
+use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/typewriterpage.ui")]
-    pub(crate) struct TypewriterPage {
+    pub(crate) struct RnTypewriterPage {
         #[template_child]
         pub(crate) fontchooser_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -51,9 +51,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for TypewriterPage {
-        const NAME: &'static str = "TypewriterPage";
-        type Type = super::TypewriterPage;
+    impl ObjectSubclass for RnTypewriterPage {
+        const NAME: &'static str = "RnTypewriterPage";
+        type Type = super::RnTypewriterPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -65,7 +65,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for TypewriterPage {
+    impl ObjectImpl for RnTypewriterPage {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -80,21 +80,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for TypewriterPage {}
+    impl WidgetImpl for RnTypewriterPage {}
 }
 
 glib::wrapper! {
-    pub(crate) struct TypewriterPage(ObjectSubclass<imp::TypewriterPage>)
+    pub(crate) struct RnTypewriterPage(ObjectSubclass<imp::RnTypewriterPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for TypewriterPage {
+impl Default for RnTypewriterPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl TypewriterPage {
+impl RnTypewriterPage {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -134,7 +134,7 @@ impl TypewriterPage {
         text_style
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         let fontchooser = imp.fontchooser.get();
@@ -488,7 +488,7 @@ impl TypewriterPage {
         );
     }
 
-    pub(crate) fn refresh_ui(&self, active_tab: &RnoteCanvasWrapper) {
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
 
         let typewriter_config = active_tab

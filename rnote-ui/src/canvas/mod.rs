@@ -3,7 +3,7 @@ pub(crate) mod imexport;
 mod input;
 
 // Re-exports
-pub(crate) use canvaslayout::CanvasLayout;
+pub(crate) use canvaslayout::RnCanvasLayout;
 use gettextrs::gettext;
 use rnote_engine::pens::PenMode;
 
@@ -21,7 +21,7 @@ use gtk4::{
     IMMulticontext, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
 
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 use futures::StreamExt;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
@@ -59,7 +59,7 @@ mod imp {
     use super::*;
 
     #[allow(missing_debug_implementations)]
-    pub(crate) struct RnoteCanvas {
+    pub(crate) struct RnCanvas {
         pub(crate) handlers: RefCell<Handlers>,
 
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
@@ -91,7 +91,7 @@ mod imp {
         pub(crate) touch_drawing: Cell<bool>,
     }
 
-    impl Default for RnoteCanvas {
+    impl Default for RnCanvas {
         fn default() -> Self {
             let stylus_drawing_gesture = GestureStylus::builder()
                 .name("stylus_drawing_gesture")
@@ -194,15 +194,15 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for RnoteCanvas {
-        const NAME: &'static str = "RnoteCanvas";
-        type Type = super::RnoteCanvas;
+    impl ObjectSubclass for RnCanvas {
+        const NAME: &'static str = "RnCanvas";
+        type Type = super::RnCanvas;
         type ParentType = Widget;
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
             klass.set_accessible_role(AccessibleRole::Widget);
-            klass.set_layout_manager_type::<CanvasLayout>();
+            klass.set_layout_manager_type::<RnCanvasLayout>();
         }
 
         fn new() -> Self {
@@ -210,7 +210,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for RnoteCanvas {
+    impl ObjectImpl for RnCanvas {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -439,7 +439,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for RnoteCanvas {
+    impl WidgetImpl for RnCanvas {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
@@ -478,9 +478,9 @@ mod imp {
         }
     }
 
-    impl ScrollableImpl for RnoteCanvas {}
+    impl ScrollableImpl for RnCanvas {}
 
-    impl RnoteCanvas {
+    impl RnCanvas {
         fn setup_input(&self) {
             let inst = self.instance();
 
@@ -742,12 +742,12 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct RnoteCanvas(ObjectSubclass<imp::RnoteCanvas>)
+    pub(crate) struct RnCanvas(ObjectSubclass<imp::RnCanvas>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Scrollable;
 }
 
-impl Default for RnoteCanvas {
+impl Default for RnCanvas {
     fn default() -> Self {
         Self::new()
     }
@@ -758,7 +758,7 @@ pub(crate) static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
 pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
     once_cell::sync::Lazy::new(|| gettext("Draft"));
 
-impl RnoteCanvas {
+impl RnCanvas {
     // the zoom timeout time
     pub(crate) const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
@@ -1009,7 +1009,7 @@ impl RnoteCanvas {
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
     }
 
-    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnoteAppWindow) {
+    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
         let new_monitor =
             match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
                 Ok(output_file_monitor) => output_file_monitor,
@@ -1128,7 +1128,7 @@ impl RnoteCanvas {
     }
 
     /// Replaces and installs a new file monitor when there is an output file present
-    fn reinstall_output_file_monitor(&self, appwindow: &RnoteAppWindow) {
+    fn reinstall_output_file_monitor(&self, appwindow: &RnAppWindow) {
         if let Some(output_file) = self.output_file() {
             self.create_output_file_monitor(&output_file, appwindow);
         } else {
@@ -1138,7 +1138,7 @@ impl RnoteCanvas {
 
     /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved between appwindows through tabs,
     /// this function also disconnects and replaces all existing old connections
-    pub(crate) fn init_reconnect(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
         // Initial file monitor, (e.g. needed when reiniting the widget on a new appwindow)
         self.reinstall_output_file_monitor(appwindow);
 
@@ -1238,7 +1238,7 @@ impl RnoteCanvas {
             "handle-widget-flags",
             false,
             clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
-                // first argument is RnoteCanvas
+                // first argument is the widget
                 let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -1305,7 +1305,7 @@ impl RnoteCanvas {
     }
 
     /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
-    pub(crate) fn disconnect_handlers(&self, _appwindow: &RnoteAppWindow) {
+    pub(crate) fn disconnect_handlers(&self, _appwindow: &RnAppWindow) {
         self.clear_output_file_monitor();
 
         let mut handlers = self.imp().handlers.borrow_mut();
@@ -1357,7 +1357,7 @@ impl RnoteCanvas {
             .transform_to(|b, _output_file: Option<gio::File>| {
                 Some(
                     b.source()?
-                        .downcast::<RnoteCanvas>()
+                        .downcast::<RnCanvas>()
                         .unwrap()
                         .doc_title_display(),
                 )
@@ -1483,7 +1483,7 @@ impl RnoteCanvas {
         // We need to update the layout managers internal state after zooming
         self.layout_manager()
             .unwrap()
-            .downcast::<CanvasLayout>()
+            .downcast::<RnCanvasLayout>()
             .unwrap()
             .update_state(self);
     }

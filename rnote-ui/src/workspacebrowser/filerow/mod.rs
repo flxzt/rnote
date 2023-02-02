@@ -1,6 +1,6 @@
 mod actions;
 
-use crate::RnoteAppWindow;
+use crate::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DragSource,
     GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget,
@@ -14,7 +14,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
-    pub(crate) struct FileRow {
+    pub(crate) struct RnFileRow {
         pub(crate) current_file: RefCell<Option<gio::File>>,
         pub(crate) drag_source: DragSource,
         pub(crate) action_group: gio::SimpleActionGroup,
@@ -31,7 +31,7 @@ mod imp {
         pub(crate) popovermenu: TemplateChild<PopoverMenu>,
     }
 
-    impl Default for FileRow {
+    impl Default for RnFileRow {
         fn default() -> Self {
             let drag_source = DragSource::builder()
                 .name("workspacebrowser-file-drag-source")
@@ -52,9 +52,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for FileRow {
-        const NAME: &'static str = "FileRow";
-        type Type = super::FileRow;
+    impl ObjectSubclass for RnFileRow {
+        const NAME: &'static str = "RnFileRow";
+        type Type = super::RnFileRow;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -66,7 +66,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for FileRow {
+    impl ObjectImpl for RnFileRow {
         fn constructed(&self) {
             self.parent_constructed();
 
@@ -113,9 +113,9 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for FileRow {}
+    impl WidgetImpl for RnFileRow {}
 
-    impl FileRow {
+    impl RnFileRow {
         fn setup_input(&self) {
             let inst = self.instance();
             inst.add_controller(&self.drag_source);
@@ -148,17 +148,17 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub(crate) struct FileRow(ObjectSubclass<imp::FileRow>)
+    pub(crate) struct RnFileRow(ObjectSubclass<imp::RnFileRow>)
         @extends gtk4::Widget;
 }
 
-impl Default for FileRow {
+impl Default for RnFileRow {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl FileRow {
+impl RnFileRow {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -189,11 +189,11 @@ impl FileRow {
         self.imp().menubutton_box.get()
     }
 
-    pub(crate) fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_actions(appwindow);
     }
 
-    fn setup_actions(&self, appwindow: &RnoteAppWindow) {
+    fn setup_actions(&self, appwindow: &RnAppWindow) {
         self.insert_action_group("filerow", Some(&self.imp().action_group));
 
         self.imp()

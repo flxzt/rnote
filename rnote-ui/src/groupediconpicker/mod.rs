@@ -1,23 +1,23 @@
 mod group;
 
 // Re-exports
-pub(crate) use group::GroupedIconPickerGroup;
 pub(crate) use group::GroupedIconPickerGroupData;
+pub(crate) use group::RnGroupedIconPickerGroup;
 
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Widget};
+// Imports
+use gtk4::{
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ListBox, Widget,
+};
 use gtk4::{Label, StringList, StringObject};
 use once_cell::sync::Lazy;
+use std::cell::RefCell;
 
 mod imp {
-    use std::cell::RefCell;
-
-    use gtk4::ListBox;
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/groupediconpicker/groupediconpicker.ui")]
-    pub(crate) struct GroupedIconPicker {
+    pub(crate) struct RnGroupedIconPicker {
         pub(crate) picked: RefCell<Option<String>>,
 
         #[template_child]
@@ -26,7 +26,7 @@ mod imp {
         pub(crate) selection_label: TemplateChild<Label>,
     }
 
-    impl Default for GroupedIconPicker {
+    impl Default for RnGroupedIconPicker {
         fn default() -> Self {
             Self {
                 picked: RefCell::new(None),
@@ -38,9 +38,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for GroupedIconPicker {
-        const NAME: &'static str = "GroupedIconPicker";
-        type Type = super::GroupedIconPicker;
+    impl ObjectSubclass for RnGroupedIconPicker {
+        const NAME: &'static str = "RnGroupedIconPicker";
+        type Type = super::RnGroupedIconPicker;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -52,7 +52,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for GroupedIconPicker {
+    impl ObjectImpl for RnGroupedIconPicker {
         fn constructed(&self) {
             self.parent_constructed();
         }
@@ -98,22 +98,22 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for GroupedIconPicker {}
+    impl WidgetImpl for RnGroupedIconPicker {}
 }
 
 glib::wrapper! {
-    pub(crate) struct GroupedIconPicker(ObjectSubclass<imp::GroupedIconPicker>)
+    pub(crate) struct RnGroupedIconPicker(ObjectSubclass<imp::RnGroupedIconPicker>)
         @extends gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for GroupedIconPicker {
+impl Default for RnGroupedIconPicker {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl GroupedIconPicker {
+impl RnGroupedIconPicker {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -146,7 +146,7 @@ impl GroupedIconPicker {
 
             let icon_names = &groups.iter().find(|x| x.name.as_str() == group_name.as_str()).unwrap().icons;
 
-            let group = GroupedIconPickerGroup::new(&group_name.to_string(), icon_names, &iconpicker, generate_display_name);
+            let group = RnGroupedIconPickerGroup::new(&group_name.to_string(), icon_names, &iconpicker, generate_display_name);
             group.upcast::<Widget>()
         }));
     }

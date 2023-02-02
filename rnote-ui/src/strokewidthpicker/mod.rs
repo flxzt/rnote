@@ -2,8 +2,8 @@ mod strokewidthpreview;
 mod strokewidthsetter;
 
 // Re-exports
-pub(crate) use strokewidthpreview::StrokeWidthPreview;
-pub(crate) use strokewidthsetter::StrokeWidthSetter;
+pub(crate) use strokewidthpreview::RnStrokeWidthPreview;
+pub(crate) use strokewidthsetter::RnStrokeWidthSetter;
 
 // Imports
 use gtk4::{
@@ -18,7 +18,7 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/strokewidthpicker.ui")]
-    pub(crate) struct StrokeWidthPicker {
+    pub(crate) struct RnStrokeWidthPicker {
         pub(crate) position: Cell<PositionType>,
         pub(crate) stroke_width: Cell<f64>,
 
@@ -27,14 +27,14 @@ mod imp {
         #[template_child]
         pub(crate) setter_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub(crate) setter_1: TemplateChild<StrokeWidthSetter>,
+        pub(crate) setter_1: TemplateChild<RnStrokeWidthSetter>,
         #[template_child]
-        pub(crate) setter_2: TemplateChild<StrokeWidthSetter>,
+        pub(crate) setter_2: TemplateChild<RnStrokeWidthSetter>,
         #[template_child]
-        pub(crate) setter_3: TemplateChild<StrokeWidthSetter>,
+        pub(crate) setter_3: TemplateChild<RnStrokeWidthSetter>,
     }
 
-    impl Default for StrokeWidthPicker {
+    impl Default for RnStrokeWidthPicker {
         fn default() -> Self {
             Self {
                 position: Cell::new(PositionType::Right),
@@ -50,9 +50,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for StrokeWidthPicker {
-        const NAME: &'static str = "StrokeWidthPicker";
-        type Type = super::StrokeWidthPicker;
+    impl ObjectSubclass for RnStrokeWidthPicker {
+        const NAME: &'static str = "RnStrokeWidthPicker";
+        type Type = super::RnStrokeWidthPicker;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -64,7 +64,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for StrokeWidthPicker {
+    impl ObjectImpl for RnStrokeWidthPicker {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -206,24 +206,24 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for StrokeWidthPicker {}
+    impl WidgetImpl for RnStrokeWidthPicker {}
 
-    impl StrokeWidthPicker {}
+    impl RnStrokeWidthPicker {}
 }
 
 glib::wrapper! {
-    pub(crate) struct StrokeWidthPicker(ObjectSubclass<imp::StrokeWidthPicker>)
+    pub(crate) struct RnStrokeWidthPicker(ObjectSubclass<imp::RnStrokeWidthPicker>)
         @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for StrokeWidthPicker {
+impl Default for RnStrokeWidthPicker {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl StrokeWidthPicker {
+impl RnStrokeWidthPicker {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }
@@ -252,15 +252,15 @@ impl StrokeWidthPicker {
         self.imp().spinbutton.get()
     }
 
-    pub(crate) fn setter_1(&self) -> StrokeWidthSetter {
+    pub(crate) fn setter_1(&self) -> RnStrokeWidthSetter {
         self.imp().setter_1.get()
     }
 
-    pub(crate) fn setter_2(&self) -> StrokeWidthSetter {
+    pub(crate) fn setter_2(&self) -> RnStrokeWidthSetter {
         self.imp().setter_2.get()
     }
 
-    pub(crate) fn setter_3(&self) -> StrokeWidthSetter {
+    pub(crate) fn setter_3(&self) -> RnStrokeWidthSetter {
         self.imp().setter_3.get()
     }
 

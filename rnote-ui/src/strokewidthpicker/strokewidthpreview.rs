@@ -10,11 +10,11 @@ mod imp {
     use super::*;
 
     #[derive(Debug)]
-    pub(crate) struct StrokeWidthPreview {
+    pub(crate) struct RnStrokeWidthPreview {
         stroke_width: Cell<f64>,
     }
 
-    impl Default for StrokeWidthPreview {
+    impl Default for RnStrokeWidthPreview {
         fn default() -> Self {
             Self {
                 stroke_width: Cell::new(1.0),
@@ -23,13 +23,13 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for StrokeWidthPreview {
-        const NAME: &'static str = "StrokeWidthPreview";
-        type Type = super::StrokeWidthPreview;
+    impl ObjectSubclass for RnStrokeWidthPreview {
+        const NAME: &'static str = "RnStrokeWidthPreview";
+        type Type = super::RnStrokeWidthPreview;
         type ParentType = Widget;
     }
 
-    impl ObjectImpl for StrokeWidthPreview {
+    impl ObjectImpl for RnStrokeWidthPreview {
         fn constructed(&self) {
             self.parent_constructed();
             let inst = self.instance();
@@ -75,7 +75,7 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for StrokeWidthPreview {
+    impl WidgetImpl for RnStrokeWidthPreview {
         fn request_mode(&self) -> SizeRequestMode {
             SizeRequestMode::ConstantSize
         }
@@ -126,22 +126,22 @@ mod imp {
         }
     }
 
-    impl StrokeWidthPreview {}
+    impl RnStrokeWidthPreview {}
 }
 
 glib::wrapper! {
-    pub(crate) struct StrokeWidthPreview(ObjectSubclass<imp::StrokeWidthPreview>)
+    pub(crate) struct RnStrokeWidthPreview(ObjectSubclass<imp::RnStrokeWidthPreview>)
         @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
-impl Default for StrokeWidthPreview {
+impl Default for RnStrokeWidthPreview {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl StrokeWidthPreview {
+impl RnStrokeWidthPreview {
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])
     }

@@ -7,8 +7,8 @@ use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
 use regex::Regex;
 
-use crate::workspacebrowser::FileRow;
-use crate::RnoteAppWindow;
+use crate::workspacebrowser::RnFileRow;
+use crate::RnAppWindow;
 
 ///                                 - Look for `.dup` pattern
 ///                                 |   - Look for `.dup1`/`.dup123`/`.dup1234`/...
@@ -22,7 +22,7 @@ const DUPLICATE_SUFFIX: &str = ".dup";
 const DOT: &str = ".";
 
 /// Creates a new `duplicate` action
-pub(crate) fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::SimpleAction {
+pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 
     action.connect_activate(
@@ -51,7 +51,7 @@ pub(crate) fn duplicate(filerow: &FileRow, appwindow: &RnoteAppWindow) -> gio::S
 /// returns the progress handler for
 /// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html)
 fn create_process_evaluator(
-    appwindow: RnoteAppWindow,
+    appwindow: RnAppWindow,
 ) -> impl Fn(TransitProcess) -> TransitProcessResult {
     move |process: TransitProcess| -> TransitProcessResult {
         let status = {

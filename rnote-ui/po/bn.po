@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:21+0100\n"
+"POT-Creation-Date: 2023-02-02 13:26+0100\n"
 "PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -85,8 +85,8 @@ msgstr "এটি সম্পূর্ণ নথি পরিষ্কার �
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:379
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
+#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr "বাতিল করুন"
 
@@ -165,7 +165,7 @@ msgid "Edit workspace"
 msgstr "কর্মক্ষেত্র সম্পাদনা করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
 msgstr "প্রয়োগ করুন"
 
@@ -200,7 +200,7 @@ msgstr "কর্মক্ষেত্রের ডিরেক্টরি প�
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
 msgid "- no directory selected -"
 msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
 
@@ -838,7 +838,7 @@ msgstr "ভর্তি করুন"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:378
+#: rnote-ui/src/dialogs/mod.rs:374
 msgid "Select"
 msgstr "নির্বাচন করুন"
 
@@ -1506,11 +1506,18 @@ msgid "Paste clipboard"
 msgstr "ক্লিপবোর্ডে পেস্ট করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
+#, fuzzy
+#| msgid "Duplicate selection"
+msgctxt "shortcut window"
+msgid "Duplicate selection"
+msgstr "সদৃশ নির্বাচন"
+
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "পূর্বাবস্থায় ফিরুন"
 
-#: rnote-ui/data/ui/shortcuts.ui:201
+#: rnote-ui/data/ui/shortcuts.ui:207
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "পুনঃকরণ"
@@ -1527,23 +1534,23 @@ msgstr "কর্মক্ষেত্র ডিরেক্টরির ক্�
 msgid "Create new folder"
 msgstr "নতুন ফোল্ডার তৈরি করুন"
 
-#: rnote-ui/data/ui/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move selected workspace up"
 msgstr "নির্বাচিত কর্মক্ষেত্র উপরে সরান"
 
-#: rnote-ui/data/ui/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move selected workspace down"
 msgstr "নির্বাচিত কর্মক্ষেত্র নিচে সরান"
 
-#: rnote-ui/data/ui/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "কর্মক্ষেত্র যোগ করুন"
 
-#: rnote-ui/data/ui/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove selected workspace"
 msgstr "নির্বাচিত কর্মক্ষেত্র মুছে ফেলুন"
 
-#: rnote-ui/data/ui/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit selected workspace"
 msgstr "নির্বাচিত কর্মক্ষেত্র সম্পাদনা করুন"
 
@@ -1581,7 +1588,7 @@ msgstr "ফাইল খুলতে ব্যর্থ: অসমর্থি�
 #: rnote-ui/src/appwindow/appwindowactions.rs:525
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
-#: rnote-ui/src/dialogs/mod.rs:322
+#: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed."
 msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে।"
 
@@ -1762,11 +1769,11 @@ msgstr "পৃষ্ঠা:"
 msgid "translator-credits"
 msgstr "অনুবাদক-কৃতিত্ব"
 
-#: rnote-ui/src/dialogs/mod.rs:278
+#: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:371
 msgid "Change workspace directory"
 msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
@@ -1828,11 +1835,11 @@ msgstr "দ্বিঘাত বেজিয়ে বক্ররেখা"
 msgid "Cubic bezier curve"
 msgstr "ত্রিঘাত বেজিয়ে বক্ররেখা"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder name"
 msgstr "ফোল্ডারের নাম"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New folder"
 msgstr "নতুন ফোল্ডার"
 

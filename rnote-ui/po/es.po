@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:21+0100\n"
+"POT-Creation-Date: 2023-02-02 13:26+0100\n"
 "PO-Revision-Date: 2023-01-29 14:10+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -85,8 +85,8 @@ msgstr "Esto limpia todo el documento. Por favor, confirme."
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:379
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
+#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -154,7 +154,7 @@ msgid "Edit workspace"
 msgstr "Editar área de trabajo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
 msgstr "Aplicar"
 
@@ -189,7 +189,7 @@ msgstr "Cambiar el directorio del área de trabajo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
 msgid "- no directory selected -"
 msgstr "- ningún directorio seleccionado -"
 
@@ -824,7 +824,7 @@ msgstr "Rellenar"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:378
+#: rnote-ui/src/dialogs/mod.rs:374
 msgid "Select"
 msgstr "Seleccionar"
 
@@ -1467,11 +1467,18 @@ msgid "Paste clipboard"
 msgstr "Pegar portapapeles"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
+#, fuzzy
+#| msgid "Duplicate selection"
+msgctxt "shortcut window"
+msgid "Duplicate selection"
+msgstr "Duplicar selección"
+
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "Deshacer"
 
-#: rnote-ui/data/ui/shortcuts.ui:201
+#: rnote-ui/data/ui/shortcuts.ui:207
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "Rehacer"
@@ -1488,23 +1495,23 @@ msgstr "Acciones del directorio del espacio de trabajo"
 msgid "Create new folder"
 msgstr "Crear nueva carpeta"
 
-#: rnote-ui/data/ui/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move selected workspace up"
 msgstr "Mover el espacio de trabajo seleccionado hacia arriba"
 
-#: rnote-ui/data/ui/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move selected workspace down"
 msgstr "Mover el espacio de trabajo seleccionado hacia abajo"
 
-#: rnote-ui/data/ui/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "Añadir área de trabajo"
 
-#: rnote-ui/data/ui/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove selected workspace"
 msgstr "Quitar el espacio de trabajo seleccionado"
 
-#: rnote-ui/data/ui/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit selected workspace"
 msgstr "Editar el espacio de trabajo seleccionado"
 
@@ -1540,7 +1547,7 @@ msgstr "No se pudo abrir el archivo: Tipo de archivo no admitido."
 #: rnote-ui/src/appwindow/appwindowactions.rs:525
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
-#: rnote-ui/src/dialogs/mod.rs:322
+#: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed."
 msgstr "No se ha podido guardar el documento."
 
@@ -1722,11 +1729,11 @@ msgstr "Páginas:"
 msgid "translator-credits"
 msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
 
-#: rnote-ui/src/dialogs/mod.rs:278
+#: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
 msgstr "- No se puede encontrar una carpeta para las copias de seguridad -"
 
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:371
 msgid "Change workspace directory"
 msgstr "Cambiar el directorio del área de trabajo"
 
@@ -1782,11 +1789,11 @@ msgstr "Curva cuadrática de Bézier"
 msgid "Cubic bezier curve"
 msgstr "Curva cúbica de Bézier"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder name"
 msgstr "Nombre de la carpeta"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New folder"
 msgstr "Carpeta nueva"
 

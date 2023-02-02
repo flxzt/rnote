@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:21+0100\n"
+"POT-Creation-Date: 2023-02-02 13:26+0100\n"
 "PO-Revision-Date: 2022-11-28 19:41+0000\n"
 "Last-Translator: Mirza <mirza.arnaut45@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/rnote/repo/bs/>\n"
@@ -86,8 +86,8 @@ msgstr ""
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:379
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
+#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr ""
 
@@ -156,7 +156,7 @@ msgid "Edit workspace"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
 msgstr ""
 
@@ -191,7 +191,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
 msgid "- no directory selected -"
 msgstr ""
 
@@ -810,7 +810,7 @@ msgstr ""
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:378
+#: rnote-ui/src/dialogs/mod.rs:374
 msgid "Select"
 msgstr ""
 
@@ -1475,11 +1475,18 @@ msgid "Paste clipboard"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:195
+#, fuzzy
+#| msgid "A selection"
+msgctxt "shortcut window"
+msgid "Duplicate selection"
+msgstr "Izbor"
+
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:201
+#: rnote-ui/data/ui/shortcuts.ui:207
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr ""
@@ -1496,23 +1503,23 @@ msgstr ""
 msgid "Create new folder"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move selected workspace up"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move selected workspace down"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove selected workspace"
 msgstr ""
 
-#: rnote-ui/data/ui/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit selected workspace"
 msgstr ""
 
@@ -1548,7 +1555,7 @@ msgstr ""
 #: rnote-ui/src/appwindow/appwindowactions.rs:525
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
-#: rnote-ui/src/dialogs/mod.rs:322
+#: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed."
 msgstr ""
 
@@ -1725,11 +1732,11 @@ msgstr ""
 msgid "translator-credits"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:278
+#: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:371
 msgid "Change workspace directory"
 msgstr ""
 
@@ -1785,11 +1792,11 @@ msgstr ""
 msgid "Cubic bezier curve"
 msgstr ""
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder name"
 msgstr ""
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New folder"
 msgstr ""
 

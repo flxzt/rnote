@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:21+0100\n"
+"POT-Creation-Date: 2023-02-02 13:26+0100\n"
 "PO-Revision-Date: 2023-02-01 05:31+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -85,8 +85,8 @@ msgstr "இது முழு ஆவணத்தையும் அழிக்
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:379
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
+#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr "ரத்துசெய்"
 
@@ -154,7 +154,7 @@ msgid "Edit workspace"
 msgstr "பணியிடத்தை திருத்து"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
 msgstr "விண்ணப்பிக்க"
 
@@ -189,7 +189,7 @@ msgstr "பணியிட கோப்பகத்தை மாற்றவு�
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
 msgid "- no directory selected -"
 msgstr "- எந்த கோப்பகமும் தேர்ந்தெடுக்கப்படவில்லை -"
 
@@ -821,7 +821,7 @@ msgstr "நிரப்பு"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:378
+#: rnote-ui/src/dialogs/mod.rs:374
 msgid "Select"
 msgstr "தேர்ந்தெடுக்கவும்"
 
@@ -1462,11 +1462,18 @@ msgid "Paste clipboard"
 msgstr "கிளிப்போர்டை ஒட்டவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
+#, fuzzy
+#| msgid "Duplicate selection"
+msgctxt "shortcut window"
+msgid "Duplicate selection"
+msgstr "நகல் தேர்வு"
+
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "செயல்தவிர்"
 
-#: rnote-ui/data/ui/shortcuts.ui:201
+#: rnote-ui/data/ui/shortcuts.ui:207
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "மீண்டும் செய்"
@@ -1483,23 +1490,23 @@ msgstr "பணியிட அடைவு செயல்கள்"
 msgid "Create new folder"
 msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
-#: rnote-ui/data/ui/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move selected workspace up"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை மேலே நகர்த்தவும்"
 
-#: rnote-ui/data/ui/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move selected workspace down"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை கீழே நகர்த்தவும்"
 
-#: rnote-ui/data/ui/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "பணியிடத்தைச் சேர்க்கவும்"
 
-#: rnote-ui/data/ui/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove selected workspace"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை அகற்று"
 
-#: rnote-ui/data/ui/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit selected workspace"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தைத் திருத்தவும்"
 
@@ -1535,7 +1542,7 @@ msgstr "கோப்பைத் திறக்க முடியவில்�
 #: rnote-ui/src/appwindow/appwindowactions.rs:525
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
-#: rnote-ui/src/dialogs/mod.rs:322
+#: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed."
 msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
 
@@ -1713,11 +1720,11 @@ msgstr "பக்கங்கள்:"
 msgid "translator-credits"
 msgstr "மொழிபெயர்ப்பாளர்-வரவுகள்"
 
-#: rnote-ui/src/dialogs/mod.rs:278
+#: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
 msgstr "- சரியான சேமிப்பு கோப்புறையை கண்டுபிடிக்க முடியவில்லை -"
 
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:371
 msgid "Change workspace directory"
 msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
 
@@ -1773,11 +1780,11 @@ msgstr "இருபடி பெஜியர் வளைவு"
 msgid "Cubic bezier curve"
 msgstr "க்யூபிக் பெஜியர் வளைவு"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder name"
 msgstr "கோப்புறை பெயர்"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New folder"
 msgstr "புதிய அடைவு"
 

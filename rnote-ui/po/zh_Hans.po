@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 12:21+0100\n"
+"POT-Creation-Date: 2023-02-02 13:26+0100\n"
 "PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: Coned Zot <conedcm@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -85,8 +85,8 @@ msgstr "这将清空整个文档。请确认。"
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:379
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:53
+#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr "取消"
 
@@ -161,7 +161,7 @@ msgid "Edit workspace"
 msgstr "编辑工作区"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:60
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
 msgstr "应用"
 
@@ -196,7 +196,7 @@ msgstr "更改工作区目录"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
@@ -832,7 +832,7 @@ msgstr "填充"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:378
+#: rnote-ui/src/dialogs/mod.rs:374
 msgid "Select"
 msgstr "选择"
 
@@ -1492,11 +1492,18 @@ msgid "Paste clipboard"
 msgstr "粘贴剪切板"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
+#, fuzzy
+#| msgid "Duplicate selection"
+msgctxt "shortcut window"
+msgid "Duplicate selection"
+msgstr "复制所选内容"
+
+#: rnote-ui/data/ui/shortcuts.ui:201
 msgctxt "shortcut window"
 msgid "Undo"
 msgstr "撤销"
 
-#: rnote-ui/data/ui/shortcuts.ui:201
+#: rnote-ui/data/ui/shortcuts.ui:207
 msgctxt "shortcut window"
 msgid "Redo"
 msgstr "重做"
@@ -1513,23 +1520,23 @@ msgstr "工作区目录操作"
 msgid "Create new folder"
 msgstr "创建新文件夹"
 
-#: rnote-ui/data/ui/workspacesbar.ui:54
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move selected workspace up"
 msgstr "向上移动选定的工作区"
 
-#: rnote-ui/data/ui/workspacesbar.ui:63
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move selected workspace down"
 msgstr "向下移动选定的工作区"
 
-#: rnote-ui/data/ui/workspacesbar.ui:72
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
 msgid "Add workspace"
 msgstr "添加工作区"
 
-#: rnote-ui/data/ui/workspacesbar.ui:81
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove selected workspace"
 msgstr "移除选定的工作区"
 
-#: rnote-ui/data/ui/workspacesbar.ui:91
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit selected workspace"
 msgstr "编辑选定的工作区"
 
@@ -1565,7 +1572,7 @@ msgstr "打开文件失败：不支持的文件类型。"
 #: rnote-ui/src/appwindow/appwindowactions.rs:525
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
-#: rnote-ui/src/dialogs/mod.rs:322
+#: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed."
 msgstr "文档保存失败。"
 
@@ -1746,11 +1753,11 @@ msgstr "页码："
 msgid "translator-credits"
 msgstr "译者注"
 
-#: rnote-ui/src/dialogs/mod.rs:278
+#: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:371
 msgid "Change workspace directory"
 msgstr "更改工作区目录"
 
@@ -1812,11 +1819,11 @@ msgstr "二次贝塞尔曲线"
 msgid "Cubic bezier curve"
 msgstr "三次贝塞尔曲线"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:57
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder name"
 msgstr "文件夹名称"
 
-#: rnote-ui/src/workspacebrowser/workspaceactions/create_folder.rs:65
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New folder"
 msgstr "新建文件夹"
 

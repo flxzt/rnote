@@ -229,54 +229,8 @@ impl RnShaperPage {
 
         // shape builder type
         imp.shapebuildertype_picker.set_groups(
-            vec![
-                GroupedIconPickerGroupData {
-                    name: gettext("Miscellaneous"),
-                    icons: StringList::new(&[
-                        "shapebuilder-line-symbolic",
-                        "shapebuilder-rectangle-symbolic",
-                        "shapebuilder-grid-symbolic",
-                    ]),
-                },
-                GroupedIconPickerGroupData {
-                    name: gettext("Coordinate Systems"),
-                    icons: StringList::new(&[
-                        "shapebuilder-coordsystem2d-symbolic",
-                        "shapebuilder-coordsystem3d-symbolic",
-                        "shapebuilder-quadrantcoordsystem2d-symbolic",
-                    ]),
-                },
-                GroupedIconPickerGroupData {
-                    name: gettext("Ellipses"),
-                    icons: StringList::new(&[
-                        "shapebuilder-ellipse-symbolic",
-                        "shapebuilder-fociellipse-symbolic",
-                    ]),
-                },
-                GroupedIconPickerGroupData {
-                    name: gettext("Curves"),
-                    icons: StringList::new(&[
-                        "shapebuilder-quadbez-symbolic",
-                        "shapebuilder-cubbez-symbolic",
-                    ]),
-                },
-            ],
-            |icon_name| match ShapeBuilderType::from_icon_name(icon_name).expect(
-                "ShapeBuilderTypePicker failed, display name of unknown icon name requested",
-            ) {
-                ShapeBuilderType::Line => gettext("Line"),
-                ShapeBuilderType::Rectangle => gettext("Rectangle"),
-                ShapeBuilderType::Grid => gettext("Grid"),
-                ShapeBuilderType::CoordSystem2D => gettext("2D coordinate system"),
-                ShapeBuilderType::CoordSystem3D => gettext("3D coordinate system"),
-                ShapeBuilderType::QuadrantCoordSystem2D => {
-                    gettext("2D single quadrant coordinate system")
-                }
-                ShapeBuilderType::Ellipse => gettext("Ellipse"),
-                ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
-                ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
-                ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
-            },
+            shape_builder_type_icons_get_groups(),
+            shape_builder_type_icons_to_display_name,
         );
 
         imp.shapebuildertype_picker.connect_notify_local(
@@ -384,5 +338,57 @@ impl RnShaperPage {
                 .ratios
                 .contains(&ConstraintRatio::Golden),
         );
+    }
+}
+
+fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
+    vec![
+        GroupedIconPickerGroupData {
+            name: gettext("Miscellaneous"),
+            icons: StringList::new(&[
+                "shapebuilder-line-symbolic",
+                "shapebuilder-rectangle-symbolic",
+                "shapebuilder-grid-symbolic",
+            ]),
+        },
+        GroupedIconPickerGroupData {
+            name: gettext("Coordinate Systems"),
+            icons: StringList::new(&[
+                "shapebuilder-coordsystem2d-symbolic",
+                "shapebuilder-coordsystem3d-symbolic",
+                "shapebuilder-quadrantcoordsystem2d-symbolic",
+            ]),
+        },
+        GroupedIconPickerGroupData {
+            name: gettext("Ellipses"),
+            icons: StringList::new(&[
+                "shapebuilder-ellipse-symbolic",
+                "shapebuilder-fociellipse-symbolic",
+            ]),
+        },
+        GroupedIconPickerGroupData {
+            name: gettext("Curves"),
+            icons: StringList::new(&[
+                "shapebuilder-quadbez-symbolic",
+                "shapebuilder-cubbez-symbolic",
+            ]),
+        },
+    ]
+}
+
+fn shape_builder_type_icons_to_display_name(icon_name: &str) -> String {
+    match ShapeBuilderType::from_icon_name(icon_name)
+        .expect("ShapeBuilderTypePicker failed, display name of unknown icon name requested")
+    {
+        ShapeBuilderType::Line => gettext("Line"),
+        ShapeBuilderType::Rectangle => gettext("Rectangle"),
+        ShapeBuilderType::Grid => gettext("Grid"),
+        ShapeBuilderType::CoordSystem2D => gettext("2D coordinate system"),
+        ShapeBuilderType::CoordSystem3D => gettext("3D coordinate system"),
+        ShapeBuilderType::QuadrantCoordSystem2D => gettext("2D single quadrant coordinate system"),
+        ShapeBuilderType::Ellipse => gettext("Ellipse"),
+        ShapeBuilderType::FociEllipse => gettext("Ellipse with foci"),
+        ShapeBuilderType::QuadBez => gettext("Quadratic bezier curve"),
+        ShapeBuilderType::CubBez => gettext("Cubic bezier curve"),
     }
 }

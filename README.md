@@ -34,7 +34,7 @@ Written in Rust and GTK4.
 - PDF, Bitmap and SVG image import
 - Save and load the documents in the native `.rnote` file format
 - Document and selection export to SVG, PDF
-- Tabs to work on mulitple documents at the same time
+- Tabs to work on multiple documents at the same time
 - Autosave, printing
 
 **Disclaimer**  

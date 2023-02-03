@@ -1,6 +1,7 @@
 use ink_stroke_modeler_rs::{
     ModelerInput, ModelerInputEventType, PredictionParams, StrokeModeler, StrokeModelerParams,
 };
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::time::Instant;
@@ -135,10 +136,17 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
     }
 }
 
-impl PenPathModeledBuilder {
-    const MODELER_MIN_OUTPUT_RATE: f64 = 120.0;
-    const MODELER_MAX_OUTPUTS_PER_CALL: i32 = 100;
+static MODELER_PARAMS: Lazy<StrokeModelerParams> = Lazy::new(|| StrokeModelerParams {
+    sampling_min_output_rate: 120.0,
+    sampling_end_of_stroke_stopping_distance: 0.01,
+    sampling_end_of_stroke_max_iterations: 20,
+    sampling_max_outputs_per_call: 200,
+    stylus_state_modeler_max_input_samples: 20,
+    prediction_params: PredictionParams::StrokeEnd,
+    ..StrokeModelerParams::suggested()
+});
 
+impl PenPathModeledBuilder {
     fn try_build_segments(&mut self) -> Option<Vec<Segment>> {
         if self.buffer.is_empty() {
             return None;
@@ -172,10 +180,10 @@ impl PenPathModeledBuilder {
         self.last_element = element;
 
         let n_steps = (now.duration_since(self.last_element_time).as_secs_f64()
-            * Self::MODELER_MIN_OUTPUT_RATE)
+            * MODELER_PARAMS.sampling_min_output_rate)
             .ceil() as i32;
 
-        if n_steps > Self::MODELER_MAX_OUTPUTS_PER_CALL {
+        if n_steps > MODELER_PARAMS.sampling_max_outputs_per_call {
             // If the no of outputs the modeler would need to produce exceeds the configured maximum
             // ( because the time delta between the last elements is too large ), it needs to be restarted.
             log::debug!("penpathmodeledbuilder: update_modeler_w_element(): n_steps exceeds configured max outputs per call, restarting modeler");
@@ -231,19 +239,12 @@ impl PenPathModeledBuilder {
     }
 
     fn restart(&mut self, element: Element, now: Instant) {
-        let params = StrokeModelerParams {
-            sampling_min_output_rate: Self::MODELER_MIN_OUTPUT_RATE,
-            sampling_max_outputs_per_call: Self::MODELER_MAX_OUTPUTS_PER_CALL,
-            prediction_params: PredictionParams::StrokeEnd,
-            ..StrokeModelerParams::suggested()
-        };
-
         self.buffer.clear();
         self.prediction_buffer.clear();
         self.start_time = now;
         self.last_element_time = now;
         self.last_element = element;
-        self.stroke_modeler.reset_w_params(params);
+        self.stroke_modeler.reset_w_params(*MODELER_PARAMS);
 
         self.buffer.extend(
             self.stroke_modeler

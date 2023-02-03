@@ -1,12 +1,15 @@
 <div align="center">
-<img src="rnote-ui/data/icons/scalable/apps/rnote.svg" width="256"></img>
+<img src="rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
 </div><br><br><br>
 
-<div align="start">
-    <a href="https://liberapay.com/flxzt/donate">
-        <img alt="Donate using Liberapay" src="https://github.com/flxzt/rnote/blob/main/misc/assets/liberapay-donate-button.svg" width="75" height="25">
+<div align="center">
+    <a href="https://github.com/flxzt/rnote/actions/workflows/ci.yml">
+        <img alt="CI"src="https://github.com/flxzt/rnote/actions/workflows/ci.yml/badge.svg"></img>
     </a>
-</div><br>
+    <a href="https://liberapay.com/flxzt/donate">
+        <img alt="Donate using Liberapay" src="https://github.com/flxzt/rnote/blob/main/misc/assets/liberapay-donate-button.svg" width="60" height="20">
+    </a>
+</div>
 
 
 # Rnote
@@ -27,10 +30,11 @@ Written in Rust and GTK4.
 - (Optional) pen sounds
 - Reconfigurable stylus button shortcuts
 - An integrated workspace browser for quick access to related media files
-- Drag & drop, clipboard support
-- PDF, bitmap and SVG image import
+- Drag & Drop, clipboard support
+- PDF, Bitmap and SVG image import
 - Save and load the documents in the native `.rnote` file format
 - Document and selection export to SVG, PDF
+- Tabs to work on mulitple documents at the same time
 - Autosave, printing
 
 **Disclaimer**  
@@ -93,7 +97,7 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `rnote-ui/po/`.
 
  Creating translations for new languages or updating existing ones can be done in two ways:
-- take the `rnote.pot` file and generate a new `.po` translation file from it, with for example "Poedit". Add the new translation language to `LINGUAS` and submit a PR with both changed files.
+- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with both changed files.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
 

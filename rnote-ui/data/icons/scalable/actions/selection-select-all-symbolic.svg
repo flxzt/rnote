@@ -4,85 +4,24 @@
    viewBox="0 0 16 16"
    width="16px"
    version="1.1"
-   id="svg38"
+   id="svg8"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
-     id="defs42" />
+     id="defs12" />
   <g
      fill="#2e3436"
-     id="g36"
-     transform="matrix(0.5625,0,0,0.5625,3.5,3.5)"
-     style="stroke-width:0.995303">
+     id="g6"
+     transform="matrix(0.62509198,0,0,0.62509198,3.0052565,2.9932717)"
+     style="stroke-width:1.59975">
     <path
-       d="M 0,0 H 3 V 3 H 0 Z m 0,0"
+       d="M 0,0 V 3 H 3 V 0 Z M 4,0 V 2 H 7 V 0 Z m 4,0 v 2 h 4 V 0 Z m 5,0 v 3 h 3 V 0 Z M 0,4 V 8 H 2 V 4 Z m 14,0 v 3 h 2 V 4 Z m 0,4 v 4 h 2 V 8 Z M 0,9 v 3 H 2 V 9 Z m 0,4 v 3 h 3 v -3 z m 13,0 v 3 h 3 v -3 z m -9,1 v 2 h 4 v -2 z m 5,0 v 2 h 3 v -2 z m 0,0"
        id="path2"
-       style="stroke-width:0.995303" />
+       style="stroke-width:1.59975" />
     <path
-       d="m 13,0 h 3 v 3 h -3 z m 0,0"
+       d="M 5,4 C 4.445312,4 4,4.445312 4,5 V 6 C 4,6.554688 4.445312,7 5,7 H 6 C 6.554688,7 7,6.554688 7,6 V 5 C 7,4.445312 6.554688,4 6,4 Z M 9,4 C 8.445312,4 8,4.445312 8,5 v 2 c 0,0.554688 0.445312,1 1,1 h 2 c 0.554688,0 1,-0.445312 1,-1 V 5 C 12,4.445312 11.554688,4 11,4 Z M 5,8 C 4.445312,8 4,8.445312 4,9 v 2 c 0,0.554688 0.445312,1 1,1 h 2 c 0.554688,0 1,-0.445312 1,-1 V 9 C 8,8.445312 7.554688,8 7,8 Z m 5,1 C 9.445312,9 9,9.445312 9,10 v 1 c 0,0.554688 0.445312,1 1,1 h 1 c 0.554688,0 1,-0.445312 1,-1 V 10 C 12,9.445312 11.554688,9 11,9 Z m 0,0"
+       fill-opacity="0.34902"
        id="path4"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 0,13 h 3 v 3 H 0 Z m 0,0"
-       id="path6"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 13,13 h 3 v 3 h -3 z m 0,0"
-       id="path8"
-       style="stroke-width:0.995303" />
-    <path
-       d="M 0,4 H 2 V 8 H 0 Z m 0,0"
-       id="path10"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 0,9 h 2 v 3 H 0 Z m 0,0"
-       id="path12"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 14,4 h 2 v 3 h -2 z m 0,0"
-       id="path14"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 14,8 h 2 v 4 h -2 z m 0,0"
-       id="path16"
-       style="stroke-width:0.995303" />
-    <g
-       fill-opacity="0.327168"
-       id="g24"
-       style="stroke-width:0.990628">
-      <path
-         d="m 5,8 h 2 c 0.550781,0 1,0.449219 1,1 v 2 c 0,0.550781 -0.449219,1 -1,1 H 5 C 4.449219,12 4,11.550781 4,11 V 9 C 4,8.449219 4.449219,8 5,8 Z m 0,0"
-         id="path18"
-         style="stroke-width:0.995303" />
-      <path
-         d="M 5,4 H 6 C 6.550781,4 7,4.449219 7,5 V 6 C 7,6.550781 6.550781,7 6,7 H 5 C 4.449219,7 4,6.550781 4,6 V 5 C 4,4.449219 4.449219,4 5,4 Z m 0,0"
-         id="path20"
-         style="stroke-width:0.995303" />
-      <path
-         d="m 9,4 h 2 c 0.550781,0 1,0.449219 1,1 v 2 c 0,0.550781 -0.449219,1 -1,1 H 9 C 8.449219,8 8,7.550781 8,7 V 5 C 8,4.449219 8.449219,4 9,4 Z m 0,0"
-         id="path22"
-         style="stroke-width:0.995303" />
-    </g>
-    <path
-       d="M 12,0 V 2 H 8 V 0 Z m 0,0"
-       id="path26"
-       style="stroke-width:0.995303" />
-    <path
-       d="M 7,0 V 2 H 4 V 0 Z m 0,0"
-       id="path28"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 12,14 v 2 H 9 v -2 z m 0,0"
-       id="path30"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 8,14 v 2 H 4 v -2 z m 0,0"
-       id="path32"
-       style="stroke-width:0.995303" />
-    <path
-       d="m 10,9 h 1 c 0.550781,0 1,0.449219 1,1 v 1 c 0,0.550781 -0.449219,1 -1,1 H 10 C 9.449219,12 9,11.550781 9,11 V 10 C 9,9.449219 9.449219,9 10,9 Z m 0,0"
-       fill-opacity="0.327168"
-       id="path34"
-       style="stroke-width:0.990628" />
+       style="stroke-width:2.26242" />
   </g>
 </svg>

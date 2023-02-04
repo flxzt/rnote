@@ -88,6 +88,12 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Drag View</property>
+                <property name="subtitle" context="shortcut window" translatable="yes">Alt + Drag</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom in</property>
                 <property name="accelerator">&lt;ctrl&gt;ScrollUp</property>
               </object>
@@ -120,6 +126,12 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom out</property>
                 <property name="shortcut-type">gesture-pinch</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Zoom in / out</property>
+                <property name="subtitle" context="shortcut window" translatable="yes">Alt + Shift + Drag</property>
               </object>
             </child>
           </object>

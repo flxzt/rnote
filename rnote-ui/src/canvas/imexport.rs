@@ -1,9 +1,10 @@
 use std::ops::Range;
 use std::path::Path;
 
+use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
-use rnote_engine::engine::EngineSnapshot;
+use rnote_engine::engine::{EngineSnapshot, NativeClipboardContent};
 use rnote_engine::strokes::Stroke;
 
 use super::RnCanvas;
@@ -169,6 +170,32 @@ impl RnCanvas {
         });
 
         let widget_flags = self.engine().borrow_mut().insert_text(text, pos)?;
+
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
+    }
+
+    pub(crate) async fn paste_native_clipboard(
+        &self,
+        clipboard_data: Vec<u8>,
+    ) -> anyhow::Result<()> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<NativeClipboardContent>>();
+
+        rayon::spawn(move || {
+            let result = || -> Result<NativeClipboardContent, anyhow::Error> {
+                Ok(serde_json::from_slice(&clipboard_data)?)
+            };
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
+            }
+        });
+        let content = oneshot_receiver.await??;
+
+        let widget_flags = self
+            .engine()
+            .borrow_mut()
+            .paste_native_clipboard_content(content);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

@@ -12,7 +12,7 @@ use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{RnoteEngine, WidgetFlags};
 
-use super::{EngineConfig, EngineViewMut};
+use super::{EngineConfig, EngineViewMut, NativeClipboardContent};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -317,7 +317,7 @@ impl RnoteEngine {
     ) -> anyhow::Result<WidgetFlags> {
         let mut widget_flags = self.store.record(Instant::now());
 
-        // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
+        // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
@@ -341,5 +341,29 @@ impl RnoteEngine {
         widget_flags.redraw = true;
 
         Ok(widget_flags)
+    }
+
+    pub fn paste_native_clipboard_content(
+        &mut self,
+        clipboard_content: NativeClipboardContent,
+    ) -> WidgetFlags {
+        let mut widget_flags = self.store.record(Instant::now());
+        // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
+        let all_strokes = self.store.stroke_keys_as_rendered();
+        self.store.set_selected_keys(&all_strokes, false);
+        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
+
+        self.store.paste_native_clipboard(clipboard_content);
+
+        widget_flags.merge(self.penholder.update_state_current_pen(&mut EngineViewMut {
+            tasks_tx: self.tasks_tx.clone(),
+            pens_config: &mut self.pens_config,
+            doc: &mut self.document,
+            store: &mut self.store,
+            camera: &mut self.camera,
+            audioplayer: &mut self.audioplayer,
+        }));
+        widget_flags.redraw = true;
+        widget_flags
     }
 }

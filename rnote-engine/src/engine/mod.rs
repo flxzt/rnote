@@ -12,7 +12,6 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
-use self::export::{SelectionExportFormat, SelectionExportPrefs};
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
@@ -299,6 +298,15 @@ impl EngineSnapshot {
 
         snapshot_receiver.await?
     }
+}
+
+pub const RNOTE_NATIVE_CLIPBOARD_MIME_TYPE: &str = "application/rnote-clipboard";
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default, rename = "native_clipboard_content")]
+pub struct NativeClipboardContent {
+    #[serde(rename = "strokes")]
+    pub strokes: Vec<Arc<Stroke>>,
 }
 
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
@@ -791,21 +799,6 @@ impl RnoteEngine {
     pub fn fetch_clipboard_content(
         &self,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
-        let export_bytes = self.export_selection(Some(SelectionExportPrefs {
-            with_background: true,
-            export_format: SelectionExportFormat::Svg,
-            ..Default::default()
-        }));
-
-        // First try exporting the selection as svg
-        if let Some(selection_bytes) = futures::executor::block_on(async { export_bytes.await? })? {
-            return Ok((
-                Some((selection_bytes, String::from("image/svg+xml"))),
-                WidgetFlags::default(),
-            ));
-        }
-
-        // else fetch from pen
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
             pens_config: &self.pens_config,

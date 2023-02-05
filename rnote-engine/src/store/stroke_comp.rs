@@ -1,5 +1,6 @@
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
+use crate::engine::NativeClipboardContent;
 use crate::strokes::Stroke;
 use crate::{render, StrokeStore};
 use geo::intersects::Intersects;
@@ -571,5 +572,34 @@ impl StrokeStore {
                 }
             })
             .collect::<Vec<StrokeKey>>()
+    }
+
+    pub fn fetch_native_clipboard(&self, keys: &[StrokeKey]) -> NativeClipboardContent {
+        let strokes = keys
+            .iter()
+            .filter_map(|k| self.stroke_components.get(*k).map(Arc::clone))
+            .collect();
+
+        NativeClipboardContent { strokes }
+    }
+
+    /// Cuts the strokes for the given keys (meaning: marking them as trashed) and returns them as clipboard content
+    pub fn cut_into_native_clipboard(&mut self, keys: &[StrokeKey]) -> NativeClipboardContent {
+        let strokes = keys
+            .iter()
+            .filter_map(|k| {
+                self.set_selected(*k, false);
+                self.set_trashed(*k, true);
+                self.stroke_components.get(*k).map(Arc::clone)
+            })
+            .collect();
+
+        NativeClipboardContent { strokes }
+    }
+
+    pub fn paste_native_clipboard(&mut self, clipboard_content: NativeClipboardContent) {
+        for stroke in clipboard_content.strokes {
+            self.insert_stroke((*stroke).clone(), None);
+        }
     }
 }

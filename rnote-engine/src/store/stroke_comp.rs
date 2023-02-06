@@ -588,7 +588,7 @@ impl StrokeStore {
         StrokeContent { strokes }
     }
 
-    /// Cuts the strokes for the given keys (meaning: marking them as trashed) and returns them as clipboard content
+    /// Cuts the strokes for the given keys (meaning: marking them as trashed) and returns them as stroke content
     pub fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()

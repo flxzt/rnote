@@ -812,7 +812,6 @@ impl RnAppWindow {
                         }
                     };
                 }));
-            // TODO: Fix the broken svg import
             } else if content_formats.contain_mime_type("image/svg+xml") {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     log::debug!("recognized clipboard content: svg image");

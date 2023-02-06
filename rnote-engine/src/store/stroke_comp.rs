@@ -611,12 +611,22 @@ impl StrokeStore {
         clipboard_content: NativeClipboardContent,
         pos: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
+        if clipboard_content.strokes.is_empty() {
+            return vec![];
+        }
+        let clipboard_bounds = clipboard_content
+            .strokes
+            .iter()
+            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.bounds()));
+
         clipboard_content
             .strokes
             .into_iter()
             .map(|s| {
+                let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
                 let key = self.insert_stroke((*s).clone(), None);
                 self.set_stroke_pos(key, pos);
+                self.translate_strokes(&[key], offset);
                 self.set_selected(key, true);
                 key
             })

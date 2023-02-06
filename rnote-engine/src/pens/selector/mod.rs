@@ -5,7 +5,7 @@ use std::time::Instant;
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
-use crate::engine::{EngineView, EngineViewMut, RNOTE_NATIVE_CLIPBOARD_MIME_TYPE};
+use crate::engine::{EngineView, EngineViewMut, RNOTE_STROKE_CONTENT_MIME_TYPE};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
@@ -155,12 +155,12 @@ impl PenBehaviour for Selector {
         };
 
         if let Some(selected_keys) = selected_keys {
-            let clipboard_content = engine_view.store.fetch_native_clipboard(&selected_keys);
+            let clipboard_content = engine_view.store.fetch_stroke_content(&selected_keys);
 
             return Ok((
                 Some((
                     serde_json::to_string(&clipboard_content)?.into_bytes(),
-                    RNOTE_NATIVE_CLIPBOARD_MIME_TYPE.to_string(),
+                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
                 )),
                 widget_flags,
             ));
@@ -182,7 +182,7 @@ impl PenBehaviour for Selector {
         };
 
         if let Some(selected_keys) = selected_keys {
-            let clipboard_content = engine_view.store.cut_into_native_clipboard(&selected_keys);
+            let clipboard_content = engine_view.store.cut_stroke_content(&selected_keys);
             widget_flags.store_modified = true;
             widget_flags.redraw = true;
 
@@ -191,7 +191,7 @@ impl PenBehaviour for Selector {
             return Ok((
                 Some((
                     serde_json::to_string(&clipboard_content)?.into_bytes(),
-                    RNOTE_NATIVE_CLIPBOARD_MIME_TYPE.to_string(),
+                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
                 )),
                 widget_flags,
             ));

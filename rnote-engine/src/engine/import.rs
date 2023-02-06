@@ -12,7 +12,7 @@ use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{RnoteEngine, WidgetFlags};
 
-use super::{EngineConfig, EngineViewMut, NativeClipboardContent};
+use super::{EngineConfig, EngineViewMut, StrokeContent};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -343,9 +343,10 @@ impl RnoteEngine {
         Ok(widget_flags)
     }
 
-    pub fn paste_native_clipboard_content(
+    /// Inserts the stroke content. Data usually coming from the clipboard, drop source, etc.
+    pub fn insert_stroke_content(
         &mut self,
-        clipboard_content: NativeClipboardContent,
+        content: StrokeContent,
         pos: na::Vector2<f64>,
     ) -> WidgetFlags {
         let mut widget_flags = self.store.record(Instant::now());
@@ -354,7 +355,7 @@ impl RnoteEngine {
         self.store.set_selected_keys(&all_strokes, false);
         widget_flags.merge(self.change_pen_style(PenStyle::Selector));
 
-        let inserted_keys = self.store.paste_native_clipboard(clipboard_content, pos);
+        let inserted_keys = self.store.insert_stroke_content(content, pos);
         self.store.update_geometry_for_strokes(&inserted_keys);
         self.store.regenerate_rendering_for_strokes(
             &inserted_keys,

@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
-use crate::engine::NativeClipboardContent;
+use crate::engine::StrokeContent;
 use crate::strokes::Stroke;
 use crate::{render, StrokeStore};
 
@@ -579,17 +579,17 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn fetch_native_clipboard(&self, keys: &[StrokeKey]) -> NativeClipboardContent {
+    pub fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()
             .filter_map(|k| self.stroke_components.get(*k).map(Arc::clone))
             .collect();
 
-        NativeClipboardContent { strokes }
+        StrokeContent { strokes }
     }
 
     /// Cuts the strokes for the given keys (meaning: marking them as trashed) and returns them as clipboard content
-    pub fn cut_into_native_clipboard(&mut self, keys: &[StrokeKey]) -> NativeClipboardContent {
+    pub fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()
             .filter_map(|k| {
@@ -599,16 +599,16 @@ impl StrokeStore {
             })
             .collect();
 
-        NativeClipboardContent { strokes }
+        StrokeContent { strokes }
     }
 
     /// Pastes the clipboard content as a selection
     ///
     /// returns the keys for the inserted strokes.
     /// The inserted strokes then need to update their geometry and rendering.
-    pub fn paste_native_clipboard(
+    pub fn insert_stroke_content(
         &mut self,
-        clipboard_content: NativeClipboardContent,
+        clipboard_content: StrokeContent,
         pos: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
         if clipboard_content.strokes.is_empty() {

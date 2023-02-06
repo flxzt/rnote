@@ -4,7 +4,7 @@ use std::path::Path;
 use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
-use rnote_engine::engine::{EngineSnapshot, NativeClipboardContent};
+use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
 
 use super::RnCanvas;
@@ -175,16 +175,17 @@ impl RnCanvas {
         Ok(())
     }
 
-    pub(crate) async fn paste_native_clipboard(&self, json_string: String) -> anyhow::Result<()> {
+    /// Deserializes the stroke content and inserts it into the engine. The data is usually coming from the clipboard, drop source, etc.
+    pub(crate) async fn insert_stroke_content(&self, json_string: String) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
-            oneshot::channel::<anyhow::Result<NativeClipboardContent>>();
+            oneshot::channel::<anyhow::Result<StrokeContent>>();
 
         rayon::spawn(move || {
-            let result = || -> Result<NativeClipboardContent, anyhow::Error> {
+            let result = || -> Result<StrokeContent, anyhow::Error> {
                 Ok(serde_json::from_str(&json_string)?)
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in paste_native_clipboard() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in insert_stroke_content() failed. Receiver already dropped.");
             }
         });
         let content = oneshot_receiver.await??;
@@ -195,7 +196,7 @@ impl RnCanvas {
         let widget_flags = self
             .engine()
             .borrow_mut()
-            .paste_native_clipboard_content(content, pos);
+            .insert_stroke_content(content, pos);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

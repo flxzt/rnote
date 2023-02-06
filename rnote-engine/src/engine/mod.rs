@@ -300,11 +300,11 @@ impl EngineSnapshot {
     }
 }
 
-pub const RNOTE_NATIVE_CLIPBOARD_MIME_TYPE: &str = "application/rnote-clipboard";
+pub const RNOTE_STROKE_CONTENT_MIME_TYPE: &str = "application/rnote-stroke-content";
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(default, rename = "native_clipboard_content")]
-pub struct NativeClipboardContent {
+#[serde(default, rename = "stroke_content")]
+pub struct StrokeContent {
     #[serde(rename = "strokes")]
     pub strokes: Vec<Arc<Stroke>>,
 }

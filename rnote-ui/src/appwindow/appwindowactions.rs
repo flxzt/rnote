@@ -5,7 +5,7 @@ use crate::{dialogs, RnCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
-use rnote_engine::engine::RNOTE_NATIVE_CLIPBOARD_MIME_TYPE;
+use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
@@ -774,10 +774,10 @@ impl RnAppWindow {
                         }
                     }
                 }));
-            } else if content_formats.contain_mime_type(RNOTE_NATIVE_CLIPBOARD_MIME_TYPE) {
+            } else if content_formats.contain_mime_type(RNOTE_STROKE_CONTENT_MIME_TYPE) {
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-                    log::debug!("recognized clipboard content format: {RNOTE_NATIVE_CLIPBOARD_MIME_TYPE}");
-                    match appwindow.clipboard().read_future(&[RNOTE_NATIVE_CLIPBOARD_MIME_TYPE], glib::PRIORITY_DEFAULT).await {
+                    log::debug!("recognized clipboard content format: {RNOTE_STROKE_CONTENT_MIME_TYPE}");
+                    match appwindow.clipboard().read_future(&[RNOTE_STROKE_CONTENT_MIME_TYPE], glib::PRIORITY_DEFAULT).await {
                         Ok((input_stream, _)) => {
                             let mut acc = Vec::new();
                             loop {
@@ -799,7 +799,7 @@ impl RnAppWindow {
                             if !acc.is_empty() {
                                 match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(json_string) => {
-                                        if let Err(e) = canvas.paste_native_clipboard(json_string.to_string()).await {
+                                        if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
                                             log::error!("failed to paste clipboard, Err: {e:?}");
                                         }
                                     }
@@ -808,7 +808,7 @@ impl RnAppWindow {
                             }
                         }
                         Err(e) => {
-                            log::error!("failed to paste clipboard as {RNOTE_NATIVE_CLIPBOARD_MIME_TYPE}, read_future() failed with Err: {e:?}");
+                            log::error!("failed to paste clipboard as {RNOTE_STROKE_CONTENT_MIME_TYPE}, read_future() failed with Err: {e:?}");
                         }
                     };
                 }));

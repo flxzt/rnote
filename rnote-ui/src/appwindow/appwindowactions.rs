@@ -795,8 +795,13 @@ impl RnAppWindow {
                             }
 
                             if !acc.is_empty() {
-                                if let Err(e) = canvas.paste_native_clipboard(acc).await {
-                                    log::error!("failed to paste clipboard, Err: {e:?}");
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
+                                    Ok(json_string) => {
+                                        if let Err(e) = canvas.paste_native_clipboard(json_string.to_string()).await {
+                                            log::error!("failed to paste clipboard, Err: {e:?}");
+                                        }
+                                    }
+                                    Err(e) => log::error!("failed to read &str from clipboard data, Err: {e:?}"),
                                 }
                             }
                         }
@@ -829,15 +834,13 @@ impl RnAppWindow {
                             }
 
                             if !acc.is_empty() {
-                                match String::from_utf8(acc) {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
                                     Ok(text) => {
                                         if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
                                             log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err: {e:?}");
                                         };
                                     }
-                                    Err(e) => {
-                                        log::error!("failed to paste clipboard, Err: {e:?}");
-                                    }
+                                    Err(e) => log::error!("failed to read &str from clipboard data, Err: {e:?}"),
                                 }
                             }
                         }

@@ -357,8 +357,9 @@ impl RnoteEngine {
 
         let inserted_keys = self.store.insert_stroke_content(content, pos);
         self.store.update_geometry_for_strokes(&inserted_keys);
-        self.store.regenerate_rendering_for_strokes(
-            &inserted_keys,
+        self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx.clone(),
+            false,
             self.camera.viewport(),
             self.camera.image_scale(),
         );

@@ -727,6 +727,8 @@ impl Typewriter {
                     pen_down: false,
                 };
 
+                widget_flags.store_modified = true;
+                widget_flags.resize = true;
                 widget_flags.redraw = true;
             }
             TypewriterState::Start(pos) => {
@@ -764,6 +766,8 @@ impl Typewriter {
                     pen_down: false,
                 };
 
+                widget_flags.store_modified = true;
+                widget_flags.resize = true;
                 widget_flags.redraw = true;
             }
             TypewriterState::Modifying {
@@ -787,9 +791,9 @@ impl Typewriter {
                         .doc
                         .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                    widget_flags.redraw = true;
-                    widget_flags.resize = true;
                     widget_flags.store_modified = true;
+                    widget_flags.resize = true;
+                    widget_flags.redraw = true;
                 }
             }
             TypewriterState::Selecting {
@@ -825,9 +829,9 @@ impl Typewriter {
                         pen_down: false,
                     };
 
+                    widget_flags.store_modified = true;
                     widget_flags.resize = true;
                     widget_flags.redraw = true;
-                    widget_flags.store_modified = true;
                 }
             }
             TypewriterState::Translating { .. } | TypewriterState::AdjustTextWidth { .. } => {}

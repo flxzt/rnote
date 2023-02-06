@@ -70,10 +70,10 @@ $ flatpak mask --remove com.github.flxzt.rnote
 Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Screenshots
-![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
 ![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
+![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)
 ![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
-![selection](./rnote-ui/data/screenshots/selection.png)
+![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)
 
 ## Pitfalls & Known Issues
 * Drag & Drop not working - Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)

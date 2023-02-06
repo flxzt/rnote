@@ -1,3 +1,5 @@
+use crate::strokes::Stroke;
+
 use super::{StrokeKey, StrokeStore};
 
 use p2d::bounding_volume::Aabb;
@@ -18,8 +20,6 @@ impl Default for SelectionComponent {
 }
 
 impl SelectionComponent {
-    const SELECTION_DUPLICATION_OFFSET: na::Vector2<f64> = na::vector![20.0, 20.0];
-
     pub fn new(selected: bool) -> Self {
         Self { selected }
     }
@@ -120,10 +120,7 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>();
 
         // Offsetting the new selected stroke to make the duplication apparent
-        self.translate_strokes(
-            &new_selected,
-            SelectionComponent::SELECTION_DUPLICATION_OFFSET,
-        );
+        self.translate_strokes(&new_selected, Stroke::IMPORT_OFFSET_DEFAULT);
 
         new_selected
     }

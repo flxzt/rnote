@@ -5,7 +5,7 @@ use std::time::Instant;
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
-use crate::engine::{EngineView, EngineViewMut};
+use crate::engine::{EngineView, EngineViewMut, RNOTE_STROKE_CONTENT_MIME_TYPE};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
@@ -140,6 +140,64 @@ impl PenBehaviour for Selector {
             PenEvent::Text { text } => self.handle_pen_event_text(text, now, engine_view),
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         }
+    }
+
+    fn fetch_clipboard_content(
+        &self,
+        engine_view: &EngineView,
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+        let widget_flags = WidgetFlags::default();
+
+        let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
+            Some(selection.clone())
+        } else {
+            None
+        };
+
+        if let Some(selected_keys) = selected_keys {
+            let clipboard_content = engine_view.store.fetch_stroke_content(&selected_keys);
+
+            return Ok((
+                Some((
+                    serde_json::to_string(&clipboard_content)?.into_bytes(),
+                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
+                )),
+                widget_flags,
+            ));
+        }
+
+        Ok((None, widget_flags))
+    }
+
+    fn cut_clipboard_content(
+        &mut self,
+        engine_view: &mut EngineViewMut,
+    ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
+        let mut widget_flags = engine_view.store.record(Instant::now());
+
+        let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
+            Some(selection.clone())
+        } else {
+            None
+        };
+
+        if let Some(selected_keys) = selected_keys {
+            let clipboard_content = engine_view.store.cut_stroke_content(&selected_keys);
+            widget_flags.store_modified = true;
+            widget_flags.redraw = true;
+
+            self.state = SelectorState::Idle;
+
+            return Ok((
+                Some((
+                    serde_json::to_string(&clipboard_content)?.into_bytes(),
+                    RNOTE_STROKE_CONTENT_MIME_TYPE.to_string(),
+                )),
+                widget_flags,
+            ));
+        }
+
+        Ok((None, widget_flags))
     }
 }
 

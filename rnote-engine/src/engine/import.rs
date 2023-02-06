@@ -12,7 +12,7 @@ use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{RnoteEngine, WidgetFlags};
 
-use super::{EngineConfig, EngineViewMut};
+use super::{EngineConfig, EngineViewMut, StrokeContent};
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -317,7 +317,7 @@ impl RnoteEngine {
     ) -> anyhow::Result<WidgetFlags> {
         let mut widget_flags = self.store.record(Instant::now());
 
-        // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
+        // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
@@ -341,5 +341,36 @@ impl RnoteEngine {
         widget_flags.redraw = true;
 
         Ok(widget_flags)
+    }
+
+    /// Inserts the stroke content. Data usually coming from the clipboard, drop source, etc.
+    pub fn insert_stroke_content(
+        &mut self,
+        content: StrokeContent,
+        pos: na::Vector2<f64>,
+    ) -> WidgetFlags {
+        let mut widget_flags = self.store.record(Instant::now());
+        // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
+        let all_strokes = self.store.stroke_keys_as_rendered();
+        self.store.set_selected_keys(&all_strokes, false);
+        widget_flags.merge(self.change_pen_style(PenStyle::Selector));
+
+        let inserted_keys = self.store.insert_stroke_content(content, pos);
+        self.store.update_geometry_for_strokes(&inserted_keys);
+        self.store.regenerate_rendering_for_strokes(
+            &inserted_keys,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+        widget_flags.merge(self.penholder.update_state_current_pen(&mut EngineViewMut {
+            tasks_tx: self.tasks_tx.clone(),
+            pens_config: &mut self.pens_config,
+            doc: &mut self.document,
+            store: &mut self.store,
+            camera: &mut self.camera,
+            audioplayer: &mut self.audioplayer,
+        }));
+        widget_flags.redraw = true;
+        widget_flags
     }
 }

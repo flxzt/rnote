@@ -218,6 +218,23 @@ impl StrokeStore {
         }
     }
 
+    pub fn regenerate_rendering_for_strokes_threaded(
+        &mut self,
+        tasks_tx: EngineTaskSender,
+        keys: &[StrokeKey],
+        viewport: Aabb,
+        image_scale: f64,
+    ) {
+        for &key in keys {
+            self.regenerate_rendering_for_stroke_threaded(
+                tasks_tx.clone(),
+                key,
+                viewport,
+                image_scale,
+            );
+        }
+    }
+
     /// Regenerates the rendering of all keys for the given viewport that need rerendering
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,

@@ -5,6 +5,7 @@ use crate::{dialogs, RnCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
+use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
@@ -13,6 +14,8 @@ use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperati
 use gtk4::{PrintStatus, Window};
 use std::path::PathBuf;
 use std::time::Instant;
+
+const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
 impl RnAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
@@ -710,7 +713,6 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let (content, widget_flags) = match canvas.engine().borrow_mut().cut_clipboard_content() {
-
                 Ok((content, widget_flags)) => (content,widget_flags),
                 Err(e) => {
                     log::error!("cut_clipboard_content() failed in clipboard-cut action, Err: {e:?}");
@@ -734,33 +736,15 @@ impl RnAppWindow {
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
-        // Clipboard paste as selection
+        // Clipboard paste
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let canvas = appwindow.active_tab().canvas();
             let content_formats = appwindow.clipboard().formats();
 
-            // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in many text based formats
-            // TODO: Fix the broken svg import
-            /*
-            if content_formats.contain_mime_type("image/svg+xml") {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
-                    match appwindow.clipboard().read_text_future().await {
-                        Ok(Some(text)) => {
-                                if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
-                                    log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err: {e:?}");
-                                };
-                        }
-                        Ok(None) => {}
-                        Err(e) => {
-                            log::debug!("could not load clipboard contents as svg, read_text() failed with Err: {e:?}");
-
-                        }
-                    }
-                }));
-            } else
-            */
+            // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in other text based formats
              if content_formats.contain_mime_type("text/uri-list") {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    log::debug!("recognized clipboard content format: files list");
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             let file_paths = text.lines().filter_map(|line| {
@@ -790,6 +774,82 @@ impl RnAppWindow {
                         }
                     }
                 }));
+            } else if content_formats.contain_mime_type(RNOTE_STROKE_CONTENT_MIME_TYPE) {
+                glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                    log::debug!("recognized clipboard content format: {RNOTE_STROKE_CONTENT_MIME_TYPE}");
+                    match appwindow.clipboard().read_future(&[RNOTE_STROKE_CONTENT_MIME_TYPE], glib::PRIORITY_DEFAULT).await {
+                        Ok((input_stream, _)) => {
+                            let mut acc = Vec::new();
+                            loop {
+                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::PRIORITY_DEFAULT).await {
+                                    Ok((mut bytes, n)) => {
+                                        if n == 0 {
+                                            break;
+                                        }
+                                        acc.append(&mut bytes);
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to read clipboard input stream, Err: {e:?}");
+                                        acc.clear();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
+                                    Ok(json_string) => {
+                                        if let Err(e) = canvas.insert_stroke_content(json_string.to_string()).await {
+                                            log::error!("failed to paste clipboard, Err: {e:?}");
+                                        }
+                                    }
+                                    Err(e) => log::error!("failed to read &str from clipboard data, Err: {e:?}"),
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            log::error!("failed to paste clipboard as {RNOTE_STROKE_CONTENT_MIME_TYPE}, read_future() failed with Err: {e:?}");
+                        }
+                    };
+                }));
+            } else if content_formats.contain_mime_type("image/svg+xml") {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    log::debug!("recognized clipboard content: svg image");
+                    match appwindow.clipboard().read_future(&["image/svg+xml"], glib::PRIORITY_DEFAULT).await {
+                        Ok((input_stream, _)) => {
+                            let mut acc = Vec::new();
+                            loop {
+                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::PRIORITY_DEFAULT).await {
+                                    Ok((mut bytes, n)) => {
+                                        if n == 0 {
+                                            break;
+                                        }
+                                        acc.append(&mut bytes);
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to read clipboard input stream, Err: {e:?}");
+                                        acc.clear();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if !acc.is_empty() {
+                                match crate::utils::str_from_u8_nul_utf8(&acc) {
+                                    Ok(text) => {
+                                        if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
+                                            log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err: {e:?}");
+                                        };
+                                    }
+                                    Err(e) => log::error!("failed to read &str from clipboard data, Err: {e:?}"),
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            log::error!("failed to paste clipboard as vector image, read_future() failed with Err: {e:?}");
+                        }
+                    };
+                }));
             } else if content_formats.contain_mime_type("image/png")  ||
                       content_formats.contain_mime_type("image/jpeg") ||
                       content_formats.contain_mime_type("image/jpg")  ||
@@ -804,6 +864,7 @@ impl RnAppWindow {
                 ];
                 if let Some(mime_type) = MIMES.into_iter().find(|&mime| content_formats.contain_mime_type(mime)) {
                     glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                        log::debug!("recognized clipboard content: bitmap image");
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
                                 if let Err(e) = canvas.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
@@ -819,6 +880,7 @@ impl RnAppWindow {
                 }
             } else if content_formats.contain_mime_type("text/plain") || content_formats.contain_mime_type("text/plain;charset=utf-8"){
                 glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
+                    log::debug!("recognized clipboard content: plain text");
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
                             if let Err(e) = canvas.load_in_text(text.to_string(), None) {

@@ -1,9 +1,10 @@
 use std::ops::Range;
 use std::path::Path;
 
+use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
-use rnote_engine::engine::EngineSnapshot;
+use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
 
 use super::RnCanvas;
@@ -169,6 +170,33 @@ impl RnCanvas {
         });
 
         let widget_flags = self.engine().borrow_mut().insert_text(text, pos)?;
+
+        self.emit_handle_widget_flags(widget_flags);
+        Ok(())
+    }
+
+    /// Deserializes the stroke content and inserts it into the engine. The data is usually coming from the clipboard, drop source, etc.
+    pub(crate) async fn insert_stroke_content(&self, json_string: String) -> anyhow::Result<()> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<StrokeContent>>();
+
+        rayon::spawn(move || {
+            let result = || -> Result<StrokeContent, anyhow::Error> {
+                Ok(serde_json::from_str(&json_string)?)
+            };
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in insert_stroke_content() failed. Receiver already dropped.");
+            }
+        });
+        let content = oneshot_receiver.await??;
+        let pos = (self.engine().borrow().camera.transform().inverse()
+            * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+        .coords;
+
+        let widget_flags = self
+            .engine()
+            .borrow_mut()
+            .insert_stroke_content(content, pos);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

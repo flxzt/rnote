@@ -1,16 +1,17 @@
-use super::render_comp::RenderCompState;
-use super::StrokeKey;
-use crate::strokes::Stroke;
-use crate::{render, StrokeStore};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
 use std::sync::Arc;
+
+use super::render_comp::RenderCompState;
+use super::StrokeKey;
+use crate::engine::StrokeContent;
+use crate::strokes::Stroke;
+use crate::{render, StrokeStore};
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -167,6 +168,11 @@ impl StrokeStore {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
             .collect::<Vec<Aabb>>()
+    }
+
+    pub fn set_stroke_pos(&mut self, key: StrokeKey, pos: na::Vector2<f64>) {
+        let Some(stroke) = Arc::make_mut(&mut self.stroke_components).get_mut(key).map(Arc::make_mut) else {return;};
+        stroke.set_pos(pos);
     }
 
     /// Translate the strokes with the offset.
@@ -571,5 +577,59 @@ impl StrokeStore {
                 }
             })
             .collect::<Vec<StrokeKey>>()
+    }
+
+    pub fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
+        let strokes = keys
+            .iter()
+            .filter_map(|k| self.stroke_components.get(*k).map(Arc::clone))
+            .collect();
+
+        StrokeContent { strokes }
+    }
+
+    /// Cuts the strokes for the given keys (meaning: marking them as trashed) and returns them as stroke content
+    pub fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
+        let strokes = keys
+            .iter()
+            .filter_map(|k| {
+                self.set_selected(*k, false);
+                self.set_trashed(*k, true);
+                self.stroke_components.get(*k).map(Arc::clone)
+            })
+            .collect();
+
+        StrokeContent { strokes }
+    }
+
+    /// Pastes the clipboard content as a selection
+    ///
+    /// returns the keys for the inserted strokes.
+    /// The inserted strokes then need to update their geometry and rendering.
+    pub fn insert_stroke_content(
+        &mut self,
+        clipboard_content: StrokeContent,
+        pos: na::Vector2<f64>,
+    ) -> Vec<StrokeKey> {
+        if clipboard_content.strokes.is_empty() {
+            return vec![];
+        }
+        let clipboard_bounds = clipboard_content
+            .strokes
+            .iter()
+            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.bounds()));
+
+        clipboard_content
+            .strokes
+            .into_iter()
+            .map(|s| {
+                let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
+                let key = self.insert_stroke((*s).clone(), None);
+                self.set_stroke_pos(key, pos);
+                self.translate_strokes(&[key], offset);
+                self.set_selected(key, true);
+                key
+            })
+            .collect()
     }
 }

@@ -9,7 +9,7 @@ use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{KeyboardKey, PenEvent, PenState};
 use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::style::drawhelpers;
+use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};
 
 use crate::engine::{EngineView, EngineViewMut};
@@ -174,7 +174,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     )?;
 
                     // Draw the text width adjust node
-                    drawhelpers::draw_triangular_down_node(
+                    indicators::draw_triangular_down_node(
                         cx,
                         PenState::Up,
                         Self::adjust_text_width_node_center(
@@ -188,7 +188,7 @@ impl DrawOnDocBehaviour for Typewriter {
 
                     if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         // draw translate Node
-                        drawhelpers::draw_rectangular_node(
+                        indicators::draw_rectangular_node(
                             cx,
                             PenState::Up,
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
@@ -235,7 +235,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     )?;
 
                     // Draw the text width adjust node
-                    drawhelpers::draw_triangular_down_node(
+                    indicators::draw_triangular_down_node(
                         cx,
                         PenState::Up,
                         Self::adjust_text_width_node_center(
@@ -249,7 +249,7 @@ impl DrawOnDocBehaviour for Typewriter {
 
                     if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         // draw translate Node
-                        drawhelpers::draw_rectangular_node(
+                        indicators::draw_rectangular_node(
                             cx,
                             PenState::Up,
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
@@ -272,7 +272,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the text width adjust node
-                    drawhelpers::draw_triangular_down_node(
+                    indicators::draw_triangular_down_node(
                         cx,
                         PenState::Up,
                         Self::adjust_text_width_node_center(
@@ -286,7 +286,7 @@ impl DrawOnDocBehaviour for Typewriter {
 
                     // Translate Node
                     if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
-                        drawhelpers::draw_rectangular_node(
+                        indicators::draw_rectangular_node(
                             cx,
                             PenState::Down,
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
@@ -309,7 +309,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the text width adjust node
-                    drawhelpers::draw_triangular_down_node(
+                    indicators::draw_triangular_down_node(
                         cx,
                         PenState::Down,
                         Self::adjust_text_width_node_center(
@@ -323,7 +323,7 @@ impl DrawOnDocBehaviour for Typewriter {
 
                     // Translate Node
                     if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
-                        drawhelpers::draw_rectangular_node(
+                        indicators::draw_rectangular_node(
                             cx,
                             PenState::Up,
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera),

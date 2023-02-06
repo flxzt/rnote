@@ -53,7 +53,7 @@ impl TexturedDotsDistribution {
         let sample = match self {
             Self::Uniform => rand_distr::Uniform::from(range.clone()).sample(rng),
             Self::Normal => {
-                // setting the mean to the mid of the range
+                // the mean to the mid of the range
                 let mean = (range.end + range.start) * 0.5;
                 // the standard deviation
                 let std_dev = ((range.end - range.start) * 0.5) / 3.0;

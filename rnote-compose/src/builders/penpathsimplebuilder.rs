@@ -11,13 +11,13 @@ use crate::{PenPath, Style};
 use super::penpathbuilderbehaviour::{
     PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress,
 };
-use super::Constraints;
+use crate::Constraints;
 
 #[derive(Debug, Clone)]
 /// The simple pen path builder
 pub struct PenPathSimpleBuilder {
     /// Buffered elements, which are filled up by new pen events and used to try to build path segments
-    pub buffer: VecDeque<Element>,
+    buffer: VecDeque<Element>,
 }
 
 impl PenPathBuilderCreator for PenPathSimpleBuilder {

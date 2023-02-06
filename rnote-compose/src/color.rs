@@ -87,7 +87,7 @@ impl Color {
     }
 
     /// The luma value, in range [0.0 - 1.0]
-    /// see: https://en.wikipedia.org/wiki/Luma_(video)
+    /// see: <https://en.wikipedia.org/wiki/Luma_(video)>
     pub fn luma(&self) -> f64 {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
     }

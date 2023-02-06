@@ -68,8 +68,8 @@ impl Element {
     }
 
     /// transform pen input data entries
-    pub fn transform_elements(data_entries: &mut VecDeque<Self>, transform: na::Affine2<f64>) {
-        data_entries.iter_mut().for_each(|element| {
+    pub fn transform_elements(els: &mut VecDeque<Self>, transform: na::Affine2<f64>) {
+        els.iter_mut().for_each(|element| {
             element.transform_by(transform);
         });
     }

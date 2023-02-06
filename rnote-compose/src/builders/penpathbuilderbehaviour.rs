@@ -4,9 +4,8 @@ use p2d::bounding_volume::Aabb;
 
 use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
+use crate::Constraints;
 use crate::Style;
-
-use super::Constraints;
 
 #[derive(Debug, Clone)]
 /// the builder progress

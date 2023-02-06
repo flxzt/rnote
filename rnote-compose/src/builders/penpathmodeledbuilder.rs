@@ -11,12 +11,13 @@ use crate::penpath::{Element, Segment};
 use crate::style::Composer;
 use crate::{PenPath, Style};
 
-use super::{Constraints, PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress};
+use super::{PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress};
+use crate::Constraints;
 
 /// The pen path builder
 pub struct PenPathModeledBuilder {
     /// Buffered elements, which are filled up by new pen events and used to build path segments
-    pub buffer: Vec<Element>,
+    buffer: Vec<Element>,
     prediction_start: Element,
     /// Holding the current prediction. Is recalculated after the modeler is updated with a new element
     prediction_buffer: Vec<Element>,

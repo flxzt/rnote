@@ -9,13 +9,13 @@ use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::builders::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use rnote_compose::builders::GridBuilder;
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
+use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
 use rnote_compose::penevents::{KeyboardKey, PenEvent, ShortcutKey};
 use rnote_compose::penpath::Element;
 

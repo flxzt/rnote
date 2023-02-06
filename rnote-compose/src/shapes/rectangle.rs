@@ -13,7 +13,7 @@ use super::Line;
 /// A rectangle
 pub struct Rectangle {
     #[serde(rename = "cuboid")]
-    /// The cuboid, consisting of half extents.
+    /// The cuboid, specifies the extents.
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]
     /// The transform of the center of the cuboid

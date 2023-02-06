@@ -107,7 +107,7 @@ impl KeyboardKey {
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename = "shortcut_key")]
-/// A input shortcut key (could also be named modifier key)
+/// A input shortcut key
 pub enum ShortcutKey {
     /// the primary button of the stylus
     #[serde(rename = "stylus_primary_button")]

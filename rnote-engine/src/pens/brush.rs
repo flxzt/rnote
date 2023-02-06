@@ -9,11 +9,11 @@ use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use rnote_compose::builders::{
-    Constraints, PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress,
-    PenPathModeledBuilder,
+    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
 };
 use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
 use rnote_compose::penevents::PenEvent;
+use rnote_compose::Constraints;
 
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;

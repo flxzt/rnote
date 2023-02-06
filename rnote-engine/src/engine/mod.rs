@@ -558,19 +558,21 @@ impl RnoteEngine {
     /// ```rust, ignore
     ///
     /// glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow => async move {
-    ///           let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
+    ///    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
     ///
-    ///           loop {
-    ///              if let Some(task) = task_rx.next().await {
-    ///                    let widget_flags = canvas.engine().borrow_mut().handle_engine_task(task);
-    ///                    if appwindow.handle_widget_flags(widget_flags) {
-    ///                         break;
-    ///                    }
-    ///                }
+    ///    loop {
+    ///        if let Some(task) = task_rx.next().await {
+    ///            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
+    ///            canvas.emit_handle_widget_flags(widget_flags);
+
+    ///            if quit {
+    ///                break;
     ///            }
-    ///        }));
+    ///        }
+    ///    }
+    /// }));
     /// ```
-    /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
+    /// Processes a received store task. Usually called from a receiver loop which awaits tasks_rx.
     ///
     /// Returns the widget flags, and whether the handler should quit
     pub fn handle_engine_task(&mut self, task: EngineTask) -> (WidgetFlags, bool) {
@@ -596,7 +598,7 @@ impl RnoteEngine {
         (widget_flags, quit)
     }
 
-    /// handle an pen event
+    /// handle a pen event
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
@@ -686,6 +688,7 @@ impl RnoteEngine {
         )
     }
 
+    /// Reinstalls the pen in the current style
     pub fn reinstall_pen_current_style(&mut self) -> WidgetFlags {
         self.penholder
             .reinstall_pen_current_style(&mut EngineViewMut {
@@ -698,7 +701,7 @@ impl RnoteEngine {
             })
     }
 
-    // Generates bounds for each page on the document which contains content
+    /// Generates bounds for each page on the document which contains content
     pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();
@@ -745,20 +748,23 @@ impl RnoteEngine {
         )
     }
 
-    /// resizes the doc to the format and to fit all strokes
+    /// Resizes the doc to the format and to fit all strokes.
+    ///
     /// Document background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
         self.document
             .resize_to_fit_strokes(&self.store, &self.camera);
     }
 
-    /// resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke
+    /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
+    ///
     /// Document background rendering then needs to be updated.
     pub fn resize_autoexpand(&mut self) {
         self.document.resize_autoexpand(&self.store, &self.camera);
     }
 
     /// Updates the camera and expands doc dimensions with offset
+    ///
     /// Document background rendering then needs to be updated.
     pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
         self.camera.offset = new_offset;
@@ -781,6 +787,7 @@ impl RnoteEngine {
     }
 
     /// Updates the current pen with the current engine state.
+    ///
     /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn update_state_current_pen(&mut self) -> WidgetFlags {
         self.penholder.update_state_current_pen(&mut EngineViewMut {
@@ -793,7 +800,8 @@ impl RnoteEngine {
         })
     }
 
-    /// clipboard content from current state.
+    /// fetches clipboard content from the current pen.
+    ///
     /// Returns (the content, mime_type)
     #[allow(clippy::type_complexity)]
     pub fn fetch_clipboard_content(
@@ -809,7 +817,8 @@ impl RnoteEngine {
         })
     }
 
-    /// Cuts clipboard content from current state.
+    /// Cuts clipboard content from the current pen.
+    ///
     /// Returns (the content, mime_type)
     #[allow(clippy::type_complexity)]
     pub fn cut_clipboard_content(

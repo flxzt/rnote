@@ -5,7 +5,8 @@ use gtk4::{
     Switch,
 };
 use num_traits::cast::ToPrimitive;
-use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
+use rnote_compose::builders::ShapeBuilderType;
+use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;

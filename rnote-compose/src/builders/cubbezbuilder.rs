@@ -6,42 +6,30 @@ use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::CubicBezier;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
+use crate::Constraints;
 
 #[derive(Debug, Clone)]
-/// The cubbez builder state
-pub enum CubBezBuilderState {
-    /// setting the start of the new cubbez
+enum CubBezBuilderState {
     Start(na::Vector2<f64>),
-    /// setting the first control point of the new cubbez
     Cp1 {
-        /// start
         start: na::Vector2<f64>,
-        /// first control point
         cp1: na::Vector2<f64>,
     },
-    /// setting the second control point of the new cubbez
     Cp2 {
-        /// start
         start: na::Vector2<f64>,
-        /// first control point
         cp1: na::Vector2<f64>,
-        /// second control point
         cp2: na::Vector2<f64>,
     },
-    /// setting the end of the new cubbez
     End {
-        /// start
         start: na::Vector2<f64>,
-        /// first control point
         cp1: na::Vector2<f64>,
-        /// second control point
         cp2: na::Vector2<f64>,
-        /// end
         end: na::Vector2<f64>,
     },
 }
@@ -50,7 +38,7 @@ pub enum CubBezBuilderState {
 /// cubic bezier builder
 pub struct CubBezBuilder {
     /// the state
-    pub state: CubBezBuilderState,
+    state: CubBezBuilderState,
 }
 
 impl ShapeBuilderCreator for CubBezBuilder {
@@ -138,17 +126,17 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         match &self.state {
             CubBezBuilderState::Start(start) => Some(Aabb::from_half_extents(
                 na::Point2::from(*start),
-                na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+                na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             )),
             CubBezBuilderState::Cp1 { start, cp1 } => Some(
                 Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
-                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+                    .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
                 let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
                 aabb.take_point(na::Point2::from(*cp1));
 
-                Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))
+                Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
             CubBezBuilderState::End {
                 start,
@@ -160,7 +148,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 aabb.take_point(na::Point2::from(*cp1));
                 aabb.take_point(na::Point2::from(*cp2));
 
-                Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))
+                Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
         }
     }
@@ -168,12 +156,12 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         match &self.state {
             CubBezBuilderState::Start(start) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *start, zoom);
             }
             CubBezBuilderState::Cp1 { start, cp1 } => {
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp1, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *cp1, zoom);
             }
             CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
                 let cubbez = CubicBezier {
@@ -184,10 +172,10 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
                 cubbez.draw_composed(cx, style);
 
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp1, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp2, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *cp1, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *cp2, zoom);
             }
             CubBezBuilderState::End {
                 start,
@@ -203,12 +191,12 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
                 cubbez.draw_composed(cx, style);
 
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *cp2, *end, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp1, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp2, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, *cp2, *end, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *cp1, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *cp2, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *end, zoom);
             }
         }
     }

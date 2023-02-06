@@ -7,11 +7,12 @@ use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::{Line, Rectangle};
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::ShapeBuilderBehaviour;
+use crate::Constraints;
 
 #[derive(Debug, Clone, Copy)]
 enum GridBuilderState {
@@ -85,7 +86,7 @@ impl ShapeBuilderBehaviour for GridBuilder {
     }
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
-        let bounds_margin = style.bounds_margin().max(drawhelpers::POS_INDICATOR_RADIUS) / zoom;
+        let bounds_margin = style.bounds_margin().max(indicators::POS_INDICATOR_RADIUS) / zoom;
 
         match &self.state {
             GridBuilderState::Start(start) => Some(Aabb::from_half_extents(
@@ -113,25 +114,25 @@ impl ShapeBuilderBehaviour for GridBuilder {
 
         match &self.state {
             GridBuilderState::Start(start) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *start, zoom);
             }
             GridBuilderState::FirstCell { start, current } => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *current, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *current, zoom);
             }
             GridBuilderState::Grids {
                 start,
                 cell_size,
                 current,
             } => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
 
                 let cols = ((current - start)[0] / cell_size[0]).floor();
                 let rows = ((current - start)[1] / cell_size[1]).floor();
 
                 if cols > 0.0 && rows > 0.0 {
-                    drawhelpers::draw_pos_indicator(cx, PenState::Up, *start + cell_size, zoom);
-                    drawhelpers::draw_pos_indicator(
+                    indicators::draw_pos_indicator(cx, PenState::Up, *start + cell_size, zoom);
+                    indicators::draw_pos_indicator(
                         cx,
                         PenState::Up,
                         *start + cell_size.component_mul(&na::vector![cols, rows]),

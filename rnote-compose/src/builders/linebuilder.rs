@@ -6,19 +6,21 @@ use piet::RenderContext;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
+use crate::Constraints;
 
 /// line builder
 #[derive(Debug, Clone)]
 pub struct LineBuilder {
     /// the start position
-    pub start: na::Vector2<f64>,
+    start: na::Vector2<f64>,
     /// the current position
-    pub current: na::Vector2<f64>,
+    current: na::Vector2<f64>,
 }
 
 impl ShapeBuilderCreator for LineBuilder {
@@ -58,7 +60,7 @@ impl ShapeBuilderBehaviour for LineBuilder {
         Some(
             self.state_as_line()
                 .composed_bounds(style)
-                .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
     }
 
@@ -67,8 +69,8 @@ impl ShapeBuilderBehaviour for LineBuilder {
         let line = self.state_as_line();
         line.draw_composed(cx, style);
 
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
         cx.restore().unwrap();
     }
 }

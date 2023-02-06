@@ -22,8 +22,7 @@ pub struct RoughOptions {
     /// the hachure angle (in rad)
     #[serde(rename = "hachure_angle")]
     pub hachure_angle: f64,
-    /// an optional seed for creating random values used in shape generation.
-    /// When using the same seed the generator produces the same shape.
+    /// An optional seed to generate reproducible shapes
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
 }

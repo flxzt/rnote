@@ -6,31 +6,25 @@ use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::QuadraticBezier;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
+use crate::Constraints;
 
 #[derive(Debug, Clone)]
 /// The quadbez builder state
-pub enum QuadBezBuilderState {
-    /// setting the start point of the new quadbez
+enum QuadBezBuilderState {
     Start(na::Vector2<f64>),
-    /// setting the control point of the new quadbez
     Cp {
-        /// start
         start: na::Vector2<f64>,
-        /// control point
         cp: na::Vector2<f64>,
     },
-    /// setting the end point of the new quadbez
     End {
-        /// start
         start: na::Vector2<f64>,
-        /// control point
         cp: na::Vector2<f64>,
-        /// end
         end: na::Vector2<f64>,
     },
 }
@@ -38,8 +32,7 @@ pub enum QuadBezBuilderState {
 #[derive(Debug, Clone)]
 /// quadratic bezier builder
 pub struct QuadBezBuilder {
-    /// the state
-    pub state: QuadBezBuilderState,
+    state: QuadBezBuilderState,
 }
 
 impl ShapeBuilderCreator for QuadBezBuilder {
@@ -109,12 +102,12 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
             crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
                 Some(Aabb::from_half_extents(
                     na::Point2::from(*start),
-                    na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+                    na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
                 ))
             }
             crate::builders::quadbezbuilder::QuadBezBuilderState::Cp { start, cp } => Some(
                 Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
-                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+                    .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
                 let stroke_width = style.stroke_width();
@@ -122,7 +115,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*end));
                 aabb.take_point(na::Point2::from(*cp));
 
-                Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))
+                Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
         }
     }
@@ -130,12 +123,12 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         match &self.state {
             QuadBezBuilderState::Start(start) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *start, zoom);
             }
             QuadBezBuilderState::Cp { start, cp } => {
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *cp, zoom);
             }
             QuadBezBuilderState::End { start, cp, end } => {
                 let quadbez = QuadraticBezier {
@@ -145,10 +138,10 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 };
                 quadbez.draw_composed(cx, style);
 
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, *cp, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *end, zoom);
             }
         }
     }

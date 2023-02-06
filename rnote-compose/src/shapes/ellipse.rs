@@ -88,7 +88,7 @@ impl Ellipse {
         Self { radii, transform }
     }
 
-    /// Approximating a ellipse with lines
+    /// Approximate with lines
     pub fn approx_with_lines(&self) -> Vec<Line> {
         let mut lines = Vec::new();
         let mut prev = kurbo::Point::new(0.0, 0.0);

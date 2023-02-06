@@ -6,19 +6,20 @@ use piet::RenderContext;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::ShapeBuilderBehaviour;
+use crate::Constraints;
 
 /// 3D coordinate system builder
 #[derive(Debug, Clone)]
 pub struct CoordSystem3DBuilder {
     /// the tip of the z axis
-    pub tip_z: na::Vector2<f64>,
+    tip_z: na::Vector2<f64>,
     /// the tip of the y axis
-    pub tip_y: na::Vector2<f64>,
+    tip_y: na::Vector2<f64>,
 }
 
 impl ShapeBuilderCreator for CoordSystem3DBuilder {
@@ -61,7 +62,7 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
                 .iter()
                 .map(|line| line.composed_bounds(style))
                 .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
-                .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
     }
 
@@ -72,8 +73,8 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
             line.draw_composed(cx, style);
         }
 
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.tip_z, zoom);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.tip_y, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Up, self.tip_z, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Down, self.tip_y, zoom);
         cx.restore().unwrap();
     }
 }

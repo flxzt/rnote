@@ -43,15 +43,25 @@ mod imp {
         fn activate(&self) {
             self.parent_activate();
 
-            // init and show the first window
+            // init and show a new window
             self.new_appwindow_init_show(None);
         }
 
         fn open(&self, files: &[gio::File], hint: &str) {
             self.parent_open(files, hint);
 
-            // open another appwindow and load the file
-            self.new_appwindow_init_show(files.first().cloned());
+            let input_file = files.first().cloned();
+            if let Some(appwindow) = self
+                .instance()
+                .active_window()
+                .map(|w| w.downcast::<RnAppWindow>().unwrap())
+            {
+                if let Some(input_file) = input_file {
+                    appwindow.open_file_w_dialogs(input_file, None, true);
+                }
+            } else {
+                self.new_appwindow_init_show(input_file);
+            }
         }
     }
 

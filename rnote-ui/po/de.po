@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-02 13:26+0100\n"
-"PO-Revision-Date: 2023-02-02 17:41+0000\n"
+"PO-Revision-Date: 2023-02-04 15:49+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -133,7 +133,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Close window"
-msgstr "Schließe das Fenster"
+msgstr "Fenster schließen"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -394,7 +394,7 @@ msgstr "Exportiere Dokumentseiten"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
 msgid "Page files naming:"
-msgstr "Seiten Dateien-Benennung:"
+msgstr "Seiten Dateienbenennung:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"

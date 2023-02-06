@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-02 13:26+0100\n"
-"PO-Revision-Date: 2023-01-14 07:23+0000\n"
+"PO-Revision-Date: 2023-02-05 17:36+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -99,10 +99,6 @@ msgid "New Document"
 msgstr "Yeni Belge"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
-#, fuzzy
-#| msgid ""
-#| "Creating a new document will discard any unsaved\n"
-#| "      changes. Do you want to save the current document?"
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
@@ -147,10 +143,8 @@ msgstr ""
 "değişiklikler kalıcı olarak kaybolacak."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Save document"
 msgid "Unsaved documents"
-msgstr "Belgeyi kaydet"
+msgstr "Kaydedilmemiş belge"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard all"
@@ -227,7 +221,7 @@ msgstr "İçe aktar"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Bilgi"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
@@ -398,10 +392,8 @@ msgid "Export document pages"
 msgstr "Belge sayfalarını dışa aktar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page files naming:"
-msgstr "Sayfa boşluğu"
+msgstr "Sayfa dosyası adlandırma:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export directory"
@@ -982,10 +974,8 @@ msgid "_Continuous vertical"
 msgstr "_Sürekli dikey"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-#, fuzzy
-#| msgid "_Infinite"
 msgid "_Semi infinite"
-msgstr "_Sonsuz"
+msgstr "_Yarı sonsuz"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
@@ -1028,16 +1018,12 @@ msgid "Zoom to fit page width"
 msgstr "Sayfa genişliğine sığdırmak için yakınlaştır"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
-#, fuzzy
-#| msgid "Stroke dots radii"
 msgid "Stroke color"
-msgstr "Darbe nokta yarıçapları"
+msgstr "Darbe rengi"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill color"
-msgstr "Dolgu biçimi"
+msgstr "Dolgu rengi"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1094,24 +1080,19 @@ msgstr "Belgeyi kaydet"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _left"
-msgstr ""
+msgstr "_Sola taşı"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _right"
-msgstr ""
+msgstr "Sağa _taşı"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close all _other tabs"
-msgstr "Etkin pencereyi kapat"
+msgstr "_Diğer tüm sekmeleri kapat"
 
 #: rnote-ui/data/ui/overlays.ui:165
-#, fuzzy
-#| msgid "Close tab"
 msgid "_Close"
-msgstr "Sekmeyi kapat"
+msgstr "_Kapat"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -1336,13 +1317,11 @@ msgstr "Fare ikinci düğme eylemini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:405
 msgid "Touch two-finger long-press action"
-msgstr ""
+msgstr "Dokunma, iki parmakla uzun basma eylemi"
 
 #: rnote-ui/data/ui/settingspanel.ui:406
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "Fare ikinci düğme eylemini ayarla"
+msgstr "Dokunma, iki parmakla uzun basma hareketi için eylem ayarla"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"
@@ -1355,12 +1334,9 @@ msgid "Show keyboard shortcuts"
 msgstr "Klavye kısayolarını göster"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgctxt "shortcut window"
 msgid "Close the active tab"
-msgstr "Etkin pencereyi kapat"
+msgstr "Aktif sekmeyi kapat"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
@@ -1490,8 +1466,6 @@ msgid "Paste clipboard"
 msgstr "Panodan yapıştır"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-#, fuzzy
-#| msgid "Duplicate selection"
 msgctxt "shortcut window"
 msgid "Duplicate selection"
 msgstr "Seçimi ikizle"
@@ -1759,25 +1733,19 @@ msgstr "Çalışma alanı dizinini değiştir"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:234
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Çeşitli"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:242
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "2B koordinat sistemi"
+msgstr "Koordinat Sistemleri"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:250
-#, fuzzy
-#| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "Elips"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:257
-#, fuzzy
-#| msgid "Curved"
 msgid "Curves"
-msgstr "Kavisli"
+msgstr "Eğriler"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:267
 msgid "Line"

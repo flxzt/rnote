@@ -195,6 +195,7 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
     padding: 8px 12px;
 }
 
+.iconpicker_label,
 .groupediconpicker_label {
     line-height: 1.25em; /* close to the default line height */
     min-height: 2.5em; /* 2 lines, i.e. 1.25em * 2 */

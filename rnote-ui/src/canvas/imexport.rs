@@ -175,19 +175,18 @@ impl RnCanvas {
         Ok(())
     }
 
-    pub(crate) async fn paste_native_clipboard(
-        &self,
-        clipboard_data: Vec<u8>,
-    ) -> anyhow::Result<()> {
+    pub(crate) async fn paste_native_clipboard(&self, bytes: Vec<u8>) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<NativeClipboardContent>>();
 
         rayon::spawn(move || {
             let result = || -> Result<NativeClipboardContent, anyhow::Error> {
-                Ok(serde_json::from_slice(&clipboard_data)?)
+                let text = String::from_utf8(bytes)?;
+                //log::debug!("\"\n{text}\n\"");
+                Ok(serde_json::from_str(&text)?)
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in paste_native_clipboard() failed. Receiver already dropped.");
             }
         });
         let content = oneshot_receiver.await??;

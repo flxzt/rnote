@@ -159,7 +159,7 @@ impl PenBehaviour for Selector {
 
             return Ok((
                 Some((
-                    serde_json::to_vec(&clipboard_content)?,
+                    serde_json::to_string(&clipboard_content)?.into_bytes(),
                     RNOTE_NATIVE_CLIPBOARD_MIME_TYPE.to_string(),
                 )),
                 widget_flags,
@@ -190,7 +190,7 @@ impl PenBehaviour for Selector {
 
             return Ok((
                 Some((
-                    serde_json::to_vec(&clipboard_content)?,
+                    serde_json::to_string(&clipboard_content)?.into_bytes(),
                     RNOTE_NATIVE_CLIPBOARD_MIME_TYPE.to_string(),
                 )),
                 widget_flags,

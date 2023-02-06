@@ -777,14 +777,25 @@ impl RnAppWindow {
                     log::debug!("recognized clipboard content format: {RNOTE_NATIVE_CLIPBOARD_MIME_TYPE}");
                     match appwindow.clipboard().read_future(&[RNOTE_NATIVE_CLIPBOARD_MIME_TYPE], glib::PRIORITY_DEFAULT).await {
                         Ok((input_stream, _)) => {
-                            match input_stream.read_all_future(Vec::new(), glib::PRIORITY_DEFAULT).await {
-                                Ok((bytes, n, _)) => {
-                                    log::debug!("{n} bytes read from clipboard");
-                                    if let Err(e) = canvas.paste_native_clipboard(bytes).await {
-                                        log::error!("failed to paste clipboard, Err: {e:?}");
+                            let mut acc = Vec::new();
+                            loop {
+                                match input_stream.read_future(vec![0; 4096], glib::PRIORITY_DEFAULT).await {
+                                    Ok((mut bytes, n)) => {
+                                        if n == 0 {
+                                            break;
+                                        }
+                                        acc.append(&mut bytes);
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to read clipboard input stream, Err: {e:?}");
+                                        acc.clear();
+                                        break;
                                     }
                                 }
-                                Err(e) => {
+                            }
+
+                            if !acc.is_empty() {
+                                if let Err(e) = canvas.paste_native_clipboard(acc).await {
                                     log::error!("failed to paste clipboard, Err: {e:?}");
                                 }
                             }
@@ -794,29 +805,39 @@ impl RnAppWindow {
                         }
                     };
                 }));
-/* 
             // TODO: Fix the broken svg import
             } else if content_formats.contain_mime_type("image/svg+xml") {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     log::debug!("recognized clipboard content: svg image");
                     match appwindow.clipboard().read_future(&["image/svg+xml"], glib::PRIORITY_DEFAULT).await {
                         Ok((input_stream, _)) => {
-                            match input_stream.read_all_future(Vec::new(), glib::PRIORITY_DEFAULT).await {
-                                Ok((bytes, n, _)) => {
-                                    log::debug!("{n} bytes read from clipboard");
-                                    match String::from_utf8(bytes) {
-                                        Ok(text) => {
-                                            if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
-                                                log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err: {e:?}");
-                                            };
+                            let mut acc = Vec::new();
+                            loop {
+                                match input_stream.read_future(vec![0; 4096], glib::PRIORITY_DEFAULT).await {
+                                    Ok((mut bytes, n)) => {
+                                        if n == 0 {
+                                            break;
                                         }
-                                        Err(e) => {
-                                            log::error!("failed to paste clipboard, Err: {e:?}");
-                                        }
+                                        acc.append(&mut bytes);
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to read clipboard input stream, Err: {e:?}");
+                                        acc.clear();
+                                        break;
                                     }
                                 }
-                                Err(e) => {
-                                    log::error!("failed to paste clipboard, Err: {e:?}");
+                            }
+
+                            if !acc.is_empty() {
+                                match String::from_utf8(acc) {
+                                    Ok(text) => {
+                                        if let Err(e) = canvas.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
+                                            log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err: {e:?}");
+                                        };
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to paste clipboard, Err: {e:?}");
+                                    }
                                 }
                             }
                         }
@@ -825,7 +846,6 @@ impl RnAppWindow {
                         }
                     };
                 }));
- */
             } else if content_formats.contain_mime_type("image/png")  ||
                       content_formats.contain_mime_type("image/jpeg") ||
                       content_formats.contain_mime_type("image/jpg")  ||

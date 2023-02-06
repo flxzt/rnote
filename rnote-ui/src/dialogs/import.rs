@@ -82,7 +82,7 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnAppWindow) {
     filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Open file"))
+        .title(&gettext("Open File"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Open"))
@@ -132,10 +132,10 @@ pub(crate) fn filechooser_import_file(appwindow: &RnAppWindow) {
     filter.add_suffix("png");
     filter.add_suffix("jpg");
     filter.add_suffix("jpeg");
-    filter.set_name(Some(&gettext("JPG, PDF, PNG, SVG, Xopp")));
+    filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Import file"))
+        .title(&gettext("Import File"))
         .modal(true)
         .transient_for(appwindow)
         .accept_label(&gettext("Import"))

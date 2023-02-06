@@ -106,7 +106,7 @@
                     <child type="start">
                       <object class="GtkButton" id="flap_close_button">
                         <property name="icon_name">right-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Close the folded flap</property>
+                        <property name="tooltip_text" translatable="yes">Close the Folded Flap</property>
                       </object>
                     </child>
                     <child type="end">

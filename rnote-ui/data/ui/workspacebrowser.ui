@@ -40,7 +40,7 @@
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkButton" id="dir_controls_dir_up_button">
-                        <property name="tooltip_text" translatable="yes">Move directory up</property>
+                        <property name="tooltip_text" translatable="yes">Move Directory up</property>
                         <property name="halign">fill</property>
                         <property name="hexpand">true</property>
                         <child>
@@ -67,7 +67,7 @@
                             <property name="direction">down</property>
                             <property name="icon_name">dir-actions-symbolic</property>
                             <property name="popover">dir_controls_actions_popover</property>
-                            <property name="tooltip_text" translatable="yes">Workspace directory actions</property>
+                            <property name="tooltip_text" translatable="yes">Workspace Directory Actions</property>
                             <style>
                               <class name="flat" />
                             </style>
@@ -118,7 +118,7 @@
       <menu id="workspace_dir_actions_menu_model">
         <section>
           <item>
-            <attribute name="label" translatable="yes">Create new folder</attribute>
+            <attribute name="label" translatable="yes">Create new Folder</attribute>
             <attribute name="action">workspacebrowser.create-folder</attribute>
           </item>
         </section>

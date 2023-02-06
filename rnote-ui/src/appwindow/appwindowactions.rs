@@ -674,7 +674,7 @@ impl RnAppWindow {
             if !canvas.engine().borrow().store.selection_keys_unordered().is_empty() {
                 dialogs::export::dialog_export_selection_w_prefs(&appwindow, &appwindow.active_tab().canvas());
             } else {
-                appwindow.overlays().dispatch_toast_error(&gettext("Export selection failed, nothing selected."));
+                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, nothing selected."));
             }
         }));
 

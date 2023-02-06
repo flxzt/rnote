@@ -15,7 +15,7 @@
         </child>
         <child>
           <object class="AdwWindowTitle" id="main_title">
-            <property name="title" translatable="yes">New document</property>
+            <property name="title" translatable="yes">New Document</property>
             <property name="subtitle" translatable="yes">Draft</property>
             <style>
               <class name="main_title" />
@@ -36,14 +36,14 @@
                 <child>
                   <object class="GtkToggleButton" id="left_flapreveal_toggle">
                     <property name="icon_name">flap-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
+                    <property name="tooltip_text" translatable="yes">Reveal / Hide Flap</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton">
                     <property name="icon-name">tab-new-filled-symbolic</property>
                     <property name="action-name">win.new-tab</property>
-                    <property name="tooltip-text" translatable="yes">New tab</property>
+                    <property name="tooltip-text" translatable="yes">New Tab</property>
                   </object>
                 </child>
               </object>
@@ -84,14 +84,14 @@
                     <child>
                       <object class="GtkButton">
                         <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Add page</property>
+                        <property name="tooltip_text" translatable="yes">Add Page</property>
                         <property name="action-name">win.add-page-to-doc</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton">
                         <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
+                        <property name="tooltip_text" translatable="yes">Resize Document to Fit Strokes</property>
                         <property name="action-name">win.resize-to-fit-strokes</property>
                       </object>
                     </child>
@@ -106,7 +106,7 @@
             <property name="spacing">3</property>
             <child>
               <object class="GtkButton">
-                <property name="tooltip-text" translatable="yes">Save document</property>
+                <property name="tooltip-text" translatable="yes">Save Document</property>
                 <property name="icon-name">doc-save-symbolic</property>
                 <property name="action-name">win.save-doc</property>
               </object>
@@ -114,7 +114,7 @@
             <child>
               <object class="GtkToggleButton" id="right_flapreveal_toggle">
                 <property name="icon_name">flap-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Reveal / hide flap</property>
+                <property name="tooltip_text" translatable="yes">Reveal / Hide Flap</property>
               </object>
             </child>
             <child>

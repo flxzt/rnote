@@ -51,7 +51,7 @@
         <child>
           <object class="GtkButton" id="move_selected_workspace_up_button">
             <property name="icon_name">up-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Move selected workspace up</property>
+            <property name="tooltip_text" translatable="yes">Move Selected Workspace Up</property>
             <style>
               <class name="flat" />
             </style>
@@ -60,7 +60,7 @@
         <child>
           <object class="GtkButton" id="move_selected_workspace_down_button">
             <property name="icon_name">down-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Move selected workspace down</property>
+            <property name="tooltip_text" translatable="yes">Move Selected Workspace Down</property>
             <style>
               <class name="flat" />
             </style>
@@ -69,7 +69,7 @@
         <child>
           <object class="GtkButton" id="add_workspace_button">
             <property name="icon_name">plus-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Add workspace</property>
+            <property name="tooltip_text" translatable="yes">Add Workspace</property>
             <style>
               <class name="flat" />
             </style>
@@ -78,7 +78,7 @@
         <child>
           <object class="GtkButton" id="remove_selected_workspace_button">
             <property name="icon_name">trash-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Remove selected workspace</property>
+            <property name="tooltip_text" translatable="yes">Remove Selected Workspace</property>
             <style>
               <class name="flat" />
               <class name="flat-destructive-action" />
@@ -88,7 +88,7 @@
         <child>
           <object class="GtkButton" id="edit_selected_workspace_button">
             <property name="icon-name">edit-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Edit selected workspace</property>
+            <property name="tooltip_text" translatable="yes">Edit Selected Workspace</property>
             <style>
               <class name="flat" />
             </style>

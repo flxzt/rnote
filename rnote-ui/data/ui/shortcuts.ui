@@ -11,37 +11,37 @@
             <property name="title" context="shortcut window" translatable="yes">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Show keyboard shortcuts</property>
+                <property name="title" context="shortcut window" translatable="yes">Show Keyboard Shortcuts</property>
                 <property name="accelerator">&lt;ctrl&gt;question</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Close the active tab</property>
+                <property name="title" context="shortcut window" translatable="yes">Close the Active Tab</property>
                 <property name="accelerator">&lt;ctrl&gt;w</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Quit the application</property>
+                <property name="title" context="shortcut window" translatable="yes">Quit the Application</property>
                 <property name="accelerator">&lt;ctrl&gt;q</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Open the canvas menu</property>
+                <property name="title" context="shortcut window" translatable="yes">Open the Canvas-Menu</property>
                 <property name="accelerator">F9</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Open the app menu</property>
+                <property name="title" context="shortcut window" translatable="yes">Open the App-Menu</property>
                 <property name="accelerator">F10</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Toggle fullscreen</property>
+                <property name="title" context="shortcut window" translatable="yes">Toggle Fullscreen</property>
                 <property name="accelerator">F11</property>
               </object>
             </child>
@@ -141,43 +141,43 @@
             <property name="title" context="shortcut window" translatable="yes">Document</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">New document</property>
+                <property name="title" context="shortcut window" translatable="yes">New Document</property>
                 <property name="accelerator">&lt;ctrl&gt;n</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Open document</property>
+                <property name="title" context="shortcut window" translatable="yes">Open Document</property>
                 <property name="accelerator">&lt;ctrl&gt;o</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Save document</property>
+                <property name="title" context="shortcut window" translatable="yes">Save Document</property>
                 <property name="accelerator">&lt;ctrl&gt;s</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Save document as</property>
+                <property name="title" context="shortcut window" translatable="yes">Save Document As</property>
                 <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;s</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Clear document</property>
+                <property name="title" context="shortcut window" translatable="yes">Clear Document</property>
                 <property name="accelerator">&lt;ctrl&gt;l</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Print document</property>
+                <property name="title" context="shortcut window" translatable="yes">Print Document</property>
                 <property name="accelerator">&lt;ctrl&gt;p</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Import file</property>
+                <property name="title" context="shortcut window" translatable="yes">Import File</property>
                 <property name="accelerator">&lt;ctrl&gt;i</property>
               </object>
             </child>
@@ -186,25 +186,25 @@
                 <property name="title" context="shortcut window" translatable="yes">Drawing</property>
                 <child>
                   <object class="GtkShortcutsShortcut">
-                    <property name="title" context="shortcut window" translatable="yes">Copy to clipboard</property>
+                    <property name="title" context="shortcut window" translatable="yes">Copy to Clipboard</property>
                     <property name="accelerator">&lt;ctrl&gt;c</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
-                    <property name="title" context="shortcut window" translatable="yes">Cut to clipboard</property>
+                    <property name="title" context="shortcut window" translatable="yes">Cut to Clipboard</property>
                     <property name="accelerator">&lt;ctrl&gt;x</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
-                    <property name="title" context="shortcut window" translatable="yes">Paste clipboard</property>
+                    <property name="title" context="shortcut window" translatable="yes">Paste Clipboard</property>
                     <property name="accelerator">&lt;ctrl&gt;v</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
-                    <property name="title" context="shortcut window" translatable="yes">Duplicate selection</property>
+                    <property name="title" context="shortcut window" translatable="yes">Duplicate Selection</property>
                     <property name="accelerator">&lt;ctrl&gt;d</property>
                   </object>
                 </child>

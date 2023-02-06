@@ -15,6 +15,7 @@ use crate::{render, DrawBehaviour};
 
 use super::{EngineConfig, EngineSnapshot, RnoteEngine};
 
+/// Document export format
 #[derive(
     Debug,
     Clone,
@@ -58,6 +59,7 @@ impl TryFrom<u32> for DocExportFormat {
 }
 
 impl DocExportFormat {
+    /// File extension for the format
     pub fn file_ext(self) -> String {
         match self {
             DocExportFormat::Svg => String::from("svg"),
@@ -67,13 +69,17 @@ impl DocExportFormat {
     }
 }
 
+/// Document export preferences
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "doc_export_prefs")]
 pub struct DocExportPrefs {
+    /// whether the background should be exported
     #[serde(rename = "with_background")]
     pub with_background: bool,
+    /// Wether the background pattern should be exported
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// The export format
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
 }
@@ -88,6 +94,7 @@ impl Default for DocExportPrefs {
     }
 }
 
+/// document pages export format
 #[derive(
     Debug,
     Clone,
@@ -117,17 +124,23 @@ impl Default for DocPagesExportFormat {
     }
 }
 
+/// Document pages export preferences
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "doc_pages_export_prefs")]
 pub struct DocPagesExportPrefs {
+    /// whether the background should be exported
     #[serde(rename = "with_background")]
     pub with_background: bool,
+    /// Wether the background pattern should be exported
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Export format
     #[serde(rename = "export_format")]
     pub export_format: DocPagesExportFormat,
+    /// The bitmap scale-factor in relation to the actual size
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
+    /// Quality when exporting as jpeg
     #[serde(rename = "jpg_quality")]
     pub jpeg_quality: u8,
 }
@@ -167,6 +180,7 @@ impl DocPagesExportFormat {
     }
 }
 
+/// Selection export format
 #[derive(
     Debug,
     Clone,
@@ -222,16 +236,22 @@ impl TryFrom<u32> for SelectionExportFormat {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "selection_export_prefs")]
 pub struct SelectionExportPrefs {
+    /// whether the background should be exported
     #[serde(rename = "with_background")]
     pub with_background: bool,
+    /// whether the background pattern should be exported
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Export format
     #[serde(rename = "export_format")]
     pub export_format: SelectionExportFormat,
+    /// The bitmap scale-factor in relation to the actual size
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
+    /// Quality when exporting as jpeg
     #[serde(rename = "jpg_quality")]
     pub jpeg_quality: u8,
+    /// The margins of the export extending the bounds of the selection
     #[serde(rename = "margin")]
     pub margin: f64,
 }
@@ -249,22 +269,26 @@ impl Default for SelectionExportPrefs {
     }
 }
 
+/// Export preferences
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "export_prefs")]
 pub struct ExportPrefs {
+    /// Document export preferences
     #[serde(rename = "doc_export_prefs")]
     pub doc_export_prefs: DocExportPrefs,
+    //// Document pages export preferences
     #[serde(rename = "doc_pages_export_prefs")]
     pub doc_pages_export_prefs: DocPagesExportPrefs,
+    /// Selection export preferences
     #[serde(rename = "selection_export_prefs")]
     pub selection_export_prefs: SelectionExportPrefs,
 }
 
 impl RnoteEngine {
-    /// The used image scale factor for any strokes that are converted to bitmap images on export
+    /// The used image scale factor for any strokes that are converted to bitmap images on export.
     pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.5;
 
-    /// Saves the current state as a .rnote file.
+    /// Saves the current document as a .rnote file.
     pub fn save_as_rnote_bytes(
         &self,
         file_name: String,
@@ -290,7 +314,7 @@ impl RnoteEngine {
         Ok(oneshot_receiver)
     }
 
-    /// Extracts the current engine config
+    /// Extracts the current engine config.
     pub fn extract_engine_config(&self) -> anyhow::Result<EngineConfig> {
         let engine_config = EngineConfig {
             document: serde_json::to_value(self.document)?,
@@ -304,18 +328,19 @@ impl RnoteEngine {
         Ok(engine_config)
     }
 
-    /// Exports the current engine config as JSON string
+    /// Exports the current engine config as JSON string.
     pub fn export_engine_config_as_json(&self) -> anyhow::Result<String> {
         Ok(serde_json::to_string(&self.extract_engine_config()?)?)
     }
 
-    /// Exports the entire engine state as JSON string
+    /// Exports the entire engine state as JSON string.
+    ///
     /// Only use for debugging
     pub fn export_state_as_json(&self) -> anyhow::Result<String> {
         Ok(serde_json::to_string_pretty(self)?)
     }
 
-    /// Exports the doc.
+    /// Exports the document.
     pub fn export_doc(
         &self,
         title: String,
@@ -494,7 +519,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Exports the doc with the strokes as a Xournal++ .xopp file. Excluding the current selection.
+    /// Exports the document as a Xournal++ .xopp file.
     pub fn export_doc_as_xopp_bytes(
         &self,
         title: String,
@@ -632,7 +657,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Exports the doc pages.
+    /// Exports the document pages.
     pub fn export_doc_pages(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
@@ -650,7 +675,7 @@ impl RnoteEngine {
         }
     }
 
-    /// Exports the doc with the strokes as a SVG string.
+    /// Exports the document as SVG.
     pub fn export_doc_pages_as_svgs_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
@@ -704,7 +729,9 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Exports the document pages a bitmap bytes. Panics if the format pref is not set to a bitmap variant
+    /// Exports the document pages as bitmap images.
+    ///
+    /// Returns an Error if the format pref is not set to a bitmap variant.
     pub fn export_doc_pages_as_bitmap_bytes(
         &self,
         doc_pages_export_prefs_override: Option<DocPagesExportPrefs>,
@@ -713,14 +740,6 @@ impl RnoteEngine {
 
         let doc_pages_export_prefs =
             doc_pages_export_prefs_override.unwrap_or(self.export_prefs.doc_pages_export_prefs);
-
-        let bitmapimage_format = match doc_pages_export_prefs.export_format {
-            DocPagesExportFormat::Svg => unreachable!(),
-            DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
-            DocPagesExportFormat::Jpeg => {
-                image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
-            }
-        };
 
         let snapshot = self.take_snapshot();
 
@@ -738,6 +757,14 @@ impl RnoteEngine {
 
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
+                let bitmapimage_format = match doc_pages_export_prefs.export_format {
+                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
+                    DocPagesExportFormat::Jpeg => {
+                        image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
+                    }
+                };
+
                 gen_doc_pages_svgs(pages_strokes, &snapshot, doc_pages_export_prefs)?
                     .into_iter()
                     .map(|page_svg| {
@@ -760,7 +787,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Exports the current selection
+    /// Exports the current selection.
     pub fn export_selection(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
@@ -778,7 +805,7 @@ impl RnoteEngine {
         }
     }
 
-    /// Exports the selection to SVG bytes.
+    /// Exports the selection as SVG.
     pub fn export_selection_as_svg_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
@@ -826,7 +853,9 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Exports the selection a bitmap bytes. Returns an error if the format pref is not set to a bitmap format
+    /// Exports the selection a bitmap bytes.
+    ///
+    /// Returns an error if the format pref is not set to a bitmap format
     pub fn export_selection_as_bitmap_bytes(
         &self,
         selection_export_prefs_override: Option<SelectionExportPrefs>,
@@ -882,6 +911,7 @@ impl RnoteEngine {
 }
 
 /// generates the doc svg.
+///
 /// without root or xml header.
 fn gen_doc_svg(
     doc_w_content_bounds: Aabb,
@@ -918,6 +948,7 @@ fn gen_doc_svg(
 }
 
 /// generates the doc pages svgs.
+///
 /// without root or xml header.
 fn gen_doc_pages_svgs(
     pages_strokes: Vec<(Aabb, Vec<StrokeKey>)>,
@@ -958,6 +989,7 @@ fn gen_doc_pages_svgs(
 }
 
 /// generates the selection svg.
+///
 /// without root or xml header.
 fn gen_selection_svg(
     selection_keys: Vec<StrokeKey>,

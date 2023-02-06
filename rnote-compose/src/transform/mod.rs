@@ -132,7 +132,7 @@ impl Transform {
         )
     }
 
-    /// to kurbo affine
+    /// to kurbo
     pub fn to_kurbo(&self) -> kurbo::Affine {
         self.affine.to_kurbo()
     }

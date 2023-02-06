@@ -1,6 +1,6 @@
 mod composer;
 /// Draw helpers
-pub mod drawhelpers;
+pub mod indicators;
 /// The rough module for rough styles
 pub mod rough;
 /// The smooth module for smooth styles

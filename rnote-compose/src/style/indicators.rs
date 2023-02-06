@@ -1,4 +1,4 @@
-//! Helpers for drawing edit nodes, guides, etc.
+//! Helpers for drawing indicators, edit nodes, guides, etc.
 
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};

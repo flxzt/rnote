@@ -10,7 +10,8 @@ use crate::style::Composer;
 use crate::{PenPath, Style};
 
 use super::penpathbuilderbehaviour::PenPathBuilderCreator;
-use super::{Constraints, PenPathBuilderBehaviour, PenPathBuilderProgress};
+use super::{PenPathBuilderBehaviour, PenPathBuilderProgress};
+use crate::Constraints;
 
 #[derive(Debug, Clone)]
 pub(crate) enum PenPathCurvedBuilderState {
@@ -21,9 +22,9 @@ pub(crate) enum PenPathCurvedBuilderState {
 #[derive(Debug, Clone)]
 /// The pen path builder
 pub struct PenPathCurvedBuilder {
-    pub(crate) state: PenPathCurvedBuilderState,
-    /// Buffered elements, which are filled up by new pen events and used to try to build path segments
-    pub buffer: Vec<Element>,
+    state: PenPathCurvedBuilderState,
+    /// Buffered elements, which are filled up by new pen events and used to build path segments
+    buffer: Vec<Element>,
     /// the index of the current first unprocessed buffer element
     i: usize,
 }

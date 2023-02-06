@@ -1,12 +1,10 @@
-use std::time::Instant;
-
 use p2d::bounding_volume::Aabb;
+use std::time::Instant;
 
 use crate::penevents::PenEvent;
 use crate::penpath::Element;
+use crate::Constraints;
 use crate::{Shape, Style};
-
-use super::Constraints;
 
 #[derive(Debug, Clone)]
 /// the builder progress

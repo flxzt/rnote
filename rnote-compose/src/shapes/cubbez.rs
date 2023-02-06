@@ -69,9 +69,7 @@ impl ShapeBehaviour for CubicBezier {
 }
 
 impl CubicBezier {
-    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them,
-    /// and only being affected by their four points (locality), so are easily calculated and easy to work with.
-    /// making them a good spline to represent pen paths.
+    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them.
     /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
     pub fn new_w_catmull_rom(
         first: na::Vector2<f64>,
@@ -79,7 +77,7 @@ impl CubicBezier {
         third: na::Vector2<f64>,
         forth: na::Vector2<f64>,
     ) -> Option<Self> {
-        // Tension factor (tau)
+        // Tension factor
         let tension = 1.0;
 
         // Creating cubic bezier with catmull-rom

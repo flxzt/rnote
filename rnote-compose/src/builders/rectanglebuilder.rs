@@ -1,25 +1,24 @@
-use std::time::Instant;
-
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::shape::Cuboid;
 use piet::RenderContext;
+use std::time::Instant;
 
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
+use crate::Constraints;
 use crate::{Shape, Style, Transform};
 
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{Constraints, ShapeBuilderBehaviour};
-
-/// rect builder
+/// rectangle builder
 #[derive(Debug, Clone)]
 pub struct RectangleBuilder {
     /// the start position
-    pub start: na::Vector2<f64>,
+    start: na::Vector2<f64>,
     /// the current position
-    pub current: na::Vector2<f64>,
+    current: na::Vector2<f64>,
 }
 
 impl ShapeBuilderCreator for RectangleBuilder {
@@ -57,7 +56,7 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
         Some(
             self.state_as_rect()
                 .composed_bounds(style)
-                .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
     }
 
@@ -66,8 +65,8 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
         let rect = self.state_as_rect();
         rect.draw_composed(cx, style);
 
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
         cx.restore().unwrap();
     }
 }

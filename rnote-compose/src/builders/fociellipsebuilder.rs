@@ -7,11 +7,13 @@ use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
+use crate::Constraints;
 
 #[derive(Debug, Clone)]
 /// The foci ellipse builder state
@@ -33,7 +35,7 @@ pub enum FociEllipseBuilderState {
 /// building ellipse with foci and point
 pub struct FociEllipseBuilder {
     /// the state
-    pub state: FociEllipseBuilderState,
+    state: FociEllipseBuilderState,
 }
 
 impl ShapeBuilderCreator for FociEllipseBuilder {
@@ -98,11 +100,11 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         match &self.state {
             FociEllipseBuilderState::First(point) => Some(Aabb::from_half_extents(
                 na::Point2::from(*point),
-                na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+                na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             )),
             FociEllipseBuilderState::Foci(foci) => Some(
                 Aabb::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+                    .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
@@ -110,7 +112,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
                 Some(
                     ellipse
                         .composed_bounds(style)
-                        .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                        .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
                 )
             }
         }
@@ -120,22 +122,22 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         cx.save().unwrap();
         match &self.state {
             FociEllipseBuilderState::First(point) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *point, zoom);
             }
             FociEllipseBuilderState::Foci(foci) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, foci[1], zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, foci[1], zoom);
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
 
                 ellipse.draw_composed(cx, style);
 
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[0], *point, zoom);
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[1], *point, zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, foci[0], *point, zoom);
+                indicators::draw_vec_indicator(cx, PenState::Down, foci[1], *point, zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
+                indicators::draw_pos_indicator(cx, PenState::Up, foci[1], zoom);
+                indicators::draw_pos_indicator(cx, PenState::Down, *point, zoom);
             }
         }
         cx.restore().unwrap();

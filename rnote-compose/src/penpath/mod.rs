@@ -96,7 +96,7 @@ impl TransformBehaviour for PenPath {
 }
 
 impl PenPath {
-    /// A new pen path with a first dot segment
+    /// A new pen path
     pub fn new(start: Element) -> Self {
         Self {
             start,
@@ -137,12 +137,9 @@ impl PenPath {
         Some(Self { start, segments })
     }
 
-    /// Extends the pen path with the segments of the other.
-    pub fn extend_w_other(&mut self, other: Self) {
-        self.segments.extend(other.segments);
-    }
-
     /// Checks whether bounds collide with the path. If it does, it returns the indices of the colliding segments
+    ///
+    /// `loosened` loosens the segments hitboxes by the value
     pub fn hittest(&self, hit: &Aabb, loosened: f64) -> Vec<usize> {
         self.hitboxes_w_segs_indices()
             .into_iter()

@@ -15,7 +15,7 @@ use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::style::drawhelpers;
+use rnote_compose::style::indicators;
 use rnote_compose::{color, Color};
 
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
@@ -519,7 +519,7 @@ impl Selector {
 
         let mut clip_path = kurbo::BezPath::new();
         clip_path.extend(
-            drawhelpers::rectangular_node_shape(
+            indicators::rectangular_node_shape(
                 resize_tl_node_state,
                 resize_tl_node_bounds,
                 total_zoom,
@@ -527,7 +527,7 @@ impl Selector {
             .path_elements(0.1),
         );
         clip_path.extend(
-            drawhelpers::rectangular_node_shape(
+            indicators::rectangular_node_shape(
                 resize_tr_node_state,
                 resize_tr_node_bounds,
                 total_zoom,
@@ -535,7 +535,7 @@ impl Selector {
             .path_elements(0.1),
         );
         clip_path.extend(
-            drawhelpers::rectangular_node_shape(
+            indicators::rectangular_node_shape(
                 resize_bl_node_state,
                 resize_bl_node_bounds,
                 total_zoom,
@@ -543,7 +543,7 @@ impl Selector {
             .path_elements(0.1),
         );
         clip_path.extend(
-            drawhelpers::rectangular_node_shape(
+            indicators::rectangular_node_shape(
                 resize_br_node_state,
                 resize_br_node_bounds,
                 total_zoom,
@@ -552,7 +552,7 @@ impl Selector {
         );
 
         clip_path.extend(
-            drawhelpers::circular_node_shape(rotate_node_state, rotate_node_sphere, total_zoom)
+            indicators::circular_node_shape(rotate_node_state, rotate_node_sphere, total_zoom)
                 .path_elements(0.1),
         );
         // enclosing the shapes with the selector (!) bounds ( in reversed winding ),
@@ -579,28 +579,28 @@ impl Selector {
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         // Rotate Node
-        drawhelpers::draw_circular_node(piet_cx, rotate_node_state, rotate_node_sphere, total_zoom);
+        indicators::draw_circular_node(piet_cx, rotate_node_state, rotate_node_sphere, total_zoom);
 
         // Resize Nodes
-        drawhelpers::draw_rectangular_node(
+        indicators::draw_rectangular_node(
             piet_cx,
             resize_tl_node_state,
             resize_tl_node_bounds,
             total_zoom,
         );
-        drawhelpers::draw_rectangular_node(
+        indicators::draw_rectangular_node(
             piet_cx,
             resize_tr_node_state,
             resize_tr_node_bounds,
             total_zoom,
         );
-        drawhelpers::draw_rectangular_node(
+        indicators::draw_rectangular_node(
             piet_cx,
             resize_bl_node_state,
             resize_bl_node_bounds,
             total_zoom,
         );
-        drawhelpers::draw_rectangular_node(
+        indicators::draw_rectangular_node(
             piet_cx,
             resize_br_node_state,
             resize_br_node_bounds,

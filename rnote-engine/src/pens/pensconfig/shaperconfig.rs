@@ -1,7 +1,9 @@
 use rand::{Rng, SeedableRng};
-use rnote_compose::builders::{ConstraintRatio, Constraints, ShapeBuilderType};
+use rnote_compose::builders::ShapeBuilderType;
+use rnote_compose::constraints::ConstraintRatio;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::Constraints;
 use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 

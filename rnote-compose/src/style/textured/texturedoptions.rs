@@ -10,7 +10,7 @@ use super::textureddotsdistribution::TexturedDotsDistribution;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]
 pub struct TexturedOptions {
-    /// An optional seed to generate reproducible strokes
+    /// An optional seed to generate reproducible shapes
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
     /// The width
@@ -48,7 +48,6 @@ impl TexturedOptions {
     pub(super) const DOTS_RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
     /// The weight factor the stroke width has to the radii of the dots
     pub(super) const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
-
     /// The minimum dots density
     pub const DENSITY_MIN: f64 = 0.1;
     /// The maximum dots density

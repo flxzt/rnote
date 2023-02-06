@@ -116,11 +116,14 @@ impl Default for XoppImportPrefs {
     }
 }
 
+/// Import preferences
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "import_prefs")]
 pub struct ImportPrefs {
+    /// Pdf import preferences
     #[serde(rename = "pdf_import_prefs")]
     pub pdf_import_prefs: PdfImportPrefs,
+    /// Xournal++ file import preferences
     #[serde(rename = "xopp_import_prefs")]
     pub xopp_import_prefs: XoppImportPrefs,
 }
@@ -164,7 +167,8 @@ impl RnoteEngine {
     }
 
     /// Imports and replaces the engine config. If pen sounds should be enabled the rnote data dir must be provided
-    /// NOT for opening files
+    ///
+    /// NOT for opening files.
     pub fn import_engine_config_from_json(
         &mut self,
         serialized_config: &str,
@@ -197,7 +201,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// generates a bitmapimage for the bytes ( from a bitmap image file (PNG, JPG) )
+    /// generates a bitmapimage for the bytes ( from a bitmap image file: PNG, JPG )
     pub fn generate_bitmapimage_from_bytes(
         &self,
         pos: na::Vector2<f64>,
@@ -309,7 +313,7 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// inserts text
+    /// insert text
     pub fn insert_text(
         &mut self,
         text: String,

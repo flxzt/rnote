@@ -31,13 +31,13 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_dark.png</image>
+        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_light.png</image>
       <caption>Main window in light colors</caption>
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_light.png</image>
-      <caption>Main window in dark colors</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png</image>
+      <caption>Lecture Note 1</caption>
     </screenshot>
     <screenshot>
       <image>
@@ -46,8 +46,8 @@
     </screenshot>
     <screenshot>
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/selection.png</image>
-      <caption>A selection</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png</image>
+      <caption>Lecture Note 2</caption>
     </screenshot>
   </screenshots>
 
@@ -72,9 +72,9 @@
 
   <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.5.13-beta4" date="2023-01-29">
+    <release version="0.5.13" date="2023-02-06">
       <description>
-        <p>this release changes: (BETA)</p>
+        <p>this release changes:</p>
         <ul>
           <li>feature: tabs!</li>
           <li>feature: a global colorpicker</li>
@@ -83,8 +83,10 @@
           <li>feature: added two-finger long-press touch gesture that switches the active pen (like stylus buttons)</li>
           <li>feature: added pdf import bitmap scaling preference</li>
           <li>UI: floating toolbars</li>
-          <li>improvement: shape builder picker is now a categorized grid (thanks a lot @Kneemund !)</li>
+          <li>UI: shape builder picker is now a categorized grid (thanks a lot @Kneemund !)</li>
+          <li>improvement: copy, cut and paste selections between tabs and windows</li>
           <li>improvement: flap revealed state is now remembered across app launches</li>
+          <li>fix: svg clipboard paste</li>
           <li>fix: lag when panning in "continuous-vertical" layout</li>
           <li>fix: layers when erasing marker strokes in "split-stroke" mode</li>
           <li>fix: "split-stroke" mode only eraser one segment at a time</li>

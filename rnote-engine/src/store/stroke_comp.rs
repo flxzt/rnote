@@ -1,17 +1,17 @@
+use geo::intersects::Intersects;
+use geo::prelude::Contains;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::helpers;
+use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::transform::TransformBehaviour;
+use std::sync::Arc;
+
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::engine::NativeClipboardContent;
 use crate::strokes::Stroke;
 use crate::{render, StrokeStore};
-use geo::intersects::Intersects;
-use geo::prelude::Contains;
-use rnote_compose::helpers;
-use rnote_compose::penpath::{Element, Segment};
-use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::transform::TransformBehaviour;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -168,6 +168,11 @@ impl StrokeStore {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
             .collect::<Vec<Aabb>>()
+    }
+
+    pub fn set_stroke_pos(&mut self, key: StrokeKey, pos: na::Vector2<f64>) {
+        let Some(stroke) = Arc::make_mut(&mut self.stroke_components).get_mut(key).map(Arc::make_mut) else {return;};
+        stroke.set_pos(pos);
     }
 
     /// Translate the strokes with the offset.
@@ -597,9 +602,24 @@ impl StrokeStore {
         NativeClipboardContent { strokes }
     }
 
-    pub fn paste_native_clipboard(&mut self, clipboard_content: NativeClipboardContent) {
-        for stroke in clipboard_content.strokes {
-            self.insert_stroke((*stroke).clone(), None);
-        }
+    /// Pastes the clipboard content as a selection
+    ///
+    /// returns the keys for the inserted strokes.
+    /// The inserted strokes then need to update their geometry and rendering.
+    pub fn paste_native_clipboard(
+        &mut self,
+        clipboard_content: NativeClipboardContent,
+        pos: na::Vector2<f64>,
+    ) -> Vec<StrokeKey> {
+        clipboard_content
+            .strokes
+            .into_iter()
+            .map(|s| {
+                let key = self.insert_stroke((*s).clone(), None);
+                self.set_stroke_pos(key, pos);
+                self.set_selected(key, true);
+                key
+            })
+            .collect()
     }
 }

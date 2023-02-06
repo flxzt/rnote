@@ -346,6 +346,7 @@ impl RnoteEngine {
     pub fn paste_native_clipboard_content(
         &mut self,
         clipboard_content: NativeClipboardContent,
+        pos: na::Vector2<f64>,
     ) -> WidgetFlags {
         let mut widget_flags = self.store.record(Instant::now());
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
@@ -353,8 +354,13 @@ impl RnoteEngine {
         self.store.set_selected_keys(&all_strokes, false);
         widget_flags.merge(self.change_pen_style(PenStyle::Selector));
 
-        self.store.paste_native_clipboard(clipboard_content);
-
+        let inserted_keys = self.store.paste_native_clipboard(clipboard_content, pos);
+        self.store.update_geometry_for_strokes(&inserted_keys);
+        self.store.regenerate_rendering_for_strokes(
+            &inserted_keys,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
         widget_flags.merge(self.penholder.update_state_current_pen(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,

@@ -188,11 +188,14 @@ impl RnCanvas {
             }
         });
         let content = oneshot_receiver.await??;
+        let pos = (self.engine().borrow().camera.transform().inverse()
+            * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+        .coords;
 
         let widget_flags = self
             .engine()
             .borrow_mut()
-            .paste_native_clipboard_content(content);
+            .paste_native_clipboard_content(content, pos);
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

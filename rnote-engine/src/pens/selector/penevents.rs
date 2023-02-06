@@ -488,7 +488,14 @@ impl Selector {
                     KeyboardKey::Unicode('d') => {
                         //Duplicate selection
                         if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
-                            engine_view.store.duplicate_selection();
+                            let duplicated = engine_view.store.duplicate_selection();
+                            engine_view.store.update_geometry_for_strokes(&duplicated);
+                            engine_view.store.regenerate_rendering_for_strokes_threaded(
+                                engine_view.tasks_tx.clone(),
+                                &duplicated,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                         }
                         PenProgress::Finished
                     }

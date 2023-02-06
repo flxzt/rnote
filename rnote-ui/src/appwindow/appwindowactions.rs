@@ -15,6 +15,8 @@ use gtk4::{PrintStatus, Window};
 use std::path::PathBuf;
 use std::time::Instant;
 
+const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
+
 impl RnAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
@@ -779,7 +781,7 @@ impl RnAppWindow {
                         Ok((input_stream, _)) => {
                             let mut acc = Vec::new();
                             loop {
-                                match input_stream.read_future(vec![0; 4096], glib::PRIORITY_DEFAULT).await {
+                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::PRIORITY_DEFAULT).await {
                                     Ok((mut bytes, n)) => {
                                         if n == 0 {
                                             break;
@@ -818,7 +820,7 @@ impl RnAppWindow {
                         Ok((input_stream, _)) => {
                             let mut acc = Vec::new();
                             loop {
-                                match input_stream.read_future(vec![0; 4096], glib::PRIORITY_DEFAULT).await {
+                                match input_stream.read_future(vec![0; CLIPBOARD_INPUT_STREAM_BUFSIZE], glib::PRIORITY_DEFAULT).await {
                                     Ok((mut bytes, n)) => {
                                         if n == 0 {
                                             break;

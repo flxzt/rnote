@@ -130,6 +130,19 @@ run_target(
     env: cargo_env,
 )
 
+# cargo test
+run_target(
+    'cargo-test',
+    command: [
+        cargo,
+        [
+            'test',
+            '--manifest-path',
+            cargo_manifest_path,
+        ],
+    ],
+    env: cargo_env,
+)
 
 # build / install the app
 app_sources = [

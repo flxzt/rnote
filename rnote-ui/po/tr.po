@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-06 23:02+0100\n"
-"PO-Revision-Date: 2023-02-05 17:36+0000\n"
+"PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -54,7 +54,7 @@ msgstr "Ana pencere açık renklerle"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "Ders Notu 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -62,13 +62,11 @@ msgstr "PDF açıklaması"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "Ders Not 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
-#, fuzzy
-#| msgid "Clear document"
 msgid "Clear Document"
-msgstr "Belgeyi temizle"
+msgstr "Belgeyi Temizle"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -122,10 +120,8 @@ msgid "Save"
 msgstr "Kaydet"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "Close tab"
 msgid "Close Tab"
-msgstr "Sekmeyi kapat"
+msgstr "Sekmeyi Kapat"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -136,10 +132,8 @@ msgstr ""
 "kalıcı olarak kaybolacak."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgid "Close window"
 msgid "Close Window"
-msgstr "Pencereyi kapat"
+msgstr "Pencereyi Kapat"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -150,22 +144,16 @@ msgstr ""
 "değişiklikler kalıcı olarak kaybolacak."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Unsaved documents"
 msgid "Unsaved Documents"
-msgstr "Kaydedilmemiş belge"
+msgstr "Kaydedilmemiş Belgeler"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard all"
 msgid "Discard All"
-msgstr "Hepsini gözden çıkar"
+msgstr "Tümünden Vazgeç"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
-msgstr "Çalışma alanını düzenle"
+msgstr "Çalışma Alanı Düzenle"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:38
@@ -237,28 +225,20 @@ msgid "Info"
 msgstr "Bilgi"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "PDF Import Preferences"
-msgstr "PDF içe aktarma tercihleri"
+msgstr "PDF İçe Aktarma Tercihleri"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
-#, fuzzy
-#| msgid "Start page"
 msgid "Start Page"
-msgstr "Başlangıç sayfası"
+msgstr "Başlangıç Sayfası"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
-#| msgid "End page"
 msgid "End Page"
 msgstr "Bitiş sayfası"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
-#, fuzzy
-#| msgid "Page width (%)"
 msgid "Page Width (%)"
-msgstr "Sayfa genişliği (%)"
+msgstr "Sayfa Genişliği (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported PDF's in percentage to the format width"
@@ -266,10 +246,8 @@ msgstr ""
 "İçe aktarılan PDF'lerin genişliğini biçim genişliğine yüzde olarak ayarla"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Spacing"
-msgstr "Sayfa boşluğu"
+msgstr "Sayfa Boşluğu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
 msgid "How PDF pages are spaced"
@@ -280,16 +258,12 @@ msgid "Continuous"
 msgstr "Sürekli"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
-#, fuzzy
-#| msgid "One per document page"
 msgid "One per Document Page"
-msgstr "Belge sayfası başına bir"
+msgstr "Belge Sayfası Başına Bir"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
-#, fuzzy
-#| msgid "Pages type"
 msgid "Pages Type"
-msgstr "Sayfa türü"
+msgstr "Sayfa Türü"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Set whether PDFs should be imported as vector or bitmap images"
@@ -308,10 +282,8 @@ msgstr "Biteşlem"
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scale factor"
 msgid "Bitmap Scale-Factor"
-msgstr "Bitmap ölçek faktörü"
+msgstr "Bitmap Ölçek Faktörü"
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
 #: rnote-ui/data/ui/dialogs/export.ui:294
@@ -324,16 +296,12 @@ msgstr ""
 "ölçek faktörünü ayarlayın"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
-#, fuzzy
-#| msgid "Import Xournal++ file"
 msgid "Import Xournal++ File"
-msgstr "Xournal++ dosyasını içe aktar"
+msgstr "Xournal++ Dosyasını İçe Aktar"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
-#, fuzzy
-#| msgid "Xournal++ file import preferences"
 msgid "Xournal++ File Import Preferences"
-msgstr "Xournal++ dosyası içe aktarma tercihleri"
+msgstr "Xournal++ Dosya İçe Aktarma Tercihleri"
 
 #: rnote-ui/data/ui/dialogs/import.ui:263
 msgid "DPI"
@@ -344,10 +312,8 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ dosyası için tercih edilen DPI değerini ayarla"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Document"
-msgstr "Belgeyi dışa aktar"
+msgstr "Belgeyi Dışa Aktar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
@@ -356,10 +322,8 @@ msgid "Export"
 msgstr "Dışa aktar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Export file"
 msgid "Export File"
-msgstr "Dosya dışa aktar"
+msgstr "Dosyayı Dışa Aktar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Select the export file"
@@ -375,17 +339,13 @@ msgstr "- dosya seçilmedi -"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
-#, fuzzy
-#| msgid "Export preferences"
 msgid "Export Preferences"
-msgstr "Dışa aktarma tercihleri"
+msgstr "Dışa Aktarma Tercihleri"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
-#, fuzzy
-#| msgid "With background"
 msgid "With Background"
-msgstr "Arka plan ile"
+msgstr "Arka Plan ile"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
@@ -394,8 +354,6 @@ msgstr "Arka planın dışa aktarılıp aktarılmayacağını ayarla"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "With pattern"
 msgid "With Pattern"
 msgstr "Desen ile"
 
@@ -407,10 +365,8 @@ msgstr "Arka plan deseninin dışa aktarılıp aktarılmayacağını ayarla"
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
-#, fuzzy
-#| msgid "Export format"
 msgid "Export Format"
-msgstr "Dışa aktarma biçimi"
+msgstr "Dışa Aktarma Biçimi"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279
@@ -433,32 +389,24 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export Document Pages"
-msgstr "Belge sayfalarını dışa aktar"
+msgstr "Belge Sayfalarını Dışa Aktar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page files naming:"
 msgid "Page Files Naming:"
-msgstr "Sayfa dosyası adlandırma:"
+msgstr "Sayfa Dosyaları Adlandırma:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Export directory"
 msgid "Export Directory"
-msgstr "Dışa aktarma dizini"
+msgstr "Dışa Aktarım Dizini"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"
 msgstr "Dışa aktarma dizinini seç"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export files stem name"
 msgid "Export Files Stem Name"
-msgstr "Dışa aktarma dosyalarının kök adı"
+msgstr "Dışa Aktarma Dosyalarının Kök Adı"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
@@ -474,10 +422,8 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
-#, fuzzy
-#| msgid "Jpeg quality"
 msgid "Jpeg Quality"
-msgstr "Jpeg kalitesi"
+msgstr "Jpeg Kalitesi"
 
 #: rnote-ui/data/ui/dialogs/export.ui:316
 #: rnote-ui/data/ui/dialogs/export.ui:485
@@ -501,10 +447,8 @@ msgid "Set the margin around the selected area"
 msgstr "Seçilen alanın etrafındaki kenar boşluğunu ayarla"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
 msgid "Brush Style"
-msgstr "Fırça biçimi"
+msgstr "Fırça Biçimi"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:132

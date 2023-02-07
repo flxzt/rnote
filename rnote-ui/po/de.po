@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 00:21+0100\n"
-"PO-Revision-Date: 2023-02-07 23:23+0000\n"
+"PO-Revision-Date: 2023-02-07 23:45+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1679,7 +1679,7 @@ msgstr "Engine Konfiguration exportieren gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:918
 msgid "Exported engine config successfully"
-msgstr "Engine Konfiguration erfolgreich exportiert."
+msgstr "Engine Konfiguration erfolgreich exportiert"
 
 #: rnote-ui/src/dialogs/import.rs:34
 msgid "Opening file failed"

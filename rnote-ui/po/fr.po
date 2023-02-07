@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-06 23:02+0100\n"
-"PO-Revision-Date: 2023-02-07 11:36+0000\n"
+"PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -31,7 +31,7 @@ msgstr "Gnome;GTK;Office;Dessin;Notes;Bureau;Graphisme;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
-msgstr "Nouvelle fenêtre"
+msgstr "Nouvelle Fenêtre"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -67,7 +67,7 @@ msgstr "Lecture Note 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear Document"
-msgstr "Effacer le document"
+msgstr "Effacer le Document"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
@@ -98,7 +98,7 @@ msgstr "Effacer"
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
 #: rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
-msgstr "Nouveau document"
+msgstr "Nouveau Document"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
@@ -122,7 +122,7 @@ msgstr "Sauvegarder"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr "Fermer l’onglet"
+msgstr "Fermer l’Onglet"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -134,7 +134,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Close Window"
-msgstr "Fermer la fenêtre"
+msgstr "Fermer la Fenêtre"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -145,16 +145,17 @@ msgstr ""
 "Les modifications qui ne sont pas sauvegardées seront définitivement perdues."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
+#, fuzzy
 msgid "Unsaved Documents"
-msgstr "Documents non sauvegardés"
+msgstr "Documents Non-sauvegardés"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard All"
-msgstr "Abandonner tout"
+msgstr "Abandonner Tout"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
 msgid "Edit Workspace"
-msgstr "Modifier l’espace de travail"
+msgstr "Modifier l’Espace de Travail"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:38
@@ -162,12 +163,13 @@ msgid "Apply"
 msgstr "Appliquer"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:110
+#, fuzzy
 msgid "Workspace Name"
-msgstr "Nom de l’espace de travail"
+msgstr "Nom de l’Espace de Travail"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:115
 msgid "Icon"
-msgstr "Icône"
+msgstr "Icone"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:116
 msgid "Change the workspace icon"
@@ -202,7 +204,7 @@ msgstr "Modifier le répertoire"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:85
 msgid "Open File"
-msgstr "Ouvrir fichier"
+msgstr "Ouvrir le Fichier"
 
 #: rnote-ui/data/ui/dialogs/import.ui:6
 msgid ""
@@ -223,23 +225,23 @@ msgstr "Importer"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr "Informations"
+msgstr "Info"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF Import Preferences"
-msgstr "Paramètres d’importation de PDF"
+msgstr "Paramètres d’Importation de PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start Page"
-msgstr "Première page"
+msgstr "Première Page"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
 msgid "End Page"
-msgstr "Dernière page"
+msgstr "Dernière Page"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
 msgid "Page Width (%)"
-msgstr "Largeur de la page (%)"
+msgstr "Largeur de Page (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported PDF's in percentage to the format width"
@@ -248,8 +250,9 @@ msgstr ""
 "de la page"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
+#, fuzzy
 msgid "Page Spacing"
-msgstr "Espacement des pages"
+msgstr "Espacement de Pages"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
 msgid "How PDF pages are spaced"
@@ -260,12 +263,13 @@ msgid "Continuous"
 msgstr "Continu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
+#, fuzzy
 msgid "One per Document Page"
-msgstr "Un par page de document"
+msgstr "Une par Page de Document"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
 msgid "Pages Type"
-msgstr "Type de pages"
+msgstr "Type de Pages"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Set whether PDFs should be imported as vector or bitmap images"
@@ -284,24 +288,23 @@ msgstr "Matricielle"
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scale factor"
 msgid "Bitmap Scale-Factor"
-msgstr "Mise à l’échelle"
+msgstr "Proportion Image Matricielle"
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
 #: rnote-ui/data/ui/dialogs/export.ui:294
 #: rnote-ui/data/ui/dialogs/export.ui:463
+#, fuzzy
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Définir le facteur de mise à l'échelle de l’image Bitmap\n"
-"par rapport à sa taille réelle sur le document"
+"Définir la proportion de l’image matricielle\n"
+"à sa taille réelle dans le document"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
 msgid "Import Xournal++ File"
-msgstr "Importer un fichier Xournal++"
+msgstr "Importer un Fichier Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
 msgid "Xournal++ File Import Preferences"
@@ -317,7 +320,7 @@ msgstr "Définir le DPI préféré pour le fichier Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export Document"
-msgstr "Exporter le document"
+msgstr "Exporter le Document"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
@@ -344,12 +347,12 @@ msgstr "- aucun fichier sélectionné -"
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
 msgid "Export Preferences"
-msgstr "Paramètres d’exportation"
+msgstr "Paramètres d’Exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
 msgid "With Background"
-msgstr "Avec arrière-plan"
+msgstr "Inclure l’Arrière-plan"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
@@ -359,7 +362,7 @@ msgstr "Définit si l’arrière-plan doit être exporté"
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
 msgid "With Pattern"
-msgstr "Avec motif"
+msgstr "Inclure le Motif"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
@@ -370,7 +373,7 @@ msgstr "Définir si le motif d’arrière-plan doit être exporté"
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
 msgid "Export Format"
-msgstr "Format d’exportation"
+msgstr "Format d’Exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279
@@ -394,15 +397,15 @@ msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 msgid "Export Document Pages"
-msgstr "Exporter les pages du document"
+msgstr "Exporter des Pages du Document"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
 msgid "Page Files Naming:"
-msgstr "Nommage des fichiers de pages :"
+msgstr "Nommage des Fichiers de Pages :"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export Directory"
-msgstr "Répertoire d’exportation"
+msgstr "Répertoire d’Exportation"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"
@@ -412,7 +415,7 @@ msgstr "Sélectionnez le répertoire d’exportation"
 #, fuzzy
 #| msgid "Export engine state"
 msgid "Export Files Stem Name"
-msgstr "Nom de la racine des fichiers à exporter"
+msgstr "Racine des Noms des Fichiers à Exporter"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
@@ -442,7 +445,7 @@ msgstr "Exporter la sélection"
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
-msgstr "Le format d'exportation"
+msgstr "Le format d'exportation de l’image"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -454,16 +457,16 @@ msgstr "Définir la marge autour de l’aire sélectionnée"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr "Style du pinceau"
+msgstr "Style de Pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:132
 msgid "Brush Configuration"
-msgstr "Configuration du pinceau"
+msgstr "Configuration du Pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:62
 msgid "Brush Styles"
-msgstr "Styles du pinceau"
+msgstr "Styles de Pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:80
 msgid "Marker"
@@ -479,8 +482,9 @@ msgid "Solid"
 msgstr "Continu"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+#, fuzzy
 msgid "Draw solid color strokes"
-msgstr "Dessiner des traits de couleur continus"
+msgstr "Dessiner des traits de couleur unis"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:104
 msgid "Textured"
@@ -492,7 +496,7 @@ msgstr "Dessiner des traits texturés"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:141
 msgid "Path Modelling"
-msgstr "Modélisation du chemin"
+msgstr "Modélisation de la Trajectoire"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Simple"
@@ -524,11 +528,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "Solid Style"
-msgstr "Style uniforme"
+msgstr "Style Uniforme"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
 msgid "Pressure Curve"
-msgstr "Courbe de pression"
+msgstr "Courbe de Pression"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
@@ -552,15 +556,15 @@ msgstr "Racine cubique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Quadratic Parabola"
-msgstr "Parabole quadratique"
+msgstr "Parabole Quadratique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:196
 msgid "Cubic Parabola"
-msgstr "Parabole cubique"
+msgstr "Parabole Cubique"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
 msgid "Textured Style"
-msgstr "Style texturé"
+msgstr "Style Texturé"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"
@@ -772,11 +776,9 @@ msgstr "3:2"
 #, fuzzy
 #| msgid "Golden ratio (1:1.618)"
 msgid "Golden Ratio (1:1.618)"
-msgstr "Proportion en or (1:1.618)"
+msgstr "Proportion dorée (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
-#, fuzzy
-#| msgid "Insert vertical space"
 msgid "Insert Vertical Space"
 msgstr "Insérer un espace vertical"
 
@@ -784,14 +786,9 @@ msgstr "Insérer un espace vertical"
 #, fuzzy
 #| msgid "Offset the camera by dragging"
 msgid "Offset the Camera"
-msgstr "Décalez la caméra en faisant glisser"
+msgstr "Déplacer la caméra"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
-#, fuzzy
-#| msgid ""
-#| "Font chooser\n"
-#| "(double-click, click on select\n"
-#| "or press Enter to select a new font)"
 msgid ""
 "Font Chooser\n"
 "(double-click, click on select\n"
@@ -802,8 +799,6 @@ msgstr ""
 "ou appuyez sur Entrée pour sélectionner une nouvelle police)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
-#, fuzzy
-#| msgid "Pick and insert an emoji"
 msgid "Pick And Insert Emoji"
 msgstr "Choisissez et insérez un émoji"
 
@@ -830,20 +825,14 @@ msgid "Strikethrough"
 msgstr "Barrer"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
-#, fuzzy
-#| msgid "Align left"
 msgid "Align Left"
 msgstr "Aligner à gauche"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
-#, fuzzy
-#| msgid "Align center"
 msgid "Align Center"
 msgstr "Aligner au centre"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
-#, fuzzy
-#| msgid "Align right"
 msgid "Align Right"
 msgstr "Aligner à droite"
 
@@ -868,19 +857,19 @@ msgstr "Thème de cou_leurs"
 #, fuzzy
 #| msgid "Use _system colors"
 msgid "Use _System Colors"
-msgstr "Utiliser le thème du _système"
+msgstr "Thème du _Système"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 #, fuzzy
 #| msgid "Use _light colors"
 msgid "Use _Light Colors"
-msgstr "Thème _clair"
+msgstr "Thème _Clair"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 #, fuzzy
 #| msgid "Use _dark colors"
 msgid "Use _Dark Colors"
-msgstr "Thème _sombre"
+msgstr "Thème _Sombre"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
@@ -892,7 +881,7 @@ msgstr "Mode dé_veloppeur"
 #, fuzzy
 #| msgid "Developer _menu"
 msgid "Developer _Menu"
-msgstr "_Menu développeur"
+msgstr "_Menu Développeur"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
@@ -964,7 +953,7 @@ msgstr "_Exporter…"
 #, fuzzy
 #| msgid "Export document"
 msgid "Export _Document"
-msgstr "Exporter document"
+msgstr "Exporter_Document"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 #, fuzzy
@@ -976,7 +965,7 @@ msgstr "Exporter les _pages du document"
 #, fuzzy
 #| msgid "Export Selection"
 msgid "Export _Selection"
-msgstr "Exporter la sélection"
+msgstr "Exporter la _sélection"
 
 #: rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
@@ -1000,13 +989,13 @@ msgstr "À _propos de Rnote"
 #, fuzzy
 #| msgid "Sidebar on the left side"
 msgid "Sidebar on the Left Side"
-msgstr "Bar latéral à gauche"
+msgstr "Barre latérale à gauche"
 
 #: rnote-ui/data/ui/appmenu.ui:178
 #, fuzzy
 #| msgid "Sidebar on the right side"
 msgid "Sidebar on the Right Side"
-msgstr "Bar latéral à droite"
+msgstr "Barre latérale à droite"
 
 #: rnote-ui/data/ui/appmenu.ui:188
 #, fuzzy
@@ -1044,7 +1033,7 @@ msgstr "Taille _fixe"
 #, fuzzy
 #| msgid "_Continuous vertical"
 msgid "_Continuous Vertical"
-msgstr "Vertical _continue"
+msgstr "Vertical _continu"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 #, fuzzy
@@ -1078,7 +1067,7 @@ msgstr "Sons du _stylo"
 #, fuzzy
 #| msgid "C_lear document"
 msgid "C_lear Document"
-msgstr "_Effacer le document"
+msgstr "E_ffacer le document"
 
 #: rnote-ui/data/ui/canvasmenu.ui:70
 #, fuzzy

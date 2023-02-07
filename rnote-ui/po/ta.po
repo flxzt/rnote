@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-06 23:02+0100\n"
-"PO-Revision-Date: 2023-02-03 10:48+0000\n"
+"PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -65,8 +65,6 @@ msgid "Lecture Note 2"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
-#, fuzzy
-#| msgid "Clear document"
 msgid "Clear Document"
 msgstr "தெளிவான ஆவணம்"
 
@@ -122,8 +120,6 @@ msgid "Save"
 msgstr "சேமி"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "Close tab"
 msgid "Close Tab"
 msgstr "தாவலை மூடவும்"
 
@@ -135,8 +131,6 @@ msgstr ""
 "இந்த தாவலில் சேமிக்கப்படாத மாற்றங்கள் உள்ளன. சேமிக்கப்படாத மாற்றங்கள் நிரந்தரமாக இழக்கப்படும்."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgid "Close window"
 msgid "Close Window"
 msgstr "சாளரத்தை மூடு"
 
@@ -149,20 +143,14 @@ msgstr ""
 "நிரந்தரமாக இழக்கப்படும்."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Unsaved documents"
 msgid "Unsaved Documents"
 msgstr "சேமிக்கப்படாத ஆவணங்கள்"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard all"
 msgid "Discard All"
 msgstr "அனைத்தையும் நிராகரிக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
 msgstr "பணியிடத்தை திருத்து"
 
@@ -236,26 +224,18 @@ msgid "Info"
 msgstr "தகவல்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "PDF Import Preferences"
 msgstr "PDF இறக்குமதி விருப்பத்தேர்வுகள்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
-#, fuzzy
-#| msgid "Start page"
 msgid "Start Page"
 msgstr "தொடக்க பக்கம்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
-#| msgid "End page"
 msgid "End Page"
 msgstr "முடிவுப் பக்கம்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
-#, fuzzy
-#| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "பக்கத்தின் அகலம் (%)"
 
@@ -264,8 +244,6 @@ msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "இறக்குமதி செய்யப்பட்ட PDF இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "பக்க இடைவெளி"
 
@@ -278,14 +256,10 @@ msgid "Continuous"
 msgstr "தொடர்ச்சியான"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
-#, fuzzy
-#| msgid "One per document page"
 msgid "One per Document Page"
 msgstr "ஒரு ஆவணப் பக்கத்திற்கு ஒன்று"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
-#, fuzzy
-#| msgid "Pages type"
 msgid "Pages Type"
 msgstr "பக்கங்களின் வகை"
 
@@ -305,10 +279,8 @@ msgstr "பிட்மேப்"
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scale factor"
 msgid "Bitmap Scale-Factor"
-msgstr "பிட்மேப் அளவிலான காரணி"
+msgstr "பிட்மேப் அளவிலான-காரணி"
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
 #: rnote-ui/data/ui/dialogs/export.ui:294
@@ -321,14 +293,10 @@ msgstr ""
 "ஆவணத்தின் உண்மையான அளவிற்கு"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
-#, fuzzy
-#| msgid "Import Xournal++ file"
 msgid "Import Xournal++ File"
 msgstr "Xournal++ கோப்பை இறக்குமதி செய்யவும்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
-#, fuzzy
-#| msgid "Xournal++ file import preferences"
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ கோப்பு இறக்குமதி விருப்பத்தேர்வுகள்"
 
@@ -341,8 +309,6 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ கோப்பிற்கு விருப்பமான DPI ஐ அமைக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Document"
 msgstr "ஏற்றுமதி ஆவணம்"
 

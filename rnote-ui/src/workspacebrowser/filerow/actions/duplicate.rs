@@ -74,7 +74,7 @@ fn duplicate_file(source_path: PathBuf) {
             log::error!("Couldn't duplicate file, Err: {e:?}");
         }
     } else {
-        log::warn!("Destination-file for duplication not found.");
+        log::warn!("Destination-file for duplication not found");
     }
 }
 

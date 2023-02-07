@@ -143,8 +143,8 @@ pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                         if let Err(e) = canvas.save_document_to_file(&output_file).await {
                             canvas.set_output_file(None);
 
-                            log::error!("saving document failed with error `{e:?}`");
-                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                            log::error!("saving document failed, Error: `{e:?}`");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         }
 
                         appwindow.overlays().finish_progressbar();
@@ -196,8 +196,8 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
 
-                                log::error!("saving document failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                                log::error!("saving document failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
 
                             appwindow.overlays().finish_progressbar();
@@ -312,10 +312,10 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                         if let Err(e) = canvas.save_document_to_file(&save_file).await {
                             canvas.set_output_file(None);
 
-                            log::error!("saving document failed with error `{e:?}`");
+                            log::error!("saving document failed, Error: `{e:?}`");
                             appwindow
                                 .overlays()
-                                .dispatch_toast_error(&gettext("Saving document failed."));
+                                .dispatch_toast_error(&gettext("Saving document failed"));
                         }
 
                         // No success toast on saving without dialog, success is already indicated in the header title

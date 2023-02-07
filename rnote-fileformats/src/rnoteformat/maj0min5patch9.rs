@@ -22,7 +22,7 @@ impl TryFrom<RnoteFileMaj0Min5Patch9> for RnoteFile {
         let store_snapshot = value
             .store_snapshot
             .as_object_mut()
-            .ok_or_else(|| anyhow::anyhow!("store snapshot is not a json map."))?;
+            .ok_or_else(|| anyhow::anyhow!("store snapshot is not a json map"))?;
 
         engine_snapshot.insert(String::from("document"), value.document);
         engine_snapshot.insert(

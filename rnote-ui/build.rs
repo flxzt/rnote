@@ -13,5 +13,5 @@ fn compile_icon_winres() -> anyhow::Result<()> {
     res.set("OriginalFileName", "rnote.exe");
     res.set_icon("./data/icons/rnote.ico");
     res.compile()
-        .context("Failed to compile winresource resource.")
+        .context("Failed to compile winresource resource")
 }

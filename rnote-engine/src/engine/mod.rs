@@ -158,14 +158,14 @@ impl EngineSnapshot {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Self> {
                 let rnote_file = rnoteformat::RnoteFile::load_from_bytes(&bytes)
-                    .context("RnoteFile load_from_bytes() failed.")?;
+                    .context("RnoteFile load_from_bytes() failed")?;
 
                 serde_json::from_value(rnote_file.engine_snapshot)
                     .context("serde_json::from_value() for rnote_file.engine_snapshot failed")
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -292,7 +292,7 @@ impl EngineSnapshot {
             };
 
             if let Err(_data) = snapshot_sender.send(result()) {
-                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in open_from_xopp_bytes() failed. Receiver already dropped");
             }
         });
 

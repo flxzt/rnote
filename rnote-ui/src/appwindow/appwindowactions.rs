@@ -518,8 +518,8 @@ impl RnAppWindow {
                     if let Err(e) = canvas.save_document_to_file(&output_file).await {
                         canvas.set_output_file(None);
 
-                        log::error!("saving document failed with error `{e:?}`");
-                        appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                        log::error!("saving document failed, Error: `{e:?}`");
+                        appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                     }
 
                     appwindow.overlays().finish_progressbar();
@@ -674,7 +674,7 @@ impl RnAppWindow {
             if !canvas.engine().borrow().store.selection_keys_unordered().is_empty() {
                 dialogs::export::dialog_export_selection_w_prefs(&appwindow, &appwindow.active_tab().canvas());
             } else {
-                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, nothing selected."));
+                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, nothing selected"));
             }
         }));
 
@@ -701,7 +701,7 @@ impl RnAppWindow {
                     }
                 }
                 None => {
-                    log::debug!("no data available to copy into clipboard.");
+                    log::debug!("no data available to copy into clipboard");
                 }
             }
 
@@ -729,7 +729,7 @@ impl RnAppWindow {
                     }
                 }
                 None => {
-                    log::debug!("no data available to cut into clipboard.");
+                    log::debug!("no data available to cut into clipboard");
                 }
             }
 

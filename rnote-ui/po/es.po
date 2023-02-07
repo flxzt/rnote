@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: Isaias Carrillo <icarrillo1304@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -1862,7 +1862,7 @@ msgstr "Error: Intento de abrir la carpeta como archivo"
 #: rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr "No se pudo abrir el archivo: Tipo de archivo no admitido."
 
 #: rnote-ui/src/appwindow/imp.rs:272

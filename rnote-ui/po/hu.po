@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -1578,7 +1578,7 @@ msgstr "Hiba: Mappa fájlként való megnyitása"
 #: rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
 
 #: rnote-ui/src/appwindow/imp.rs:272

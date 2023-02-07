@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Nguyen Phi Truong <Nguyenairport56@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/vi/"
@@ -1651,7 +1651,7 @@ msgid "Failed to open file, tried to open folder as file"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:563
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:272

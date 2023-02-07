@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -1823,7 +1823,7 @@ msgstr "பிழை: கோப்புறையை கோப்பாக த�
 #: rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
 
 #: rnote-ui/src/appwindow/imp.rs:272

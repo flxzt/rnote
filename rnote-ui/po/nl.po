@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1581,7 +1581,7 @@ msgstr "Een map kan niet als bestand worden geopend"
 #: rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr "Dit bestandstype wordt niet ondersteund."
 
 #: rnote-ui/src/appwindow/imp.rs:272

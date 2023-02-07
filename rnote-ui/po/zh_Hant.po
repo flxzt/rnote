@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -1857,7 +1857,7 @@ msgstr "錯誤：將資料夾作為檔案開啟"
 #: rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr "開啟檔案失敗：不支援的檔案型別。"
 
 #: rnote-ui/src/appwindow/imp.rs:272

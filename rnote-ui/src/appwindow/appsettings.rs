@@ -65,7 +65,7 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
-        // permanently hide canvas scrollbars
+        // show scrollbars
         self.app_settings()
             .bind(
                 "show-scrollbars",

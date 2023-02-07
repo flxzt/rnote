@@ -111,6 +111,10 @@ impl RnOverlays {
         glib::Object::new(&[])
     }
 
+    pub(crate) fn pens_toggles_box(&self) -> gtk4::Box {
+        self.imp().pens_toggles_box.get()
+    }
+
     pub(crate) fn brush_toggle(&self) -> ToggleButton {
         self.imp().brush_toggle.get()
     }

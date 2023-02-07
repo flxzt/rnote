@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 19:42+0100\n"
+"POT-Creation-Date: 2023-02-08 00:14+0100\n"
 "PO-Revision-Date: 2022-12-17 13:50+0000\n"
 "Last-Translator: Dan <denqwerta@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -1771,31 +1771,41 @@ msgid "Edit Selected Workspace"
 msgstr "Редагувати робочу область"
 
 #: rnote-ui/src/appwindow/mod.rs:505
-msgid "Opening .rnote file failed."
-msgstr ""
+#, fuzzy
+#| msgid "Opening Xournal++ file failed."
+msgid "Opening .rnote file failed"
+msgstr "Не вдалося відкрити файл Xournal++."
 
 #: rnote-ui/src/appwindow/mod.rs:516
-msgid "Opening vector image file failed."
-msgstr ""
+#, fuzzy
+#| msgid "Opening Xournal++ file failed."
+msgid "Opening vector image file failed"
+msgstr "Не вдалося відкрити файл Xournal++."
 
 #: rnote-ui/src/appwindow/mod.rs:527
-msgid "Opening bitmap image file failed."
-msgstr ""
+#, fuzzy
+#| msgid "Opening Xournal++ file failed."
+msgid "Opening bitmap image file failed"
+msgstr "Не вдалося відкрити файл Xournal++."
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
+#, fuzzy
+#| msgid "Opening Xournal++ file failed."
+msgid "Opening Xournal++ file failed"
 msgstr "Не вдалося відкрити файл Xournal++."
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
-msgstr ""
+#, fuzzy
+#| msgid "Opening Xournal++ file failed."
+msgid "Opening PDF file failed"
+msgstr "Не вдалося відкрити файл Xournal++."
 
 #: rnote-ui/src/appwindow/mod.rs:558
-msgid "Failed to open file: Tried to open folder as file"
+msgid "Failed to open file, tried to open folder as file"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:563
-msgid "Failed to open file: Unsupported file type."
+msgid "Failed to open file: Unsupported file type"
 msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:272
@@ -1803,8 +1813,10 @@ msgstr ""
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-msgid "Saving document failed."
-msgstr ""
+#, fuzzy
+#| msgid "Export document failed."
+msgid "Saving document failed"
+msgstr "Не вдалося експортувати документ."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
 msgid "Printed document successfully"
@@ -1817,7 +1829,7 @@ msgstr ""
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
 #, fuzzy
 #| msgid "Export selection failed, nothing selected."
-msgid "Exporting selection failed, nothing selected."
+msgid "Exporting selection failed, nothing selected"
 msgstr "Не вдалося експортувати вибране, нічого не вибрано."
 
 #: rnote-ui/src/canvas/mod.rs:994
@@ -1829,7 +1841,7 @@ msgid "- invalid folder path -"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1031
-msgid "Opened file was modified on disk."
+msgid "Opened file was modified on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1032
@@ -1837,15 +1849,15 @@ msgid "Reload"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1038
-msgid "Reloading .rnote file from disk failed."
+msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1087
-msgid "Opened file was renamed on disk."
+msgid "Opened file was renamed on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1100
-msgid "Opened file was moved or deleted on disk."
+msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
@@ -1859,55 +1871,63 @@ msgid "Save Document As"
 msgstr "Зберегти документ як"
 
 #: rnote-ui/src/dialogs/export.rs:62
-msgid "Saved document successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Exported document successfully."
+msgid "Saved document successfully"
+msgstr "Документ успішно експортовано."
 
 #: rnote-ui/src/dialogs/export.rs:195
 #, fuzzy
 #| msgid "Export document failed."
-msgid "Exporting document failed."
+msgid "Exporting document failed"
 msgstr "Не вдалося експортувати документ."
 
 #: rnote-ui/src/dialogs/export.rs:197
-msgid "Exported document successfully."
+#, fuzzy
+#| msgid "Exported document successfully."
+msgid "Exported document successfully"
 msgstr "Документ успішно експортовано."
 
 #: rnote-ui/src/dialogs/export.rs:203
 #, fuzzy
 #| msgid "Export document failed, no file selected."
-msgid "Exporting document failed, no file selected."
+msgid "Exporting document failed, no file selected"
 msgstr "Помилка експорту документа, файл не вибрано."
 
 #: rnote-ui/src/dialogs/export.rs:468
 #, fuzzy
 #| msgid "Export document pages failed."
-msgid "Exporting document pages failed."
+msgid "Exporting document pages failed"
 msgstr "Не вдалося експортувати сторінки документа."
 
 #: rnote-ui/src/dialogs/export.rs:470
-msgid "Exported document pages successfully."
+#, fuzzy
+#| msgid "Exported document pages successfully."
+msgid "Exported document pages successfully"
 msgstr "Сторінки документів успішно експортовано."
 
 #: rnote-ui/src/dialogs/export.rs:476
 #, fuzzy
 #| msgid "Export document pages failed, no directory selected."
-msgid "Exporting document pages failed, no directory selected."
+msgid "Exporting document pages failed, no directory selected"
 msgstr "Експортувати сторінки документів не вдалося, не вибрано каталог."
 
 #: rnote-ui/src/dialogs/export.rs:716
 #, fuzzy
 #| msgid "Export selection failed."
-msgid "Exporting selection failed."
+msgid "Exporting selection failed"
 msgstr "Не вдалося експортувати вибране."
 
 #: rnote-ui/src/dialogs/export.rs:718
-msgid "Exported selection successfully."
+#, fuzzy
+#| msgid "Exported selection successfully."
+msgid "Exported selection successfully"
 msgstr "Вибранн успішно експортовано."
 
 #: rnote-ui/src/dialogs/export.rs:724
 #, fuzzy
 #| msgid "Export selection failed, no file selected."
-msgid "Exporting selection failed, no file selected."
+msgid "Exporting selection failed, no file selected"
 msgstr "Помилка вибору експорту, файл не вибрано."
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
@@ -1923,12 +1943,14 @@ msgstr "Експортувати стан рушія"
 #: rnote-ui/src/dialogs/export.rs:852
 #, fuzzy
 #| msgid "Export engine state"
-msgid "Exporting engine state failed."
+msgid "Exporting engine state failed"
 msgstr "Експортувати стан рушія"
 
 #: rnote-ui/src/dialogs/export.rs:854
-msgid "Exported engine state successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Exported document successfully."
+msgid "Exported engine state successfully"
+msgstr "Документ успішно експортовано."
 
 #: rnote-ui/src/dialogs/export.rs:878
 #, fuzzy
@@ -1939,16 +1961,20 @@ msgstr "Експорт конфігурації рушія"
 #: rnote-ui/src/dialogs/export.rs:916
 #, fuzzy
 #| msgid "Export engine config"
-msgid "Exporting engine config failed."
+msgid "Exporting engine config failed"
 msgstr "Експорт конфігурації рушія"
 
 #: rnote-ui/src/dialogs/export.rs:918
-msgid "Exported engine config successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Exported selection successfully."
+msgid "Exported engine config successfully"
+msgstr "Вибранн успішно експортовано."
 
 #: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed."
-msgstr ""
+#, fuzzy
+#| msgid "Opening Xournal++ file failed."
+msgid "Opening file failed"
+msgstr "Не вдалося відкрити файл Xournal++."
 
 #: rnote-ui/src/dialogs/import.rs:135
 msgid "Jpg, Pdf, Png, Svg, Xopp"
@@ -2175,26 +2201,26 @@ msgstr ""
 msgid "Star"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:565
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:567
 #, fuzzy
 #| msgid "Textured"
 msgid "Text"
 msgstr "Текстурований"
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Travel"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:569
 msgid "Weather"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:570
 #, fuzzy
 #| msgid "Height"
 msgid "Weight"

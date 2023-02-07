@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 19:42+0100\n"
+"POT-Creation-Date: 2023-02-08 00:14+0100\n"
 "PO-Revision-Date: 2022-11-16 10:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1596,31 +1596,31 @@ msgid "Edit Selected Workspace"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:505
-msgid "Opening .rnote file failed."
+msgid "Opening .rnote file failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:516
-msgid "Opening vector image file failed."
+msgid "Opening vector image file failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:527
-msgid "Opening bitmap image file failed."
+msgid "Opening bitmap image file failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
-msgid "Opening Xournal++ file failed."
+msgid "Opening Xournal++ file failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
+msgid "Opening PDF file failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:558
-msgid "Failed to open file: Tried to open folder as file"
+msgid "Failed to open file, tried to open folder as file"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:563
-msgid "Failed to open file: Unsupported file type."
+msgid "Failed to open file: Unsupported file type"
 msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:272
@@ -1628,7 +1628,7 @@ msgstr ""
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-msgid "Saving document failed."
+msgid "Saving document failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
@@ -1640,7 +1640,7 @@ msgid "Printing document failed"
 msgstr ""
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
-msgid "Exporting selection failed, nothing selected."
+msgid "Exporting selection failed, nothing selected"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:994
@@ -1652,7 +1652,7 @@ msgid "- invalid folder path -"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1031
-msgid "Opened file was modified on disk."
+msgid "Opened file was modified on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1032
@@ -1660,15 +1660,15 @@ msgid "Reload"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1038
-msgid "Reloading .rnote file from disk failed."
+msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1087
-msgid "Opened file was renamed on disk."
+msgid "Opened file was renamed on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1100
-msgid "Opened file was moved or deleted on disk."
+msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
@@ -1680,44 +1680,58 @@ msgid "Save Document As"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:62
-msgid "Saved document successfully."
+msgid "Saved document successfully"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:195
-msgid "Exporting document failed."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _state"
+msgid "Exporting document failed"
+msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/src/dialogs/export.rs:197
-msgid "Exported document successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _state"
+msgid "Exported document successfully"
+msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/src/dialogs/export.rs:203
-msgid "Exporting document failed, no file selected."
+msgid "Exporting document failed, no file selected"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:468
-msgid "Exporting document pages failed."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _state"
+msgid "Exporting document pages failed"
+msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/src/dialogs/export.rs:470
-msgid "Exported document pages successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _state"
+msgid "Exported document pages successfully"
+msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/src/dialogs/export.rs:476
-msgid "Exporting document pages failed, no directory selected."
+msgid "Exporting document pages failed, no directory selected"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:716
-msgid "Exporting selection failed."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _config"
+msgid "Exporting selection failed"
+msgstr "엔진 구성 내보내기(_C)"
 
 #: rnote-ui/src/dialogs/export.rs:718
-msgid "Exported selection successfully."
-msgstr ""
+#, fuzzy
+#| msgid "A selection"
+msgid "Exported selection successfully"
+msgstr "선택항목"
 
 #: rnote-ui/src/dialogs/export.rs:724
-msgid "Exporting selection failed, no file selected."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _config"
+msgid "Exporting selection failed, no file selected"
+msgstr "엔진 구성 내보내기(_C)"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
@@ -1732,12 +1746,14 @@ msgstr "엔진 상태 내보내기(_S)"
 #: rnote-ui/src/dialogs/export.rs:852
 #, fuzzy
 #| msgid "Export engine _state"
-msgid "Exporting engine state failed."
+msgid "Exporting engine state failed"
 msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/src/dialogs/export.rs:854
-msgid "Exported engine state successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _state"
+msgid "Exported engine state successfully"
+msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/src/dialogs/export.rs:878
 #, fuzzy
@@ -1748,16 +1764,20 @@ msgstr "엔진 구성 내보내기(_C)"
 #: rnote-ui/src/dialogs/export.rs:916
 #, fuzzy
 #| msgid "Export engine _config"
-msgid "Exporting engine config failed."
+msgid "Exporting engine config failed"
 msgstr "엔진 구성 내보내기(_C)"
 
 #: rnote-ui/src/dialogs/export.rs:918
-msgid "Exported engine config successfully."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _config"
+msgid "Exported engine config successfully"
+msgstr "엔진 구성 내보내기(_C)"
 
 #: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed."
-msgstr ""
+#, fuzzy
+#| msgid "Export engine _config"
+msgid "Opening file failed"
+msgstr "엔진 구성 내보내기(_C)"
 
 #: rnote-ui/src/dialogs/import.rs:135
 msgid "Jpg, Pdf, Png, Svg, Xopp"
@@ -1975,24 +1995,24 @@ msgstr ""
 msgid "Star"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:565
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:567
 msgid "Text"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Travel"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:569
 msgid "Weather"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:570
 msgid "Weight"
 msgstr ""
 

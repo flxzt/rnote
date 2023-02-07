@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 19:42+0100\n"
+"POT-Creation-Date: 2023-02-08 00:14+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Gabriel Gian <gabrielgian@live.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -1833,36 +1833,44 @@ msgid "Edit Selected Workspace"
 msgstr "Editar área de trabalho"
 
 #: rnote-ui/src/appwindow/mod.rs:505
-msgid "Opening .rnote file failed."
+#, fuzzy
+#| msgid "Opening .rnote file failed."
+msgid "Opening .rnote file failed"
 msgstr "Falha ao abrir arquivo .rnote."
 
 #: rnote-ui/src/appwindow/mod.rs:516
-msgid "Opening vector image file failed."
+#, fuzzy
+#| msgid "Opening vector image file failed."
+msgid "Opening vector image file failed"
 msgstr "Falha ao abrir arquivo de imagem de vetor."
 
 #: rnote-ui/src/appwindow/mod.rs:527
-msgid "Opening bitmap image file failed."
+#, fuzzy
+#| msgid "Opening bitmap image file failed."
+msgid "Opening bitmap image file failed"
 msgstr "Falha ao abrir arquivo de imagem de mapa de bits (\"bitmap\")."
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xournal++ file failed."
+msgid "Opening Xournal++ file failed"
 msgstr "Falha ao abrir arquivo .xopp."
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
+#, fuzzy
+#| msgid "Opening PDF file failed."
+msgid "Opening PDF file failed"
 msgstr "Falha ao abrir arquivo PDF."
 
 #: rnote-ui/src/appwindow/mod.rs:558
 #, fuzzy
 #| msgid "Error: Tried opening folder as file"
-msgid "Failed to open file: Tried to open folder as file"
+msgid "Failed to open file, tried to open folder as file"
 msgstr "Erro: tentou abrir diretório como arquivo"
 
 #: rnote-ui/src/appwindow/mod.rs:563
 #, fuzzy
-msgid "Failed to open file: Unsupported file type."
+msgid "Failed to open file: Unsupported file type"
 msgstr "Falha ao abrir arquivo, é um tipo de arquivo não suportado."
 
 #: rnote-ui/src/appwindow/imp.rs:272
@@ -1870,7 +1878,9 @@ msgstr "Falha ao abrir arquivo, é um tipo de arquivo não suportado."
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-msgid "Saving document failed."
+#, fuzzy
+#| msgid "Saving document failed."
+msgid "Saving document failed"
 msgstr "Falha ao salvar documento."
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
@@ -1884,7 +1894,7 @@ msgstr "Falha ao imprimir documento"
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
 #, fuzzy
 #| msgid "Export selection as SVG failed."
-msgid "Exporting selection failed, nothing selected."
+msgid "Exporting selection failed, nothing selected"
 msgstr "Falha ao exportar seleção como SVG."
 
 #: rnote-ui/src/canvas/mod.rs:994
@@ -1898,7 +1908,7 @@ msgid "- invalid folder path -"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1031
-msgid "Opened file was modified on disk."
+msgid "Opened file was modified on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1032
@@ -1908,15 +1918,15 @@ msgstr ""
 #: rnote-ui/src/canvas/mod.rs:1038
 #, fuzzy
 #| msgid "Opening .rnote file failed."
-msgid "Reloading .rnote file from disk failed."
+msgid "Reloading .rnote file from disk failed"
 msgstr "Falha ao abrir arquivo .rnote."
 
 #: rnote-ui/src/canvas/mod.rs:1087
-msgid "Opened file was renamed on disk."
+msgid "Opened file was renamed on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1100
-msgid "Opened file was moved or deleted on disk."
+msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
@@ -1932,61 +1942,63 @@ msgid "Save Document As"
 msgstr "Salvar documento como"
 
 #: rnote-ui/src/dialogs/export.rs:62
-msgid "Saved document successfully."
+#, fuzzy
+#| msgid "Saved document successfully."
+msgid "Saved document successfully"
 msgstr "Documento salvo com sucesso."
 
 #: rnote-ui/src/dialogs/export.rs:195
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Exporting document failed."
+msgid "Exporting document failed"
 msgstr "Falha ao exportar o documento como SVG."
 
 #: rnote-ui/src/dialogs/export.rs:197
 #, fuzzy
 #| msgid "Exported document as SVG successfully."
-msgid "Exported document successfully."
+msgid "Exported document successfully"
 msgstr "Documento como SVG exportado com sucesso."
 
 #: rnote-ui/src/dialogs/export.rs:203
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Exporting document failed, no file selected."
+msgid "Exporting document failed, no file selected"
 msgstr "Falha ao exportar o documento como SVG."
 
 #: rnote-ui/src/dialogs/export.rs:468
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Exporting document pages failed."
+msgid "Exporting document pages failed"
 msgstr "Falha ao exportar o documento como SVG."
 
 #: rnote-ui/src/dialogs/export.rs:470
 #, fuzzy
 #| msgid "Exported document as SVG successfully."
-msgid "Exported document pages successfully."
+msgid "Exported document pages successfully"
 msgstr "Documento como SVG exportado com sucesso."
 
 #: rnote-ui/src/dialogs/export.rs:476
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Exporting document pages failed, no directory selected."
+msgid "Exporting document pages failed, no directory selected"
 msgstr "Falha ao exportar o documento como SVG."
 
 #: rnote-ui/src/dialogs/export.rs:716
 #, fuzzy
 #| msgid "Export selection as SVG failed."
-msgid "Exporting selection failed."
+msgid "Exporting selection failed"
 msgstr "Falha ao exportar seleção como SVG."
 
 #: rnote-ui/src/dialogs/export.rs:718
 #, fuzzy
 #| msgid "Exported selection as SVG successfully."
-msgid "Exported selection successfully."
+msgid "Exported selection successfully"
 msgstr "Seleção como SVG exportada com sucesso."
 
 #: rnote-ui/src/dialogs/export.rs:724
 #, fuzzy
 #| msgid "Export selection as SVG failed."
-msgid "Exporting selection failed, no file selected."
+msgid "Exporting selection failed, no file selected"
 msgstr "Falha ao exportar seleção como SVG."
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
@@ -2002,11 +2014,13 @@ msgstr "Exportar estado do motor"
 #: rnote-ui/src/dialogs/export.rs:852
 #, fuzzy
 #| msgid "Export engine state failed."
-msgid "Exporting engine state failed."
+msgid "Exporting engine state failed"
 msgstr "Falha ao exportar o estado do motor."
 
 #: rnote-ui/src/dialogs/export.rs:854
-msgid "Exported engine state successfully."
+#, fuzzy
+#| msgid "Exported engine state successfully."
+msgid "Exported engine state successfully"
 msgstr "Estado do motor exportado com sucesso."
 
 #: rnote-ui/src/dialogs/export.rs:878
@@ -2018,15 +2032,19 @@ msgstr "Exportar configuração do motor"
 #: rnote-ui/src/dialogs/export.rs:916
 #, fuzzy
 #| msgid "Export engine config failed."
-msgid "Exporting engine config failed."
+msgid "Exporting engine config failed"
 msgstr "Falha ao exportar a configuração do motor."
 
 #: rnote-ui/src/dialogs/export.rs:918
-msgid "Exported engine config successfully."
+#, fuzzy
+#| msgid "Exported engine config successfully."
+msgid "Exported engine config successfully"
 msgstr "Configuração do motor exportada com sucesso."
 
 #: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed."
+#, fuzzy
+#| msgid "Opening file failed."
+msgid "Opening file failed"
 msgstr "Falha ao abrir arquivo."
 
 #: rnote-ui/src/dialogs/import.rs:135
@@ -2256,26 +2274,26 @@ msgstr ""
 msgid "Star"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:565
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:567
 #, fuzzy
 #| msgid "Textured"
 msgid "Text"
 msgstr "Texturizado"
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Travel"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:569
 msgid "Weather"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:570
 #, fuzzy
 #| msgid "Height"
 msgid "Weight"

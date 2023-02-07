@@ -556,6 +556,27 @@ impl RnSettingsPanel {
             .bidirectional()
             .build();
 
+        let set_overlays_margins = |appwindow: &RnAppWindow, switch_active: bool| {
+            let (m1, m2) = if switch_active { (18, 72) } else { (9, 63) };
+            appwindow.overlays().colorpicker().set_margin_top(m1);
+            appwindow
+                .overlays()
+                .pens_toggles_box()
+                .set_margin_bottom(m1);
+            appwindow.overlays().sidebar_box().set_margin_start(m1);
+            appwindow.overlays().sidebar_box().set_margin_end(m1);
+            appwindow.overlays().sidebar_box().set_margin_top(m2);
+            appwindow.overlays().sidebar_box().set_margin_top(m2);
+        };
+        // set on init
+        set_overlays_margins(appwindow, imp.general_show_scrollbars_switch.is_active());
+        // and on change
+        imp.general_show_scrollbars_switch.connect_active_notify(
+            clone!(@weak appwindow => move |switch| {
+                    set_overlays_margins(&appwindow, switch.is_active());
+            }),
+        );
+
         // Regular cursor picker
         imp.general_regular_cursor_picker.set_list(
             StringList::new(CURSORS_LIST),

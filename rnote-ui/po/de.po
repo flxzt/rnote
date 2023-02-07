@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 00:14+0100\n"
-"PO-Revision-Date: 2023-02-07 23:15+0000\n"
+"PO-Revision-Date: 2023-02-07 23:22+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1530,56 +1530,40 @@ msgid "Edit Selected Workspace"
 msgstr "Bearbeite Ausgewählte Arbeitsfläche"
 
 #: rnote-ui/src/appwindow/mod.rs:505
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
-msgstr ".rnote Datei öffnen gescheitert."
+msgstr ".rnote Datei öffnen gescheitert"
 
 #: rnote-ui/src/appwindow/mod.rs:516
-#, fuzzy
-#| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
-msgstr "Vektorbild öffnen gescheitert."
+msgstr "Vektorbild öffnen gescheitert"
 
 #: rnote-ui/src/appwindow/mod.rs:527
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
-msgstr "Bitmapbild öffnen gescheitert."
+msgstr "Bitmapbild öffnen gescheitert"
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
-#, fuzzy
-#| msgid "Opening Xournal++ file failed."
 msgid "Opening Xournal++ file failed"
-msgstr "Xournal++ Datei öffnen gescheitert."
+msgstr "Xournal++ Datei öffnen gescheitert"
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-#, fuzzy
-#| msgid "Opening PDF file failed."
 msgid "Opening PDF file failed"
-msgstr "PDF Datei öffnen gescheitert."
+msgstr "PDF Datei öffnen gescheitert"
 
 #: rnote-ui/src/appwindow/mod.rs:558
-#, fuzzy
-#| msgid "Failed to open file: Tried to open folder as file"
 msgid "Failed to open file, tried to open folder as file"
-msgstr "Datei öffnen gescheitert: Versucht Ordner als Datei zu öffnen"
+msgstr "Datei öffnen gescheitert, versucht Ordner als Datei zu öffnen"
 
 #: rnote-ui/src/appwindow/mod.rs:563
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file: Unsupported file type"
-msgstr "Datei öffnen gescheitert: Nicht unterstützter Dateityp."
+msgstr "Datei öffnen gescheitert: Nicht unterstützter Dateityp"
 
 #: rnote-ui/src/appwindow/imp.rs:272
 #: rnote-ui/src/appwindow/appwindowactions.rs:522
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-#, fuzzy
-#| msgid "Saving document failed."
 msgid "Saving document failed"
-msgstr "Dokument speichern gescheitert."
+msgstr "Dokument speichern gescheitert"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
 msgid "Printed document successfully"
@@ -1590,10 +1574,8 @@ msgid "Printing document failed"
 msgstr "Dokument drucken gescheitert"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
-#, fuzzy
-#| msgid "Exporting selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
-msgstr "Auswahl exportieren gescheitert, nichts ausgewählt."
+msgstr "Auswahl exportieren gescheitert, nichts ausgewählt"
 
 #: rnote-ui/src/canvas/mod.rs:994
 msgid "- invalid file name -"
@@ -1604,32 +1586,24 @@ msgid "- invalid folder path -"
 msgstr "- ungültiger Ordnerpfad -"
 
 #: rnote-ui/src/canvas/mod.rs:1031
-#, fuzzy
-#| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
-msgstr "Geöffnete Datei wurde auf dem Datenträger geändert."
+msgstr "Geöffnete Datei wurde auf dem Datenträger geändert"
 
 #: rnote-ui/src/canvas/mod.rs:1032
 msgid "Reload"
 msgstr "Neu laden"
 
 #: rnote-ui/src/canvas/mod.rs:1038
-#, fuzzy
-#| msgid "Reloading .rnote file from disk failed."
 msgid "Reloading .rnote file from disk failed"
-msgstr ".rnote Datei neu laden gescheitert."
+msgstr ".rnote Datei neu laden gescheitert"
 
 #: rnote-ui/src/canvas/mod.rs:1087
-#, fuzzy
-#| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
-msgstr "Geöffnete Datei wurde auf dem Datenträger umbenannt."
+msgstr "Geöffnete Datei wurde auf dem Datenträger umbenannt"
 
 #: rnote-ui/src/canvas/mod.rs:1100
-#, fuzzy
-#| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
-msgstr "Geöffnete Datei wurde auf dem Datenträger verschoben oder gelöscht."
+msgstr "Geöffnete Datei wurde auf dem Datenträger verschoben oder gelöscht"
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
 msgid ".rnote"
@@ -1640,64 +1614,44 @@ msgid "Save Document As"
 msgstr "Dokument Speichern Als"
 
 #: rnote-ui/src/dialogs/export.rs:62
-#, fuzzy
-#| msgid "Saved document successfully."
 msgid "Saved document successfully"
-msgstr "Dokument erfolgreich gespeichert."
+msgstr "Dokument erfolgreich gespeichert"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Exporting document failed."
 msgid "Exporting document failed"
-msgstr "Dokument exportieren gescheitert."
+msgstr "Dokument exportieren gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:197
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document successfully"
-msgstr "Dokument erfolgreich exportiert."
+msgstr "Dokument erfolgreich exportiert"
 
 #: rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Exporting document failed, no file selected."
 msgid "Exporting document failed, no file selected"
-msgstr "Dokument exportieren gescheitert, keine Datei ausgewählt."
+msgstr "Dokument exportieren gescheitert, keine Datei ausgewählt"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Exporting document pages failed."
 msgid "Exporting document pages failed"
-msgstr "Dokumentseiten exportieren gescheitert."
+msgstr "Dokumentseiten exportieren gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document pages successfully."
 msgid "Exported document pages successfully"
-msgstr "Dokumentseiten erfolgreich exportiert."
+msgstr "Dokumentseiten erfolgreich exportiert"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Exporting document pages failed, no directory selected."
 msgid "Exporting document pages failed, no directory selected"
-msgstr "Dokumentseiten exportieren gescheitert, keine Datei ausgewählt."
+msgstr "Dokumentseiten exportieren gescheitert, keine Datei ausgewählt"
 
 #: rnote-ui/src/dialogs/export.rs:716
-#, fuzzy
-#| msgid "Exporting selection failed."
 msgid "Exporting selection failed"
-msgstr "Auswahl exportieren gescheitert."
+msgstr "Auswahl exportieren gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:718
-#, fuzzy
-#| msgid "Exported selection successfully."
 msgid "Exported selection successfully"
-msgstr "Auswahl erfolgreich exportiert."
+msgstr "Auswahl erfolgreich exportiert"
 
 #: rnote-ui/src/dialogs/export.rs:724
-#, fuzzy
-#| msgid "Exporting selection failed, no file selected."
 msgid "Exporting selection failed, no file selected"
-msgstr "Auswahl exportieren gescheitert, keine Datei ausgewählt."
+msgstr "Auswahl exportieren gescheitert, keine Datei ausgewählt"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
@@ -1708,38 +1662,28 @@ msgid "Export Engine State"
 msgstr "Exportiere Engine Zustand"
 
 #: rnote-ui/src/dialogs/export.rs:852
-#, fuzzy
-#| msgid "Exporting engine state failed."
 msgid "Exporting engine state failed"
-msgstr "Engine Zustand exportieren gescheitert."
+msgstr "Engine Zustand exportieren gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:854
-#, fuzzy
-#| msgid "Exported engine state successfully."
 msgid "Exported engine state successfully"
-msgstr "'engine state' erfolgreich exportiert."
+msgstr "Engine Zustand erfolgreich exportiert"
 
 #: rnote-ui/src/dialogs/export.rs:878
 msgid "Export Engine Config"
 msgstr "Exportiere Engine Konfiguration"
 
 #: rnote-ui/src/dialogs/export.rs:916
-#, fuzzy
-#| msgid "Exporting engine config failed."
 msgid "Exporting engine config failed"
-msgstr "Engine Konfiguration exportieren gescheitert."
+msgstr "Engine Konfiguration exportieren gescheitert"
 
 #: rnote-ui/src/dialogs/export.rs:918
-#, fuzzy
-#| msgid "Exported engine config successfully."
 msgid "Exported engine config successfully"
-msgstr "'engine config' erfolgreich exportiert."
+msgstr "Engine Konfiguration erfolgreich exportiert."
 
 #: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Opening file failed"
-msgstr "Datei öffnen gescheitert."
+msgstr "Datei öffnen gescheitert"
 
 #: rnote-ui/src/dialogs/import.rs:135
 msgid "Jpg, Pdf, Png, Svg, Xopp"

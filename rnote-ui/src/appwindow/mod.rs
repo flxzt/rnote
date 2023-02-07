@@ -479,7 +479,7 @@ impl RnAppWindow {
                 }
             }
             crate::utils::FileType::Unsupported => {
-                log::error!("tried to open unsupported file type.");
+                log::error!("tried to open unsupported file type");
             }
         }
     }
@@ -502,7 +502,7 @@ impl RnAppWindow {
                         Ok((bytes, _)) => {
                             if let Err(e) = canvas.load_in_rnote_bytes(bytes.to_vec(), file.path()).await {
                                 log::error!("load_in_rnote_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening .rnote file failed"));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -513,7 +513,7 @@ impl RnAppWindow {
                         Ok((bytes, _)) => {
                             if let Err(e) = canvas.load_in_vectorimage_bytes(bytes.to_vec(), target_pos).await {
                                 log::error!("load_in_vectorimage_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening vector image file failed"));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -524,7 +524,7 @@ impl RnAppWindow {
                         Ok((bytes, _)) => {
                             if let Err(e) = canvas.load_in_bitmapimage_bytes(bytes.to_vec(), target_pos).await {
                                 log::error!("load_in_bitmapimage_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening bitmap image file failed"));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -535,7 +535,7 @@ impl RnAppWindow {
                         Ok((bytes, _)) => {
                             if let Err(e) = canvas.load_in_xopp_bytes(bytes.to_vec()).await {
                                 log::error!("load_in_xopp_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed"));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
@@ -546,21 +546,21 @@ impl RnAppWindow {
                         Ok((bytes, _)) => {
                             if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
                                 log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed"));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),
                     }
                 }
                 crate::utils::FileType::Folder => {
-                    log::error!("tried to open a folder as a file.");
+                    log::error!("tried to open a folder as a file");
                     appwindow.overlays()
-                        .dispatch_toast_error(&gettext("Failed to open file: Tried to open folder as file"));
+                        .dispatch_toast_error(&gettext("Failed to open file, tried to open folder as file"));
                 }
                 crate::utils::FileType::Unsupported => {
-                    log::error!("tried to open a unsupported file type.");
+                    log::error!("tried to open a unsupported file type");
                     appwindow.overlays()
-                        .dispatch_toast_error(&gettext("Failed to open file: Unsupported file type."));
+                        .dispatch_toast_error(&gettext("Failed to open file: Unsupported file type"));
                 }
             }
 

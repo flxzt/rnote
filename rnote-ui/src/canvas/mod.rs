@@ -337,16 +337,16 @@ mod imp {
                 "output-file" => {
                     let output_file = value
                         .get::<Option<gio::File>>()
-                        .expect("The value needs to be of type `Option<gio::File>`.");
+                        .expect("The value needs to be of type `Option<gio::File>`");
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
+                        value.get().expect("The value needs to be of type `bool`");
                     self.unsaved_changes.replace(unsaved_changes);
                 }
                 "empty" => {
-                    let empty: bool = value.get().expect("The value needs to be of type `bool`.");
+                    let empty: bool = value.get().expect("The value needs to be of type `bool`");
                     self.empty.replace(empty);
                     if empty {
                         inst.set_unsaved_changes(false);
@@ -370,7 +370,7 @@ mod imp {
                 }
                 "touch-drawing" => {
                     let touch_drawing: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
+                        value.get().expect("The value needs to be of type `bool`");
                     self.touch_drawing.replace(touch_drawing);
                     if touch_drawing {
                         self.touch_drawing_gesture
@@ -1028,14 +1028,14 @@ impl RnCanvas {
                     canvas.set_unsaved_changes(true);
 
                     appwindow.overlays().dispatch_toast_w_button_singleton(
-                        &gettext("Opened file was modified on disk."),
+                        &gettext("Opened file was modified on disk"),
                         &gettext("Reload"),
                         clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
                             glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                                 appwindow.overlays().start_pulsing_progressbar();
 
                                 if let Err(e) = canvas.reload_from_disk().await {
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed."));
+                                    appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
                                     log::error!("failed to reload current output file, {}", e);
                                 }
 
@@ -1084,7 +1084,7 @@ impl RnCanvas {
 
                             canvas.set_output_file(other_file.cloned());
 
-                            appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk."))
+                            appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk"))
                         }
                     },
                     gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
@@ -1097,7 +1097,7 @@ impl RnCanvas {
                         canvas.set_unsaved_changes(true);
                         canvas.set_output_file(None);
 
-                        appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk."));
+                        appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk"));
                     },
                     _ => {},
                 }
@@ -1418,7 +1418,7 @@ impl RnCanvas {
     // update_engine_rendering() then needs to be called.
     pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
         let Some(parent) = self.parent() else {
-            log::debug!("self.parent() is None in `center_around_coord_on_doc().");
+            log::debug!("self.parent() is None in `center_around_coord_on_doc()");
             return
         };
 
@@ -1438,7 +1438,7 @@ impl RnCanvas {
     pub(crate) fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
         let Some(parent) = self.parent() else {
-            log::debug!("self.parent() is None in `return_to_origin_page().");
+            log::debug!("self.parent() is None in `return_to_origin_page()");
             return
         };
 

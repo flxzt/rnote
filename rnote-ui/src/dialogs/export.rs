@@ -59,7 +59,7 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas
 
                             match canvas.save_document_to_file(&file).await {
                                 Ok(true) => {
-                                    appwindow.overlays().dispatch_toast_text(&gettext("Saved document successfully."));
+                                    appwindow.overlays().dispatch_toast_text(&gettext("Saved document successfully"));
                                 }
                                 Ok(false) => {
                                     // Saving was already in progress
@@ -67,8 +67,8 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas
                                 Err(e) => {
                                     canvas.set_output_file(None);
 
-                                    log::error!("saving document failed with error `{e:?}`");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                                    log::error!("saving document failed, Error: `{e:?}`");
+                                    appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                                 }
                             }
 
@@ -191,16 +191,16 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanv
                             );
 
                             if let Err(e) = canvas.export_doc(&file, file_title, None).await {
-                                log::error!("exporting document failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed."));
+                                log::error!("exporting document failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document successfully"));
                             }
 
                             appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed, no file selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document failed, no file selected"));
                     }
                 }
                 _ => {}
@@ -464,16 +464,16 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, canvas: &
                             let file_stem_name = export_files_stemname_entryrow.text().to_string();
 
                             if let Err(e) = canvas.export_doc_pages(&dir, file_stem_name, None).await {
-                                log::error!("exporting document pages failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed."));
+                                log::error!("exporting document pages failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported document pages successfully"));
                             }
 
                             appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed, no directory selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting document pages failed, no directory selected"));
                     }
                 }
                 _ => {}
@@ -712,16 +712,16 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, canvas: &
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = canvas.export_selection(&file, None).await {
-                                log::error!("exporting selection failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed."));
+                                log::error!("exporting selection failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported selection successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported selection successfully"));
                             }
 
                             appwindow.overlays().finish_progressbar();
                         }));
                     } else {
-                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, no file selected."));
+                        appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, no file selected"));
                     }
                 }
                 _ => {}
@@ -848,10 +848,10 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = canvas.export_engine_state(&file).await {
-                                log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting engine state failed."));
+                                log::error!("exporting engine state failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting engine state failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported engine state successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported engine state successfully"));
                             }
 
                             appwindow.overlays().finish_progressbar();
@@ -912,10 +912,10 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: 
                             appwindow.overlays().start_pulsing_progressbar();
 
                             if let Err(e) = canvas.export_engine_config(&file).await {
-                                log::error!("exporting engine state failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting engine config failed."));
+                                log::error!("exporting engine state failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Exporting engine config failed"));
                             } else {
-                                appwindow.overlays().dispatch_toast_text(&gettext("Exported engine config successfully."));
+                                appwindow.overlays().dispatch_toast_text(&gettext("Exported engine config successfully"));
                             }
 
                             appwindow.overlays().finish_progressbar();

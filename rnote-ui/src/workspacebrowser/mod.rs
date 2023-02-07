@@ -385,9 +385,9 @@ fn setup_file_rows(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
         .set_model(Some(&primary_selection_model));
 
     wb.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |files_listview, position| {
-                let model = files_listview.model().expect("model for primary_listview does not exist.");
+                let model = files_listview.model().expect("model for primary_listview does not exist");
                 let fileinfo = model.item(position)
-                    .expect("selected item in primary_listview does not exist.")
+                    .expect("selected item in primary_listview does not exist")
                     .downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
                 if let Some(input_file) = fileinfo.attribute_object("standard::file") {

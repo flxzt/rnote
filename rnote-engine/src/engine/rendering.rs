@@ -23,7 +23,7 @@ impl RnoteEngine {
             // Only create the texture once, it is expensive
             let new_texture = image
                 .to_memtexture()
-                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
+                .context("image to_memtexture() failed in gen_rendernode() of background")?;
 
             for splitted_bounds in
                 viewport.split_extended_origin_aligned(self.document.background.tile_size())

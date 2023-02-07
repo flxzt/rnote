@@ -31,7 +31,7 @@ pub(crate) fn dialog_open_overwrite(
             let open_overwrite = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
                 if let Err(e) = appwindow.load_in_file(input_file, None, canvas) {
                     log::error!("failed to load in input file, {e:?}");
-                    appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed."));
+                    appwindow.overlays().dispatch_toast_error(&gettext("Opening file failed"));
                 }
             };
 
@@ -47,8 +47,8 @@ pub(crate) fn dialog_open_overwrite(
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
 
-                                log::error!("saving document failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                                log::error!("saving document failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
 
                             appwindow.overlays().finish_progressbar();
@@ -332,7 +332,7 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = canvas.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed"));
                                 log::error!(
                                     "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
                                 );
@@ -391,7 +391,7 @@ pub(crate) fn dialog_import_xopp_w_prefs(
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = canvas.load_in_xopp_bytes(file_bytes.to_vec()).await {
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed."));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed"));
                                 log::error!(
                                     "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
                                 );

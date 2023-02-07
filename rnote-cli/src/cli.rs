@@ -137,9 +137,7 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                             println!("Export finished!");
                         }
                     }
-                    None => {
-                        return Err(anyhow::anyhow!("Failed to get filename from rnote_files."))
-                    }
+                    None => return Err(anyhow::anyhow!("Failed to get filename from rnote_files")),
                 },
                 None => {
                     let output_files = rnote_files
@@ -208,7 +206,7 @@ pub(crate) async fn import_file(
 ) -> anyhow::Result<()> {
     let mut input_bytes = vec![];
     let Some(rnote_file_name) = rnote_file.file_name().map(|s| s.to_string_lossy().to_string()) else {
-        return Err(anyhow::anyhow!("Failed to get filename from rnote_file."));
+        return Err(anyhow::anyhow!("Failed to get filename from rnote_file"));
     };
 
     let mut ifh = File::open(input_file).await?;
@@ -291,7 +289,7 @@ pub(crate) async fn export_to_file(
     output_file: impl AsRef<Path>,
 ) -> anyhow::Result<()> {
     let Some(export_file_name) = output_file.as_ref().file_name().map(|s| s.to_string_lossy().to_string()) else {
-        return Err(anyhow::anyhow!("Failed to get filename from output_file."));
+        return Err(anyhow::anyhow!("Failed to get filename from output_file"));
     };
 
     let mut rnote_bytes = vec![];

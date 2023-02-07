@@ -89,7 +89,7 @@ mod imp {
                 "dir" => {
                     let dir = value
                         .get::<String>()
-                        .expect("The value needs to be of type `String`.");
+                        .expect("The value needs to be of type `String`");
 
                     self.inner.borrow_mut().dir = PathBuf::from(dir);
                 }

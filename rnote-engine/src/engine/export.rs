@@ -307,7 +307,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in save_as_rnote_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in save_as_rnote_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -390,7 +390,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_as_svg_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_doc_as_svg_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -512,7 +512,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_as_pdf_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_doc_as_pdf_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -650,7 +650,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_doc_as_xopp_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -722,7 +722,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_doc_pages_as_svgs_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -758,7 +758,7 @@ impl RnoteEngine {
         rayon::spawn(move || {
             let result = || -> Result<Vec<Vec<u8>>, anyhow::Error> {
                 let bitmapimage_format = match doc_pages_export_prefs.export_format {
-                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format.")),
+                    DocPagesExportFormat::Svg => return Err(anyhow::anyhow!("extracting bitmap image format from doc pages export prefs failed, not set to a bitmap format")),
                     DocPagesExportFormat::Png => image::ImageOutputFormat::Png,
                     DocPagesExportFormat::Jpeg => {
                         image::ImageOutputFormat::Jpeg(doc_pages_export_prefs.jpeg_quality)
@@ -780,7 +780,7 @@ impl RnoteEngine {
                     .collect()
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_doc_pages_as_bitmap_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_doc_pages_as_bitmap_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -846,7 +846,7 @@ impl RnoteEngine {
                 ))
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_selection_as_svgs_bytes() failed. Receiver already dropped");
             }
         });
 
@@ -885,7 +885,7 @@ impl RnoteEngine {
                 let selection_svg_bounds = selection_svg.bounds;
 
                 let bitmapimage_format = match selection_export_prefs.export_format {
-                SelectionExportFormat::Svg => return Err(anyhow::anyhow!("export_selection_as_bitmap_bytes() failed, export preferences have Svg as export format.")),
+                SelectionExportFormat::Svg => return Err(anyhow::anyhow!("export_selection_as_bitmap_bytes() failed, export preferences have Svg as export format")),
                 SelectionExportFormat::Png => image::ImageOutputFormat::Png,
                 SelectionExportFormat::Jpeg => {
                     image::ImageOutputFormat::Jpeg(selection_export_prefs.jpeg_quality)
@@ -902,7 +902,7 @@ impl RnoteEngine {
                 ))
             };
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped.");
+                log::error!("sending result to receiver in export_selection_as_bitmap_bytes() failed. Receiver already dropped");
             }
         });
 

@@ -187,7 +187,7 @@ impl ObjectImpl for RnAppWindow {
             "autosave" => {
                 let autosave = value
                     .get::<bool>()
-                    .expect("The value needs to be of type `bool`.");
+                    .expect("The value needs to be of type `bool`");
 
                 self.autosave.replace(autosave);
 
@@ -201,7 +201,7 @@ impl ObjectImpl for RnAppWindow {
             "autosave-interval-secs" => {
                 let autosave_interval_secs = value
                     .get::<u32>()
-                    .expect("The value needs to be of type `u32`.");
+                    .expect("The value needs to be of type `u32`");
 
                 self.autosave_interval_secs.replace(autosave_interval_secs);
 
@@ -212,7 +212,7 @@ impl ObjectImpl for RnAppWindow {
             "righthanded" => {
                 let righthanded = value
                     .get::<bool>()
-                    .expect("The value needs to be of type `bool`.");
+                    .expect("The value needs to be of type `bool`");
 
                 self.righthanded.replace(righthanded);
 
@@ -220,7 +220,7 @@ impl ObjectImpl for RnAppWindow {
             }
             "touch-drawing" => {
                 let touch_drawing: bool =
-                    value.get().expect("The value needs to be of type `bool`.");
+                    value.get().expect("The value needs to be of type `bool`");
                 self.touch_drawing.replace(touch_drawing);
             }
             _ => unimplemented!(),
@@ -268,8 +268,8 @@ impl RnAppWindow {
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
 
-                                log::error!("saving document failed with error `{e:?}`");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed."));
+                                log::error!("saving document failed, Error: `{e:?}`");
+                                appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                             }
                         }
                     ));

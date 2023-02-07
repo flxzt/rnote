@@ -223,7 +223,7 @@ mod imp {
                 "show-scrollbars" => {
                     let show_scrollbars = value
                         .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
+                        .expect("The value needs to be of type `bool`");
 
                     self.show_scrollbars.replace(show_scrollbars);
 

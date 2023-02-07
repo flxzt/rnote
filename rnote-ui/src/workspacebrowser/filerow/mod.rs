@@ -98,7 +98,7 @@ mod imp {
                 "current-file" => {
                     let current_file = value
                         .get::<Option<gio::File>>()
-                        .expect("The value needs to be of type `Option<gio::File>`.");
+                        .expect("The value needs to be of type `Option<gio::File>`");
                     self.current_file.replace(current_file);
                 }
                 _ => unimplemented!(),

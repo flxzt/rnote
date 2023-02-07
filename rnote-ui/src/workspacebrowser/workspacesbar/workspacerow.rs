@@ -82,7 +82,7 @@ mod imp {
                 "entry" => {
                     let entry = value
                         .get::<RnWorkspaceListEntry>()
-                        .expect("The value needs to be of type `WorkspaceListEntry`.");
+                        .expect("The value needs to be of type `WorkspaceListEntry`");
 
                     self.entry.replace(entry);
                     self.connect_entry();

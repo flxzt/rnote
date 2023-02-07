@@ -45,7 +45,7 @@ pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::Simpl
 
             popover.popup();
         } else {
-            log::warn!("can't create new folder when there currently is no workspace selected.");
+            log::warn!("can't create new folder when there currently is no workspace selected");
         }
     }));
 

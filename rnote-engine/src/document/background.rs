@@ -280,7 +280,7 @@ impl Background {
         }
 
         let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
-            .context("svg_node_to_string() failed for background.")?;
+            .context("svg_node_to_string() failed for background")?;
 
         Ok(render::Svg { svg_data, bounds })
     }

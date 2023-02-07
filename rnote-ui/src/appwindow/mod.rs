@@ -560,7 +560,7 @@ impl RnAppWindow {
                 crate::utils::FileType::Unsupported => {
                     log::error!("tried to open a unsupported file type");
                     appwindow.overlays()
-                        .dispatch_toast_error(&gettext("Failed to open file: Unsupported file type"));
+                        .dispatch_toast_error(&gettext("Failed to open file, unsupported file type"));
                 }
             }
 

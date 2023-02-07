@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:14+0100\n"
+"POT-Creation-Date: 2023-02-08 00:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1527,7 +1527,7 @@ msgid "Failed to open file, tried to open folder as file"
 msgstr ""
 
 #: rnote-ui/src/appwindow/mod.rs:563
-msgid "Failed to open file: Unsupported file type"
+msgid "Failed to open file, unsupported file type"
 msgstr ""
 
 #: rnote-ui/src/appwindow/imp.rs:272

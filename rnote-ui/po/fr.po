@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-06 23:02+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
-"Last-Translator: rene-coty <irenee.thirion@e.email>\n"
+"Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -55,7 +55,7 @@ msgstr "Fenêtre principale aux couleurs claires"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "Lecture Note 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -63,7 +63,7 @@ msgstr "Une annotation PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "Lecture Note 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear Document"
@@ -1110,7 +1110,7 @@ msgstr "Ajuster le zoom à la largeur de la page"
 #, fuzzy
 #| msgid "Stroke dots radii"
 msgid "Stroke Color"
-msgstr "Rayons des points"
+msgstr "Couleur du trait"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
 #, fuzzy
@@ -1128,8 +1128,6 @@ msgid "Rename"
 msgstr "Renommer"
 
 #: rnote-ui/data/ui/filerow.ui:66
-#, fuzzy
-#| msgid "Move into trash"
 msgid "Move Into Trash"
 msgstr "Déplacer dans la corbeille"
 
@@ -1142,10 +1140,8 @@ msgid "Draft"
 msgstr "Brouillon"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-#, fuzzy
-#| msgid "Reveal / hide flap"
 msgid "Reveal / Hide Flap"
-msgstr "Afficher / masquer le rabat"
+msgstr "Afficher / Masquer le volet"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 #, fuzzy
@@ -1174,18 +1170,18 @@ msgid "Resize Document to Fit Strokes"
 msgstr "Redimensionner le document pour l’adapter aux traits"
 
 #: rnote-ui/data/ui/mainheader.ui:109
-#, fuzzy
-#| msgid "Save document"
 msgid "Save Document"
 msgstr "Enregistrer le document"
 
 #: rnote-ui/data/ui/overlays.ui:151
+#, fuzzy
 msgid "Move _Left"
-msgstr ""
+msgstr "Déplacer _à Gauche"
 
 #: rnote-ui/data/ui/overlays.ui:155
+#, fuzzy
 msgid "Move _Right"
-msgstr ""
+msgstr "Déplacer _à Droite"
 
 #: rnote-ui/data/ui/overlays.ui:161
 msgid "_Close"

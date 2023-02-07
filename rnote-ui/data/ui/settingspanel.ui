@@ -232,7 +232,7 @@
                     <child>
                       <object class="AdwActionRow" id="format_dpi_row">
                         <property name="title" translatable="yes">Dpi</property>
-                        <property name="subtitle" translatable="yes">Set the Dpi (dots per inch). Defaults to 96</property>
+                        <property name="subtitle" translatable="yes">Set the Dpi (dots per inch). Defaults to 96.</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="format_dpi_adj">
                             <property name="step-increment">1</property>

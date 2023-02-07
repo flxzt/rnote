@@ -106,7 +106,7 @@
                   <child>
                     <object class="GtkButton" id="zoom_reset_button">
                       <property name="action-name">win.zoom-reset</property>
-                      <property name="tooltip_text" translatable="yes">Reset the Zoom</property>
+                      <property name="tooltip_text" translatable="yes">Reset Zoom</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -125,7 +125,7 @@
                 <object class="GtkButton" id="zoom_fit_width_button">
                   <property name="hexpand">false</property>
                   <property name="icon_name">zoom-fit-width-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Zoom to Fit Page Width</property>
+                  <property name="tooltip_text" translatable="yes">Zoom to Page Width</property>
                   <property name="action-name">win.zoom-fit-width</property>
                 </object>
               </child>

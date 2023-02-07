@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-07 19:42+0100\n"
-"PO-Revision-Date: 2023-02-07 18:44+0000\n"
+"PO-Revision-Date: 2023-02-07 23:15+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -1359,10 +1359,8 @@ msgid "Dpi"
 msgstr "Dpi"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-#, fuzzy
-#| msgid "Set the DPI (dots per inch). Defaults to 96"
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "Imposta il DPI (punti per pollice). Il valore predefinito è 96"
+msgstr "Imposta il Dpi (punti per pollice). Il valore predefinito è 96."
 
 #: rnote-ui/data/ui/settingspanel.ui:258
 msgid "Revert"
@@ -2040,7 +2038,7 @@ msgstr "Lampadina"
 
 #: rnote-ui/src/dialogs/mod.rs:549
 msgid "Mathematics"
-msgstr ""
+msgstr "Matematica"
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"

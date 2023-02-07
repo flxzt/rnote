@@ -130,7 +130,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Zoom in / out</property>
+                <property name="title" context="shortcut window" translatable="yes">Zoom in/out</property>
                 <property name="subtitle" context="shortcut window" translatable="yes">Alt + Shift + Drag</property>
               </object>
             </child>

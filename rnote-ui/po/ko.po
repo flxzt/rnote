@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2022-11-16 10:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -1051,7 +1051,7 @@ msgid "Zoom out"
 msgstr "축소"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1059,7 +1059,7 @@ msgid "Zoom in"
 msgstr "확대"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr ""
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1080,7 +1080,7 @@ msgid "Rename"
 msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:66
-msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1274,7 +1274,7 @@ msgid "Dpi"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1476,7 +1476,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Zoom out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "축소"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -1845,6 +1845,7 @@ msgid "Camera"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:533
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
@@ -1911,7 +1912,7 @@ msgid "Lightbulb"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
+msgid "Mathematics"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
@@ -1975,6 +1976,7 @@ msgid "Star"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:564
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 

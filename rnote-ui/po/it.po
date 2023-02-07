@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -1116,7 +1116,7 @@ msgstr "Diminuisci Zoom"
 #: rnote-ui/data/ui/canvasmenu.ui:109
 #, fuzzy
 #| msgid "Reset the zoom"
-msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "Ripristinare lo Zoom"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1126,7 +1126,7 @@ msgstr "Aumenta Zoom"
 #: rnote-ui/data/ui/canvasmenu.ui:128
 #, fuzzy
 #| msgid "Zoom to fit page width"
-msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "Ingrandisci per adattare alla larghezza della pagina"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1153,7 +1153,7 @@ msgstr "Rinomina"
 #: rnote-ui/data/ui/filerow.ui:66
 #, fuzzy
 #| msgid "Move into trash"
-msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "Sposta nel cestino"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1361,7 +1361,7 @@ msgstr "Dpi"
 #: rnote-ui/data/ui/settingspanel.ui:235
 #, fuzzy
 #| msgid "Set the DPI (dots per inch). Defaults to 96"
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Imposta il DPI (punti per pollice). Il valore predefinito è 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1580,7 +1580,7 @@ msgstr "Rimpicciolire"
 #, fuzzy
 #| msgid "Zoom out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "Diminuisci Zoom"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -1745,7 +1745,8 @@ msgstr "Apertura file PDF fallita."
 
 #: rnote-ui/src/appwindow/mod.rs:558
 msgid "Failed to open file: Tried to open folder as file"
-msgstr "Apertura del file fallita: si è provato ad aprire la cartella come file"
+msgstr ""
+"Apertura del file fallita: si è provato ad aprire la cartella come file"
 
 #: rnote-ui/src/appwindow/mod.rs:563
 msgid "Failed to open file: Unsupported file type."
@@ -1971,6 +1972,7 @@ msgid "Camera"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:533
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
@@ -2037,8 +2039,8 @@ msgid "Lightbulb"
 msgstr "Lampadina"
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
-msgstr "Matematica"
+msgid "Mathematics"
+msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"
@@ -2097,6 +2099,9 @@ msgid "Star"
 msgstr "Stella"
 
 #: rnote-ui/src/dialogs/mod.rs:564
+#, fuzzy
+#| msgid "Terminal"
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminale"
 
@@ -2249,6 +2254,9 @@ msgstr "Nome Cartella"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Nuova Cartella"
+
+#~ msgid "Math"
+#~ msgstr "Matematica"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "Finestra principale dai colori scuri"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -1007,7 +1007,9 @@ msgid "Zoom out"
 msgstr "Uitzoomen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-msgid "Reset the Zoom"
+#, fuzzy
+#| msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "Oorspronkelijk zoomniveau"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1015,7 +1017,9 @@ msgid "Zoom in"
 msgstr "Inzoomen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-msgid "Zoom to Fit Page Width"
+#, fuzzy
+#| msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "Aanpassen aan paginabreedte"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1036,7 +1040,9 @@ msgid "Rename"
 msgstr "Naam wijzigen"
 
 #: rnote-ui/data/ui/filerow.ui:66
-msgid "Move Into Trash"
+#, fuzzy
+#| msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "Verplaatsen naar prullenbak"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1226,7 +1232,9 @@ msgid "Dpi"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+#, fuzzy
+#| msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Stel de DPI (dots per inch) in. Standaard: 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1415,8 +1423,11 @@ msgid "Zoom out"
 msgstr "Uitzoomen"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Zoom in / out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "In-/uitzoomen"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -1775,6 +1786,9 @@ msgid "Camera"
 msgstr "Camera"
 
 #: rnote-ui/src/dialogs/mod.rs:533
+#, fuzzy
+#| msgid "Chip"
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Chip"
 
@@ -1839,8 +1853,8 @@ msgid "Lightbulb"
 msgstr "Lamp"
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
-msgstr "Wiskunde"
+msgid "Mathematics"
+msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"
@@ -1899,6 +1913,9 @@ msgid "Star"
 msgstr "Ster"
 
 #: rnote-ui/src/dialogs/mod.rs:564
+#, fuzzy
+#| msgid "Terminal"
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminal"
 
@@ -2049,6 +2066,9 @@ msgstr "Mapnaam"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Nieuwe map"
+
+#~ msgid "Math"
+#~ msgstr "Wiskunde"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "Hoofdvenster (donker thema)"

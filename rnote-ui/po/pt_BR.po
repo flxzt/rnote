@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Gabriel Gian <gabrielgian@live.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -1206,7 +1206,7 @@ msgstr "Diminuir"
 #: rnote-ui/data/ui/canvasmenu.ui:109
 #, fuzzy
 #| msgid "Reset the zoom"
-msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "Redefinir zoom"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1216,7 +1216,7 @@ msgstr "Ampliar"
 #: rnote-ui/data/ui/canvasmenu.ui:128
 #, fuzzy
 #| msgid "Zoom to fit page width"
-msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "Ampliar para se ajustar à largura da página"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1243,7 +1243,7 @@ msgstr "Renomear"
 #: rnote-ui/data/ui/filerow.ui:66
 #, fuzzy
 #| msgid "Move into trash"
-msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "Mover para o lixo"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1454,7 +1454,7 @@ msgstr ""
 #: rnote-ui/data/ui/settingspanel.ui:235
 #, fuzzy
 #| msgid "Set the DPI (dots per inch). Defaults to 96"
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Definir os pontos por polegada (DPI). O valor padrão é 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1673,7 +1673,7 @@ msgstr "Diminuir"
 #, fuzzy
 #| msgid "Zoom out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "Diminuir"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -2119,6 +2119,7 @@ msgid "Camera"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:533
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
@@ -2190,7 +2191,7 @@ msgid "Lightbulb"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
+msgid "Mathematics"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
@@ -2256,6 +2257,7 @@ msgid "Star"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:564
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 

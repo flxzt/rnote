@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
-"\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
+">\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1006,7 +1006,9 @@ msgid "Zoom out"
 msgstr "Kicsinyítés"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-msgid "Reset the Zoom"
+#, fuzzy
+#| msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "Nagyítás alaphelyzetbe állítása"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1014,7 +1016,9 @@ msgid "Zoom in"
 msgstr "Nagyítás"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-msgid "Zoom to Fit Page Width"
+#, fuzzy
+#| msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "Nagyítás oldalszélességre"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1035,7 +1039,9 @@ msgid "Rename"
 msgstr "Átnevezés"
 
 #: rnote-ui/data/ui/filerow.ui:66
-msgid "Move Into Trash"
+#, fuzzy
+#| msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "Áthelyezés a kukába"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1223,7 +1229,9 @@ msgid "Dpi"
 msgstr "Hüvelykenkénti pontok száma (dpi)"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+#, fuzzy
+#| msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Hüvelykenkénti pontok száma (dpi) beállítása. Alapértelmezett érték 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1412,8 +1420,11 @@ msgid "Zoom out"
 msgstr "Kicsinyítés"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Zoom in / out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "Nagyítás/kicsinyítés"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -1770,6 +1781,9 @@ msgid "Camera"
 msgstr "Fényképezőgép"
 
 #: rnote-ui/src/dialogs/mod.rs:533
+#, fuzzy
+#| msgid "Chip"
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Forgács"
 
@@ -1834,8 +1848,8 @@ msgid "Lightbulb"
 msgstr "Villanykörte"
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
-msgstr "Matematika"
+msgid "Mathematics"
+msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"
@@ -1894,6 +1908,9 @@ msgid "Star"
 msgstr "Csillag"
 
 #: rnote-ui/src/dialogs/mod.rs:564
+#, fuzzy
+#| msgid "Terminal"
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Végállomás"
 
@@ -2044,6 +2061,9 @@ msgstr "Mappanév"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Új mappa"
+
+#~ msgid "Math"
+#~ msgstr "Matematika"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "Fő ablak sötét színekben"

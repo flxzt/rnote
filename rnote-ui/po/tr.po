@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -1007,7 +1007,9 @@ msgid "Zoom out"
 msgstr "Uzaklaştır"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-msgid "Reset the Zoom"
+#, fuzzy
+#| msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "Yakınlaştırmayı Sıfırla"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1015,7 +1017,9 @@ msgid "Zoom in"
 msgstr "Yakınlaştır"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-msgid "Zoom to Fit Page Width"
+#, fuzzy
+#| msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "Sayfa Genişliğine Sığdırmak İçin Yakınlaştır"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1036,7 +1040,9 @@ msgid "Rename"
 msgstr "Yeniden adlandır"
 
 #: rnote-ui/data/ui/filerow.ui:66
-msgid "Move Into Trash"
+#, fuzzy
+#| msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "Çöpe Taşı"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1224,7 +1230,9 @@ msgid "Dpi"
 msgstr "Dpi"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+#, fuzzy
+#| msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "DPI (dots per inch) Ayarla. Öntanımlı değer 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1413,8 +1421,11 @@ msgid "Zoom out"
 msgstr "Uzaklaştır"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Zoom in / out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "Yakınlaştır/Uzaklaştır"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -1773,6 +1784,9 @@ msgid "Camera"
 msgstr "Kamera"
 
 #: rnote-ui/src/dialogs/mod.rs:533
+#, fuzzy
+#| msgid "Chip"
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Çip"
 
@@ -1837,8 +1851,8 @@ msgid "Lightbulb"
 msgstr "Ampül"
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
-msgstr "Matematik"
+msgid "Mathematics"
+msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"
@@ -1897,6 +1911,9 @@ msgid "Star"
 msgstr "Yıldız"
 
 #: rnote-ui/src/dialogs/mod.rs:564
+#, fuzzy
+#| msgid "Terminal"
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Uçbirim"
 
@@ -2047,6 +2064,9 @@ msgstr "Klasör Adı"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Yeni Klasör"
+
+#~ msgid "Math"
+#~ msgstr "Matematik"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "Ana pencere koyu renklerle"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -1004,7 +1004,9 @@ msgid "Zoom out"
 msgstr "صغِّر"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-msgid "Reset the Zoom"
+#, fuzzy
+#| msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "إعادة ضبط التكبير"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1012,7 +1014,9 @@ msgid "Zoom in"
 msgstr "كبِّر"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-msgid "Zoom to Fit Page Width"
+#, fuzzy
+#| msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "كبِّر حتَّى عرض الصفحة"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1033,7 +1037,9 @@ msgid "Rename"
 msgstr "أعِد التسمية"
 
 #: rnote-ui/data/ui/filerow.ui:66
-msgid "Move Into Trash"
+#, fuzzy
+#| msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "احذف لسلَّة المهملات"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1221,7 +1227,9 @@ msgid "Dpi"
 msgstr "عدد النقاط لكلِّ بوصة"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+#, fuzzy
+#| msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "حدد عدد النقاط في كلِّ بوصة. القيمة المبدئيَّة هي 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1410,8 +1418,11 @@ msgid "Zoom out"
 msgstr "صغِّر"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Zoom in / out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "كبِّر \\ صغِّر"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -1770,6 +1781,9 @@ msgid "Camera"
 msgstr "كاميرة"
 
 #: rnote-ui/src/dialogs/mod.rs:533
+#, fuzzy
+#| msgid "Chip"
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "رقاقة"
 
@@ -1834,8 +1848,8 @@ msgid "Lightbulb"
 msgstr "مصباح"
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
-msgstr "رياضيَّات"
+msgid "Mathematics"
+msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"
@@ -1894,6 +1908,9 @@ msgid "Star"
 msgstr "نجم"
 
 #: rnote-ui/src/dialogs/mod.rs:564
+#, fuzzy
+#| msgid "Terminal"
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "طرفيَّة"
 
@@ -2044,6 +2061,9 @@ msgstr "اسم المجلَّد"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "مجلَّد جديد"
+
+#~ msgid "Math"
+#~ msgstr "رياضيَّات"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "تلوين النافذة الرئيسة بألوان داكنة"

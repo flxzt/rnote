@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 23:02+0100\n"
+"POT-Creation-Date: 2023-02-07 19:42+0100\n"
 "PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: Coned Zot <conedcm@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1187,7 +1187,7 @@ msgstr "缩小"
 #: rnote-ui/data/ui/canvasmenu.ui:109
 #, fuzzy
 #| msgid "Reset the zoom"
-msgid "Reset the Zoom"
+msgid "Reset Zoom"
 msgstr "重置缩放"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116
@@ -1197,7 +1197,7 @@ msgstr "放大"
 #: rnote-ui/data/ui/canvasmenu.ui:128
 #, fuzzy
 #| msgid "Zoom to fit page width"
-msgid "Zoom to Fit Page Width"
+msgid "Zoom to Page Width"
 msgstr "缩放以适合页宽"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
@@ -1224,7 +1224,7 @@ msgstr "重命名"
 #: rnote-ui/data/ui/filerow.ui:66
 #, fuzzy
 #| msgid "Move into trash"
-msgid "Move Into Trash"
+msgid "Move to Trash"
 msgstr "移至回收站"
 
 #: rnote-ui/data/ui/filerow.ui:70
@@ -1437,7 +1437,7 @@ msgstr ""
 #: rnote-ui/data/ui/settingspanel.ui:235
 #, fuzzy
 #| msgid "Set the DPI (dots per inch). Defaults to 96"
-msgid "Set the Dpi (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "设置像素密度(DPI)，默认值96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1656,7 +1656,7 @@ msgstr "缩小"
 #, fuzzy
 #| msgid "Zoom out"
 msgctxt "shortcut window"
-msgid "Zoom in / out"
+msgid "Zoom in/out"
 msgstr "缩小"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
@@ -2094,6 +2094,7 @@ msgid "Camera"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:533
+msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
@@ -2165,7 +2166,7 @@ msgid "Lightbulb"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:549
-msgid "Math"
+msgid "Mathematics"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
@@ -2231,6 +2232,7 @@ msgid "Star"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:564
+msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 

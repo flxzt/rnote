@@ -2,7 +2,7 @@ pub(crate) mod export;
 pub(crate) mod import;
 
 use adw::prelude::*;
-use gettextrs::gettext;
+use gettextrs::{gettext, pgettext};
 use gtk4::CheckButton;
 use gtk4::{
     gio, glib, glib::clone, Builder, Button, ColorButton, Dialog, FileChooserAction,
@@ -530,7 +530,7 @@ fn workspacelistentry_icons_list_to_display_name(icon_name: &str) -> String {
         "workspacelistentryicon-bread-symbolic" => gettext("Bread"),
         "workspacelistentryicon-calendar-symbolic" => gettext("Calendar"),
         "workspacelistentryicon-camera-symbolic" => gettext("Camera"),
-        "workspacelistentryicon-chip-symbolic" => gettext("Chip"),
+        "workspacelistentryicon-chip-symbolic" => pgettext("as in computer chip", "Chip"),
         "workspacelistentryicon-code-symbolic" => gettext("Code"),
         "workspacelistentryicon-compose-symbolic" => gettext("Compose"),
         "workspacelistentryicon-document-symbolic" => gettext("Document"),
@@ -546,7 +546,7 @@ fn workspacelistentry_icons_list_to_display_name(icon_name: &str) -> String {
         "workspacelistentryicon-key-symbolic" => gettext("Key"),
         "workspacelistentryicon-language-symbolic" => gettext("Language"),
         "workspacelistentryicon-lightbulb-symbolic" => gettext("Lightbulb"),
-        "workspacelistentryicon-math-symbolic" => gettext("Math"),
+        "workspacelistentryicon-math-symbolic" => gettext("Mathematics"),
         "workspacelistentryicon-meeting-symbolic" => gettext("Meeting"),
         "workspacelistentryicon-money-symbolic" => gettext("Money"),
         "workspacelistentryicon-musicnote-symbolic" => gettext("Musical Note"),
@@ -561,7 +561,9 @@ fn workspacelistentry_icons_list_to_display_name(icon_name: &str) -> String {
         "workspacelistentryicon-speechbubble-symbolic" => gettext("Speech Bubble"),
         "workspacelistentryicon-speedometer-symbolic" => gettext("Speedometer"),
         "workspacelistentryicon-star-symbolic" => gettext("Star"),
-        "workspacelistentryicon-terminal-symbolic" => gettext("Terminal"),
+        "workspacelistentryicon-terminal-symbolic" => {
+            pgettext("as in terminal software", "Terminal")
+        }
         "workspacelistentryicon-text-symbolic" => gettext("Text"),
         "workspacelistentryicon-travel-symbolic" => gettext("Travel"),
         "workspacelistentryicon-weather-symbolic" => gettext("Weather"),

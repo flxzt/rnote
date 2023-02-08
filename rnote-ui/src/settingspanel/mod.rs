@@ -566,7 +566,7 @@ impl RnSettingsPanel {
             appwindow.overlays().sidebar_box().set_margin_start(m1);
             appwindow.overlays().sidebar_box().set_margin_end(m1);
             appwindow.overlays().sidebar_box().set_margin_top(m2);
-            appwindow.overlays().sidebar_box().set_margin_top(m2);
+            appwindow.overlays().sidebar_box().set_margin_bottom(m2);
         };
         // set on init
         set_overlays_margins(appwindow, imp.general_show_scrollbars_switch.is_active());

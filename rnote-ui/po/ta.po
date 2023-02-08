@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-08 16:29+0000\n"
+"PO-Revision-Date: 2023-02-08 18:55+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1048,8 +1048,6 @@ msgid "Draft"
 msgstr "வரைவு"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-#, fuzzy
-#| msgid "Reveal / Hide Flap"
 msgid "Reveal/Hide Flap"
 msgstr "மடலை வெளிப்படுத்தவும் / மறைக்கவும்"
 
@@ -1343,86 +1341,50 @@ msgid "Open the App-Menu"
 msgstr "பயன்பாட்ட- பட்டியலைத் திறக்கவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Navigation"
 msgid "Navigation"
 msgstr "வழிசெலுத்தல்"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Brush'"
 msgid "Switch to the 'Brush'"
-msgstr "'பிரஷ்'க்கு மாறவும்"
+msgstr "'தூரிகை'க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Shaper'"
 msgid "Switch to the 'Shaper'"
-msgstr "'ஷேப்பருக்கு' மாறவும்"
+msgstr "'வடிவமைப்பவர்க்கு' மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Typewriter'"
 msgid "Switch to the 'Typewriter'"
-msgstr "'டைப்ரைட்டருக்கு' மாறவும்"
+msgstr "'தட்டச்சுப்பொறிக்கு' மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Eraser'"
 msgid "Switch to the 'Eraser'"
 msgstr "'அழிப்பி'க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Selector'"
 msgid "Switch to the 'Selector'"
-msgstr "'செலக்டருக்கு' மாறவும்"
+msgstr "'தேர்வாளர்க்கு' மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "'கருவிகள்' க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Alt + Drag"
 msgid "Alt + Drag"
 msgstr "Alt + இழுக்கவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom in/out"
 msgid "Zoom in/out"
 msgstr "பெரிதாக்கவும் / வெளியேறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Alt + Shift + Drag"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + இழுக்கவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Document"
 msgid "Document"
 msgstr "ஆவணம்"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open Document"
 msgid "Open Document"
 msgstr "ஆவணத்தைத் திற"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 00:21+0100\n"
-"PO-Revision-Date: 2023-02-07 11:36+0000\n"
+"PO-Revision-Date: 2023-02-08 13:05+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -54,7 +54,7 @@ msgstr "வெளிர் வண்ணங்களில் பிரதான 
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "விரிவுரை குறிப்பு 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -62,7 +62,7 @@ msgstr "ஒரு PDF சிறுகுறிப்பு"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "விரிவுரை குறிப்பு 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear Document"
@@ -319,8 +319,6 @@ msgid "Export"
 msgstr "ஏற்றுமதி"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Export file"
 msgid "Export File"
 msgstr "ஏற்றுமதி கோப்பை"
 
@@ -338,15 +336,11 @@ msgstr "- எந்த கோப்பும் தேர்ந்தெடு�
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
-#, fuzzy
-#| msgid "Export preferences"
 msgid "Export Preferences"
 msgstr "ஏற்றுமதி விருப்பத்தேர்வுகள்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
-#, fuzzy
-#| msgid "With background"
 msgid "With Background"
 msgstr "பின்னணியுடன்"
 
@@ -357,8 +351,6 @@ msgstr "பின்னணி ஏற்றுமதி செய்யப்ப�
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "With pattern"
 msgid "With Pattern"
 msgstr "வடிவத்துடன்"
 
@@ -370,8 +362,6 @@ msgstr "பின்னணி வடிவத்தை ஏற்றுமதி 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
-#, fuzzy
-#| msgid "Export format"
 msgid "Export Format"
 msgstr "ஏற்றுமதி வடிவம்"
 
@@ -396,20 +386,14 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export Document Pages"
 msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்யவும்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page files naming:"
 msgid "Page Files Naming:"
 msgstr "பக்க கோப்புகள் பெயரிடுதல்:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Export directory"
 msgid "Export Directory"
 msgstr "ஏற்றுமதி கோப்பகம்"
 
@@ -418,10 +402,8 @@ msgid "Select the export directory"
 msgstr "ஏற்றுமதி கோப்பகத்தைத் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export files stem name"
 msgid "Export Files Stem Name"
-msgstr "கோப்புகளின் ஸ்டெம் பெயரை ஏற்றுமதி செய்யவும்"
+msgstr "கோப்புகளின் தண்டு பெயரை ஏற்றுமதி செய்யவும்"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
@@ -437,8 +419,6 @@ msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
-#, fuzzy
-#| msgid "Jpeg quality"
 msgid "Jpeg Quality"
 msgstr "Jpeg தரம்"
 
@@ -464,21 +444,15 @@ msgid "Set the margin around the selected area"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பகுதியைச் சுற்றி விளிம்பை அமைக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
 msgid "Brush Style"
 msgstr "தூரிகை பாணி"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:132
-#, fuzzy
-#| msgid "Brush configuration"
 msgid "Brush Configuration"
 msgstr "தூரிகை கட்டமைப்பு"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:62
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Brush Styles"
 msgstr "தூரிகை பாணிகள்"
 
@@ -508,8 +482,6 @@ msgid "Draw textured strokes"
 msgstr "டெக்ஸ்சர்டு பக்கவாதங்களை வரையவும்"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:141
-#, fuzzy
-#| msgid "Path modelling"
 msgid "Path Modelling"
 msgstr "பாதை மாதிரியாக்கம்"
 
@@ -542,16 +514,12 @@ msgstr ""
 "சிறந்த தோற்றமுடைய கையெழுத்தில் முடிவுகள்."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
-#, fuzzy
-#| msgid "Solid style"
 msgid "Solid Style"
 msgstr "உறுதியான பாணி"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
-#, fuzzy
-#| msgid "Pressure curve"
 msgid "Pressure Curve"
-msgstr "அழுத்தம் வளைவு"
+msgstr "அழுத்த வளைவு"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
@@ -582,10 +550,8 @@ msgid "Cubic Parabola"
 msgstr "க்யூபிக் பரபோலா"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
-#, fuzzy
-#| msgid "Textured style"
 msgid "Textured Style"
-msgstr "டெக்ஸ்சர்டு ஸ்டைல்"
+msgstr "கடினமான பாணி"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"
@@ -596,8 +562,6 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "அடர்த்தி என்பது 10x10 பகுதிக்கு உள்ள புள்ளிகளின் அளவு"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
-#, fuzzy
-#| msgid "Stroke dots position distribution"
 msgid "Stroke Dots Position Distribution"
 msgstr "பக்கவாதம் புள்ளிகளின் நிலைப் பரவல்"
 
@@ -622,14 +586,10 @@ msgid "Reverse Exponential"
 msgstr "தலைகீழ் அதிவேக"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
-#, fuzzy
-#| msgid "Trash strokes"
 msgid "Trash Strokes"
 msgstr "குப்பை பக்கவாதம்"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
-#, fuzzy
-#| msgid "Split strokes"
 msgid "Split Strokes"
 msgstr "பிளவு பக்கவாதம்"
 
@@ -664,76 +624,52 @@ msgid "Tools"
 msgstr "கருவிகள்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
-#, fuzzy
-#| msgid "Select with a polygon"
 msgid "Select With a Polygon"
 msgstr "பலகோணத்துடன் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
-#, fuzzy
-#| msgid "Select with a rectangle"
 msgid "Select With a Rectangle"
 msgstr "ஒரு செவ்வகத்துடன் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
-#, fuzzy
-#| msgid "Select one by one"
 msgid "Select One by One"
 msgstr "ஒவ்வொன்றாக தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
-#, fuzzy
-#| msgid "Select intersecting path"
 msgid "Select Intersecting Path"
 msgstr "வெட்டும் பாதையைத் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-#, fuzzy
-#| msgid "Lock aspectratio while resizing the selection"
 msgid "Lock Aspectratio While Resizing the Selection"
 msgstr "தேர்வின் அளவை மாற்றும் போது தோற்ற விகிதத்தைப் பூட்டவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-#, fuzzy
-#| msgid "Select all strokes"
 msgid "Select All Strokes"
-msgstr "அனைத்து பக்கவாதம் தேர்ந்தெடுக்கவும்"
+msgstr "அனைத்து பக்கவாதங்களும் தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
-#, fuzzy
-#| msgid "Deselect all strokes"
 msgid "Deselect All Strokes"
 msgstr "அனைத்து பக்கவாதங்களையும் தேர்வுநீக்கு"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
-#, fuzzy
-#| msgid "Duplicate selection"
 msgid "Duplicate Selection"
 msgstr "நகல் தேர்வு"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#, fuzzy
-#| msgid "Delete selection"
 msgid "Delete Selection"
 msgstr "தேர்வை நீக்கு"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
-#, fuzzy
-#| msgid "Shaper style"
 msgid "Shaper Style"
-msgstr "ஷேப்பர் ஸ்டைல்"
+msgstr "வடிவமைப்பவர் பாணி"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
-#, fuzzy
-#| msgid "Shape configuration"
 msgid "Shape Configuration"
 msgstr "வடிவ கட்டமைப்பு"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
-#, fuzzy
-#| msgid "Shape builders"
 msgid "Shape Builders"
 msgstr "வடிவத்தை உருவாக்குபவர்கள்"
 
@@ -743,10 +679,8 @@ msgid "Constraints"
 msgstr "கட்டுப்பாடுகள்"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
-#, fuzzy
-#| msgid "Shaper styles"
 msgid "Shaper Styles"
-msgstr "ஷேப்பர் ஸ்டைல்கள்"
+msgstr "வடிவமைப்பவர் பாணிகள்"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
@@ -761,8 +695,6 @@ msgid "Rough style"
 msgstr "கரடுமுரடான பாணி"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
-#, fuzzy
-#| msgid "Fill style"
 msgid "Fill Style"
 msgstr "நிரப்பு பாணி"
 
@@ -796,8 +728,6 @@ msgid "Dashed"
 msgstr "கோடு போட்டது"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-#, fuzzy
-#| msgid "Hachure angle"
 msgid "Hachure Angle"
 msgstr "ஹச்சூர் கோணம்"
 
@@ -828,29 +758,18 @@ msgid "3:2"
 msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
-#, fuzzy
-#| msgid "Golden ratio (1:1.618)"
 msgid "Golden Ratio (1:1.618)"
 msgstr "தங்க விகிதம் (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
-#, fuzzy
-#| msgid "Insert vertical space"
 msgid "Insert Vertical Space"
 msgstr "செங்குத்து இடத்தைச் செருகவும்"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-#, fuzzy
-#| msgid "Offset the camera by dragging"
 msgid "Offset the Camera"
-msgstr "இழுப்பதன் மூலம் கேமராவை ஆஃப்செட் செய்யவும்"
+msgstr "புகைப்பட கருவியை ஆஃப்செட் செய்யவும்"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
-#, fuzzy
-#| msgid ""
-#| "Font chooser\n"
-#| "(double-click, click on select\n"
-#| "or press Enter to select a new font)"
 msgid ""
 "Font Chooser\n"
 "(double-click, click on select\n"
@@ -861,14 +780,10 @@ msgstr ""
 "அல்லது புதிய எழுத்துருவைத் தேர்ந்தெடுக்க Enter ஐ அழுத்தவும்)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
-#, fuzzy
-#| msgid "Pick and insert an emoji"
 msgid "Pick And Insert Emoji"
 msgstr "ஈமோஜியைத் தேர்ந்தெடுத்து செருகவும்"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:73
-#, fuzzy
-#| msgid "Reset text attributes"
 msgid "Reset Text Attributes"
 msgstr "உரை பண்புகளை மீட்டமைக்கவும்"
 

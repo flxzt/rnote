@@ -101,7 +101,7 @@ fn setup_macos_env() -> anyhow::Result<()> {
             }
         })
     {
-        std::env::set_var("XDG_DATA_DIRS", &current_dir.join("/..Resources/share"));
+        std::env::set_var("XDG_DATA_DIRS", &current_dir.join("/../Resources/share"));
         std::env::set_var(
             "GDK_PIXBUF_MODULE_FILE",
             current_dir.join(PathBuf::from(

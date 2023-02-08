@@ -26,7 +26,7 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="toolstyle_offsetcamera_toggle">
-            <property name="tooltip_text" translatable="yes">Offset the Camera</property>
+            <property name="tooltip_text" translatable="yes">Move View</property>
             <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
             <property name="group">toolstyle_verticalspace_toggle</property>
             <style>

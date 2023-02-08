@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:21+0100\n"
+"POT-Creation-Date: 2023-02-08 15:17+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/rnote/repo/ja/"
@@ -65,7 +65,7 @@ msgstr ""
 msgid "Lecture Note 2"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:5
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Clear Document"
@@ -98,7 +98,7 @@ msgid "Clear"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
 msgstr ""
 
@@ -474,40 +474,40 @@ msgid "Brush Style"
 msgstr "ブラシ"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:132
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:133
 msgid "Brush Configuration"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:62
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:64
 msgid "Brush Styles"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:80
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 msgid "Mark underneath other strokes"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:92
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:104
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:141
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"
 msgstr ""
 
@@ -676,6 +676,7 @@ msgid "Deselect All Strokes"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+#: rnote-ui/data/ui/shortcuts.ui:207
 #, fuzzy
 #| msgid "Duplicate selection"
 msgid "Duplicate Selection"
@@ -1006,7 +1007,7 @@ msgstr ""
 msgid "Sidebar on the Right Side"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:188
+#: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Fullscreen"
 msgstr ""
 
@@ -1068,7 +1069,8 @@ msgstr "選択範囲をSVGに保存"
 msgid "_Return to Origin Page"
 msgstr "最初のページに戻る"
 
-#: rnote-ui/data/ui/canvasmenu.ui:100
+#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "縮小"
 
@@ -1078,7 +1080,8 @@ msgstr "縮小"
 msgid "Reset Zoom"
 msgstr "倍率をリセット"
 
-#: rnote-ui/data/ui/canvasmenu.ui:116
+#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "拡大"
 
@@ -1119,18 +1122,18 @@ msgid "Draft"
 msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-msgid "Reveal / Hide Flap"
+msgid "Reveal/Hide Flap"
 msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:68
+#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
 msgstr "元に戻す"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:219
 msgid "Redo"
 msgstr "やり直す"
 
@@ -1144,7 +1147,7 @@ msgstr "ページを追加"
 msgid "Resize Document to Fit Strokes"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:109
+#: rnote-ui/data/ui/mainheader.ui:109 rnote-ui/data/ui/shortcuts.ui:156
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Save Document"
@@ -1166,7 +1169,7 @@ msgstr ""
 msgid "perm."
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:41
+#: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
 msgstr ""
 
@@ -1397,203 +1400,120 @@ msgstr ""
 msgid "Set the action for the touch two-finger long-press gesture"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:11
-msgctxt "shortcut window"
-msgid "General"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:14
 #, fuzzy
 #| msgid "Keyboard shortcuts"
-msgctxt "shortcut window"
 msgid "Show Keyboard Shortcuts"
 msgstr "キーボードショートカット"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
 #, fuzzy
 #| msgid "New Window"
-msgctxt "shortcut window"
 msgid "Close the Active Tab"
 msgstr "新しいウィンドウ"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
-msgctxt "shortcut window"
 msgid "Quit the Application"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:32
-msgctxt "shortcut window"
 msgid "Open the Canvas-Menu"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:38
-msgctxt "shortcut window"
 msgid "Open the App-Menu"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:44
-msgctxt "shortcut window"
-msgid "Toggle Fullscreen"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:52
-msgctxt "shortcut window"
 msgid "Navigation"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:91
-msgctxt "shortcut window"
 msgid "Drag View"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:92
-msgctxt "shortcut window"
 msgid "Alt + Drag"
-msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:97 rnote-ui/data/ui/shortcuts.ui:103
-#: rnote-ui/data/ui/shortcuts.ui:109
-msgctxt "shortcut window"
-msgid "Zoom in"
-msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:115 rnote-ui/data/ui/shortcuts.ui:121
-#: rnote-ui/data/ui/shortcuts.ui:127
-msgctxt "shortcut window"
-msgid "Zoom out"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 #, fuzzy
 #| msgid "Zoom out"
-msgctxt "shortcut window"
 msgid "Zoom in/out"
 msgstr "縮小"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
-msgctxt "shortcut window"
 msgid "Alt + Shift + Drag"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:141
-msgctxt "shortcut window"
-msgid "Document"
-msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:144
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
 #, fuzzy
 #| msgid "Export document as SVG"
-msgctxt "shortcut window"
-msgid "New Document"
+msgid "Document"
 msgstr "選択範囲をSVGに保存"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
 #, fuzzy
 #| msgid "Export document as SVG"
-msgctxt "shortcut window"
 msgid "Open Document"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/shortcuts.ui:156
+#: rnote-ui/data/ui/shortcuts.ui:162 rnote-ui/src/dialogs/export.rs:23
 #, fuzzy
 #| msgid "Export document as SVG"
-msgctxt "shortcut window"
-msgid "Save Document"
-msgstr "選択範囲をSVGに保存"
-
-#: rnote-ui/data/ui/shortcuts.ui:162
-#, fuzzy
-#| msgid "Export document as SVG"
-msgctxt "shortcut window"
 msgid "Save Document As"
-msgstr "選択範囲をSVGに保存"
-
-#: rnote-ui/data/ui/shortcuts.ui:168
-#, fuzzy
-#| msgid "Export document as SVG"
-msgctxt "shortcut window"
-msgid "Clear Document"
 msgstr "選択範囲をSVGに保存"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
 #, fuzzy
 #| msgid "Export document as SVG"
-msgctxt "shortcut window"
 msgid "Print Document"
 msgstr "選択範囲をSVGに保存"
 
-#: rnote-ui/data/ui/shortcuts.ui:180
+#: rnote-ui/data/ui/shortcuts.ui:180 rnote-ui/src/dialogs/import.rs:138
 #, fuzzy
 #| msgid "Selector"
-msgctxt "shortcut window"
 msgid "Import File"
 msgstr "選択"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
-msgctxt "shortcut window"
 msgid "Drawing"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:189
-msgctxt "shortcut window"
 msgid "Copy to Clipboard"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-msgctxt "shortcut window"
 msgid "Cut to Clipboard"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:201
-msgctxt "shortcut window"
 msgid "Paste Clipboard"
-msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:207
-#, fuzzy
-#| msgid "Duplicate selection"
-msgctxt "shortcut window"
-msgid "Duplicate Selection"
-msgstr "選択範囲を複製"
-
-#: rnote-ui/data/ui/shortcuts.ui:213
-msgctxt "shortcut window"
-msgid "Undo"
-msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:219
-msgctxt "shortcut window"
-msgid "Redo"
 msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
@@ -1726,12 +1646,6 @@ msgstr ""
 msgid ".rnote"
 msgstr ""
 
-#: rnote-ui/src/dialogs/export.rs:23
-#, fuzzy
-#| msgid "Export document as SVG"
-msgid "Save Document As"
-msgstr "選択範囲をSVGに保存"
-
 #: rnote-ui/src/dialogs/export.rs:62
 #, fuzzy
 #| msgid "Exported document as .xopp successfully."
@@ -1842,12 +1756,6 @@ msgstr "ビットマップ画像の読み込みに失敗しました。"
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:138
-#, fuzzy
-#| msgid "Selector"
-msgid "Import File"
-msgstr "選択"
-
 #: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
 msgstr ""
@@ -1939,12 +1847,6 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:535
 msgid "Compose"
 msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:536
-#, fuzzy
-#| msgid "Export document as SVG"
-msgid "Document"
-msgstr "選択範囲をSVGに保存"
 
 #: rnote-ui/src/dialogs/mod.rs:537
 msgid "Drinks"
@@ -2135,75 +2037,75 @@ msgstr "4次ベジェ曲線"
 msgid "Cubic bezier curve"
 msgstr "3次ベジェ曲線"
 
-#: rnote-ui/src/settingspanel/mod.rs:797
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:798
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:799
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:800
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Dot (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:801
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Dot (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:802
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Dot (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:803
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:804
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:805
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:806
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:807
+#: rnote-ui/src/settingspanel/mod.rs:828
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:808
+#: rnote-ui/src/settingspanel/mod.rs:829
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:809
+#: rnote-ui/src/settingspanel/mod.rs:830
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:810
+#: rnote-ui/src/settingspanel/mod.rs:831
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:811
+#: rnote-ui/src/settingspanel/mod.rs:832
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:812
+#: rnote-ui/src/settingspanel/mod.rs:833
 msgid "Beam (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:813
+#: rnote-ui/src/settingspanel/mod.rs:834
 msgid "Beam (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:814
+#: rnote-ui/src/settingspanel/mod.rs:835
 msgid "Beam (Large)"
 msgstr ""
 
@@ -2214,6 +2116,42 @@ msgstr ""
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Export document as SVG"
+#~ msgctxt "shortcut window"
+#~ msgid "New Document"
+#~ msgstr "選択範囲をSVGに保存"
+
+#, fuzzy
+#~| msgid "Export document as SVG"
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document"
+#~ msgstr "選択範囲をSVGに保存"
+
+#, fuzzy
+#~| msgid "Export document as SVG"
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document As"
+#~ msgstr "選択範囲をSVGに保存"
+
+#, fuzzy
+#~| msgid "Export document as SVG"
+#~ msgctxt "shortcut window"
+#~ msgid "Clear Document"
+#~ msgstr "選択範囲をSVGに保存"
+
+#, fuzzy
+#~| msgid "Selector"
+#~ msgctxt "shortcut window"
+#~ msgid "Import File"
+#~ msgstr "選択"
+
+#, fuzzy
+#~| msgid "Duplicate selection"
+#~ msgctxt "shortcut window"
+#~ msgid "Duplicate Selection"
+#~ msgstr "選択範囲を複製"
 
 #, fuzzy
 #~| msgid "New Window"

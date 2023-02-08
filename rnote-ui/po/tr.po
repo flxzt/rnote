@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:21+0100\n"
+"POT-Creation-Date: 2023-02-08 15:17+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -64,7 +64,7 @@ msgstr "PDF açıklaması"
 msgid "Lecture Note 2"
 msgstr "Ders Not 2"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:5
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
 msgid "Clear Document"
 msgstr "Belgeyi Temizle"
 
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "Temizle"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
 msgstr "Yeni Belge"
 
@@ -451,40 +451,40 @@ msgid "Brush Style"
 msgstr "Fırça Biçimi"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:132
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:133
 msgid "Brush Configuration"
 msgstr "Fırça Yapılandırma"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:62
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:64
 msgid "Brush Styles"
 msgstr "Fırça Biçimleri"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:80
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
 msgstr "İşaretçi"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 msgid "Mark underneath other strokes"
 msgstr "Diğer darbelerin altını işaretle"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:92
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "Düz"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
 msgstr "Düz renk darbeleri çiz"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:104
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
 msgstr "Dokulu"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
 msgstr "Dokulu darbeler çiz"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:141
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"
 msgstr "Yol Modellemesi"
 
@@ -655,6 +655,7 @@ msgid "Deselect All Strokes"
 msgstr "Tüm Darbe Seçimlerini Kaldır"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+#: rnote-ui/data/ui/shortcuts.ui:207
 msgid "Duplicate Selection"
 msgstr "Seçimi İkizle"
 
@@ -946,7 +947,7 @@ msgstr "Kenar Çubuğu Solda"
 msgid "Sidebar on the Right Side"
 msgstr "Kenar Çubuğu Sağda"
 
-#: rnote-ui/data/ui/appmenu.ui:188
+#: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Fullscreen"
 msgstr "Tam Ekranı Aç/Kapat"
 
@@ -1002,7 +1003,8 @@ msgstr "Belgeyi _Temizle"
 msgid "_Return to Origin Page"
 msgstr "Özgün Sayfaya _Dön"
 
-#: rnote-ui/data/ui/canvasmenu.ui:100
+#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "Uzaklaştır"
 
@@ -1012,7 +1014,8 @@ msgstr "Uzaklaştır"
 msgid "Reset Zoom"
 msgstr "Yakınlaştırmayı Sıfırla"
 
-#: rnote-ui/data/ui/canvasmenu.ui:116
+#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "Yakınlaştır"
 
@@ -1054,18 +1057,20 @@ msgid "Draft"
 msgstr "Taslak"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-msgid "Reveal / Hide Flap"
+#, fuzzy
+#| msgid "Reveal / Hide Flap"
+msgid "Reveal/Hide Flap"
 msgstr "Kapağı Göster/Gizle"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
 msgstr "Yeni Sekme"
 
-#: rnote-ui/data/ui/mainheader.ui:68
+#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
 msgstr "Geri Al"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:219
 msgid "Redo"
 msgstr "Yinele"
 
@@ -1077,7 +1082,7 @@ msgstr "Sayfa Ekle"
 msgid "Resize Document to Fit Strokes"
 msgstr "Belgeyi Darbelere Uyacak Şekilde Yeniden Boyutlandır"
 
-#: rnote-ui/data/ui/mainheader.ui:109
+#: rnote-ui/data/ui/mainheader.ui:109 rnote-ui/data/ui/shortcuts.ui:156
 msgid "Save Document"
 msgstr "Belgeyi Kaydet"
 
@@ -1097,7 +1102,7 @@ msgstr "_Kapat"
 msgid "perm."
 msgstr "izin"
 
-#: rnote-ui/data/ui/settingspanel.ui:41
+#: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
 msgstr "Genel"
 
@@ -1328,185 +1333,171 @@ msgstr "Dokunma, İki Parmakla Uzun Basma Eylemi"
 msgid "Set the action for the touch two-finger long-press gesture"
 msgstr "Dokunma, iki parmakla uzun basma hareketi için eylem ayarla"
 
-#: rnote-ui/data/ui/shortcuts.ui:11
-msgctxt "shortcut window"
-msgid "General"
-msgstr "Genel"
-
 #: rnote-ui/data/ui/shortcuts.ui:14
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Show Keyboard Shortcuts"
 msgid "Show Keyboard Shortcuts"
 msgstr "Klavye Kısayolarını Göster"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Close the Active Tab"
 msgid "Close the Active Tab"
 msgstr "Aktif Sekmeyi Kapat"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Quit the Application"
 msgid "Quit the Application"
 msgstr "Uygulamadan Çık"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Open the Canvas-Menu"
 msgid "Open the Canvas-Menu"
 msgstr "Tuval Menüsünü Aç"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Open the App-Menu"
 msgid "Open the App-Menu"
 msgstr "Uygulama Menüsünü Aç"
 
-#: rnote-ui/data/ui/shortcuts.ui:44
-msgctxt "shortcut window"
-msgid "Toggle Fullscreen"
-msgstr "Tam Ekranı Aç/Kapat"
-
 #: rnote-ui/data/ui/shortcuts.ui:52
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Navigation"
 msgid "Navigation"
 msgstr "Gezinme"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Switch to the 'Brush'"
 msgid "Switch to the 'Brush'"
 msgstr "'Fırça'ya geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Switch to the 'Shaper'"
 msgid "Switch to the 'Shaper'"
 msgstr "'Şekillendirici'ye geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Switch to the 'Typewriter'"
 msgid "Switch to the 'Typewriter'"
 msgstr "'Daktilo'ya geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Switch to the 'Eraser'"
 msgid "Switch to the 'Eraser'"
 msgstr "'Silgi'ye geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Switch to the 'Selector'"
 msgid "Switch to the 'Selector'"
 msgstr "'Seçici'ye geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "'Araçlar'a geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:91
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Drag View"
 msgid "Drag View"
 msgstr "Sürükleme Görünümü"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Alt + Drag"
 msgid "Alt + Drag"
 msgstr "Alt + Sürükle"
-
-#: rnote-ui/data/ui/shortcuts.ui:97 rnote-ui/data/ui/shortcuts.ui:103
-#: rnote-ui/data/ui/shortcuts.ui:109
-msgctxt "shortcut window"
-msgid "Zoom in"
-msgstr "Yakınlaştır"
-
-#: rnote-ui/data/ui/shortcuts.ui:115 rnote-ui/data/ui/shortcuts.ui:121
-#: rnote-ui/data/ui/shortcuts.ui:127
-msgctxt "shortcut window"
-msgid "Zoom out"
-msgstr "Uzaklaştır"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Zoom in / out"
-msgctxt "shortcut window"
 msgid "Zoom in/out"
 msgstr "Yakınlaştır/Uzaklaştır"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Alt + Shift + Drag"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + Sürükle"
 
-#: rnote-ui/data/ui/shortcuts.ui:141
-msgctxt "shortcut window"
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
 msgid "Document"
 msgstr "Belge"
 
-#: rnote-ui/data/ui/shortcuts.ui:144
-msgctxt "shortcut window"
-msgid "New Document"
-msgstr "Yeni Belge"
-
 #: rnote-ui/data/ui/shortcuts.ui:150
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Open Document"
 msgid "Open Document"
 msgstr "Belge Aç"
 
-#: rnote-ui/data/ui/shortcuts.ui:156
-msgctxt "shortcut window"
-msgid "Save Document"
-msgstr "Belgeyi Kaydet"
-
-#: rnote-ui/data/ui/shortcuts.ui:162
-msgctxt "shortcut window"
+#: rnote-ui/data/ui/shortcuts.ui:162 rnote-ui/src/dialogs/export.rs:23
 msgid "Save Document As"
 msgstr "Belgeyi Farklı Kaydet"
 
-#: rnote-ui/data/ui/shortcuts.ui:168
-msgctxt "shortcut window"
-msgid "Clear Document"
-msgstr "Belgeyi Temizle"
-
 #: rnote-ui/data/ui/shortcuts.ui:174
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Print Document"
 msgid "Print Document"
 msgstr "Belgeyi Yazdır"
 
-#: rnote-ui/data/ui/shortcuts.ui:180
-msgctxt "shortcut window"
+#: rnote-ui/data/ui/shortcuts.ui:180 rnote-ui/src/dialogs/import.rs:138
 msgid "Import File"
 msgstr "Dosya İçe Aktar"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Drawing"
 msgid "Drawing"
 msgstr "Çizim"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Copy to Clipboard"
 msgid "Copy to Clipboard"
 msgstr "Panoya Kopyala"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Cut to Clipboard"
 msgid "Cut to Clipboard"
 msgstr "Panoya Kes"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste Clipboard"
 msgid "Paste Clipboard"
 msgstr "Panodan Yapıştır"
-
-#: rnote-ui/data/ui/shortcuts.ui:207
-msgctxt "shortcut window"
-msgid "Duplicate Selection"
-msgstr "Seçimi İkizle"
-
-#: rnote-ui/data/ui/shortcuts.ui:213
-msgctxt "shortcut window"
-msgid "Undo"
-msgstr "Geri al"
-
-#: rnote-ui/data/ui/shortcuts.ui:219
-msgctxt "shortcut window"
-msgid "Redo"
-msgstr "Yinele"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
 msgid "Move Directory up"
@@ -1646,10 +1637,6 @@ msgstr "Açılan dosya diskte taşınmış veya silinmiş."
 msgid ".rnote"
 msgstr ".rnote"
 
-#: rnote-ui/src/dialogs/export.rs:23
-msgid "Save Document As"
-msgstr "Belgeyi Farklı Kaydet"
-
 #: rnote-ui/src/dialogs/export.rs:62
 #, fuzzy
 #| msgid "Saved document successfully."
@@ -1756,10 +1743,6 @@ msgstr "Dosya açılamadı."
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:138
-msgid "Import File"
-msgstr "Dosya İçe Aktar"
-
 #: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
 msgstr "- adsız -"
@@ -1853,10 +1836,6 @@ msgstr "Kod"
 #: rnote-ui/src/dialogs/mod.rs:535
 msgid "Compose"
 msgstr "Düzenle"
-
-#: rnote-ui/src/dialogs/mod.rs:536
-msgid "Document"
-msgstr "Belge"
 
 #: rnote-ui/src/dialogs/mod.rs:537
 msgid "Drinks"
@@ -2041,75 +2020,75 @@ msgstr "İkinci dereceden bezier eğrisi"
 msgid "Cubic bezier curve"
 msgstr "Kübik bezier eğrisi"
 
-#: rnote-ui/src/settingspanel/mod.rs:797
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Crosshair (Small)"
 msgstr "Artı Simgesi (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:798
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Crosshair (Medium)"
 msgstr "Artı Simgesi (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:799
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Crosshair (Large)"
 msgstr "Artı Simgesi (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:800
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Dot (Small)"
 msgstr "Nokta (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:801
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Dot (Medium)"
 msgstr "Nokta (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:802
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Dot (Large)"
 msgstr "Nokta (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:803
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North-West (Small)"
 msgstr "Gözyaşı Kuzey Batı (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:804
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Teardrop North-West (Medium)"
 msgstr "Gözyaşı Kuzey Batı (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:805
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Teardrop North-West (Large)"
 msgstr "Gözyaşı Kuzey Batı (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:806
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Teardrop North-East (Small)"
 msgstr "Gözyaşı Kuzey Doğu (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:807
+#: rnote-ui/src/settingspanel/mod.rs:828
 msgid "Teardrop North-East (Medium)"
 msgstr "Gözyaşı Kuzey Doğu (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:808
+#: rnote-ui/src/settingspanel/mod.rs:829
 msgid "Teardrop North-East (Large)"
 msgstr "Gözyaşı Kuzey Doğu (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:809
+#: rnote-ui/src/settingspanel/mod.rs:830
 msgid "Teardrop North (Small)"
 msgstr "Gözyaşı Kuzey (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:810
+#: rnote-ui/src/settingspanel/mod.rs:831
 msgid "Teardrop North (Medium)"
 msgstr "Gözyaşı Kuzey (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:811
+#: rnote-ui/src/settingspanel/mod.rs:832
 msgid "Teardrop North (Large)"
 msgstr "Gözyaşı Kuzey (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:812
+#: rnote-ui/src/settingspanel/mod.rs:833
 msgid "Beam (Small)"
 msgstr "Hüzme (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:813
+#: rnote-ui/src/settingspanel/mod.rs:834
 msgid "Beam (Medium)"
 msgstr "Hüzme (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:814
+#: rnote-ui/src/settingspanel/mod.rs:835
 msgid "Beam (Large)"
 msgstr "Hüzme (Büyük)"
 
@@ -2120,6 +2099,58 @@ msgstr "Klasör Adı"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Yeni Klasör"
+
+#~ msgctxt "shortcut window"
+#~ msgid "General"
+#~ msgstr "Genel"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Toggle Fullscreen"
+#~ msgstr "Tam Ekranı Aç/Kapat"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Zoom in"
+#~ msgstr "Yakınlaştır"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Zoom out"
+#~ msgstr "Uzaklaştır"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Document"
+#~ msgstr "Belge"
+
+#~ msgctxt "shortcut window"
+#~ msgid "New Document"
+#~ msgstr "Yeni Belge"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document"
+#~ msgstr "Belgeyi Kaydet"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document As"
+#~ msgstr "Belgeyi Farklı Kaydet"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Clear Document"
+#~ msgstr "Belgeyi Temizle"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Import File"
+#~ msgstr "Dosya İçe Aktar"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Duplicate Selection"
+#~ msgstr "Seçimi İkizle"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Undo"
+#~ msgstr "Geri al"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Redo"
+#~ msgstr "Yinele"
 
 #~ msgid "Math"
 #~ msgstr "Matematik"

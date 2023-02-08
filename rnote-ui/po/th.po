@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 00:21+0100\n"
+"POT-Creation-Date: 2023-02-08 15:17+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -63,7 +63,7 @@ msgstr "การใส่คำอธิบายประกอบ PDF"
 msgid "Lecture Note 2"
 msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:5
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
 #, fuzzy
 #| msgid "Clear document"
 msgid "Clear Document"
@@ -96,7 +96,7 @@ msgid "Clear"
 msgstr "ล้าง"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
 msgstr "เอกสารใหม่"
 
@@ -504,46 +504,46 @@ msgid "Brush Style"
 msgstr "รูปแบบพู่กัน"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:132
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:133
 #, fuzzy
 #| msgid "Brush configuration"
 msgid "Brush Configuration"
 msgstr "กำหนดค่าพู่กัน"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:62
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:64
 #, fuzzy
 #| msgid "Brush styles"
 msgid "Brush Styles"
 msgstr "รูปแบบพู่กันต่าง ๆ"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:80
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
 msgstr "ปากกาเมจิก"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 #, fuzzy
 #| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
 msgstr "มาร์คใต้เส้นของพู่กันแบบอื่น ๆ"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:92
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "เส้นทึบ"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
 msgstr "วาดเส้นสีทึบ"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:104
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
 msgstr "เส้นเทกเจอร์"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
 msgstr "วาดเส้นเทกเจอร์"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:141
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"
 msgstr ""
 
@@ -736,6 +736,7 @@ msgid "Deselect All Strokes"
 msgstr "เลิกเลือกเส้นทั้งหมด"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+#: rnote-ui/data/ui/shortcuts.ui:207
 #, fuzzy
 #| msgid "Duplicate selection"
 msgid "Duplicate Selection"
@@ -1110,7 +1111,7 @@ msgstr "แถบข้างอยู่ด้านซ้าย"
 msgid "Sidebar on the Right Side"
 msgstr "แถบข้างอยู่ด้านขวา"
 
-#: rnote-ui/data/ui/appmenu.ui:188
+#: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
 #, fuzzy
 #| msgid "Toggle fullscreen"
 msgid "Toggle Fullscreen"
@@ -1190,7 +1191,8 @@ msgstr "ล้างเอกสาร"
 msgid "_Return to Origin Page"
 msgstr "กลับไปหน้าแรก"
 
-#: rnote-ui/data/ui/canvasmenu.ui:100
+#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "ซูมออก"
 
@@ -1200,7 +1202,8 @@ msgstr "ซูมออก"
 msgid "Reset Zoom"
 msgstr "รีเซ็ตการซูม"
 
-#: rnote-ui/data/ui/canvasmenu.ui:116
+#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "ซูมเข้า"
 
@@ -1247,18 +1250,18 @@ msgid "Draft"
 msgstr "ฉบับร่าง"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-msgid "Reveal / Hide Flap"
+msgid "Reveal/Hide Flap"
 msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:68
+#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
 msgstr "เลิกทำ"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:219
 msgid "Redo"
 msgstr "ทำซ้ำ"
 
@@ -1274,7 +1277,7 @@ msgstr "เพิ่มหน้าใหม่"
 msgid "Resize Document to Fit Strokes"
 msgstr "ปรับขนาดของเอกสารให้พอดีกับลายเส้น"
 
-#: rnote-ui/data/ui/mainheader.ui:109
+#: rnote-ui/data/ui/mainheader.ui:109 rnote-ui/data/ui/shortcuts.ui:156
 #, fuzzy
 #| msgid "Save document"
 msgid "Save Document"
@@ -1299,7 +1302,7 @@ msgstr "ปิดหน้าต่างที่กำลังใช้งา
 msgid "perm."
 msgstr "ถาวร"
 
-#: rnote-ui/data/ui/settingspanel.ui:41
+#: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
 msgstr "ทั่วไป"
 
@@ -1551,16 +1554,10 @@ msgstr ""
 msgid "Set the action for the touch two-finger long-press gesture"
 msgstr "ตั้งค่าปุ่มคลิกขวาของเมาส์"
 
-#: rnote-ui/data/ui/shortcuts.ui:11
-msgctxt "shortcut window"
-msgid "General"
-msgstr "ทั่วไป"
-
 #: rnote-ui/data/ui/shortcuts.ui:14
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Show keyboard shortcuts"
-msgctxt "shortcut window"
 msgid "Show Keyboard Shortcuts"
 msgstr "แสดงคีย์ลัด"
 
@@ -1568,7 +1565,6 @@ msgstr "แสดงคีย์ลัด"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgctxt "shortcut window"
 msgid "Close the Active Tab"
 msgstr "ปิดหน้าต่างที่กำลังใช้งานอยู่"
 
@@ -1576,7 +1572,6 @@ msgstr "ปิดหน้าต่างที่กำลังใช้งา
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Quit the application"
-msgctxt "shortcut window"
 msgid "Quit the Application"
 msgstr "ออกจากแอปพลิเคชัน"
 
@@ -1584,7 +1579,6 @@ msgstr "ออกจากแอปพลิเคชัน"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Open the canvas menu"
-msgctxt "shortcut window"
 msgid "Open the Canvas-Menu"
 msgstr "เปิดเมนูของเอกสาร"
 
@@ -1592,146 +1586,95 @@ msgstr "เปิดเมนูของเอกสาร"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Open the app menu"
-msgctxt "shortcut window"
 msgid "Open the App-Menu"
 msgstr "เปิดเมนูของแอปฯ"
 
-#: rnote-ui/data/ui/shortcuts.ui:44
-#, fuzzy
-#| msgid "Toggle fullscreen"
-msgctxt "shortcut window"
-msgid "Toggle Fullscreen"
-msgstr "สลับโหมดเต็มหน้าจอ"
-
 #: rnote-ui/data/ui/shortcuts.ui:52
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Navigation"
 msgid "Navigation"
 msgstr "เนวิเกชั่น"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:91
-msgctxt "shortcut window"
 msgid "Drag View"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:92
-msgctxt "shortcut window"
 msgid "Alt + Drag"
 msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:97 rnote-ui/data/ui/shortcuts.ui:103
-#: rnote-ui/data/ui/shortcuts.ui:109
-msgctxt "shortcut window"
-msgid "Zoom in"
-msgstr "ซูมเข้า"
-
-#: rnote-ui/data/ui/shortcuts.ui:115 rnote-ui/data/ui/shortcuts.ui:121
-#: rnote-ui/data/ui/shortcuts.ui:127
-msgctxt "shortcut window"
-msgid "Zoom out"
-msgstr "ซูมออก"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 #, fuzzy
 #| msgid "Zoom out"
-msgctxt "shortcut window"
 msgid "Zoom in/out"
 msgstr "ซูมออก"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
-msgctxt "shortcut window"
 msgid "Alt + Shift + Drag"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:141
-msgctxt "shortcut window"
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Document"
 msgid "Document"
 msgstr "เอกสาร"
-
-#: rnote-ui/data/ui/shortcuts.ui:144
-#, fuzzy
-#| msgid "New Document"
-msgctxt "shortcut window"
-msgid "New Document"
-msgstr "เอกสารใหม่"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Open document"
-msgctxt "shortcut window"
 msgid "Open Document"
 msgstr "เปิดเอกสาร"
 
-#: rnote-ui/data/ui/shortcuts.ui:156
+#: rnote-ui/data/ui/shortcuts.ui:162 rnote-ui/src/dialogs/export.rs:23
 #, fuzzy
-#| msgid "Save document"
-msgctxt "shortcut window"
-msgid "Save Document"
-msgstr "บันทึกเอกสาร"
-
-#: rnote-ui/data/ui/shortcuts.ui:162
-#, fuzzy
-#| msgctxt "shortcut window"
 #| msgid "Save document as"
-msgctxt "shortcut window"
 msgid "Save Document As"
 msgstr "บันทึกเอกสารที่"
-
-#: rnote-ui/data/ui/shortcuts.ui:168
-#, fuzzy
-#| msgid "Clear document"
-msgctxt "shortcut window"
-msgid "Clear Document"
-msgstr "ล้างเอกสาร"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Print document"
-msgctxt "shortcut window"
 msgid "Print Document"
 msgstr "พิมพ์เอกสาร"
 
-#: rnote-ui/data/ui/shortcuts.ui:180
+#: rnote-ui/data/ui/shortcuts.ui:180 rnote-ui/src/dialogs/import.rs:138
 #, fuzzy
-#| msgctxt "shortcut window"
 #| msgid "Import file"
-msgctxt "shortcut window"
 msgid "Import File"
 msgstr "นำเข้าไฟล์"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Drawing"
 msgid "Drawing"
 msgstr "การวาด"
 
@@ -1739,7 +1682,6 @@ msgstr "การวาด"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Copy into clipboard"
-msgctxt "shortcut window"
 msgid "Copy to Clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ด"
 
@@ -1747,7 +1689,6 @@ msgstr "คัดลอกไปยังคลิปบอร์ด"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Copy into clipboard"
-msgctxt "shortcut window"
 msgid "Cut to Clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ด"
 
@@ -1755,26 +1696,8 @@ msgstr "คัดลอกไปยังคลิปบอร์ด"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Paste clipboard"
-msgctxt "shortcut window"
 msgid "Paste Clipboard"
 msgstr "วางคลิปบอร์ด"
-
-#: rnote-ui/data/ui/shortcuts.ui:207
-#, fuzzy
-#| msgid "Duplicate selection"
-msgctxt "shortcut window"
-msgid "Duplicate Selection"
-msgstr "สำเนาสิ่งที่เลือก"
-
-#: rnote-ui/data/ui/shortcuts.ui:213
-msgctxt "shortcut window"
-msgid "Undo"
-msgstr "เลิกทำ"
-
-#: rnote-ui/data/ui/shortcuts.ui:219
-msgctxt "shortcut window"
-msgid "Redo"
-msgstr "ทำซ้ำ"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
 #, fuzzy
@@ -1926,12 +1849,6 @@ msgstr ""
 msgid ".rnote"
 msgstr "ไฟล์ .rnote"
 
-#: rnote-ui/src/dialogs/export.rs:23
-#, fuzzy
-#| msgid "Save document as"
-msgid "Save Document As"
-msgstr "บันทึกเอกสารที่"
-
 #: rnote-ui/src/dialogs/export.rs:62
 #, fuzzy
 #| msgid "Saved document successfully."
@@ -2042,12 +1959,6 @@ msgstr "การเปิดไฟล์ล้มเหลว"
 msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
 
-#: rnote-ui/src/dialogs/import.rs:138
-#, fuzzy
-#| msgid "Import file"
-msgid "Import File"
-msgstr "นำเข้าไฟล์"
-
 #: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
 msgstr "- ไม่มีชื่อไฟล์ -"
@@ -2139,13 +2050,6 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:535
 msgid "Compose"
 msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:536
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Document"
-msgid "Document"
-msgstr "เอกสาร"
 
 #: rnote-ui/src/dialogs/mod.rs:537
 msgid "Drinks"
@@ -2344,75 +2248,75 @@ msgstr "เส้นโค้งเบซิเยร์สองจังหว
 msgid "Cubic bezier curve"
 msgstr "เส้นโค้งเบซิเยร์สามจังหวะ"
 
-#: rnote-ui/src/settingspanel/mod.rs:797
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:798
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:799
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:800
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Dot (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:801
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Dot (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:802
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Dot (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:803
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:804
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:805
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:806
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:807
+#: rnote-ui/src/settingspanel/mod.rs:828
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:808
+#: rnote-ui/src/settingspanel/mod.rs:829
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:809
+#: rnote-ui/src/settingspanel/mod.rs:830
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:810
+#: rnote-ui/src/settingspanel/mod.rs:831
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:811
+#: rnote-ui/src/settingspanel/mod.rs:832
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:812
+#: rnote-ui/src/settingspanel/mod.rs:833
 msgid "Beam (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:813
+#: rnote-ui/src/settingspanel/mod.rs:834
 msgid "Beam (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:814
+#: rnote-ui/src/settingspanel/mod.rs:835
 msgid "Beam (Large)"
 msgstr ""
 
@@ -2425,6 +2329,74 @@ msgstr "ชื่อไฟล์:"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr ""
+
+#~ msgctxt "shortcut window"
+#~ msgid "General"
+#~ msgstr "ทั่วไป"
+
+#, fuzzy
+#~| msgid "Toggle fullscreen"
+#~ msgctxt "shortcut window"
+#~ msgid "Toggle Fullscreen"
+#~ msgstr "สลับโหมดเต็มหน้าจอ"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Zoom in"
+#~ msgstr "ซูมเข้า"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Zoom out"
+#~ msgstr "ซูมออก"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Document"
+#~ msgstr "เอกสาร"
+
+#, fuzzy
+#~| msgid "New Document"
+#~ msgctxt "shortcut window"
+#~ msgid "New Document"
+#~ msgstr "เอกสารใหม่"
+
+#, fuzzy
+#~| msgid "Save document"
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document"
+#~ msgstr "บันทึกเอกสาร"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Save document as"
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document As"
+#~ msgstr "บันทึกเอกสารที่"
+
+#, fuzzy
+#~| msgid "Clear document"
+#~ msgctxt "shortcut window"
+#~ msgid "Clear Document"
+#~ msgstr "ล้างเอกสาร"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Import file"
+#~ msgctxt "shortcut window"
+#~ msgid "Import File"
+#~ msgstr "นำเข้าไฟล์"
+
+#, fuzzy
+#~| msgid "Duplicate selection"
+#~ msgctxt "shortcut window"
+#~ msgid "Duplicate Selection"
+#~ msgstr "สำเนาสิ่งที่เลือก"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Undo"
+#~ msgstr "เลิกทำ"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Redo"
+#~ msgstr "ทำซ้ำ"
 
 #~ msgid "Main window in dark colors"
 #~ msgstr "หน้าต่างหลักธีมมืด"

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 00:21+0100\n"
-"PO-Revision-Date: 2023-02-07 18:44+0000\n"
+"PO-Revision-Date: 2023-02-08 13:05+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1007,8 +1007,6 @@ msgid "Zoom out"
 msgstr "Uitzoomen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-#, fuzzy
-#| msgid "Reset the Zoom"
 msgid "Reset Zoom"
 msgstr "Oorspronkelijk zoomniveau"
 
@@ -1017,8 +1015,6 @@ msgid "Zoom in"
 msgstr "Inzoomen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-#, fuzzy
-#| msgid "Zoom to Fit Page Width"
 msgid "Zoom to Page Width"
 msgstr "Aanpassen aan paginabreedte"
 
@@ -1040,8 +1036,6 @@ msgid "Rename"
 msgstr "Naam wijzigen"
 
 #: rnote-ui/data/ui/filerow.ui:66
-#, fuzzy
-#| msgid "Move Into Trash"
 msgid "Move to Trash"
 msgstr "Verplaatsen naar prullenbak"
 
@@ -1232,8 +1226,6 @@ msgid "Dpi"
 msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-#, fuzzy
-#| msgid "Set the Dpi (dots per inch). Defaults to 96"
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Stel de DPI (dots per inch) in. Standaard: 96"
 
@@ -1423,9 +1415,6 @@ msgid "Zoom out"
 msgstr "Uitzoomen"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom in / out"
 msgctxt "shortcut window"
 msgid "Zoom in/out"
 msgstr "In-/uitzoomen"
@@ -1543,56 +1532,40 @@ msgid "Edit Selected Workspace"
 msgstr "Gekozen werkblad bewerken"
 
 #: rnote-ui/src/appwindow/mod.rs:505
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
-msgstr "Het bestand kan niet worden geopend."
+msgstr "Rnote-bestand kan niet worden geopend"
 
 #: rnote-ui/src/appwindow/mod.rs:516
-#, fuzzy
-#| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
-msgstr "Het bestand kan niet worden geopend."
+msgstr "Vectorafbeeldingsbestand openen mislukt"
 
 #: rnote-ui/src/appwindow/mod.rs:527
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
-msgstr "Het bestand kan niet worden geopend."
+msgstr "Bitmapafbeeldingsbestand openen mislukt"
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
-#, fuzzy
-#| msgid "Opening Xournal++ file failed."
 msgid "Opening Xournal++ file failed"
-msgstr "Het Xournal++-bestand kan niet worden geopend."
+msgstr "Xournal++-bestand openen mislukt"
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-#, fuzzy
-#| msgid "Opening PDF file failed."
 msgid "Opening PDF file failed"
-msgstr "Het document kan niet worden geopend."
+msgstr "PDF-bestand openen mislukt"
 
 #: rnote-ui/src/appwindow/mod.rs:558
-#, fuzzy
-#| msgid "Failed to open file: Tried to open folder as file"
 msgid "Failed to open file, tried to open folder as file"
 msgstr "Een map kan niet als bestand worden geopend"
 
 #: rnote-ui/src/appwindow/mod.rs:563
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file, unsupported file type"
-msgstr "Dit bestandstype wordt niet ondersteund."
+msgstr "Dit bestandstype wordt niet ondersteund"
 
 #: rnote-ui/src/appwindow/imp.rs:272
 #: rnote-ui/src/appwindow/appwindowactions.rs:522
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-#, fuzzy
-#| msgid "Saving document failed."
 msgid "Saving document failed"
-msgstr "Het document kan niet worden opgeslagen."
+msgstr "Document opslaan mislukt"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
 msgid "Printed document successfully"
@@ -1603,10 +1576,8 @@ msgid "Printing document failed"
 msgstr "Het afdrukken is mislukt"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
-#, fuzzy
-#| msgid "Exporting selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
-msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is."
+msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
 
 #: rnote-ui/src/canvas/mod.rs:994
 msgid "- invalid file name -"
@@ -1617,32 +1588,24 @@ msgid "- invalid folder path -"
 msgstr "- ongeldige bestandslocatie -"
 
 #: rnote-ui/src/canvas/mod.rs:1031
-#, fuzzy
-#| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
-msgstr "Het geopende bestand is elders bewerkt."
+msgstr "Het geopende bestand is elders bewerkt"
 
 #: rnote-ui/src/canvas/mod.rs:1032
 msgid "Reload"
 msgstr "Herladen"
 
 #: rnote-ui/src/canvas/mod.rs:1038
-#, fuzzy
-#| msgid "Reloading .rnote file from disk failed."
 msgid "Reloading .rnote file from disk failed"
-msgstr "Het bestand kan niet worden herladen."
+msgstr "Rnote-bestand herladen mislukt"
 
 #: rnote-ui/src/canvas/mod.rs:1087
-#, fuzzy
-#| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
-msgstr "Het geopende bestand is van naam gewijzigd."
+msgstr "Het geopende bestand is van naam gewijzigd"
 
 #: rnote-ui/src/canvas/mod.rs:1100
-#, fuzzy
-#| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
-msgstr "Het geopende bestand is verplaatst of verwijderd."
+msgstr "Het geopende bestand is verplaatst of verwijderd"
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
 msgid ".rnote"
@@ -1653,34 +1616,24 @@ msgid "Save Document As"
 msgstr "Document opslaan als"
 
 #: rnote-ui/src/dialogs/export.rs:62
-#, fuzzy
-#| msgid "Saved document successfully."
 msgid "Saved document successfully"
-msgstr "Het document is opgeslagen."
+msgstr "Het document is opgeslagen"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Exporting document failed."
 msgid "Exporting document failed"
-msgstr "Het exporteren is mislukt."
+msgstr "Document exporteren mislukt"
 
 #: rnote-ui/src/dialogs/export.rs:197
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document successfully"
-msgstr "Het exporteren is voltooid."
+msgstr "Document succesvol geëxporteerd"
 
 #: rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Exporting document failed, no file selected."
 msgid "Exporting document failed, no file selected"
 msgstr "Het exporteren is mislukt omdat er geen bestand gekozen is."
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Exporting document pages failed."
 msgid "Exporting document pages failed"
-msgstr "Pagina's exporteren is mislukt."
+msgstr "Pagina's exporteren mislukt"
 
 #: rnote-ui/src/dialogs/export.rs:470
 #, fuzzy

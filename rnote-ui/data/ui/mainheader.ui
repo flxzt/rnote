@@ -36,7 +36,7 @@
                 <child>
                   <object class="GtkToggleButton" id="left_flapreveal_toggle">
                     <property name="icon_name">flap-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Reveal / Hide Flap</property>
+                    <property name="tooltip_text" translatable="yes">Reveal/Hide Flap</property>
                   </object>
                 </child>
                 <child>
@@ -114,7 +114,7 @@
             <child>
               <object class="GtkToggleButton" id="right_flapreveal_toggle">
                 <property name="icon_name">flap-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Reveal / Hide Flap</property>
+                <property name="tooltip_text" translatable="yes">Reveal/Hide Flap</property>
               </object>
             </child>
             <child>

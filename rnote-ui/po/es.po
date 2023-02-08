@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: Isaias Carrillo <icarrillo1304@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
@@ -878,10 +878,11 @@ msgid "Insert Vertical Space"
 msgstr "Insertar espacio vertical"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
+#: rnote-ui/data/ui/shortcuts.ui:91
 #, fuzzy
-#| msgid "Offset the camera by dragging"
-msgid "Offset the Camera"
-msgstr "Desplazar la cámara arrastrando"
+#| msgid "Move _left"
+msgid "Move View"
+msgstr "Mover a la izquierda"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 #, fuzzy
@@ -1637,10 +1638,6 @@ msgstr "Cambiar al \"Selector\""
 msgid "Switch to the 'Tools'"
 msgstr "Cambiar a las \"Herramientas\""
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
 #| msgctxt "shortcut window"
@@ -2365,6 +2362,11 @@ msgstr "Nombre de la carpeta"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "Carpeta nueva"
+
+#, fuzzy
+#~| msgid "Offset the camera by dragging"
+#~ msgid "Offset the Camera"
+#~ msgstr "Desplazar la cámara arrastrando"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

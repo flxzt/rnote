@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2022-12-23 16:27+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -882,10 +882,9 @@ msgid "Insert Vertical Space"
 msgstr "উল্লম্ব স্থান সন্নিবেশ করুন"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-#, fuzzy
-#| msgid "Offset the camera by dragging"
-msgid "Offset the Camera"
-msgstr "টেনে এনে ক্যামেরাটি অফসেট করুন"
+#: rnote-ui/data/ui/shortcuts.ui:91
+msgid "Move View"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 #, fuzzy
@@ -1638,10 +1637,6 @@ msgstr "'নির্বাচক'-এ পরিবর্তন করুন"
 msgid "Switch to the 'Tools'"
 msgstr "'টুলস'-এ পরিবর্তন করুন"
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
 msgstr ""
@@ -2361,6 +2356,11 @@ msgstr "ফোল্ডারের নাম"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "নতুন ফোল্ডার"
+
+#, fuzzy
+#~| msgid "Offset the camera by dragging"
+#~ msgid "Offset the Camera"
+#~ msgstr "টেনে এনে ক্যামেরাটি অফসেট করুন"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

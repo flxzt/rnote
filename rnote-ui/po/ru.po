@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2022-11-28 13:13+0000\n"
 "Last-Translator: Valeriy Manzhos <valeronishe2002@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -883,10 +883,9 @@ msgid "Insert Vertical Space"
 msgstr "Добавить вертикальный пробел"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-#, fuzzy
-#| msgid "Offset the camera by dragging"
-msgid "Offset the Camera"
-msgstr "Перемещение камеры перетаскиванием"
+#: rnote-ui/data/ui/shortcuts.ui:91
+msgid "Move View"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 #, fuzzy
@@ -1640,10 +1639,6 @@ msgstr "Переключиться на 'Выделение'"
 msgid "Switch to the 'Tools'"
 msgstr "Переключиться на 'Инструменты"
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
 msgstr ""
@@ -2357,6 +2352,11 @@ msgstr "Имя папки:"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "Новая папка"
+
+#, fuzzy
+#~| msgid "Offset the camera by dragging"
+#~ msgid "Offset the Camera"
+#~ msgstr "Перемещение камеры перетаскиванием"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

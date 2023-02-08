@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2022-12-25 17:47+0000\n"
 "Last-Translator: OpenCC\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
@@ -878,10 +878,9 @@ msgid "Insert Vertical Space"
 msgstr "插入豎直空白"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-#, fuzzy
-#| msgid "Offset the camera by dragging"
-msgid "Offset the Camera"
-msgstr "拖動來偏移視角"
+#: rnote-ui/data/ui/shortcuts.ui:91
+msgid "Move View"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 #, fuzzy
@@ -1632,10 +1631,6 @@ msgstr "切換到“選擇工具”"
 msgid "Switch to the 'Tools'"
 msgstr "切換到“工具”"
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
 msgstr ""
@@ -2355,6 +2350,11 @@ msgstr "資料夾名稱"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "新建資料夾"
+
+#, fuzzy
+#~| msgid "Offset the camera by dragging"
+#~ msgid "Offset the Camera"
+#~ msgstr "拖動來偏移視角"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

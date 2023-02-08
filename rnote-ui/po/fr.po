@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
@@ -784,10 +784,10 @@ msgid "Insert Vertical Space"
 msgstr "Insérer un espace vertical"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
+#: rnote-ui/data/ui/shortcuts.ui:91
 #, fuzzy
-#| msgid "Offset the camera by dragging"
-msgid "Offset the Camera"
-msgstr "Déplacer la caméra"
+msgid "Move View"
+msgstr "Déplacer _à Gauche"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1524,10 +1524,6 @@ msgstr "Basculer vers \"Sélecteur\""
 msgid "Switch to the 'Tools'"
 msgstr "Basculer vers \"Outils\""
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
 msgstr ""
@@ -2251,6 +2247,11 @@ msgstr "Nom du dossier"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "Nouveau dossier"
+
+#, fuzzy
+#~| msgid "Offset the camera by dragging"
+#~ msgid "Offset the Camera"
+#~ msgstr "Déplacer la caméra"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

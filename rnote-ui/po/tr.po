@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-07 18:44+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -771,8 +771,11 @@ msgid "Insert Vertical Space"
 msgstr "Dikey Boşluk Ekle"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "Kamerayı Dengele"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _Left"
+msgid "Move View"
+msgstr "_Sola Taşı"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1416,13 +1419,6 @@ msgstr "'Seçici'ye geç"
 #| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "'Araçlar'a geç"
-
-#: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
-msgid "Drag View"
-msgstr "Sürükleme Görünümü"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
@@ -2099,6 +2095,15 @@ msgstr "Klasör Adı"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Yeni Klasör"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "Kamerayı Dengele"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Drag View"
+#~ msgid "Drag View"
+#~ msgstr "Sürükleme Görünümü"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

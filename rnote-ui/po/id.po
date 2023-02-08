@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-01-23 18:19+0000\n"
 "Last-Translator: Hersa37 <bernardus.hersa37@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
@@ -767,7 +767,8 @@ msgid "Insert Vertical Space"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
+#: rnote-ui/data/ui/shortcuts.ui:91
+msgid "Move View"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
@@ -1380,10 +1381,6 @@ msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgid "Switch to the 'Tools'"
-msgstr ""
-
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:92

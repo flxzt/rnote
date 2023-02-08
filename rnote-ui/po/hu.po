@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -770,8 +770,11 @@ msgid "Insert Vertical Space"
 msgstr "Függőleges térköz beszúrása"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "Fényképezőgép eltolása"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _Left"
+msgid "Move View"
+msgstr "Áthelyezés _balra"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1415,13 +1418,6 @@ msgstr "Kiválasztó kijelölése"
 #| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "Eszközök kijelölése"
-
-#: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
-msgid "Drag View"
-msgstr "Nézet húzása"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
@@ -2096,6 +2092,15 @@ msgstr "Mappanév"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Új mappa"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "Fényképezőgép eltolása"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Drag View"
+#~ msgid "Drag View"
+#~ msgstr "Nézet húzása"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

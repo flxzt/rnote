@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-08 13:05+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -771,8 +771,11 @@ msgid "Insert Vertical Space"
 msgstr "Verticale ruimte invoegen"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "Camerahoek verschuiven door te verslepen"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _Left"
+msgid "Move View"
+msgstr "Naar _links verplaatsen"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1410,13 +1413,6 @@ msgstr "Overschakelen naar selectie"
 #| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "Overschakelen naar gereedschappen"
-
-#: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
-msgid "Drag View"
-msgstr "Sleepweergave"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
@@ -2057,6 +2053,15 @@ msgstr "Mapnaam"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Nieuwe map"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "Camerahoek verschuiven door te verslepen"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Drag View"
+#~ msgid "Drag View"
+#~ msgstr "Sleepweergave"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

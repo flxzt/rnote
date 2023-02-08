@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-07 23:15+0000\n"
 "Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -835,8 +835,11 @@ msgid "Insert Vertical Space"
 msgstr "Inserisci Spazio Verticale"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "Sposta la Visuale"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _left"
+msgid "Move View"
+msgstr "Muoviti a _sinistra"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 #, fuzzy
@@ -1552,10 +1555,6 @@ msgstr "Passa al 'Selettore'"
 msgid "Switch to the 'Tools'"
 msgstr "Passa agli 'Strumenti'"
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-msgid "Drag View"
-msgstr ""
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
 msgstr ""
@@ -2247,6 +2246,9 @@ msgstr "Nome Cartella"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Nuova Cartella"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "Sposta la Visuale"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

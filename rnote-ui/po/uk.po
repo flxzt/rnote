@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-08 14:19+0000\n"
 "Last-Translator: Dan <denqwerta@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
@@ -765,8 +765,11 @@ msgid "Insert Vertical Space"
 msgstr "Вставити вертикальний простір"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "Зміщення камери"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _Left"
+msgid "Move View"
+msgstr "Перемістити вліво"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1403,13 +1406,6 @@ msgstr "Переключатися на “Виділення”"
 msgid "Switch to the 'Tools'"
 msgstr "Переключитися на «Інструменти\""
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
-msgid "Drag View"
-msgstr "Перетягнути перегляд"
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
 #| msgctxt "shortcut window"
@@ -2023,6 +2019,15 @@ msgstr "Назва папки"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Нова папка"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "Зміщення камери"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Drag View"
+#~ msgid "Drag View"
+#~ msgstr "Перетягнути перегляд"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-08 13:05+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
@@ -768,8 +768,11 @@ msgid "Insert Vertical Space"
 msgstr "أدرج مسافةً عموديةً"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "أزِح الكاميرا بالسحب"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _Left"
+msgid "Move View"
+msgstr "حرِّك يسارًا"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1406,13 +1409,6 @@ msgstr "بدِّل ل‍ ‹المحدِّد›"
 msgid "Switch to the 'Tools'"
 msgstr "بدِّل ل‍ ‹الأدوات›"
 
-#: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
-msgid "Drag View"
-msgstr "منظور السحب"
-
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
 #| msgctxt "shortcut window"
@@ -2028,6 +2024,15 @@ msgstr "اسم المجلَّد"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "مجلَّد جديد"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "أزِح الكاميرا بالسحب"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Drag View"
+#~ msgid "Drag View"
+#~ msgstr "منظور السحب"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

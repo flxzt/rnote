@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:17+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2023-02-08 14:19+0000\n"
 "Last-Translator: K.B.Dharun Krishna <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -767,8 +767,11 @@ msgid "Insert Vertical Space"
 msgstr "செங்குத்து இடத்தைச் செருகவும்"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the Camera"
-msgstr "புகைப்பட கருவியை ஆஃப்செட் செய்யவும்"
+#: rnote-ui/data/ui/shortcuts.ui:91
+#, fuzzy
+#| msgid "Move _Left"
+msgid "Move View"
+msgstr "நகர்த்து _இடதுபுறம்"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1404,13 +1407,6 @@ msgstr "'செலக்டருக்கு' மாறவும்"
 #| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "'கருவிகள்' க்கு மாறவும்"
-
-#: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
-msgid "Drag View"
-msgstr "இழுத்து பார்வை"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 #, fuzzy
@@ -2131,6 +2127,15 @@ msgstr "கோப்புறை பெயர்"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "புதிய அடைவு"
+
+#~ msgid "Offset the Camera"
+#~ msgstr "புகைப்பட கருவியை ஆஃப்செட் செய்யவும்"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Drag View"
+#~ msgid "Drag View"
+#~ msgstr "இழுத்து பார்வை"
 
 #~ msgctxt "shortcut window"
 #~ msgid "General"

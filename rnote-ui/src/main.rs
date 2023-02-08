@@ -48,7 +48,9 @@ extern crate parry2d_f64 as p2d;
 
 fn main() -> anyhow::Result<()> {
     #[cfg(target_os = "windows")]
-    setup_windows_env();
+    if let Err(e) = setup_windows_env() {
+        eprintln!("failed to setup env for windows, Err: {e:?}");
+    }
 
     let app = RnApp::new();
     app.run();
@@ -58,13 +60,20 @@ fn main() -> anyhow::Result<()> {
 
 /// we need to set some env vars on windows
 #[cfg(target_os = "windows")]
-fn setup_windows_env() {
+fn setup_windows_env() -> anyhow::Result<()> {
+    use std::path::PathBuf;
+
     std::env::set_var(
-        "GSETTINGS_SCHEMA_DIR",
-        config::DATADIR.to_string() + "/glib-2.0/schemas",
+        "XDG_DATA_DIRS",
+        PathBuf::from(config::DATADIR).canonicalize()?,
     );
     std::env::set_var(
         "GDK_PIXBUF_MODULEDIR",
-        config::LIBDIR.to_string() + "/gdk-pixbuf-2.0/2.10.0/loaders",
+        PathBuf::from(config::LIBDIR)
+            .canonicalize()?
+            .join("/gdk-pixbuf-2.0/2.10.0/loaders"),
     );
+    // for debugging
+    //std::env::set_var("RUST_LOG", "rnote=debug");
+    Ok(())
 }

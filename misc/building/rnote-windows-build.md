@@ -37,7 +37,7 @@ setup meson
 meson setup --prefix=C:/msys64/mingw64 _mesonbuild
 ```
 
-For reasons not yet understood, there are `libpthread.a` and `libpthread.dll.a` in `mingw64\lib\` and rustc apparently wants to link with both, resulting in "multiple definitions of pthread_..." linker errors. To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
+For unknown reasons, there are `libpthread.a` and `libpthread.dll.a` in `mingw64\lib\` and rustc apparently wants to link with both, resulting in "multiple definitions of pthread_..." linker errors. To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
 
 Then the project can be compiled:
 

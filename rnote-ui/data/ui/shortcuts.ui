@@ -88,7 +88,7 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" translatable="yes">Drag View</property>
+                <property name="title" translatable="yes">Move View</property>
                 <property name="subtitle" translatable="yes">Alt + Drag</property>
               </object>
             </child>

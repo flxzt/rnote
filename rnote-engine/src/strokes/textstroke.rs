@@ -833,7 +833,9 @@ impl TextStroke {
     }
 
     pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {
-        if let (Ok(lines), Ok(hittest_position)) = (
+        if let (Ok(text_layout), Ok(lines), Ok(hittest_position)) = (
+            self.text_style
+                .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone()),
             self.text_style
                 .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
             self.text_style.cursor_hittest_position(
@@ -842,31 +844,25 @@ impl TextStroke {
                 cursor,
             ),
         ) {
-            let next_line = (hittest_position.line + 1).min(lines.len() - 1);
+            let next_line = (hittest_position.line + 1).min(lines.len().saturating_sub(1));
 
             if next_line != hittest_position.line {
-                let current_line_rel_offset = cursor
-                    .cur_cursor()
-                    .saturating_sub(lines[hittest_position.line].start_offset);
+                // offset the cursor in the next line based on the hit of the x offset of the current cursor,
+                // it matches intuition best when fonts are not monospace.
+                let hit_test_point = text_layout.hit_test_point(kurbo::Point::new(
+                    hittest_position.point.x,
+                    lines[next_line].y_offset + lines[next_line].height * 0.5,
+                ));
 
-                let next_line_max_offset = lines[next_line]
-                    .end_offset
-                    .saturating_sub(lines[next_line].start_offset)
-                    .saturating_sub(1);
-
-                let line_rel_offset = current_line_rel_offset.min(next_line_max_offset);
-
-                *cursor = GraphemeCursor::new(
-                    lines[next_line].start_offset + line_rel_offset,
-                    self.text.len(),
-                    true,
-                );
+                *cursor = GraphemeCursor::new(hit_test_point.idx, self.text.len(), true);
             }
         }
     }
 
     pub fn move_cursor_line_up(&self, cursor: &mut GraphemeCursor) {
-        if let (Ok(lines), Ok(hittest_position)) = (
+        if let (Ok(text_layout), Ok(lines), Ok(hittest_position)) = (
+            self.text_style
+                .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone()),
             self.text_style
                 .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
             self.text_style.cursor_hittest_position(
@@ -878,21 +874,12 @@ impl TextStroke {
             let prev_line = hittest_position.line.saturating_sub(1);
 
             if prev_line != hittest_position.line {
-                let current_line_rel_offset = cursor
-                    .cur_cursor()
-                    .saturating_sub(lines[hittest_position.line].start_offset);
-                let prev_line_max_offset = lines[prev_line]
-                    .end_offset
-                    .saturating_sub(lines[prev_line].start_offset)
-                    .saturating_sub(1);
+                let hit_test_point = text_layout.hit_test_point(kurbo::Point::new(
+                    hittest_position.point.x,
+                    lines[prev_line].y_offset + lines[prev_line].height * 0.5,
+                ));
 
-                let line_rel_offset = current_line_rel_offset.min(prev_line_max_offset);
-
-                *cursor = GraphemeCursor::new(
-                    lines[prev_line].start_offset + line_rel_offset,
-                    self.text.len(),
-                    true,
-                );
+                *cursor = GraphemeCursor::new(hit_test_point.idx, self.text.len(), true);
             }
         }
     }

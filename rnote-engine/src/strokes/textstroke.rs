@@ -1,5 +1,3 @@
-use std::ops::Range;
-
 use gtk4::pango;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
@@ -10,11 +8,12 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
-
-use crate::{render, Camera, DrawBehaviour};
+use std::ops::Range;
+use unicode_segmentation::GraphemeCursor;
 
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
+use crate::{render, Camera, DrawBehaviour};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "font_style")]
@@ -364,7 +363,7 @@ impl TextStyle {
         &self,
         piet_text: &mut T,
         text: String,
-        cursor: &unicode_segmentation::GraphemeCursor,
+        cursor: &GraphemeCursor,
     ) -> anyhow::Result<piet::HitTestPosition>
     where
         T: piet::Text,
@@ -377,8 +376,8 @@ impl TextStyle {
     pub fn get_selection_rects_for_cursors(
         &self,
         text: String,
-        cursor: &unicode_segmentation::GraphemeCursor,
-        selection_cursor: &unicode_segmentation::GraphemeCursor,
+        cursor: &GraphemeCursor,
+        selection_cursor: &GraphemeCursor,
     ) -> anyhow::Result<Vec<kurbo::Rect>> {
         let text_layout = self
             .build_text_layout(&mut piet_cairo::CairoText::new(), text)
@@ -398,7 +397,7 @@ impl TextStyle {
         &self,
         cx: &mut impl piet::RenderContext,
         text: String,
-        cursor: &unicode_segmentation::GraphemeCursor,
+        cursor: &GraphemeCursor,
         transform: &Transform,
         camera: &Camera,
     ) -> anyhow::Result<()> {
@@ -434,8 +433,8 @@ impl TextStyle {
         &self,
         cx: &mut impl piet::RenderContext,
         text: String,
-        cursor: &unicode_segmentation::GraphemeCursor,
-        selection_cursor: &unicode_segmentation::GraphemeCursor,
+        cursor: &GraphemeCursor,
+        selection_cursor: &GraphemeCursor,
         transform: &Transform,
         camera: &Camera,
     ) {
@@ -625,7 +624,7 @@ impl TextStroke {
     pub fn get_cursor_for_global_coord(
         &self,
         coord: na::Vector2<f64>,
-    ) -> anyhow::Result<unicode_segmentation::GraphemeCursor> {
+    ) -> anyhow::Result<GraphemeCursor> {
         let text_layout = self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
@@ -636,34 +635,23 @@ impl TextStroke {
                 .to_kurbo_point(),
         );
 
-        Ok(unicode_segmentation::GraphemeCursor::new(
+        Ok(GraphemeCursor::new(
             hit_test_point.idx,
             self.text.len(),
             true,
         ))
     }
 
-    pub fn insert_text_after_cursor(
-        &mut self,
-        text: &str,
-        cursor: &mut unicode_segmentation::GraphemeCursor,
-    ) {
+    pub fn insert_text_after_cursor(&mut self, text: &str, cursor: &mut GraphemeCursor) {
         self.text.insert_str(cursor.cur_cursor(), text);
 
         // translate the text attributes
         self.translate_attrs_after_cursor(cursor.cur_cursor(), text.len() as i32);
 
-        *cursor = unicode_segmentation::GraphemeCursor::new(
-            cursor.cur_cursor() + text.len(),
-            self.text.len(),
-            true,
-        );
+        *cursor = GraphemeCursor::new(cursor.cur_cursor() + text.len(), self.text.len(), true);
     }
 
-    pub fn remove_grapheme_before_cursor(
-        &mut self,
-        cursor: &mut unicode_segmentation::GraphemeCursor,
-    ) {
+    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
         if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
@@ -678,18 +666,11 @@ impl TextStroke {
             }
 
             // New text length, new cursor
-            *cursor = unicode_segmentation::GraphemeCursor::new(
-                cursor.cur_cursor(),
-                self.text.len(),
-                true,
-            );
+            *cursor = GraphemeCursor::new(cursor.cur_cursor(), self.text.len(), true);
         }
     }
 
-    pub fn remove_grapheme_after_cursor(
-        &mut self,
-        cursor: &mut unicode_segmentation::GraphemeCursor,
-    ) {
+    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
         if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
@@ -704,14 +685,14 @@ impl TextStroke {
             }
 
             // New text length, new cursor
-            *cursor = unicode_segmentation::GraphemeCursor::new(cur_pos, self.text.len(), true);
+            *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
         }
     }
 
     pub fn replace_text_between_selection_cursors(
         &mut self,
-        cursor: &mut unicode_segmentation::GraphemeCursor,
-        selection_cursor: &mut unicode_segmentation::GraphemeCursor,
+        cursor: &mut GraphemeCursor,
+        selection_cursor: &mut GraphemeCursor,
         replace_text: &str,
     ) {
         let cursor_pos = cursor.cur_cursor();
@@ -725,12 +706,12 @@ impl TextStroke {
 
         self.text.replace_range(cursor_range.clone(), replace_text);
 
-        *cursor = unicode_segmentation::GraphemeCursor::new(
+        *cursor = GraphemeCursor::new(
             cursor_range.start + replace_text.len(),
             self.text.len(),
             true,
         );
-        *selection_cursor = unicode_segmentation::GraphemeCursor::new(
+        *selection_cursor = GraphemeCursor::new(
             cursor_range.start + replace_text.len(),
             self.text.len(),
             true,
@@ -834,24 +815,24 @@ impl TextStroke {
 
     pub fn update_selection_entire_text(
         &self,
-        cursor: &mut unicode_segmentation::GraphemeCursor,
-        selection_cursor: &mut unicode_segmentation::GraphemeCursor,
+        cursor: &mut GraphemeCursor,
+        selection_cursor: &mut GraphemeCursor,
     ) {
-        *cursor = unicode_segmentation::GraphemeCursor::new(self.text.len(), self.text.len(), true);
-        *selection_cursor = unicode_segmentation::GraphemeCursor::new(0, self.text.len(), true);
+        *cursor = GraphemeCursor::new(self.text.len(), self.text.len(), true);
+        *selection_cursor = GraphemeCursor::new(0, self.text.len(), true);
     }
 
-    pub fn move_cursor_back(&self, cursor: &mut unicode_segmentation::GraphemeCursor) {
+    pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor) {
         // Cant fail, we are providing the entire text
         cursor.prev_boundary(&self.text, 0).unwrap();
     }
 
-    pub fn move_cursor_forward(&self, cursor: &mut unicode_segmentation::GraphemeCursor) {
+    pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor) {
         // Cant fail, we are providing the entire text
         cursor.next_boundary(&self.text, 0).unwrap();
     }
 
-    pub fn move_cursor_line_down(&self, cursor: &mut unicode_segmentation::GraphemeCursor) {
+    pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {
         if let (Ok(lines), Ok(hittest_position)) = (
             self.text_style
                 .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
@@ -875,7 +856,7 @@ impl TextStroke {
 
                 let line_rel_offset = current_line_rel_offset.min(next_line_max_offset);
 
-                *cursor = unicode_segmentation::GraphemeCursor::new(
+                *cursor = GraphemeCursor::new(
                     lines[next_line].start_offset + line_rel_offset,
                     self.text.len(),
                     true,
@@ -884,7 +865,7 @@ impl TextStroke {
         }
     }
 
-    pub fn move_cursor_line_up(&self, cursor: &mut unicode_segmentation::GraphemeCursor) {
+    pub fn move_cursor_line_up(&self, cursor: &mut GraphemeCursor) {
         if let (Ok(lines), Ok(hittest_position)) = (
             self.text_style
                 .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
@@ -907,7 +888,7 @@ impl TextStroke {
 
                 let line_rel_offset = current_line_rel_offset.min(prev_line_max_offset);
 
-                *cursor = unicode_segmentation::GraphemeCursor::new(
+                *cursor = GraphemeCursor::new(
                     lines[prev_line].start_offset + line_rel_offset,
                     self.text.len(),
                     true,

@@ -1,15 +1,14 @@
-use std::time::Instant;
-
 use rnote_compose::penevents::{KeyboardKey, ShortcutKey};
 use rnote_compose::penpath::Element;
+use std::time::Instant;
+use unicode_segmentation::GraphemeCursor;
 
+use super::{Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
 use crate::pens::penbehaviour::PenProgress;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
 use crate::{DrawOnDocBehaviour, StrokeStore, WidgetFlags};
-
-use super::{Typewriter, TypewriterState};
 
 impl Typewriter {
     pub(super) fn handle_pen_event_down(
@@ -39,11 +38,7 @@ impl Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(stroke_key)
                     {
-                        let mut cursor = unicode_segmentation::GraphemeCursor::new(
-                            0,
-                            textstroke.text.len(),
-                            true,
-                        );
+                        let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
                         // Updating the cursor for the clicked position
                         if let Ok(new_cursor) = textstroke.get_cursor_for_global_coord(element.pos)
@@ -413,11 +408,7 @@ impl Typewriter {
 
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
 
-                        let mut cursor = unicode_segmentation::GraphemeCursor::new(
-                            0,
-                            textstroke.text.len(),
-                            true,
-                        );
+                        let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
                         textstroke.move_cursor_forward(&mut cursor);
 
                         let stroke_key = engine_view
@@ -482,12 +473,12 @@ impl Typewriter {
 
                                 Some(TypewriterState::Selecting {
                                     stroke_key: *stroke_key,
-                                    cursor: unicode_segmentation::GraphemeCursor::new(
+                                    cursor: GraphemeCursor::new(
                                         textstroke.text.len(),
                                         textstroke.text.len(),
                                         true,
                                     ),
-                                    selection_cursor: unicode_segmentation::GraphemeCursor::new(
+                                    selection_cursor: GraphemeCursor::new(
                                         0,
                                         textstroke.text.len(),
                                         true,
@@ -770,7 +761,7 @@ impl Typewriter {
 
                 let textstroke = TextStroke::new(text, *pos, text_style);
 
-                let cursor = unicode_segmentation::GraphemeCursor::new(text_len, text_len, true);
+                let cursor = GraphemeCursor::new(text_len, text_len, true);
 
                 let stroke_key = engine_view
                     .store

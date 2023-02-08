@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:17+0100\n"
-"PO-Revision-Date: 2023-02-07 23:45+0000\n"
+"PO-Revision-Date: 2023-02-08 14:29+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1051,10 +1051,8 @@ msgid "Draft"
 msgstr "Entwurf"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-#, fuzzy
-#| msgid "Reveal / Hide Flap"
 msgid "Reveal/Hide Flap"
-msgstr "Zeige / Verberge das Seitenmenü"
+msgstr "Zeige/Verberge das Seitenmenü"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
@@ -1326,114 +1324,66 @@ msgid "Set the action for the touch two-finger long-press gesture"
 msgstr "Ändere die Aktion für die Touch Zwei-Finger Lange-Drücken Geste"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Show Keyboard Shortcuts"
 msgid "Show Keyboard Shortcuts"
 msgstr "Zeige Tastaturkürzel"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the Active Tab"
 msgid "Close the Active Tab"
 msgstr "Schließe den Aktiven Tab"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Quit the Application"
 msgid "Quit the Application"
 msgstr "App Beenden"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open the Canvas-Menu"
 msgid "Open the Canvas-Menu"
 msgstr "Öffne das Leinwandmenü"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open the App-Menu"
 msgid "Open the App-Menu"
 msgstr "Öffne das Appmenü"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Navigation"
 msgid "Navigation"
 msgstr "Navigation"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Brush'"
 msgid "Switch to the 'Brush'"
 msgstr "Wechsle zum 'Pinsel'"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Shaper'"
 msgid "Switch to the 'Shaper'"
 msgstr "Wechsle zum 'Former'"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Typewriter'"
 msgid "Switch to the 'Typewriter'"
 msgstr "Wechsle zur 'Schreibmaschine'"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Eraser'"
 msgid "Switch to the 'Eraser'"
 msgstr "Wechsle zum 'Radierer'"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Selector'"
 msgid "Switch to the 'Selector'"
 msgstr "Wechsle zur 'Auswahl'"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "Wechsle zum 'Werkzeug'"
 
 #: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drag View"
 msgid "Drag View"
 msgstr "Bewege Ansicht"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Alt + Drag"
 msgid "Alt + Drag"
 msgstr "Alt + Ziehen"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom in/out"
 msgid "Zoom in/out"
 msgstr "Zoome herein/heraus"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Alt + Shift + Drag"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Umschalt + Ziehen"
 
@@ -1442,9 +1392,6 @@ msgid "Document"
 msgstr "Dokument"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open Document"
 msgid "Open Document"
 msgstr "Dokument Öffnen"
 
@@ -1453,9 +1400,6 @@ msgid "Save Document As"
 msgstr "Dokument Speichern Als"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Print Document"
 msgid "Print Document"
 msgstr "Dokument Drucken"
 
@@ -1464,30 +1408,18 @@ msgid "Import File"
 msgstr "Importiere Datei"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing"
 msgstr "Zeichnen"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy to Clipboard"
 msgid "Copy to Clipboard"
 msgstr "Kopiere in die Zwischenablage"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Cut to Clipboard"
 msgid "Cut to Clipboard"
 msgstr "Ausschneiden in die Zwischenablage"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste Clipboard"
 msgid "Paste Clipboard"
 msgstr "Zwischenablage Einfügen"
 

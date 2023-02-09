@@ -19,7 +19,7 @@ pub(crate) fn handle_pointer_controller_event(
     let touch_drawing = canvas.touch_drawing();
     let event_type = event.event_type();
 
-    super::input::debug_gdk_event(event);
+    //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
         return (Inhibit(false), state);
@@ -59,7 +59,7 @@ pub(crate) fn handle_pointer_controller_event(
         gdk::EventType::ButtonPress => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
-            log::debug!("ButtonPress - button: {gdk_button}");
+            log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
 
             let shortcut_key = if is_stylus {
                 // even though it is a button press, we handle it also as pen event so the engine gets the chance to switch pen mode, pen style, etc.
@@ -105,9 +105,12 @@ pub(crate) fn handle_pointer_controller_event(
         gdk::EventType::ButtonRelease => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
-            log::debug!("ButtonRelease - button: {gdk_button}");
+            log::debug!("ButtonRelease - button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
+                handle_pen_event = true;
+                inhibit = true;
+
                 // again, this is the method to detect proximity on stylus
                 if gdk_button == gdk::BUTTON_PRIMARY {
                     state = PenState::Up;
@@ -118,12 +121,10 @@ pub(crate) fn handle_pointer_controller_event(
                 #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
                     state = PenState::Up;
+                    handle_pen_event = true;
+                    inhibit = true;
                 }
             };
-
-            // even though it is a button press, we handle it also as pointer event so the engine gets the chance to switch pen mode, pen style, etc.
-            handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::ProximityIn => {
             state = PenState::Proximity;

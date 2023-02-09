@@ -3,7 +3,7 @@ use std::time::Instant;
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-use rnote_compose::penevents::{KeyboardKey, ShortcutKey};
+use rnote_compose::penevents::{KeyboardKey, ModifierKey};
 use rnote_compose::penpath::Element;
 
 use crate::engine::EngineViewMut;
@@ -17,7 +17,7 @@ impl Selector {
     pub(super) fn handle_pen_event_down(
         &mut self,
         element: Element,
-        shortcut_keys: Vec<ShortcutKey>,
+        modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -72,7 +72,7 @@ impl Selector {
                         let key_to_add = keys.last();
 
                         if (engine_view.pens_config.selector_config.style == SelectorStyle::Single
-                            || shortcut_keys.contains(&ShortcutKey::KeyboardShift))
+                            || modifier_keys.contains(&ModifierKey::KeyboardShift))
                             && key_to_add
                                 .and_then(|&key| engine_view.store.selected(key).map(|s| !s))
                                 .unwrap_or(false)
@@ -255,7 +255,7 @@ impl Selector {
                             .pens_config
                             .selector_config
                             .resize_lock_aspectratio
-                            || shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
+                            || modifier_keys.contains(&ModifierKey::KeyboardCtrl)
                         {
                             // Lock aspectratio
                             rnote_compose::helpers::scale_w_locked_aspectratio(
@@ -296,7 +296,7 @@ impl Selector {
     pub(super) fn handle_pen_event_up(
         &mut self,
         element: Element,
-        _shortcut_keys: Vec<ShortcutKey>,
+        _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -452,7 +452,7 @@ impl Selector {
     pub(super) fn handle_pen_event_proximity(
         &mut self,
         element: Element,
-        _shortcut_keys: Vec<ShortcutKey>,
+        _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -481,7 +481,7 @@ impl Selector {
     pub(super) fn handle_pen_event_keypressed(
         &mut self,
         keyboard_key: KeyboardKey,
-        shortcut_keys: Vec<ShortcutKey>,
+        modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -490,24 +490,24 @@ impl Selector {
         let progress = match &mut self.state {
             SelectorState::Idle => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(shortcut_keys, engine_view, &mut widget_flags)
+                    self.select_all(modifier_keys, engine_view, &mut widget_flags)
                 }
                 _ => PenProgress::InProgress,
             },
             SelectorState::Selecting { .. } => match keyboard_key {
                 KeyboardKey::Unicode('a') => {
-                    self.select_all(shortcut_keys, engine_view, &mut widget_flags)
+                    self.select_all(modifier_keys, engine_view, &mut widget_flags)
                 }
                 _ => PenProgress::InProgress,
             },
             SelectorState::ModifySelection { selection, .. } => {
                 match keyboard_key {
                     KeyboardKey::Unicode('a') => {
-                        self.select_all(shortcut_keys, engine_view, &mut widget_flags)
+                        self.select_all(modifier_keys, engine_view, &mut widget_flags)
                     }
                     KeyboardKey::Unicode('d') => {
                         //Duplicate selection
-                        if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                             let duplicated = engine_view.store.duplicate_selection();
                             engine_view.store.update_geometry_for_strokes(&duplicated);
                             engine_view.store.regenerate_rendering_for_strokes_threaded(

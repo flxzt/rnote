@@ -13,7 +13,7 @@ use once_cell::sync::Lazy;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-use rnote_compose::penevents::{PenEvent, PenState, ShortcutKey};
+use rnote_compose::penevents::{ModifierKey, PenEvent, PenState};
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::indicators;
@@ -125,20 +125,20 @@ impl PenBehaviour for Selector {
         match event {
             PenEvent::Down {
                 element,
-                shortcut_keys,
-            } => self.handle_pen_event_down(element, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_down(element, modifier_keys, now, engine_view),
             PenEvent::Up {
                 element,
-                shortcut_keys,
-            } => self.handle_pen_event_up(element, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_up(element, modifier_keys, now, engine_view),
             PenEvent::Proximity {
                 element,
-                shortcut_keys,
-            } => self.handle_pen_event_proximity(element, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_proximity(element, modifier_keys, now, engine_view),
             PenEvent::KeyPressed {
                 keyboard_key,
-                shortcut_keys,
-            } => self.handle_pen_event_keypressed(keyboard_key, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_keypressed(keyboard_key, modifier_keys, now, engine_view),
             PenEvent::Text { text } => self.handle_pen_event_text(text, now, engine_view),
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         }
@@ -700,11 +700,11 @@ impl Selector {
 
     fn select_all(
         &mut self,
-        shortcut_keys: Vec<ShortcutKey>,
+        modifier_keys: Vec<ModifierKey>,
         engine_view: &mut EngineViewMut,
         widget_flags: &mut WidgetFlags,
     ) -> PenProgress {
-        if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
             // Select all keys
             let all_strokes = engine_view.store.keys_sorted_chrono();
 

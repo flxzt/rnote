@@ -1,4 +1,4 @@
-use rnote_compose::penevents::{KeyboardKey, ShortcutKey};
+use rnote_compose::penevents::{KeyboardKey, ModifierKey};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
@@ -14,7 +14,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_down(
         &mut self,
         element: Element,
-        _shortcut_keys: Vec<ShortcutKey>,
+        _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -273,7 +273,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_up(
         &mut self,
         _element: Element,
-        _shortcut_keys: Vec<ShortcutKey>,
+        _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -358,7 +358,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_proximity(
         &mut self,
         _element: Element,
-        _shortcut_keys: Vec<ShortcutKey>,
+        _modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -382,7 +382,7 @@ impl Typewriter {
     pub(super) fn handle_pen_event_keypressed(
         &mut self,
         keyboard_key: KeyboardKey,
-        shortcut_keys: Vec<ShortcutKey>,
+        modifier_keys: Vec<ModifierKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -467,7 +467,7 @@ impl Typewriter {
                     // Handling keyboard input
                     let new_state = match keyboard_key {
                         KeyboardKey::Unicode(keychar) => {
-                            if keychar == 'a' && shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
+                            if keychar == 'a' && modifier_keys.contains(&ModifierKey::KeyboardCtrl)
                             {
                                 // Select entire text
 
@@ -515,7 +515,7 @@ impl Typewriter {
                             None
                         }
                         KeyboardKey::NavLeft => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 let mut new_cursor = cursor.clone();
                                 textstroke.move_cursor_back(&mut new_cursor);
 
@@ -532,7 +532,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavRight => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 let mut new_cursor = cursor.clone();
                                 textstroke.move_cursor_forward(&mut new_cursor);
 
@@ -549,7 +549,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavUp => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 let mut new_cursor = cursor.clone();
                                 textstroke.move_cursor_line_up(&mut new_cursor);
 
@@ -566,7 +566,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavDown => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 let mut new_cursor = cursor.clone();
                                 textstroke.move_cursor_line_down(&mut new_cursor);
 
@@ -627,7 +627,7 @@ impl Typewriter {
                     // Handle keyboard keys
                     let quit_selecting = match keyboard_key {
                         KeyboardKey::Unicode(keychar) => {
-                            if keychar == 'a' && shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
+                            if keychar == 'a' && modifier_keys.contains(&ModifierKey::KeyboardCtrl)
                             {
                                 textstroke.update_selection_entire_text(cursor, selection_cursor);
                                 *finished = true;
@@ -645,7 +645,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavLeft => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 textstroke.move_cursor_back(cursor);
                                 false
                             } else {
@@ -653,7 +653,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavRight => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 textstroke.move_cursor_forward(cursor);
                                 false
                             } else {
@@ -661,7 +661,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavUp => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 textstroke.move_cursor_line_up(cursor);
                                 false
                             } else {
@@ -669,7 +669,7 @@ impl Typewriter {
                             }
                         }
                         KeyboardKey::NavDown => {
-                            if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
+                            if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                 textstroke.move_cursor_line_down(cursor);
                                 false
                             } else {

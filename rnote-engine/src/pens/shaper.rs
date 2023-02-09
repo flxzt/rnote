@@ -16,7 +16,7 @@ use rnote_compose::builders::{
 };
 use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
-use rnote_compose::penevents::{KeyboardKey, PenEvent, ShortcutKey};
+use rnote_compose::penevents::{KeyboardKey, ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
 
 #[derive(Debug)]
@@ -84,17 +84,17 @@ impl PenBehaviour for Shaper {
                 let mut constraints = engine_view.pens_config.shaper_config.constraints.clone();
                 constraints.enabled = match event {
                     PenEvent::Down {
-                        ref shortcut_keys, ..
+                        ref modifier_keys, ..
                     }
                     | PenEvent::Up {
-                        ref shortcut_keys, ..
+                        ref modifier_keys, ..
                     }
                     | PenEvent::Proximity {
-                        ref shortcut_keys, ..
+                        ref modifier_keys, ..
                     }
                     | PenEvent::KeyPressed {
-                        ref shortcut_keys, ..
-                    } => constraints.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                        ref modifier_keys, ..
+                    } => constraints.enabled ^ modifier_keys.contains(&ModifierKey::KeyboardCtrl),
                     PenEvent::Text { .. } | PenEvent::Cancel => false,
                 };
 
@@ -177,10 +177,10 @@ impl PenBehaviour for Shaper {
                 // When esc is pressed, reset state
                 if let PenEvent::KeyPressed {
                     keyboard_key,
-                    shortcut_keys,
+                    modifier_keys,
                 } = event
                 {
-                    if keyboard_key == KeyboardKey::Escape && shortcut_keys.is_empty() {
+                    if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
                         self.state = ShaperState::Idle;
                         widget_flags.redraw = true;
                         pen_progress = PenProgress::Finished;

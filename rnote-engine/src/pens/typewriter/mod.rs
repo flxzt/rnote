@@ -427,20 +427,20 @@ impl PenBehaviour for Typewriter {
         let (pen_progress, widget_flags) = match event {
             PenEvent::Down {
                 element,
-                shortcut_keys,
-            } => self.handle_pen_event_down(element, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_down(element, modifier_keys, now, engine_view),
             PenEvent::Up {
                 element,
-                shortcut_keys,
-            } => self.handle_pen_event_up(element, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_up(element, modifier_keys, now, engine_view),
             PenEvent::Proximity {
                 element,
-                shortcut_keys,
-            } => self.handle_pen_event_proximity(element, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_proximity(element, modifier_keys, now, engine_view),
             PenEvent::KeyPressed {
                 keyboard_key,
-                shortcut_keys,
-            } => self.handle_pen_event_keypressed(keyboard_key, shortcut_keys, now, engine_view),
+                modifier_keys,
+            } => self.handle_pen_event_keypressed(keyboard_key, modifier_keys, now, engine_view),
             PenEvent::Text { text } => self.handle_pen_event_text(text, now, engine_view),
             PenEvent::Cancel => self.handle_pen_event_cancel(now, engine_view),
         };

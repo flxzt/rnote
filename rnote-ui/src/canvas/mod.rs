@@ -471,10 +471,6 @@ mod imp {
                                //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
                            }),
                        );
-
-                       self.key_controller.connect_modifiers(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, modifier| {
-                           super::input::handle_key_controller_modifiers(&canvas, modifier)
-                       }));
             */
         }
     }

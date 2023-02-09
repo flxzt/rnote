@@ -1,7 +1,7 @@
 use gtk4::{gdk, prelude::*, Inhibit};
-use rnote_compose::penevents::PenEvent;
 use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
+use rnote_compose::penevents::{ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
@@ -46,7 +46,7 @@ pub(crate) fn handle_pointer_controller_event(
                     state = PenState::Proximity;
                 }
             } else {
-                // only handle primary and secondary mouse buttons
+                // only handle no pressed button, primary and secondary mouse buttons
                 if modifiers.is_empty()
                     || modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
                     || modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
@@ -61,37 +61,26 @@ pub(crate) fn handle_pointer_controller_event(
             let gdk_button = button_event.button();
             log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
 
-            let shortcut_key = if is_stylus {
+            if is_stylus {
                 // even though it is a button press, we handle it also as pen event so the engine gets the chance to switch pen mode, pen style, etc.
-                handle_pen_event = true;
-                inhibit = true;
-
-                if gdk_button == gdk::BUTTON_PRIMARY {
-                    state = PenState::Down;
-                    None
-                } else if gdk_button == gdk::BUTTON_SECONDARY {
-                    Some(ShortcutKey::StylusPrimaryButton)
-                } else if gdk_button == gdk::BUTTON_MIDDLE {
-                    Some(ShortcutKey::StylusSecondaryButton)
-                } else {
-                    None
+                #[allow(clippy::collapsible_else_if)]
+                if gdk_button == gdk::BUTTON_PRIMARY
+                    || gdk_button == gdk::BUTTON_SECONDARY
+                    || gdk_button == gdk::BUTTON_MIDDLE
+                {
+                    handle_pen_event = true;
+                    inhibit = true;
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
-                if gdk_button == gdk::BUTTON_PRIMARY {
-                    state = PenState::Down;
-                    handle_pen_event = true;
-                    inhibit = true;
-                    None
-                } else if gdk_button == gdk::BUTTON_SECONDARY {
+                if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
                     handle_pen_event = true;
                     inhibit = true;
                     state = PenState::Down;
-                    Some(ShortcutKey::MouseSecondaryButton)
-                } else {
-                    None
                 }
-            };
+            }
+
+            let shortcut_key = retrieve_button_shortcut_key(gdk_button, is_stylus);
 
             if let Some(shortcut_key) = shortcut_key {
                 widget_flags.merge(
@@ -164,10 +153,10 @@ pub(crate) fn handle_pointer_controller_event(
         let Some(element) = retrieve_pointer_element(canvas, event) else {
                     return (Inhibit(false), state);
                 };
-        let shortcut_keys = retrieve_modifier_shortcut_keys(event.modifier_state());
+        let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
-        //log::debug!("handle event, state: {state:?}, shortcut_keys: {shortcut_keys:?}, pen_mode: {pen_mode:?}");
+        //log::debug!("handle event, state: {state:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}");
 
         match state {
             PenState::Up => {
@@ -176,7 +165,7 @@ pub(crate) fn handle_pointer_controller_event(
                 widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
                     PenEvent::Up {
                         element,
-                        shortcut_keys,
+                        modifier_keys,
                     },
                     pen_mode,
                     now,
@@ -188,7 +177,7 @@ pub(crate) fn handle_pointer_controller_event(
                 widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
                     PenEvent::Proximity {
                         element,
-                        shortcut_keys,
+                        modifier_keys,
                     },
                     pen_mode,
                     now,
@@ -201,7 +190,7 @@ pub(crate) fn handle_pointer_controller_event(
                 widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
                     PenEvent::Down {
                         element,
-                        shortcut_keys,
+                        modifier_keys,
                     },
                     pen_mode,
                     now,
@@ -224,40 +213,18 @@ pub(crate) fn handle_key_controller_key_pressed(
 
     let now = Instant::now();
     let keyboard_key = retrieve_keyboard_key(key);
-    let shortcut_keys = retrieve_modifier_shortcut_keys(modifier);
+    let modifier_keys = retrieve_modifier_keys(modifier);
 
     //log::debug!("keyboard key: {:?}", keyboard_key);
 
     let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
         PenEvent::KeyPressed {
             keyboard_key,
-            shortcut_keys,
+            modifier_keys,
         },
         None,
         now,
     );
-    canvas.emit_handle_widget_flags(widget_flags);
-
-    Inhibit(true)
-}
-
-#[allow(unused)]
-pub(crate) fn handle_key_controller_modifiers(
-    canvas: &RnCanvas,
-    modifier: gdk::ModifierType,
-) -> Inhibit {
-    let now = Instant::now();
-    let shortcut_keys = retrieve_modifier_shortcut_keys(modifier);
-    let mut widget_flags = WidgetFlags::default();
-
-    for shortcut_key in shortcut_keys {
-        widget_flags.merge(
-            canvas
-                .engine()
-                .borrow_mut()
-                .handle_pressed_shortcut_key(shortcut_key, now),
-        );
-    }
     canvas.emit_handle_widget_flags(widget_flags);
 
     Inhibit(true)
@@ -335,22 +302,43 @@ fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Ele
     Some(Element::new(pos, pressure))
 }
 
-pub(crate) fn retrieve_modifier_shortcut_keys(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
-    let mut shortcut_keys = vec![];
-
-    if modifier.contains(gdk::ModifierType::BUTTON2_MASK) {
-        shortcut_keys.push(ShortcutKey::MouseSecondaryButton);
+pub(crate) fn retrieve_button_shortcut_key(
+    gdk_button: u32,
+    is_stylus: bool,
+) -> Option<ShortcutKey> {
+    match gdk_button {
+        gdk::BUTTON_PRIMARY => None,
+        gdk::BUTTON_SECONDARY => {
+            if is_stylus {
+                Some(ShortcutKey::StylusPrimaryButton)
+            } else {
+                Some(ShortcutKey::StylusSecondaryButton)
+            }
+        }
+        gdk::BUTTON_MIDDLE => {
+            if is_stylus {
+                Some(ShortcutKey::StylusSecondaryButton)
+            } else {
+                None
+            }
+        }
+        _ => None,
     }
+}
+
+pub(crate) fn retrieve_modifier_keys(modifier: gdk::ModifierType) -> Vec<ModifierKey> {
+    let mut keys = vec![];
+
     if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
-        shortcut_keys.push(ShortcutKey::KeyboardShift);
+        keys.push(ModifierKey::KeyboardShift);
     }
     if modifier.contains(gdk::ModifierType::CONTROL_MASK) {
-        shortcut_keys.push(ShortcutKey::KeyboardCtrl);
+        keys.push(ModifierKey::KeyboardCtrl);
     }
     if modifier.contains(gdk::ModifierType::ALT_MASK) {
-        shortcut_keys.push(ShortcutKey::KeyboardAlt);
+        keys.push(ModifierKey::KeyboardAlt);
     }
-    shortcut_keys
+    keys
 }
 
 fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
@@ -370,5 +358,27 @@ fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
 }
 
 pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
-    rnote_engine::utils::keyboard_key_from_gdk(gdk_key)
+    //log::debug!("gdk: pressed key: {:?}", gdk_key);
+
+    if let Some(keychar) = gdk_key.to_unicode() {
+        KeyboardKey::Unicode(keychar).filter_convert_unicode_control_chars()
+    } else {
+        match gdk_key {
+            gdk::Key::BackSpace => KeyboardKey::BackSpace,
+            gdk::Key::Tab => KeyboardKey::HorizontalTab,
+            gdk::Key::Linefeed => KeyboardKey::Linefeed,
+            gdk::Key::Return => KeyboardKey::CarriageReturn,
+            gdk::Key::Escape => KeyboardKey::Escape,
+            gdk::Key::Delete => KeyboardKey::Delete,
+            gdk::Key::Down => KeyboardKey::NavDown,
+            gdk::Key::Up => KeyboardKey::NavUp,
+            gdk::Key::Left => KeyboardKey::NavLeft,
+            gdk::Key::Right => KeyboardKey::NavRight,
+            gdk::Key::Shift_L => KeyboardKey::ShiftLeft,
+            gdk::Key::Shift_R => KeyboardKey::ShiftRight,
+            gdk::Key::Control_L => KeyboardKey::CtrlLeft,
+            gdk::Key::Control_R => KeyboardKey::CtrlRight,
+            _ => KeyboardKey::Unsupported,
+        }
+    }
 }

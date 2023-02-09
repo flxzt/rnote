@@ -13,6 +13,10 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
+    <key name="flap-reveal" type="b">
+      <default>false</default>
+      <summary>Whether the flap is revealed or not</summary>
+    </key>
     <key name="flap-width" type="i">
       <default>500</default>
       <summary>flap width</summary>
@@ -29,9 +33,73 @@
         Use the color scheme in the application's UI and in the text area.
       </description>
     </key>
-    <key name="current-workspace-index" type="u">
+    <key name="active-stroke-color" type="(dddd)">
+      <default>(0.0, 0.0, 0.0, 1.0)</default>
+      <summary>the active stroke color (default: black)</summary>
+    </key>
+    <key name="active-fill-color" type="(dddd)">
+      <default>(0.0, 0.0, 0.0, 0.0)</default>
+      <summary>the active fill color (default: transparent)</summary>
+    </key>
+    <key name="colorpicker-color-1" type="(dddd)">
+      <default>(0.0, 0.0, 0.0, 1.0)</default>
+      <summary>the colorpicker palette color 1 (default: black)</summary>
+    </key>
+    <key name="colorpicker-color-2" type="(dddd)">
+      <default>(0.0, 0.0, 0.0, 0.0)</default>
+      <summary>the colorpicker palette color 2 (default: transparent)</summary>
+    </key>
+    <key name="colorpicker-color-3" type="(dddd)">
+      <default>(0.597, 0.753, 0.941, 1.0)</default>
+      <summary>the colorpicker palette color 3 (default: blue 1)</summary>
+    </key>
+    <key name="colorpicker-color-4" type="(dddd)">
+      <default>(0.101, 0.371, 0.703, 1.0)</default>
+      <summary>the colorpicker palette color 4 (default: blue 5)</summary>
+    </key>
+    <key name="colorpicker-color-5" type="(dddd)">
+      <default>(0.148, 0.632, 0.410, 1.0)</default>
+      <summary>the colorpicker palette color 5 (default: green 5)</summary>
+    </key>
+    <key name="colorpicker-color-6" type="(dddd)">
+      <default>(0.957, 0.757, 0.066, 1.0)</default>
+      <summary>the colorpicker palette color 6 (default: yellow 4)</summary>
+    </key>
+    <key name="colorpicker-color-7" type="(dddd)">
+      <default>(0.898, 0.378, 0.0, 1.0)</default>
+      <summary>the colorpicker palette color 7 (default: orange 4)</summary>
+    </key>
+    <key name="colorpicker-color-8" type="(dddd)">
+      <default>(0.644, 0.113, 0.175, 1.0)</default>
+      <summary>the colorpicker palette color 8 (default: red 5)</summary>
+    </key>
+    <key name="brush-width-1" type="d">
+      <default>2.0</default>
+      <summary>the first brush stroke palette width</summary>
+    </key>
+    <key name="brush-width-2" type="d">
+      <default>6.0</default>
+      <summary>the second brush stroke palette width</summary>
+    </key>
+    <key name="brush-width-3" type="d">
+      <default>12.0</default>
+      <summary>the third brush stroke palette width</summary>
+    </key>
+    <key name="shaper-width-1" type="d">
+      <default>2.0</default>
+      <summary>the first shaper stroke palette width</summary>
+    </key>
+    <key name="shaper-width-2" type="d">
+      <default>6.0</default>
+      <summary>the second shaper stroke palette width</summary>
+    </key>
+    <key name="shaper-width-3" type="d">
+      <default>12.0</default>
+      <summary>the third shaper stroke palette width</summary>
+    </key>
+    <key name="selected-workspace-index" type="u">
       <default>0</default>
-      <summary>the current workspace index</summary>
+      <summary>the selected workspace index</summary>
     </key>
     <key name="workspace-list" type="a(aysus)">
       <default>[(b'./', 'folder-symbolic', 442479871, 'default')]</default>
@@ -45,9 +113,9 @@
       <default>120</default>
       <summary>the sec interval for the autosave</summary>
     </key>
-    <key name="permanently-hide-canvas-scrollbars" type="b">
+    <key name="show-scrollbars" type="b">
       <default>false</default>
-      <summary>Whether the canvas scrollbars are permanently hidden</summary>
+      <summary>Whether the canvas scrollbars are shown</summary>
     </key>
     <key name="righthanded" type="b">
       <default>true</default>
@@ -64,56 +132,6 @@
     <key name="drawing-cursor" type="s">
       <default>"cursor-dot-small"</default>
       <summary>The drawing cursor</summary>
-    </key>
-    <key name="brushpage-selected-color" type="u">
-      <default>0</default>
-      <summary>the default selected color row on the brush page</summary>
-    </key>
-    <key name="brushpage-colors" type="(uuuuuuuu)">
-      <default>(
-        0x000000ff,
-        0xffffffff,
-        0x99c1f1ff,
-        0x1a5fb4ff,
-        0x26a269ff,
-        0xf6d32dff,
-        0xff7800ff,
-        0xe01b24ff
-      )</default>
-      <summary>the brush page colors</summary>
-    </key>
-    <key name="shaperpage-selected-color" type="u">
-      <default>0</default>
-      <summary>the default selected color row on the shaper page</summary>
-    </key>
-    <key name="shaperpage-colors" type="(uu)">
-      <default>(
-        0x000000ff,
-        0x1a5fb4ff
-      )</default>
-      <summary>the shaper page colors</summary>
-    </key>
-    <key name="shaperpage-selected-fill" type="u">
-      <default>0</default>
-      <summary>the default selected fill color row on the shaper page</summary>
-    </key>
-    <key name="shaperpage-fills" type="(uu)">
-      <default>(
-        0x00000000,
-        0x99c1f1ff
-      )</default>
-      <summary>the shaper page fill colors</summary>
-    </key>
-    <key name="typewriterpage-colors" type="(uu)">
-      <default>(
-        0x000000ff,
-        0x1a5fb4ff
-      )</default>
-      <summary>the typewriter page colors</summary>
-    </key>
-    <key name="typewriterpage-selected-color" type="u">
-      <default>0</default>
-      <summary>the default selected color row on the typewriter page</summary>
     </key>
     <key name="resize-lock-aspectratio" type="b">
       <default>false</default>

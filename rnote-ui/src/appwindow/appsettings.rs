@@ -1,11 +1,11 @@
-use crate::appwindow::RnoteAppWindow;
-use rnote_compose::Color;
-
 use adw::prelude::*;
+use gtk4::{gdk, glib};
 
-impl RnoteAppWindow {
+use crate::appwindow::RnAppWindow;
+
+impl RnAppWindow {
     /// Settings binds
-    pub fn setup_settings_binds(&self) {
+    pub(crate) fn setup_settings_binds(&self) {
         let app = self.app();
 
         // Color scheme
@@ -33,84 +33,280 @@ impl RnoteAppWindow {
                 adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
                 _ => None,
             })
+            .get_no_changes()
+            .build();
+
+        self.app_settings()
+            .bind("flap-reveal", &self.flap(), "reveal-flap")
+            .get_no_changes()
             .build();
 
         // autosave
         self.app_settings()
             .bind("autosave", self, "autosave")
+            .get_no_changes()
             .build();
 
         // autosave interval secs
         self.app_settings()
             .bind("autosave-interval-secs", self, "autosave-interval-secs")
-            .build();
-
-        // permanently hide canvas scrollbars
-        self.app_settings()
-            .bind(
-                "permanently-hide-canvas-scrollbars",
-                self,
-                "permanently-hide-canvas-scrollbars",
-            )
+            .get_no_changes()
             .build();
 
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")
+            .get_no_changes()
             .build();
 
         // touch drawing
         self.app_settings()
-            .bind("touch-drawing", &self.canvas(), "touch-drawing")
+            .bind("touch-drawing", self, "touch-drawing")
+            .get_no_changes()
+            .build();
+
+        // show scrollbars
+        self.app_settings()
+            .bind(
+                "show-scrollbars",
+                &self.settings_panel().general_show_scrollbars_switch(),
+                "active",
+            )
+            .get_no_changes()
             .build();
 
         // regular cursor
         self.app_settings()
-            .bind("regular-cursor", &self.canvas(), "regular-cursor")
+            .bind(
+                "regular-cursor",
+                &self.settings_panel().general_regular_cursor_picker(),
+                "picked",
+            )
+            .get_no_changes()
             .build();
 
         // drawing cursor
         self.app_settings()
-            .bind("drawing-cursor", &self.canvas(), "drawing-cursor")
+            .bind(
+                "drawing-cursor",
+                &self.settings_panel().general_drawing_cursor_picker(),
+                "picked",
+            )
+            .get_no_changes()
             .build();
 
-        // Brush page
+        // colorpicker palette
+        let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
+            let color = var.get::<(f64, f64, f64, f64)>()?;
+            Some(
+                gdk::RGBA::new(
+                    color.0 as f32,
+                    color.1 as f32,
+                    color.2 as f32,
+                    color.3 as f32,
+                )
+                .to_value(),
+            )
+        };
+        let gdk_color_set_mapping = |val: &glib::Value, _: glib::VariantType| {
+            let color = val.get::<gdk::RGBA>().ok()?;
+            Some(
+                (
+                    color.red() as f64,
+                    color.green() as f64,
+                    color.blue() as f64,
+                    color.alpha() as f64,
+                )
+                    .to_variant(),
+            )
+        };
+
         self.app_settings()
             .bind(
-                "brushpage-selected-color",
-                &self.penssidebar().brush_page().colorpicker(),
-                "selected",
+                "active-stroke-color",
+                &self.overlays().colorpicker(),
+                "stroke-color",
             )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "active-fill-color",
+                &self.overlays().colorpicker(),
+                "fill-color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-1",
+                &self.overlays().colorpicker().setter_1(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-2",
+                &self.overlays().colorpicker().setter_2(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-3",
+                &self.overlays().colorpicker().setter_3(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-4",
+                &self.overlays().colorpicker().setter_4(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-5",
+                &self.overlays().colorpicker().setter_5(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-6",
+                &self.overlays().colorpicker().setter_6(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-7",
+                &self.overlays().colorpicker().setter_7(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "colorpicker-color-8",
+                &self.overlays().colorpicker().setter_8(),
+                "color",
+            )
+            .mapping(gdk_color_mapping)
+            .set_mapping(gdk_color_set_mapping)
+            .get_no_changes()
             .build();
 
-        // Shaper page
+        // brush stroke widths
         self.app_settings()
             .bind(
-                "shaperpage-selected-color",
-                &self.penssidebar().shaper_page().stroke_colorpicker(),
-                "selected",
+                "brush-width-1",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .setter_1(),
+                "stroke-width",
             )
+            .get_no_changes()
             .build();
         self.app_settings()
             .bind(
-                "shaperpage-selected-fill",
-                &self.penssidebar().shaper_page().fill_colorpicker(),
-                "selected",
+                "brush-width-2",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .setter_2(),
+                "stroke-width",
             )
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "brush-width-3",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .brush_page()
+                    .stroke_width_picker()
+                    .setter_3(),
+                "stroke-width",
+            )
+            .get_no_changes()
             .build();
 
-        // Typewriter page
+        // shaper stroke widths
         self.app_settings()
             .bind(
-                "typewriterpage-selected-color",
-                &self.penssidebar().typewriter_page().colorpicker(),
-                "selected",
+                "shaper-width-1",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .setter_1(),
+                "stroke-width",
             )
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "shaper-width-2",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .setter_2(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "shaper-width-3",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_width_picker()
+                    .setter_3(),
+                "stroke-width",
+            )
+            .get_no_changes()
             .build();
     }
 
-    /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
-    pub fn load_settings(&self) {
+    /// load settings at startup that are not bound as binding. Setting changes through gsettings / dconf might not be applied until app restarts
+    pub(crate) fn load_settings(&self) {
         let _app = self.app();
 
         // appwindow
@@ -120,113 +316,31 @@ impl RnoteAppWindow {
             let is_maximized = self.app_settings().boolean("is-maximized");
 
             self.set_default_size(window_width, window_height);
-
             if is_maximized {
                 self.maximize();
             }
-
+            // flap width
             self.flap_box()
                 .set_width_request(self.app_settings().int("flap-width"));
         }
 
         // color scheme
-        // Set the action menu, as the style manager colorscheme property may not be changed from the binding at startup when opening a second window (FIXME: why?)
+        // Set the action menu, as the style manager colorscheme property may not be updated
+        // from the binding at startup when opening a second window (TODO: why?)
         let color_scheme = self.app_settings().string("color-scheme");
         self.app()
             .activate_action("color-scheme", Some(&color_scheme.to_variant()));
 
         {
-            // Workspacebrowser
+            // Workspaces bar
             self.workspacebrowser()
+                .workspacesbar()
                 .load_from_settings(&self.app_settings());
-        }
-
-        {
-            // Brush page
-            let colors = self
-                .app_settings()
-                .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>("brushpage-colors");
-            let colors = [
-                colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
-            ]
-            .into_iter()
-            .map(Color::from)
-            .collect::<Vec<Color>>();
-            self.penssidebar()
-                .brush_page()
-                .colorpicker()
-                .load_colors(&colors);
-        }
-
-        {
-            // Shaper page
-            let colors = self.app_settings().get::<(u32, u32)>("shaperpage-colors");
-            let colors = [colors.0, colors.1]
-                .into_iter()
-                .map(Color::from)
-                .collect::<Vec<Color>>();
-            self.penssidebar()
-                .shaper_page()
-                .stroke_colorpicker()
-                .load_colors(&colors);
-
-            // Shaper page fills
-
-            let fill_colors = self.app_settings().get::<(u32, u32)>("shaperpage-fills");
-            let fill_colors = [fill_colors.0, fill_colors.1]
-                .into_iter()
-                .map(Color::from)
-                .collect::<Vec<Color>>();
-            self.penssidebar()
-                .shaper_page()
-                .fill_colorpicker()
-                .load_colors(&fill_colors);
-        }
-
-        {
-            // Typewriter page
-            let colors = self
-                .app_settings()
-                .get::<(u32, u32)>("typewriterpage-colors");
-            let colors = [colors.0, colors.1]
-                .into_iter()
-                .map(Color::from)
-                .collect::<Vec<Color>>();
-            self.penssidebar()
-                .typewriter_page()
-                .colorpicker()
-                .load_colors(&colors);
-        }
-
-        {
-            // load engine config
-            let engine_config = self.app_settings().string("engine-config");
-            let widget_flags = match self
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .load_engine_config(&engine_config)
-            {
-                Err(e) => {
-                    // On first app startup the engine config is empty, so we don't log an error
-                    if engine_config.is_empty() {
-                        log::debug!("did not load `engine-config` from settings, was empty");
-                    } else {
-                        log::error!("failed to load `engine-config` from settings, Err {}", e);
-                    }
-                    None
-                }
-                Ok(widget_flags) => Some(widget_flags),
-            };
-            // Avoiding already borrowed
-            if let Some(widget_flags) = widget_flags {
-                self.handle_widget_flags(widget_flags);
-            }
         }
     }
 
     /// Save all settings at shutdown that are not bound in setup_settings
-    pub fn save_to_settings(&self) -> anyhow::Result<()> {
+    pub(crate) fn save_to_settings(&self) -> anyhow::Result<()> {
         {
             // Appwindow
             self.app_settings().set_int("window-width", self.width())?;
@@ -234,76 +348,15 @@ impl RnoteAppWindow {
                 .set_int("window-height", self.height())?;
             self.app_settings()
                 .set_boolean("is-maximized", self.is_maximized())?;
-
             self.app_settings()
                 .set_int("flap-width", self.flap_box().width())?;
         }
 
         {
-            // Brush page
-            let colors = self
-                .penssidebar()
-                .brush_page()
-                .colorpicker()
-                .fetch_all_colors()
-                .into_iter()
-                .map(|color| color.into())
-                .collect::<Vec<u32>>();
-            let colors = (
-                colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6],
-                colors[7],
-            );
-            self.app_settings()
-                .set_value("brushpage-colors", &colors.to_variant())?;
-        }
-
-        {
-            // Shaper page colors
-            let colors = self
-                .penssidebar()
-                .shaper_page()
-                .stroke_colorpicker()
-                .fetch_all_colors()
-                .into_iter()
-                .map(|color| color.into())
-                .collect::<Vec<u32>>();
-            let colors = (colors[0], colors[1]);
-            self.app_settings()
-                .set_value("shaperpage-colors", &colors.to_variant())?;
-
-            // Shaper page fills
-            let fills = self
-                .penssidebar()
-                .shaper_page()
-                .fill_colorpicker()
-                .fetch_all_colors()
-                .into_iter()
-                .map(|color| color.into())
-                .collect::<Vec<u32>>();
-            let fills = (fills[0], fills[1]);
-            self.app_settings()
-                .set_value("shaperpage-fills", &fills.to_variant())?;
-        }
-
-        {
-            // Typewriter page colors
-
-            let colors = self
-                .penssidebar()
-                .typewriter_page()
-                .colorpicker()
-                .fetch_all_colors()
-                .into_iter()
-                .map(|color| color.into())
-                .collect::<Vec<u32>>();
-            let colors = (colors[0], colors[1]);
-            self.app_settings()
-                .set_value("typewriterpage-colors", &colors.to_variant())?;
-        }
-
-        {
-            // Save engine config
-            self.save_engine_config()?;
+            // Save engine config of the last active tab
+            self.active_tab()
+                .canvas()
+                .save_engine_config(&self.app_settings())?;
         }
 
         Ok(())

@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::sync::Arc;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use rayon::slice::ParallelSliceMut;
 use serde::{Deserialize, Serialize};
 
@@ -121,7 +121,7 @@ impl StrokeStore {
         keys
     }
 
-    pub fn keys_sorted_chrono_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+    pub fn keys_sorted_chrono_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 
         let mut keys = self.key_tree.keys_intersecting_bounds(bounds);

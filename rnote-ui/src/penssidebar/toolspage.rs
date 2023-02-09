@@ -1,25 +1,24 @@
-use crate::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
-use rnote_engine::pens::tools::ToolsStyle;
+use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
+
+use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
     use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
-    pub struct ToolsPage {
+    pub(crate) struct RnToolsPage {
         #[template_child]
-        pub toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
+        pub(crate) toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub toolstyle_dragproximity_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
+        pub(crate) toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ToolsPage {
-        const NAME: &'static str = "ToolsPage";
-        type Type = super::ToolsPage;
+    impl ObjectSubclass for RnToolsPage {
+        const NAME: &'static str = "RnToolsPage";
+        type Type = super::RnToolsPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -31,88 +30,85 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ToolsPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+    impl ObjectImpl for RnToolsPage {
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
     }
 
-    impl WidgetImpl for ToolsPage {}
+    impl WidgetImpl for RnToolsPage {}
 }
 
 glib::wrapper! {
-    pub struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
+    pub(crate) struct RnToolsPage(ObjectSubclass<imp::RnToolsPage>)
         @extends gtk4::Widget;
 }
 
-impl Default for ToolsPage {
+impl Default for RnToolsPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl ToolsPage {
-    pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create ToolsPage")
+impl RnToolsPage {
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
-    pub fn toolstyle_verticalspace_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_verticalspace_toggle.get()
-    }
+    #[allow(unused)]
+    pub(crate) fn tool_style(&self) -> Option<ToolStyle> {
+        let imp = self.imp();
 
-    pub fn toolstyle_dragproximity_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_dragproximity_toggle.get()
-    }
-
-    pub fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_offsetcamera_toggle.get()
-    }
-
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.toolstyle_verticalspace_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
-            if toolstyle_verticalspace_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::VerticalSpace;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
-                }
-            }
-        }));
-
-        self.toolstyle_dragproximity_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
-            if toolstyle_dragproximity_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::DragProximity;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
-                }
-            }
-        }));
-
-        self.toolstyle_offsetcamera_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
-            if toolstyle_offsetcamera_toggle.is_active() {
-                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::OffsetCamera;
-
-                if let Err(e) = appwindow.save_engine_config() {
-                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
-                }
-            }
-        }));
-    }
-
-    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
-        let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
-
-        match tools.style {
-            ToolsStyle::VerticalSpace => self.toolstyle_verticalspace_toggle().set_active(true),
-            ToolsStyle::DragProximity => self.toolstyle_dragproximity_toggle().set_active(true),
-            ToolsStyle::OffsetCamera => self.toolstyle_offsetcamera_toggle().set_active(true),
+        if imp.toolstyle_verticalspace_toggle.is_active() {
+            Some(ToolStyle::VerticalSpace)
+        } else if imp.toolstyle_offsetcamera_toggle.is_active() {
+            Some(ToolStyle::OffsetCamera)
+        } else {
+            None
         }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_tool_style(&self, style: ToolStyle) {
+        let imp = self.imp();
+
+        match style {
+            ToolStyle::VerticalSpace => imp.toolstyle_verticalspace_toggle.set_active(true),
+            ToolStyle::OffsetCamera => imp.toolstyle_offsetcamera_toggle.set_active(true),
+        }
+    }
+
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+
+        imp.toolstyle_verticalspace_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
+            if toolstyle_verticalspace_toggle.is_active() {
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::VerticalSpace;
+            }
+        }));
+
+        imp.toolstyle_offsetcamera_toggle.connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
+            if toolstyle_offsetcamera_toggle.is_active() {
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
+            }
+        }));
+    }
+
+    pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {
+        let tools_config = active_tab
+            .canvas()
+            .engine()
+            .borrow()
+            .pens_config
+            .tools_config
+            .clone();
+
+        self.set_tool_style(tools_config.style);
     }
 }

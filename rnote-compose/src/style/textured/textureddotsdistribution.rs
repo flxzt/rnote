@@ -1,5 +1,6 @@
 use std::ops::Range;
 
+use anyhow::Context;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
 
@@ -36,11 +37,8 @@ impl TryFrom<u32> for TexturedDotsDistribution {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "TexturedDotsDistribution try_from::<u32>() for value {} failed",
-                value
-            )
+        num_traits::FromPrimitive::from_u32(value).with_context(|| {
+            format!("TexturedDotsDistribution try_from::<u32>() for value {value} failed",)
         })
     }
 }
@@ -55,7 +53,7 @@ impl TexturedDotsDistribution {
         let sample = match self {
             Self::Uniform => rand_distr::Uniform::from(range.clone()).sample(rng),
             Self::Normal => {
-                // setting the mean to the mid of the range
+                // the mean to the mid of the range
                 let mean = (range.end + range.start) * 0.5;
                 // the standard deviation
                 let std_dev = ((range.end - range.start) * 0.5) / 3.0;

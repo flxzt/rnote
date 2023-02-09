@@ -1,19 +1,20 @@
 use gtk4::{gio, glib, prelude::*, Widget};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 
+/// File types supported by Rnote
 #[derive(Debug)]
-pub enum FileType {
+pub(crate) enum FileType {
     Folder,
     RnoteFile,
-    XoppFile,
     VectorImageFile,
     BitmapImageFile,
+    XoppFile,
     PdfFile,
     Unsupported,
 }
 
 impl FileType {
-    pub fn lookup_file_type(file: &gio::File) -> Self {
+    pub(crate) fn lookup_file_type(file: &gio::File) -> Self {
         if let Ok(info) = file.query_info(
             "standard::*",
             gio::FileQueryInfoFlags::NONE,
@@ -26,15 +27,14 @@ impl FileType {
                             "application/rnote" => {
                                 return Self::RnoteFile;
                             }
-                            "application/x-xopp" => {
-                                log::debug!(" is a xopp file ");
-                                return Self::XoppFile;
-                            }
                             "image/svg+xml" => {
                                 return Self::VectorImageFile;
                             }
                             "image/png" | "image/jpeg" => {
                                 return Self::BitmapImageFile;
+                            }
+                            "application/x-xopp" => {
+                                return Self::XoppFile;
                             }
                             "application/pdf" => {
                                 return Self::PdfFile;
@@ -62,8 +62,17 @@ impl FileType {
                     "rnote" => {
                         return Self::RnoteFile;
                     }
+                    "svg" => {
+                        return Self::VectorImageFile;
+                    }
+                    "jpg" | "jpeg" | "png" => {
+                        return Self::BitmapImageFile;
+                    }
                     "xopp" => {
                         return Self::XoppFile;
+                    }
+                    "pdf" => {
+                        return Self::PdfFile;
                     }
                     _ => {}
                 }
@@ -76,12 +85,25 @@ impl FileType {
     }
 }
 
-/// Translates a AABB to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
-pub fn translate_aabb_to_widget(
-    aabb: AABB,
+pub(crate) fn is_goutputstream_file(file: &gio::File) -> bool {
+    if let Some(path) = file.path() {
+        if let Some(file_name) = path.file_name() {
+            if String::from(file_name.to_string_lossy()).starts_with(".goutputstream-") {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+/// Translates a Aabb to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
+#[allow(unused)]
+pub(crate) fn translate_aabb_to_widget(
+    aabb: Aabb,
     widget: &impl IsA<Widget>,
     dest_widget: &impl IsA<Widget>,
-) -> Option<AABB> {
+) -> Option<Aabb> {
     let mins = {
         let coords = widget.translate_coordinates(dest_widget, aabb.mins[0], aabb.mins[1])?;
         na::point![coords.0, coords.1]
@@ -90,44 +112,52 @@ pub fn translate_aabb_to_widget(
         let coords = widget.translate_coordinates(dest_widget, aabb.maxs[0], aabb.maxs[1])?;
         na::point![coords.0, coords.1]
     };
-    Some(AABB::new(mins, maxs))
+    Some(Aabb::new(mins, maxs))
 }
 
 /// Create a new file or replace if it already exists, asynchronously
-pub async fn create_replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
+pub(crate) async fn create_replace_file_future(
+    bytes: Vec<u8>,
+    file: &gio::File,
+) -> anyhow::Result<()> {
     let output_stream = file
         .replace_future(
             None,
             false,
             gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::PRIORITY_HIGH_IDLE,
+            glib::PRIORITY_HIGH,
         )
         .await
         .map_err(|e| {
             anyhow::anyhow!(
-                "file replace_future() failed in create_replace_file_future(), Err {}",
-                e
+                "file replace_future() failed in create_replace_file_future(), Err: {e:?}"
             )
         })?;
 
     output_stream
-        .write_all_future(bytes, glib::PRIORITY_HIGH_IDLE)
+        .write_all_future(bytes, glib::PRIORITY_HIGH)
         .await
         .map_err(|(_, e)| {
             anyhow::anyhow!(
-                "output_stream write_all_future() failed in create_replace_file_future(), Err {}",
-                e
+                "output_stream write_all_future() failed in create_replace_file_future(), Err: {e:?}"
             )
         })?;
     output_stream
-        .close_future(glib::PRIORITY_HIGH_IDLE)
+        .close_future(glib::PRIORITY_HIGH)
         .await
         .map_err(|e| {
             anyhow::anyhow!(
-                "output_stream close_future() failed in create_replace_file_future(), Err {}",
-                e
+                "output_stream close_future() failed in create_replace_file_future(), Err: {e:?}"
             )
         })?;
 
     Ok(())
+}
+
+pub(crate) fn str_from_u8_nul_utf8(utf8_src: &[u8]) -> Result<&str, std::str::Utf8Error> {
+    let nul_range_end = utf8_src
+        .iter()
+        .position(|&c| c == b'\0')
+        .unwrap_or(utf8_src.len()); // default to length if no `\0` present
+    std::str::from_utf8(&utf8_src[0..nul_range_end])
 }

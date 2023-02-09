@@ -4,25 +4,25 @@ use crate::settingspanel::penshortcutmodels::{
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{glib, glib::clone, glib::subclass::*, CheckButton, CompositeTemplate};
 use once_cell::sync::Lazy;
-use rnote_compose::penhelpers::ShortcutKey;
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::pens::shortcuts::ShortcutAction;
+use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
 mod imp {
     use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penshortcutrow.ui")]
-    pub struct PenShortcutRow {
-        pub key: RefCell<Option<ShortcutKey>>,
-        pub action: RefCell<ShortcutAction>,
-        pub changepenstyle_model: ChangePenStyleListModel,
+    pub(crate) struct RnPenShortcutRow {
+        pub(crate) key: RefCell<Option<ShortcutKey>>,
+        pub(crate) action: RefCell<ShortcutAction>,
+        pub(crate) changepenstyle_model: ChangePenStyleListModel,
 
         #[template_child]
-        pub permanent_checker: TemplateChild<CheckButton>,
+        pub(crate) permanent_checker: TemplateChild<CheckButton>,
     }
 
-    impl Default for PenShortcutRow {
+    impl Default for RnPenShortcutRow {
         fn default() -> Self {
             Self {
                 key: RefCell::new(None),
@@ -37,9 +37,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for PenShortcutRow {
-        const NAME: &'static str = "PenShortcutRow";
-        type Type = super::PenShortcutRow;
+    impl ObjectSubclass for RnPenShortcutRow {
+        const NAME: &'static str = "RnPenShortcutRow";
+        type Type = super::RnPenShortcutRow;
         type ParentType = adw::ComboRow;
         type Interfaces = ();
 
@@ -52,18 +52,20 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for PenShortcutRow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+    impl ObjectImpl for RnPenShortcutRow {
+        fn constructed(&self) {
+            let inst = self.instance();
+
+            self.parent_constructed();
 
             let list_factory = ChangePenStyleListFactory::default();
             let icon_factory = ChangePenStyleIconFactory::default();
 
-            obj.set_model(Some(&*self.changepenstyle_model));
-            obj.set_list_factory(Some(&*list_factory));
-            obj.set_factory(Some(&*icon_factory));
+            inst.set_model(Some(&*self.changepenstyle_model));
+            inst.set_list_factory(Some(&*list_factory));
+            inst.set_factory(Some(&*icon_factory));
 
-            obj.connect_selected_item_notify(move |obj| {
+            inst.connect_selected_item_notify(move |obj| {
                 if let Some(selected_item) = obj.selected_item() {
                     let new_pen_style = PenStyle::try_from(
                         selected_item
@@ -86,75 +88,75 @@ mod imp {
             });
 
             self.permanent_checker.get().connect_toggled(
-                clone!(@weak obj => move |permanent_checker| {
-                    match &mut *obj.imp().action.borrow_mut() {
+                clone!(@weak inst as penshortcutrow => move |permanent_checker| {
+                    match &mut *penshortcutrow.imp().action.borrow_mut() {
                         ShortcutAction::ChangePenStyle { style: _, ref mut permanent } => {
                             *permanent = permanent_checker.is_active();
                         }
                     }
-                    obj.emit_by_name::<()>("action-changed", &[]);
+                    penshortcutrow.emit_by_name::<()>("action-changed", &[]);
                 }),
             );
 
-            obj.connect_local(
+            inst.connect_local(
                 "key-changed",
                 false,
-                clone!(@weak obj => @default-return None, move |_values| {
-                    obj.update_ui();
+                clone!(@weak inst as penshortcutrow => @default-return None, move |_values| {
+                    penshortcutrow.update_ui();
                     None
                 }),
             );
 
-            obj.connect_local(
+            inst.connect_local(
                 "action-changed",
                 false,
-                clone!(@weak obj => @default-return None, move |_values| {
-                    obj.update_ui();
+                clone!(@weak inst as penshortcutrow => @default-return None, move |_values| {
+                    penshortcutrow.update_ui();
                     None
                 }),
             );
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
         fn signals() -> &'static [Signal] {
             static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
                 vec![
-                    Signal::builder("key-changed", &[], <()>::static_type().into()).build(),
-                    Signal::builder("action-changed", &[], <()>::static_type().into()).build(),
+                    Signal::builder("key-changed").build(),
+                    Signal::builder("action-changed").build(),
                 ]
             });
             SIGNALS.as_ref()
         }
     }
 
-    impl WidgetImpl for PenShortcutRow {}
-    impl ListBoxRowImpl for PenShortcutRow {}
-    impl PreferencesRowImpl for PenShortcutRow {}
-    impl ActionRowImpl for PenShortcutRow {}
-    impl ComboRowImpl for PenShortcutRow {}
+    impl WidgetImpl for RnPenShortcutRow {}
+    impl ListBoxRowImpl for RnPenShortcutRow {}
+    impl PreferencesRowImpl for RnPenShortcutRow {}
+    impl ActionRowImpl for RnPenShortcutRow {}
+    impl ComboRowImpl for RnPenShortcutRow {}
 
-    impl PenShortcutRow {}
+    impl RnPenShortcutRow {}
 }
 
 glib::wrapper! {
-    pub struct PenShortcutRow(ObjectSubclass<imp::PenShortcutRow>)
+    pub(crate) struct RnPenShortcutRow(ObjectSubclass<imp::RnPenShortcutRow>)
         @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
 }
 
-impl PenShortcutRow {
+impl RnPenShortcutRow {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        glib::Object::new(&[]).unwrap()
+    #[allow(unused)]
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
     fn update_ui(&self) {
-        let action = self.action();
-        match action {
+        match self.action() {
             ShortcutAction::ChangePenStyle { style, permanent } => {
                 self.set_selected(self.imp().changepenstyle_model.find_position(style as i32));
                 self.imp().permanent_checker.set_active(permanent);
@@ -162,20 +164,24 @@ impl PenShortcutRow {
         }
     }
 
-    pub fn key(&self) -> Option<ShortcutKey> {
+    #[allow(unused)]
+    pub(crate) fn key(&self) -> Option<ShortcutKey> {
         *self.imp().key.borrow()
     }
 
-    pub fn set_key(&self, key: Option<ShortcutKey>) {
+    #[allow(unused)]
+    pub(crate) fn set_key(&self, key: Option<ShortcutKey>) {
         *self.imp().key.borrow_mut() = key;
         self.emit_by_name::<()>("key-changed", &[]);
     }
 
-    pub fn action(&self) -> ShortcutAction {
+    #[allow(unused)]
+    pub(crate) fn action(&self) -> ShortcutAction {
         *self.imp().action.borrow()
     }
 
-    pub fn set_action(&self, action: ShortcutAction) {
+    #[allow(unused)]
+    pub(crate) fn set_action(&self, action: ShortcutAction) {
         *self.imp().action.borrow_mut() = action;
         self.emit_by_name::<()>("action-changed", &[]);
     }

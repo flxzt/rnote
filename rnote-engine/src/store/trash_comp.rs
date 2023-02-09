@@ -1,9 +1,9 @@
+use super::chrono_comp::StrokeLayer;
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
 use crate::WidgetFlags;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use rnote_compose::penpath::Segment;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::PenPath;
 use serde::{Deserialize, Serialize};
@@ -24,6 +24,15 @@ impl Default for TrashComponent {
 
 /// Systems that are related trashing
 impl StrokeStore {
+    /// Rebuilds the slotmap with default trash components from the keys returned from the primary map, stroke_components.
+    pub fn rebuild_trash_components_slotmap(&mut self) {
+        self.trash_components = Arc::new(slotmap::SecondaryMap::new());
+        self.stroke_components.keys().for_each(|key| {
+            Arc::make_mut(&mut self.trash_components)
+                .insert(key, Arc::new(TrashComponent::default()));
+        });
+    }
+
     pub fn can_trash(&self, key: StrokeKey) -> bool {
         self.trash_components.get(key).is_some()
     }
@@ -78,7 +87,7 @@ impl StrokeStore {
     }
 
     /// trash strokes that collide with the given bounds
-    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) -> WidgetFlags {
+    pub fn trash_colliding_strokes(&mut self, eraser_bounds: Aabb, viewport: Aabb) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
@@ -100,21 +109,16 @@ impl StrokeStore {
                                 }
                             }
                         }
-                        Stroke::TextStroke(_textstroke) => {
-                            // Ignore text strokes when trashing with the Eraser
-                        }
-                        Stroke::VectorImage(_vectorimage) => {
-                            // Ignore vector images when trashing with the Eraser
-                        }
-                        Stroke::BitmapImage(_bitmapimage) => {
-                            // Ignore bitmap images when trashing with the Eraser
+                        // Ignore other strokes when trashing with the Eraser
+                        Stroke::TextStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
                         }
                     }
                 }
 
                 if trash_current_stroke {
-                    widget_flags.merge_with_other(self.record());
                     self.set_trashed(key, true);
+                    widget_flags.store_modified = true;
+                    widget_flags.resize = true;
                 }
             });
 
@@ -126,21 +130,24 @@ impl StrokeStore {
     /// returned strokes need to update their rendering.
     pub fn split_colliding_strokes(
         &mut self,
-        eraser_bounds: AABB,
-        viewport: AABB,
-    ) -> Vec<StrokeKey> {
+        eraser_bounds: Aabb,
+        viewport: Aabb,
+    ) -> (Vec<StrokeKey>, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
         let mut modified_keys = vec![];
 
         let new_strokes = self
             .stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .flat_map(|key| {
-                let stroke = match Arc::make_mut(&mut self.stroke_components)
+                let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                     .get_mut(key)
-                    .map(Arc::make_mut)
-                {
-                    Some(stroke) => stroke,
-                    None => return vec![],
+                    .map(Arc::make_mut) else {
+                    return vec![]
+                };
+
+                let Some(chrono_comp) = self.chrono_components.get(key) else {
+                    return vec![]
                 };
 
                 let mut new_strokes = vec![];
@@ -150,56 +157,58 @@ impl StrokeStore {
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
-                            let stroke_width = brushstroke.style.stroke_width();
-                            brushstroke.path.make_contiguous();
+                            let mut splitted = Vec::new();
 
-                            let split_segments = brushstroke
+                            let mut hits = brushstroke
                                 .path
-                                .as_slices()
-                                .0
-                                .split(|segment| {
-                                    segment.hitboxes().iter().any(|hitbox| {
-                                        // The hitboxes of the individual segments need to be loosened with the style stroke width
-                                        hitbox
-                                            .loosened(stroke_width * 0.5)
-                                            .intersects(&eraser_bounds)
-                                    })
-                                })
-                                .collect::<Vec<&[Segment]>>();
+                                .hittest(&eraser_bounds, brushstroke.style.stroke_width() * 0.5)
+                                .into_iter();
 
-                            // If this is met, we intersect with the stroke but we cant form any new split strokes, so we trash it ( e.g. strokes that only have a single element )
-                            if split_segments.iter().all(|segments| segments.is_empty()) {
-                                trash_current_stroke = true;
-                            } else {
-                                // Filter out all empty paths
-                                let mut split_penpaths = split_segments
-                                    .into_iter()
-                                    .filter_map(|segments| {
-                                        let split_penpath =
-                                            PenPath::from_iter(segments.iter().cloned());
+                            if let Some(first_hit) = hits.next() {
+                                let mut prev = first_hit;
+                                for hit in hits {
+                                    let split = &brushstroke.path.segments[prev..hit];
 
-                                        if split_penpath.is_empty() {
-                                            None
-                                        } else {
-                                            Some(split_penpath)
-                                        }
-                                    })
-                                    .collect::<Vec<PenPath>>();
-
-                                if let Some(last_penpath) = split_penpaths.pop() {
-                                    for split_penpath in split_penpaths {
-                                        if let Some(new_brushstroke) = BrushStroke::from_penpath(
-                                            split_penpath,
-                                            brushstroke.style.clone(),
-                                        ) {
-                                            new_strokes.push(Stroke::BrushStroke(new_brushstroke));
-                                        }
+                                    // skip splits that don't have at least two segments (one's end as path start, one additional)
+                                    if split.len() > 1 {
+                                        splitted.push(split.to_vec());
                                     }
 
-                                    // reusing the current brushstroke by replacing its path with the last new path
-                                    brushstroke.replace_path(last_penpath);
-                                    modified_keys.push(key);
+                                    prev = hit;
                                 }
+
+                                // Catch the last
+                                let last_split = &brushstroke.path.segments[prev..];
+                                if last_split.len() > 1 {
+                                    splitted.push(last_split.to_vec());
+                                }
+
+                                for next_split in splitted {
+                                    let mut next_split_iter = next_split.into_iter();
+                                    let next_start = next_split_iter.next().unwrap().end();
+
+                                    new_strokes.push((
+                                        Stroke::BrushStroke(BrushStroke::from_penpath(
+                                            PenPath::new_w_segments(next_start, next_split_iter),
+                                            brushstroke.style.clone(),
+                                        )),
+                                        chrono_comp.layer,
+                                    ));
+                                }
+
+                                let first_split = &brushstroke.path.segments[..first_hit];
+                                // Modify the original stroke at the end.
+                                // We keep the start, so we only need at least one segment
+                                if !first_split.is_empty() {
+                                    brushstroke.replace_path(PenPath::new_w_segments(
+                                        brushstroke.path.start,
+                                        first_split.to_vec(),
+                                    ));
+                                } else {
+                                    trash_current_stroke = true;
+                                }
+
+                                modified_keys.push(key);
                             }
                         }
                     }
@@ -208,36 +217,37 @@ impl StrokeStore {
                             for hitbox_elem in stroke.hitboxes().iter() {
                                 if eraser_bounds.intersects(hitbox_elem) {
                                     trash_current_stroke = true;
+                                    modified_keys.push(key);
                                 }
                             }
                         }
                     }
-                    Stroke::TextStroke(_textstroke) => {
-                        // Ignore text strokes when trashing with the Eraser
-                    }
-                    Stroke::VectorImage(_vectorimage) => {
-                        // Ignore vector images when trashing with the Eraser
-                    }
-                    Stroke::BitmapImage(_bitmapimage) => {
-                        // Ignore bitmap images when trashing with the Eraser
-                    }
+                    // Ignore other strokes when trashing with the Eraser
+                    Stroke::TextStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {}
                 }
 
                 if trash_current_stroke {
                     self.set_trashed(key, true);
+                    widget_flags.store_modified = true;
+                    widget_flags.resize = true;
                 }
 
                 new_strokes
             })
-            .collect::<Vec<Stroke>>();
+            .collect::<Vec<(Stroke, StrokeLayer)>>();
 
         modified_keys.append(
             &mut new_strokes
                 .into_iter()
-                .map(|new_stroke| self.insert_stroke(new_stroke, None))
+                .map(|(new_stroke, layer)| self.insert_stroke(new_stroke, Some(layer)))
                 .collect(),
         );
 
-        modified_keys
+        if !modified_keys.is_empty() {
+            widget_flags.store_modified = true;
+            widget_flags.resize = true;
+        }
+
+        (modified_keys, widget_flags)
     }
 }

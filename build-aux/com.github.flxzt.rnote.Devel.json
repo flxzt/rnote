@@ -1,0 +1,97 @@
+{
+  "id": "com.github.flxzt.rnote.Devel",
+  "tags": [
+    "development"
+  ],
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "43",
+  "sdk": "org.gnome.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable",
+    "org.freedesktop.Sdk.Extension.llvm14"
+  ],
+  "command": "rnote",
+  "finish-args": [
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--device=dri",
+    "--share=ipc",
+    "--socket=pulseaudio",
+    "--filesystem=xdg-documents",
+    "--filesystem=xdg-pictures",
+    "--filesystem=xdg-desktop",
+    "--filesystem=xdg-run/gvfs",
+    "--filesystem=xdg-run/gvfsd",
+    "--env=RUST_BACKTRACE=full",
+    "--env=RUST_LOG=rnote=debug",
+    "--env=G_MESSAGES_DEBUG=all",
+    "--env=GTK_PATH=/app/lib/gtk-4.0",
+    "--env=GST_DEBUG=3"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm14/bin",
+    "env": {
+      "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "clang",
+      "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold",
+      "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER": "clang",
+      "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
+    },
+    "build-args": [
+      "--share=network"
+    ],
+    "test-args": [
+      "--socket=x11",
+      "--share=network"
+    ],
+    "prepend-ld-library-path": "/usr/lib/sdk/llvm14/lib"
+  },
+  "modules": [
+    {
+      "name": "poppler",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_CXX_STANDARD=17",
+        "-DCMAKE_POSITION_INDEPENDENT_CODE=ON",
+        "-DCMAKE_INSTALL_LIBDIR=/app/lib",
+        "-DCMAKE_INSTALL_INCLUDEDIR=/app/include",
+        "-DENABLE_BOOST=OFF",
+        "-DENABLE_LIBOPENJPEG=none"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://poppler.freedesktop.org/poppler-22.12.0.tar.xz",
+          "sha256": "d9aa9cacdfbd0f8e98fc2b3bb008e645597ed480685757c3e7bc74b4278d15c0"
+        }
+      ]
+    },
+    {
+      "name": "poppler-data",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://poppler.freedesktop.org/poppler-data-0.4.11.tar.gz",
+          "sha256": "2cec05cd1bb03af98a8b06a1e22f6e6e1a65b1e2f3816cb3069bb0874825f08c"
+        }
+      ]
+    },
+    {
+      "name": "rnote",
+      "buildsystem": "meson",
+      "run-tests": true,
+      "config-opts": [
+        "-Dprofile=devel"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "../"
+        }
+      ]
+    }
+  ]
+}

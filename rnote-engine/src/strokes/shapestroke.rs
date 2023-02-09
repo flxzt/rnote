@@ -9,7 +9,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -21,14 +21,14 @@ pub struct ShapeStroke {
     pub style: Style,
     #[serde(skip)]
     // since the shape can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
-    hitboxes: Vec<AABB>,
+    hitboxes: Vec<Aabb>,
 }
 
 impl StrokeBehaviour for ShapeStroke {
     fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
         let bounds = self.bounds();
 
-        render::Svg::gen_with_piet_svg_backend_no_text(
+        render::Svg::gen_with_piet_cairo_backend(
             |cx| {
                 cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
                 self.draw(cx, 1.0)
@@ -39,7 +39,7 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -72,17 +72,17 @@ impl StrokeBehaviour for ShapeStroke {
 
 impl DrawBehaviour for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         self.shape.draw_composed(cx, &self.style);
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
 impl ShapeBehaviour for ShapeStroke {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match &self.style {
             Style::Smooth(options) => self.shape.composed_bounds(options),
             Style::Rough(options) => self.shape.composed_bounds(options),
@@ -90,19 +90,19 @@ impl ShapeBehaviour for ShapeStroke {
         }
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.hitboxes.clone()
     }
 }
 
 impl TransformBehaviour for ShapeStroke {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.shape.translate(offset);
     }
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.shape.rotate(angle, center);
     }
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         self.shape.scale(scale);
     }
 }
@@ -123,7 +123,7 @@ impl ShapeStroke {
         self.hitboxes = self.gen_hitboxes();
     }
 
-    fn gen_hitboxes(&self) -> Vec<AABB> {
+    fn gen_hitboxes(&self) -> Vec<Aabb> {
         let width = self.style.stroke_width();
 
         self.shape

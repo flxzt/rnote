@@ -1,44 +1,52 @@
 [package]
 name = "rnote"
-version = "0.5.7"
+version = "0.5.13"
 edition = "2021"
 rust-version = "1.65"
+build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+anyhow = "1.0"
+
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
 
 [dependencies]
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-engine = {path = "../rnote-engine", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-piet = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-piet-svg = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-piet-cairo = { git = "https://github.com/flxzt/piet", branch = "rnote" }
-
-log = "0.4.16"
-pretty_env_logger = "0.4.0"
-num-derive = "0.3.3"
-num-traits = "0.2.14"
-once_cell = "1.8"
-rand = "0.8.5"
-rand_pcg = "0.3.1"
-rand_distr = "0.4.3"
-anyhow = "1.0"
-serde = {version = "1.0", features = ["derive", "rc"]}
-serde_json = { version="1.0" }
-futures = "0.3.21"
-rayon = "1.5"
-nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
-parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
-gtk4 = {version = "0.4.8", features = ["v4_8"]}
-adw = {version = "0.2.0-alpha.2", package="libadwaita", features = ["v1_2"]}
-cairo-rs = {version = "0.15.12", features = ["png", "svg", "pdf"]}
-poppler-rs = {version = "0.19.0", features = ["v21_12"] }
-svg = "0.10.0"
-image = "0.23.14"
-gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
-kurbo = "0.8.3"
-url = "2.2.2"
-unicode-segmentation = "1.9.0"
-fs_extra = "1.2.0"
-regex = "1.6.0"
+log = "0.4"
+pretty_env_logger = "0.4"
+num-derive = "0.3"
+num-traits = "0.2"
+once_cell = "1"
+rand = "0.8"
+rand_pcg = "0.3"
+rand_distr = "0.4"
+anyhow = "1"
+serde = {version = "1", features = ["derive", "rc"]}
+serde_json = { version="1" }
+futures = "0.3"
+rayon = "1"
+nalgebra = { version = "0.31", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.12", features = ["serde-serialize"] }
+gtk4 = {version = "0.5", features = ["xml_validation", "v4_8"]}
+adw = {version = "0.2", package="libadwaita", features = ["v1_2"]}
+cairo-rs = {version = "0.16", features = ["png", "svg", "pdf"]}
+# newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
+poppler-rs = {version = "0.20", features = ["v20_9"] }
+svg = "0.13"
+image = "0.23"
+piet = "0.6"
+piet-cairo = "0.6"
+kurbo = "0.9"
+url = "2"
+unicode-segmentation = "1"
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+fs_extra = "1"
+same-file = "1"
+regex = "1"
+directories = "4"

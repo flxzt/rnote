@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="WorkspaceBrowser" parent="GtkWidget">
+  <template class="RnWorkspaceBrowser" parent="GtkWidget">
     <property name="hexpand">false</property>
     <property name="vexpand">true</property>
     <property name="valign">fill</property>
@@ -30,54 +30,44 @@
                   <class name="view"></class>
                 </style>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="dir_controls_box">
                     <property name="orientation">horizontal</property>
                     <property name="hexpand">true</property>
                     <property name="margin-top">6</property>
                     <property name="margin-bottom">3</property>
+                    <property name="margin-start">6</property>
+                    <property name="margin-end">6</property>
+                    <property name="spacing">6</property>
                     <child>
-                      <object class="GtkListBox" id="files_prefix_listbox">
-                        <property name="selection-mode">none</property>
-                        <property name="activate-on-single-click">false</property>
-                        <property name="hexpand">true</property>
+                      <object class="GtkButton" id="dir_controls_dir_up_button">
+                        <property name="tooltip_text" translatable="yes">Move Directory up</property>
                         <property name="halign">fill</property>
-                        <style>
-                          <class name="files-prefix-listbox"></class>
-                        </style>
+                        <property name="hexpand">true</property>
                         <child>
-                          <object class="GtkListBoxRow" id="dir_up_row">
-                            <property name="tooltip_text" translatable="yes">Move directory up</property>
-                            <child>
-                              <object class="GtkBox">
-                                <property name="halign">start</property>
-                                <property name="hexpand">true</property>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="margin-top">3</property>
-                                    <property name="margin-bottom">3</property>
-                                    <property name="margin-start">12</property>
-                                    <property name="margin-end">12</property>
-                                    <property name="halign">start</property>
-                                    <property name="label">‥</property>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
+                          <object class="GtkLabel">
+                            <property name="label">‥</property>
+                            <property name="halign">start</property>
+                            <property name="hexpand">false</property>
+                            <style>
+                              <class name="caption" />
+                            </style>
                           </object>
                         </child>
+                        <style>
+                          <class name="flat" />
+                        </style>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkBox" id="workspace_dir_actions_box">
+                      <object class="GtkBox" id="dir_controls_actions_box">
                         <property name="orientation">horizontal</property>
-                        <property name="margin-end">14</property>
+                        <property name="margin-end">7</property>
                         <child>
-                          <object class="GtkMenuButton" id="workspace_dir_actions_button">
-                            <property name="name">workspace_dir_actions_button</property>
+                          <object class="GtkMenuButton" id="dir_controls_actions_menubutton">
                             <property name="direction">down</property>
-                            <property name="icon_name">canvasmenu-symbolic</property>
-                            <property name="popover">workspace_dir_actions_popover</property>
-                            <property name="tooltip_text" translatable="yes">Workspace directory actions</property>
+                            <property name="icon_name">dir-actions-symbolic</property>
+                            <property name="popover">dir_controls_actions_popover</property>
+                            <property name="tooltip_text" translatable="yes">Workspace Directory Actions</property>
                             <style>
                               <class name="flat" />
                             </style>
@@ -114,86 +104,22 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox" id="workspace_bar">
-            <property name="orientation">vertical</property>
+          <object class="RnWorkspacesBar" id="workspacesbar">
             <layout>
               <property name="column">2</property>
               <property name="row">0</property>
             </layout>
-            <child>
-              <object class="GtkScrolledWindow" id="workspace_scroller">
-                <property name="propagate-natural-width">false</property>
-                <property name="propagate-natural-height">false</property>
-                <property name="vexpand">true</property>
-                <property name="valign">fill</property>
-                <property name="halign">fill</property>
-                <property name="hscrollbar-policy">never</property>
-                <child>
-                  <object class="GtkListBox" id="workspace_listbox">
-                    <property name="vexpand">true</property>
-                    <property name="valign">fill</property>
-                    <property name="halign">fill</property>
-                    <property name="show-separators">true</property>
-                    <property name="selection-mode">single</property>
-                    <style>
-                      <class name="background" />
-                      <class name="workspace-listbox" />
-                    </style>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSeparator">
-                <property name="orientation">vertical</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <property name="margin-bottom">6</property>
-                <property name="margin-start">6</property>
-                <property name="margin-end">6</property>
-                <property name="halign">fill</property>
-                <property name="valign">end</property>
-                <child>
-                  <object class="GtkButton" id="add_workspace_button">
-                    <property name="icon_name">plus-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Add workspace</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="remove_workspace_button">
-                    <property name="icon_name">trash-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Remove workspace</property>
-                    <style>
-                      <class name="destructive-action" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="edit_workspace_button">
-                    <property name="icon-name">edit-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Edit workspace</property>
-                  </object>
-                </child>
-              </object>
-            </child>
           </object>
         </child>
       </object>
     </child>
-    <object class="GtkPopoverMenu" id="workspace_dir_actions_popover">
-      <property name="name">workspace_dir_actions_popover</property>
+    <object class="GtkPopoverMenu" id="dir_controls_actions_popover">
       <property name="menu-model">workspace_dir_actions_menu_model</property>
       <menu id="workspace_dir_actions_menu_model">
         <section>
           <item>
-            <attribute name="label" translatable="yes">Create Directory</attribute>
-            <attribute name="action">workspace_action.create-dir</attribute>
+            <attribute name="label" translatable="yes">Create new Folder</attribute>
+            <attribute name="action">workspacebrowser.create-folder</attribute>
           </item>
         </section>
       </menu>

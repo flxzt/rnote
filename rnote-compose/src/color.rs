@@ -1,10 +1,10 @@
-#[allow(unused)]
-use rnote_fileformats::xoppformat;
-
 use serde::{Deserialize, Serialize};
 
+/// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
+pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
+
 /// A rgba color
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(default, rename = "color")]
 pub struct Color {
     /// red, ranging [0.0, 1.0]
@@ -86,28 +86,8 @@ impl Color {
         }
     }
 
-    /// Returns the red part
-    pub fn r(&self) -> f64 {
-        self.r
-    }
-
-    /// Returns the green part
-    pub fn g(&self) -> f64 {
-        self.g
-    }
-
-    /// Returns the blue part
-    pub fn b(&self) -> f64 {
-        self.b
-    }
-
-    /// Returns the alpha part
-    pub fn a(&self) -> f64 {
-        self.a
-    }
-
     /// The luma value, in range [0.0 - 1.0]
-    /// see: https://en.wikipedia.org/wiki/Luma_(video)
+    /// see: <https://en.wikipedia.org/wiki/Luma_(video)>
     pub fn luma(&self) -> f64 {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
     }
@@ -115,7 +95,7 @@ impl Color {
     /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`. The values are 8 bit integers, ranging [0, 255]
     pub fn to_css_color_attr(self) -> String {
         format!(
-            "rgb({:03},{:03},{:03},{:.3})",
+            "rgba({:03},{:03},{:03},{:.3})",
             (self.r * 255.0) as i32,
             (self.g * 255.0) as i32,
             (self.b * 255.0) as i32,
@@ -179,25 +159,20 @@ impl From<Color> for u32 {
     }
 }
 
-impl From<xoppformat::XoppColor> for Color {
-    fn from(xopp_color: xoppformat::XoppColor) -> Self {
+impl From<roughr::Srgba> for Color {
+    fn from(c: roughr::Srgba) -> Self {
         Self {
-            r: f64::from(xopp_color.red) / 255.0,
-            g: f64::from(xopp_color.green) / 255.0,
-            b: f64::from(xopp_color.blue) / 255.0,
-            a: f64::from(xopp_color.alpha) / 255.0,
+            r: c.blue as f64,
+            g: c.green as f64,
+            b: c.blue as f64,
+            a: c.alpha as f64,
         }
     }
 }
 
-impl From<Color> for xoppformat::XoppColor {
-    fn from(color: Color) -> Self {
-        xoppformat::XoppColor {
-            red: (color.r * 255.0).floor() as u8,
-            green: (color.g * 255.0).floor() as u8,
-            blue: (color.b * 255.0).floor() as u8,
-            alpha: (color.a * 255.0).floor() as u8,
-        }
+impl From<Color> for roughr::Srgba {
+    fn from(c: Color) -> Self {
+        roughr::Srgba::new(c.r as f32, c.g as f32, c.b as f32, c.a as f32)
     }
 }
 

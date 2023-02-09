@@ -8,3 +8,10 @@ option(
   value: 'default',
   description: 'The build profile for rnote. One of "default" or "devel".'
 )
+
+option(
+  'cli',
+  type: 'boolean',
+  value: false,
+  description: 'Build the cli'
+)

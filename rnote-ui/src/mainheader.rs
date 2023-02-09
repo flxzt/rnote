@@ -1,52 +1,42 @@
-use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
+use crate::{appmenu::RnAppMenu, appwindow::RnAppWindow, canvasmenu::RnCanvasMenu};
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Label, ToggleButton,
-    Widget,
+    glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, ToggleButton, Widget,
 };
-use rnote_engine::pens::penholder::PenStyle;
 
 mod imp {
     use super::*;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
-    pub struct MainHeader {
+    pub(crate) struct RnMainHeader {
         #[template_child]
-        pub headerbar: TemplateChild<adw::HeaderBar>,
+        pub(crate) headerbar: TemplateChild<adw::HeaderBar>,
         #[template_child]
-        pub main_title: TemplateChild<adw::WindowTitle>,
+        pub(crate) main_title: TemplateChild<adw::WindowTitle>,
         #[template_child]
-        pub main_title_unsaved_indicator: TemplateChild<Label>,
+        pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
-        pub menus_box: TemplateChild<gtk4::Box>,
+        pub(crate) fixedsize_quickactions_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
+        pub(crate) undo_button: TemplateChild<Button>,
         #[template_child]
-        pub pens_toggles_clamp: TemplateChild<adw::Clamp>,
+        pub(crate) redo_button: TemplateChild<Button>,
         #[template_child]
-        pub pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
+        pub(crate) left_flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub brush_toggle: TemplateChild<ToggleButton>,
+        pub(crate) right_flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub shaper_toggle: TemplateChild<ToggleButton>,
+        pub(crate) menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub typewriter_toggle: TemplateChild<ToggleButton>,
+        pub(crate) canvasmenu: TemplateChild<RnCanvasMenu>,
         #[template_child]
-        pub eraser_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub selector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub tools_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub canvasmenu: TemplateChild<CanvasMenu>,
-        #[template_child]
-        pub appmenu: TemplateChild<AppMenu>,
+        pub(crate) appmenu: TemplateChild<RnAppMenu>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for MainHeader {
-        const NAME: &'static str = "MainHeader";
-        type Type = super::MainHeader;
+    impl ObjectSubclass for RnMainHeader {
+        const NAME: &'static str = "RnMainHeader";
+        type Type = super::RnMainHeader;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -58,94 +48,77 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for MainHeader {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+    impl ObjectImpl for RnMainHeader {
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
     }
-    impl WidgetImpl for MainHeader {}
+    impl WidgetImpl for RnMainHeader {}
 }
 
 glib::wrapper! {
-    pub struct MainHeader(ObjectSubclass<imp::MainHeader>)
+    pub(crate) struct RnMainHeader(ObjectSubclass<imp::RnMainHeader>)
         @extends Widget;
 }
 
-impl Default for MainHeader {
+impl Default for RnMainHeader {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl MainHeader {
-    pub fn new() -> Self {
-        let mainheader: MainHeader = glib::Object::new(&[]).expect("Failed to create MainHeader");
-        mainheader
+impl RnMainHeader {
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
-    pub fn headerbar(&self) -> adw::HeaderBar {
-        self.imp().headerbar.get()
-    }
-
-    pub fn main_title(&self) -> adw::WindowTitle {
+    pub(crate) fn main_title(&self) -> adw::WindowTitle {
         self.imp().main_title.get()
     }
 
-    pub fn main_title_unsaved_indicator(&self) -> Label {
+    pub(crate) fn main_title_unsaved_indicator(&self) -> Label {
         self.imp().main_title_unsaved_indicator.get()
     }
 
-    pub fn menus_box(&self) -> gtk4::Box {
+    pub(crate) fn fixedsize_quickactions_box(&self) -> gtk4::Box {
+        self.imp().fixedsize_quickactions_box.get()
+    }
+
+    pub(crate) fn left_flapreveal_toggle(&self) -> ToggleButton {
+        self.imp().left_flapreveal_toggle.get()
+    }
+
+    pub(crate) fn right_flapreveal_toggle(&self) -> ToggleButton {
+        self.imp().right_flapreveal_toggle.get()
+    }
+
+    pub(crate) fn undo_button(&self) -> Button {
+        self.imp().undo_button.get()
+    }
+
+    pub(crate) fn redo_button(&self) -> Button {
+        self.imp().redo_button.get()
+    }
+
+    pub(crate) fn menus_box(&self) -> gtk4::Box {
         self.imp().menus_box.get()
     }
 
-    pub fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
-        self.imp().pens_toggles_placeholderbox.get()
-    }
-
-    pub fn pens_toggles_squeezer(&self) -> adw::Squeezer {
-        self.imp().pens_toggles_squeezer.get()
-    }
-
-    pub fn brush_toggle(&self) -> ToggleButton {
-        self.imp().brush_toggle.get()
-    }
-
-    pub fn shaper_toggle(&self) -> ToggleButton {
-        self.imp().shaper_toggle.get()
-    }
-
-    pub fn typewriter_toggle(&self) -> ToggleButton {
-        self.imp().typewriter_toggle.get()
-    }
-
-    pub fn eraser_toggle(&self) -> ToggleButton {
-        self.imp().eraser_toggle.get()
-    }
-
-    pub fn selector_toggle(&self) -> ToggleButton {
-        self.imp().selector_toggle.get()
-    }
-
-    pub fn tools_toggle(&self) -> ToggleButton {
-        self.imp().tools_toggle.get()
-    }
-
-    pub fn canvasmenu(&self) -> CanvasMenu {
+    pub(crate) fn canvasmenu(&self) -> RnCanvasMenu {
         self.imp().canvasmenu.get()
     }
 
-    pub fn appmenu(&self) -> AppMenu {
+    pub(crate) fn appmenu(&self) -> RnAppMenu {
         self.imp().appmenu.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.imp()
             .headerbar
             .get()
@@ -154,11 +127,9 @@ impl MainHeader {
                 &appwindow.flap_header(),
                 "show-end-title-buttons",
             )
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
+            .sync_create()
+            .bidirectional()
+            .invert_boolean()
             .build();
 
         self.imp()
@@ -169,59 +140,9 @@ impl MainHeader {
                 &appwindow.flap_header(),
                 "show-start-title-buttons",
             )
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
+            .sync_create()
+            .bidirectional()
+            .invert_boolean()
             .build();
-
-        self.pens_toggles_squeezer().connect_visible_child_notify(
-            clone!(@weak self as mainheader, @weak appwindow => move |pens_toggles_squeezer| {
-                if let Some(visible_child) = pens_toggles_squeezer.visible_child() {
-                    if visible_child == mainheader.imp().pens_toggles_placeholderbox.get() {
-                        appwindow.narrow_pens_toggles_revealer().set_reveal_child(true);
-                    } else if visible_child == mainheader.imp().pens_toggles_clamp.get() {
-                        appwindow.narrow_pens_toggles_revealer().set_reveal_child(false);
-                    }
-                }
-            }),
-        );
-
-        self.imp().brush_toggle.get().connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
-            if brush_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
-            }
-        }));
-
-        self.imp().shaper_toggle.get().connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
-            if shaper_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
-            }
-        }));
-
-        self.imp().typewriter_toggle.get().connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
-            if typewriter_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
-            }
-        }));
-
-        self.imp().eraser_toggle.get().connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
-            if eraser_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
-            }
-        }));
-
-        self.imp().selector_toggle.get().connect_toggled(clone!(@weak appwindow => move |selector_toggle| {
-            if selector_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
-            }
-        }));
-
-        self.imp().tools_toggle.get().connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
-            if tools_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
-            }
-        }));
     }
 }

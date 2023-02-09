@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### FileRow ### -->
 <interface>
-  <template class="FileRow" parent="GtkWidget">
+  <template class="RnFileRow" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="orientation">horizontal</property>
@@ -39,7 +39,7 @@
           <object class="GtkMenuButton" id="menubutton">
             <property name="name">menubutton</property>
             <property name="direction">down</property>
-            <property name="icon_name">canvasmenu-symbolic</property>
+            <property name="icon_name">misc-menu-symbolic</property>
             <property name="popover">popovermenu</property>
             <style>
               <class name="flat" />
@@ -63,7 +63,7 @@
             <attribute name="action">filerow.rename-file</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Move into trash</attribute>
+            <attribute name="label" translatable="yes">Move to Trash</attribute>
             <attribute name="action">filerow.trash-file</attribute>
           </item>
           <item>

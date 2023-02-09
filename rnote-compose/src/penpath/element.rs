@@ -1,7 +1,9 @@
 use std::collections::VecDeque;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
+
+use crate::transform::TransformBehaviour;
 
 /// A pen input element
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
@@ -18,6 +20,23 @@ pub struct Element {
 impl Default for Element {
     fn default() -> Self {
         Self::new(na::vector![0.0, 0.0], Self::PRESSURE_DEFAULT)
+    }
+}
+
+impl TransformBehaviour for Element {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        self.pos += offset;
+    }
+
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+        let mut isometry = na::Isometry2::identity();
+        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
+
+        self.pos = (isometry * na::Point2::from(self.pos)).coords;
+    }
+
+    fn scale(&mut self, scale: na::Vector2<f64>) {
+        self.pos = self.pos.component_mul(&scale);
     }
 }
 
@@ -39,7 +58,7 @@ impl Element {
     }
 
     /// indicates if a element is out of valid bounds and should be filtered out. Returns true if element pos is not inside the bounds
-    pub fn filter_by_bounds(&self, filter_bounds: AABB) -> bool {
+    pub fn filter_by_bounds(&self, filter_bounds: Aabb) -> bool {
         !filter_bounds.contains_local_point(&na::Point2::from(self.pos))
     }
 
@@ -49,8 +68,8 @@ impl Element {
     }
 
     /// transform pen input data entries
-    pub fn transform_elements(data_entries: &mut VecDeque<Self>, transform: na::Affine2<f64>) {
-        data_entries.iter_mut().for_each(|element| {
+    pub fn transform_elements(els: &mut VecDeque<Self>, transform: na::Affine2<f64>) {
+        els.iter_mut().for_each(|element| {
             element.transform_by(transform);
         });
     }

@@ -1,48 +1,59 @@
 on:
   push:
-  workflow_dispatch:
+    branches:
+    - main
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 name: CI
 
 jobs:
   check:
-    name: cargo check
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
     container: fedora:37
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install deps
+      - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y meson gcc gcc-c++ clang make automake cmake kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
-      - name: toolchain
+          sudo dnf install -y gcc gcc-c++ clang make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+      - name: Install toolchain
+        id: toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
+          components: rustfmt, clippy
           override: true
-      - name: check
-        uses: actions-rs/cargo@v1
+      - name: Cache
+        uses: actions/cache@v3
         with:
-          command: check
-
-  fmt:
-    name: rustfmt
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - run: rustup component add rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+          path: |
+            _mesonbuild/cargo-home/bin/
+            _mesonbuild/cargo-home/registry/index/
+            _mesonbuild/cargo-home/registry/cache/
+            _mesonbuild/cargo-home/git/db/
+            _mesonbuild/target/
+          key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}
+      - name: Configure
+        run: |
+          meson setup --prefix=/usr _mesonbuild
+          meson configure -Dprofile=devel -Dcli=true _mesonbuild
+      - name: Run cargo fmt
+        run: meson compile cargo-fmt-check -C _mesonbuild
+      - name: Check app
+        run: meson compile app-cargo-check -C _mesonbuild
+      - name: Check CLI
+        run: meson compile cli-cargo-check -C _mesonbuild
+      - name: Run clippy for app
+        run: meson compile app-cargo-clippy -C _mesonbuild
+        continue-on-error: true
+      - name: Run clippy for CLI
+        run: meson compile cli-cargo-clippy -C _mesonbuild
+        continue-on-error: true
+      - name: Run tests
+        run: meson test -v -C _mesonbuild

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### Headerbar ### -->
 <interface>
-  <template class="MainHeader" parent="GtkWidget">
+  <template class="RnMainHeader" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
@@ -15,7 +15,7 @@
         </child>
         <child>
           <object class="AdwWindowTitle" id="main_title">
-            <property name="title" translatable="yes">New document</property>
+            <property name="title" translatable="yes">New Document</property>
             <property name="subtitle" translatable="yes">Draft</property>
             <style>
               <class name="main_title" />
@@ -28,104 +28,104 @@
         <property name="centering-policy">loose</property>
         <property name="vexpand">false</property>
         <child type="start">
+          <object class="GtkBox" id="quickactions_box">
+            <property name="spacing">3</property>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="GtkToggleButton" id="left_flapreveal_toggle">
+                    <property name="icon_name">flap-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Reveal/Hide Flap</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="icon-name">tab-new-filled-symbolic</property>
+                    <property name="action-name">win.new-tab</property>
+                    <property name="tooltip-text" translatable="yes">New Tab</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <property name="orientation">vertical</property>
+                <style>
+                  <class name="spacer" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="GtkBox">
+                    <child>
+                      <object class="GtkButton" id="undo_button">
+                        <property name="sensitive">false</property>
+                        <property name="icon_name">edit-undo-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Undo</property>
+                        <property name="action-name">win.undo</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="redo_button">
+                        <property name="sensitive">false</property>
+                        <property name="icon_name">edit-redo-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Redo</property>
+                        <property name="action-name">win.redo</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="fixedsize_quickactions_box">
+                    <child>
+                      <object class="GtkButton">
+                        <property name="icon_name">add-page-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Add Page</property>
+                        <property name="action-name">win.add-page-to-doc</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton">
+                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Resize Document to Fit Strokes</property>
+                        <property name="action-name">win.resize-to-fit-strokes</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
           <object class="GtkBox">
-            <property name="width_request">55</property>
+            <property name="spacing">3</property>
             <child>
               <object class="GtkButton">
-                <property name="visible">true</property>
-                <property name="halign">start</property>
-                <property name="tooltip-text" translatable="yes">Save document</property>
+                <property name="tooltip-text" translatable="yes">Save Document</property>
                 <property name="icon-name">doc-save-symbolic</property>
                 <property name="action-name">win.save-doc</property>
               </object>
             </child>
-          </object>
-        </child>
-        <child type="end">
-          <object class="GtkBox" id="menus_box">
-            <property name="spacing">6</property>
-            <property name="margin-start">22</property>
             <child>
-              <object class="CanvasMenu" id="canvasmenu"></object>
-            </child>
-            <child>
-              <object class="AppMenu" id="appmenu"></object>
-            </child>
-          </object>
-        </child>
-        <child type="end">
-          <object class="AdwSqueezer" id="pens_toggles_squeezer">
-            <property name="transition-type">crossfade</property>
-            <property name="switch-threshold-policy">minimum</property>
-            <child>
-              <object class="AdwClamp" id="pens_toggles_clamp">
-                <property name="maximum-size">600</property>
-                <property name="tightening-threshold">450</property>
-                <property name="hexpand">true</property>
-                <property name="vexpand">true</property>
-                <property name="halign">fill</property>
-                <property name="child">
-                  <object class="GtkBox" id="pens_toggles_box">
-                    <property name="width-request">350</property>
-                    <property name="homogeneous">true</property>
-                    <style>
-                      <class name="linked" />
-                    </style>
-                    <child>
-                      <object class="GtkToggleButton" id="brush_toggle">
-                        <property name="icon_name">pen-brush-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Brush</property>
-                        <property name="hexpand">true</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkToggleButton" id="shaper_toggle">
-                        <property name="icon_name">pen-shaper-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Shaper</property>
-                        <property name="hexpand">true</property>
-                        <property name="group">brush_toggle</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkToggleButton" id="typewriter_toggle">
-                        <property name="icon_name">pen-typewriter-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Typewriter</property>
-                        <property name="hexpand">true</property>
-                        <property name="group">brush_toggle</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkToggleButton" id="eraser_toggle">
-                        <property name="icon_name">pen-eraser-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Eraser</property>
-                        <property name="hexpand">true</property>
-                        <property name="group">brush_toggle</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkToggleButton" id="selector_toggle">
-                        <property name="icon_name">pen-selector-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Selector</property>
-                        <property name="hexpand">true</property>
-                        <property name="group">brush_toggle</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkToggleButton" id="tools_toggle">
-                        <property name="icon_name">pen-tools-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Tools</property>
-                        <property name="hexpand">true</property>
-                        <property name="group">brush_toggle</property>
-                      </object>
-                    </child>
-                  </object>
-                </property>
+              <object class="GtkToggleButton" id="right_flapreveal_toggle">
+                <property name="icon_name">flap-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Reveal/Hide Flap</property>
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="pens_toggles_placeholderbox">
-                <property name="hexpand">false</property>
-                <property name="vexpand">false</property>
+              <object class="GtkBox" id="menus_box">
+                <property name="spacing">3</property>
+                <child>
+                  <object class="RnCanvasMenu" id="canvasmenu"></object>
+                </child>
+                <child>
+                  <object class="RnAppMenu" id="appmenu"></object>
+                </child>
               </object>
             </child>
           </object>

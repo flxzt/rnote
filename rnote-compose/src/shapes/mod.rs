@@ -3,7 +3,7 @@ mod arrow;
 pub mod cubbez;
 mod ellipse;
 mod line;
-/// Quadratic bezier curves
+/// quadratic bezier curves
 pub mod quadbez;
 mod rectangle;
 mod shape;

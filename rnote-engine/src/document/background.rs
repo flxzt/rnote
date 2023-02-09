@@ -1,13 +1,10 @@
 use anyhow::Context;
-use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 use svg::Node;
 
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{render, Camera};
-use rnote_compose::helpers::AABBHelpers;
+use crate::render;
 use rnote_compose::Color;
 
 #[derive(
@@ -50,7 +47,7 @@ impl TryFrom<u32> for PatternStyle {
 }
 
 pub fn gen_hline_pattern(
-    bounds: AABB,
+    bounds: Aabb,
     spacing: f64,
     color: Color,
     line_width: f64,
@@ -79,7 +76,7 @@ pub fn gen_hline_pattern(
             ),
     );
 
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
 
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
@@ -91,7 +88,7 @@ pub fn gen_hline_pattern(
 }
 
 pub fn gen_grid_pattern(
-    bounds: AABB,
+    bounds: Aabb,
     row_spacing: f64,
     column_spacing: f64,
     color: Color,
@@ -130,7 +127,7 @@ pub fn gen_grid_pattern(
             ),
     );
 
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
 
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
@@ -142,7 +139,7 @@ pub fn gen_grid_pattern(
 }
 
 pub fn gen_dots_pattern(
-    bounds: AABB,
+    bounds: Aabb,
     row_spacing: f64,
     column_spacing: f64,
     color: Color,
@@ -172,7 +169,7 @@ pub fn gen_dots_pattern(
             ),
     );
 
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
     rect.assign("x", format!("{}px", bounds.mins[0]));
     rect.assign("y", format!("{}px", bounds.mins[1]));
     rect.assign("width", format!("{}px", bounds.extents()[0]));
@@ -182,7 +179,7 @@ pub fn gen_dots_pattern(
     group.into()
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "background")]
 pub struct Background {
     #[serde(rename = "color")]
@@ -193,10 +190,6 @@ pub struct Background {
     pub pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
     pub pattern_color: Color,
-    #[serde(skip)]
-    pub image: Option<render::Image>,
-    #[serde(skip)]
-    rendernodes: Vec<gsk::RenderNode>,
 }
 
 impl Default for Background {
@@ -206,8 +199,6 @@ impl Default for Background {
             pattern: PatternStyle::default(),
             pattern_size: Self::PATTERN_SIZE_DEFAULT,
             pattern_color: Self::PATTERN_COLOR_DEFAULT,
-            image: None,
-            rendernodes: vec![],
         }
     }
 }
@@ -224,7 +215,7 @@ impl Background {
     };
 
     /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
-    fn tile_size(&self) -> na::Vector2<f64> {
+    pub fn tile_size(&self) -> na::Vector2<f64> {
         let tile_factor =
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
@@ -242,8 +233,9 @@ impl Background {
         na::vector![tile_width, tile_height]
     }
 
-    fn gen_svg_element(&self, bounds: AABB) -> svg::node::element::Element {
-        let mut group = element::Group::new();
+    /// Generates the background svg, without xml header or svg root
+    pub fn gen_svg(&self, bounds: Aabb, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
+        let mut svg_group = element::Group::new();
 
         // background color
         let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());
@@ -253,146 +245,55 @@ impl Background {
         color_rect.assign("width", format!("{}px", bounds.extents()[0]));
         color_rect.assign("height", format!("{}px", bounds.extents()[1]));
 
-        group = group.add(color_rect);
+        svg_group = svg_group.add(color_rect);
 
-        match self.pattern {
-            PatternStyle::None => {}
-            PatternStyle::Lines => {
-                group = group.add(gen_hline_pattern(
-                    bounds,
-                    self.pattern_size[1],
-                    self.pattern_color,
-                    0.5,
-                ));
-            }
-            PatternStyle::Grid => {
-                group = group.add(gen_grid_pattern(
-                    bounds,
-                    self.pattern_size[1],
-                    self.pattern_size[0],
-                    self.pattern_color,
-                    0.5,
-                ));
-            }
-            PatternStyle::Dots => {
-                group = group.add(gen_dots_pattern(
-                    bounds,
-                    self.pattern_size[1],
-                    self.pattern_size[0],
-                    self.pattern_color,
-                    1.5,
-                ));
+        if with_pattern {
+            match self.pattern {
+                PatternStyle::None => {}
+                PatternStyle::Lines => {
+                    svg_group = svg_group.add(gen_hline_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_color,
+                        0.5,
+                    ));
+                }
+                PatternStyle::Grid => {
+                    svg_group = svg_group.add(gen_grid_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_size[0],
+                        self.pattern_color,
+                        0.5,
+                    ));
+                }
+                PatternStyle::Dots => {
+                    svg_group = svg_group.add(gen_dots_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_size[0],
+                        self.pattern_color,
+                        1.5,
+                    ));
+                }
             }
         }
 
-        group.into()
-    }
-
-    pub fn draw_to_piet_svg(
-        &self,
-        piet_svg_cx: &mut piet_svg::RenderContext,
-        bounds: AABB,
-    ) -> anyhow::Result<()> {
-        piet_svg_cx.append_svg_node(self.gen_svg_element(bounds));
-        Ok(())
-    }
-
-    /// Generates the background svg, without xml header or svg root
-    pub fn gen_svg(&self, bounds: AABB) -> Result<render::Svg, anyhow::Error> {
-        let svg_element = self.gen_svg_element(bounds);
-
-        let svg_data = rnote_compose::utils::svg_node_to_string(&svg_element)
-            .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
+        let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
+            .context("svg_node_to_string() failed for background")?;
 
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_image(
-        &self,
-        bounds: AABB,
-        image_scale: f64,
-    ) -> Result<Option<render::Image>, anyhow::Error> {
-        let svg = self.gen_svg(bounds)?;
+    pub fn gen_tile_image(&self, image_scale: f64) -> Result<Option<render::Image>, anyhow::Error> {
+        let tile_size = self.tile_size();
+        let tile_bounds = Aabb::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
+        let svg = self.gen_svg(tile_bounds, true)?;
+
         Ok(Some(render::Image::gen_image_from_svg(
             svg,
-            bounds,
+            tile_bounds,
             image_scale,
         )?))
-    }
-
-    fn gen_rendernodes(&mut self, viewport: AABB) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
-
-        if let Some(image) = &self.image {
-            // Only create the texture once, it is expensive
-            let new_texture = image
-                .to_memtexture()
-                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
-
-            for splitted_bounds in viewport.split_extended_origin_aligned(self.tile_size()) {
-                //log::debug!("splitted_bounds: {splitted_bounds:?}");
-
-                rendernodes.push(
-                    gsk::TextureNode::new(
-                        &new_texture,
-                        &graphene::Rect::from_p2d_aabb(splitted_bounds),
-                    )
-                    .upcast(),
-                );
-            }
-        }
-
-        Ok(rendernodes)
-    }
-
-    pub fn update_rendernodes(&mut self, viewport: AABB) -> anyhow::Result<()> {
-        match self.gen_rendernodes(viewport) {
-            Ok(rendernodes) => {
-                self.rendernodes = rendernodes;
-            }
-            Err(e) => {
-                log::error!(
-                    "gen_rendernode() failed in update_rendernode() of background with Err: {}",
-                    e
-                );
-            }
-        }
-
-        Ok(())
-    }
-
-    pub fn regenerate_pattern(&mut self, viewport: AABB, image_scale: f64) -> anyhow::Result<()> {
-        let tile_size = self.tile_size();
-        let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
-
-        self.image = self.gen_image(tile_bounds, image_scale)?;
-
-        self.update_rendernodes(viewport)?;
-        Ok(())
-    }
-
-    pub fn draw(
-        &self,
-        snapshot: &Snapshot,
-        doc_bounds: AABB,
-        _camera: &Camera,
-    ) -> anyhow::Result<()> {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
-
-        // Fill with background color just in case there is any space left between the tiles
-        snapshot.append_node(
-            &gsk::ColorNode::new(
-                &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_p2d_aabb(doc_bounds),
-            )
-            .upcast(),
-        );
-
-        self.rendernodes.iter().for_each(|rendernode| {
-            snapshot.append_node(&rendernode);
-        });
-
-        snapshot.pop();
-        Ok(())
     }
 }

@@ -5,7 +5,8 @@ use anyhow::Context;
 use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
 use image::GenericImageView;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use once_cell::sync::Lazy;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::transform::TransformBehaviour;
@@ -14,16 +15,14 @@ use svg::Node;
 
 use crate::utils::{base64, GrapheneRectHelpers};
 use crate::DrawBehaviour;
-use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
-lazy_static! {
-    pub static ref USVG_OPTIONS: usvg::Options = {
-        let mut usvg_options = usvg::Options::default();
-        usvg_options.fontdb.load_system_fonts();
+pub static USVG_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
+    let mut usvg_options = usvg::Options::default();
+    usvg_options.fontdb.load_system_fonts();
 
-        usvg_options
-    };
-}
+    usvg_options
+});
 
 pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
     id_prefix: None,
@@ -131,7 +130,7 @@ impl From<image::DynamicImage> for Image {
         let memory_format = ImageMemoryFormat::R8g8b8a8Premultiplied;
         let data = dynamic_image.into_rgba8().to_vec();
 
-        let bounds = AABB::new(
+        let bounds = Aabb::new(
             na::point![0.0, 0.0],
             na::point![f64::from(pixel_width), f64::from(pixel_height)],
         );
@@ -150,7 +149,7 @@ impl DrawBehaviour for Image {
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
     /// image_scale has no meaning here, as the image pixels are already provided
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
 
         let piet_image = cx
@@ -160,7 +159,7 @@ impl DrawBehaviour for Image {
                 &self.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         cx.transform(self.rect.transform.to_kurbo());
 
@@ -169,21 +168,21 @@ impl DrawBehaviour for Image {
             self.rect.cuboid.local_aabb().to_kurbo_rect(),
             piet::InterpolationMode::Bilinear,
         );
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
 impl TransformBehaviour for Image {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.rect.translate(offset)
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.rect.rotate(angle, center)
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rect.scale(scale)
     }
 }
@@ -332,7 +331,9 @@ impl Image {
         Ok(transform_node)
     }
 
-    pub fn images_to_rendernodes(images: &[Self]) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
+    pub fn images_to_rendernodes<'a>(
+        images: impl IntoIterator<Item = &'a Self>,
+    ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
         let mut rendernodes = vec![];
 
         for image in images {
@@ -372,7 +373,7 @@ impl Image {
         let mut bounds = images
             .iter()
             .map(|image| image.rect.bounds())
-            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+            .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
             .ceil();
         bounds.ensure_positive();
         bounds = bounds.ceil();
@@ -403,10 +404,7 @@ impl Image {
             }
 
             piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!(
-                    "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
-                    e
-                )
+                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
             })?;
         }
         // Surface needs to be flushed before accessing its data
@@ -416,8 +414,7 @@ impl Image {
                    .data()
                    .map_err(|e| {
                        anyhow::Error::msg(format!(
-                   "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err {}",
-                   e
+                   "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
                ))
                    })?
                    .to_vec();
@@ -434,7 +431,7 @@ impl Image {
     // create an image from an svg (using librsvg )
     pub fn gen_image_from_svg(
         svg: Svg,
-        mut bounds: AABB,
+        mut bounds: Aabb,
         image_scale: f64,
     ) -> Result<Self, anyhow::Error> {
         let svg_data = rnote_compose::utils::wrap_svg_root(
@@ -458,10 +455,7 @@ impl Image {
             )
             .map_err(|e| {
                 anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({}, {}) failed in gen_image_from_svg_librsvg(), Err {}",
-                    width_scaled,
-                    height_scaled,
-                    e
+                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg_librsvg(), Err: {e:?}"
                 )
             })?;
 
@@ -484,17 +478,16 @@ impl Image {
             renderer
                     .render_document(
                         &cx,
-                        &cairo::Rectangle {
-                            x: bounds.mins[0],
-                            y: bounds.mins[1],
-                            width: bounds.extents()[0],
-                            height: bounds.extents()[1],
-                        },
+                        &cairo::Rectangle::new(
+                            bounds.mins[0],
+                            bounds.mins[1],
+                            bounds.extents()[0],
+                            bounds.extents()[1],
+                        ),
                     )
                     .map_err(|e| {
                         anyhow::Error::msg(format!(
-                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err {}",
-                            e
+                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err: {e:?}"
                         ))
                     })?;
         }
@@ -505,8 +498,7 @@ impl Image {
                 .data()
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err {}",
-                        e
+                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err: {e:?}"
                     ))
                 })?
                 .to_vec();
@@ -523,7 +515,7 @@ impl Image {
     /// Renders an image with a function that draws onto a piet CairoRenderContext
     pub fn gen_with_piet<F>(
         draw_func: F,
-        mut bounds: AABB,
+        mut bounds: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<Self>
     where
@@ -561,10 +553,7 @@ impl Image {
             draw_func(&mut piet_cx)?;
 
             piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!(
-                    "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
-                    e
-                )
+                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
             })?;
         }
         // Surface needs to be flushed before accessing its data
@@ -574,8 +563,7 @@ impl Image {
                 .data()
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err {}",
-                e
+                "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
             ))
                 })?
                 .to_vec();
@@ -596,7 +584,7 @@ pub struct Svg {
     /// the svg data as String
     pub svg_data: String,
     /// the bounds of the svg
-    pub bounds: AABB,
+    pub bounds: Aabb,
 }
 
 impl Svg {
@@ -612,8 +600,8 @@ impl Svg {
 
     pub fn wrap_svg_root(
         &mut self,
-        bounds: Option<AABB>,
-        viewbox: Option<AABB>,
+        bounds: Option<Aabb>,
+        viewbox: Option<Aabb>,
         preserve_aspectratio: bool,
     ) {
         self.svg_data = rnote_compose::utils::wrap_svg_root(
@@ -627,68 +615,9 @@ impl Svg {
         }
     }
 
-    /// Generates an svg with piet, using the piet_svg backend (context creation might be slow due to font loading).
-    pub fn gen_with_piet_svg_backend<F>(draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
-    {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
-        let mut piet_cx = piet_svg::RenderContext::new(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
-
-        // Apply the draw function
-        draw_func(&mut piet_cx)?;
-
-        piet_cx
-            .finish()
-            .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
-
-        let mut data: Vec<u8> = vec![];
-        piet_cx.write(&mut data)?;
-
-        let svg_data = rnote_compose::utils::remove_xml_header(String::from_utf8(data)?.as_str());
-
-        Ok(Self { svg_data, bounds })
-    }
-
-    /// Generates an svg with piet, using the piet_svg backend without text loading (for faster context creation).
-    pub fn gen_with_piet_svg_backend_no_text<F>(
-        draw_func: F,
-        mut bounds: AABB,
-    ) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
-    {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
-        let mut piet_cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
-
-        // Apply the draw function
-        draw_func(&mut piet_cx)?;
-
-        piet_cx
-            .finish()
-            .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
-
-        let mut data: Vec<u8> = vec![];
-        piet_cx.write(&mut data)?;
-
-        let svg_data = rnote_compose::utils::remove_xml_header(String::from_utf8(data)?.as_str());
-
-        Ok(Self { svg_data, bounds })
-    }
-
     /// Generates an svg with piet, using the piet_cairo backend and a SvgSurface.
     /// This might be preferable to the piet_svg backend, because especially text alignment and sizes can be different with it.
-    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
+    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: Aabb) -> anyhow::Result<Self>
     where
         F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
     {
@@ -725,15 +654,14 @@ impl Svg {
 
             piet_cx.finish().map_err(|e| {
                 anyhow::anyhow!(
-                    "piet_cx.finish() failed in Svg gen_with_piet_cairo_backend() with Err {}",
-                    e
+                    "piet_cx.finish() failed in Svg gen_with_piet_cairo_backend() with Err: {e:?}"
                 )
             })?;
         }
 
         let file_content = svg_surface
             .finish_output_stream()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let svg_data = rnote_compose::utils::remove_xml_header(
             String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|_e| {
@@ -779,24 +707,40 @@ impl Svg {
             renderer
                 .render_document(
                     cx,
-                    &cairo::Rectangle {
-                        x: svg.bounds.mins[0],
-                        y: svg.bounds.mins[1],
-                        width: svg.bounds.extents()[0],
-                        height: svg.bounds.extents()[1],
-                    },
+                    &cairo::Rectangle::new(
+                        svg.bounds.mins[0],
+                        svg.bounds.mins[1],
+                        svg.bounds.extents()[0],
+                        svg.bounds.extents()[1],
+                    ),
                 )
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                    "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err {}",
-                    e
+                    "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err: {e:?}"
                 ))
                 })?;
         }
         Ok(())
     }
 
-    #[allow(dead_code)]
+    /// Simplifies the svg by passing it through usvg. Should reduce the size
+    pub fn simplify(&mut self) -> anyhow::Result<()> {
+        let xml_options = usvg::XmlOptions {
+            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+            writer_opts: xmlwriter::Options {
+                use_single_quote: false,
+                indent: xmlwriter::Indent::None,
+                attributes_indent: xmlwriter::Indent::None,
+            },
+        };
+
+        let rtree = usvg::Tree::from_str(&self.svg_data, &USVG_OPTIONS.to_ref())?;
+        self.svg_data = rtree.to_string(&xml_options);
+
+        Ok(())
+    }
+
+    #[allow(unused)]
     fn render_to_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
         if self.bounds.extents()[0] < 0.0 || self.bounds.extents()[1] < 0.0 {
             return Err(anyhow::anyhow!(

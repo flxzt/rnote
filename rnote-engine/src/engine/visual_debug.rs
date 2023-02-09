@@ -1,11 +1,8 @@
-use gtk4::{gdk, graphene, gsk, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, Text, TextLayoutBuilder};
-use rnote_compose::helpers::Vector2Helpers;
-use rnote_compose::shapes::Rectangle;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
-use crate::pens::eraser::EraserState;
-use crate::pens::penholder::PenStyle;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{DrawOnDocBehaviour, RnoteEngine};
 use rnote_compose::Color;
@@ -67,7 +64,7 @@ pub const COLOR_DOC_BOUNDS: Color = Color {
     a: 1.0,
 };
 
-pub fn draw_bounds(bounds: AABB, color: Color, snapshot: &Snapshot, width: f64) {
+pub fn draw_bounds(bounds: Aabb, color: Color, snapshot: &Snapshot, width: f64) {
     let bounds = graphene::Rect::new(
         bounds.mins[0] as f32,
         bounds.mins[1] as f32,
@@ -107,7 +104,7 @@ pub fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width:
     );
 }
 
-pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
+pub fn draw_fill(rect: Aabb, color: Color, snapshot: &Snapshot) {
     snapshot.append_color(
         &gdk::RGBA::from_compose_color(color),
         &graphene::Rect::from_p2d_aabb(rect),
@@ -119,18 +116,18 @@ pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
 pub fn draw_statistics_overlay(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
-    surface_bounds: AABB,
+    surface_bounds: Aabb,
 ) -> anyhow::Result<()> {
     // A statistics overlay
     {
-        let text_bounds = AABB::new(
+        let text_bounds = Aabb::new(
             na::point![
                 surface_bounds.maxs[0] - 320.0,
                 surface_bounds.mins[1] + 20.0
             ],
             na::point![
                 surface_bounds.maxs[0] - 20.0,
-                surface_bounds.mins[1] + 100.0
+                surface_bounds.mins[1] + 120.0
             ],
         );
         let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
@@ -142,34 +139,39 @@ pub fn draw_statistics_overlay(
             .store
             .keys_unordered_intersecting_bounds(engine.camera.viewport());
         let selected_strokes = engine.store.selection_keys_unordered();
+        let trashed_strokes = engine.store.trashed_keys_unordered();
+        let strokes_hold_image = strokes_total
+            .iter()
+            .filter(|&&key| engine.store.holds_images(key))
+            .count();
 
         let statistics_text_string = format!(
-            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}",
+            "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}\nstroke trashed: {}\nstrokes holding images: {}",
             strokes_total.len(),
             strokes_in_viewport.len(),
-            selected_strokes.len()
+            selected_strokes.len(),
+            trashed_strokes.len(),
+            strokes_hold_image,
         );
-
         let text_layout = piet_cx
             .text()
             .new_text_layout(statistics_text_string)
             .text_color(piet::Color::rgba(0.8, 1.0, 1.0, 1.0))
-            .max_width(500.0)
+            .max_width(text_bounds.extents()[0] - 20.0)
             .alignment(piet::TextAlignment::End)
             .font(piet::FontFamily::MONOSPACE, 10.0)
             .build()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         piet_cx.fill(
-            Rectangle::from_p2d_aabb(text_bounds).to_kurbo(),
-            &piet::Color::rgba(0.1, 0.1, 0.1, 0.9),
+            text_bounds.to_kurbo_rect(),
+            &piet::Color::rgba(0.1, 0.1, 0.1, 0.8),
         );
-
         piet_cx.draw_text(
             &text_layout,
-            (text_bounds.mins.coords + na::vector![20.0, 10.0]).to_kurbo_point(),
+            (text_bounds.mins.coords + na::vector![10.0, 10.0]).to_kurbo_point(),
         );
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+        piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
     }
     Ok(())
 }
@@ -178,7 +180,7 @@ pub fn draw_statistics_overlay(
 pub fn draw_debug(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
-    surface_bounds: AABB,
+    surface_bounds: Aabb,
 ) -> anyhow::Result<()> {
     let viewport = engine.camera.viewport();
     let total_zoom = engine.camera.total_zoom();
@@ -198,32 +200,16 @@ pub fn draw_debug(
     // Draw the strokes and selection
     engine.store.draw_debug(snapshot, engine, surface_bounds)?;
 
-    // Draw the pens
-    let current_pen_style = engine.penholder.current_style_w_override();
-
-    match current_pen_style {
-        PenStyle::Eraser => {
-            if let EraserState::Down(current_element) = engine.penholder.eraser.state {
-                draw_pos(
-                    current_element.pos,
-                    COLOR_POS_ALT,
-                    snapshot,
-                    border_widths * 4.0,
-                );
-            }
-        }
-        PenStyle::Selector => {
-            if let Some(bounds) = engine.penholder.selector.bounds_on_doc(&EngineView {
-                tasks_tx: engine.tasks_tx(),
-                doc: &engine.document,
-                store: &engine.store,
-                camera: &engine.camera,
-                audioplayer: &engine.audioplayer,
-            }) {
-                draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
-            }
-        }
-        PenStyle::Brush | PenStyle::Shaper | PenStyle::Typewriter | PenStyle::Tools => {}
+    // Draw the pens bounds
+    if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
+        tasks_tx: engine.tasks_tx(),
+        pens_config: &engine.pens_config,
+        doc: &engine.document,
+        store: &engine.store,
+        camera: &engine.camera,
+        audioplayer: &engine.audioplayer,
+    }) {
+        draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
     }
 
     Ok(())

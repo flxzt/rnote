@@ -1,9 +1,8 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use super::Arrow;
 use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
-use crate::penpath::Segment;
 use crate::transform::TransformBehaviour;
 
 // Container type to store shapes
@@ -30,9 +29,6 @@ pub enum Shape {
     #[serde(rename = "cubbez")]
     /// A cubic bezier curve shape
     CubicBezier(CubicBezier),
-    #[serde(rename = "segment")]
-    /// A segment
-    Segment(Segment),
 }
 
 impl Default for Shape {
@@ -42,7 +38,7 @@ impl Default for Shape {
 }
 
 impl TransformBehaviour for Shape {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::Arrow(arrow) => {
                 arrow.translate(offset);
@@ -62,13 +58,10 @@ impl TransformBehaviour for Shape {
             Self::CubicBezier(cubbez) => {
                 cubbez.translate(offset);
             }
-            Self::Segment(segment) => {
-                segment.translate(offset);
-            }
         }
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         match self {
             Self::Arrow(arrow) => {
                 arrow.rotate(angle, center);
@@ -88,13 +81,10 @@ impl TransformBehaviour for Shape {
             Self::CubicBezier(cubbez) => {
                 cubbez.rotate(angle, center);
             }
-            Self::Segment(segment) => {
-                segment.rotate(angle, center);
-            }
         }
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         match self {
             Self::Arrow(arrow) => {
                 arrow.scale(scale);
@@ -114,15 +104,12 @@ impl TransformBehaviour for Shape {
             Self::CubicBezier(cubbez) => {
                 cubbez.scale(scale);
             }
-            Self::Segment(segment) => {
-                segment.scale(scale);
-            }
         }
     }
 }
 
 impl ShapeBehaviour for Shape {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         match self {
             Self::Arrow(arrow) => arrow.bounds(),
             Self::Line(line) => line.bounds(),
@@ -130,10 +117,9 @@ impl ShapeBehaviour for Shape {
             Self::Ellipse(ellipse) => ellipse.bounds(),
             Self::QuadraticBezier(quadbez) => quadbez.bounds(),
             Self::CubicBezier(cubbez) => cubbez.bounds(),
-            Self::Segment(segment) => segment.bounds(),
         }
     }
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         match self {
             Self::Arrow(arrow) => arrow.hitboxes(),
             Self::Line(line) => line.hitboxes(),
@@ -141,7 +127,6 @@ impl ShapeBehaviour for Shape {
             Self::Ellipse(ellipse) => ellipse.hitboxes(),
             Self::QuadraticBezier(quadbez) => quadbez.hitboxes(),
             Self::CubicBezier(cubbez) => cubbez.hitboxes(),
-            Self::Segment(segment) => segment.hitboxes(),
         }
     }
 }

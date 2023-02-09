@@ -1,6 +1,6 @@
-mod action;
+mod actions;
 
-use crate::RnoteAppWindow;
+use crate::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DragSource,
     GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu, Widget,
@@ -14,24 +14,24 @@ mod imp {
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
-    pub struct FileRow {
-        pub current_file: RefCell<Option<gio::File>>,
-        pub drag_source: DragSource,
-        pub action_group: gio::SimpleActionGroup,
+    pub(crate) struct RnFileRow {
+        pub(crate) current_file: RefCell<Option<gio::File>>,
+        pub(crate) drag_source: DragSource,
+        pub(crate) action_group: gio::SimpleActionGroup,
 
         #[template_child]
-        pub file_image: TemplateChild<Image>,
+        pub(crate) file_image: TemplateChild<Image>,
         #[template_child]
-        pub file_label: TemplateChild<Label>,
+        pub(crate) file_label: TemplateChild<Label>,
         #[template_child]
-        pub menubutton_box: TemplateChild<gtk4::Box>,
+        pub(crate) menubutton_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub menubutton: TemplateChild<MenuButton>,
+        pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub popovermenu: TemplateChild<PopoverMenu>,
+        pub(crate) popovermenu: TemplateChild<PopoverMenu>,
     }
 
-    impl Default for FileRow {
+    impl Default for RnFileRow {
         fn default() -> Self {
             let drag_source = DragSource::builder()
                 .name("workspacebrowser-file-drag-source")
@@ -52,9 +52,9 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for FileRow {
-        const NAME: &'static str = "FileRow";
-        type Type = super::FileRow;
+    impl ObjectSubclass for RnFileRow {
+        const NAME: &'static str = "RnFileRow";
+        type Type = super::RnFileRow;
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -66,16 +66,17 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for FileRow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            obj.set_widget_name("filerow");
+    impl ObjectImpl for RnFileRow {
+        fn constructed(&self) {
+            self.parent_constructed();
 
-            Self::setup_input(obj);
+            self.instance().set_widget_name("filerow");
+
+            self.setup_input();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -92,25 +93,19 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "current-file" => {
                     let current_file = value
                         .get::<Option<gio::File>>()
-                        .expect("The value needs to be of type `Option<gio::File>`.");
+                        .expect("The value needs to be of type `Option<gio::File>`");
                     self.current_file.replace(current_file);
                 }
                 _ => unimplemented!(),
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "current-file" => self.current_file.borrow().to_value(),
                 _ => unimplemented!(),
@@ -118,20 +113,21 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for FileRow {}
+    impl WidgetImpl for RnFileRow {}
 
-    impl FileRow {
-        fn setup_input(obj: &super::FileRow) {
-            obj.add_controller(&obj.imp().drag_source);
+    impl RnFileRow {
+        fn setup_input(&self) {
+            let inst = self.instance();
+            inst.add_controller(&self.drag_source);
 
             let rightclick_gesture = GestureClick::builder()
                 .name("rightclick_gesture")
                 .button(gdk::BUTTON_SECONDARY)
                 .build();
-            obj.add_controller(&rightclick_gesture);
+            inst.add_controller(&rightclick_gesture);
             rightclick_gesture.connect_pressed(
-                clone!(@weak obj => move |_rightclick_gesture, _n_press, _x, _y| {
-                    obj.imp().popovermenu.popup();
+                clone!(@weak inst as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
+                    filerow.imp().popovermenu.popup();
                 }),
             );
 
@@ -139,12 +135,12 @@ mod imp {
                 .name("longpress_gesture")
                 .touch_only(true)
                 .build();
-            obj.add_controller(&longpress_gesture);
+            inst.add_controller(&longpress_gesture);
             longpress_gesture.group_with(&rightclick_gesture);
 
             longpress_gesture.connect_pressed(
-                clone!(@weak obj => move |_rightclick_gesture, _x, _y| {
-                    obj.imp().popovermenu.popup();
+                clone!(@weak inst as filerow => move |_rightclick_gesture, _x, _y| {
+                    filerow.imp().popovermenu.popup();
                 }),
             );
         }
@@ -152,67 +148,61 @@ mod imp {
 }
 
 glib::wrapper! {
-    pub struct FileRow(ObjectSubclass<imp::FileRow>)
+    pub(crate) struct RnFileRow(ObjectSubclass<imp::RnFileRow>)
         @extends gtk4::Widget;
 }
 
-impl Default for FileRow {
+impl Default for RnFileRow {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl FileRow {
-    pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create `FileRow`")
+impl RnFileRow {
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
-    pub fn current_file(&self) -> Option<gio::File> {
+    #[allow(unused)]
+    pub(crate) fn current_file(&self) -> Option<gio::File> {
         self.property::<Option<gio::File>>("current-file")
     }
 
-    pub fn set_current_file(&self, current_file: Option<gio::File>) {
+    #[allow(unused)]
+    pub(crate) fn set_current_file(&self, current_file: Option<gio::File>) {
         self.set_property("current-file", current_file.to_value());
     }
 
-    pub fn action_group(&self) -> gio::SimpleActionGroup {
-        self.imp().action_group.clone()
-    }
-
-    pub fn file_image(&self) -> Image {
+    pub(crate) fn file_image(&self) -> Image {
         self.imp().file_image.clone()
     }
 
-    pub fn file_label(&self) -> Label {
+    pub(crate) fn file_label(&self) -> Label {
         self.imp().file_label.clone()
     }
 
-    pub fn drag_source(&self) -> DragSource {
+    pub(crate) fn drag_source(&self) -> DragSource {
         self.imp().drag_source.clone()
     }
 
-    pub fn menubutton_box(&self) -> gtk4::Box {
+    pub(crate) fn menubutton_box(&self) -> gtk4::Box {
         self.imp().menubutton_box.get()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         self.setup_actions(appwindow);
     }
 
-    fn setup_actions(&self, appwindow: &RnoteAppWindow) {
+    fn setup_actions(&self, appwindow: &RnAppWindow) {
         self.insert_action_group("filerow", Some(&self.imp().action_group));
 
         self.imp()
             .action_group
-            .add_action(&action::open(self, &appwindow));
+            .add_action(&actions::open(self, appwindow));
+        self.imp().action_group.add_action(&actions::rename(self));
+        self.imp().action_group.add_action(&actions::trash(self));
         self.imp()
             .action_group
-            .add_action(&action::rename(self, &appwindow));
-        self.imp()
-            .action_group
-            .add_action(&action::trash(self, &appwindow));
-        self.imp()
-            .action_group
-            .add_action(&action::duplicate(self, &appwindow));
+            .add_action(&actions::duplicate(self, appwindow));
     }
 }

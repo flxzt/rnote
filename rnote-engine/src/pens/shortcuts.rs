@@ -1,8 +1,8 @@
-use super::penholder::PenStyle;
+use super::PenStyle;
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
-use rnote_compose::penhelpers::ShortcutKey;
+use rnote_compose::penevents::ShortcutKey;
 
 use serde::{Deserialize, Serialize};
 
@@ -44,6 +44,13 @@ impl Default for Shortcuts {
             ShortcutKey::MouseSecondaryButton,
             ShortcutAction::ChangePenStyle {
                 style: PenStyle::Shaper,
+                permanent: false,
+            },
+        );
+        map.insert(
+            ShortcutKey::TouchTwoFingerLongPress,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Eraser,
                 permanent: false,
             },
         );

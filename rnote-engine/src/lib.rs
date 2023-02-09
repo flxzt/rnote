@@ -1,6 +1,7 @@
 #![warn(missing_debug_implementations)]
 #![allow(clippy::field_reassign_with_default)]
 #![allow(clippy::single_match)]
+#![allow(clippy::derivable_impls)]
 //#![warn(missing_docs)]
 
 //! The rnote-engine crate is the core of rnote. It holds the strokes store, the pens, has methods for importing / exporting, rendering, etc..
@@ -31,5 +32,3 @@ pub use widgetflags::WidgetFlags;
 
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
-#[macro_use]
-extern crate lazy_static;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="AppMenu" parent="GtkWidget">
+  <template class="RnAppMenu" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
@@ -21,43 +21,43 @@
         </section>
         <section>
           <submenu>
-            <attribute name="label" translatable="yes">Color scheme</attribute>
+            <attribute name="label" translatable="yes">Co_lor Scheme</attribute>
             <item>
-              <attribute name="label" translatable="yes">Use system colors</attribute>
+              <attribute name="label" translatable="yes">Use _System Colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
               <attribute name="target">default</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Use light colors</attribute>
+              <attribute name="label" translatable="yes">Use _Light Colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
               <attribute name="target">force-light</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Use dark colors</attribute>
+              <attribute name="label" translatable="yes">Use _Dark Colors</attribute>
               <attribute name="action">app.color-scheme</attribute>
               <attribute name="target">force-dark</attribute>
             </item>
           </submenu>
           <item>
-            <attribute name="label" translatable="yes">Developer mode</attribute>
+            <attribute name="label" translatable="yes">De_veloper Mode</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.devel-mode</attribute>
           </item>
           <submenu>
-            <attribute name="label" translatable="yes">Developer menu</attribute>
+            <attribute name="label" translatable="yes">Developer _Menu</attribute>
             <attribute name="action">win.devel-menu</attribute>
             <attribute name="hidden-when">action-disabled</attribute>
             <section>
               <item>
-                <attribute name="label" translatable="yes">Visual debugging</attribute>
+                <attribute name="label" translatable="yes">Visual _Debugging</attribute>
                 <attribute name="action">win.visual-debug</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export engine state</attribute>
+                <attribute name="label" translatable="yes">Export Engine _State</attribute>
                 <attribute name="action">win.debug-export-engine-state</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export engine config</attribute>
+                <attribute name="label" translatable="yes">Export Engine _Config</attribute>
                 <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
             </section>
@@ -65,15 +65,77 @@
         </section>
         <section>
           <item>
-            <attribute name="label" translatable="yes">Keyboard shortcuts</attribute>
+            <attribute name="label" translatable="yes">_New</attribute>
+            <attribute name="action">win.new-doc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Open</attribute>
+            <attribute name="action">win.open-doc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Save</attribute>
+            <attribute name="action">win.save-doc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Save _As</attribute>
+            <attribute name="action">win.save-doc-as</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">_Print</attribute>
+            <attribute name="action">win.print-doc</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Import File</attribute>
+            <attribute name="action">win.import-file</attribute>
+          </item>
+          <submenu>
+            <attribute name="label" translatable="yes">_Clipboard</attribute>
+            <item>
+              <attribute name="label" translatable="yes">_Copy</attribute>
+              <attribute name="action">win.clipboard-copy</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">C_ut</attribute>
+              <attribute name="action">win.clipboard-cut</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">_Paste</attribute>
+              <attribute name="action">win.clipboard-paste</attribute>
+            </item>
+          </submenu>
+          <submenu>
+            <attribute name="label" translatable="yes">_Export…</attribute>
+            <item>
+              <attribute name="label" translatable="yes">Export _Document</attribute>
+              <attribute name="action">win.export-doc</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Export Document _Pages</attribute>
+              <attribute name="action">win.export-doc-pages</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Export _Selection</attribute>
+              <attribute name="action">win.export-selection</attribute>
+            </item>
+          </submenu>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Se_ttings</attribute>
+            <attribute name="action">win.open-settings</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
             <attribute name="action">win.keyboard-shortcuts</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Donate 💝</attribute>
+            <attribute name="label" translatable="yes">_Donate 💝</attribute>
             <attribute name="action">win.donate</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">About Rnote</attribute>
+            <attribute name="label" translatable="yes">A_bout Rnote</attribute>
             <attribute name="action">win.about</attribute>
           </item>
         </section>
@@ -84,11 +146,11 @@
           <property name="hexpand">false</property>
           <property name="vexpand">false</property>
           <property name="orientation">vertical</property>
-          <property name="margin-top">6</property>
-          <property name="margin-bottom">6</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
-          <property name="spacing">12</property>
+          <property name="margin-top">3</property>
+          <property name="margin-bottom">3</property>
+          <property name="margin-start">3</property>
+          <property name="margin-end">3</property>
+          <property name="spacing">6</property>
           <child>
             <object class="GtkBox">
               <property name="orientation">horizontal</property>
@@ -104,7 +166,7 @@
                   <child>
                     <object class="GtkToggleButton" id="righthanded_toggle">
                       <property name="icon_name">dock-left-symbolic</property>
-                      <property name="tooltip_text" translatable="yes">Sidebar on the left side</property>
+                      <property name="tooltip_text" translatable="yes">Sidebar on the Left Side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -113,7 +175,7 @@
                       <property name="group">righthanded_toggle</property>
                       <property name="active">true</property>
                       <property name="icon_name">dock-right-symbolic</property>
-                      <property name="tooltip_text" translatable="yes">Sidebar on the right side</property>
+                      <property name="tooltip_text" translatable="yes">Sidebar on the Right Side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -123,7 +185,7 @@
                 <object class="GtkButton" id="fullscreen_toggle">
                   <property name="hexpand">false</property>
                   <property name="icon_name">appwindow-fullscreen-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Toggle fullscreen</property>
+                  <property name="tooltip_text" translatable="yes">Toggle Fullscreen</property>
                   <property name="action-name">win.fullscreen</property>
                 </object>
               </child>

@@ -1,24 +1,25 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::Constraints;
 
 /// 2D coordinate system builder
 #[derive(Debug, Clone)]
 pub struct CoordSystem2DBuilder {
     /// the tip of the y axis
-    pub tip_y: na::Vector2<f64>,
+    tip_y: na::Vector2<f64>,
     /// the tip of the x axis
-    pub tip_x: na::Vector2<f64>,
+    tip_x: na::Vector2<f64>,
 }
 
 impl ShapeBuilderCreator for CoordSystem2DBuilder {
@@ -36,13 +37,13 @@ impl ShapeBuilderBehaviour for CoordSystem2DBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.tip_x = constraints.constrain(element.pos - self.tip_y) + self.tip_y;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(
+                return ShapeBuilderProgress::Finished(
                     self.state_as_lines()
                         .iter()
                         .map(|&line| Shape::Line(line))
@@ -52,16 +53,16 @@ impl ShapeBuilderBehaviour for CoordSystem2DBuilder {
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_lines()
                 .iter()
                 .map(|line| line.composed_bounds(style))
-                .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
-                .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
+                .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
     }
 
@@ -72,8 +73,8 @@ impl ShapeBuilderBehaviour for CoordSystem2DBuilder {
             line.draw_composed(cx, style);
         }
 
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.tip_y, zoom);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.tip_x, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Up, self.tip_y, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Down, self.tip_x, zoom);
         cx.restore().unwrap();
     }
 }

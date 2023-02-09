@@ -1,7 +1,7 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AABBHelpers, Vector2Helpers};
+use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
@@ -20,12 +20,12 @@ pub struct Line {
 }
 
 impl TransformBehaviour for Line {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.end += offset;
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
@@ -33,18 +33,18 @@ impl TransformBehaviour for Line {
         self.end = (isometry * na::Point2::from(self.end)).coords;
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         self.start = self.start.component_mul(&scale);
         self.end = self.end.component_mul(&scale);
     }
 }
 
 impl ShapeBehaviour for Line {
-    fn bounds(&self) -> AABB {
-        AABBHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
+    fn bounds(&self) -> Aabb {
+        AabbHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         let n_splits = super::hitbox_elems_for_shape_len((self.end - self.start).magnitude());
 
         self.split(n_splits)

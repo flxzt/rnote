@@ -1,184 +1,63 @@
 use std::time::Instant;
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::pensconfig::brushconfig::BrushStyle;
+use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::AudioPlayer;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
-use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::{Constraints, PenPathModeledBuilder};
-use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder, ShapeBuilderBehaviour};
-use rnote_compose::penhelpers::PenEvent;
-use rnote_compose::penpath::Segment;
-use rnote_compose::style::textured::TexturedOptions;
-use rnote_compose::style::PressureCurve;
-use rnote_compose::{Shape, Style};
+use rnote_compose::builders::{
+    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
+};
+use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
+use rnote_compose::penevents::PenEvent;
+use rnote_compose::Constraints;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rand::{Rng, SeedableRng};
 use rnote_compose::builders::PenPathBuilderType;
-use rnote_compose::style::smooth::SmoothOptions;
-use serde::{Deserialize, Serialize};
-
-#[derive(
-    Debug,
-    Copy,
-    Clone,
-    Eq,
-    PartialEq,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
-    num_derive::ToPrimitive,
-)]
-#[serde(rename = "brush_style")]
-pub enum BrushStyle {
-    #[serde(rename = "marker")]
-    Marker = 0,
-    #[serde(rename = "solid")]
-    Solid,
-    #[serde(rename = "textured")]
-    Textured,
-}
-
-impl Default for BrushStyle {
-    fn default() -> Self {
-        Self::Solid
-    }
-}
-
-impl TryFrom<u32> for BrushStyle {
-    type Error = anyhow::Error;
-
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!("BrushStyle try_from::<u32>() for value {} failed", value)
-        })
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "marker_options")]
-pub struct MarkerOptions(SmoothOptions);
-
-impl Default for MarkerOptions {
-    fn default() -> Self {
-        let mut options = SmoothOptions::default();
-        options.pressure_curve = PressureCurve::Const;
-
-        Self(options)
-    }
-}
-
-impl std::ops::Deref for MarkerOptions {
-    type Target = SmoothOptions;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl std::ops::DerefMut for MarkerOptions {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "solid_options")]
-pub struct SolidOptions(SmoothOptions);
-
-impl Default for SolidOptions {
-    fn default() -> Self {
-        Self(SmoothOptions::default())
-    }
-}
-
-impl std::ops::Deref for SolidOptions {
-    type Target = SmoothOptions;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl std::ops::DerefMut for SolidOptions {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
+use rnote_compose::penpath::Element;
 
 #[derive(Debug)]
 enum BrushState {
     Idle,
     Drawing {
-        path_builder: Box<dyn ShapeBuilderBehaviour>,
+        path_builder: Box<dyn PenPathBuilderBehaviour>,
         current_stroke_key: StrokeKey,
     },
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(default, rename = "brush")]
+#[derive(Debug)]
 pub struct Brush {
-    pub builder_type: PenPathBuilderType,
-    #[serde(rename = "style")]
-    pub style: BrushStyle,
-    #[serde(rename = "marker_options")]
-    pub marker_options: MarkerOptions,
-    #[serde(rename = "solid_options")]
-    pub solid_options: SolidOptions,
-    #[serde(rename = "textured_options")]
-    pub textured_options: TexturedOptions,
-
-    #[serde(skip)]
     state: BrushState,
-}
-
-impl Clone for Brush {
-    fn clone(&self) -> Self {
-        Self {
-            style: self.style.clone(),
-            builder_type: self.builder_type.clone(),
-            marker_options: self.marker_options.clone(),
-            solid_options: self.solid_options.clone(),
-            textured_options: self.textured_options.clone(),
-            state: BrushState::Idle,
-        }
-    }
 }
 
 impl Default for Brush {
     fn default() -> Self {
-        let mut marker_options = MarkerOptions::default();
-        let mut solid_options = SolidOptions::default();
-        let mut textured_options = TexturedOptions::default();
-        marker_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-        solid_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-        textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
-
         Self {
-            style: BrushStyle::default(),
-            builder_type: PenPathBuilderType::default(),
-            marker_options,
-            solid_options,
-            textured_options,
             state: BrushState::Idle,
         }
     }
 }
 
 impl PenBehaviour for Brush {
+    fn style(&self) -> PenStyle {
+        PenStyle::Brush
+    }
+
+    fn update_state(&mut self, _engine_view: &mut EngineViewMut) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
     fn handle_event(
         &mut self,
         event: PenEvent,
+        now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let style = self.style;
 
         let pen_progress = match (&mut self.state, event) {
             (
@@ -191,49 +70,43 @@ impl PenBehaviour for Brush {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
-                    widget_flags.merge_with_other(engine_view.store.record());
-
-                    Self::start_audio(style, engine_view.audioplayer);
-
-                    // A new seed for a new brush stroke
-                    let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
-                    self.textured_options.seed = seed;
+                    widget_flags.merge(engine_view.store.record(Instant::now()));
+                    self.start_audio(engine_view);
+                    engine_view.pens_config.brush_config.new_style_seeds();
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
-                        Segment::Dot { element },
-                        self.style_for_current_options(),
+                        element,
+                        engine_view
+                            .pens_config
+                            .brush_config
+                            .style_for_current_options(),
                     ));
-                    let current_stroke_key = engine_view
-                        .store
-                        .insert_stroke(brushstroke, Some(self.layer_for_current_options()));
+                    let current_stroke_key = engine_view.store.insert_stroke(
+                        brushstroke,
+                        Some(
+                            engine_view
+                                .pens_config
+                                .brush_config
+                                .layer_for_current_options(),
+                        ),
+                    );
 
-                    let path_builder: Box<dyn ShapeBuilderBehaviour> = match self.builder_type {
-                        PenPathBuilderType::Simple => {
-                            Box::new(PenPathSimpleBuilder::start(element, Instant::now()))
-                        }
-                        PenPathBuilderType::Curved => {
-                            Box::new(PenPathCurvedBuilder::start(element, Instant::now()))
-                        }
-                        PenPathBuilderType::Modeled => {
-                            Box::new(PenPathModeledBuilder::start(element, Instant::now()))
-                        }
-                    };
-
-                    if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                    engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
-                    ) {
-                        log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err {}", e);
-                    }
+                    );
 
                     self.state = BrushState::Drawing {
-                        path_builder,
+                        path_builder: new_builder(
+                            engine_view.pens_config.brush_config.builder_type,
+                            element,
+                            now,
+                        ),
                         current_stroke_key,
                     };
 
                     widget_flags.redraw = true;
-                    widget_flags.hide_scrollbars = Some(true);
 
                     PenProgress::InProgress
                 } else {
@@ -247,8 +120,6 @@ impl PenBehaviour for Brush {
                 },
                 PenEvent::Cancel,
             ) => {
-                Self::stop_audio(style, engine_view.audioplayer);
-
                 // Finish up the last stroke
                 engine_view
                     .store
@@ -268,8 +139,9 @@ impl PenBehaviour for Brush {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
-                widget_flags.hide_scrollbars = Some(false);
+                widget_flags.store_modified = true;
+
+                self.stop_audio(engine_view);
 
                 PenProgress::Finished
             }
@@ -280,60 +152,58 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, Instant::now(), Constraints::default()) {
-                    BuilderProgress::InProgress => {
+                match path_builder.handle_event(pen_event, now, Constraints::default()) {
+                    PenPathBuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::EmitContinue(shapes) => {
-                        let mut n_segments = 0;
+                    PenPathBuilderProgress::EmitContinue(segments) => {
+                        let n_segments = segments.len();
 
-                        for shape in shapes {
-                            match shape {
-                                Shape::Segment(new_segment) => {
-                                    engine_view.store.add_segment_to_brushstroke(
-                                        *current_stroke_key,
-                                        new_segment,
-                                    );
-                                    n_segments += 1;
-                                    widget_flags.indicate_changed_store = true;
-                                }
-                                _ => {
-                                    // not reachable, pen builder should only produce segments
-                                }
+                        if n_segments != 0 {
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_mut(*current_stroke_key)
+                            {
+                                brushstroke.extend_w_segments(segments);
+                                widget_flags.store_modified = true;
                             }
+
+                            engine_view.store.append_rendering_last_segments(
+                                engine_view.tasks_tx.clone(),
+                                *current_stroke_key,
+                                n_segments,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                         }
 
-                        if let Err(e) = engine_view.store.append_rendering_last_segments(
-                            engine_view.tasks_tx.clone(),
-                            *current_stroke_key,
-                            n_segments,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
-                        }
                         widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::Finished(shapes) => {
-                        for shape in shapes {
-                            match shape {
-                                Shape::Segment(new_segment) => {
-                                    engine_view.store.add_segment_to_brushstroke(
-                                        *current_stroke_key,
-                                        new_segment,
-                                    );
-                                    widget_flags.indicate_changed_store = true;
-                                }
-                                _ => {
-                                    // not reachable, pen builder should only produce segments
-                                }
+                    PenPathBuilderProgress::Finished(segments) => {
+                        let n_segments = segments.len();
+
+                        if n_segments != 0 {
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_mut(*current_stroke_key)
+                            {
+                                brushstroke.extend_w_segments(segments);
+                                widget_flags.store_modified = true;
                             }
+
+                            // First we draw the last segments immediately,
+                            engine_view.store.append_rendering_last_segments(
+                                engine_view.tasks_tx.clone(),
+                                *current_stroke_key,
+                                n_segments,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
                         }
 
+                        // but then regenerate the entire stroke rendering because it gets rid of some artifacts
                         // Finish up the last stroke
                         engine_view
                             .store
@@ -345,7 +215,7 @@ impl PenBehaviour for Brush {
                             engine_view.camera.image_scale(),
                         );
 
-                        Self::stop_audio(style, engine_view.audioplayer);
+                        self.stop_audio(engine_view);
 
                         self.state = BrushState::Idle;
 
@@ -355,8 +225,7 @@ impl PenBehaviour for Brush {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
-                        widget_flags.hide_scrollbars = Some(false);
+                        widget_flags.store_modified = true;
 
                         PenProgress::Finished
                     }
@@ -369,8 +238,11 @@ impl PenBehaviour for Brush {
 }
 
 impl DrawOnDocBehaviour for Brush {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
-        let style = self.style_for_current_options();
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        let style = engine_view
+            .pens_config
+            .brush_config
+            .style_for_current_options();
 
         match &self.state {
             BrushState::Idle => None,
@@ -385,24 +257,38 @@ impl DrawOnDocBehaviour for Brush {
         cx: &mut piet_cairo::CairoRenderContext,
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &self.state {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
-                match self.style {
+                match engine_view.pens_config.brush_config.style {
                     BrushStyle::Marker => {
                         // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
                     }
                     BrushStyle::Solid | BrushStyle::Textured => {
-                        let style = self.style_for_current_options();
+                        let style = engine_view
+                            .pens_config
+                            .brush_config
+                            .style_for_current_options();
+
+                        /*
+                                               // Change color for debugging
+                                               match &mut style {
+                                                   Style::Smooth(options) => {
+                                                       options.stroke_color = Some(rnote_compose::Color::RED)
+                                                   }
+                                                   Style::Rough(_) | Style::Textured(_) => {}
+                                               }
+                        */
+
                         path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
                     }
                 }
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -410,13 +296,9 @@ impl DrawOnDocBehaviour for Brush {
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
 
-    pub const STROKE_WIDTH_MIN: f64 = 1.0;
-    pub const STROKE_WIDTH_MAX: f64 = 500.0;
-    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
-
-    fn start_audio(style: BrushStyle, audioplayer: &mut Option<AudioPlayer>) {
-        if let Some(audioplayer) = audioplayer {
-            match style {
+    fn start_audio(&self, engine_view: &mut EngineViewMut) {
+        if let Some(audioplayer) = engine_view.audioplayer {
+            match engine_view.pens_config.brush_config.style {
                 BrushStyle::Marker => {
                     audioplayer.play_random_marker_sound();
                 }
@@ -427,36 +309,21 @@ impl Brush {
         }
     }
 
-    fn stop_audio(_style: BrushStyle, audioplayer: &mut Option<AudioPlayer>) {
-        if let Some(audioplayer) = audioplayer {
+    fn stop_audio(&self, engine_view: &mut EngineViewMut) {
+        if let Some(audioplayer) = engine_view.audioplayer {
             audioplayer.stop_random_brush_sond();
         }
     }
+}
 
-    pub fn layer_for_current_options(&self) -> StrokeLayer {
-        match &self.style {
-            BrushStyle::Marker => StrokeLayer::Highlighter,
-            BrushStyle::Solid | BrushStyle::Textured => StrokeLayer::UserLayer(0),
-        }
-    }
-
-    pub fn style_for_current_options(&self) -> Style {
-        match &self.style {
-            BrushStyle::Marker => {
-                let options = self.marker_options.clone();
-
-                Style::Smooth(options.0)
-            }
-            BrushStyle::Solid => {
-                let options = self.solid_options.clone();
-
-                Style::Smooth(options.0)
-            }
-            BrushStyle::Textured => {
-                let options = self.textured_options.clone();
-
-                Style::Textured(options)
-            }
-        }
+fn new_builder(
+    builder_type: PenPathBuilderType,
+    element: Element,
+    now: Instant,
+) -> Box<dyn PenPathBuilderBehaviour> {
+    match builder_type {
+        PenPathBuilderType::Simple => Box::new(PenPathSimpleBuilder::start(element, now)),
+        PenPathBuilderType::Curved => Box::new(PenPathCurvedBuilder::start(element, now)),
+        PenPathBuilderType::Modeled => Box::new(PenPathModeledBuilder::start(element, now)),
     }
 }

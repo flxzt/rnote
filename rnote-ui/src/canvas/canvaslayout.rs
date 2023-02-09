@@ -188,7 +188,7 @@ impl Default for RnCanvasLayout {
 
 impl RnCanvasLayout {
     pub(crate) const OVERSHOOT_VERTICAL: f64 = 96.0;
-    pub(crate) const OVERSHOOT_HORIZONTAL: f64 = 32.0;
+    pub(crate) const OVERSHOOT_HORIZONTAL: f64 = 96.0;
 
     pub(crate) fn new() -> Self {
         glib::Object::new(&[])

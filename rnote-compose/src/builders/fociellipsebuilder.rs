@@ -72,20 +72,28 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             (FociEllipseBuilderState::StartFinished(_), _) => {}
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
-                // we want to allow horizontal and vertical constraints while setting the second foci
                 constraints.ratios.insert(ConstraintRatio::Horizontal);
                 constraints.ratios.insert(ConstraintRatio::Vertical);
 
                 foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
-                self.state = FociEllipseBuilderState::FociFinished([foci[0], element.pos]);
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
+                self.state = FociEllipseBuilderState::FociFinished([
+                    foci[0],
+                    constraints.constrain(element.pos - foci[0]) + foci[0],
+                ]);
             }
             (FociEllipseBuilderState::Foci(_), _) => {}
             (FociEllipseBuilderState::FociFinished(foci), PenEvent::Down { element, .. }) => {
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
                 self.state = FociEllipseBuilderState::FociAndPoint {
                     foci: *foci,
-                    point: element.pos,
+                    point: constraints.constrain(element.pos - foci[1]) + foci[1],
                 };
             }
             (FociEllipseBuilderState::FociFinished(_), _) => {}

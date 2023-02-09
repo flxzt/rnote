@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-09 12:51+0000\n"
+"PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
 "Language: ko\n"
@@ -1692,55 +1692,55 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:537
 msgid "Drinks"
-msgstr ""
+msgstr "음료수"
 
 #: rnote-ui/src/dialogs/mod.rs:538
 msgid "Flag"
-msgstr ""
+msgstr "깃발"
 
 #: rnote-ui/src/dialogs/mod.rs:539
 msgid "Folder"
-msgstr ""
+msgstr "서류철"
 
 #: rnote-ui/src/dialogs/mod.rs:540
 msgid "Footprints"
-msgstr ""
+msgstr "발자국"
 
 #: rnote-ui/src/dialogs/mod.rs:541
 msgid "Gamepad"
-msgstr ""
+msgstr "게임패드"
 
 #: rnote-ui/src/dialogs/mod.rs:542
 msgid "Gear"
-msgstr ""
+msgstr "기어"
 
 #: rnote-ui/src/dialogs/mod.rs:543
 msgid "Hammer"
-msgstr ""
+msgstr "해머"
 
 #: rnote-ui/src/dialogs/mod.rs:544
 msgid "Heart"
-msgstr ""
+msgstr "하트"
 
 #: rnote-ui/src/dialogs/mod.rs:545
 msgid "Hourglass"
-msgstr ""
+msgstr "모래시계"
 
 #: rnote-ui/src/dialogs/mod.rs:546
 msgid "Key"
-msgstr ""
+msgstr "열쇠"
 
 #: rnote-ui/src/dialogs/mod.rs:547
 msgid "Language"
-msgstr ""
+msgstr "언어"
 
 #: rnote-ui/src/dialogs/mod.rs:548
 msgid "Lightbulb"
-msgstr ""
+msgstr "전구"
 
 #: rnote-ui/src/dialogs/mod.rs:549
 msgid "Mathematics"
-msgstr ""
+msgstr "수학"
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Meeting"
@@ -1748,35 +1748,35 @@ msgstr "회의"
 
 #: rnote-ui/src/dialogs/mod.rs:551
 msgid "Money"
-msgstr ""
+msgstr "돈"
 
 #: rnote-ui/src/dialogs/mod.rs:552
 msgid "Musical Note"
-msgstr ""
+msgstr "음표"
 
 #: rnote-ui/src/dialogs/mod.rs:553
 msgid "Paintbrush"
-msgstr ""
+msgstr "페인트브러시"
 
 #: rnote-ui/src/dialogs/mod.rs:554
 msgid "Pencil and Paper"
-msgstr ""
+msgstr "연필과 종이"
 
 #: rnote-ui/src/dialogs/mod.rs:555
 msgid "People"
-msgstr ""
+msgstr "사람들"
 
 #: rnote-ui/src/dialogs/mod.rs:556
 msgid "Person"
-msgstr ""
+msgstr "사람"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Projector"
-msgstr ""
+msgstr "프로젝터"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Scratchpad"
-msgstr ""
+msgstr "스크래치패드"
 
 #: rnote-ui/src/dialogs/mod.rs:559
 msgid "Shapes"
@@ -1784,116 +1784,116 @@ msgstr "모형들"
 
 #: rnote-ui/src/dialogs/mod.rs:560
 msgid "Shopping"
-msgstr ""
+msgstr "쇼핑"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Speech Bubble"
-msgstr ""
+msgstr "말풍선"
 
 #: rnote-ui/src/dialogs/mod.rs:562
 msgid "Speedometer"
-msgstr ""
+msgstr "속도계"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Star"
-msgstr ""
+msgstr "별"
 
 #: rnote-ui/src/dialogs/mod.rs:565
 msgctxt "as in terminal software"
 msgid "Terminal"
-msgstr ""
+msgstr "단말기"
 
 #: rnote-ui/src/dialogs/mod.rs:567
 msgid "Text"
-msgstr ""
+msgstr "텍스트"
 
 #: rnote-ui/src/dialogs/mod.rs:568
 msgid "Travel"
-msgstr ""
+msgstr "여행"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Weather"
-msgstr ""
+msgstr "날씨"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Weight"
-msgstr ""
+msgstr "무게"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:348
 msgid "Miscellaneous"
-msgstr ""
+msgstr "기타"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:356
 msgid "Coordinate Systems"
-msgstr ""
+msgstr "좌표계"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:364
 msgid "Ellipses"
-msgstr ""
+msgstr "타원들"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:371
 msgid "Curves"
-msgstr ""
+msgstr "곡선"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:384
 msgid "Line"
-msgstr ""
+msgstr "선"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Rectangle"
-msgstr ""
+msgstr "사각형"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "2D coordinate system"
-msgstr ""
+msgstr "2D 좌표계"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "3D coordinate system"
-msgstr ""
+msgstr "3D 좌표계"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "2D 단일 사분면 좌표계"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "Ellipse"
-msgstr ""
+msgstr "타원"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "Ellipse with foci"
-msgstr ""
+msgstr "초점이 있는 타원"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Quadratic bezier curve"
-msgstr ""
+msgstr "2차 베지어 곡선"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Cubic bezier curve"
-msgstr ""
+msgstr "3차 베지어 곡선"
 
 #: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Crosshair (Small)"
-msgstr ""
+msgstr "십자선 (소)"
 
 #: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Crosshair (Medium)"
-msgstr ""
+msgstr "십자선 (중)"
 
 #: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Crosshair (Large)"
-msgstr ""
+msgstr "십자선 (대)"
 
 #: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Dot (Small)"
-msgstr ""
+msgstr "점 (소)"
 
 #: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Dot (Medium)"
-msgstr ""
+msgstr "점 (중)"
 
 #: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Dot (Large)"
-msgstr ""
+msgstr "점 (대)"
 
 #: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North-West (Small)"
@@ -1945,11 +1945,11 @@ msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder Name"
-msgstr ""
+msgstr "폴더 이름"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
-msgstr ""
+msgstr "새 폴더"
 
 #, fuzzy
 #~| msgid "Toggle fullscreen"

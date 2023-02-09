@@ -80,7 +80,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             (CubBezBuilderState::Cp1 { start, .. }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::Cp1Finished {
                     start: *start,
-                    cp1: element.pos,
+                    cp1: constraints.constrain(element.pos - *start) + *start,
                 };
             }
             (CubBezBuilderState::Cp1 { .. }, ..) => {}

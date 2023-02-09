@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2022-11-16 10:26+0000\n"
+"PO-Revision-Date: 2023-02-09 12:51+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
 "Language: ko\n"
@@ -16,12 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
-msgstr "스케치 및 필기 메모 작성"
+msgstr "스케치 및 손글씨 메모 작성하기"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
@@ -36,17 +36,15 @@ msgstr "새 창"
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr ""
-"Rnote는 스케치하기, 필기 메모, 문서, 그림에 주석을 달기위한 벡터 기반 그리기 "
-"앱입니다."
+msgstr "Rnote는 스케치하기, 필기 메모, 문서, 그림에 주석을 달 수 있는 벡터 기반 "
+"드로잉 앱입니다."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
-msgstr ""
-"면책 조항 : 파일 형식이 여전히 불안정합니다. 버전 간의 호환성이 변경되고 손상"
-"될 수 있습니다."
+msgstr "고지 사항: 파일 형식이 여전히 불안정합니다. 버전 간 호환성이 변경되거나 "
+"중단될 수 있습니다."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
@@ -54,7 +52,7 @@ msgstr "밝은 색상의 기본 창"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "강의 노트 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -62,15 +60,15 @@ msgstr "PDF 주석"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "강의 노트 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
 msgid "Clear Document"
-msgstr ""
+msgstr "문서 지우기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "전체 문서를 지웁니다. 확인 부탁드립니다."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -88,197 +86,196 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:379
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
-msgstr ""
+msgstr "취소하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "지우기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
 #: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
-msgstr ""
+msgstr "새 문서"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"새 문서를 만들면 저장되지 않은 변경 내용이 모두 삭제됩니다.\n"
+"현재 문서를 저장하시겠습니까?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr ""
+msgstr "폐기하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:24
 #: rnote-ui/data/ui/dialogs/dialogs.ui:36
 #: rnote-ui/data/ui/dialogs/dialogs.ui:53 rnote-ui/data/ui/dialogs/import.ui:12
 #: rnote-ui/src/dialogs/export.rs:26
 msgid "Save"
-msgstr ""
+msgstr "저장하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "Close the folded flap"
 msgid "Close Tab"
-msgstr "접힌 플랩 닫기"
+msgstr "탭 닫기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
-msgstr ""
+msgstr "이 탭에는 저장되지 않은 변경 사항이 포함되어 있습니다. 저장되지 않은 변경 "
+"사항은 영구적으로 손실됩니다."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgid "New Window"
 msgid "Close Window"
-msgstr "새 창"
+msgstr "창 닫기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
-msgstr ""
+msgstr "일부 열린 파일에는 저장되지 않은 변경 사항이 포함되어 있습니다. 저장되지 "
+"않은 변경 사항은 영구적으로 손실됩니다."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Unsaved Documents"
-msgstr ""
+msgstr "저장되지 않은 문서"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 msgid "Discard All"
-msgstr ""
+msgstr "모두 폐기하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Workspace"
 msgid "Edit Workspace"
-msgstr "작업 공간"
+msgstr "작업 공간 편집하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
-msgstr ""
+msgstr "적용하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:110
 msgid "Workspace Name"
-msgstr ""
+msgstr "작업 공간 이름"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:115
 msgid "Icon"
-msgstr ""
+msgstr "아이콘"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:116
 msgid "Change the workspace icon"
-msgstr ""
+msgstr "작업 공간 아이콘 변경하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:135
 #: rnote-ui/data/ui/settingspanel.ui:283
 msgid "Color"
-msgstr ""
+msgstr "색상"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:136
 msgid "Change the workspace color"
-msgstr ""
+msgstr "작업 공간 색상 변경하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:149
 msgid "Directory"
-msgstr ""
+msgstr "디렉터리"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:150
 msgid "Change the workspace directory"
-msgstr ""
+msgstr "작업 공간 디렉터리 변경하기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
 #: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- 선택된 디렉터리 없음 -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
 msgid "Change the directory"
-msgstr ""
+msgstr "디렉터리 변경하기"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:85
 msgid "Open File"
-msgstr ""
+msgstr "파일 열기"
 
 #: rnote-ui/data/ui/dialogs/import.ui:6
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr ""
+msgstr "이 파일을 열면 저장되지 않은 변경 사항을 덮어씁니다. 현재 문서를 "
+"저장하시겠습니까?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import PDF"
-msgstr ""
+msgstr "PDF 가져오기"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
 #: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
-msgstr ""
+msgstr "가져오기"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "정보"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF Import Preferences"
-msgstr ""
+msgstr "PDF 가져오기 환경설정"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start Page"
-msgstr ""
+msgstr "시작 페이지"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
 msgid "End Page"
-msgstr ""
+msgstr "끝 페이지"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
 msgid "Page Width (%)"
-msgstr ""
+msgstr "페이지 너비 (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr ""
+msgstr "가져온 PDF의 너비를 형식 너비에 대한 백분율로 설정합니다"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
-msgstr ""
+msgstr "페이지 간격"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
 msgid "How PDF pages are spaced"
-msgstr ""
+msgstr "PDF 페이지 간격 지정 방법"
 
 #: rnote-ui/data/ui/dialogs/import.ui:151
 msgid "Continuous"
-msgstr ""
+msgstr "연속"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
 msgid "One per Document Page"
-msgstr ""
+msgstr "문서 페이지당 하나"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
 msgid "Pages Type"
-msgstr ""
+msgstr "페이지 유형"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
 msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgstr ""
+msgstr "PDF를 벡터 이미지로 가져올지 비트맵 이미지로 가져올지 설정합니다"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
 msgid "Vector"
-msgstr ""
+msgstr "벡터"
 
 #: rnote-ui/data/ui/dialogs/import.ui:180
 msgid "Bitmap"
-msgstr ""
+msgstr "비트맵"
 
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap Scale-Factor"
-msgstr ""
+msgstr "비트맵 배율 인수"
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
 #: rnote-ui/data/ui/dialogs/export.ui:294
@@ -287,40 +284,42 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"문서의 실제 크기를 기준으로 비트맵\n"
+"배율을 설정합니다"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
 msgid "Import Xournal++ File"
-msgstr ""
+msgstr "Xournal++ 파일 가져오기"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
 msgid "Xournal++ File Import Preferences"
-msgstr ""
+msgstr "Xournal++ 파일 가져오기 환경설정"
 
 #: rnote-ui/data/ui/dialogs/import.ui:263
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:264
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Xournal++ 파일에 대한 선호 DPI를 설정합니다"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export Document"
-msgstr ""
+msgstr "문서 내보내기"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
 #: rnote-ui/src/dialogs/export.rs:881
 msgid "Export"
-msgstr ""
+msgstr "내보내기"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Export File"
-msgstr ""
+msgstr "파일 내보내기"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Select the export file"
-msgstr ""
+msgstr "내보내기 파일 선택하기"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
@@ -328,270 +327,266 @@ msgstr ""
 #: rnote-ui/src/dialogs/export.rs:175 rnote-ui/src/dialogs/export.rs:623
 #: rnote-ui/src/dialogs/export.rs:649 rnote-ui/src/dialogs/export.rs:684
 msgid "- no file selected -"
-msgstr ""
+msgstr "- 선택된 파일 없음 -"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
 msgid "Export Preferences"
-msgstr ""
+msgstr "내보내기 환경설정"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
 msgid "With Background"
-msgstr ""
+msgstr "배경 포함"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "배경을 내보낼지 여부를 설정합니다"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
 msgid "With Pattern"
-msgstr ""
+msgstr "패턴 포함"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "배경 패턴을 내보낼지 여부를 설정합니다"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
 msgid "Export Format"
-msgstr ""
+msgstr "내보내기 형식"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279
 msgid "The export format"
-msgstr ""
+msgstr "내보내기 형식"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:256
 #: rnote-ui/src/dialogs/export.rs:535 rnote-ui/src/dialogs/export.rs:781
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:261
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:266
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 msgid "Export Document Pages"
-msgstr ""
+msgstr "문서 페이지 내보내기"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
 msgid "Page Files Naming:"
-msgstr ""
+msgstr "페이지 파일 이름 지정:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export Directory"
-msgstr ""
+msgstr "내보내기 디렉터리"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"
-msgstr ""
+msgstr "내보내기 디렉터리 선택하기"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Export Files Stem Name"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "내보내기 파일 스템 이름"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
 #: rnote-ui/src/dialogs/export.rs:786
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285
 #: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:546
 #: rnote-ui/src/dialogs/export.rs:792
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "Jpeg 화질"
 
 #: rnote-ui/data/ui/dialogs/export.ui:316
 #: rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Jpeg 이미지의 화질을 설정합니다 (1~100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
-#, fuzzy
-#| msgid "A selection"
 msgid "Export Selection"
-msgstr "선택항목"
+msgstr "내보내기 선택항목"
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
-msgstr ""
+msgstr "내보내기 이미지 형식"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr ""
+msgstr "여백"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "선택한 영역 주변의 여백을 설정합니다"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush"
 msgid "Brush Style"
-msgstr "브러시"
+msgstr "브러시 스타일"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:133
 msgid "Brush Configuration"
-msgstr ""
+msgstr "브러시 구성"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:64
 msgid "Brush Styles"
-msgstr ""
+msgstr "브러시 스타일"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
-msgstr ""
+msgstr "매직펜"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 msgid "Mark underneath other strokes"
-msgstr ""
+msgstr "다른 자획의 밑에 표시합니다"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
-msgstr ""
+msgstr "솔리드"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "솔리드 자획 그리기"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
-msgstr ""
+msgstr "텍스처"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
-msgstr ""
+msgstr "텍스처 있는 자획 그리기"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"
-msgstr ""
+msgstr "경로 모델링"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Simple"
-msgstr ""
+msgstr "단순"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "원시 입력에서 선 부분을 생성합니다.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Curved"
-msgstr ""
+msgstr "곡선"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "부드러운 곡선 부분을 생성합니다.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:173
 msgid "Modeled"
-msgstr ""
+msgstr "모델링"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"물리 기반 알고리즘을 사용하여 모델링된 경로를 생성합니다.\n"
+"최상의 손글씨 결과를 얻을 수 있습니다."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "Solid Style"
-msgstr ""
+msgstr "솔리드 스타일"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
 msgid "Pressure Curve"
-msgstr ""
+msgstr "압력 곡선"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "압력 곡선 고르기"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Constant"
-msgstr ""
+msgstr "고정값"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:192
 msgid "Linear"
-msgstr ""
+msgstr "선형"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Square root"
-msgstr ""
+msgstr "제곱근"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Cubic root"
-msgstr ""
+msgstr "세제곱근"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "2차 포물선"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:196
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "3차 포물선"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
 msgid "Textured Style"
-msgstr ""
+msgstr "텍스처 있는 스타일"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"
-msgstr ""
+msgstr "밀도"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "밀도는 10x10 영역당 도트의 양입니다"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
 msgid "Stroke Dots Position Distribution"
-msgstr ""
+msgstr "자획 도트 위치 분포"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:227
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "도트 위치 확률 분포 고르기"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:231
 msgid "Uniform"
-msgstr ""
+msgstr "균일"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:232
 msgid "Normal"
-msgstr ""
+msgstr "보통"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:233
 msgid "Exponential"
-msgstr ""
+msgstr "기하급수적"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "기하급수적 반전하기"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr ""
+msgstr "엉망 자획"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr ""
+msgstr "분열 자획"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: rnote-ui/data/ui/overlays.ui:45
@@ -601,7 +596,7 @@ msgstr "브러시"
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: rnote-ui/data/ui/overlays.ui:52
 msgid "Shaper"
-msgstr "셰이퍼"
+msgstr "모형도구"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: rnote-ui/data/ui/overlays.ui:60
@@ -616,7 +611,7 @@ msgstr "지우개"
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
 #: rnote-ui/data/ui/overlays.ui:76
 msgid "Selector"
-msgstr "선택자"
+msgstr "선택도구"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
 #: rnote-ui/data/ui/overlays.ui:84
@@ -625,130 +620,120 @@ msgstr "도구"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr ""
+msgstr "다각형으로 선택하기"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr ""
+msgstr "사각형으로 선택하기"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "하나씩 선택하기"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr ""
+msgstr "교차 경로 선택하기"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
-msgstr ""
+msgstr "선택항목의 크기를 조정하는 동안 종횡비를 고정합니다"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr ""
+msgstr "모든 자획 선택하기"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
-msgstr ""
+msgstr "모든 자획 선택해제"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 #: rnote-ui/data/ui/shortcuts.ui:207
-#, fuzzy
-#| msgid "A selection"
 msgid "Duplicate Selection"
-msgstr "선택항목"
+msgstr "선택항목 복제하기"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#, fuzzy
-#| msgid "A selection"
 msgid "Delete Selection"
-msgstr "선택항목"
+msgstr "선택항목 삭제하기"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper Style"
-msgstr "셰이퍼"
+msgstr "모형도구 스타일"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape Configuration"
-msgstr ""
+msgstr "모형 구성"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shape Builders"
-msgstr "셰이퍼"
+msgstr "모형 작성도구"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
-msgstr ""
+msgstr "제약 조건"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shaper Styles"
-msgstr "셰이퍼"
+msgstr "모형도구 스타일"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
-msgstr ""
+msgstr "부드러운"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
-msgstr ""
+msgstr "거친"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
-msgstr ""
+msgstr "거친 스타일"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 msgid "Fill Style"
-msgstr ""
+msgstr "채움 스타일"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
-msgstr ""
+msgstr "채움 스타일 고르기"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
-msgstr ""
+msgstr "그려넣기"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
-msgstr ""
+msgstr "지그재그"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "지그재그 선"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
-msgstr ""
+msgstr "망상선"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
-msgstr ""
+msgstr "점선"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
-msgstr ""
+msgstr "파선"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure Angle"
-msgstr ""
+msgstr "그려넣기 각도"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
-msgstr ""
+msgstr "그려넣기 채움의 각도를 설정합니다"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
-msgstr ""
+msgstr "활성화됨"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 msgid ""
@@ -756,27 +741,31 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
+"이 스위치가 꺼져 있거나\n"
+"켜져 있을 때 Ctrl 키를 눌러\n"
+"제약 조건을 일시적으로\n"
+"활성화/비활성화합니다"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
-msgstr ""
+msgstr "1:1"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
-msgstr ""
+msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden Ratio (1:1.618)"
-msgstr ""
+msgstr "황금 비율 (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr ""
+msgstr "수직 공간 삽입하기"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:91
 msgid "Move View"
-msgstr ""
+msgstr "이동 보기"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -784,177 +773,154 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
+"글꼴 선택도구\n"
+"(새 글꼴을 선택하려면 두 번 클릭하고,\n"
+"선택을 클릭하거나 Enter 키를 누릅니다)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
 msgid "Pick And Insert Emoji"
-msgstr ""
+msgstr "이모지 선택 및 삽입하기"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:73
 msgid "Reset Text Attributes"
-msgstr ""
+msgstr "텍스트 속성 재설정"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:82
 msgid "Bold"
-msgstr ""
+msgstr "굵게"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:91
 msgid "Italic"
-msgstr ""
+msgstr "기울임꼴"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:100
 msgid "Underline"
-msgstr ""
+msgstr "밑줄"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
-msgstr ""
+msgstr "취소선"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
-msgstr ""
+msgstr "왼쪽 정렬"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
-msgstr ""
+msgstr "중앙 정렬"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
-msgstr ""
+msgstr "오른쪽 정렬"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
-msgstr ""
+msgstr "채움"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
-msgstr ""
+msgstr "선택하기"
 
 #: rnote-ui/data/ui/appmenu.ui:24
-#, fuzzy
-#| msgid "_Color scheme"
 msgid "Co_lor Scheme"
-msgstr "색 구성표(_C)"
+msgstr "색상 구성표(_L)"
 
 #: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-#| msgid "Use _system colors"
 msgid "Use _System Colors"
 msgstr "시스템 색상 사용하기(_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:31
-#, fuzzy
-#| msgid "Use _light colors"
 msgid "Use _Light Colors"
 msgstr "밝은 색상 사용하기(_L)"
 
 #: rnote-ui/data/ui/appmenu.ui:36
-#, fuzzy
-#| msgid "Use _dark colors"
 msgid "Use _Dark Colors"
 msgstr "어두운 색상 사용하기(_D)"
 
 #: rnote-ui/data/ui/appmenu.ui:42
-#, fuzzy
-#| msgid "_Developer mode"
 msgid "De_veloper Mode"
-msgstr "개발자 모드(_D)"
+msgstr "개발자 모드(_V)"
 
 #: rnote-ui/data/ui/appmenu.ui:47
-#, fuzzy
-#| msgid "Developer _menu"
 msgid "Developer _Menu"
 msgstr "개발자 메뉴(_M)"
 
 #: rnote-ui/data/ui/appmenu.ui:52
-#, fuzzy
-#| msgid "_Visual debugging"
 msgid "Visual _Debugging"
-msgstr "시각적 디버깅(_V)"
+msgstr "시각적 디버깅(_D)"
 
 #: rnote-ui/data/ui/appmenu.ui:56
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Export Engine _State"
 msgstr "엔진 상태 내보내기(_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:60
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Export Engine _Config"
 msgstr "엔진 구성 내보내기(_C)"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "새로 만들기(_N)"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr ""
+msgstr "열기(_O)"
 
 #: rnote-ui/data/ui/appmenu.ui:76
 msgid "_Save"
-msgstr ""
+msgstr "저장(_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _As"
-msgstr ""
+msgstr "다른 이름으로 저장(_A)"
 
 #: rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
-msgstr ""
+msgstr "인쇄(_P)"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 msgid "_Import File"
-msgstr ""
+msgstr "파일 가져오기(_I)"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr ""
+msgstr "클립보드(_C)"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "복사하기(_C)"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "잘라내기(_U)"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "붙여넣기(_P)"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
-msgstr ""
+msgstr "내보내기(_E)…"
 
 #: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr ""
+msgstr "문서 내보내기(_D)"
 
 #: rnote-ui/data/ui/appmenu.ui:115
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Export Document _Pages"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "문서 페이지 내보내기(_P)"
 
 #: rnote-ui/data/ui/appmenu.ui:119
-#, fuzzy
-#| msgid "A selection"
 msgid "Export _Selection"
-msgstr "선택항목"
+msgstr "선택항목 내보내기(_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:126
-#, fuzzy
-#| msgid "Settings"
 msgid "Se_ttings"
-msgstr "설정"
+msgstr "설정(_T)"
 
 #: rnote-ui/data/ui/appmenu.ui:130
-#, fuzzy
-#| msgid "_Keyboard shortcuts"
 msgid "_Keyboard Shortcuts"
 msgstr "키보드 단축키(_K)"
 
@@ -963,32 +929,22 @@ msgid "_Donate 💝"
 msgstr "기부하기(_D) 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:138
-#, fuzzy
-#| msgid "_About Rnote"
 msgid "A_bout Rnote"
-msgstr "Rnote 정보(_A)"
+msgstr "Rnote 정보(_B)"
 
 #: rnote-ui/data/ui/appmenu.ui:169
-#, fuzzy
-#| msgid "Sidebar on the left side"
 msgid "Sidebar on the Left Side"
 msgstr "왼쪽의 사이드바"
 
 #: rnote-ui/data/ui/appmenu.ui:178
-#, fuzzy
-#| msgid "Sidebar on the right side"
 msgid "Sidebar on the Right Side"
 msgstr "오른쪽의 사이드바"
 
 #: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
-#, fuzzy
-#| msgid "Toggle fullscreen"
 msgid "Toggle Fullscreen"
 msgstr "전체화면 전환하기"
 
 #: rnote-ui/data/ui/appwindow.ui:109
-#, fuzzy
-#| msgid "Close the folded flap"
 msgid "Close the Folded Flap"
 msgstr "접힌 플랩 닫기"
 
@@ -1001,52 +957,44 @@ msgid "Settings"
 msgstr "설정"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
-#, fuzzy
-#| msgid "Document _layout"
 msgid "_Document Layout"
-msgstr "문서 레이아웃(_L)"
+msgstr "문서 레이아웃(_D)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
-#, fuzzy
-#| msgid "_Fixed size"
 msgid "_Fixed Size"
 msgstr "고정된 크기(_F)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "_Continuous Vertical"
-msgstr ""
+msgstr "세로로 연속된 페이지(_C)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr ""
+msgstr "반무한(_S)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
-msgstr ""
+msgstr "무한(_I)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Format Borders"
-msgstr ""
+msgstr "형식 테두리 표시하기(_F)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
-#, fuzzy
-#| msgid "Draw with _touch input"
 msgid "Draw With _Touch Input"
 msgstr "터치 입력으로 그리기(_T)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "_Pen Sounds"
-msgstr ""
+msgstr "펜 소리(_P)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:66
 msgid "C_lear Document"
-msgstr ""
+msgstr "문서 지우기(_L)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:70
-#, fuzzy
-#| msgid "Return to the origin page"
 msgid "_Return to Origin Page"
-msgstr "원본 페이지로 돌아가기"
+msgstr "원본 페이지로 돌아가기(_R)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
 #: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
@@ -1055,7 +1003,7 @@ msgstr "축소"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
 msgid "Reset Zoom"
-msgstr ""
+msgstr "확대/축소 재설정"
 
 #: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
@@ -1064,44 +1012,44 @@ msgstr "확대"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
 msgid "Zoom to Page Width"
-msgstr ""
+msgstr "페이지 너비로 확대/축소"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
-msgstr ""
+msgstr "자획 색상"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
 msgid "Fill Color"
-msgstr ""
+msgstr "채움 색상"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
-msgstr ""
+msgstr "열기"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
-msgstr ""
+msgstr "이름 바꾸기"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move to Trash"
-msgstr ""
+msgstr "휴지통으로 이동하기"
 
 #: rnote-ui/data/ui/filerow.ui:70
 msgid "Duplicate"
-msgstr ""
+msgstr "복제하기"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
 msgid "Draft"
-msgstr ""
+msgstr "초안"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
 msgid "Reveal/Hide Flap"
-msgstr ""
+msgstr "플랩 드러내기/숨기기"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
-msgstr ""
+msgstr "새 탭"
 
 #: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
@@ -1112,441 +1060,417 @@ msgid "Redo"
 msgstr "다시 실행"
 
 #: rnote-ui/data/ui/mainheader.ui:87
-#, fuzzy
-#| msgid "Add page"
 msgid "Add Page"
 msgstr "페이지 추가하기"
 
 #: rnote-ui/data/ui/mainheader.ui:94
-#, fuzzy
-#| msgid "Resize document to fit the strokes"
 msgid "Resize Document to Fit Strokes"
 msgstr "자획에 맞게 문서 크기 조정하기"
 
 #: rnote-ui/data/ui/mainheader.ui:109 rnote-ui/data/ui/shortcuts.ui:156
 msgid "Save Document"
-msgstr ""
+msgstr "문서 저장하기"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _Left"
-msgstr ""
+msgstr "왼쪽으로 이동(_L)"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _Right"
-msgstr ""
+msgstr "오른쪽으로 이동(_R)"
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgid "Close the folded flap"
 msgid "_Close"
-msgstr "접힌 플랩 닫기"
+msgstr "닫기(_C)"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
-msgstr ""
+msgstr "영구."
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
-msgstr ""
+msgstr "일반"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr ""
+msgstr "자동 저장"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr ""
+msgstr "자동 저장 활성화 또는 비활성화"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave Interval (secs)"
-msgstr ""
+msgstr "자동 저장 간격 (초)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr ""
+msgstr "자동 저장 간격(초)을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Format Border Color"
-msgstr ""
+msgstr "형식 테두리 색상"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 msgid "Set the format border color"
-msgstr ""
+msgstr "형식 테두리 색상을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show Scrollbars"
-msgstr ""
+msgstr "스크롤바 표시하기"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr ""
+msgstr "캔버스에 스크롤 막대를 표시할지 여부를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular Cursor"
-msgstr ""
+msgstr "일반 커서"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 msgid "Set the regular cursor"
-msgstr ""
+msgstr "일반 커서를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:128
 msgid "Drawing Cursor"
-msgstr ""
+msgstr "드로잉 커서"
 
 #: rnote-ui/data/ui/settingspanel.ui:129
 msgid "Set the drawing cursor"
-msgstr ""
+msgstr "드로잉 커서를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:154
 msgid "Page Format"
-msgstr ""
+msgstr "페이지 형식"
 
 #: rnote-ui/data/ui/settingspanel.ui:157
 msgid "Format"
-msgstr ""
+msgstr "형식"
 
 #: rnote-ui/data/ui/settingspanel.ui:158
 msgid "Choose a format"
-msgstr ""
+msgstr "형식 고르기"
 
 #: rnote-ui/data/ui/settingspanel.ui:162
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #: rnote-ui/data/ui/settingspanel.ui:163
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #: rnote-ui/data/ui/settingspanel.ui:165
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: rnote-ui/data/ui/settingspanel.ui:166
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:167
 msgid "US letter"
-msgstr ""
+msgstr "US letter"
 
 #: rnote-ui/data/ui/settingspanel.ui:168
 msgid "US legal"
-msgstr ""
+msgstr "US legal"
 
 #: rnote-ui/data/ui/settingspanel.ui:169
 msgid "Custom"
-msgstr ""
+msgstr "사용자 지정"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "Orientation"
-msgstr ""
+msgstr "방향"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
 msgid "Set the format orientation"
-msgstr ""
+msgstr "형식 방향을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:190
 msgid "Portrait"
-msgstr ""
+msgstr "세로 방향"
 
 #: rnote-ui/data/ui/settingspanel.ui:196
 msgid "Landscape"
-msgstr ""
+msgstr "가로 방향"
 
 #: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Width"
-msgstr ""
+msgstr "너비"
 
 #: rnote-ui/data/ui/settingspanel.ui:207
 msgid "Set the format width"
-msgstr ""
+msgstr "형식 너비를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:220
 msgid "Height"
-msgstr ""
+msgstr "높이"
 
 #: rnote-ui/data/ui/settingspanel.ui:221
 msgid "Set the format height"
-msgstr ""
+msgstr "형식 높이를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:234
 msgid "Dpi"
-msgstr ""
+msgstr "Dpi"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr ""
+msgstr "Dpi(인치당 도트 수)를 설정합니다. 기본값은 96입니다."
 
 #: rnote-ui/data/ui/settingspanel.ui:258
 msgid "Revert"
-msgstr ""
+msgstr "되돌리기"
 
 #: rnote-ui/data/ui/settingspanel.ui:280
-#, fuzzy
-#| msgid "Document _layout"
 msgid "Document Background"
-msgstr "문서 레이아웃(_L)"
+msgstr "문서 배경"
 
 #: rnote-ui/data/ui/settingspanel.ui:284
 msgid "Set the background color"
-msgstr ""
+msgstr "배경 색상을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:301
 msgid "Pattern"
-msgstr ""
+msgstr "패턴"
 
 #: rnote-ui/data/ui/settingspanel.ui:302
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "배경 패턴을 고릅니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:306
 msgid "None"
-msgstr ""
+msgstr "없음"
 
 #: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
-msgstr ""
+msgstr "선"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
 #: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Grid"
-msgstr ""
+msgstr "격자"
 
 #: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
-msgstr ""
+msgstr "패턴 색상"
 
 #: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "배경 패턴 색상을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Pattern Width"
-msgstr ""
+msgstr "패턴 너비"
 
 #: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "배경 패턴 너비를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:349
 msgid "Pattern Height"
-msgstr ""
+msgstr "패턴 높이"
 
 #: rnote-ui/data/ui/settingspanel.ui:350
 msgid "Set the background pattern height"
-msgstr ""
+msgstr "배경 패턴 높이를 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:366
 msgid "Button Shortcuts"
-msgstr ""
+msgstr "버튼 단축키"
 
 #: rnote-ui/data/ui/settingspanel.ui:369
 msgid "Stylus Primary Button Action"
-msgstr ""
+msgstr "스타일러스 기본 버튼 동작"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
 msgid "Set the action for the primary stylus button"
-msgstr ""
+msgstr "기본 스타일러스 버튼의 동작을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:381
 msgid "Stylus Secondary Button Action"
-msgstr ""
+msgstr "스타일러스 보조 버튼 동작"
 
 #: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Set the action for the secondary stylus button"
-msgstr ""
+msgstr "보조 스타일러스 버튼의 동작을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:393
 msgid "Mouse Secondary Button Action"
-msgstr ""
+msgstr "마우스 보조 버튼 동작"
 
 #: rnote-ui/data/ui/settingspanel.ui:394
 msgid "Set the action for the secondary mouse button"
-msgstr ""
+msgstr "보조 마우스 버튼에 대한 동작을 설정합니다"
 
 #: rnote-ui/data/ui/settingspanel.ui:405
 msgid "Touch Two-Finger Long-Press Action"
-msgstr ""
+msgstr "두 손가락 터치 길게 누르기 동작"
 
 #: rnote-ui/data/ui/settingspanel.ui:406
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr ""
+msgstr "두 손가락 터치 길게 누르기 제스처에 대한 동작을 설정합니다"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
-#, fuzzy
-#| msgid "_Keyboard shortcuts"
 msgid "Show Keyboard Shortcuts"
-msgstr "키보드 단축키(_K)"
+msgstr "키보드 단축키 표시하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgid "Close the folded flap"
 msgid "Close the Active Tab"
-msgstr "접힌 플랩 닫기"
+msgstr "활성 탭 닫기"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
-#, fuzzy
-#| msgid "New Window"
 msgid "Quit the Application"
-msgstr "새 창"
+msgstr "응용 프로그램 종료"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
 msgid "Open the Canvas-Menu"
-msgstr ""
+msgstr "캔버스 메뉴 열기"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
 msgid "Open the App-Menu"
-msgstr ""
+msgstr "앱 메뉴 열기"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
 msgid "Navigation"
-msgstr ""
+msgstr "탐색"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "'브러시'로 전환하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "'모형도구'로 전환하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "'타이프라이터'로 전환하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "'지우개'로 전환하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "'선택도구'로 전환하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "'도구'로 전환하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + 드래그"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
-#, fuzzy
-#| msgid "Zoom out"
 msgid "Zoom in/out"
-msgstr "축소"
+msgstr "확대/축소"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + 드래그"
 
 #: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
-#, fuzzy
-#| msgid "Document _layout"
 msgid "Document"
-msgstr "문서 레이아웃(_L)"
+msgstr "문서"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
-#, fuzzy
-#| msgid "Document _layout"
 msgid "Open Document"
-msgstr "문서 레이아웃(_L)"
+msgstr "문서 열기"
 
 #: rnote-ui/data/ui/shortcuts.ui:162 rnote-ui/src/dialogs/export.rs:23
 msgid "Save Document As"
-msgstr ""
+msgstr "문서를 다른 이름으로 저장"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
-#, fuzzy
-#| msgid "Document _layout"
 msgid "Print Document"
-msgstr "문서 레이아웃(_L)"
+msgstr "문서 인쇄하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:180 rnote-ui/src/dialogs/import.rs:138
 msgid "Import File"
-msgstr ""
+msgstr "파일 가져오기"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
 msgid "Drawing"
-msgstr ""
+msgstr "드로잉"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
 msgid "Copy to Clipboard"
-msgstr ""
+msgstr "클립보드로 복사하기"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
 msgid "Cut to Clipboard"
-msgstr ""
+msgstr "클립보드로 잘라내기"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
 msgid "Paste Clipboard"
-msgstr ""
+msgstr "클립보드 붙여넣기"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
 msgid "Move Directory up"
-msgstr ""
+msgstr "디렉터리를 위로 이동하기"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:70
 msgid "Workspace Directory Actions"
-msgstr ""
+msgstr "작업 공간 디렉터리 작업"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
 msgid "Create new Folder"
-msgstr ""
+msgstr "새 폴더 만들기"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move Selected Workspace Up"
-msgstr ""
+msgstr "선택된 작업 공간 위로 이동하기"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move Selected Workspace Down"
-msgstr ""
+msgstr "선택된 작업 공간 아래로 이동하기"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
-#, fuzzy
-#| msgid "Workspace"
 msgid "Add Workspace"
-msgstr "작업 공간"
+msgstr "작업 공간 추가하기"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove Selected Workspace"
-msgstr ""
+msgstr "선택된 작업 공간 제거하기"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit Selected Workspace"
-msgstr ""
+msgstr "선택된 작업 공간 편집하기"
 
 #: rnote-ui/src/appwindow/mod.rs:505
 msgid "Opening .rnote file failed"
-msgstr ""
+msgstr ".rnote 파일 열기에 실패했습니다"
 
 #: rnote-ui/src/appwindow/mod.rs:516
 msgid "Opening vector image file failed"
-msgstr ""
+msgstr "벡터 이미지 파일 열기에 실패했습니다"
 
 #: rnote-ui/src/appwindow/mod.rs:527
 msgid "Opening bitmap image file failed"
-msgstr ""
+msgstr "비트맵 이미지 파일 열기에 실패했습니다"
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed"
-msgstr ""
+msgstr "Xournal++ 파일 열기에 실패했습니다"
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed"
-msgstr ""
+msgstr "PDF 파일 열기에 실패했습니다"
 
 #: rnote-ui/src/appwindow/mod.rs:558
 msgid "Failed to open file, tried to open folder as file"
-msgstr ""
+msgstr "파일을 열지 못했습니다. 폴더를 파일로 열려고 했습니다"
 
 #: rnote-ui/src/appwindow/mod.rs:563
 msgid "Failed to open file, unsupported file type"
-msgstr ""
+msgstr "파일을 열지 못했습니다. 지원되지 않는 파일 형식입니다"
 
 #: rnote-ui/src/appwindow/imp.rs:272
 #: rnote-ui/src/appwindow/appwindowactions.rs:522
@@ -1554,241 +1478,213 @@ msgstr ""
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed"
-msgstr ""
+msgstr "문서 저장에 실패했습니다"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
 msgid "Printed document successfully"
-msgstr ""
+msgstr "성공적으로 문서를 인쇄했습니다"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:649
 msgid "Printing document failed"
-msgstr ""
+msgstr "문서 인쇄에 실패했습니다"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
 msgid "Exporting selection failed, nothing selected"
-msgstr ""
+msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 
 #: rnote-ui/src/canvas/mod.rs:994
 msgid "- invalid file name -"
-msgstr ""
+msgstr "- 잘못된 파일 이름 -"
 
 #: rnote-ui/src/canvas/mod.rs:1007
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- 잘못된 폴더 경로 -"
 
 #: rnote-ui/src/canvas/mod.rs:1031
 msgid "Opened file was modified on disk"
-msgstr ""
+msgstr "디스크에서 열린 파일이 수정되었습니다"
 
 #: rnote-ui/src/canvas/mod.rs:1032
 msgid "Reload"
-msgstr ""
+msgstr "다시 불러오기"
 
 #: rnote-ui/src/canvas/mod.rs:1038
 msgid "Reloading .rnote file from disk failed"
-msgstr ""
+msgstr "디스크에서 .rnote 파일을 다시 불러오기에 실패했습니다"
 
 #: rnote-ui/src/canvas/mod.rs:1087
 msgid "Opened file was renamed on disk"
-msgstr ""
+msgstr "디스크에서 열린 파일의 이름이 변경되었습니다"
 
 #: rnote-ui/src/canvas/mod.rs:1100
 msgid "Opened file was moved or deleted on disk"
-msgstr ""
+msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
 msgid ".rnote"
-msgstr ""
+msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/export.rs:62
 msgid "Saved document successfully"
-msgstr ""
+msgstr "문서를 성공적으로 저장했습니다"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Exporting document failed"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "문서 내보내기에 실패했습니다"
 
 #: rnote-ui/src/dialogs/export.rs:197
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Exported document successfully"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "문서를 성공적으로 내보냈습니다"
 
 #: rnote-ui/src/dialogs/export.rs:203
 msgid "Exporting document failed, no file selected"
-msgstr ""
+msgstr "문서 내보내기에 실패했습니다. 선택한 파일이 없습니다"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Exporting document pages failed"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "문서 페이지 내보내기에 실패했습니다"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Exported document pages successfully"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "문서 페이지를 성공적으로 내보냈습니다"
 
 #: rnote-ui/src/dialogs/export.rs:476
 msgid "Exporting document pages failed, no directory selected"
-msgstr ""
+msgstr "문서 페이지 내보내기에 실패했습니다. 선택한 디렉터리가 없습니다"
 
 #: rnote-ui/src/dialogs/export.rs:716
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Exporting selection failed"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr "선택항목 내보내기에 실패했습니다"
 
 #: rnote-ui/src/dialogs/export.rs:718
-#, fuzzy
-#| msgid "A selection"
 msgid "Exported selection successfully"
-msgstr "선택항목"
+msgstr "선택항목을 성공적으로 내보냈습니다"
 
 #: rnote-ui/src/dialogs/export.rs:724
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Exporting selection failed, no file selected"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr "선택항목 내보내기에 실패했습니다. 선택한 파일이 없습니다"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: rnote-ui/src/dialogs/export.rs:814
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Export Engine State"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "엔진 상태 내보내기"
 
 #: rnote-ui/src/dialogs/export.rs:852
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Exporting engine state failed"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "엔진 상태 내보내기에 실패했습니다"
 
 #: rnote-ui/src/dialogs/export.rs:854
-#, fuzzy
-#| msgid "Export engine _state"
 msgid "Exported engine state successfully"
-msgstr "엔진 상태 내보내기(_S)"
+msgstr "엔진 상태를 성공적으로 내보냈습니다"
 
 #: rnote-ui/src/dialogs/export.rs:878
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Export Engine Config"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr "엔진 구성 내보내기"
 
 #: rnote-ui/src/dialogs/export.rs:916
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Exporting engine config failed"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr "엔진 구성 내보내기에 실패했습니다"
 
 #: rnote-ui/src/dialogs/export.rs:918
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Exported engine config successfully"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr "엔진 구성을 성공적으로 내보냈습니다"
 
 #: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-#| msgid "Export engine _config"
 msgid "Opening file failed"
-msgstr "엔진 구성 내보내기(_C)"
+msgstr "파일을 열지 못했습니다"
 
 #: rnote-ui/src/dialogs/import.rs:135
 msgid "Jpg, Pdf, Png, Svg, Xopp"
-msgstr ""
+msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
-msgstr ""
+msgstr "- 파일 이름 없음 -"
 
 #: rnote-ui/src/dialogs/import.rs:276
 msgid "- no title -"
-msgstr ""
+msgstr "- 제목 없음 -"
 
 #: rnote-ui/src/dialogs/import.rs:279
 msgid "- no author -"
-msgstr ""
+msgstr "- 작성자 없음 -"
 
 #: rnote-ui/src/dialogs/import.rs:283
 msgid "- no date -"
-msgstr ""
+msgstr "- 날짜 없음 -"
 
 #: rnote-ui/src/dialogs/import.rs:290
 msgid "File name:"
-msgstr ""
+msgstr "파일 이름:"
 
 #: rnote-ui/src/dialogs/import.rs:294
 msgid "Title:"
-msgstr ""
+msgstr "제목:"
 
 #: rnote-ui/src/dialogs/import.rs:298
 msgid "Author:"
-msgstr ""
+msgstr "작성자:"
 
 #: rnote-ui/src/dialogs/import.rs:302
 msgid "Modification date:"
-msgstr ""
+msgstr "수정 날짜:"
 
 #: rnote-ui/src/dialogs/import.rs:306
 msgid "Pages:"
-msgstr ""
+msgstr "페이지:"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs/mod.rs:44
 msgid "translator-credits"
-msgstr ""
+msgstr "이정희 <daemul72@gmail.com>"
 
 #: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- 유효한 저장 폴더를 찾을 수 없음 -"
 
 #: rnote-ui/src/dialogs/mod.rs:375
 msgid "Change Workspace Directory"
-msgstr ""
+msgstr "작업 공간 디렉터리 변경하기"
 
 #: rnote-ui/src/dialogs/mod.rs:526
 msgid "Band-Aid"
-msgstr ""
+msgstr "반창고"
 
 #: rnote-ui/src/dialogs/mod.rs:527
 msgid "Bank"
-msgstr ""
+msgstr "은행"
 
 #: rnote-ui/src/dialogs/mod.rs:528
 msgid "Bookmark"
-msgstr ""
+msgstr "책갈피"
 
 #: rnote-ui/src/dialogs/mod.rs:529
 msgid "Book"
-msgstr ""
+msgstr "책"
 
 #: rnote-ui/src/dialogs/mod.rs:530
 msgid "Bread"
-msgstr ""
+msgstr "빵"
 
 #: rnote-ui/src/dialogs/mod.rs:531
 msgid "Calendar"
-msgstr ""
+msgstr "달력"
 
 #: rnote-ui/src/dialogs/mod.rs:532
 msgid "Camera"
-msgstr ""
+msgstr "카메라"
 
 #: rnote-ui/src/dialogs/mod.rs:533
 msgctxt "as in computer chip"
 msgid "Chip"
-msgstr ""
+msgstr "반도체"
 
 #: rnote-ui/src/dialogs/mod.rs:534
 msgid "Code"
-msgstr ""
+msgstr "코드"
 
 #: rnote-ui/src/dialogs/mod.rs:535
 msgid "Compose"
@@ -1847,10 +1743,8 @@ msgid "Mathematics"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:550
-#, fuzzy
-#| msgid "Settings"
 msgid "Meeting"
-msgstr "설정"
+msgstr "회의"
 
 #: rnote-ui/src/dialogs/mod.rs:551
 msgid "Money"
@@ -1885,10 +1779,8 @@ msgid "Scratchpad"
 msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:559
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shapes"
-msgstr "셰이퍼"
+msgstr "모형들"
 
 #: rnote-ui/src/dialogs/mod.rs:560
 msgid "Shopping"

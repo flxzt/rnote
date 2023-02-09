@@ -19,9 +19,11 @@ pub(crate) fn handle_pointer_controller_event(
     let touch_drawing = canvas.touch_drawing();
     let event_type = event.event_type();
 
-    if event_type != gdk::EventType::MotionNotify {
-        super::input::debug_gdk_event(event);
-    }
+    /*
+       if event_type != gdk::EventType::MotionNotify {
+           super::input::debug_gdk_event(event);
+       }
+    */
 
     if reject_pointer_input(event, touch_drawing) {
         return (Inhibit(false), state);
@@ -38,22 +40,34 @@ pub(crate) fn handle_pointer_controller_event(
     match event_type {
         gdk::EventType::MotionNotify => {
             if is_stylus {
+                handle_pen_event = true;
+                inhibit = true;
+
                 // As in gtk4 'gesturestylus.c:120' proximity with stylus is also detected in this way, in case ProximityIn & Out is not reported
                 if modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
                     state = PenState::Down;
                 } else {
                     state = PenState::Proximity;
                 }
+            } else {
+                // Only handle mouse left and right click
+                if modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
+                    | modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
+                {
+                    handle_pen_event = true;
+                    inhibit = true;
+                }
             }
-
-            handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::ButtonPress => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
 
             let shortcut_key = if is_stylus {
+                // even though it is a button press, we handle it also as pointer event so the engine gets the chance to switch pen mode, pen style, etc.
+                handle_pen_event = true;
+                inhibit = true;
+
                 if gdk_button == gdk::BUTTON_PRIMARY {
                     state = PenState::Down;
                     None
@@ -65,10 +79,15 @@ pub(crate) fn handle_pointer_controller_event(
                     None
                 }
             } else {
+                #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY {
                     state = PenState::Down;
+                    handle_pen_event = true;
+                    inhibit = true;
                     None
                 } else if gdk_button == gdk::BUTTON_SECONDARY {
+                    handle_pen_event = true;
+                    inhibit = true;
                     state = PenState::Down;
                     Some(ShortcutKey::MouseSecondaryButton)
                 } else {
@@ -84,10 +103,6 @@ pub(crate) fn handle_pointer_controller_event(
                         .handle_pressed_shortcut_key(shortcut_key, now),
                 );
             }
-
-            // even though it is a button press, we handle it also as pointer event so the engine gets the chance to switch pen mode, pen style, etc.
-            handle_pen_event = true;
-            inhibit = true;
         }
         gdk::EventType::ButtonRelease => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
@@ -99,9 +114,8 @@ pub(crate) fn handle_pointer_controller_event(
                 }
                 // we don't handle stylus buttons, because they shouldn't modify the state
             } else {
-                if gdk_button == gdk::BUTTON_PRIMARY {
-                    state = PenState::Up;
-                } else if gdk_button == gdk::BUTTON_SECONDARY {
+                #[allow(clippy::collapsible_else_if)]
+                if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
                     state = PenState::Up;
                 }
             };
@@ -145,13 +159,13 @@ pub(crate) fn handle_pointer_controller_event(
     };
 
     if handle_pen_event {
-        let Some(element) = retrieve_pointer_element(&canvas, event) else {
+        let Some(element) = retrieve_pointer_element(canvas, event) else {
                     return (Inhibit(false), state);
                 };
         let shortcut_keys = retrieve_modifier_shortcut_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
-        log::debug!("handle event, state: {state:?}, shortcut_keys: {shortcut_keys:?}, pen_mode: {pen_mode:?}");
+        //log::debug!("handle event, state: {state:?}, shortcut_keys: {shortcut_keys:?}, pen_mode: {pen_mode:?}");
 
         match state {
             PenState::Up => {

@@ -16,12 +16,20 @@ use crate::Constraints;
 
 #[derive(Debug, Clone)]
 enum CubBezBuilderState {
-    Start(na::Vector2<f64>),
     Cp1 {
         start: na::Vector2<f64>,
         cp1: na::Vector2<f64>,
     },
+    Cp1Finished {
+        start: na::Vector2<f64>,
+        cp1: na::Vector2<f64>,
+    },
     Cp2 {
+        start: na::Vector2<f64>,
+        cp1: na::Vector2<f64>,
+        cp2: na::Vector2<f64>,
+    },
+    Cp2Finished {
         start: na::Vector2<f64>,
         cp1: na::Vector2<f64>,
         cp2: na::Vector2<f64>,
@@ -44,7 +52,10 @@ pub struct CubBezBuilder {
 impl ShapeBuilderCreator for CubBezBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
-            state: CubBezBuilderState::Start(element.pos),
+            state: CubBezBuilderState::Cp1 {
+                start: element.pos,
+                cp1: element.pos,
+            },
         }
     }
 }
@@ -63,38 +74,47 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
         match (&mut self.state, event) {
-            (CubBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
-                *start = element.pos;
-
-                self.state = CubBezBuilderState::Cp1 {
+            (CubBezBuilderState::Cp1 { start, cp1, .. }, PenEvent::Down { element, .. }) => {
+                *cp1 = constraints.constrain(element.pos - *start) + *start;
+            }
+            (CubBezBuilderState::Cp1 { start, .. }, PenEvent::Up { element, .. }) => {
+                self.state = CubBezBuilderState::Cp1Finished {
                     start: *start,
                     cp1: element.pos,
                 };
             }
-            (CubBezBuilderState::Start(_), ..) => {}
-            (CubBezBuilderState::Cp1 { start, cp1, .. }, PenEvent::Down { element, .. }) => {
-                *cp1 = constraints.constrain(element.pos - *start) + *start;
-            }
-            (CubBezBuilderState::Cp1 { start, cp1 }, PenEvent::Up { element, .. }) => {
+            (CubBezBuilderState::Cp1 { .. }, ..) => {}
+            (CubBezBuilderState::Cp1Finished { start, cp1 }, PenEvent::Down { element, .. }) => {
                 self.state = CubBezBuilderState::Cp2 {
                     start: *start,
                     cp1: *cp1,
-                    cp2: element.pos,
+                    cp2: constraints.constrain(element.pos - *cp1) + *cp1,
                 };
             }
-            (CubBezBuilderState::Cp1 { .. }, ..) => {}
+            (CubBezBuilderState::Cp1Finished { .. }, ..) => {}
             (CubBezBuilderState::Cp2 { cp1, cp2, .. }, PenEvent::Down { element, .. }) => {
                 *cp2 = constraints.constrain(element.pos - *cp1) + *cp1;
             }
-            (CubBezBuilderState::Cp2 { start, cp1, cp2 }, PenEvent::Up { element, .. }) => {
+            (CubBezBuilderState::Cp2 { start, cp1, .. }, PenEvent::Up { element, .. }) => {
+                self.state = CubBezBuilderState::Cp2Finished {
+                    start: *start,
+                    cp1: *cp1,
+                    cp2: constraints.constrain(element.pos - *cp1) + *cp1,
+                };
+            }
+            (CubBezBuilderState::Cp2 { .. }, ..) => {}
+            (
+                CubBezBuilderState::Cp2Finished { start, cp1, cp2 },
+                PenEvent::Down { element, .. },
+            ) => {
                 self.state = CubBezBuilderState::End {
                     start: *start,
                     cp1: *cp1,
                     cp2: *cp2,
-                    end: element.pos,
+                    end: constraints.constrain(element.pos - *cp2) + *cp2,
                 };
             }
-            (CubBezBuilderState::Cp2 { .. }, ..) => {}
+            (CubBezBuilderState::Cp2Finished { .. }, ..) => {}
             (CubBezBuilderState::End { cp2, end, .. }, PenEvent::Down { element, .. }) => {
                 *end = constraints.constrain(element.pos - *cp2) + *cp2;
             }
@@ -124,15 +144,13 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            CubBezBuilderState::Start(start) => Some(Aabb::from_half_extents(
-                na::Point2::from(*start),
-                na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
-            )),
-            CubBezBuilderState::Cp1 { start, cp1 } => Some(
+            CubBezBuilderState::Cp1 { start, cp1 }
+            | CubBezBuilderState::Cp1Finished { start, cp1 } => Some(
                 Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
                     .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
-            CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
+            CubBezBuilderState::Cp2 { start, cp1, cp2 }
+            | CubBezBuilderState::Cp2Finished { start, cp1, cp2 } => {
                 let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
                 aabb.take_point(na::Point2::from(*cp1));
 
@@ -155,15 +173,14 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         match &self.state {
-            CubBezBuilderState::Start(start) => {
-                indicators::draw_pos_indicator(cx, PenState::Down, *start, zoom);
-            }
-            CubBezBuilderState::Cp1 { start, cp1 } => {
+            CubBezBuilderState::Cp1 { start, cp1 }
+            | CubBezBuilderState::Cp1Finished { start, cp1 } => {
                 indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
                 indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
                 indicators::draw_pos_indicator(cx, PenState::Down, *cp1, zoom);
             }
-            CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
+            CubBezBuilderState::Cp2 { start, cp1, cp2 }
+            | CubBezBuilderState::Cp2Finished { start, cp1, cp2 } => {
                 let cubbez = CubicBezier {
                     start: *start,
                     cp1: *cp1,

@@ -19,9 +19,7 @@ pub(crate) fn handle_pointer_controller_event(
     let touch_drawing = canvas.touch_drawing();
     let event_type = event.event_type();
 
-    if event_type != gdk::EventType::MotionNotify {
-        super::input::debug_gdk_event(event);
-    }
+    super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
         return (Inhibit(false), state);
@@ -48,10 +46,10 @@ pub(crate) fn handle_pointer_controller_event(
                     state = PenState::Proximity;
                 }
             } else {
-                // avoids handling middle mouse button
+                // only handle primary and secondary mouse buttons
                 if modifiers.is_empty()
-                    | modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
-                    | modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
+                    || modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
+                    || modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
                 {
                     handle_pen_event = true;
                     inhibit = true;

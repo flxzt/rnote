@@ -19,11 +19,9 @@ pub(crate) fn handle_pointer_controller_event(
     let touch_drawing = canvas.touch_drawing();
     let event_type = event.event_type();
 
-    /*
-       if event_type != gdk::EventType::MotionNotify {
-           super::input::debug_gdk_event(event);
-       }
-    */
+    if event_type != gdk::EventType::MotionNotify {
+        super::input::debug_gdk_event(event);
+    }
 
     if reject_pointer_input(event, touch_drawing) {
         return (Inhibit(false), state);
@@ -43,7 +41,7 @@ pub(crate) fn handle_pointer_controller_event(
                 handle_pen_event = true;
                 inhibit = true;
 
-                // As in gtk4 'gesturestylus.c:120' proximity with stylus is also detected in this way, in case ProximityIn & Out is not reported
+                // As in gtk4 'gesturestylus.c:120' proximity with stylus is also detected in this way, in case ProximityIn & ProximityOut is not reported
                 if modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
                     state = PenState::Down;
                 } else {
@@ -63,9 +61,10 @@ pub(crate) fn handle_pointer_controller_event(
         gdk::EventType::ButtonPress => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
+            log::debug!("ButtonPress - button: {gdk_button}");
 
             let shortcut_key = if is_stylus {
-                // even though it is a button press, we handle it also as pointer event so the engine gets the chance to switch pen mode, pen style, etc.
+                // even though it is a button press, we handle it also as pen event so the engine gets the chance to switch pen mode, pen style, etc.
                 handle_pen_event = true;
                 inhibit = true;
 
@@ -108,12 +107,15 @@ pub(crate) fn handle_pointer_controller_event(
         gdk::EventType::ButtonRelease => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
+            log::debug!("ButtonRelease - button: {gdk_button}");
 
             if is_stylus {
+                // again, this is the method to detect proximity on stylus
                 if gdk_button == gdk::BUTTON_PRIMARY {
                     state = PenState::Up;
+                } else {
+                    state = PenState::Proximity;
                 }
-                // we don't handle stylus buttons, because they shouldn't modify the state
             } else {
                 #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {

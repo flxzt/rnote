@@ -9,7 +9,7 @@ use rnote_compose::penpath::Element;
 use crate::engine::EngineViewMut;
 use crate::pens::penbehaviour::PenProgress;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
-use crate::WidgetFlags;
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 use super::{ModifyState, ResizeCorner, Selector, SelectorState};
 
@@ -61,7 +61,7 @@ impl Selector {
                 let mut pen_progress = PenProgress::InProgress;
 
                 match modify_state {
-                    ModifyState::Up => {
+                    ModifyState::Up | ModifyState::Hover(_) => {
                         widget_flags.merge(engine_view.store.record(Instant::now()));
 
                         // If we click on another, not-already selected stroke while in separate style or while pressing Shift, we add it to the selection
@@ -295,12 +295,13 @@ impl Selector {
 
     pub(super) fn handle_pen_event_up(
         &mut self,
-        _element: Element,
+        element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
+        let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
         let progress = match &mut self.state {
             SelectorState::Idle => PenProgress::Idle,
@@ -423,7 +424,15 @@ impl Selector {
                 if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
                     *selection_bounds = new_bounds;
                 }
-                *modify_state = ModifyState::Up;
+
+                *modify_state = if selector_bounds
+                    .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
+                    .unwrap_or(false)
+                {
+                    ModifyState::Hover(element.pos)
+                } else {
+                    ModifyState::Up
+                };
 
                 engine_view
                     .doc
@@ -442,17 +451,28 @@ impl Selector {
 
     pub(super) fn handle_pen_event_proximity(
         &mut self,
-        _element: Element,
+        element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
         _now: Instant,
-        _engine_view: &mut EngineViewMut,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
+        let selector_bounds = self.bounds_on_doc(&engine_view.as_im());
 
         let progress = match &mut self.state {
             SelectorState::Idle => PenProgress::Idle,
             SelectorState::Selecting { .. } => PenProgress::InProgress,
-            SelectorState::ModifySelection { .. } => PenProgress::InProgress,
+            SelectorState::ModifySelection { modify_state, .. } => {
+                *modify_state = if selector_bounds
+                    .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
+                    .unwrap_or(false)
+                {
+                    ModifyState::Hover(element.pos)
+                } else {
+                    ModifyState::Up
+                };
+                PenProgress::InProgress
+            }
         };
 
         (progress, widget_flags)

@@ -50,8 +50,9 @@ pub(crate) fn handle_pointer_controller_event(
                     state = PenState::Proximity;
                 }
             } else {
-                // Only handle mouse left and right click
-                if modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
+                // avoids handling middle mouse button
+                if modifiers.is_empty()
+                    | modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
                     | modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
                 {
                     handle_pen_event = true;

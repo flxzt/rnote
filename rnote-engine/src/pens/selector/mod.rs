@@ -10,6 +10,7 @@ use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
 use once_cell::sync::Lazy;
+use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{PenEvent, PenState, ShortcutKey};
@@ -31,6 +32,7 @@ pub(super) enum ResizeCorner {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ModifyState {
     Up,
+    Hover(na::Vector2<f64>),
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
@@ -466,51 +468,86 @@ impl Selector {
         piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = camera.total_zoom();
 
+        let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
         let rotate_node_state = match modify_state {
             ModifyState::Rotate { .. } => PenState::Down,
+            ModifyState::Hover(pos) => {
+                if rotate_node_sphere.contains_local_point(&na::Point2::from(*pos)) {
+                    PenState::Proximity
+                } else {
+                    PenState::Up
+                }
+            }
             _ => PenState::Up,
         };
-        let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
 
+        let resize_tl_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera);
         let resize_tl_node_state = match modify_state {
             ModifyState::Resize {
                 from_corner: ResizeCorner::TopLeft,
                 ..
             } => PenState::Down,
+            ModifyState::Hover(pos) => {
+                if resize_tl_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                    PenState::Proximity
+                } else {
+                    PenState::Up
+                }
+            }
             _ => PenState::Up,
         };
-        let resize_tl_node_bounds =
-            Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera);
 
+        let resize_tr_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera);
         let resize_tr_node_state = match modify_state {
             ModifyState::Resize {
                 from_corner: ResizeCorner::TopRight,
                 ..
             } => PenState::Down,
+            ModifyState::Hover(pos) => {
+                if resize_tr_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                    PenState::Proximity
+                } else {
+                    PenState::Up
+                }
+            }
             _ => PenState::Up,
         };
-        let resize_tr_node_bounds =
-            Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera);
 
+        let resize_bl_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera);
         let resize_bl_node_state = match modify_state {
             ModifyState::Resize {
                 from_corner: ResizeCorner::BottomLeft,
                 ..
             } => PenState::Down,
+            ModifyState::Hover(pos) => {
+                if resize_bl_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                    PenState::Proximity
+                } else {
+                    PenState::Up
+                }
+            }
             _ => PenState::Up,
         };
-        let resize_bl_node_bounds =
-            Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera);
 
+        let resize_br_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera);
         let resize_br_node_state = match modify_state {
             ModifyState::Resize {
                 from_corner: ResizeCorner::BottomRight,
                 ..
             } => PenState::Down,
+            ModifyState::Hover(pos) => {
+                if resize_br_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                    PenState::Proximity
+                } else {
+                    PenState::Up
+                }
+            }
             _ => PenState::Up,
         };
-        let resize_br_node_bounds =
-            Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera);
 
         // Selection rect
         let selection_rect = selection_bounds.to_kurbo_rect();

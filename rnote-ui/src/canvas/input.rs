@@ -59,11 +59,11 @@ pub(crate) fn handle_pointer_controller_event(
         gdk::EventType::ButtonPress => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
-            log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
+
+            //log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
                 // even though it is a button press, we handle it also as pen event so the engine gets the chance to switch pen mode, pen style, etc.
-                #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY
                     || gdk_button == gdk::BUTTON_SECONDARY
                     || gdk_button == gdk::BUTTON_MIDDLE
@@ -94,11 +94,17 @@ pub(crate) fn handle_pointer_controller_event(
         gdk::EventType::ButtonRelease => {
             let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
             let gdk_button = button_event.button();
-            log::debug!("ButtonRelease - button: {gdk_button}, is_stylus: {is_stylus}");
+
+            //log::debug!("ButtonRelease - button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
-                handle_pen_event = true;
-                inhibit = true;
+                if gdk_button == gdk::BUTTON_PRIMARY
+                    || gdk_button == gdk::BUTTON_SECONDARY
+                    || gdk_button == gdk::BUTTON_MIDDLE
+                {
+                    handle_pen_event = true;
+                    inhibit = true;
+                }
 
                 // again, this is the method to detect proximity on stylus
                 if gdk_button == gdk::BUTTON_PRIMARY {

@@ -1,6 +1,6 @@
 use gtk4::{graphene, gsk};
-use p2d::bounding_volume::AABB;
-use rnote_compose::helpers::AABBHelpers;
+use p2d::bounding_volume::Aabb;
+use rnote_compose::helpers::AabbHelpers;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -83,26 +83,26 @@ impl Camera {
 
     /// The scaling factor for generating pixel images with the current zoom. also takes the scale factor in account
     pub fn image_scale(&self) -> f64 {
-        self.zoom * self.temporary_zoom * self.scale_factor
+        self.zoom * self.scale_factor
     }
 
     /// the viewport in document coordinate space
-    pub fn viewport(&self) -> AABB {
+    pub fn viewport(&self) -> Aabb {
         let inv_zoom = 1.0 / self.total_zoom();
 
-        AABB::new_positive(
+        Aabb::new_positive(
             na::Point2::from(self.offset * inv_zoom),
             na::Point2::from((self.offset + self.size) * inv_zoom),
         )
     }
 
     /// from document coords -> surface coords
-    pub fn transform_bounds(&self, bounds: AABB) -> AABB {
+    pub fn transform_bounds(&self, bounds: Aabb) -> Aabb {
         bounds.scale(self.total_zoom()).translate(-self.offset)
     }
 
     /// from surface coords -> document coords
-    pub fn transform_inv_bounds(&self, bounds: AABB) -> AABB {
+    pub fn transform_inv_bounds(&self, bounds: Aabb) -> Aabb {
         bounds.translate(self.offset).scale(1.0 / self.total_zoom())
     }
 
@@ -130,9 +130,7 @@ impl Camera {
                 -self.offset[0] as f32,
                 -self.offset[1] as f32,
             ))
-            .unwrap()
             .scale(total_zoom as f32, total_zoom as f32)
-            .unwrap()
     }
 }
 

@@ -1,15 +1,15 @@
 <div align="center">
-<img src="rnote-ui/data/icons/scalable/apps/rnote.svg" width="256"></img>
+<img src="rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
 </div><br><br><br>
 
-<div align="start">
+<div align="center">
+    <a href="https://github.com/flxzt/rnote/actions/workflows/ci.yml">
+        <img alt="CI"src="https://github.com/flxzt/rnote/actions/workflows/ci.yml/badge.svg"></img>
+    </a>
     <a href="https://liberapay.com/flxzt/donate">
-        <img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg" width="75" height="25">
+        <img alt="Donate using Liberapay" src="https://github.com/flxzt/rnote/blob/main/misc/assets/liberapay-donate-button.svg" width="60" height="20">
     </a>
-    <a href="https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG">
-        <img src="https://github.com/flxzt/rnote/blob/main/misc/media/paypal-donate-button.png" alt="Donate with PayPal" width="75" height="25"/>
-    </a>
-</div><br>
+</div>
 
 
 # Rnote
@@ -22,18 +22,19 @@ Written in Rust and GTK4.
 **Features**  
 - Adaptive UI focused on stylus input
 - Pressure-sensitive stylus input with different and configurable stroke styles
-- Draw many different shapes with the shape tool
+- Create many different shapes with the shape tool
 - Move, rotate, resize and modify existing content with the selection tool
-- Different document expand layouts ( fixed pages, continuous vertical, infinite in every direction )
+- Different document expansion layouts ( fixed pages, continuous vertical, infinite in every direction, .. )
 - Customizable background colors, patterns, sizes
 - Customizable page format
-- (optional) pen sounds
+- (Optional) pen sounds
 - Reconfigurable stylus button shortcuts
-- An integrated workspace browser for quick access to related media files
-- Drag & drop, clipboard support
-- PDF, bitmap and SVG image import
+- An integrated workspace browser for quick access to related files
+- Drag & Drop, clipboard support
+- PDF, Bitmap and SVG image import
+- Document, document pages and selection export to many formats including SVG, PDF, Xopp
 - Save and load the documents in the native `.rnote` file format
-- Document and selection export to SVG, PDF
+- Tabs to work on multiple documents at the same time
 - Autosave, printing
 
 **Disclaimer**  
@@ -51,6 +52,7 @@ Rnote is available as a flatpak on Flathub:
 
 **Downgrading**  
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
+
 | version | command                                                                                                                |
 | ------- | ---------------------------------------------------------------------------------------------------------------------- |
 | v0.4.0  | `sudo flatpak update --commit=2ee585842334ad976802f08a1952c3fdc40f6f3afe2e056f3597fe4a029d54d2 com.github.flxzt.rnote` |
@@ -59,6 +61,7 @@ Because the file format still is unstable, downgrading to a specific version mig
 | v0.1.6  | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
 
 After downgrading, the version can be pinned or unpinned with:
+
 ```
 $ flatpak mask com.github.flxzt.rnote
 $ flatpak mask --remove com.github.flxzt.rnote
@@ -67,16 +70,17 @@ $ flatpak mask --remove com.github.flxzt.rnote
 Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Screenshots
-![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
 ![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
+![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)
 ![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
-![selection](./rnote-ui/data/screenshots/selection.png)
+![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)
 
-## Pitfalls & known issues
-* Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
-* odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
+## Pitfalls & Known Issues
+* Drag & Drop not working - Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+* odd location for current file - when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
     Again, granting them in Flatseal fixes this issue.
-* Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+* Stylus buttons move canvas / are not functional - make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+* While hovering with the stylus, other input events are blocked in some regions of the screen - Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't do much to disable this unfortunately. ( discussed in issue #329 )
 
 ## Credits
 - A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
@@ -90,10 +94,10 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 <img src="https://hosted.weblate.org/widgets/rnote/-/repo/multi-auto.svg" alt="Translation status" />
 </a><br><br>
 
-A great way to contribute to the project without writing code is adding and maintaining a new translation language. The translations files are located in `rnote-ui/po/`.
+A great way to contribute to the project without writing code is adding a new or start maintaining an existing translation language. The translations files are located in `rnote-ui/po/`.
 
  Creating translations for new languages or updating existing ones can be done in two ways:
-- take `rnote.pot` and generate a new `.po` translation file from it, add the new translation language to `LINGUAS` and submit a PR.
+- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with both changed files.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
 
@@ -104,7 +108,8 @@ There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) cha
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
 
-So far breaking changes in the format happened in versions:  
+So far breaking changes in the format happened in versions:
+
 - `v0.2.0`
 - `v0.3.0`
 - `v0.4.0`
@@ -112,7 +117,7 @@ So far breaking changes in the format happened in versions:
 
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 
-## Drawings created with Rnote
+## Drawings Created With Rnote
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
 <div align="center" spacing="20px">

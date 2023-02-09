@@ -1,7 +1,7 @@
 use crate::render;
 use crate::DrawBehaviour;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use rnote_compose::shapes::ShapeBehaviour;
 
 #[derive(Debug, Clone)]
@@ -10,7 +10,7 @@ pub enum GeneratedStrokeImages {
     /// only part of the stroke was rendered (e.g. part of it is out of the viewport)
     Partial {
         images: Vec<render::Image>,
-        viewport: AABB,
+        viewport: Aabb,
     },
     /// All stroke images were rendered
     Full(Vec<render::Image>),
@@ -30,7 +30,7 @@ where
     /// a larger image_scale value renders them in a higher than native resolution (usually set as the camera zoom). the bounds stay the same.
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error>;
 

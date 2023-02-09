@@ -1,4 +1,4 @@
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 
 use gtk4::{
     gio, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, MenuButton,
@@ -10,27 +10,27 @@ mod imp {
     use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
-    pub struct CanvasMenu {
+    pub(crate) struct RnCanvasMenu {
         #[template_child]
-        pub menubutton: TemplateChild<MenuButton>,
+        pub(crate) menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub popovermenu: TemplateChild<PopoverMenu>,
+        pub(crate) popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
-        pub menu_model: TemplateChild<gio::MenuModel>,
+        pub(crate) menu_model: TemplateChild<gio::MenuModel>,
         #[template_child]
-        pub zoom_in_button: TemplateChild<Button>,
+        pub(crate) zoom_in_button: TemplateChild<Button>,
         #[template_child]
-        pub zoom_out_button: TemplateChild<Button>,
+        pub(crate) zoom_out_button: TemplateChild<Button>,
         #[template_child]
-        pub zoom_reset_button: TemplateChild<Button>,
+        pub(crate) zoom_reset_button: TemplateChild<Button>,
         #[template_child]
-        pub zoom_fit_width_button: TemplateChild<Button>,
+        pub(crate) zoom_fit_width_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for CanvasMenu {
-        const NAME: &'static str = "CanvasMenu";
-        type Type = super::CanvasMenu;
+    impl ObjectSubclass for RnCanvasMenu {
+        const NAME: &'static str = "RnCanvasMenu";
+        type Type = super::RnCanvasMenu;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -42,77 +42,57 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for CanvasMenu {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+    impl ObjectImpl for RnCanvasMenu {
+        fn constructed(&self) {
+            self.parent_constructed();
 
             self.menubutton
                 .get()
                 .set_popover(Some(&self.popovermenu.get()));
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
     }
 
-    impl WidgetImpl for CanvasMenu {
-        fn size_allocate(&self, widget: &Self::Type, width: i32, height: i32, baseline: i32) {
-            self.parent_size_allocate(widget, width, height, baseline);
+    impl WidgetImpl for RnCanvasMenu {
+        fn size_allocate(&self, width: i32, height: i32, baseline: i32) {
+            self.parent_size_allocate(width, height, baseline);
             self.popovermenu.get().present();
         }
     }
 }
 
 glib::wrapper! {
-    pub struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
+    pub(crate) struct RnCanvasMenu(ObjectSubclass<imp::RnCanvasMenu>)
     @extends Widget;
 }
 
-impl Default for CanvasMenu {
+impl Default for RnCanvasMenu {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl CanvasMenu {
-    pub fn new() -> Self {
-        let canvasmenu: CanvasMenu = glib::Object::new(&[]).expect("Failed to create CanvasMenu");
-        canvasmenu
+impl RnCanvasMenu {
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
-    pub fn menubutton(&self) -> MenuButton {
-        self.imp().menubutton.get()
-    }
-
-    pub fn popovermenu(&self) -> PopoverMenu {
+    pub(crate) fn popovermenu(&self) -> PopoverMenu {
         self.imp().popovermenu.get()
     }
 
-    pub fn menu_model(&self) -> gio::MenuModel {
-        self.imp().menu_model.get()
-    }
-
-    pub fn zoomin_button(&self) -> Button {
-        self.imp().zoom_in_button.get()
-    }
-
-    pub fn zoomout_button(&self) -> Button {
-        self.imp().zoom_out_button.get()
-    }
-
-    pub fn zoomreset_button(&self) -> Button {
+    pub(crate) fn zoom_reset_button(&self) -> Button {
         self.imp().zoom_reset_button.get()
     }
 
-    pub fn zoom_fit_width_button(&self) -> Button {
-        self.imp().zoom_fit_width_button.get()
-    }
-
-    pub fn init(&self, _appwindow: &RnoteAppWindow) {
-        self.zoomreset_button()
+    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {
+        self.imp()
+            .zoom_reset_button
             .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());
     }
 }

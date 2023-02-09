@@ -1,5 +1,5 @@
 use kurbo::Shape;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{Affine2Helpers, Vector2Helpers};
@@ -31,11 +31,11 @@ impl Default for Ellipse {
 }
 
 impl TransformBehaviour for Ellipse {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.transform.append_rotation_wrt_point_mut(angle, center)
     }
 
@@ -45,7 +45,7 @@ impl TransformBehaviour for Ellipse {
 }
 
 impl ShapeBehaviour for Ellipse {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
         let half_extents = na::Vector2::from_homogeneous(
@@ -54,10 +54,10 @@ impl ShapeBehaviour for Ellipse {
         .unwrap()
         .abs();
 
-        AABB::from_half_extents(center, half_extents)
+        Aabb::from_half_extents(center, half_extents)
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.approx_with_lines()
             .into_iter()
             .map(|line| line.bounds())
@@ -88,7 +88,7 @@ impl Ellipse {
         Self { radii, transform }
     }
 
-    /// Approximating a ellipse with lines
+    /// Approximate with lines
     pub fn approx_with_lines(&self) -> Vec<Line> {
         let mut lines = Vec::new();
         let mut prev = kurbo::Point::new(0.0, 0.0);

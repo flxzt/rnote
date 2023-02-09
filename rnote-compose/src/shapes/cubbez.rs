@@ -1,5 +1,5 @@
 use kurbo::Shape;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{KurboHelpers, Vector2Helpers};
@@ -28,14 +28,14 @@ pub struct CubicBezier {
 }
 
 impl TransformBehaviour for CubicBezier {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.start += offset;
         self.cp1 += offset;
         self.cp2 += offset;
         self.end += offset;
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
@@ -45,7 +45,7 @@ impl TransformBehaviour for CubicBezier {
         self.end = (isometry * na::Point2::from(self.end)).coords;
     }
 
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+    fn scale(&mut self, scale: na::Vector2<f64>) {
         self.start = self.start.component_mul(&scale);
         self.cp1 = self.cp1.component_mul(&scale);
         self.cp2 = self.cp2.component_mul(&scale);
@@ -54,13 +54,12 @@ impl TransformBehaviour for CubicBezier {
 }
 
 impl ShapeBehaviour for CubicBezier {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> p2d::bounding_volume::Aabb {
         self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
-        // TODO: should be depending on the actual curve length
-        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
+    fn hitboxes(&self) -> Vec<Aabb> {
+        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.25));
 
         self.approx_with_lines(n_splits)
             .into_iter()
@@ -70,9 +69,7 @@ impl ShapeBehaviour for CubicBezier {
 }
 
 impl CubicBezier {
-    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them,
-    /// and only being affected by their four points (locality), so are easily calculated and easy to work with.
-    /// making them a good spline to represent pen paths.
+    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them.
     /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
     pub fn new_w_catmull_rom(
         first: na::Vector2<f64>,
@@ -80,7 +77,7 @@ impl CubicBezier {
         third: na::Vector2<f64>,
         forth: na::Vector2<f64>,
     ) -> Option<Self> {
-        // Tension factor (tau)
+        // Tension factor
         let tension = 1.0;
 
         // Creating cubic bezier with catmull-rom
@@ -96,7 +93,7 @@ impl CubicBezier {
             end,
         };
 
-        // returnsing None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
+        // returning None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
         if (cubbez.end - cubbez.start).magnitude() == 0.0 {
             return None;
         }

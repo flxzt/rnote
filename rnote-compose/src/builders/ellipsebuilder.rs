@@ -1,24 +1,25 @@
 use std::time::Instant;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
-use crate::penhelpers::{PenEvent, PenState};
+use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
-use crate::style::{drawhelpers, Composer};
+use crate::style::{indicators, Composer};
 use crate::{Shape, Style, Transform};
 
-use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::Constraints;
 
 /// ellipse builder
 #[derive(Debug, Clone)]
 pub struct EllipseBuilder {
     /// the start position
-    pub start: na::Vector2<f64>,
+    start: na::Vector2<f64>,
     /// the current position
-    pub current: na::Vector2<f64>,
+    current: na::Vector2<f64>,
 }
 
 impl ShapeBuilderCreator for EllipseBuilder {
@@ -36,25 +37,27 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
         event: PenEvent,
         _now: Instant,
         constraints: Constraints,
-    ) -> BuilderProgress {
+    ) -> ShapeBuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);
+                return ShapeBuilderProgress::Finished(vec![Shape::Ellipse(
+                    self.state_as_ellipse(),
+                )]);
             }
             _ => {}
         }
 
-        BuilderProgress::InProgress
+        ShapeBuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<AABB> {
+    fn bounds(&self, style: &crate::Style, zoom: f64) -> Option<Aabb> {
         Some(
             self.state_as_ellipse()
                 .composed_bounds(style)
-                .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
     }
 
@@ -63,8 +66,8 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
         let ellipse = self.state_as_ellipse();
         ellipse.draw_composed(cx, style);
 
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
         cx.restore().unwrap();
     }
 }

@@ -1,38 +1,42 @@
-/// cubic bezier builder
-pub mod cubbezbuilder;
-/// ellipse builder
-pub mod ellipsebuilder;
-/// foci and point ellipse builder
-pub mod fociellipsebuilder;
-/// line builder
-pub mod linebuilder;
-/// the regular pen path builder, using bezier curves to interpolate between input elements.
-pub mod penpathcurvedbuilder;
-/// modeled pen path builder, uses ink-stroke-modeler for smooth paths with advanced algorithms and its predictor to reduce input latency
-pub mod penpathmodeledbuilder;
-/// simple pen path builder, only produces line segments
-pub mod penpathsimplebuilder;
-/// quadratic bezier builder
-pub mod quadbezbuilder;
-/// rectangle builder
-pub mod rectanglebuilder;
-/// shape builder behaviour
-pub mod shapebuilderbehaviour;
-
-use std::collections::HashSet;
+mod coordsystem2dbuilder;
+mod coordsystem3dbuilder;
+mod cubbezbuilder;
+mod ellipsebuilder;
+mod fociellipsebuilder;
+mod gridbuilder;
+mod linebuilder;
+mod penpathbuilderbehaviour;
+mod penpathcurvedbuilder;
+mod penpathmodeledbuilder;
+mod penpathsimplebuilder;
+mod quadbezbuilder;
+mod quadrantcoordsystem2dbuilder;
+mod rectanglebuilder;
+mod shapebuilderbehaviour;
 
 // Re-exports
+pub use coordsystem2dbuilder::CoordSystem2DBuilder;
+pub use coordsystem3dbuilder::CoordSystem3DBuilder;
 pub use cubbezbuilder::CubBezBuilder;
 pub use ellipsebuilder::EllipseBuilder;
 pub use fociellipsebuilder::FociEllipseBuilder;
+pub use gridbuilder::GridBuilder;
 pub use linebuilder::LineBuilder;
+pub use penpathbuilderbehaviour::PenPathBuilderBehaviour;
+pub use penpathbuilderbehaviour::PenPathBuilderCreator;
+pub use penpathbuilderbehaviour::PenPathBuilderProgress;
 pub use penpathcurvedbuilder::PenPathCurvedBuilder;
 pub use penpathmodeledbuilder::PenPathModeledBuilder;
 pub use penpathsimplebuilder::PenPathSimpleBuilder;
 pub use quadbezbuilder::QuadBezBuilder;
+pub use quadrantcoordsystem2dbuilder::QuadrantCoordSystem2DBuilder;
 pub use rectanglebuilder::RectangleBuilder;
 pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
+pub use shapebuilderbehaviour::ShapeBuilderCreator;
+pub use shapebuilderbehaviour::ShapeBuilderProgress;
 
+// Imports
+use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -41,24 +45,73 @@ use serde::{Deserialize, Serialize};
 #[serde(rename = "shapebuilder_type")]
 /// A choice for a shape builder type
 pub enum ShapeBuilderType {
-    #[serde(rename = "line")]
     /// A line builder
+    #[serde(rename = "line")]
     Line = 0,
-    #[serde(rename = "rectangle")]
     /// A rectangle builder
+    #[serde(rename = "rectangle")]
     Rectangle,
-    #[serde(rename = "ellipse")]
+    /// A grid
+    #[serde(rename = "grid")]
+    Grid,
+    /// A 2D coordinate system builder
+    #[serde(rename = "coord_system_2d")]
+    CoordSystem2D,
+    /// A 3D coordinate system builder
+    #[serde(rename = "coord_system_3d")]
+    CoordSystem3D,
+    /// A 2D single quadrant coordinate system builder
+    #[serde(rename = "quadrant_coord_system_2d")]
+    QuadrantCoordSystem2D,
     /// An ellipse builder
+    #[serde(rename = "ellipse")]
     Ellipse,
-    #[serde(rename = "foci_ellipse")]
     /// A foci ellipse builder
+    #[serde(rename = "foci_ellipse")]
     FociEllipse,
-    #[serde(rename = "quadbez")]
     /// An quadbez builder
+    #[serde(rename = "quadbez")]
     QuadBez,
-    #[serde(rename = "cubbez")]
     /// An cubic bezier builder
+    #[serde(rename = "cubbez")]
     CubBez,
+}
+
+impl ShapeBuilderType {
+    /// Converts an icon name into the represented shape builder type. Returns None for invalid strings.
+    pub fn from_icon_name(icon_name: &str) -> Option<Self> {
+        match icon_name {
+            "shapebuilder-line-symbolic" => Some(Self::Line),
+            "shapebuilder-rectangle-symbolic" => Some(Self::Rectangle),
+            "shapebuilder-grid-symbolic" => Some(Self::Grid),
+            "shapebuilder-coordsystem2d-symbolic" => Some(Self::CoordSystem2D),
+            "shapebuilder-coordsystem3d-symbolic" => Some(Self::CoordSystem3D),
+            "shapebuilder-quadrantcoordsystem2d-symbolic" => Some(Self::QuadrantCoordSystem2D),
+            "shapebuilder-ellipse-symbolic" => Some(Self::Ellipse),
+            "shapebuilder-fociellipse-symbolic" => Some(Self::FociEllipse),
+            "shapebuilder-quadbez-symbolic" => Some(Self::QuadBez),
+            "shapebuilder-cubbez-symbolic" => Some(Self::CubBez),
+            _ => None,
+        }
+    }
+
+    /// Converts a shape builder type into the icon name that represents it.
+    pub fn to_icon_name(self) -> String {
+        match self {
+            Self::Line => String::from("shapebuilder-line-symbolic"),
+            Self::Rectangle => String::from("shapebuilder-rectangle-symbolic"),
+            Self::Grid => String::from("shapebuilder-grid-symbolic"),
+            Self::CoordSystem2D => String::from("shapebuilder-coordsystem2d-symbolic"),
+            Self::CoordSystem3D => String::from("shapebuilder-coordsystem3d-symbolic"),
+            Self::QuadrantCoordSystem2D => {
+                String::from("shapebuilder-quadrantcoordsystem2d-symbolic")
+            }
+            Self::Ellipse => String::from("shapebuilder-ellipse-symbolic"),
+            Self::FociEllipse => String::from("shapebuilder-fociellipse-symbolic"),
+            Self::QuadBez => String::from("shapebuilder-quadbez-symbolic"),
+            Self::CubBez => String::from("shapebuilder-cubbez-symbolic"),
+        }
+    }
 }
 
 impl Default for ShapeBuilderType {
@@ -71,12 +124,8 @@ impl TryFrom<u32> for ShapeBuilderType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "ShapeBuilderType try_from::<u32>() for value {} failed",
-                value
-            )
-        })
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("ShapeBuilderType try_from::<u32>() for value {value} failed"))
     }
 }
 
@@ -107,102 +156,8 @@ impl TryFrom<u32> for PenPathBuilderType {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "PenPathBuilderType try_from::<u32>() for value {} failed",
-                value
-            )
+        num_traits::FromPrimitive::from_u32(value).with_context(|| {
+            format!("PenPathBuilderType try_from::<u32>() for value {value} failed",)
         })
-    }
-}
-
-/// constraints
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(default, rename = "constraints")]
-pub struct Constraints {
-    /// Whether constraints are enabled
-    #[serde(rename = "enabled")]
-    pub enabled: bool,
-    /// stores the constraint ratios
-    #[serde(rename = "ratios")]
-    pub ratios: HashSet<ConstraintRatio>,
-}
-
-impl Constraints {
-    /// constrain the coordinates of a vector by the current stored constraint ratios
-    pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
-        if !self.enabled {
-            return pos;
-        }
-        self.ratios
-            .iter()
-            .map(|ratio| ((ratio.constrain(pos) - pos).norm(), ratio.constrain(pos)))
-            .reduce(|(acc_dist, acc_posi), (dist, posi)| {
-                if dist <= acc_dist {
-                    (dist, posi)
-                } else {
-                    (acc_dist, acc_posi)
-                }
-            })
-            .map(|(_d, p)| p)
-            .unwrap_or(pos)
-    }
-}
-
-/// the constraint ratio
-#[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename = "constraint_ratio")]
-pub enum ConstraintRatio {
-    #[serde(rename = "horizontal")]
-    /// Horizontal axis
-    Horizontal,
-    #[serde(rename = "vertical")]
-    /// Vertical axis
-    Vertical,
-    #[serde(rename = "one_to_one")]
-    /// 1:1 (enables drawing circles, squares, etc.)
-    OneToOne,
-    #[serde(rename = "three_to_two")]
-    /// 3:2
-    ThreeToTwo,
-    #[serde(rename = "golden")]
-    /// Golden ratio
-    Golden,
-}
-
-impl ConstraintRatio {
-    /// the golden ratio
-    pub const GOLDEN_RATIO: f64 = 1.618;
-
-    /// Constrain the coordinates of a vector by the constraint ratio
-    pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
-        let dx = pos[0];
-        let dy = pos[1];
-
-        match self {
-            ConstraintRatio::Horizontal => na::vector![dx, 0.0],
-            ConstraintRatio::Vertical => na::vector![0.0, dy],
-            ConstraintRatio::OneToOne => {
-                if dx.abs() > dy.abs() {
-                    na::vector![dx, dx.abs() * dy.signum()]
-                } else {
-                    na::vector![dy.abs() * dx.signum(), dy]
-                }
-            }
-            ConstraintRatio::ThreeToTwo => {
-                if dx.abs() > dy.abs() {
-                    na::vector![dx, (dx / 1.5).abs() * dy.signum()]
-                } else {
-                    na::vector![(dy / 1.5).abs() * dx.signum(), dy]
-                }
-            }
-            ConstraintRatio::Golden => {
-                if dx.abs() > dy.abs() {
-                    na::vector![dx, (dx / Self::GOLDEN_RATIO).abs() * dy.signum()]
-                } else {
-                    na::vector![(dy / Self::GOLDEN_RATIO).abs() * dx.signum(), dy]
-                }
-            }
-        }
     }
 }

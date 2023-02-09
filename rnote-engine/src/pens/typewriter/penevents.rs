@@ -1,24 +1,28 @@
-use rnote_compose::penhelpers::{KeyboardKey, ShortcutKey};
+use rnote_compose::penevents::{KeyboardKey, ShortcutKey};
 use rnote_compose::penpath::Element;
+use std::time::Instant;
+use unicode_segmentation::GraphemeCursor;
 
+use super::{Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
 use crate::pens::penbehaviour::PenProgress;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
 use crate::{DrawOnDocBehaviour, StrokeStore, WidgetFlags};
 
-use super::{Typewriter, TypewriterState};
-
 impl Typewriter {
     pub(super) fn handle_pen_event_down(
         &mut self,
         element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
+
+        let text_width = engine_view.pens_config.typewriter_config.text_width;
 
         let pen_progress = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
@@ -34,11 +38,7 @@ impl Typewriter {
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(stroke_key)
                     {
-                        let mut cursor = unicode_segmentation::GraphemeCursor::new(
-                            0,
-                            textstroke.text.len(),
-                            true,
-                        );
+                        let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
                         // Updating the cursor for the clicked position
                         if let Ok(new_cursor) = textstroke.get_cursor_for_global_coord(element.pos)
@@ -62,7 +62,7 @@ impl Typewriter {
                 // after setting new state
                 if refresh_state {
                     // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
-                    self.update_internal_state(&engine_view.as_im());
+                    widget_flags.merge(self.update_state(engine_view));
 
                     widget_flags.redraw = true;
                     widget_flags.refresh_ui = true;
@@ -85,7 +85,7 @@ impl Typewriter {
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
                         // switch to translating the text field
-                        widget_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
 
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
@@ -94,21 +94,19 @@ impl Typewriter {
                             current_pos: element.pos,
                         };
                     } else if Self::adjust_text_width_node_bounds(
-                        Self::text_rect_bounds(self.text_width, textstroke)
-                            .mins
-                            .coords,
-                        self.text_width,
+                        Self::text_rect_bounds(text_width, textstroke).mins.coords,
+                        text_width,
                         engine_view.camera,
                     )
                     .contains_local_point(&na::Point2::from(element.pos))
                     {
-                        widget_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
 
                         // Clicking on the adjust text width node
                         self.state = TypewriterState::AdjustTextWidth {
                             stroke_key: *stroke_key,
                             cursor: cursor.clone(),
-                            start_text_width: self.text_width,
+                            start_text_width: text_width,
                             start_pos: element.pos,
                             current_pos: element.pos,
                         };
@@ -160,7 +158,7 @@ impl Typewriter {
                     if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
-                        widget_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
 
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
@@ -220,18 +218,16 @@ impl Typewriter {
                         .store
                         .translate_strokes_images(&[*stroke_key], offset);
 
-                    if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                    engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
-                    ) {
-                        log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err {}", e);
-                    }
+                    );
 
                     *current_pos = element.pos;
 
                     widget_flags.redraw = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
                 }
 
                 PenProgress::InProgress
@@ -248,25 +244,24 @@ impl Typewriter {
                 {
                     let abs_x_offset = element.pos[0] - start_pos[0];
 
-                    self.text_width = (*start_text_width + abs_x_offset).max(2.0);
+                    engine_view.pens_config.typewriter_config.text_width =
+                        (*start_text_width + abs_x_offset).max(2.0);
 
                     if let Some(max_width) = &mut textstroke.text_style.max_width {
                         *max_width = *start_text_width + abs_x_offset;
                     }
                 }
 
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() while adjusting text width textstroke failed with Err {}", e);
-                }
+                );
 
                 *current_pos = element.pos;
 
                 widget_flags.redraw = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -279,6 +274,7 @@ impl Typewriter {
         &mut self,
         _element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -304,13 +300,11 @@ impl Typewriter {
                 engine_view
                     .store
                     .update_geometry_for_strokes(&[*stroke_key]);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err {}", e);
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key: *stroke_key,
@@ -324,7 +318,7 @@ impl Typewriter {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -334,13 +328,11 @@ impl Typewriter {
                 engine_view
                     .store
                     .update_geometry_for_strokes(&[*stroke_key]);
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() while adjusting textstroke text width failed with Err {}", e);
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key: *stroke_key,
@@ -354,7 +346,7 @@ impl Typewriter {
 
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
-                widget_flags.indicate_changed_store = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -367,6 +359,7 @@ impl Typewriter {
         &mut self,
         _element: Element,
         _shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let widget_flags = WidgetFlags::default();
@@ -390,50 +383,52 @@ impl Typewriter {
         &mut self,
         keyboard_key: KeyboardKey,
         shortcut_keys: Vec<ShortcutKey>,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
+        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
+        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
+
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
-                        widget_flags.merge_with_other(engine_view.store.record());
+                        text_style.ranged_text_attributes.clear();
 
-                        let mut text_style = self.text_style.clone();
-                        if self.max_width_enabled {
-                            text_style.max_width = Some(self.text_width);
+                        if max_width_enabled {
+                            text_style.max_width = Some(text_width);
                         }
 
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
 
-                        let mut cursor = unicode_segmentation::GraphemeCursor::new(
-                            0,
-                            textstroke.text.len(),
-                            true,
-                        );
+                        let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
                         textstroke.move_cursor_forward(&mut cursor);
 
                         let stroke_key = engine_view
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
 
-                        if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                        engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err {}", e);
-                        }
+                        );
 
                         self.state = TypewriterState::Modifying {
                             stroke_key,
                             cursor,
                             pen_down: false,
                         };
+
+                        widget_flags.resize = true;
+                        widget_flags.store_modified = true;
                     }
                     _ => {}
                 }
@@ -448,18 +443,15 @@ impl Typewriter {
                 pen_down,
             } => {
                 //log::debug!("key: {:?}", keyboard_key);
+                widget_flags.merge(engine_view.store.record(Instant::now()));
+                Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
-
                     let mut update_stroke = |store: &mut StrokeStore| {
-                        widget_flags.merge_with_other(store.record());
-
                         store.update_geometry_for_stroke(*stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            engine_view.tasks_tx.clone(),
+                        store.regenerate_rendering_for_stroke(
                             *stroke_key,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
@@ -469,7 +461,7 @@ impl Typewriter {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
                     };
 
                     // Handling keyboard input
@@ -481,12 +473,12 @@ impl Typewriter {
 
                                 Some(TypewriterState::Selecting {
                                     stroke_key: *stroke_key,
-                                    cursor: unicode_segmentation::GraphemeCursor::new(
+                                    cursor: GraphemeCursor::new(
                                         textstroke.text.len(),
                                         textstroke.text.len(),
                                         true,
                                     ),
-                                    selection_cursor: unicode_segmentation::GraphemeCursor::new(
+                                    selection_cursor: GraphemeCursor::new(
                                         0,
                                         textstroke.text.len(),
                                         true,
@@ -611,18 +603,15 @@ impl Typewriter {
                 finished,
             } => {
                 //log::debug!("key: {:?}", keyboard_key);
+                widget_flags.merge(engine_view.store.record(Instant::now()));
+                Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
-
                     let mut update_stroke = |store: &mut StrokeStore| {
-                        widget_flags.merge_with_other(store.record());
-
                         store.update_geometry_for_stroke(*stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            engine_view.tasks_tx.clone(),
+                        store.regenerate_rendering_for_stroke(
                             *stroke_key,
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
@@ -632,7 +621,7 @@ impl Typewriter {
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
-                        widget_flags.indicate_changed_store = true;
+                        widget_flags.store_modified = true;
                     };
 
                     // Handle keyboard keys
@@ -748,42 +737,51 @@ impl Typewriter {
     pub(super) fn handle_pen_event_text(
         &mut self,
         text: String,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
+        let text_width = engine_view.pens_config.typewriter_config.text_width;
+        let mut text_style = engine_view.pens_config.typewriter_config.text_style.clone();
+        let max_width_enabled = engine_view.pens_config.typewriter_config.max_width_enabled;
+
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 Self::start_audio(None, engine_view.audioplayer);
 
-                let mut text_style = self.text_style.clone();
-                if self.max_width_enabled {
-                    text_style.max_width = Some(self.text_width);
+                text_style.ranged_text_attributes.clear();
+
+                if max_width_enabled {
+                    text_style.max_width = Some(text_width);
                 }
                 let text_len = text.len();
 
                 let textstroke = TextStroke::new(text, *pos, text_style);
 
-                let cursor = unicode_segmentation::GraphemeCursor::new(text_len, text_len, true);
+                let cursor = GraphemeCursor::new(text_len, text_len, true);
 
                 let stroke_key = engine_view
                     .store
                     .insert_stroke(Stroke::TextStroke(textstroke), None);
 
-                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err {}", e);
-                }
+                );
 
                 self.state = TypewriterState::Modifying {
                     stroke_key,
                     cursor,
                     pen_down: false,
                 };
+
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -792,18 +790,19 @@ impl Typewriter {
                 cursor,
                 pen_down,
             } => {
+                // Only record between words
+                if text.contains(' ') {
+                    widget_flags.merge(engine_view.store.record(Instant::now()));
+                }
+                Self::start_audio(None, engine_view.audioplayer);
+
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(None, engine_view.audioplayer);
-
                     textstroke.insert_text_after_cursor(&text, cursor);
 
-                    widget_flags.merge_with_other(engine_view.store.record());
-
                     engine_view.store.update_geometry_for_stroke(*stroke_key);
-                    engine_view.store.regenerate_rendering_for_stroke_threaded(
-                        engine_view.tasks_tx.clone(),
+                    engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
@@ -815,7 +814,7 @@ impl Typewriter {
 
                     widget_flags.redraw = true;
                     widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
 
                     *pen_down = false;
                 }
@@ -828,22 +827,22 @@ impl Typewriter {
                 selection_cursor,
                 finished,
             } => {
+                if text.contains(' ') {
+                    widget_flags.merge(engine_view.store.record(Instant::now()));
+                }
+                Self::start_audio(None, engine_view.audioplayer);
+
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    Self::start_audio(None, engine_view.audioplayer);
-
                     textstroke.replace_text_between_selection_cursors(
                         cursor,
                         selection_cursor,
                         text.as_str(),
                     );
 
-                    widget_flags.merge_with_other(engine_view.store.record());
-
                     engine_view.store.update_geometry_for_stroke(*stroke_key);
-                    engine_view.store.regenerate_rendering_for_stroke_threaded(
-                        engine_view.tasks_tx.clone(),
+                    engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
                         engine_view.camera.viewport(),
                         engine_view.camera.image_scale(),
@@ -855,7 +854,7 @@ impl Typewriter {
 
                     widget_flags.redraw = true;
                     widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
+                    widget_flags.store_modified = true;
 
                     *finished = true
                 }
@@ -871,6 +870,7 @@ impl Typewriter {
 
     pub(super) fn handle_pen_event_cancel(
         &mut self,
+        _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();

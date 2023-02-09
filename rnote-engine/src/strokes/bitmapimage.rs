@@ -1,7 +1,7 @@
 use std::ops::Range;
 
 use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
+use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
@@ -9,7 +9,7 @@ use crate::DrawBehaviour;
 use piet::RenderContext;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
+use rnote_compose::helpers::{AabbHelpers, Affine2Helpers, Vector2Helpers};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
@@ -17,7 +17,7 @@ use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::{cairo, glib};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -43,7 +43,7 @@ impl StrokeBehaviour for BitmapImage {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
 
-        render::Svg::gen_with_piet_svg_backend_no_text(
+        render::Svg::gen_with_piet_cairo_backend(
             |cx| {
                 cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
                 self.draw(cx, 1.0)
@@ -54,7 +54,7 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
@@ -87,7 +87,7 @@ impl StrokeBehaviour for BitmapImage {
 
 impl DrawBehaviour for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
 
@@ -100,32 +100,32 @@ impl DrawBehaviour for BitmapImage {
                 &self.image.data,
                 piet_image_format,
             )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
 
 impl ShapeBehaviour for BitmapImage {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         self.rectangle.bounds()
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         vec![self.bounds()]
     }
 }
 
 impl TransformBehaviour for BitmapImage {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.rectangle.translate(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.rectangle.rotate(angle, center);
     }
 
@@ -135,18 +135,18 @@ impl TransformBehaviour for BitmapImage {
 }
 
 impl BitmapImage {
-    /// The default offset in surface coords when importing a bitmap image
-    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
-
     pub fn import_from_image_bytes(
         bytes: &[u8],
         pos: na::Vector2<f64>,
+        size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
         let mut image = render::Image::try_from_encoded_bytes(bytes)?;
         // Ensure we are in rgba8-remultiplied format, to be able to draw to piet
         image.convert_to_rgba8pre()?;
 
-        let size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
+        let size = size.unwrap_or_else(|| {
+            na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)]
+        });
 
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(size * 0.5),
@@ -172,10 +172,10 @@ impl BitmapImage {
             .enumerate()
             .filter_map(|(i, page_i)| {
                 let page = doc.page(page_i as i32)?;
-                let result = || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>)> {
+                let result = || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)> {
                     let intrinsic_size = page.size();
 
-                    let (width, height, zoom) = {
+                    let (width_on_doc, height_on_doc, zoom) = {
                         let zoom = page_width / intrinsic_size.0;
 
                         (
@@ -185,40 +185,50 @@ impl BitmapImage {
                         )
                     };
 
-                    let x = insert_pos[0];
-                    let y = match pdf_import_prefs.page_spacing {
+                    let x_on_doc = insert_pos[0];
+                    let y_on_doc = match pdf_import_prefs.page_spacing {
                         PdfImportPageSpacing::Continuous => {
                             insert_pos[1]
                                 + f64::from(i as u32)
-                                    * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5)
+                                    * (f64::from(height_on_doc)
+                                        + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
                         }
                         PdfImportPageSpacing::OnePerDocumentPage => {
                             insert_pos[1] + f64::from(i as u32) * format.height
                         }
                     };
 
-                    let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
-                        .map_err(|e| {
-                            anyhow::anyhow!(
-                                "create ImageSurface with dimensions ({}, {}) failed, {}",
-                                width,
-                                height,
-                                e
-                            )
-                        })?;
+                    let surface_width =
+                        (width_on_doc as f64 * pdf_import_prefs.bitmap_scalefactor).round() as i32;
+                    let surface_height =
+                        (height_on_doc as f64 * pdf_import_prefs.bitmap_scalefactor).round() as i32;
+
+                    let surface = cairo::ImageSurface::create(
+                        cairo::Format::ARgb32,
+                        surface_width,
+                        surface_height,
+                    )
+                    .map_err(|e| {
+                        anyhow::anyhow!(
+                            "create image surface while importing bitmapimage failed, {e:?}"
+                        )
+                    })?;
 
                     {
                         let cx =
                             cairo::Context::new(&surface).context("new cairo::Context failed")?;
-                        cx.scale(zoom, zoom);
+
+                        // Scale with the bitmap scalefactor pref
+                        cx.scale(
+                            zoom * pdf_import_prefs.bitmap_scalefactor,
+                            zoom * pdf_import_prefs.bitmap_scalefactor,
+                        );
 
                         // Set margin to white
                         cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
                         cx.paint()?;
 
                         page.render(&cx);
-
-                        cx.scale(1.0 / zoom, 1.0 / zoom);
 
                         // Draw outline around page
                         cx.set_source_rgba(
@@ -233,8 +243,8 @@ impl BitmapImage {
                         cx.rectangle(
                             line_width * 0.5,
                             line_width * 0.5,
-                            f64::from(width) - line_width,
-                            f64::from(height) - line_width,
+                            intrinsic_size.0 - line_width,
+                            intrinsic_size.1 - line_width,
                         );
                         cx.stroke()?;
                     }
@@ -242,29 +252,34 @@ impl BitmapImage {
                     let mut png_data: Vec<u8> = Vec::new();
                     surface.write_to_png(&mut png_data)?;
 
-                    Ok((png_data, na::vector![x, y]))
+                    Ok((
+                        png_data,
+                        na::vector![x_on_doc, y_on_doc],
+                        na::vector![width_on_doc as f64, height_on_doc as f64],
+                    ))
                 };
 
                 match result() {
                     Ok(ret) => Some(ret),
                     Err(e) => {
-                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err {}", e);
+                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err: {e:?}");
                         None
                     }
                 }
             })
-            .collect::<Vec<(Vec<u8>, na::Vector2<f64>)>>();
+            .collect::<Vec<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)>>();
 
         Ok(pngs
             .into_par_iter()
-            .filter_map(|(png_data, pos)| {
+            .filter_map(|(png_data, pos, size)| {
                 match Self::import_from_image_bytes(
                     &png_data,
-                    pos
+                    pos,
+                    Some(size),
                 ) {
                     Ok(bitmapimage) => Some(bitmapimage),
                     Err(e) => {
-                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err {}", e);
+                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err: {e:?}");
                         None
                     }
                 }

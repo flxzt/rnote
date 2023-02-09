@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="ShaperPage" parent="GtkWidget">
+  <template class="RnShaperPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="spacing">6</property>
@@ -10,10 +10,40 @@
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
     <child>
-      <object class="GtkImage">
-        <property name="icon_name">pen-shaper-symbolic</property>
-        <property name="margin-top">9</property>
-        <property name="margin-bottom">9</property>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkMenuButton" id="shaperstyle_menubutton">
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Shaper Style</property>
+            <property name="popover">shaperstyle_popover</property>
+            <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
+            <style>
+              <class name="flat" />
+              <class name="sidebar_action_button" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="shapeconfig_menubutton">
+            <property name="icon-name">settings-symbolic</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Shape Configuration</property>
+            <property name="popover">shapeconfig_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="RnStrokeWidthPicker" id="stroke_width_picker">
       </object>
     </child>
     <child>
@@ -26,46 +56,57 @@
         <property name="orientation">vertical</property>
         <property name="vexpand">false</property>
         <child>
-          <object class="GtkMenuButton" id="shaperstyle_menubutton">
+          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
+            <property name="direction">left</property>
+            <property name="tooltip_text" translatable="yes">Shape Builders</property>
+            <property name="popover">shapebuildertype_popover</property>
+            <property name="icon-name">shapebuilder-line-symbolic</property>
+            <style>
+              <class name="flat" />
+              <class name="sidebar_action_button" />
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="constraint_menubutton">
+            <property name="icon-name">settings-symbolic</property>
             <property name="hexpand">true</property>
+            <property name="sensitive">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shaper style</property>
-            <property name="popover">shaperstyle_popover</property>
-            <child>
-              <object class="GtkImage" id="shaperstyle_image">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="tooltip_text" translatable="yes">Constraints</property>
+            <property name="popover">constraint_popover</property>
+            <style>
+              <class name="flat" />
+            </style>
           </object>
         </child>
       </object>
     </child>
+
+    <!-- Shaper style -->
     <object class="GtkPopover" id="shaperstyle_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Shaper styles</property>
+              <property name="label" translatable="yes">Shaper Styles</property>
               <property name="halign">center</property>
-              <property name="margin-bottom">12</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
           <child>
             <object class="GtkListBox" id="shaperstyle_listbox">
               <property name="width-request">300</property>
-              <property name="selection-mode">single</property>
+              <property name="selection-mode">browse</property>
               <style>
                 <class name="content" />
                 <class name="large" />
@@ -97,33 +138,20 @@
         </object>
       </child>
     </object>
+
     <!-- Shape config -->
-    <child>
-      <object class="GtkBox">
-        <child>
-          <object class="GtkMenuButton" id="shapeconfig_menubutton">
-            <property name="icon-name">settings-symbolic</property>
-            <property name="hexpand">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape configuration</property>
-            <property name="popover">shapeconfig_popover</property>
-          </object>
-        </child>
-      </object>
-    </child>
     <object class="GtkPopover" id="shapeconfig_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Shape configuration</property>
+              <property name="label" translatable="yes">Shape Configuration</property>
               <property name="halign">center</property>
               <style>
                 <class name="title-3" />
@@ -134,63 +162,44 @@
             <!-- Rough options -->
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Rough style</property>
+              <property name="width-request">300</property>
               <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Roughness</property>
-                  <property name="subtitle" translatable="yes">Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0</property>
-                  <child type="suffix">
-                    <object class="GtkSpinButton" id="roughconfig_roughness_spinbutton">
-                      <property name="valign">center</property>
-                      <property name="margin_start">12</property>
-                      <property name="orientation">horizontal</property>
-                      <property name="numeric">true</property>
-                      <property name="digits">1</property>
-                      <property name="climb-rate">0.5</property>
+                <object class="AdwComboRow" id="roughstyle_fillstyle_row">
+                  <property name="title" translatable="yes">Fill Style</property>
+                  <property name="subtitle" translatable="yes">Choose a fill style</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Solid</item>
+                        <item translatable="yes">Hachure</item>
+                        <item translatable="yes">Zig-Zag</item>
+                        <item translatable="yes">Zig-Zag Line</item>
+                        <item translatable="yes">Crosshatch</item>
+                        <item translatable="yes">Dots</item>
+                        <item translatable="yes">Dashed</item>
+                      </items>
                     </object>
-                  </child>
+                  </property>
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Bowing</property>
-                  <property name="subtitle" translatable="yes">How curvy the lines are when drawing a rough shape. 0.0 is a straight line. Defaults to 1.0</property>
+                <object class="AdwActionRow" id="roughstyle_hachure_angle_row">
+                  <property name="title" translatable="yes">Hachure Angle</property>
+                  <property name="subtitle" translatable="yes">Set the angle of hachure fills</property>
                   <child type="suffix">
-                    <object class="GtkSpinButton" id="roughconfig_bowing_spinbutton">
-                      <property name="valign">center</property>
-                      <property name="margin_start">12</property>
-                      <property name="orientation">horizontal</property>
-                      <property name="numeric">true</property>
-                      <property name="digits">1</property>
-                      <property name="climb-rate">0.5</property>
+                    <object class="GtkAdjustment" id="roughstyle_hachure_angle_adj">
+                      <property name="step-increment">2</property>
+                      <property name="upper">180.0</property>
+                      <property name="lower">-180.0</property>
+                      <property name="value">90.0</property>
                     </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Curve step count</property>
-                  <property name="subtitle" translatable="yes">How many steps make up a curve. Defaults to 12</property>
-                  <child type="suffix">
-                    <object class="GtkSpinButton" id="roughconfig_curvestepcount_spinbutton">
+                    <object class="GtkSpinButton" id="roughstyle_hachure_angle_spinbutton">
+                      <property name="adjustment">roughstyle_hachure_angle_adj</property>
                       <property name="valign">center</property>
                       <property name="margin_start">12</property>
                       <property name="orientation">horizontal</property>
                       <property name="numeric">true</property>
                       <property name="digits">0</property>
-                      <property name="climb-rate">1.0</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Multistroke</property>
-                  <property name="subtitle" translatable="yes">Multiple stroke generation for a sketched look. Defaults to true</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="roughconfig_multistroke_switch">
-                      <property name="valign">center</property>
-                      <property name="margin_start">12</property>
-                      <property name="active">true</property>
                     </object>
                   </child>
                 </object>
@@ -200,174 +209,51 @@
         </object>
       </child>
     </object>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSpinButton" id="width_spinbutton">
-        <property name="orientation">vertical</property>
-        <property name="numeric">true</property>
-        <property name="digits">1</property>
-        <property name="climb-rate">0.5</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <property name="vexpand">false</property>
-        <child>
-          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
-            <property name="hexpand">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape builders</property>
-            <property name="popover">shapebuildertype_popover</property>
-            <child>
-              <object class="GtkImage" id="shapebuildertype_image">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="icon-name">shape-line-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
+
+    <!-- Shape builder type -->
     <object class="GtkPopover" id="shapebuildertype_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Shape builders</property>
+              <property name="label" translatable="yes">Shape Builders</property>
               <property name="halign">center</property>
-              <property name="margin-bottom">12</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
           <child>
-            <object class="GtkListBox" id="shapebuildertype_listbox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">single</property>
-              <style>
-                <class name="content" />
-                <class name="large" />
-              </style>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_line_row">
-                  <property name="title" translatable="yes">Line</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shape-line-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_rectangle_row">
-                  <property name="title" translatable="yes">Rectangle</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shape-rectangle-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_ellipse_row">
-                  <property name="title" translatable="yes">Ellipse</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shape-ellipse-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_fociellipse_row">
-                  <property name="title" translatable="yes">Ellipse with foci</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shape-fociellipse-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_quadbez_row">
-                  <property name="title" translatable="yes">Quadratic bezier curve</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shape-quadbez-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="shapebuildertype_cubbez_row">
-                  <property name="title" translatable="yes">Cubic bezier curve</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">shape-cubbez-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
+            <object class="RnGroupedIconPicker" id="shapebuildertype_picker">
+              <property name="width-request">250</property>
             </object>
           </child>
         </object>
       </child>
     </object>
-    <child>
-      <object class="GtkBox">
-        <child>
-          <object class="GtkMenuButton" id="constraint_menubutton">
-            <property name="icon-name">settings-symbolic</property>
-            <property name="hexpand">true</property>
-            <property name="sensitive">true</property>
-            <property name="halign">fill</property>
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Constraints</property>
-            <property name="popover">constraint_popover</property>
-          </object>
-        </child>
-      </object>
-    </child>
+
+    <!-- constraints -->
     <object class="GtkPopover" id="constraint_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
-          <property name="margin-top">12</property>
-          <property name="margin-bottom">12</property>
-          <property name="margin-start">12</property>
-          <property name="margin-end">12</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">6</property>
+          <property name="margin-end">6</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Constraints</property>
               <property name="halign">center</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
@@ -382,7 +268,8 @@
               <child>
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Enabled</property>
-                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily enable/disable constraints
+                  <property name="subtitle" translatable="yes">Hold Ctrl to temporarily
+enable/disable constraints
 when this switch is off/on</property>
                   <child type="suffix">
                     <object class="GtkSwitch" id="constraint_enabled_switch">
@@ -413,7 +300,7 @@ when this switch is off/on</property>
               </child>
               <child>
                 <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Golden ratio (1:1.618)</property>
+                  <property name="title" translatable="yes">Golden Ratio (1:1.618)</property>
                   <child type="suffix">
                     <object class="GtkSwitch" id="constraint_golden_switch">
                       <property name="valign">center</property>
@@ -426,39 +313,5 @@ when this switch is off/on</property>
         </object>
       </child>
     </object>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">stroke-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="stroke_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="icon_name">fill-color-symbolic</property>
-        <property name="margin-top">6</property>
-        <property name="margin-bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="fill_colorpicker">
-        <property name="amount-colorbuttons">2</property>
-      </object>
-    </child>
   </template>
 </interface>

@@ -1,69 +1,97 @@
 mod canvaslayout;
+pub(crate) mod imexport;
 mod input;
 
 // Re-exports
-pub use canvaslayout::CanvasLayout;
+pub(crate) use canvaslayout::RnCanvasLayout;
+use gettextrs::gettext;
 use rnote_engine::pens::PenMode;
 
 // Imports
 use std::cell::{Cell, RefCell};
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use crate::config;
-use rnote_engine::RnoteEngine;
+use rnote_engine::{RnoteEngine, WidgetFlags};
 
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
     Adjustment, DropTarget, EventControllerKey, EventSequenceState, GestureDrag, GestureStylus,
-    IMContextSimple, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    IMMulticontext, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
 
-use crate::appwindow::RnoteAppWindow;
+use crate::appwindow::RnAppWindow;
 use futures::StreamExt;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::AABB;
-use rnote_compose::helpers::AABBHelpers;
+use p2d::bounding_volume::Aabb;
+use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 
 use std::collections::VecDeque;
-use std::time;
+use std::time::{self, Instant};
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
+#[boxed_type(name = "WidgetFlagsBoxed")]
+struct WidgetFlagsBoxed(WidgetFlags);
+
+#[derive(Debug, Default)]
+pub(crate) struct Handlers {
+    pub(crate) hadjustment: Option<glib::SignalHandlerId>,
+    pub(crate) vadjustment: Option<glib::SignalHandlerId>,
+    pub(crate) zoom_timeout: Option<glib::SourceId>,
+    pub(crate) tab_page_output_file: Option<glib::Binding>,
+    pub(crate) tab_page_unsaved_changes: Option<glib::Binding>,
+    pub(crate) appwindow_output_file: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_scalefactor: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_touch_drawing: Option<glib::Binding>,
+    pub(crate) appwindow_regular_cursor: Option<glib::Binding>,
+    pub(crate) appwindow_drawing_cursor: Option<glib::Binding>,
+    pub(crate) appwindow_drop_target: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_zoom_changed: Option<glib::SignalHandlerId>,
+    pub(crate) appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
+}
 
 mod imp {
-    use std::path::PathBuf;
-
     use super::*;
 
     #[allow(missing_debug_implementations)]
-    pub struct RnoteCanvas {
-        pub hadjustment: RefCell<Option<Adjustment>>,
-        pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
-        pub vadjustment: RefCell<Option<Adjustment>>,
-        pub vadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
-        pub hscroll_policy: Cell<ScrollablePolicy>,
-        pub vscroll_policy: Cell<ScrollablePolicy>,
-        pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
-        pub regular_cursor: RefCell<gdk::Cursor>,
-        pub regular_cursor_icon_name: RefCell<String>,
-        pub drawing_cursor: RefCell<gdk::Cursor>,
-        pub drawing_cursor_icon_name: RefCell<String>,
-        pub stylus_drawing_gesture: GestureStylus,
-        pub mouse_drawing_gesture: GestureDrag,
-        pub touch_drawing_gesture: GestureDrag,
-        pub key_controller: EventControllerKey,
-        pub key_controller_im_context: IMContextSimple,
+    pub(crate) struct RnCanvas {
+        pub(crate) handlers: RefCell<Handlers>,
 
-        pub engine: Rc<RefCell<RnoteEngine>>,
+        pub(crate) hadjustment: RefCell<Option<Adjustment>>,
+        pub(crate) vadjustment: RefCell<Option<Adjustment>>,
+        pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
+        pub(crate) vscroll_policy: Cell<ScrollablePolicy>,
+        pub(crate) regular_cursor: RefCell<gdk::Cursor>,
+        pub(crate) regular_cursor_icon_name: RefCell<String>,
+        pub(crate) drawing_cursor: RefCell<gdk::Cursor>,
+        pub(crate) drawing_cursor_icon_name: RefCell<String>,
+        pub(crate) stylus_drawing_gesture: GestureStylus,
+        pub(crate) mouse_drawing_gesture: GestureDrag,
+        pub(crate) touch_drawing_gesture: GestureDrag,
+        pub(crate) key_controller: EventControllerKey,
+        pub(crate) key_controller_im_context: IMMulticontext,
+        pub(crate) drop_target: DropTarget,
 
-        pub output_file: RefCell<Option<gio::File>>,
-        pub unsaved_changes: Cell<bool>,
-        pub empty: Cell<bool>,
+        pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
-        pub touch_drawing: Cell<bool>,
+        pub(crate) output_file: RefCell<Option<gio::File>>,
+        pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
+        pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
+        pub(crate) output_file_modified_toast_singleton: RefCell<Option<adw::Toast>>,
+        pub(crate) output_file_expect_write: Cell<bool>,
+        pub(crate) save_in_progress: Cell<bool>,
+        pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) empty: Cell<bool>,
+
+        pub(crate) touch_drawing: Cell<bool>,
     }
 
-    impl Default for RnoteCanvas {
+    impl Default for RnCanvas {
         fn default() -> Self {
             let stylus_drawing_gesture = GestureStylus::builder()
                 .name("stylus_drawing_gesture")
@@ -91,7 +119,16 @@ mod imp {
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
-            let key_controller_im_context = IMContextSimple::new();
+            let key_controller_im_context = IMMulticontext::new();
+
+            let drop_target = DropTarget::builder()
+                .name("canvas_drop_target")
+                .propagation_phase(PropagationPhase::Capture)
+                .actions(gdk::DragAction::COPY)
+                .build();
+
+            // The order here is important: first files, then text
+            drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
 
             // Gesture grouping
             mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
@@ -120,13 +157,13 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
-            let engine = RnoteEngine::new(Some(PathBuf::from(config::PKG_DATA_DIR)));
+            let engine = RnoteEngine::default();
 
             Self {
+                handlers: RefCell::new(Handlers::default()),
+
                 hadjustment: RefCell::new(None),
-                hadjustment_signal: RefCell::new(None),
                 vadjustment: RefCell::new(None),
-                vadjustment_signal: RefCell::new(None),
                 hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 regular_cursor: RefCell::new(regular_cursor),
@@ -138,11 +175,16 @@ mod imp {
                 touch_drawing_gesture,
                 key_controller,
                 key_controller_im_context,
-                zoom_timeout_id: RefCell::new(None),
+                drop_target,
 
                 engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
+                output_file_monitor: RefCell::new(None),
+                output_file_monitor_changed_handler: RefCell::new(None),
+                output_file_modified_toast_singleton: RefCell::new(None),
+                output_file_expect_write: Cell::new(false),
+                save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -152,15 +194,15 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for RnoteCanvas {
-        const NAME: &'static str = "RnoteCanvas";
-        type Type = super::RnoteCanvas;
+    impl ObjectSubclass for RnCanvas {
+        const NAME: &'static str = "RnCanvas";
+        type Type = super::RnCanvas;
         type ParentType = Widget;
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
             klass.set_accessible_role(AccessibleRole::Widget);
-            klass.set_layout_manager_type::<CanvasLayout>();
+            klass.set_layout_manager_type::<RnCanvasLayout>();
         }
 
         fn new() -> Self {
@@ -168,26 +210,48 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for RnoteCanvas {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+    impl ObjectImpl for RnCanvas {
+        fn constructed(&self) {
+            self.parent_constructed();
+            let inst = self.instance();
 
-            obj.set_hexpand(false);
-            obj.set_vexpand(false);
-            obj.set_can_target(true);
-            obj.set_focusable(true);
-            obj.set_can_focus(true);
+            inst.set_hexpand(false);
+            inst.set_vexpand(false);
+            // keyboard focus needed for typewriter
+            inst.set_can_focus(true);
+            inst.set_focusable(true);
 
-            obj.set_cursor(Some(&*self.regular_cursor.borrow()));
+            inst.set_cursor(Some(&*self.regular_cursor.borrow()));
 
-            obj.add_controller(&self.stylus_drawing_gesture);
-            obj.add_controller(&self.mouse_drawing_gesture);
-            obj.add_controller(&self.touch_drawing_gesture);
-            obj.add_controller(&self.key_controller);
+            inst.add_controller(&self.stylus_drawing_gesture);
+            inst.add_controller(&self.mouse_drawing_gesture);
+            inst.add_controller(&self.touch_drawing_gesture);
+            inst.add_controller(&self.key_controller);
+            inst.add_controller(&self.drop_target);
+
+            // receive and handling engine tasks
+            glib::MainContext::default().spawn_local(
+                clone!(@weak inst as canvas => async move {
+                    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
+
+                    loop {
+                        if let Some(task) = task_rx.next().await {
+                            let (widget_flags, quit) = canvas.engine().borrow_mut().handle_engine_task(task);
+                            canvas.emit_handle_widget_flags(widget_flags);
+
+                            if quit {
+                                break;
+                            }
+                        }
+                    }
+                }),
+            );
+
+            self.setup_input();
         }
 
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
+        fn dispose(&self) {
+            while let Some(child) = self.instance().first_child() {
                 child.unparent();
             }
         }
@@ -195,7 +259,6 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    // Flag for any unsaved changes on the canvas. Propagates to the application 'unsaved-changes' property
                     glib::ParamSpecObject::new(
                         "output-file",
                         "output-file",
@@ -203,6 +266,7 @@ mod imp {
                         Option::<gio::File>::static_type(),
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Flag to indicate that there are unsaved changes to the canvas
                     glib::ParamSpecBoolean::new(
                         "unsaved-changes",
                         "unsaved-changes",
@@ -250,7 +314,7 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "output-file" => self.output_file.borrow().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
@@ -266,39 +330,31 @@ mod imp {
             }
         }
 
-        fn set_property(
-            &self,
-            obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
-            /*             let parent_scrolledwindow = obj
-            .parent()
-            .map(|parent| parent.downcast::<ScrolledWindow>().unwrap()); */
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
+            let inst = self.instance();
 
             match pspec.name() {
                 "output-file" => {
                     let output_file = value
                         .get::<Option<gio::File>>()
-                        .expect("The value needs to be of type `Option<gio::File>`.");
+                        .expect("The value needs to be of type `Option<gio::File>`");
                     self.output_file.replace(output_file);
                 }
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
+                        value.get().expect("The value needs to be of type `bool`");
                     self.unsaved_changes.replace(unsaved_changes);
                 }
                 "empty" => {
-                    let empty: bool = value.get().expect("The value needs to be of type `bool`.");
+                    let empty: bool = value.get().expect("The value needs to be of type `bool`");
                     self.empty.replace(empty);
                     if empty {
-                        obj.set_unsaved_changes(false);
+                        inst.set_unsaved_changes(false);
                     }
                 }
                 "hadjustment" => {
                     let hadjustment = value.get().unwrap();
-                    obj.set_hadjustment(hadjustment);
+                    inst.set_hadjustment(hadjustment);
                 }
                 "hscroll-policy" => {
                     let hscroll_policy = value.get().unwrap();
@@ -306,7 +362,7 @@ mod imp {
                 }
                 "vadjustment" => {
                     let vadjustment = value.get().unwrap();
-                    obj.set_vadjustment(vadjustment);
+                    inst.set_vadjustment(vadjustment);
                 }
                 "vscroll-policy" => {
                     let vscroll_policy = value.get().unwrap();
@@ -314,7 +370,7 @@ mod imp {
                 }
                 "touch-drawing" => {
                     let touch_drawing: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
+                        value.get().expect("The value needs to be of type `bool`");
                     self.touch_drawing.replace(touch_drawing);
                     if touch_drawing {
                         self.touch_drawing_gesture
@@ -344,7 +400,7 @@ mod imp {
 
                     self.regular_cursor.replace(cursor);
 
-                    obj.set_cursor(Some(&*self.regular_cursor.borrow()));
+                    inst.set_cursor(Some(&*self.regular_cursor.borrow()));
                 }
                 "drawing-cursor" => {
                     let icon_name = value.get().unwrap();
@@ -369,22 +425,36 @@ mod imp {
                 _ => unimplemented!(),
             }
         }
+
+        fn signals() -> &'static [glib::subclass::Signal] {
+            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
+                vec![
+                    glib::subclass::Signal::builder("zoom-changed").build(),
+                    glib::subclass::Signal::builder("handle-widget-flags")
+                        .param_types([WidgetFlagsBoxed::static_type()])
+                        .build(),
+                ]
+            });
+            SIGNALS.as_ref()
+        }
     }
 
-    impl WidgetImpl for RnoteCanvas {
+    impl WidgetImpl for RnCanvas {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
-        fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
+        fn snapshot(&self, snapshot: &gtk4::Snapshot) {
+            let inst = self.instance();
+
             if let Err(e) = || -> anyhow::Result<()> {
-                let clip_bounds = if let Some(parent) = widget.parent() {
+                let clip_bounds = if let Some(parent) = inst.parent() {
                     // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(widget, 0.0, 0.0).unwrap();
-                    AABB::new_positive(
+                    let (clip_x, clip_y) = parent.translate_coordinates(&*inst, 0.0, 0.0).unwrap();
+                    Aabb::new_positive(
                         na::point![clip_x, clip_y],
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
-                    widget.bounds()
+                    inst.bounds()
                 };
                 // pushing the clip
                 snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
@@ -395,7 +465,7 @@ mod imp {
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_on_snapshot(snapshot, widget.bounds())?;
+                    .draw_on_gtk_snapshot(snapshot, inst.bounds())?;
 
                 // Restore original coordinate space
                 snapshot.restore();
@@ -403,251 +473,21 @@ mod imp {
                 snapshot.pop();
                 Ok(())
             }() {
-                log::error!("canvas snapshot() failed with Err {}", e);
+                log::error!("canvas snapshot() failed with Err: {e:?}");
             }
         }
     }
 
-    impl ScrollableImpl for RnoteCanvas {}
+    impl ScrollableImpl for RnCanvas {}
 
-    impl RnoteCanvas {}
-}
+    impl RnCanvas {
+        fn setup_input(&self) {
+            let inst = self.instance();
 
-glib::wrapper! {
-    pub struct RnoteCanvas(ObjectSubclass<imp::RnoteCanvas>)
-        @extends gtk4::Widget,
-        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Scrollable;
-}
-
-impl Default for RnoteCanvas {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl RnoteCanvas {
-    /// The zoom amount when activating the zoom-in / zoom-out action
-    pub const ZOOM_ACTION_DELTA: f64 = 0.1;
-    // the zoom timeout time
-    pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
-    // Sets the canvas zoom scroll step in % for one unit of the event controller delta
-    pub const ZOOM_STEP: f64 = 0.1;
-
-    pub fn new() -> Self {
-        let canvas: RnoteCanvas = glib::Object::new(&[]).expect("Failed to create RnoteCanvas");
-
-        canvas
-    }
-
-    pub fn regular_cursor(&self) -> String {
-        self.property::<String>("regular-cursor")
-    }
-
-    pub fn set_regular_cursor(&self, regular_cursor: String) {
-        self.set_property("regular-cursor", regular_cursor.to_value());
-    }
-
-    pub fn drawing_cursor(&self) -> String {
-        self.property::<String>("drawing-cursor")
-    }
-
-    pub fn set_drawing_cursor(&self, drawing_cursor: String) {
-        self.set_property("drawing-cursor", drawing_cursor.to_value());
-    }
-
-    /// Only change the engine state in actions to avoid nested mutable borrows!
-    pub fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
-        self.imp().engine.clone()
-    }
-
-    pub fn output_file(&self) -> Option<gio::File> {
-        self.property::<Option<gio::File>>("output-file")
-    }
-
-    pub fn set_output_file(&self, output_file: Option<gio::File>) {
-        self.set_property("output-file", output_file.to_value());
-    }
-
-    pub fn unsaved_changes(&self) -> bool {
-        self.property::<bool>("unsaved-changes")
-    }
-
-    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        self.set_property("unsaved-changes", unsaved_changes.to_value());
-    }
-
-    pub fn empty(&self) -> bool {
-        self.property::<bool>("empty")
-    }
-
-    pub fn set_empty(&self, empty: bool) {
-        self.set_property("empty", empty.to_value());
-    }
-
-    pub fn touch_drawing(&self) -> bool {
-        self.property::<bool>("touch-drawing")
-    }
-
-    pub fn set_touch_drawing(&self, touch_drawing: bool) {
-        self.set_property("touch-drawing", touch_drawing.to_value());
-    }
-
-    fn set_hadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().hadjustment_signal.borrow_mut().take() {
-            let old_adj = self.imp().hadjustment.borrow().as_ref().unwrap().clone();
-            old_adj.disconnect(signal_id);
-        }
-
-        if let Some(ref hadjustment) = adj {
-            let signal_id = hadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_hadjustment| {
-                    canvas.queue_resize();
-                }),
-            );
-
-            self.imp().hadjustment_signal.replace(Some(signal_id));
-        }
-        self.imp().hadjustment.replace(adj);
-    }
-
-    fn set_vadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().vadjustment_signal.borrow_mut().take() {
-            let old_adj = self.imp().vadjustment.borrow().as_ref().unwrap().clone();
-            old_adj.disconnect(signal_id);
-        }
-
-        if let Some(ref vadjustment) = adj {
-            let signal_id = vadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_vadjustment| {
-                    canvas.queue_resize();
-                }),
-            );
-
-            self.imp().vadjustment_signal.replace(Some(signal_id));
-        }
-        self.imp().vadjustment.replace(adj);
-    }
-
-    pub fn set_text_preprocessing(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .key_controller
-                .set_im_context(Some(&self.imp().key_controller_im_context));
-        } else {
-            self.imp()
-                .key_controller
-                .set_im_context(None::<&IMContextSimple>);
-        }
-    }
-
-    /// Switches between the regular and the drawing cursor
-    pub fn switch_between_cursors(&self, drawing_cursor: bool) {
-        if drawing_cursor {
-            self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
-        } else {
-            self.set_cursor(Some(&*self.imp().regular_cursor.borrow()));
-        }
-    }
-
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.setup_input(appwindow);
-
-        // receiving and handling engine tasks
-        glib::MainContext::default().spawn_local(
-            clone!(@strong self as canvas, @strong appwindow => async move {
-                let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
-
-                loop {
-                    if let Some(task) = task_rx.next().await {
-                        let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
-                        if appwindow.handle_widget_flags(widget_flags) {
-                            break;
-                        }
-                    }
-                }
-            }),
-        );
-
-        self.connect_notify_local(
-            Some("output-file"),
-            clone!(@weak appwindow => move |canvas, _pspec| {
-                let output_file = canvas.output_file();
-
-                appwindow.update_titles_for_file(output_file.as_ref());
-            }),
-        );
-
-        self.connect_notify_local(
-            Some("touch-drawing"),
-            clone!(@weak appwindow => move |canvas, _pspec| {
-                let touch_drawing = canvas.touch_drawing();
-
-                // Disable the zoom gesture when touch drawing is enabled
-                appwindow.canvas_zoom_gesture_enable(!touch_drawing);
-            }),
-        );
-
-        self.bind_property("unsaved-changes", appwindow, "unsaved-changes")
-            .flags(glib::BindingFlags::DEFAULT)
-            .build();
-
-        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |canvas, _pspec| {
-            appwindow.mainheader().main_title_unsaved_indicator().set_visible(canvas.unsaved_changes());
-            if canvas.unsaved_changes() {
-                appwindow.mainheader().main_title().add_css_class("unsaved_changes");
-            } else {
-                appwindow.mainheader().main_title().remove_css_class("unsaved_changes");
-            }
-        }));
-
-        self.bind_property(
-            "regular-cursor",
-            &appwindow
-                .settings_panel()
-                .general_regular_cursor_picker_image(),
-            "icon-name",
-        )
-        .flags(glib::BindingFlags::DEFAULT)
-        .build();
-
-        self.bind_property(
-            "drawing-cursor",
-            &appwindow
-                .settings_panel()
-                .general_drawing_cursor_picker_image(),
-            "icon-name",
-        )
-        .flags(glib::BindingFlags::DEFAULT)
-        .build();
-
-        // set at startup
-        self.engine().borrow_mut().camera.scale_factor = f64::from(self.scale_factor());
-        // and connect
-        self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
-            let scale_factor = f64::from(canvas.scale_factor());
-            canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
-
-            canvas
-                .engine()
-                .borrow_mut()
-                .store
-                .set_rendering_dirty_all_keys();
-
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
-        });
-    }
-
-    fn setup_input(&self, appwindow: &RnoteAppWindow) {
-        // Stylus Drawing
-        self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            // Stylus Drawing
+            self.stylus_drawing_gesture.connect_down(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture down");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            // disable drag and zoom gestures entirely while drawing with stylus
-            appwindow.canvas_touch_drag_gesture_enable(false);
-            appwindow.canvas_zoom_gesture_enable(false);
-            appwindow.canvas_drag_empty_area_gesture_enable(false);
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
@@ -659,12 +499,15 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now(), ));
             }
+
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
+            self.stylus_drawing_gesture.connect_motion(clone!(@weak inst as canvas => move |stylus_drawing_gesture, x, y| {
             //log::debug!("stylus_drawing_gesture motion");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
@@ -676,22 +519,16 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
             }
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            self.stylus_drawing_gesture.connect_up(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture up");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            // enable drag and zoom gestures again
-            appwindow.canvas_touch_drag_gesture_enable(true);
-            appwindow.canvas_drag_empty_area_gesture_enable(true);
-
-            if !canvas.touch_drawing() {
-                appwindow.canvas_zoom_gesture_enable(true);
-            }
 
             if input::filter_stylus_input(stylus_drawing_gesture) { return; }
 
@@ -702,14 +539,16 @@ impl RnoteCanvas {
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
             if let Some(last) = data_entries.pop_back() {
+                let mut widget_flags = WidgetFlags::default();
                 for element in data_entries {
-                    input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
                 }
-                input::process_pen_up(last, shortcut_keys, pen_mode, &appwindow);
+                widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, pen_mode, Instant::now()));
+                canvas.emit_handle_widget_flags(widget_flags);
             }
         }));
 
-        self.imp().stylus_drawing_gesture.connect_proximity(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            self.stylus_drawing_gesture.connect_proximity(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture proximity");
             //input::debug_stylus_gesture(stylus_drawing_gesture);
 
@@ -721,13 +560,15 @@ impl RnoteCanvas {
             let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
             let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_proximity(element, shortcut_keys.clone(), pen_mode, &appwindow);
+                widget_flags.merge(input::process_pen_proximity(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
             }
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        // Mouse drawing
-        self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            // Mouse drawing
+            self.mouse_drawing_gesture.connect_drag_begin(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture begin");
             //input::debug_drag_gesture(mouse_drawing_gesture);
 
@@ -740,12 +581,14 @@ impl RnoteCanvas {
 
             let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
             }
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            self.mouse_drawing_gesture.connect_drag_update(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture motion");
             //input::debug_drag_gesture(mouse_drawing_gesture);
 
@@ -757,13 +600,15 @@ impl RnoteCanvas {
 
                 let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
 
+                let mut widget_flags = WidgetFlags::default();
                 for element in data_entries {
-                    input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                 }
+                canvas.emit_handle_widget_flags(widget_flags);
             }
         }));
 
-        self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            self.mouse_drawing_gesture.connect_drag_end(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture end");
             //input::debug_drag_gesture(mouse_drawing_gesture);
 
@@ -776,16 +621,18 @@ impl RnoteCanvas {
                 let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
+                    let mut widget_flags = WidgetFlags::default();
                     for element in data_entries {
-                        input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                     }
-                    input::process_pen_up(last, shortcut_keys, Some(PenMode::Pen), &appwindow);
+                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
+                    canvas.emit_handle_widget_flags(widget_flags);
                 }
             }
         }));
 
-        // Touch drawing
-        self.imp().touch_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+            // Touch drawing
+            self.touch_drawing_gesture.connect_drag_begin(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
             //log::debug!("touch_drawing_gesture begin");
 
             if input::filter_touch_input(touch_drawing_gesture) { return; }
@@ -797,12 +644,14 @@ impl RnoteCanvas {
 
             let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
 
+            let mut widget_flags = WidgetFlags::default();
             for element in data_entries {
-                input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
             }
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+            self.touch_drawing_gesture.connect_drag_update(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 //log::debug!("touch_drawing_gesture motion");
 
@@ -813,13 +662,15 @@ impl RnoteCanvas {
 
                 let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
 
+                let mut widget_flags = WidgetFlags::default();
                 for element in data_entries {
-                    input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                 }
+                canvas.emit_handle_widget_flags(widget_flags);
             }
         }));
 
-        self.imp().touch_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+            self.touch_drawing_gesture.connect_drag_end(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 //log::debug!("touch_drawing_gesture end");
 
@@ -831,17 +682,19 @@ impl RnoteCanvas {
                 let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
+                    let mut widget_flags = WidgetFlags::default();
                     for element in data_entries {
-                        input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
                     }
-                    input::process_pen_up(last, shortcut_keys, Some(PenMode::Pen), &appwindow);
+                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
+                    canvas.emit_handle_widget_flags(widget_flags);
                 }
             }
         }));
 
-        // Key controller
+            // Key controller
 
-        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+            self.key_controller.connect_key_pressed(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
             //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
             canvas.grab_focus();
 
@@ -850,63 +703,691 @@ impl RnoteCanvas {
 
             //log::debug!("keyboard key: {:?}", keyboard_key);
 
-            input::process_keyboard_key_pressed(keyboard_key, shortcut_keys, &appwindow);
+            let widget_flags = input::process_keyboard_key_pressed(&canvas, keyboard_key, shortcut_keys, Instant::now());
+            canvas.emit_handle_widget_flags(widget_flags);
 
             Inhibit(true)
         }));
 
-        // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
-        self.imp().key_controller_im_context.connect_commit(
-            clone!(@weak self as canvas, @weak appwindow => move |_cx, text| {
-                input::process_keyboard_text(text.to_string(), &appwindow);
-            }),
-        );
-
-        /*
-        self.imp().key_controller.connect_key_released(clone!(@weak self as canvas, @weak appwindow => move |_key_controller, _key, _raw, _modifier| {
-            //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+            // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
+            self.key_controller_im_context.connect_commit(clone!(@weak inst as canvas => move |_cx, text| {
+            let widget_flags = input::process_keyboard_text(&canvas, text.to_string(), Instant::now());
+            canvas.emit_handle_widget_flags(widget_flags);
         }));
 
-        self.imp().key_controller.connect_modifiers(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
-            //log::debug!("key_controller modifier pressed: {:?}", modifier);
+            /*
+            self.imp().key_controller.connect_key_released(clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
+                //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+            }));
 
-            let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
-            canvas.grab_focus();
+            self.imp().key_controller.connect_modifiers(clone!(@weak inst as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
+                //log::debug!("key_controller modifier pressed: {:?}", modifier);
 
-            for shortcut_key in shortcut_keys {
-                log::debug!("shortcut key pressed: {:?}", shortcut_key);
+                let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
+                canvas.grab_focus();
 
-                input::process_shortcut_key_pressed(shortcut_key, &appwindow);
-            }
+                let mut widget_flags = WidgetFlags::default();
+                for shortcut_key in shortcut_keys {
+                    log::debug!("shortcut key pressed: {:?}", shortcut_key);
 
-            Inhibit(true)
-        }));
-        */
-
-        // Drop Target
-        let drop_target = DropTarget::builder()
-            .name("canvas_drop_target")
-            .propagation_phase(PropagationPhase::Capture)
-            .actions(gdk::DragAction::COPY)
-            .build();
-        drop_target.set_types(&[gio::File::static_type()]);
-        self.add_controller(&drop_target);
-
-        drop_target.connect_drop(
-            clone!(@weak appwindow => @default-return false, move |_drop_target, value, x, y| {
-                let pos = (appwindow.canvas().engine().borrow().camera.transform().inverse() *
-                    na::point![x,y]).coords;
-
-                if let Ok(file) = value.get::<gio::File>() {
-                    appwindow.open_file_w_dialogs(&file, Some(pos));
+                    widget_flags.merge(input::process_shortcut_key_pressed(self, shortcut_key));
                 }
-                true
-            }),
-        );
+                canvas.emit_handle_widget_flags(widget_flags);
+
+                Inhibit(true)
+            }));
+            */
+        }
+    }
+}
+
+glib::wrapper! {
+    pub(crate) struct RnCanvas(ObjectSubclass<imp::RnCanvas>)
+        @extends gtk4::Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Scrollable;
+}
+
+impl Default for RnCanvas {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+pub(crate) static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
+    once_cell::sync::Lazy::new(|| gettext("New Document"));
+pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
+    once_cell::sync::Lazy::new(|| gettext("Draft"));
+
+impl RnCanvas {
+    // the zoom timeout time
+    pub(crate) const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
+    // Sets the canvas zoom scroll step in % for one unit of the event controller delta
+    pub(crate) const ZOOM_STEP: f64 = 0.1;
+
+    pub(crate) fn new() -> Self {
+        glib::Object::new(&[])
     }
 
-    pub fn bounds(&self) -> AABB {
-        AABB::new_positive(
+    #[allow(unused)]
+    pub(crate) fn regular_cursor(&self) -> String {
+        self.property::<String>("regular-cursor")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_regular_cursor(&self, regular_cursor: &str) {
+        self.set_property("regular-cursor", regular_cursor.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn drawing_cursor(&self) -> String {
+        self.property::<String>("drawing-cursor")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_drawing_cursor(&self, drawing_cursor: &str) {
+        self.set_property("drawing-cursor", drawing_cursor.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn output_file(&self) -> Option<gio::File> {
+        self.property::<Option<gio::File>>("output-file")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn output_file_expect_write(&self) -> bool {
+        self.imp().output_file_expect_write.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_output_file_expect_write(&self, expect_write: bool) {
+        self.imp().output_file_expect_write.set(expect_write);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn save_in_progress(&self) -> bool {
+        self.imp().save_in_progress.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
+        self.imp().save_in_progress.set(save_in_progress);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
+        self.set_property("output-file", output_file.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn unsaved_changes(&self) -> bool {
+        self.property::<bool>("unsaved-changes")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn empty(&self) -> bool {
+        self.property::<bool>("empty")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_empty(&self, empty: bool) {
+        self.set_property("empty", empty.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn touch_drawing(&self) -> bool {
+        self.property::<bool>("touch-drawing")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
+        self.set_property("touch-drawing", touch_drawing.to_value());
+    }
+
+    #[allow(unused)]
+    fn emit_zoom_changed(&self) {
+        self.emit_by_name::<()>("zoom-changed", &[]);
+    }
+
+    #[allow(unused)]
+    pub(super) fn emit_handle_widget_flags(&self, widget_flags: WidgetFlags) {
+        self.emit_by_name::<()>("handle-widget-flags", &[&WidgetFlagsBoxed(widget_flags)]);
+    }
+
+    pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
+        self.imp().engine.clone()
+    }
+
+    fn set_hadjustment(&self, adj: Option<Adjustment>) {
+        if let Some(signal_id) = self.imp().handlers.borrow_mut().hadjustment.take() {
+            let old_adj = self.imp().hadjustment.borrow().as_ref().unwrap().clone();
+            old_adj.disconnect(signal_id);
+        }
+
+        if let Some(ref hadjustment) = adj {
+            let signal_id = hadjustment.connect_value_changed(
+                clone!(@weak self as canvas => move |_hadjustment| {
+                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                    canvas.queue_resize();
+                }),
+            );
+
+            self.imp()
+                .handlers
+                .borrow_mut()
+                .hadjustment
+                .replace(signal_id);
+        }
+        self.imp().hadjustment.replace(adj);
+    }
+
+    fn set_vadjustment(&self, adj: Option<Adjustment>) {
+        if let Some(signal_id) = self.imp().handlers.borrow_mut().vadjustment.take() {
+            let old_adj = self.imp().vadjustment.borrow().as_ref().unwrap().clone();
+            old_adj.disconnect(signal_id);
+        }
+
+        if let Some(ref vadjustment) = adj {
+            let signal_id = vadjustment.connect_value_changed(
+                clone!(@weak self as canvas => move |_vadjustment| {
+                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                    canvas.queue_resize();
+                }),
+            );
+
+            self.imp()
+                .handlers
+                .borrow_mut()
+                .vadjustment
+                .replace(signal_id);
+        }
+        self.imp().vadjustment.replace(adj);
+    }
+
+    pub(crate) fn stylus_drawing_gesture(&self) -> GestureStylus {
+        self.imp().stylus_drawing_gesture.clone()
+    }
+
+    pub(crate) fn set_text_preprocessing(&self, enable: bool) {
+        if enable {
+            self.imp()
+                .key_controller
+                .set_im_context(Some(&self.imp().key_controller_im_context));
+        } else {
+            self.imp()
+                .key_controller
+                .set_im_context(None::<&IMMulticontext>);
+        }
+    }
+
+    pub(crate) fn save_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
+        let engine_config = self.engine().borrow().export_engine_config_as_json()?;
+        Ok(settings.set_string("engine-config", engine_config.as_str())?)
+    }
+
+    pub(crate) fn load_engine_config(&self, settings: &gio::Settings) -> anyhow::Result<()> {
+        // load engine config
+        let engine_config = settings.string("engine-config");
+        let widget_flags = match self
+            .engine()
+            .borrow_mut()
+            .import_engine_config_from_json(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
+        {
+            Err(e) => {
+                if engine_config.is_empty() {
+                    // On first app startup the engine config is empty, so we don't log an error
+                    log::debug!("did not load `engine-config` from settings, was empty");
+                } else {
+                    return Err(e);
+                }
+                None
+            }
+            Ok(widget_flags) => Some(widget_flags),
+        };
+
+        // Avoiding already borrowed
+        if let Some(widget_flags) = widget_flags {
+            self.emit_handle_widget_flags(widget_flags);
+        }
+        Ok(())
+    }
+
+    pub(crate) fn clear_output_file_monitor(&self) {
+        if let Some(old_output_file_monitor) = self.imp().output_file_monitor.take() {
+            if let Some(handler) = self.imp().output_file_monitor_changed_handler.take() {
+                old_output_file_monitor.disconnect(handler);
+            }
+
+            old_output_file_monitor.cancel();
+        }
+    }
+
+    pub(crate) fn dismiss_output_file_modified_toast(&self) {
+        if let Some(output_file_modified_toast) =
+            self.imp().output_file_modified_toast_singleton.take()
+        {
+            output_file_modified_toast.dismiss();
+        }
+    }
+
+    /// Switches between the regular and the drawing cursor
+    pub(crate) fn switch_between_cursors(&self, drawing_cursor: bool) {
+        if drawing_cursor {
+            self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
+        } else {
+            self.set_cursor(Some(&*self.imp().regular_cursor.borrow()));
+        }
+    }
+
+    /// The document title for display. Can be used to get a string for the existing / a new save file.
+    ///
+    /// When there is no output-file, falls back to the "New document" string
+    pub(crate) fn doc_title_display(&self) -> String {
+        self.output_file()
+            .map(|f| {
+                f.basename()
+                    .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
+                    .unwrap_or_else(|| gettext("- invalid file name -"))
+            })
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
+    }
+
+    /// The document folder path for display. To get the actual path, use output-file
+    ///
+    /// When there is no output-file, falls back to the "Draft" string
+    pub(crate) fn doc_folderpath_display(&self) -> String {
+        self.output_file()
+            .map(|f| {
+                f.parent()
+                    .and_then(|p| Some(p.path()?.display().to_string()))
+                    .unwrap_or_else(|| gettext("- invalid folder path -"))
+            })
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+    }
+
+    pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {
+        let new_monitor =
+            match file.monitor_file(gio::FileMonitorFlags::WATCH_MOVES, gio::Cancellable::NONE) {
+                Ok(output_file_monitor) => output_file_monitor,
+                Err(e) => {
+                    self.clear_output_file_monitor();
+                    log::error!(
+                        "creating a file monitor for the new output file failed with Err: {e:?}"
+                    );
+                    return;
+                }
+            };
+
+        let new_handler = new_monitor.connect_changed(
+            glib::clone!(@weak self as canvas, @weak appwindow => move |_monitor, file, other_file, event| {
+                let dispatch_toast_reload_modified_file = || {
+                    canvas.set_unsaved_changes(true);
+
+                    appwindow.overlays().dispatch_toast_w_button_singleton(
+                        &gettext("Opened file was modified on disk"),
+                        &gettext("Reload"),
+                        clone!(@weak canvas, @weak appwindow => move |_reload_toast| {
+                            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                                appwindow.overlays().start_pulsing_progressbar();
+
+                                if let Err(e) = canvas.reload_from_disk().await {
+                                    appwindow.overlays().dispatch_toast_error(&gettext("Reloading .rnote file from disk failed"));
+                                    log::error!("failed to reload current output file, {}", e);
+                                }
+
+                                appwindow.overlays().finish_progressbar();
+                            }));
+                        }),
+                        0,
+                    &mut canvas.imp().output_file_modified_toast_singleton.borrow_mut());
+                };
+
+                log::debug!("canvas with title: `{}` - output-file monitor emitted `changed` - file: {:?}, other_file: {:?}, event: {event:?}, expect_write: {}",
+                    canvas.doc_title_display(),
+                    file.path(),
+                    other_file.map(|f| f.path()),
+                    canvas.output_file_expect_write(),
+                );
+
+                match event {
+                    gio::FileMonitorEvent::Changed => {
+                        if canvas.output_file_expect_write() {
+                            // => file has been modified due to own save, don't do anything.
+                            canvas.set_output_file_expect_write(false);
+                            return;
+                        }
+
+                        dispatch_toast_reload_modified_file();
+                    },
+                    gio::FileMonitorEvent::Renamed => {
+                        if canvas.output_file_expect_write() {
+                            // => file has been modified due to own save, don't do anything.
+                            canvas.set_output_file_expect_write(false);
+                            return;
+                        }
+
+                        // if previous file name was .goutputstream-<hash>, then the file has been replaced using gio.
+                        if crate::utils::is_goutputstream_file(file) {
+                            // => file has been modified, handle it the same as the Changed event.
+                            dispatch_toast_reload_modified_file();
+                        } else {
+                            // => file has been renamed.
+
+                            // other_file *should* never be none.
+                            if other_file.is_none() {
+                                canvas.set_unsaved_changes(true);
+                            }
+
+                            canvas.set_output_file(other_file.cloned());
+
+                            appwindow.overlays().dispatch_toast_text(&gettext("Opened file was renamed on disk"))
+                        }
+                    },
+                    gio::FileMonitorEvent::Deleted | gio::FileMonitorEvent::MovedOut => {
+                        if canvas.output_file_expect_write() {
+                            // => file has been modified due to own save, don't do anything.
+                            canvas.set_output_file_expect_write(false);
+                            return;
+                        }
+
+                        canvas.set_unsaved_changes(true);
+                        canvas.set_output_file(None);
+
+                        appwindow.overlays().dispatch_toast_text(&gettext("Opened file was moved or deleted on disk"));
+                    },
+                    _ => {},
+                }
+
+                // The expect_write flag can't be cleared after any event has been fired, because some actions emit multiple
+                // events - not all of which are handled. The flag should stick around until a handled event has been blocked by it,
+                // otherwise it will likely miss its purpose.
+            }),
+        );
+
+        if let Some(old_monitor) = self
+            .imp()
+            .output_file_monitor
+            .borrow_mut()
+            .replace(new_monitor)
+        {
+            if let Some(old_handler) = self
+                .imp()
+                .output_file_monitor_changed_handler
+                .borrow_mut()
+                .replace(new_handler)
+            {
+                old_monitor.disconnect(old_handler);
+            }
+
+            old_monitor.cancel();
+        }
+    }
+
+    /// Replaces and installs a new file monitor when there is an output file present
+    fn reinstall_output_file_monitor(&self, appwindow: &RnAppWindow) {
+        if let Some(output_file) = self.output_file() {
+            self.create_output_file_monitor(&output_file, appwindow);
+        } else {
+            self.clear_output_file_monitor();
+        }
+    }
+
+    /// Initializes for the given appwindow. Usually `init()` is only called once, but since this widget can be moved between appwindows through tabs,
+    /// this function also disconnects and replaces all existing old connections
+    pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
+        // Initial file monitor, (e.g. needed when reiniting the widget on a new appwindow)
+        self.reinstall_output_file_monitor(appwindow);
+
+        let appwindow_output_file = self.connect_notify_local(
+            Some("output-file"),
+            clone!(@weak appwindow => move |canvas, _pspec| {
+                if let Some(output_file) = canvas.output_file(){
+                    canvas.create_output_file_monitor(&output_file, &appwindow);
+                } else {
+                    canvas.clear_output_file_monitor();
+                    canvas.dismiss_output_file_modified_toast();
+                }
+
+                appwindow.refresh_titles(&appwindow.active_tab());
+            }),
+        );
+
+        // set scalefactor initially
+        self.engine().borrow_mut().camera.scale_factor = f64::from(self.scale_factor());
+        // and connect
+        let appwindow_scalefactor =
+            self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
+                let scale_factor = f64::from(canvas.scale_factor());
+                canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
+
+                let all_strokes = canvas.engine().borrow_mut().store.stroke_keys_unordered();
+                canvas
+                    .engine()
+                    .borrow_mut()
+                    .store
+                    .set_rendering_dirty_for_strokes(&all_strokes);
+
+                canvas.regenerate_background_pattern();
+                canvas.update_engine_rendering();
+            });
+
+        // Update titles when there are changes
+        let appwindow_unsaved_changes = self.connect_notify_local(
+            Some("unsaved-changes"),
+            clone!(@weak appwindow => move |_canvas, _pspec| {
+                appwindow.refresh_titles(&appwindow.active_tab());
+            }),
+        );
+
+        // one per-appwindow property for touch-drawing
+        let appwindow_touch_drawing = appwindow
+            .bind_property("touch-drawing", self, "touch_drawing")
+            .sync_create()
+            .build();
+
+        // bind cursors
+        let appwindow_regular_cursor = appwindow
+            .settings_panel()
+            .general_regular_cursor_picker()
+            .bind_property("picked", self, "regular-cursor")
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
+
+        let appwindow_drawing_cursor = appwindow
+            .settings_panel()
+            .general_drawing_cursor_picker()
+            .bind_property("picked", self, "drawing-cursor")
+            .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
+
+        // Drop Target
+        let appwindow_drop_target = self.imp().drop_target.connect_drop(
+            clone!(@weak self as canvas, @weak appwindow => @default-return false, move |_drop_target, value, x, y| {
+                let pos = (canvas.engine().borrow().camera.transform().inverse() *
+                    na::point![x,y]).coords;
+
+                if value.is::<gio::File>() {
+                    appwindow.open_file_w_dialogs(value.get::<gio::File>().unwrap(), Some(pos), true);
+
+                    return true;
+                } else if value.is::<String>() {
+                    if let Err(e) = canvas.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
+                        log::error!("failed to insert dropped in text, Err: {e:?}");
+                    }
+                }
+
+                false
+            }),
+        );
+
+        // update ui when zoom changes
+        let appwindow_zoom_changed = self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
+            None
+        }));
+
+        // handle widget flags
+        let appwindow_handle_widget_flags = self.connect_local(
+            "handle-widget-flags",
+            false,
+            clone!(@weak self as canvas, @weak appwindow => @default-return None, move |args| {
+                // first argument is the widget
+                let widget_flags = args[1].get::<WidgetFlagsBoxed>().unwrap().0;
+
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+                None
+            }),
+        );
+
+        // Replace old handlers
+        let mut handlers = self.imp().handlers.borrow_mut();
+        if let Some(old) = handlers
+            .appwindow_output_file
+            .replace(appwindow_output_file)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_scalefactor
+            .replace(appwindow_scalefactor)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_unsaved_changes
+            .replace(appwindow_unsaved_changes)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_touch_drawing
+            .replace(appwindow_touch_drawing)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
+            .appwindow_regular_cursor
+            .replace(appwindow_regular_cursor)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
+            .appwindow_drawing_cursor
+            .replace(appwindow_drawing_cursor)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
+            .appwindow_drop_target
+            .replace(appwindow_drop_target)
+        {
+            self.imp().drop_target.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_zoom_changed
+            .replace(appwindow_zoom_changed)
+        {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers
+            .appwindow_handle_widget_flags
+            .replace(appwindow_handle_widget_flags)
+        {
+            self.disconnect(old);
+        }
+    }
+
+    /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
+    pub(crate) fn disconnect_handlers(&self, _appwindow: &RnAppWindow) {
+        self.clear_output_file_monitor();
+
+        let mut handlers = self.imp().handlers.borrow_mut();
+        if let Some(old) = handlers.appwindow_output_file.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_scalefactor.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_unsaved_changes.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_touch_drawing.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_regular_cursor.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_drawing_cursor.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_drop_target.take() {
+            self.imp().drop_target.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_zoom_changed.take() {
+            self.disconnect(old);
+        }
+        if let Some(old) = handlers.appwindow_handle_widget_flags.take() {
+            self.disconnect(old);
+        }
+
+        // tab page connections
+        if let Some(old) = handlers.tab_page_output_file.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.tab_page_unsaved_changes.take() {
+            old.unbind();
+        }
+    }
+
+    /// When the widget is the child of a tab page, we want to connect their titles, icons, ..
+    ///
+    /// disconnects existing bindings / handlers to old tab pages.
+    pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
+        // update the tab title whenever the canvas output file changes
+        let tab_page_output_file = self
+            .bind_property("output-file", page, "title")
+            .sync_create()
+            .transform_to(|b, _output_file: Option<gio::File>| {
+                Some(
+                    b.source()?
+                        .downcast::<RnCanvas>()
+                        .unwrap()
+                        .doc_title_display(),
+                )
+            })
+            .build();
+
+        // display unsaved changes as icon
+        let tab_page_unsaved_changes = self
+            .bind_property("unsaved-changes", page, "icon")
+            .transform_to(|_, from: bool| {
+                Some(from.then_some(gio::ThemedIcon::new("dot-symbolic")))
+            })
+            .sync_create()
+            .build();
+
+        let mut handlers = self.imp().handlers.borrow_mut();
+        if let Some(old) = handlers.tab_page_output_file.replace(tab_page_output_file) {
+            old.unbind();
+        }
+
+        if let Some(old) = handlers
+            .tab_page_unsaved_changes
+            .replace(tab_page_unsaved_changes)
+        {
+            old.unbind();
+        }
+    }
+
+    pub(crate) fn bounds(&self) -> Aabb {
+        Aabb::new_positive(
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
@@ -914,7 +1395,7 @@ impl RnoteCanvas {
 
     // updates the camera offset with a new one ( for example from touch drag gestures )
     // update_engine_rendering() then needs to be called.
-    pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
         self.engine().borrow_mut().update_camera_offset(new_offset);
 
         // By setting new adjustment values, the callback connected to their value property is called,
@@ -924,8 +1405,7 @@ impl RnoteCanvas {
     }
 
     /// returns the center of the current view on the doc
-    // update_engine_rendering() then needs to be called.
-    pub fn current_center_on_doc(&self) -> na::Vector2<f64> {
+    pub(crate) fn current_center_on_doc(&self) -> na::Vector2<f64> {
         (self.engine().borrow().camera.transform().inverse()
             * na::point![
                 f64::from(self.width()) * 0.5,
@@ -936,11 +1416,13 @@ impl RnoteCanvas {
 
     /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
     // update_engine_rendering() then needs to be called.
-    pub fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
-        let (parent_width, parent_height) = (
-            f64::from(self.parent().unwrap().width()),
-            f64::from(self.parent().unwrap().height()),
-        );
+    pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
+        let Some(parent) = self.parent() else {
+            log::debug!("self.parent() is None in `center_around_coord_on_doc()");
+            return
+        };
+
+        let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
         let total_zoom = self.engine().borrow().camera.total_zoom();
 
         let new_offset = na::vector![
@@ -953,24 +1435,27 @@ impl RnoteCanvas {
 
     /// Centering the view to the origin page
     // update_engine_rendering() then needs to be called.
-    pub fn return_to_origin_page(&self) {
+    pub(crate) fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
-
-        let new_offset = if self.engine().borrow().document.format.width * zoom
-            <= f64::from(self.parent().unwrap().width())
-        {
-            na::vector![
-                (self.engine().borrow().document.format.width * 0.5 * zoom)
-                    - f64::from(self.parent().unwrap().width()) * 0.5,
-                -Document::SHADOW_WIDTH * zoom
-            ]
-        } else {
-            // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-            na::vector![
-                -Document::SHADOW_WIDTH * zoom,
-                -Document::SHADOW_WIDTH * zoom
-            ]
+        let Some(parent) = self.parent() else {
+            log::debug!("self.parent() is None in `return_to_origin_page()");
+            return
         };
+
+        let new_offset =
+            if self.engine().borrow().document.format.width * zoom <= f64::from(parent.width()) {
+                na::vector![
+                    (self.engine().borrow().document.format.width * 0.5 * zoom)
+                        - f64::from(parent.width()) * 0.5,
+                    -Document::SHADOW_WIDTH * zoom
+                ]
+            } else {
+                // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
+                na::vector![
+                    -Document::SHADOW_WIDTH * zoom,
+                    -Document::SHADOW_WIDTH * zoom
+                ]
+            };
 
         self.update_camera_offset(new_offset);
     }
@@ -979,17 +1464,18 @@ impl RnoteCanvas {
     /// is private, zooming from other parts of the app should always be done through the "zoom-to-value" action
     fn zoom_to(&self, new_zoom: f64) {
         // Remove the timeout if exists
-        if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
-            zoom_timeout_id.remove();
+        if let Some(source_id) = self.imp().handlers.borrow_mut().zoom_timeout.take() {
+            source_id.remove();
         }
 
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
+        let all_strokes = self.engine().borrow_mut().store.stroke_keys_unordered();
         self.engine()
             .borrow_mut()
             .store
-            .set_rendering_dirty_all_keys();
+            .set_rendering_dirty_for_strokes(&all_strokes);
 
         self.regenerate_background_pattern();
         self.update_engine_rendering();
@@ -997,7 +1483,7 @@ impl RnoteCanvas {
         // We need to update the layout managers internal state after zooming
         self.layout_manager()
             .unwrap()
-            .downcast::<CanvasLayout>()
+            .downcast::<RnCanvasLayout>()
             .unwrap()
             .update_state(self);
     }
@@ -1005,13 +1491,9 @@ impl RnoteCanvas {
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
     /// Repeated calls to this function reset the timeout.
     /// should only be called from the "zoom-to-value" action.
-    pub fn zoom_temporarily_then_scale_to_after_timeout(
-        &self,
-        new_zoom: f64,
-        timeout_time: time::Duration,
-    ) {
-        if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
-            zoom_timeout_id.remove();
+    pub(crate) fn zoom_temporarily_then_scale_to_after_timeout(&self, new_zoom: f64) {
+        if let Some(handler_id) = self.imp().handlers.borrow_mut().zoom_timeout.take() {
+            handler_id.remove();
         }
 
         let old_perm_zoom = self.engine().borrow().camera.zoom();
@@ -1023,61 +1505,55 @@ impl RnoteCanvas {
             .camera
             .set_temporary_zoom(new_temp_zoom);
 
+        self.emit_zoom_changed();
+
         // In resize we render the strokes that came into view
         self.queue_resize();
 
-        if let Some(zoom_timeout_id) =
-            self.imp()
-                .zoom_timeout_id
-                .borrow_mut()
-                .replace(glib::source::timeout_add_local_once(
-                    timeout_time,
-                    clone!(@weak self as canvas => move || {
+        if let Some(source_id) = self.imp().handlers.borrow_mut().zoom_timeout.replace(
+            glib::source::timeout_add_local_once(
+                Self::ZOOM_TIMEOUT_TIME,
+                clone!(@weak self as canvas => move || {
 
-                        // After timeout zoom permanent
-                        canvas.zoom_to(new_zoom);
+                    // After timeout zoom permanent
+                    canvas.zoom_to(new_zoom);
 
-                        // Removing the timeout id
-                        let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
-                        if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
-                            zoom_timeout_id.remove();
-                        }
-                    }),
-                ))
-        {
-            zoom_timeout_id.remove();
+                    // Removing the timeout id
+                    let mut handlers = canvas.imp().handlers.borrow_mut();
+                    if let Some(source_id) = handlers.zoom_timeout.take() {
+                        source_id.remove();
+                    }
+                }),
+            ),
+        ) {
+            source_id.remove();
         }
     }
 
     /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
-    pub fn update_engine_rendering(&self) {
+    pub(crate) fn update_engine_rendering(&self) {
         // background rendering is updated in the layout manager
         self.queue_resize();
 
         // Update engine rendering for the new viewport
-        self.engine()
+        if let Err(e) = self
+            .engine()
             .borrow_mut()
-            .update_rendering_current_viewport();
+            .update_rendering_current_viewport()
+        {
+            log::error!("failed to update engine rendering for current viewport, Err: {e:?}");
+        }
 
         self.queue_draw();
     }
 
     /// updates the background pattern and rendering for the current viewport.
     /// to be called for example when changing the background pattern or zoom.
-    pub fn regenerate_background_pattern(&self) {
-        let viewport = self.engine().borrow().camera.viewport();
-        let image_scale = self.engine().borrow().camera.image_scale();
-
-        if let Err(e) = self
-            .engine()
-            .borrow_mut()
-            .document
-            .background
-            .regenerate_pattern(viewport, image_scale)
-        {
-            log::error!("failed to regenerate background, {}", e)
+    pub(crate) fn regenerate_background_pattern(&self) {
+        if let Err(e) = self.engine().borrow_mut().background_regenerate_pattern() {
+            log::error!("failed to regenerate background, {e:?}")
         };
 
         self.queue_draw();

@@ -100,8 +100,8 @@ impl XmlLoadable for XoppRoot {
                     "preview" => {
                         if let Some(preview) = child.text() {
                             self.preview = preview
-                                .trim_start_matches(&[' ', '\n'])
-                                .trim_end_matches(&[' ', '\n'])
+                                .trim_start_matches([' ', '\n'])
+                                .trim_end_matches([' ', '\n'])
                                 .to_string();
                         }
                     }
@@ -378,7 +378,7 @@ impl XmlLoadable for XoppBackground {
                 })?) {
                     Ok(s) => s,
                     Err(e) => {
-                        log::error!("failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, {}", e);
+                        log::error!("failed to retrieve the XoppBackgroundSolidStyle from `style` attribute, {e:?}");
                         XoppBackgroundSolidStyle::Plain
                     }
                 };
@@ -748,8 +748,8 @@ impl XmlLoadable for XoppStroke {
 
         if let Some(coords) = node.text() {
             let coords = coords
-                .trim_start_matches(&[' ', '\n'])
-                .trim_end_matches(&[' ', '\n'])
+                .trim_start_matches([' ', '\n'])
+                .trim_end_matches([' ', '\n'])
                 .split(' ')
                 .filter_map(|splitted| splitted.parse::<f64>().ok());
 
@@ -772,14 +772,14 @@ impl XmlWritable for XoppStroke {
         w.write_attribute("tool", &self.tool.as_xml_attr_value());
         w.write_attribute("color", &self.color.as_xml_attr_value());
         if let Some(fill) = self.fill {
-            w.write_attribute("fill", format!("{}", fill).as_str());
+            w.write_attribute("fill", format!("{fill}").as_str());
         }
         w.write_attribute(
             "width",
             &self
                 .width
                 .iter()
-                .map(|&width| format!("{}", width))
+                .map(|&width| format!("{width}"))
                 .collect::<Vec<String>>()
                 .join(" "),
         );
@@ -980,8 +980,8 @@ impl XmlLoadable for XoppImage {
         // Data
         if let Some(data) = node.text() {
             self.data = data
-                .trim_start_matches(&[' ', '\n'])
-                .trim_end_matches(&[' ', '\n'])
+                .trim_start_matches([' ', '\n'])
+                .trim_end_matches([' ', '\n'])
                 .to_string();
         }
 

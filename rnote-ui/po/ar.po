@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-03 21:26+0100\n"
-"PO-Revision-Date: 2022-11-02 18:07+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"POT-Creation-Date: 2023-02-02 13:26+0100\n"
+"PO-Revision-Date: 2023-02-02 17:41+0000\n"
+"Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs/mod.rs:23
+#: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
-msgstr "الرسم مع الملاحظات المكتوبة يدوياً"
+msgstr "ارسم واكتب ملاحظات بيدك"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;أوفيس;رسومات;ملاحظات;"
+msgstr "جنوم;GTK;مكتب;رسوميات;ملاحظات;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -38,535 +38,1058 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote هو تطبيق رسم قائم على الرسم بالمتجهات واخذ الملاحظات المكتوبة بخط اليد "
-"وللتعليق على المستندات والصور."
+"آرنوت هو تطبيق رسم بالمتجهات يُستعمل للرسم وكتابة الملاحظات والتعليق على "
+"المستندات والصور."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:24
+#: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"إخلاء مسؤولية: تنسيق الملف لا يزال غير مستقر. قد يتغير ويكسر التوافق بين "
+"إخلاء مسؤولية: لا يزال تنسيق الملفِّ غير مستقرٍّ، قد يسبِّب هذا تعارضًا بين "
 "الإصدارات."
 
-#: rnote-ui/data/app.metainfo.xml.in.in:32
+#: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
-msgstr "النافذة الرئيسية \"وضع النهار\""
-
-#: rnote-ui/data/app.metainfo.xml.in.in:36
-msgid "Main window in dark colors"
-msgstr "النافذة الرئيسية \"وضع الليل\""
+msgstr "تلوين النافذة الرئيسة بألوان فاتحة"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
+msgid "Main window in dark colors"
+msgstr "تلوين النافذة الرئيسة بألوان داكنة"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
-msgstr "تعليق توضيحي بصيغة PDF"
+msgstr "تعليق توضيحيّ على ملفِّ PDF"
 
-#: rnote-ui/data/app.metainfo.xml.in.in:44
+#: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "A selection"
-msgstr "اختيار"
+msgstr "انتقاء"
 
-#: rnote-ui/data/ui/appmenu.ui:24
-msgid "Color scheme"
-msgstr ""
-
-#: rnote-ui/data/ui/appmenu.ui:26
-#, fuzzy
-msgid "Use system colors"
-msgstr "استخدم وضع النظام المفضل"
-
-#: rnote-ui/data/ui/appmenu.ui:31
-msgid "Use light colors"
-msgstr "استخدم الوضع النهاري"
-
-#: rnote-ui/data/ui/appmenu.ui:36
-msgid "Use dark colors"
-msgstr "استخدم الوضع الليلي"
-
-#: rnote-ui/data/ui/appmenu.ui:42
-msgid "Developer mode"
-msgstr "وضع المطور"
-
-#: rnote-ui/data/ui/appmenu.ui:47
-msgid "Developer menu"
-msgstr "قائمة المطور"
-
-#: rnote-ui/data/ui/appmenu.ui:52
-msgid "Visual debugging"
-msgstr "debugging بواجهة رسومية"
-
-#: rnote-ui/data/ui/appmenu.ui:56 rnote-ui/src/dialogs/export.rs:483
-msgid "Export engine state"
-msgstr "تصدير حالة المحرك"
-
-#: rnote-ui/data/ui/appmenu.ui:60 rnote-ui/src/dialogs/export.rs:547
-msgid "Export engine config"
-msgstr "تصدير إعدادت المحرك"
-
-#: rnote-ui/data/ui/appmenu.ui:68
-msgid "Keyboard shortcuts"
-msgstr "إختصارات لوحة المفاتيح"
-
-#: rnote-ui/data/ui/appmenu.ui:72
-msgid "Donate 💝"
-msgstr "تبرع 💝"
-
-#: rnote-ui/data/ui/appmenu.ui:76
-msgid "About Rnote"
-msgstr "حول Rnote"
-
-#: rnote-ui/data/ui/appmenu.ui:107
-msgid "Sidebar on the left side"
-msgstr "الشريط الجانبي على الجانب الأيسر"
-
-#: rnote-ui/data/ui/appmenu.ui:116
-msgid "Sidebar on the right side"
-msgstr "الشريط الجانبي على الجانب الأيمن"
-
-#: rnote-ui/data/ui/appmenu.ui:126
-msgid "Toggle fullscreen"
-msgstr "وضع ملء الشاشة"
-
-#: rnote-ui/data/ui/appwindow.ui:67 rnote-ui/data/ui/mainheader.ui:77
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
-msgid "Brush"
-msgstr "فرشاة"
-
-#: rnote-ui/data/ui/appwindow.ui:74 rnote-ui/data/ui/mainheader.ui:84
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
-msgid "Shaper"
-msgstr "أشكال هندسة"
-
-#: rnote-ui/data/ui/appwindow.ui:82 rnote-ui/data/ui/mainheader.ui:92
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
-msgid "Typewriter"
-msgstr "كتابة"
-
-#: rnote-ui/data/ui/appwindow.ui:90 rnote-ui/data/ui/mainheader.ui:100
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
-msgid "Eraser"
-msgstr "ممحاة"
-
-#: rnote-ui/data/ui/appwindow.ui:98 rnote-ui/data/ui/mainheader.ui:108
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
-msgid "Selector"
-msgstr "تحديد"
-
-#: rnote-ui/data/ui/appwindow.ui:106 rnote-ui/data/ui/mainheader.ui:116
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:98
-msgid "Tools"
-msgstr "أدوات"
-
-#: rnote-ui/data/ui/appwindow.ui:163
-msgid "Add page"
-msgstr "إضافة صفحة"
-
-#: rnote-ui/data/ui/appwindow.ui:175
-msgid "Resize document to fit the strokes"
-msgstr "موافقة حجم الصفحة للحدود"
-
-#: rnote-ui/data/ui/appwindow.ui:191
-msgid "Return to the origin page"
-msgstr "استعادة الحدود الأولى"
-
-#: rnote-ui/data/ui/appwindow.ui:203 rnote-ui/data/ui/canvasmenu.ui:138
-msgid "Zoom in"
-msgstr "تكبير"
-
-#: rnote-ui/data/ui/appwindow.ui:215 rnote-ui/data/ui/canvasmenu.ui:122
-msgid "Zoom out"
-msgstr "تصغير"
-
-#: rnote-ui/data/ui/appwindow.ui:228
-msgid "Undo"
-msgstr "للخلف"
-
-#: rnote-ui/data/ui/appwindow.ui:241
-msgid "Redo"
-msgstr "للأمام"
-
-#: rnote-ui/data/ui/appwindow.ui:420
-msgid "Close the folded flap"
-msgstr "إغلق الجانب المطوي"
-
-#: rnote-ui/data/ui/appwindow.ui:437
-msgid "Workspace"
-msgstr "مجلد العمل"
-
-#: rnote-ui/data/ui/appwindow.ui:448
-msgid "Settings"
-msgstr "الإعدادات"
-
-#: rnote-ui/data/ui/canvasmenu.ui:24
-msgid "Draw with touch input"
-msgstr "الرسم بإستخدام لوحة اللمس"
-
-#: rnote-ui/data/ui/canvasmenu.ui:29
-msgid "Document layout"
-msgstr "أسلوب عرض الصفحة"
-
-#: rnote-ui/data/ui/canvasmenu.ui:32
-msgid "Fixed size"
-msgstr "حجم ثابت"
-
-#: rnote-ui/data/ui/canvasmenu.ui:37
-msgid "Continuous vertical"
-msgstr "عرض عمودي"
-
-#: rnote-ui/data/ui/canvasmenu.ui:42
-msgid "Infinite"
-msgstr "غير محدود"
-
-#: rnote-ui/data/ui/canvasmenu.ui:49
-msgid "Show format borders"
-msgstr "إظهار حدود التنسيق"
-
-#: rnote-ui/data/ui/canvasmenu.ui:54
-msgid "Pen sounds"
-msgstr "صوت اﻷقلام"
-
-#: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:6
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5
 msgid "Clear document"
-msgstr "تتظيف الصفحة"
+msgstr "امسح المستند"
 
-#: rnote-ui/data/ui/canvasmenu.ui:65
-msgid "New"
-msgstr "جديد"
-
-#: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/filerow.ui:58
-#: rnote-ui/src/dialogs/import.rs:83
-msgid "Open"
-msgstr "فتح"
-
-#: rnote-ui/data/ui/canvasmenu.ui:73 rnote-ui/data/ui/dialogs.ui:24
-#: rnote-ui/data/ui/dialogs.ui:36 rnote-ui/data/ui/dialogs.ui:48
-#: rnote-ui/src/dialogs/export.rs:24
-msgid "Save"
-msgstr "حفظ"
-
-#: rnote-ui/data/ui/canvasmenu.ui:77
-msgid "Save as"
-msgstr "حفظ ك"
-
-#: rnote-ui/data/ui/canvasmenu.ui:81
-msgid "Print"
-msgstr "طباعة"
-
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs/import.rs:143
-msgid "Import file"
-msgstr "إستيراد ملف"
-
-#: rnote-ui/data/ui/canvasmenu.ui:89
-msgid "Export…"
-msgstr "تصدير…"
-
-#: rnote-ui/data/ui/canvasmenu.ui:91 rnote-ui/data/ui/dialogs.ui:346
-#: rnote-ui/src/dialogs/export.rs:406
-#, fuzzy
-#| msgid "Export Selection"
-msgid "Export selection"
-msgstr "تصدير المحدد"
-
-#: rnote-ui/data/ui/canvasmenu.ui:95 rnote-ui/data/ui/dialogs.ui:234
-#: rnote-ui/src/dialogs/export.rs:203
-msgid "Export document"
-msgstr "تصدير ملف"
-
-#: rnote-ui/data/ui/canvasmenu.ui:131
-msgid "Reset the zoom"
-msgstr "إعادة ضبط التكبير"
-
-#: rnote-ui/data/ui/canvasmenu.ui:150
-msgid "Zoom to fit page width"
-msgstr "تكبير لموافقة عرض الصفحة"
-
-#: rnote-ui/data/ui/colorpicker.ui:61
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:66
-#: rnote-ui/src/dialogs/mod.rs:232 rnote-ui/src/dialogs/export.rs:206
-#: rnote-ui/src/dialogs/export.rs:409
-msgid "Select"
-msgstr "تحديد"
-
-#: rnote-ui/data/ui/dialogs.ui:7
+#: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr "هذا يمسح الصفحة بأكملها. هل أنت متأكد ."
+msgstr "يمسح هذا كامل المستند، عليك التأكيد."
 
-#: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:22
-#: rnote-ui/data/ui/dialogs.ui:34 rnote-ui/data/ui/dialogs.ui:46
-#: rnote-ui/data/ui/dialogs.ui:58 rnote-ui/data/ui/dialogs.ui:237
-#: rnote-ui/data/ui/dialogs.ui:349 rnote-ui/data/ui/dialogs.ui:481
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:54
-#: rnote-ui/src/dialogs/mod.rs:233 rnote-ui/src/dialogs/import.rs:84
-#: rnote-ui/src/dialogs/import.rs:147 rnote-ui/src/dialogs/export.rs:25
-#: rnote-ui/src/dialogs/export.rs:207 rnote-ui/src/dialogs/export.rs:410
-#: rnote-ui/src/dialogs/export.rs:487 rnote-ui/src/dialogs/export.rs:551
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:55
+#: rnote-ui/data/ui/dialogs/dialogs.ui:10
+#: rnote-ui/data/ui/dialogs/dialogs.ui:22
+#: rnote-ui/data/ui/dialogs/dialogs.ui:34
+#: rnote-ui/data/ui/dialogs/dialogs.ui:51
+#: rnote-ui/data/ui/dialogs/dialogs.ui:63 rnote-ui/data/ui/dialogs/import.ui:10
+#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
+#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
+#: rnote-ui/data/ui/dialogs/export.ui:348
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:172
+#: rnote-ui/src/dialogs/export.rs:27 rnote-ui/src/dialogs/export.rs:227
+#: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
+#: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
+#: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
+#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
-msgstr "إلغاء"
+msgstr "ألغِ"
 
-#: rnote-ui/data/ui/dialogs.ui:12
+#: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr "تنظيف"
+msgstr "امسح"
 
-#: rnote-ui/data/ui/dialogs.ui:17 rnote-ui/src/appwindow/mod.rs:892
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
-msgstr "صفحة جديدة"
+msgstr "مستند جديد"
 
-#: rnote-ui/data/ui/dialogs.ui:18
-#, fuzzy
+#: rnote-ui/data/ui/dialogs/dialogs.ui:17
 msgid ""
-"Creating a new document will discard any unsaved changes. Do you want to "
-"save the current document?"
+"Creating a new document will discard any unsaved changes.\n"
+"Do you want to save the current document?"
 msgstr ""
-"سيؤدي إنشاء صفحة جديدة إلى مسح أي تغييرات غير محفوظة. هل تريد حفظ الصفحة "
-"الحالية؟"
+"سوف يتجاهل إنشاء مستند جديد أيَّ تغييرات غير محفوظة.\n"
+"هل تريد حفظ المستند الحاليّ؟"
 
-#: rnote-ui/data/ui/dialogs.ui:23 rnote-ui/data/ui/dialogs.ui:35
-#: rnote-ui/data/ui/dialogs.ui:47
+#: rnote-ui/data/ui/dialogs/dialogs.ui:23
+#: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
 msgid "Discard"
-msgstr "تجاهل"
+msgstr "تجاهَل"
 
-#: rnote-ui/data/ui/dialogs.ui:29
-msgid "Quit Application"
-msgstr "الخروج من التطبيق"
+#: rnote-ui/data/ui/dialogs/dialogs.ui:24
+#: rnote-ui/data/ui/dialogs/dialogs.ui:36
+#: rnote-ui/data/ui/dialogs/dialogs.ui:53 rnote-ui/data/ui/dialogs/import.ui:12
+#: rnote-ui/src/dialogs/export.rs:26
+msgid "Save"
+msgstr "احفظ"
 
-#: rnote-ui/data/ui/dialogs.ui:30
+#: rnote-ui/data/ui/dialogs/dialogs.ui:29
+msgid "Close tab"
+msgstr "أغلق اللسان"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
-"Any unsaved changes will be lost. Do you want to save the current document?"
-msgstr "‪ستفقد أي تغييرات غير محفوظة. هل تريد حفظ الصفحة الحالية؟"
+"This tab contains unsaved changes. Changes which are not saved will be "
+"permanently lost."
+msgstr ""
+"يحتوي هذا اللسان على تغييرات غير محفوظة. سوف تحذف التغييرات الغير محفوظة "
+"نهائيًّا."
 
-#: rnote-ui/data/ui/dialogs.ui:41
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
+msgid "Close window"
+msgstr "أغلق النافذة"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:42
+msgid ""
+"Some opened files contain unsaved changes. Changes which are not saved will "
+"be permanently lost."
+msgstr ""
+"في بعض الملفَّات المفتوحة تغييرات غير محفوظة. سوف تحذف التغييرات الغير محفوظة "
+"نهائيًّا."
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+msgid "Unsaved documents"
+msgstr "مستندات غير محفوظة"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:52
+msgid "Discard all"
+msgstr "تجاهل الكلّ"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:60
+msgid "Edit workspace"
+msgstr "حرِّر مساحة العمل"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:38
+msgid "Apply"
+msgstr "طبِّق"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:110
+msgid "Workspace Name"
+msgstr "اسم مساحة العمل"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:115
+msgid "Icon"
+msgstr "الأيقونة"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:116
+msgid "Change the workspace icon"
+msgstr "غيِّر أيقونة مساحة العمل"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:135
+#: rnote-ui/data/ui/settingspanel.ui:283
+msgid "Color"
+msgstr "اللون"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:136
+msgid "Change the workspace color"
+msgstr "لون ساحة العمل"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:149
+msgid "Directory"
+msgstr "مجلَّد"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:150
+msgid "Change the workspace directory"
+msgstr "غيِّر مجلَّد ساحة العمل"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:159
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
+msgid "- no directory selected -"
+msgstr "- لم يُحدَّد أيُّ مجلَّد -"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:173
+msgid "Change the directory"
+msgstr "غيِّر المجلَّد"
+
+#: rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Open File"
-msgstr "فتح ملف"
+msgstr "افتح ملفًّا"
 
-#: rnote-ui/data/ui/dialogs.ui:42
+#: rnote-ui/data/ui/dialogs/import.ui:6
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
-"يؤدي فتح هذا الملف إلى الكتابة فوق أي تغييرات غير محفوظة. هل تريد حفظ الصفحة "
-"الحالية؟"
+"يؤدي فتح هذا الملفِّ إلى الكتابة فوق أي تغييرات غير محفوظة. هل تريد حفظ "
+"المستند الحاليِّ؟"
 
-#: rnote-ui/data/ui/dialogs.ui:55
+#: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import PDF"
-msgstr "استيراد PDF"
+msgstr "استورد PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:63 rnote-ui/src/dialogs/import.rs:146
+#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
+#: rnote-ui/src/dialogs/import.rs:141
 msgid "Import"
-msgstr "استيراد"
+msgstr "استورد"
 
-#: rnote-ui/data/ui/dialogs.ui:127
+#: rnote-ui/data/ui/dialogs/import.ui:73
+msgid "Info"
+msgstr "معلومات"
+
+#: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF import preferences"
-msgstr "تفضيلات استيراد ملفات PDF"
+msgstr "تفضيلات استيراد ملفَّات PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:131
+#: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start page"
-msgstr ""
+msgstr "صفحة البداية"
 
-#: rnote-ui/data/ui/dialogs.ui:146
-#, fuzzy
+#: rnote-ui/data/ui/dialogs/import.ui:110
 msgid "End page"
-msgstr "إضافة صفحة"
+msgstr "صفحة النهاية"
 
-#: rnote-ui/data/ui/dialogs.ui:161
-msgid "Pages type"
-msgstr "نوع الصفحات"
-
-#: rnote-ui/data/ui/dialogs.ui:162
-msgid "Set whether PDFs should be imported as vector or bitmap images"
-msgstr "حدد كيف يتم استيراد ملفات PDF ك Vector أو Bitmap"
-
-#: rnote-ui/data/ui/dialogs.ui:174
-msgid "Vector"
-msgstr "Vector"
-
-#: rnote-ui/data/ui/dialogs.ui:181
-msgid "Bitmap"
-msgstr "Bitmap"
-
-#: rnote-ui/data/ui/dialogs.ui:190
+#: rnote-ui/data/ui/dialogs/import.ui:125
 msgid "Page width (%)"
 msgstr "عرض الصفحة (٪)"
 
-#: rnote-ui/data/ui/dialogs.ui:191
+#: rnote-ui/data/ui/dialogs/import.ui:126
 msgid "Set the width of imported PDF's in percentage to the format width"
-msgstr "قم بتعيين عرض ملفات PDF المدرجة مئوياً بالنسبة لعرض التنسيق"
+msgstr "عيِّن نسبة عرض ملفَّات PDF المستوردة إلى عرض التنسيق"
 
-#: rnote-ui/data/ui/dialogs.ui:211
+#: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page spacing"
 msgstr "تباعد الصفحات"
 
-#: rnote-ui/data/ui/dialogs.ui:212
+#: rnote-ui/data/ui/dialogs/import.ui:147
 msgid "How PDF pages are spaced"
-msgstr "حدد تباعد صفحات PDF"
+msgstr "كمُّ تباعد صفحات PDF"
 
-#: rnote-ui/data/ui/dialogs.ui:216
+#: rnote-ui/data/ui/dialogs/import.ui:151
 msgid "Continuous"
-msgstr "مستمر"
+msgstr "متَّصل"
 
-#: rnote-ui/data/ui/dialogs.ui:217
+#: rnote-ui/data/ui/dialogs/import.ui:152
 msgid "One per document page"
-msgstr "واحد لكل صفحة في الملف"
+msgstr "واحد لكلِّ صفحة في الملَّف"
 
-#: rnote-ui/data/ui/dialogs.ui:242 rnote-ui/data/ui/dialogs.ui:354
-#: rnote-ui/src/dialogs/export.rs:486 rnote-ui/src/dialogs/export.rs:550
+#: rnote-ui/data/ui/dialogs/import.ui:160
+msgid "Pages type"
+msgstr "نوع الصفحات"
+
+#: rnote-ui/data/ui/dialogs/import.ui:161
+msgid "Set whether PDFs should be imported as vector or bitmap images"
+msgstr "عيِّن ما إذا كان يجب استيراد ملفَّات PDF صورَ متَّجهات أو نقاط"
+
+#: rnote-ui/data/ui/dialogs/import.ui:173
+msgid "Vector"
+msgstr "متَّجه"
+
+#: rnote-ui/data/ui/dialogs/import.ui:180
+msgid "Bitmap"
+msgstr "نقاط"
+
+#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/export.ui:293
+#: rnote-ui/data/ui/dialogs/export.ui:462
+msgid "Bitmap scale factor"
+msgstr "معامل تحجيم النقاط"
+
+#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"عيِّن معامل تحجيم النقاط بالنسبة\n"
+"للحجم الفعليِّ للمستند"
+
+#: rnote-ui/data/ui/dialogs/import.ui:220
+msgid "Import Xournal++ file"
+msgstr "استورد ملفَّ Xournal++"
+
+#: rnote-ui/data/ui/dialogs/import.ui:259
+msgid "Xournal++ file import preferences"
+msgstr "تفضيلات استيراد ملفِّ Xournal++"
+
+#: rnote-ui/data/ui/dialogs/import.ui:263 rnote-ui/data/ui/settingspanel.ui:234
+msgid "DPI"
+msgstr "نقطة في البوصة"
+
+#: rnote-ui/data/ui/dialogs/import.ui:264
+msgid "Set the preferred DPI for the Xournal++ file"
+msgstr "حدد العدد المفضَّل للنقاط في كلِّ بوصة لملفِّ Xournal++"
+
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
+msgid "Export document"
+msgstr "صدِّر المستند"
+
+#: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
+#: rnote-ui/src/dialogs/export.rs:881
 msgid "Export"
-msgstr "تصدير"
+msgstr "صدِّر"
 
-#: rnote-ui/data/ui/dialogs.ui:274 rnote-ui/data/ui/dialogs.ui:386
-#, fuzzy
-#| msgid "PDF import preferences"
-msgid "Export preferences"
-msgstr "تفضيلات استيراد ملفات PDF"
+#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
+msgid "Export file"
+msgstr "صدِّر الملفَّ"
 
-#: rnote-ui/data/ui/dialogs.ui:278 rnote-ui/data/ui/dialogs.ui:390
-#, fuzzy
-#| msgid "Document background"
-msgid "With background"
-msgstr "خلفية الملف"
-
-#: rnote-ui/data/ui/dialogs.ui:279 rnote-ui/data/ui/dialogs.ui:391
-#, fuzzy
-#| msgid "Set the background color"
-msgid "Set whether the background should be exported"
-msgstr "تحديد لون الخلفية"
-
-#: rnote-ui/data/ui/dialogs.ui:289 rnote-ui/data/ui/dialogs.ui:401
-#, fuzzy
-#| msgid "Export document"
-msgid "Export format"
-msgstr "تصدير ملف"
-
-#: rnote-ui/data/ui/dialogs.ui:290
-#, fuzzy
-#| msgid "Export document"
-msgid "The export format"
-msgstr "تصدير ملف"
-
-#: rnote-ui/data/ui/dialogs.ui:294 rnote-ui/data/ui/dialogs.ui:406
-#: rnote-ui/src/dialogs/export.rs:245 rnote-ui/src/dialogs/export.rs:448
-msgid "Svg"
-msgstr ""
-
-#: rnote-ui/data/ui/dialogs.ui:295 rnote-ui/src/dialogs/export.rs:250
-msgid "Pdf"
-msgstr ""
-
-#: rnote-ui/data/ui/dialogs.ui:296 rnote-ui/src/dialogs/export.rs:255
-msgid "Xopp"
-msgstr ""
-
-#: rnote-ui/data/ui/dialogs.ui:304 rnote-ui/data/ui/dialogs.ui:437
-#, fuzzy
-#| msgid "Import file"
-msgid "Select export file"
-msgstr "إستيراد ملف"
-
-#: rnote-ui/data/ui/dialogs.ui:305 rnote-ui/data/ui/dialogs.ui:438
-#, fuzzy
-#| msgid "Set the format width"
+#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Select the export file"
-msgstr "حدد عرض التنسيق"
+msgstr "حدِّد ملفَّ التصدير"
 
 #. force the user to pick another file
-#: rnote-ui/data/ui/dialogs.ui:314 rnote-ui/data/ui/dialogs.ui:447
-#: rnote-ui/src/dialogs/export.rs:117 rnote-ui/src/dialogs/export.rs:138
-#: rnote-ui/src/dialogs/export.rs:163 rnote-ui/src/dialogs/export.rs:315
-#: rnote-ui/src/dialogs/export.rs:336 rnote-ui/src/dialogs/export.rs:361
-#, fuzzy
-#| msgid "- no directory selected -"
+#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
+#: rnote-ui/src/dialogs/export.rs:120 rnote-ui/src/dialogs/export.rs:146
+#: rnote-ui/src/dialogs/export.rs:175 rnote-ui/src/dialogs/export.rs:623
+#: rnote-ui/src/dialogs/export.rs:649 rnote-ui/src/dialogs/export.rs:684
 msgid "- no file selected -"
-msgstr "لم يتم تحديد مجلد"
+msgstr "- لم يحدَّد أيُّ ملفٍّ -"
 
-#: rnote-ui/data/ui/dialogs.ui:402
-msgid "The export image format"
-msgstr ""
+#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
+#: rnote-ui/data/ui/dialogs/export.ui:421
+msgid "Export preferences"
+msgstr "تفضيلات الاستيراد"
 
-#: rnote-ui/data/ui/dialogs.ui:407 rnote-ui/src/dialogs/export.rs:453
+#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
+#: rnote-ui/data/ui/dialogs/export.ui:425
+msgid "With background"
+msgstr "بالخلفيَّة"
+
+#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
+#: rnote-ui/data/ui/dialogs/export.ui:426
+msgid "Set whether the background should be exported"
+msgstr "عيَّن ما إذا كان يجب تصدير الخلفيَّة"
+
+#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
+#: rnote-ui/data/ui/dialogs/export.ui:436
+msgid "With pattern"
+msgstr "بالنمط"
+
+#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
+#: rnote-ui/data/ui/dialogs/export.ui:437
+msgid "Set whether the background pattern should be exported"
+msgstr "حدِّد ما إذا كان يجب تصدير نمط الخلفيَّة"
+
+#: rnote-ui/data/ui/dialogs/export.ui:109
+#: rnote-ui/data/ui/dialogs/export.ui:278
+#: rnote-ui/data/ui/dialogs/export.ui:447
+msgid "Export format"
+msgstr "تنسيق التصدير"
+
+#: rnote-ui/data/ui/dialogs/export.ui:110
+#: rnote-ui/data/ui/dialogs/export.ui:279
+msgid "The export format"
+msgstr "تنسيق التصدير"
+
+#: rnote-ui/data/ui/dialogs/export.ui:114
+#: rnote-ui/data/ui/dialogs/export.ui:283
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:256
+#: rnote-ui/src/dialogs/export.rs:535 rnote-ui/src/dialogs/export.rs:781
+msgid "Svg"
+msgstr "Svg"
+
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:261
+msgid "Pdf"
+msgstr "Pdf"
+
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:266
+msgid "Xopp"
+msgstr "Xopp"
+
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
+msgid "Export document pages"
+msgstr "صدِّر صفحات المستند"
+
+#: rnote-ui/data/ui/dialogs/export.ui:192
+msgid "Page files naming:"
+msgstr "تسمية ملفَّات الصفحات:"
+
+#: rnote-ui/data/ui/dialogs/export.ui:213
+msgid "Export directory"
+msgstr "مجلَّد التصدير"
+
+#: rnote-ui/data/ui/dialogs/export.ui:214
+msgid "Select the export directory"
+msgstr "حدِّد مجلَّد التصدير"
+
+#: rnote-ui/data/ui/dialogs/export.ui:245
+msgid "Export files stem name"
+msgstr "صدِّر الأسماء الأساس للملفَّات"
+
+#: rnote-ui/data/ui/dialogs/export.ui:284
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
+#: rnote-ui/src/dialogs/export.rs:786
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
-#: rnote-ui/data/ui/dialogs.ui:408 rnote-ui/src/dialogs/export.rs:459
+#: rnote-ui/data/ui/dialogs/export.ui:285
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:546
+#: rnote-ui/src/dialogs/export.rs:792
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
-#: rnote-ui/data/ui/dialogs.ui:416
+#: rnote-ui/data/ui/dialogs/export.ui:315
+#: rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg quality"
-msgstr ""
+msgstr "جودة Jpeg"
 
-#: rnote-ui/data/ui/dialogs.ui:417
+#: rnote-ui/data/ui/dialogs/export.ui:316
+#: rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
+msgstr "عيِّن جودة صورة Jpeg من 1 إلى 100"
+
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
+msgid "Export selection"
+msgstr "صدِّر التحديد"
+
+#: rnote-ui/data/ui/dialogs/export.ui:448
+msgid "The export image format"
+msgstr "تنسيق الصورة المصدَّرة"
+
+#: rnote-ui/data/ui/dialogs/export.ui:505
+msgid "Margin"
+msgstr "الهامش"
+
+#: rnote-ui/data/ui/dialogs/export.ui:506
+msgid "Set the margin around the selected area"
+msgstr "عيِّن الهامش حول المساحة المحدَّدة"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:18
+msgid "Brush style"
+msgstr "نوع الفرشاة"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:33
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:132
+msgid "Brush configuration"
+msgstr "تكوين الفرشاة"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:62
+msgid "Brush styles"
+msgstr "أنواع الفراشي"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:80
+msgid "Marker"
+msgstr "قلم تمييز"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
+msgid "Mark underneath other strokes"
+msgstr "ميِّز ما تحت رسم الخطوط"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:92
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+msgid "Solid"
+msgstr "خطٌّ حاد"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+msgid "Draw solid color strokes"
+msgstr "ارسم خطوطًا ملوَّنةً حادَّةً"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:104
+msgid "Textured"
+msgstr "خطٌّ مقطَّع"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+msgid "Draw textured strokes"
+msgstr "ارسم خطوطًا مقطَّعةً"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:141
+msgid "Path modelling"
+msgstr "نمذجة المسار"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+msgid "Simple"
+msgstr "بسيط"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+msgid "Produces line segments from the raw input.\n"
+msgstr "يُنتج مقاطع خطوط من المُدخل الأساس\n"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:166
+msgid "Curved"
+msgstr "منحنٍ"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+msgid "Produces smooth, curved segments.\n"
+msgstr "يُنتج مقاطع منحنيةً سلسةً\n"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:173
+msgid "Modeled"
+msgstr "نُمذِجَ"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
 msgstr ""
+"يُنتج مسارًا مُنمذجًا باستخدام خوارزميَّات فيزيائيَّة.\n"
+"يُجمِّل خطَّ الكتابة."
 
-#: rnote-ui/data/ui/dialogs.ui:478 rnote-ui/data/ui/workspacebrowser.ui:180
-msgid "Edit workspace"
-msgstr "تعدبل مجلد العمل"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:183
+msgid "Solid style"
+msgstr "أسلوب الخطِّ الحادِّ"
 
-#: rnote-ui/data/ui/dialogs.ui:486 rnote-ui/data/ui/settingspanel.ui:277
-#: rnote-ui/src/workspacebrowser/widget_helper/entry_dialog.rs:62
-msgid "Apply"
-msgstr "تطبيق"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:186
+msgid "Pressure curve"
+msgstr "منحنى الضغط"
 
-#: rnote-ui/data/ui/dialogs.ui:528
-msgid "Workspace Name"
-msgstr "عنوان مجلد العمل"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:187
+msgid "Choose a pressure curve"
+msgstr "حدِّد منحنى ضغط"
 
-#: rnote-ui/data/ui/dialogs.ui:534
-msgid "Icon"
-msgstr "أيقونة"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
+msgid "Constant"
+msgstr "ثابت"
 
-#: rnote-ui/data/ui/dialogs.ui:535
-msgid "Change the workspace icon"
-msgstr "تغيير أيقونة مجلد العمل"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:192
+msgid "Linear"
+msgstr "خطِّيّ"
 
-#: rnote-ui/data/ui/dialogs.ui:554 rnote-ui/data/ui/settingspanel.ui:293
-msgid "Color"
-msgstr "وضع الألوان"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
+msgid "Square root"
+msgstr "جذري تربيعيّ"
 
-#: rnote-ui/data/ui/dialogs.ui:555
-msgid "Change the workspace color"
-msgstr "لون مجلد العمل"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+msgid "Cubic root"
+msgstr "جذر تكعيبيّ"
 
-#: rnote-ui/data/ui/dialogs.ui:568
-msgid "Directory"
-msgstr "مجلد"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
+msgid "Quadratic Parabola"
+msgstr "قطع مكافئ تربيعيّ"
 
-#: rnote-ui/data/ui/dialogs.ui:569
-msgid "Change the workspace directory"
-msgstr "تغيير مكان مجلد العمل"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:196
+msgid "Cubic Parabola"
+msgstr "قطع مكافئ تكعيبيّ"
 
-#: rnote-ui/data/ui/dialogs.ui:578 rnote-ui/src/dialogs/mod.rs:293
-msgid "- no directory selected -"
-msgstr "لم يتم تحديد مجلد"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:207
+msgid "Textured style"
+msgstr "أسلوب الخطِّ المقطَّع"
 
-#: rnote-ui/data/ui/dialogs.ui:592 rnote-ui/src/dialogs/mod.rs:229
-msgid "Change workspace directory"
-msgstr "تغيير مجلد العمل"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:210
+msgid "Density"
+msgstr "الكثافة"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:211
+msgid "The density is the amount of dots per 10x10 area"
+msgstr "الكثافة هي مقدار النقاط لكلِّ 10x10 من المساحة"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:226
+msgid "Stroke dots position distribution"
+msgstr "توزيع النقط في الخطِّ المقطَّع"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:227
+msgid "Choose a dots position probability distribution"
+msgstr "اختر احتماليَّة توزيع النقط في الخط المقطع"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:231
+msgid "Uniform"
+msgstr "منتظم"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:232
+msgid "Normal"
+msgstr "عاديّ"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:233
+msgid "Exponential"
+msgstr "أسِّيّ"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:234
+msgid "Reverse Exponential"
+msgstr "أسِّيٌّ عكسيّ"
+
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
+msgid "Trash strokes"
+msgstr "خطوط المسح"
+
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
+msgid "Split strokes"
+msgstr "خطوط التقسيم"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
+#: rnote-ui/data/ui/overlays.ui:45
+msgid "Brush"
+msgstr "فرشاة"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
+#: rnote-ui/data/ui/overlays.ui:52
+msgid "Shaper"
+msgstr "مشكِّل"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
+#: rnote-ui/data/ui/overlays.ui:60
+msgid "Typewriter"
+msgstr "آلة كاتبة"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
+#: rnote-ui/data/ui/overlays.ui:68
+msgid "Eraser"
+msgstr "ممحاة"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
+#: rnote-ui/data/ui/overlays.ui:76
+msgid "Selector"
+msgstr "محدِّد"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
+#: rnote-ui/data/ui/overlays.ui:84
+msgid "Tools"
+msgstr "أدوات"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
+msgid "Select with a polygon"
+msgstr "حدَّد باستخدام مضلع"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
+msgid "Select with a rectangle"
+msgstr "حدِّد باستخدام مستطيل"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
+msgid "Select one by one"
+msgstr "اختر واحدًا واحدًا"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
+msgid "Select intersecting path"
+msgstr "حدِّد المسار المتقاطع"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
+msgid "Lock aspectratio while resizing the selection"
+msgstr "ثبِّت نسبة العرض إلى الارتفاع أثناء تغيير حجم المحدَّد"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
+msgid "Select all strokes"
+msgstr "حدِّد كلَّ الخطوط المرسومة"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
+msgid "Deselect all strokes"
+msgstr "ألغِ تحديد كلِّ الخطوط المرسومة"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+msgid "Duplicate selection"
+msgstr "كرِّر الاختيار"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
+msgid "Delete selection"
+msgstr "احذف المحدَّد"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
+msgid "Shaper style"
+msgstr "أسلوب المشكِّل"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
+msgid "Shape configuration"
+msgstr "تكوين الشكل"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
+msgid "Shape builders"
+msgstr "قوالب الأشكال"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+msgid "Constraints"
+msgstr "القيود"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
+msgid "Shaper styles"
+msgstr "نمط المشكِّل"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
+msgid "Smooth"
+msgstr "أملس"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
+msgid "Rough"
+msgstr "خشن"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+msgid "Rough style"
+msgstr "أسلوب خشن"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+msgid "Fill style"
+msgstr "أسلوب الملء"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+msgid "Choose a fill style"
+msgstr "اختر أسلوب ملء"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+msgid "Hachure"
+msgstr "الترقين"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+msgid "Zig-Zag"
+msgstr "تعرُّج"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+msgid "Zig-Zag Line"
+msgstr "خطٌّ متعرِّج"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+msgid "Crosshatch"
+msgstr "الترقين التعارضيّ"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: rnote-ui/data/ui/settingspanel.ui:309
+msgid "Dots"
+msgstr "نقط"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+msgid "Dashed"
+msgstr "متقطِّع"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+msgid "Hachure angle"
+msgstr "زاوية الترقين"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
+msgid "Set the angle of hachure fills"
+msgstr "عيِّن زاوية الترقين"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
+msgid "Enabled"
+msgstr "مفعَّل"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
+msgid ""
+"Hold Ctrl to temporarily\n"
+"enable/disable constraints\n"
+"when this switch is off/on"
+msgstr ""
+"علِّق على مفتاح Ctrl\n"
+"لتمكين أو تعطيل القيود\n"
+"عندما يكون مفتاح التبديل هذا معطَّلًا أو ممكَّنًا"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
+msgid "1:1"
+msgstr "1:1"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
+msgid "3:2"
+msgstr "3:2"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
+msgid "Golden ratio (1:1.618)"
+msgstr "النسبة الذهبية (1: 1.618)"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:19
+msgid "Insert vertical space"
+msgstr "أدرج مسافةً عموديةً"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:29
+msgid "Offset the camera by dragging"
+msgstr "أزِح الكاميرا بالسحب"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
+msgid ""
+"Font chooser\n"
+"(double-click, click on select\n"
+"or press Enter to select a new font)"
+msgstr ""
+"منتقي الخطوط\n"
+" (انقر نقرًا مزدوجًا، انقر فوق حدِّد \n"
+"أو اضغط على Enter لتحدِّد خطًّا جديدًا)"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
+msgid "Pick and insert an emoji"
+msgstr "اختر وأدرج إيموجي"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:73
+msgid "Reset text attributes"
+msgstr "أعِد تعيين سمات النصِّ"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:82
+msgid "Bold"
+msgstr "عريض"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:91
+msgid "Italic"
+msgstr "مائل"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:100
+msgid "Underline"
+msgstr "مسطَّر"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
+msgid "Strikethrough"
+msgstr "يتوسَّطه خطٌّ"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
+msgid "Align left"
+msgstr "حاذِ يسارًا"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
+msgid "Align center"
+msgstr "حاذِ وسطًَا"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
+msgid "Align right"
+msgstr "حاذِ يمينًا"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
+msgid "Fill"
+msgstr "ساوِ"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
+#: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
+#: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
+#: rnote-ui/src/dialogs/mod.rs:374
+msgid "Select"
+msgstr "حدِّد"
+
+#: rnote-ui/data/ui/appmenu.ui:24
+msgid "Co_lor scheme"
+msgstr "مخطَّط الألوان"
+
+#: rnote-ui/data/ui/appmenu.ui:26
+msgid "Use _system colors"
+msgstr "استخدم ألوان النظام"
+
+#: rnote-ui/data/ui/appmenu.ui:31
+msgid "Use _light colors"
+msgstr "استخدم الألوان الفاتحة"
+
+#: rnote-ui/data/ui/appmenu.ui:36
+msgid "Use _dark colors"
+msgstr "استخدم الألوان الداكنة"
+
+#: rnote-ui/data/ui/appmenu.ui:42
+msgid "De_veloper mode"
+msgstr "وضع المطوِّر"
+
+#: rnote-ui/data/ui/appmenu.ui:47
+msgid "Developer _menu"
+msgstr "قائمة المطوِّر"
+
+#: rnote-ui/data/ui/appmenu.ui:52
+msgid "Visual _debugging"
+msgstr "التنقيح النظريّ"
+
+#: rnote-ui/data/ui/appmenu.ui:56
+msgid "Export engine _state"
+msgstr "صدِّر حالة المحرِّك"
+
+#: rnote-ui/data/ui/appmenu.ui:60
+msgid "Export engine _config"
+msgstr "صدِّر تكوين المحرِّك"
+
+#: rnote-ui/data/ui/appmenu.ui:68
+msgid "_New"
+msgstr "جديد"
+
+#: rnote-ui/data/ui/appmenu.ui:72
+msgid "_Open"
+msgstr "_افتح"
+
+#: rnote-ui/data/ui/appmenu.ui:76
+msgid "_Save"
+msgstr "_احفظ"
+
+#: rnote-ui/data/ui/appmenu.ui:80
+msgid "Save _as"
+msgstr "احفظ _باسم"
+
+#: rnote-ui/data/ui/appmenu.ui:86
+msgid "_Print"
+msgstr "_اطبع"
+
+#: rnote-ui/data/ui/appmenu.ui:90
+msgid "_Import file"
+msgstr "_استورد ملفًّا"
+
+#: rnote-ui/data/ui/appmenu.ui:94
+msgid "_Clipboard"
+msgstr "_الحافظة"
+
+#: rnote-ui/data/ui/appmenu.ui:96
+msgid "_Copy"
+msgstr "_انسخ"
+
+#: rnote-ui/data/ui/appmenu.ui:100
+msgid "C_ut"
+msgstr "_قُصَّ"
+
+#: rnote-ui/data/ui/appmenu.ui:104
+msgid "_Paste"
+msgstr "_الصق"
+
+#: rnote-ui/data/ui/appmenu.ui:109
+msgid "_Export…"
+msgstr "_صدِّر…"
+
+#: rnote-ui/data/ui/appmenu.ui:111
+msgid "Export _document"
+msgstr "صدِّر _المستند"
+
+#: rnote-ui/data/ui/appmenu.ui:115
+msgid "Export document _pages"
+msgstr "صدِّر صفحات المستند"
+
+#: rnote-ui/data/ui/appmenu.ui:119
+msgid "Export _selection"
+msgstr "صدِّر _المحدَّد"
+
+#: rnote-ui/data/ui/appmenu.ui:126
+msgid "Se_ttings"
+msgstr "الإعدادات"
+
+#: rnote-ui/data/ui/appmenu.ui:130
+msgid "_Keyboard shortcuts"
+msgstr "_اختصارات لوحة المفاتيح"
+
+#: rnote-ui/data/ui/appmenu.ui:134
+msgid "_Donate 💝"
+msgstr "_تبرَّع 💝"
+
+#: rnote-ui/data/ui/appmenu.ui:138
+msgid "A_bout Rnote"
+msgstr "حول آرنوت"
+
+#: rnote-ui/data/ui/appmenu.ui:169
+msgid "Sidebar on the left side"
+msgstr "الشريط الجانبيُّ يسارًا"
+
+#: rnote-ui/data/ui/appmenu.ui:178
+msgid "Sidebar on the right side"
+msgstr "الشريط الجانبيُّ يمينًا"
+
+#: rnote-ui/data/ui/appmenu.ui:188
+msgid "Toggle fullscreen"
+msgstr "بدِّل وضع ملء الشاشة"
+
+#: rnote-ui/data/ui/appwindow.ui:109
+msgid "Close the folded flap"
+msgstr "أغلق الجنيح المطويَّ"
+
+#: rnote-ui/data/ui/appwindow.ui:126
+msgid "Workspace"
+msgstr "مساحة العمل"
+
+#: rnote-ui/data/ui/appwindow.ui:137
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: rnote-ui/data/ui/canvasmenu.ui:24
+msgid "_Document layout"
+msgstr "_مخطَّط المستند"
+
+#: rnote-ui/data/ui/canvasmenu.ui:27
+msgid "_Fixed size"
+msgstr "_حجم ثابت"
+
+#: rnote-ui/data/ui/canvasmenu.ui:32
+msgid "_Continuous vertical"
+msgstr "عرض عمودي مستمرّ"
+
+#: rnote-ui/data/ui/canvasmenu.ui:37
+msgid "_Semi infinite"
+msgstr "_شبه لا نهائيّ"
+
+#: rnote-ui/data/ui/canvasmenu.ui:42
+msgid "_Infinite"
+msgstr "_لا نهائيّ"
+
+#: rnote-ui/data/ui/canvasmenu.ui:49
+msgid "Show _format borders"
+msgstr "أظهر حدود _التنسيق"
+
+#: rnote-ui/data/ui/canvasmenu.ui:54
+msgid "Draw with _touch input"
+msgstr "ارسم باللمس"
+
+#: rnote-ui/data/ui/canvasmenu.ui:59
+msgid "_Pen sounds"
+msgstr "_أصوات القلم"
+
+#: rnote-ui/data/ui/canvasmenu.ui:66
+msgid "C_lear document"
+msgstr "امسح المستند"
+
+#: rnote-ui/data/ui/canvasmenu.ui:70
+msgid "_Return to origin page"
+msgstr "عُد للصفحة الأصل"
+
+#: rnote-ui/data/ui/canvasmenu.ui:100
+msgid "Zoom out"
+msgstr "صغِّر"
+
+#: rnote-ui/data/ui/canvasmenu.ui:109
+msgid "Reset the zoom"
+msgstr "إعادة ضبط التكبير"
+
+#: rnote-ui/data/ui/canvasmenu.ui:116
+msgid "Zoom in"
+msgstr "كبِّر"
+
+#: rnote-ui/data/ui/canvasmenu.ui:128
+msgid "Zoom to fit page width"
+msgstr "كبِّر حتَّى عرض الصفحة"
+
+#: rnote-ui/data/ui/colorpicker.ui:19
+msgid "Stroke color"
+msgstr "لون الخطِّ المرسوم"
+
+#: rnote-ui/data/ui/colorpicker.ui:26
+msgid "Fill color"
+msgstr "لون الملء"
+
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
+msgid "Open"
+msgstr "افتح"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/action/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
 msgid "Rename"
-msgstr "إعادة التسمية"
+msgstr "أعِد التسمية"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move into trash"
-msgstr "حذف لسلة المهملات"
+msgstr "احذف لسلَّة المهملات"
 
 #: rnote-ui/data/ui/filerow.ui:70
-#, fuzzy
 msgid "Duplicate"
-msgstr "كرر الاختيار"
+msgstr "كرِّر"
 
 #: rnote-ui/data/ui/mainheader.ui:18
 msgid "New document"
-msgstr "ملف جديد"
+msgstr "مستند جديد"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/appwindow/mod.rs:894
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
 msgid "Draft"
-msgstr "مخطط"
+msgstr "مسودَّة"
 
-#: rnote-ui/data/ui/mainheader.ui:37
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
+msgid "Reveal / hide flap"
+msgstr "أظهر أو أخفِ الجنيح"
+
+#: rnote-ui/data/ui/mainheader.ui:46
+msgid "New tab"
+msgstr "لسان جديد"
+
+#: rnote-ui/data/ui/mainheader.ui:68
+msgid "Undo"
+msgstr "تراجَع"
+
+#: rnote-ui/data/ui/mainheader.ui:76
+msgid "Redo"
+msgstr "أعِد"
+
+#: rnote-ui/data/ui/mainheader.ui:87
+msgid "Add page"
+msgstr "أضف صفحةً"
+
+#: rnote-ui/data/ui/mainheader.ui:94
+msgid "Resize document to fit the strokes"
+msgstr "غيّر حجم الصفحة لتناسب الخطوط المرسومة"
+
+#: rnote-ui/data/ui/mainheader.ui:109
 msgid "Save document"
-msgstr "حفظ الملف"
+msgstr "احفظ المستند"
+
+#: rnote-ui/data/ui/overlays.ui:151
+msgid "Move _left"
+msgstr "حرِّك يسارًا"
+
+#: rnote-ui/data/ui/overlays.ui:155
+msgid "Move _right"
+msgstr "حرِّك يمينًا"
+
+#: rnote-ui/data/ui/overlays.ui:161
+msgid "Close all _other tabs"
+msgstr "أغلق بقيَّة الألسنة"
+
+#: rnote-ui/data/ui/overlays.ui:165
+msgid "_Close"
+msgstr "أغلق"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:8
 msgid "perm."
@@ -578,19 +1101,19 @@ msgstr "عام"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr "الحفظ التلقائي"
+msgstr "الحفظ التلقائيُّ"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr "تمكين أو تعطيل الحفظ التلقائي"
+msgstr "مكِّن أو عطِّل الحفظ التلقائيَّ"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave interval (secs)"
-msgstr "الفاصل الزمني للحفظ التلقائي (بالثواني)"
+msgstr "الفاصل الزمنيُّ للحفظ التلقائيِّ (بالثواني)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr "اضبط الفاصل الزمني للحفظ التلقائي بالثواني"
+msgstr "عيِّن الفاصل الزمنيَّ للحفظ التلقائيِّ بالثواني"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Format border color"
@@ -598,207 +1121,204 @@ msgstr "تنسيق لون الحدود"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 msgid "Set the format border color"
-msgstr "اضبط لون حدود التنسيق"
+msgstr "عيِّن لون حدود التنسيق"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Permanently hidden scrollbars"
-msgstr "إخفاء أشرطة التمرير بشكل دائم"
+msgid "Show scrollbars"
+msgstr "أظهر شُرُط التمرير"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
-#, fuzzy
-msgid "Set whether the scrollbars on the canvas are hidden permanently"
-msgstr "عين ما إذا كانت أشرطة التمرير على Canvas مخفية بشكل دائم."
+msgid "Set whether the scrollbars on the canvas are shown"
+msgstr "عين ما إذا كانت شُرُط التمرير على اللوحة تُعرض"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular cursor"
-msgstr ""
+msgstr "مؤشِّر عاديّ"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
-#, fuzzy
 msgid "Set the regular cursor"
-msgstr "اضبط لون حدود التنسيق"
+msgstr "عيِّن المؤشِّر العاديّ"
 
-#: rnote-ui/data/ui/settingspanel.ui:133
-#, fuzzy
+#: rnote-ui/data/ui/settingspanel.ui:128
 msgid "Drawing cursor"
-msgstr "رسم"
+msgstr "مؤشِّر الرسم"
 
-#: rnote-ui/data/ui/settingspanel.ui:134
-#, fuzzy
+#: rnote-ui/data/ui/settingspanel.ui:129
 msgid "Set the drawing cursor"
-msgstr "تحديد لون الخلفية"
+msgstr "عيِّن مؤشِّر الرسم"
 
-#: rnote-ui/data/ui/settingspanel.ui:164
+#: rnote-ui/data/ui/settingspanel.ui:154
 msgid "Page format"
 msgstr "تنسيق الصفحة"
 
-#: rnote-ui/data/ui/settingspanel.ui:167
+#: rnote-ui/data/ui/settingspanel.ui:157
 msgid "Format"
-msgstr "تنسيق"
+msgstr "التنسيق"
 
-#: rnote-ui/data/ui/settingspanel.ui:168
+#: rnote-ui/data/ui/settingspanel.ui:158
 msgid "Choose a format"
-msgstr "اختر التنسيق"
+msgstr "اختر تنسيقًا"
 
-#: rnote-ui/data/ui/settingspanel.ui:172
+#: rnote-ui/data/ui/settingspanel.ui:162
 msgid "A6"
 msgstr "A6"
 
-#: rnote-ui/data/ui/settingspanel.ui:173
+#: rnote-ui/data/ui/settingspanel.ui:163
 msgid "A5"
 msgstr "A5"
 
-#: rnote-ui/data/ui/settingspanel.ui:174
+#: rnote-ui/data/ui/settingspanel.ui:164
 msgid "A4"
 msgstr "A4"
 
-#: rnote-ui/data/ui/settingspanel.ui:175
+#: rnote-ui/data/ui/settingspanel.ui:165
 msgid "A3"
 msgstr "A3"
 
-#: rnote-ui/data/ui/settingspanel.ui:176
+#: rnote-ui/data/ui/settingspanel.ui:166
 msgid "A2"
 msgstr "A2"
 
-#: rnote-ui/data/ui/settingspanel.ui:177
+#: rnote-ui/data/ui/settingspanel.ui:167
 msgid "US letter"
-msgstr "حروف بصيغة US"
+msgstr "رسالة أميركيَّة"
+
+#: rnote-ui/data/ui/settingspanel.ui:168
+msgid "US legal"
+msgstr "مستند قانونيٌّ أميركيٌّ"
+
+#: rnote-ui/data/ui/settingspanel.ui:169
+msgid "Custom"
+msgstr "مخصَّص"
+
+#: rnote-ui/data/ui/settingspanel.ui:177
+msgid "Orientation"
+msgstr "الاتجاه"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
-msgid "US legal"
-msgstr "US legal"
-
-#: rnote-ui/data/ui/settingspanel.ui:179
-msgid "Custom"
-msgstr "مخصص"
-
-#: rnote-ui/data/ui/settingspanel.ui:187
-msgid "Orientation"
-msgstr "اتجاه"
-
-#: rnote-ui/data/ui/settingspanel.ui:188
 msgid "Set the format orientation"
-msgstr "اضبط اتجاه التنسيق"
+msgstr "عيِّن اتجاه التنسيق"
 
-#: rnote-ui/data/ui/settingspanel.ui:200
+#: rnote-ui/data/ui/settingspanel.ui:190
 msgid "Portrait"
-msgstr "عرض ك لوحة"
+msgstr "رأسيّ"
+
+#: rnote-ui/data/ui/settingspanel.ui:196
+msgid "Landscape"
+msgstr "أفقيّ"
 
 #: rnote-ui/data/ui/settingspanel.ui:206
-msgid "Landscape"
-msgstr "عرض ك منظر طبيعي"
-
-#: rnote-ui/data/ui/settingspanel.ui:216
 msgid "Width"
-msgstr "عرض"
+msgstr "العرض"
 
-#: rnote-ui/data/ui/settingspanel.ui:217
+#: rnote-ui/data/ui/settingspanel.ui:207
 msgid "Set the format width"
-msgstr "حدد عرض التنسيق"
+msgstr "عيِّن عرض التنسيق"
 
-#: rnote-ui/data/ui/settingspanel.ui:230
+#: rnote-ui/data/ui/settingspanel.ui:220
 msgid "Height"
-msgstr "إرتفاع"
+msgstr "الإرتفاع"
 
-#: rnote-ui/data/ui/settingspanel.ui:231
+#: rnote-ui/data/ui/settingspanel.ui:221
 msgid "Set the format height"
-msgstr "حدد ارتفاع التنسيق"
+msgstr "عيِّن ارتفاع التنسيق"
 
-#: rnote-ui/data/ui/settingspanel.ui:244
-msgid "DPI"
-msgstr "DPI"
-
-#: rnote-ui/data/ui/settingspanel.ui:245
+#: rnote-ui/data/ui/settingspanel.ui:235
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr "حدد DPI (dots per inch). الافتراضية 96"
+msgstr "حدد عدد النقاط في كلِّ بوصة. القيمة المبدئيَّة هي 96"
 
-#: rnote-ui/data/ui/settingspanel.ui:268
+#: rnote-ui/data/ui/settingspanel.ui:258
 msgid "Revert"
-msgstr "إعادة"
+msgstr "استرجع"
 
-#: rnote-ui/data/ui/settingspanel.ui:290
+#: rnote-ui/data/ui/settingspanel.ui:280
 msgid "Document background"
-msgstr "خلفية الملف"
+msgstr "خلفيَّة المستند"
 
-#: rnote-ui/data/ui/settingspanel.ui:294
+#: rnote-ui/data/ui/settingspanel.ui:284
 msgid "Set the background color"
-msgstr "تحديد لون الخلفية"
+msgstr "عيِّن لون الخلفيَّة"
 
-#: rnote-ui/data/ui/settingspanel.ui:311
+#: rnote-ui/data/ui/settingspanel.ui:301
 msgid "Pattern"
-msgstr "نمط"
+msgstr "النمط"
 
-#: rnote-ui/data/ui/settingspanel.ui:312
+#: rnote-ui/data/ui/settingspanel.ui:302
 msgid "Choose a background pattern"
-msgstr "اختر نمط الخلفية"
+msgstr "اختر نمط خلفيَّة"
 
-#: rnote-ui/data/ui/settingspanel.ui:316
+#: rnote-ui/data/ui/settingspanel.ui:306
 msgid "None"
-msgstr "لاشيء"
+msgstr "لا شيء"
 
-#: rnote-ui/data/ui/settingspanel.ui:317
+#: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
 msgstr "خطوط"
 
-#: rnote-ui/data/ui/settingspanel.ui:318
+#: rnote-ui/data/ui/settingspanel.ui:308
+#: rnote-ui/src/penssidebar/shaperpage.rs:269
 msgid "Grid"
 msgstr "شبكة"
 
-#: rnote-ui/data/ui/settingspanel.ui:319
-msgid "Dots"
-msgstr "نقط"
-
-#: rnote-ui/data/ui/settingspanel.ui:327
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
 msgstr "لون النمط"
 
-#: rnote-ui/data/ui/settingspanel.ui:328
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Set the background pattern color"
-msgstr "حدد لون خلفية النمط"
+msgstr "عيِّن لون نمط الخلفيَّة"
 
-#: rnote-ui/data/ui/settingspanel.ui:345
+#: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Pattern Width"
 msgstr "عرض النمط"
 
-#: rnote-ui/data/ui/settingspanel.ui:346
+#: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Set the background pattern width"
-msgstr "حدد عرض خلفية النمط"
+msgstr "عيِّن عرض نمط الخلفيَّة"
 
-#: rnote-ui/data/ui/settingspanel.ui:359
+#: rnote-ui/data/ui/settingspanel.ui:349
 msgid "Pattern Height"
 msgstr "إرتفاع النمط"
 
-#: rnote-ui/data/ui/settingspanel.ui:360
+#: rnote-ui/data/ui/settingspanel.ui:350
 msgid "Set the background pattern height"
-msgstr "حدد إرتفاع النمط"
+msgstr "عيِّن ارتفاع نمط الخلفيَّة"
 
-#: rnote-ui/data/ui/settingspanel.ui:376
+#: rnote-ui/data/ui/settingspanel.ui:366
 msgid "Button Shortcuts"
-msgstr "إختصارات المفاتيح"
+msgstr "اختصارات المفاتيح"
 
-#: rnote-ui/data/ui/settingspanel.ui:379
+#: rnote-ui/data/ui/settingspanel.ui:369
 msgid "Stylus primary button action"
-msgstr "عمل المفتاح الرئسي ل Stylus"
+msgstr "إجراء الزرِّ الرئيس للقلم"
 
-#: rnote-ui/data/ui/settingspanel.ui:380
+#: rnote-ui/data/ui/settingspanel.ui:370
 msgid "Set the action for the primary stylus button"
-msgstr "حدد عمل المفتاح الرئسي ل Stylus"
+msgstr "عيِّن إجراء الزرِّ الرئيس للقلم"
 
-#: rnote-ui/data/ui/settingspanel.ui:391
+#: rnote-ui/data/ui/settingspanel.ui:381
 msgid "Stylus secondary button action"
-msgstr "عمل المفتاح الثانوي ل Stylus"
+msgstr "إجراء الزرِّ الثانويِّ للقلم"
 
-#: rnote-ui/data/ui/settingspanel.ui:392
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Set the action for the secondary stylus button"
-msgstr "حدد عمل المفتاح الثانوي ل Stylus"
+msgstr "عيِّن إجراء الزرِّ الثانويِّ للقلم"
 
-#: rnote-ui/data/ui/settingspanel.ui:403
+#: rnote-ui/data/ui/settingspanel.ui:393
 msgid "Mouse secondary button action"
-msgstr "عمل المفتاح الرئيسي للفأرة"
+msgstr "إجراء الزرِّ الثانويِّ للفأرة"
 
-#: rnote-ui/data/ui/settingspanel.ui:404
+#: rnote-ui/data/ui/settingspanel.ui:394
 msgid "Set the action for the secondary mouse button"
-msgstr "حدد عمل المفتاح الرئيسي للفأرة"
+msgstr "عيِّن إجراء الزرِّ الثانويِّ للفأرة"
+
+#: rnote-ui/data/ui/settingspanel.ui:405
+msgid "Touch two-finger long-press action"
+msgstr "إجراء اللمس بإصبعين طويلًا"
+
+#: rnote-ui/data/ui/settingspanel.ui:406
+msgid "Set the action for the touch two-finger long-press gesture"
+msgstr "عيِّن إجراء اللمس بإصبعين طويلًا"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"
@@ -808,717 +1328,585 @@ msgstr "عام"
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgctxt "shortcut window"
 msgid "Show keyboard shortcuts"
-msgstr "عرض إختصارات لوحة المفاتيح"
+msgstr "أظهر اختصارات لوحة المفاتيح"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
 msgctxt "shortcut window"
-msgid "Close the active window"
-msgstr "غلق النافذة الحالية"
+msgid "Close the active tab"
+msgstr "أغلق اللسان الحاليَّ"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr "غلق التطبيق"
+msgstr "أنهِ التطبيق"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
 msgctxt "shortcut window"
 msgid "Open the canvas menu"
-msgstr "فتح قائمة ال Canvas"
+msgstr "افتح قائمة اللوحة"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
 msgctxt "shortcut window"
 msgid "Open the app menu"
-msgstr "فتح قائمة التطبيق"
+msgstr "افتح قائمة التطبيق"
 
 #: rnote-ui/data/ui/shortcuts.ui:44
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr "وضع ملء الشاشة"
+msgstr "بدِّل وضع ملء الشاشة"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
 msgctxt "shortcut window"
 msgid "Navigation"
-msgstr "التوجيه"
+msgstr "التنقُّل"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
-msgstr ""
+msgstr "بدِّل ل‍ ‹الفرشاة›"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
-msgstr ""
+msgstr "بدِّل ل‍ ‹المشكِّل›"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
-msgstr ""
+msgstr "بدِّل ل‍ ‹الآلة الكاتبة›"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
-msgstr ""
+msgstr "بدِّل ل‍ ‹الممحاة›"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
 msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
-msgstr ""
+msgstr "بدِّل ل‍ ‹المحدِّد›"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
 msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
-msgstr ""
+msgstr "بدِّل ل‍ ‹الأدوات›"
 
 #: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/shortcuts.ui:103
 msgctxt "shortcut window"
 msgid "Zoom in"
-msgstr "تكبير"
+msgstr "كبِّر"
 
-#: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
+#: rnote-ui/data/ui/shortcuts.ui:109 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/shortcuts.ui:121
 msgctxt "shortcut window"
 msgid "Zoom out"
-msgstr "تصغير"
+msgstr "صغِّر"
 
-#: rnote-ui/data/ui/shortcuts.ui:117
+#: rnote-ui/data/ui/shortcuts.ui:129
 msgctxt "shortcut window"
 msgid "Document"
-msgstr "ملف"
-
-#: rnote-ui/data/ui/shortcuts.ui:120
-msgctxt "shortcut window"
-msgid "New document"
-msgstr "ملف جديد"
-
-#: rnote-ui/data/ui/shortcuts.ui:126
-msgctxt "shortcut window"
-msgid "Open document"
-msgstr "فتح ملف"
+msgstr "المستند"
 
 #: rnote-ui/data/ui/shortcuts.ui:132
 msgctxt "shortcut window"
-msgid "Save document"
-msgstr "حفظ الملف"
+msgid "New document"
+msgstr "مستند جديد"
 
 #: rnote-ui/data/ui/shortcuts.ui:138
 msgctxt "shortcut window"
-msgid "Save document as"
-msgstr "حفظ الملف ك"
+msgid "Open document"
+msgstr "افتح مستندًا"
 
 #: rnote-ui/data/ui/shortcuts.ui:144
 msgctxt "shortcut window"
-msgid "Clear document"
-msgstr "تنظيف الملف"
+msgid "Save document"
+msgstr "احفظ المستند"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
 msgctxt "shortcut window"
-msgid "Print document"
-msgstr "طباعة الملف"
+msgid "Save document as"
+msgstr "احفظ المستند باسم"
 
 #: rnote-ui/data/ui/shortcuts.ui:156
 msgctxt "shortcut window"
-msgid "Import file"
-msgstr "إستيراد ملف"
+msgid "Clear document"
+msgstr "امسح المستند"
 
 #: rnote-ui/data/ui/shortcuts.ui:162
 msgctxt "shortcut window"
+msgid "Print document"
+msgstr "اطبع المستند"
+
+#: rnote-ui/data/ui/shortcuts.ui:168
+msgctxt "shortcut window"
+msgid "Import file"
+msgstr "استورد ملفًّا"
+
+#: rnote-ui/data/ui/shortcuts.ui:174
+msgctxt "shortcut window"
 msgid "Drawing"
-msgstr "رسم"
-
-#: rnote-ui/data/ui/shortcuts.ui:165
-msgctxt "shortcut window"
-msgid "Copy into clipboard"
-msgstr "نسخ للحافظة"
-
-#: rnote-ui/data/ui/shortcuts.ui:171
-msgctxt "shortcut window"
-msgid "Paste clipboard"
-msgstr "لصق من الحافظة"
+msgstr "الرسم"
 
 #: rnote-ui/data/ui/shortcuts.ui:177
 msgctxt "shortcut window"
-msgid "Undo"
-msgstr "عودة للخلف"
+msgid "Copy to clipboard"
+msgstr "انسخ للحافظة"
 
 #: rnote-ui/data/ui/shortcuts.ui:183
 msgctxt "shortcut window"
-msgid "Redo"
-msgstr "تقدم للأمام"
+msgid "Cut to clipboard"
+msgstr "قُصَّ للحافظة"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:49
-msgid "Move directory up"
-msgstr "نقل المجلد للأعلى"
+#: rnote-ui/data/ui/shortcuts.ui:189
+msgctxt "shortcut window"
+msgid "Paste clipboard"
+msgstr "الصق الحافظة"
 
-#: rnote-ui/data/ui/workspacebrowser.ui:80
-#, fuzzy
-msgid "Workspace directory actions"
-msgstr "تغيير مجلد العمل"
-
-#: rnote-ui/data/ui/workspacebrowser.ui:165
-msgid "Add workspace"
-msgstr "إضافة مجلد عمل"
-
-#: rnote-ui/data/ui/workspacebrowser.ui:171
-msgid "Remove workspace"
-msgstr "إزالة مجلد العمل"
-
-#: rnote-ui/data/ui/workspacebrowser.ui:195
-#, fuzzy
-msgid "Create Directory"
-msgstr "مجلد"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:33
-msgid "Brush style"
-msgstr "نمط الفرشاة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:57
-msgid "Brush styles"
-msgstr "أنماط الفرشاة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:75
-msgid "Marker"
-msgstr "قلم تحديد"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:76
-msgid "Mark underneath other brush strokes"
-msgstr "ضع علامة أسفل خطوط الفرشاة الأخرى"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:87
-msgid "Solid"
-msgstr "خط حاد"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:88
-msgid "Draw solid color strokes"
-msgstr "رسم خطوط ملونة حادة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:99
-msgid "Textured"
-msgstr "خط مقطع"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:100
-msgid "Draw textured strokes"
-msgstr "رسم خطوط مقطعة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:123
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:140
-msgid "Brush configuration"
-msgstr "تهيئة الفرشاة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:149
-msgid "Path modelling"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
-msgid "Simple"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:168
-msgid "Produces line segments from the raw input.\n"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
-msgid "Curved"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
-msgid "Produces smooth, curved segments.\n"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:181
-msgid "Modeled"
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:182
-msgid ""
-"Produces a modeled path with physics based algorithms.\n"
-"Results in the best looking handwriting."
-msgstr ""
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
-msgid "Solid style"
-msgstr "أسلوب الخط الحاد"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
-msgid "Pressure curve"
-msgstr "ضغط المنحنى"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
-msgid "Choose a pressure curve"
-msgstr "حدد ضغط المنحنى"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:199
-msgid "Constant"
-msgstr "ثابت"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:200
-msgid "Linear"
-msgstr "خطي"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:201
-msgid "Square root"
-msgstr "جذري"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:202
-msgid "Cubic root"
-msgstr "مكعب"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:203
-msgid "Quadratic Parabola"
-msgstr "تربيعي"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:204
-msgid "Cubic Parabola"
-msgstr "تكعيبي"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:215
-msgid "Textured style"
-msgstr "أسلوب الخط المقطع"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:218
-msgid "Density"
-msgstr "الكثافة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:219
-msgid "The density is the amount of dots per 10x10 area"
-msgstr "الكثافة هي مقدار النقاط لكل 10x10 من المساحة"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:234
-msgid "Stroke dots radii"
-msgstr "عدد النقط في الخط المقطع"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:235
-msgid "The radii of the individual dots in the textured stroke"
-msgstr "عدد النقط في الخط المقطع"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:293
-msgid "Stroke dots position distribution"
-msgstr "توزيع النقط في الخط المقطع"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:294
-msgid "Choose a dots position probability distribution"
-msgstr "حدد احتمالية توزيع النقط في الخط المقطع"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:298
-msgid "Uniform"
-msgstr "موحد"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:299
-msgid "Normal"
-msgstr "عادي"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:300
-msgid "Exponential"
-msgstr "أسي"
-
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:301
-msgid "Reverse Exponential"
-msgstr "أسي عكسي"
-
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
-msgid "Trash strokes"
-msgstr "مسح الخطوط"
-
-#: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
-msgid "Split strokes"
-msgstr "انقسام الخطوط"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
-msgid "Selecting with a polygon"
-msgstr "التحديد باستخدام مضلع"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
-msgid "Selecting with a rectangle"
-msgstr "التحديد باستخدام مستطيل"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
-msgid "Selecting apiece"
-msgstr "اختيار كل قطعة"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-msgid "Select intersecting path"
-msgstr "تحديد المسارات المتقاطعة"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
-msgid "Lock aspectratio while resizing the selection"
-msgstr "قفل نسبة العرض إلى الارتفاع أثناء تغيير حجم التحديد"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:124
-msgid "Select all strokes"
-msgstr "تحديد كل الخطوط"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:139
-msgid "Deselect all strokes"
-msgstr "عدم تحديد كل الخطوط"
-
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:154
+#: rnote-ui/data/ui/shortcuts.ui:195
+msgctxt "shortcut window"
 msgid "Duplicate selection"
-msgstr "كرر الاختيار"
+msgstr "كرِّر الاختيار"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
-msgid "Delete selection"
-msgstr "حذف المحدد"
+#: rnote-ui/data/ui/shortcuts.ui:201
+msgctxt "shortcut window"
+msgid "Undo"
+msgstr "تراجَع"
 
-#: rnote-ui/data/ui/penssidebar/selectorpage.ui:187
-#, fuzzy
-msgid "Paste from Clipboard"
-msgstr "لصق من الحافظة"
+#: rnote-ui/data/ui/shortcuts.ui:207
+msgctxt "shortcut window"
+msgid "Redo"
+msgstr "أعِد"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
-msgid "Shaper style"
-msgstr "نمط اﻷشكال الهندسية"
+#: rnote-ui/data/ui/workspacebrowser.ui:43
+msgid "Move directory up"
+msgstr "انقل المجلَّد للأعلى"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
-msgid "Shaper styles"
-msgstr "نمط اﻷشكال الهندسية"
+#: rnote-ui/data/ui/workspacebrowser.ui:70
+msgid "Workspace directory actions"
+msgstr "إجراءات مجلَّد مساحة العمل"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
-msgid "Smooth"
-msgstr "خفيف"
+#: rnote-ui/data/ui/workspacebrowser.ui:121
+msgid "Create new folder"
+msgstr "أنشئ مجلَّدًا جديدًا"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:86
-msgid "Rough"
-msgstr "ثقيل"
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
+msgid "Move selected workspace up"
+msgstr "حرِّك مساحة العمل المحدَّدة للأعلى"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:109
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
-msgid "Shape configuration"
-msgstr "تهيئة الشكل"
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
+msgid "Move selected workspace down"
+msgstr "حرِّك مساحة العمل المحدَّدة للأسفل"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
-msgid "Rough style"
-msgstr "نمط الثقيل"
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
+msgid "Add workspace"
+msgstr "أضف مساحة عمل"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:139
-msgid "Roughness"
-msgstr "الثقل"
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
+msgid "Remove selected workspace"
+msgstr "أزل مساحة العمل المحدَّدة"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:140
-msgid ""
-"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr "الإشارة إلى مدى ثقل الرسم. 0.0 خط خفيف. الافتراضيات إلى 1.0"
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
+msgid "Edit selected workspace"
+msgstr "حرِّر مساحة العمل المحدَّدة"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:155
-msgid "Bowing"
-msgstr "انحناء"
+#: rnote-ui/src/appwindow/mod.rs:505
+msgid "Opening .rnote file failed."
+msgstr "فشل فتح ملفِّ .rnote."
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:156
-msgid ""
-"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
-"Defaults to 1.0"
-msgstr ""
-"ما مدى انحناء الخطوط عند رسم شكل تقريبي. 0.0 خط مستقيم. الافتراضيات إلى 1.0"
+#: rnote-ui/src/appwindow/mod.rs:516
+msgid "Opening vector image file failed."
+msgstr "فشل فتح ملفِّ الصورة المتَّجهيَّة."
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
-msgid "Curve step count"
-msgstr "عدد خطوات المنحنى"
+#: rnote-ui/src/appwindow/mod.rs:527
+msgid "Opening bitmap image file failed."
+msgstr "فشل فتح ملفِّ صورة نقطيَّة."
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
-msgid "How many steps make up a curve. Defaults to 12"
-msgstr "كم عدد الخطوات التي تشكل منحنى. الافتراضي هو 12"
+#: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
+msgid "Opening Xournal++ file failed."
+msgstr "فشل فتح ملفِّ Xournal++."
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-msgid "Multistroke"
-msgstr "متعدد الخطوط"
+#: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
+msgid "Opening PDF file failed."
+msgstr "فشل فتح ملفِّ PDF."
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
-msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr "توليد متعدد خطوط لنظرة مخططة. الافتراضية هي مفعل"
+#: rnote-ui/src/appwindow/mod.rs:558
+msgid "Error: Tried opening folder as file"
+msgstr "خطأ: تمَّت محاولة فتح مجلَّد ملفًّا"
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
-msgid "Shape builders"
-msgstr "اﻷشكال الهندسية"
+#: rnote-ui/src/appwindow/mod.rs:563
+msgid "Failed to open file: Unsupported file type."
+msgstr "فشل فتح الملفِّ: نوع الملفِّ غير مدعوم."
 
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:272
-msgid "Line"
-msgstr "خط"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
-msgid "Rectangle"
-msgstr "مستطيل"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:294
-msgid "Ellipse"
-msgstr "بيضاوي"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:305
-msgid "Ellipse with foci"
-msgstr "ببيضاوي منقوص البؤرة"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:316
-msgid "Quadratic bezier curve"
-msgstr "منحنى البيزير التربيعي"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:327
-msgid "Cubic bezier curve"
-msgstr "منحنى بيزير مكعب"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:350
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:367
-msgid "Constraints"
-msgstr "القيود"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:384
-msgid "Enabled"
-msgstr "مفعلة"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:385
-#, fuzzy
-msgid ""
-"Hold Ctrl to temporarily enable/disable constraints\n"
-"when this switch is off/on"
-msgstr ""
-"اضغط مع الاستمرار على Ctrl لتفعيل/تعطيل القيود مؤقتًا عندما يكون هذا المفتاح "
-"في وضع مفعل/معطل"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:396
-msgid "1:1"
-msgstr "1:1"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:406
-msgid "3:2"
-msgstr "3:2"
-
-#: rnote-ui/data/ui/penssidebar/shaperpage.ui:416
-msgid "Golden ratio (1:1.618)"
-msgstr "النسبة الذهبية (1: 1.618)"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:32
-msgid "Insert vertical space"
-msgstr "أدخل مسافة عمودية"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:48
-msgid "Drag stroke elements based on proximity"
-msgstr "اسحب عناصر خطوط الفرشاة بناءً على القرب"
-
-#: rnote-ui/data/ui/penssidebar/toolspage.ui:65
-msgid "Offset the camera by dragging"
-msgstr "قم بإزاحة الكاميرا عن طريق السحب"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
-msgid ""
-"Font chooser\n"
-"(double-click, click on select\n"
-"or press Enter to select a new font)"
-msgstr ""
-"تحديد الخطوط\n"
-" (انقر نقرًا مزدوجًا ، انقر فوق تحديد \n"
-"أو اضغط على Enter لتحديد خط جديد)"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:113
-msgid "Pick and insert an emoji"
-msgstr "اختر وأدخل emoji"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
-msgid "Reset text attributes"
-msgstr "إعادة تعيين سمات النص"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:148
-msgid "Bold"
-msgstr "عريض"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:154
-msgid "Italic"
-msgstr "مائل"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:160
-msgid "Underline"
-msgstr "مسطر"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:166
-msgid "Strikethrough"
-msgstr "متوسط بخط"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:195
-msgid "Align left"
-msgstr "محاذاة لليسار"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:202
-msgid "Align center"
-msgstr "محاذاة للمنتصف"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:209
-msgid "Align right"
-msgstr "محاذاة لليمين"
-
-#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:216
-msgid "Fill"
-msgstr "ملء"
-
-#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs/mod.rs:35
-msgid "translator-credits"
-msgstr "المترجمون"
-
-#: rnote-ui/src/dialogs/mod.rs:129 rnote-ui/src/dialogs/mod.rs:178
-#: rnote-ui/src/dialogs/import.rs:46 rnote-ui/src/dialogs/export.rs:67
-#: rnote-ui/src/appwindow/mod.rs:456
-#: rnote-ui/src/appwindow/appwindowactions.rs:646
+#: rnote-ui/src/appwindow/imp.rs:272
+#: rnote-ui/src/appwindow/appwindowactions.rs:525
+#: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
+#: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
+#: rnote-ui/src/dialogs/mod.rs:318
 msgid "Saving document failed."
-msgstr "فشل حفظ الملف."
+msgstr "فشل حفظ المستند."
 
-#: rnote-ui/src/dialogs/import.rs:28 rnote-ui/src/dialogs/import.rs:109
+#: rnote-ui/src/appwindow/appwindowactions.rs:643
+msgid "Printed document successfully"
+msgstr "طُبع المستند بنجاح"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:652
+msgid "Printing document failed"
+msgstr "فشلت طباعة المستند"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:680
+msgid "Export selection failed, nothing selected."
+msgstr "فشل تصدير المحدَّد، لم يحدَّد أيُّ شيء."
+
+#: rnote-ui/src/canvas/mod.rs:994
+msgid "- invalid file name -"
+msgstr "- اسم الملفِّ غير صالح -"
+
+#: rnote-ui/src/canvas/mod.rs:1007
+msgid "- invalid folder path -"
+msgstr "- مسار الملفِّ غير صالح -"
+
+#: rnote-ui/src/canvas/mod.rs:1031
+msgid "Opened file was modified on disk."
+msgstr "عُدِّل الملفُّ المفتوح في القرص."
+
+#: rnote-ui/src/canvas/mod.rs:1032
+msgid "Reload"
+msgstr "أعد التحميل"
+
+#: rnote-ui/src/canvas/mod.rs:1038
+msgid "Reloading .rnote file from disk failed."
+msgstr "فشلت إعادة تحميل ملفِّ .rnote من القرص."
+
+#: rnote-ui/src/canvas/mod.rs:1087
+msgid "Opened file was renamed on disk."
+msgstr "غُيِّر اسم الملفِّ المفتوح في القرص."
+
+#: rnote-ui/src/canvas/mod.rs:1100
+msgid "Opened file was moved or deleted on disk."
+msgstr "نُقل الملفُّ المفتوح أو حُذف من القرص."
+
+#: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
+msgid ".rnote"
+msgstr ".rnote"
+
+#: rnote-ui/src/dialogs/export.rs:23
+msgid "Save document as"
+msgstr "احفظ المستند باسم"
+
+#: rnote-ui/src/dialogs/export.rs:62
+msgid "Saved document successfully."
+msgstr "حُفظ المستند بنجاح."
+
+#: rnote-ui/src/dialogs/export.rs:195
+msgid "Export document failed."
+msgstr "فشل تصدير المستند."
+
+#: rnote-ui/src/dialogs/export.rs:197
+msgid "Exported document successfully."
+msgstr "صُدِّر المستند بنجاح."
+
+#: rnote-ui/src/dialogs/export.rs:203
+msgid "Export document failed, no file selected."
+msgstr "فشل تصدير المستند، لم يحدَّد أيُّ ملفّ."
+
+#: rnote-ui/src/dialogs/export.rs:468
+msgid "Export document pages failed."
+msgstr "فشل تصدير صفحات المستند."
+
+#: rnote-ui/src/dialogs/export.rs:470
+msgid "Exported document pages successfully."
+msgstr "صُدِّرت صفحات المستند بنجاح."
+
+#: rnote-ui/src/dialogs/export.rs:476
+msgid "Export document pages failed, no directory selected."
+msgstr "فشل تصدير صفحات المستند، لم يحدَّد أيُّ مجلَّد."
+
+#: rnote-ui/src/dialogs/export.rs:716
+msgid "Export selection failed."
+msgstr "فشل تصدير المحدَّد."
+
+#: rnote-ui/src/dialogs/export.rs:718
+msgid "Exported selection successfully."
+msgstr "صُدِّر المحدَّد بنجاح."
+
+#: rnote-ui/src/dialogs/export.rs:724
+msgid "Export selection failed, no file selected."
+msgstr "فشل تصدير المحدَّد، لم يحدَّد أيُّ ملفّ."
+
+#: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
+msgid "JSON"
+msgstr "JSON"
+
+#: rnote-ui/src/dialogs/export.rs:814
+msgid "Export engine state"
+msgstr "صدِّر حالة المحرِّك"
+
+#: rnote-ui/src/dialogs/export.rs:852
+msgid "Export engine state failed."
+msgstr "فشل تصدير حالة المحرِّك."
+
+#: rnote-ui/src/dialogs/export.rs:854
+msgid "Exported engine state successfully."
+msgstr "صُدِّرت حالة المحرِّك بنجاح."
+
+#: rnote-ui/src/dialogs/export.rs:878
+msgid "Export engine config"
+msgstr "صدِّر تكوين المحرِّك"
+
+#: rnote-ui/src/dialogs/export.rs:916
+msgid "Export engine config failed."
+msgstr "فشل تصدير تكوين المحرِّك."
+
+#: rnote-ui/src/dialogs/export.rs:918
+msgid "Exported engine config successfully."
+msgstr "صُدِّر تكوين المحرِّك بنجاح."
+
+#: rnote-ui/src/dialogs/import.rs:34
 msgid "Opening file failed."
 msgstr "فشل فتح الملف."
 
-#: rnote-ui/src/dialogs/import.rs:77
-msgid ".rnote / .xopp File"
-msgstr "ملف .rnote / .xopp"
-
-#: rnote-ui/src/dialogs/import.rs:80
+#: rnote-ui/src/dialogs/import.rs:85
 msgid "Open file"
-msgstr "فتح الملف"
+msgstr "افتح ملفًّا"
 
-#: rnote-ui/src/dialogs/import.rs:140
-msgid "PNG / SVG / JPG / PDF file"
-msgstr "ملف PNG / SVG / JPG / PDF"
+#: rnote-ui/src/dialogs/import.rs:135
+msgid "JPG, PDF, PNG, SVG, Xopp"
+msgstr "JPG, PDF, PNG, SVG, Xopp"
 
-#: rnote-ui/src/dialogs/import.rs:230
+#: rnote-ui/src/dialogs/import.rs:138
+msgid "Import file"
+msgstr "استورد ملفًّا"
+
+#: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
-msgstr "- بلا اسم للملف -"
+msgstr "- بلا اسم ملفٍّ -"
 
-#: rnote-ui/src/dialogs/import.rs:235
+#: rnote-ui/src/dialogs/import.rs:276
 msgid "- no title -"
 msgstr "- بلا عنوان -"
 
-#: rnote-ui/src/dialogs/import.rs:238
+#: rnote-ui/src/dialogs/import.rs:279
 msgid "- no author -"
-msgstr "- بلا مالك -"
+msgstr "- بلا مؤلِّف -"
 
-#: rnote-ui/src/dialogs/import.rs:242
+#: rnote-ui/src/dialogs/import.rs:283
 msgid "- no date -"
 msgstr "- بلا تاريخ -"
 
-#: rnote-ui/src/dialogs/import.rs:249
+#: rnote-ui/src/dialogs/import.rs:290
 msgid "File name:"
 msgstr "اسم الملف:"
 
-#: rnote-ui/src/dialogs/import.rs:253
+#: rnote-ui/src/dialogs/import.rs:294
 msgid "Title:"
-msgstr "عنوان:"
+msgstr "العنوان:"
 
-#: rnote-ui/src/dialogs/import.rs:257
+#: rnote-ui/src/dialogs/import.rs:298
 msgid "Author:"
-msgstr "مالك:"
+msgstr "المؤلِّف:"
 
-#: rnote-ui/src/dialogs/import.rs:261
+#: rnote-ui/src/dialogs/import.rs:302
 msgid "Modification date:"
 msgstr "تاريخ التعديل:"
 
-#: rnote-ui/src/dialogs/import.rs:265
+#: rnote-ui/src/dialogs/import.rs:306
 msgid "Pages:"
 msgstr "الصفحات:"
 
-#: rnote-ui/src/dialogs/import.rs:308 rnote-ui/src/appwindow/imexport.rs:148
-msgid "Opening PDF file failed."
-msgstr "فشل فتح ملف PDF."
+#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+#: rnote-ui/src/dialogs/mod.rs:44
+msgid "translator-credits"
+msgstr ""
+"Ali Aljishi <ahj696@hotmail.com>\n"
+"mahmoud ibrahim atiyah <mahmoudaboattia1999@gmail.com>"
 
-#: rnote-ui/src/dialogs/export.rs:18
-msgid ".rnote file"
-msgstr "ملف rnote"
+#: rnote-ui/src/dialogs/mod.rs:274
+msgid "- unable to find a valid save folder -"
+msgstr "- تعذَّر العثور على مجلَّد حفظ صالح -"
 
-#: rnote-ui/src/dialogs/export.rs:21
-msgid "Save document as"
-msgstr "حفظ الملف باسم"
+#: rnote-ui/src/dialogs/mod.rs:371
+msgid "Change workspace directory"
+msgstr "غيِّر مجلَّد العمل"
 
-#: rnote-ui/src/dialogs/export.rs:69
-msgid "Saved document successfully."
-msgstr "تم حفظ الملف بنجاح."
+#: rnote-ui/src/penssidebar/shaperpage.rs:234
+msgid "Miscellaneous"
+msgstr "متنوِّعات"
 
-#: rnote-ui/src/dialogs/export.rs:179
+#: rnote-ui/src/penssidebar/shaperpage.rs:242
+msgid "Coordinate Systems"
+msgstr "أنظمة الإحداثيَّات"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:250
+msgid "Ellipses"
+msgstr "إهليلج"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:257
+msgid "Curves"
+msgstr "المنحنيات"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:267
+msgid "Line"
+msgstr "خطّ"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:268
+msgid "Rectangle"
+msgstr "مستطيل"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:270
+msgid "2D coordinate system"
+msgstr "نظام إحداثيَّات ثنائيُّ الأبعاد"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:271
+msgid "3D coordinate system"
+msgstr "نظام إحداثيَّات ثلاثيُّ الأبعاد"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:273
+msgid "2D single quadrant coordinate system"
+msgstr "نظام إحداثيَّات ثنائيُّ الأبعاد لربع واحد"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:275
+msgid "Ellipse"
+msgstr "إهليلج"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:276
+msgid "Ellipse with foci"
+msgstr "شكل إهليلجيٌّ ببؤرة"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:277
+msgid "Quadratic bezier curve"
+msgstr "منحنى بيزير تربيعيّ"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:278
+msgid "Cubic bezier curve"
+msgstr "منحنى بيزير مكعَّب"
+
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
+msgid "Folder name"
+msgstr "اسم المجلَّد"
+
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
+msgid "New folder"
+msgstr "مجلَّد جديد"
+
+#~ msgid "@APP_NAME_CAPITALIZED@"
+#~ msgstr "@APP_NAME_CAPITALIZED@"
+
+#~ msgid "Permanently hidden scrollbars"
+#~ msgstr "إخفاء أشرطة التمرير بشكل دائم"
+
 #, fuzzy
-#| msgid "Export document as SVG failed."
-msgid "Export document failed."
-msgstr "فشل التصدير كملف SVG."
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close the application window"
+#~ msgstr "غلق النافذة الحالية"
 
-#: rnote-ui/src/dialogs/export.rs:181
 #, fuzzy
-#| msgid "Exported document as SVG successfully."
-msgid "Exported document successfully."
-msgstr "تم تصدير الملف كـ SVG بنجاح."
+#~| msgid "Change workspace directory"
+#~ msgid ""
+#~ "Change workspace\n"
+#~ "                              directory"
+#~ msgstr "تغيير مجلد العمل"
 
-#: rnote-ui/src/dialogs/export.rs:187
+#~ msgid "Quit Application"
+#~ msgstr "الخروج من التطبيق"
+
+#~ msgid ""
+#~ "Any unsaved changes will be lost. Do you want to save the current "
+#~ "document?"
+#~ msgstr "‪ستفقد أي تغييرات غير محفوظة. هل تريد حفظ الصفحة الحالية؟"
+
 #, fuzzy
-#| msgid "Export document as SVG failed."
-msgid "Export document failed, no file selected."
-msgstr "فشل التصدير كملف SVG."
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "_Copy to clipboard"
+#~ msgstr "نسخ للحافظة"
 
-#: rnote-ui/src/dialogs/export.rs:382
 #, fuzzy
-#| msgid "Export selection as SVG failed."
-msgid "Export selection failed."
-msgstr "فشل تصدير التحديد كـ SVG."
+#~| msgctxt "shortcut window"
+#~| msgid "Copy into clipboard"
+#~ msgid "C_ut to clipboard"
+#~ msgstr "نسخ للحافظة"
 
-#: rnote-ui/src/dialogs/export.rs:384
 #, fuzzy
-#| msgid "Exported selection as SVG successfully."
-msgid "Exported selection successfully."
-msgstr "تم تصدير التحديد كـ SVG بنجاح."
+#~| msgctxt "shortcut window"
+#~| msgid "Paste clipboard"
+#~ msgid "_Paste clipboard"
+#~ msgstr "لصق من الحافظة"
 
-#: rnote-ui/src/dialogs/export.rs:390
-#: rnote-ui/src/appwindow/appwindowactions.rs:788
+#~ msgctxt "shortcut window"
+#~ msgid "Copy into clipboard"
+#~ msgstr "نسخ للحافظة"
+
+#~ msgid "_Clear document"
+#~ msgstr "تنظيف الصفحة"
+
+#~ msgid "The radii of the individual dots in the textured stroke"
+#~ msgstr "عدد النقط في الخط المقطع"
+
+#~ msgid "Roughness"
+#~ msgstr "الثقل"
+
+#~ msgid ""
+#~ "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+#~ msgstr "الإشارة إلى مدى ثقل الرسم. 0.0 خط خفيف. الافتراضيات إلى 1.0"
+
+#~ msgid "Bowing"
+#~ msgstr "انحناء"
+
+#~ msgid ""
+#~ "How curvy the lines are when drawing a rough shape. 0.0 is a straight "
+#~ "line. Defaults to 1.0"
+#~ msgstr ""
+#~ "ما مدى انحناء الخطوط عند رسم شكل تقريبي. 0.0 خط مستقيم. الافتراضيات إلى "
+#~ "1.0"
+
+#~ msgid "Curve step count"
+#~ msgstr "عدد خطوات المنحنى"
+
+#~ msgid "How many steps make up a curve. Defaults to 12"
+#~ msgstr "كم عدد الخطوات التي تشكل منحنى. الافتراضي هو 12"
+
+#~ msgid "Multistroke"
+#~ msgstr "متعدد الخطوط"
+
+#~ msgid "Multiple stroke generation for a sketched look. Defaults to true"
+#~ msgstr "توليد متعدد خطوط لنظرة مخططة. الافتراضية هي مفعل"
+
+#~ msgid "Selecting apiece"
+#~ msgstr "اختيار كل قطعة"
+
 #, fuzzy
-#| msgid "Export selection as SVG failed."
-msgid "Export selection failed, no file selected."
-msgstr "فشل تصدير التحديد كـ SVG."
+#~| msgid "PNG / SVG / JPG / PDF file"
+#~ msgid "Xopp, PNG, SVG, JPG, PDF"
+#~ msgstr "ملف PNG / SVG / JPG / PDF"
 
-#: rnote-ui/src/dialogs/export.rs:480 rnote-ui/src/dialogs/export.rs:544
-msgid "JSON file"
-msgstr "ملف JSON"
+#~ msgid "Drag stroke elements based on proximity"
+#~ msgstr "اسحب عناصر خطوط الفرشاة بناءً على القرب"
 
-#: rnote-ui/src/dialogs/export.rs:521
-msgid "Export engine state failed."
-msgstr "فشل تصدير حالة المحرك."
-
-#: rnote-ui/src/dialogs/export.rs:523
-msgid "Exported engine state successfully."
-msgstr "تم تصدير حالة المحرك بنجاح."
-
-#: rnote-ui/src/dialogs/export.rs:585
-msgid "Export engine config failed."
-msgstr "فشل تصدير إعدادات المحرك."
-
-#: rnote-ui/src/dialogs/export.rs:587
-msgid "Exported engine config successfully."
-msgstr "تم تصدير إعدادات المحرك بنجاح."
-
-#: rnote-ui/src/appwindow/imexport.rs:72
-msgid "Opening .rnote file failed."
-msgstr "فشل فتح ملف .rnote."
-
-#: rnote-ui/src/appwindow/imexport.rs:91
-msgid "Opening .xopp file failed."
-msgstr "فشل فتح ملف .xopp."
-
-#: rnote-ui/src/appwindow/imexport.rs:110
-msgid "Opening vector image file failed."
-msgstr "فشل فتح ملف صورة Vector."
-
-#: rnote-ui/src/appwindow/imexport.rs:129
-msgid "Opening bitmap image file failed."
-msgstr "فشل فتح ملف صورة bitmap."
-
-#: rnote-ui/src/appwindow/imexport.rs:165
-msgid "Error: Tried opening folder as file"
-msgstr "خطأ: محاولة فتح المجلد كملف"
-
-#: rnote-ui/src/appwindow/imexport.rs:174
 #, fuzzy
-msgid "Failed to open file: Unsupported file type."
-msgstr "فشل في فتح الملف ، نوع ملف غير مدعوم."
+#~ msgid "New Directory name"
+#~ msgstr "مجلد"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:763
-msgid "Printed document successfully"
-msgstr "تم طباعة الملف بنجاح"
-
-#: rnote-ui/src/appwindow/appwindowactions.rs:772
-msgid "Printing document failed"
-msgstr "فشل طباعة الملف"
-
-#: rnote-ui/src/workspacebrowser/workspace_action/create_dir.rs:44
 #, fuzzy
-msgid "New Directory name"
-msgstr "مجلد"
+#~ msgid "Paste from Clipboard"
+#~ msgstr "لصق من الحافظة"
+
+#~ msgid "New"
+#~ msgstr "جديد"
+
+#~ msgid ".rnote file"
+#~ msgstr "ملف rnote"
+
+#~ msgid "Opening .xopp file failed."
+#~ msgstr "فشل فتح ملف .xopp."
+
+#~ msgid ".rnote / .xopp File"
+#~ msgstr "ملف .rnote / .xopp"
+
+#, fuzzy
+#~| msgid "Import file"
+#~ msgid "Select export file"
+#~ msgstr "إستيراد ملف"
 
 #, fuzzy
 #~| msgid "Export document"
@@ -1533,9 +1921,6 @@ msgstr "مجلد"
 
 #~ msgid "Export selection as PNG"
 #~ msgstr "تصدير المحدد ك PNG"
-
-#~ msgid "Export document as SVG"
-#~ msgstr "تصدير الصفحة ك SVG"
 
 #~ msgid "Export document as PDF"
 #~ msgstr "تصدير الصفحة ك PDF"

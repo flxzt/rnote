@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### WorkspaceRow ### -->
+<interface>
+  <template class="RnWorkspaceRow" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="orientation">vertical</property>
+      </object>
+    </property>
+    <child>
+      <object class="GtkImage" id="folder_image">
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="icon_name">workspacelistentryicon-folder-symbolic</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="name_label">
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="label"></property>
+        <property name="selectable">false</property>
+        <property name="ellipsize">end</property>
+        <property name="max-width-chars">4</property>
+      </object>
+    </child>
+  </template>
+</interface>

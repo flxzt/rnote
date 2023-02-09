@@ -1,145 +1,172 @@
 mod appactions;
 
-use std::{cell::RefCell, path};
-
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::document::format::MeasureUnit;
-use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::PenStyle;
+use std::path::Path;
 
 use crate::{
-    colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
-    penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-    penssidebar::TypewriterPage, settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow,
-    workspacebrowser::WorkspaceRow, AppMenu, CanvasMenu, ColorPicker, IconPicker, MainHeader,
-    PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry, WorkspaceBrowser,
+    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, penssidebar::RnBrushPage,
+    penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
+    penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
+    strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
+    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
+    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
+    RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
+    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 
 mod imp {
     use super::*;
-    #[allow(missing_debug_implementations)]
-    pub struct RnoteApp {
-        pub input_file: RefCell<Option<gio::File>>,
-    }
 
-    impl Default for RnoteApp {
-        fn default() -> Self {
-            Self {
-                input_file: RefCell::new(None),
-            }
-        }
-    }
+    #[allow(missing_debug_implementations)]
+    #[derive(Default)]
+    pub(crate) struct RnApp {}
 
     #[glib::object_subclass]
-    impl ObjectSubclass for RnoteApp {
-        const NAME: &'static str = "RnoteApp";
-        type Type = super::RnoteApp;
+    impl ObjectSubclass for RnApp {
+        const NAME: &'static str = "RnApp";
+        type Type = super::RnApp;
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for RnoteApp {}
+    impl ObjectImpl for RnApp {}
 
-    impl ApplicationImpl for RnoteApp {
-        fn activate(&self, app: &Self::Type) {
-            // Custom buildable Widgets need to register
-            RnoteAppWindow::static_type();
-            RnoteCanvas::static_type();
-            ColorPicker::static_type();
-            ColorSetter::static_type();
-            CanvasMenu::static_type();
-            SettingsPanel::static_type();
-            AppMenu::static_type();
-            MainHeader::static_type();
-            PensSideBar::static_type();
-            BrushPage::static_type();
-            ShaperPage::static_type();
-            EraserPage::static_type();
-            SelectorPage::static_type();
-            TypewriterPage::static_type();
-            ToolsPage::static_type();
-            PenStyle::static_type();
-            WorkspaceBrowser::static_type();
-            FileRow::static_type();
-            WorkspaceRow::static_type();
-            MeasureUnit::static_type();
-            UnitEntry::static_type();
-            IconPicker::static_type();
-            PenShortcutRow::static_type();
+    impl ApplicationImpl for RnApp {
+        fn startup(&self) {
+            self.parent_startup();
 
-            // Load the resources
-            app.set_resource_base_path(Some(config::APP_IDPATH));
-            let resource = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
-                .expect("Could not load gresource file");
-            gio::resources_register(&resource);
-
-            // setup the app
-            app.setup_actions();
-            app.setup_action_accels();
-
-            let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
-            appwindow.init();
-
-            // Everything else before starting
-            app.init_misc(&appwindow);
-
-            appwindow.show();
+            self.init();
         }
 
-        fn open(&self, application: &Self::Type, files: &[gio::File], _hint: &str) {
-            for file in files {
-                match utils::FileType::lookup_file_type(file) {
-                    utils::FileType::Unsupported => {
-                        log::warn!("tried to open unsupported file type");
-                    }
-                    _ => {
-                        *self.input_file.borrow_mut() = Some(file.clone());
-                    }
-                };
+        fn activate(&self) {
+            self.parent_activate();
+
+            // init and show a new window
+            self.new_appwindow_init_show(None);
+        }
+
+        fn open(&self, files: &[gio::File], hint: &str) {
+            self.parent_open(files, hint);
+
+            let input_file = files.first().cloned();
+            if let Some(appwindow) = self
+                .instance()
+                .active_window()
+                .map(|w| w.downcast::<RnAppWindow>().unwrap())
+            {
+                if let Some(input_file) = input_file {
+                    appwindow.open_file_w_dialogs(input_file, None, true);
+                }
+            } else {
+                self.new_appwindow_init_show(input_file);
             }
-            application.activate();
         }
     }
 
-    impl GtkApplicationImpl for RnoteApp {}
-    impl AdwApplicationImpl for RnoteApp {}
+    impl GtkApplicationImpl for RnApp {}
+
+    impl AdwApplicationImpl for RnApp {}
+
+    impl RnApp {
+        fn init(&self) {
+            let inst = self.instance();
+
+            self.setup_logging();
+            self.setup_i18n();
+            self.setup_gresources();
+            inst.setup_actions();
+            inst.setup_action_accels();
+        }
+
+        /// Initializes and shows a new app window
+        fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
+            let appwindow = RnAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
+            appwindow.init();
+            appwindow.show();
+
+            // Loading in input file in the first tab, if Some
+            if let Some(input_file) = input_file {
+                appwindow.open_file_w_dialogs(input_file, None, false);
+            }
+        }
+
+        fn setup_logging(&self) {
+            if let Err(e) = pretty_env_logger::try_init_timed() {
+                eprintln!("initializing logging failed, Err: {e:?}");
+            } else {
+                log::debug!("... env_logger initialized");
+            }
+        }
+
+        fn setup_i18n(&self) {
+            gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
+            gettextrs::bindtextdomain(config::GETTEXT_PACKAGE, config::LOCALEDIR)
+                .expect("Unable to bind the text domain");
+            gettextrs::textdomain(config::GETTEXT_PACKAGE)
+                .expect("Unable to switch to the text domain");
+        }
+
+        fn setup_gresources(&self) {
+            // Custom buildable Widgets need to register
+            RnAppWindow::static_type();
+            RnOverlays::static_type();
+            RnCanvasWrapper::static_type();
+            RnCanvas::static_type();
+            RnColorPicker::static_type();
+            RnColorSetter::static_type();
+            RnColorPad::static_type();
+            RnCanvasMenu::static_type();
+            RnSettingsPanel::static_type();
+            RnAppMenu::static_type();
+            RnMainHeader::static_type();
+            RnPensSideBar::static_type();
+            RnBrushPage::static_type();
+            RnShaperPage::static_type();
+            RnEraserPage::static_type();
+            RnSelectorPage::static_type();
+            RnTypewriterPage::static_type();
+            RnToolsPage::static_type();
+            PenStyle::static_type();
+            RnWorkspaceBrowser::static_type();
+            RnWorkspacesBar::static_type();
+            RnFileRow::static_type();
+            RnWorkspaceRow::static_type();
+            MeasureUnit::static_type();
+            RnUnitEntry::static_type();
+            RnIconPicker::static_type();
+            RnPenShortcutRow::static_type();
+            RnStrokeWidthPicker::static_type();
+            RnStrokeWidthSetter::static_type();
+            RnStrokeWidthPreview::static_type();
+
+            self.instance()
+                .set_resource_base_path(Some(config::APP_IDPATH));
+            let resource = gio::Resource::load(Path::new(config::RESOURCES_FILE))
+                .expect("Could not load gresource file");
+            gio::resources_register(&resource);
+        }
+    }
 }
 
 glib::wrapper! {
-    pub struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
+    pub(crate) struct RnApp(ObjectSubclass<imp::RnApp>)
         @extends gio::Application, gtk4::Application, adw::Application,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
-impl Default for RnoteApp {
+impl Default for RnApp {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl RnoteApp {
-    pub fn new() -> Self {
+impl RnApp {
+    pub(crate) fn new() -> Self {
         glib::Object::new(&[
             ("application-id", &config::APP_ID),
             ("flags", &gio::ApplicationFlags::HANDLES_OPEN),
         ])
-        .expect("failed to create RnoteApp")
-    }
-
-    pub fn input_file(&self) -> Option<gio::File> {
-        self.imp().input_file.borrow().clone()
-    }
-
-    pub fn set_input_file(&self, input_file: Option<gio::File>) {
-        *self.imp().input_file.borrow_mut() = input_file;
-    }
-
-    // Anything that needs to be done right before showing the appwindow
-    pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
-        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        appwindow.undo_button().set_sensitive(false);
-        appwindow.redo_button().set_sensitive(false);
-
-        appwindow.canvas().regenerate_background_pattern();
-        appwindow.canvas().update_engine_rendering();
     }
 }

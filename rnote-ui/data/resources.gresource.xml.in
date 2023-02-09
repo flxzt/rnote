@@ -6,14 +6,20 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/overlays.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/canvaswrapper.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar/workspacesbar.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/workspacesbar/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/workspacerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/iconpicker.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpicker.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/groupediconpicker/groupediconpickergroup.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/strokewidthpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>
@@ -29,9 +35,12 @@
         <file compressed="true">icons/symbolic/apps/@APP_NAME@-symbolic.svg</file>
         <file compressed="true">icons/scalable/apps/@APP_NAME@-devel.svg</file>
         <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/dir-actions-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/misc-menu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/flap-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/tab-new-filled-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-in-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-out-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
@@ -47,6 +56,7 @@
         <file compressed="true">icons/scalable/actions/clipboard-copy-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/clipboard-paste-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/dot-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/emojichooser-symbolic.svg</file>
@@ -94,7 +104,7 @@
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-polygon-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-rectangle-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-selector-apiece-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-selector-single-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-intersectingpath-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-trash-colliding-strokes-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-split-colliding-strokes-symbolic.svg</file>
@@ -102,7 +112,6 @@
         <file compressed="true">icons/scalable/actions/pen-typewriter-fontchooser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-verticalspacetool-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-tools-dragproximitytool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-offsetcameratool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-bold-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-less-symbolic.svg</file>
@@ -114,36 +123,41 @@
         <file compressed="true">icons/scalable/actions/text-align-fill-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-align-start-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-align-end-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/shape-line-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/shape-rectangle-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/shape-fociellipse-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/shape-quadbez-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/shape-cubbez-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-line-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-rectangle-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-grid-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-coordsystem2d-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-coordsystem3d-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-quadrantcoordsystem2d-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-ellipse-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-fociellipse-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-quadbez-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shapebuilder-cubbez-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-primary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-secondary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-eraser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-primary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-secondary-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/touch-two-finger-long-press-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-bandaid-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-bank-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-bookmark-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-book-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-bread-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/workspacelistentryicon-build-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-calendar-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-camera-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-chip-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-code-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-compose-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-document-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-drinks-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/workspacelistentryicon-feet-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-flag-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-folder-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-footprints-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-gamepad-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-gear-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/workspacelistentryicon-heal-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-hammer-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-heart-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/workspacelistentryicon-help-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-hourglass-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-key-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-language-symbolic.svg</file>
@@ -156,11 +170,11 @@
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-pencilandpaper-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-people-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-person-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/workspacelistentryicon-present-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/workspacelistentryicon-richtext-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-projector-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-scratchpad-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-shapes-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-shopping-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacelistentryicon-speechbubble-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-speedometer-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-star-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacelistentryicon-terminal-symbolic.svg</file>

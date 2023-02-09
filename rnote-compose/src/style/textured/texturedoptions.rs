@@ -10,7 +10,7 @@ use super::textureddotsdistribution::TexturedDotsDistribution;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]
 pub struct TexturedOptions {
-    /// An optional seed to generate reproducible strokes
+    /// An optional seed to generate reproducible shapes
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
     /// The width
@@ -22,9 +22,6 @@ pub struct TexturedOptions {
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
     pub density: f64,
-    /// the radii of the dots
-    #[serde(rename = "radii")]
-    pub radii: na::Vector2<f64>,
     /// the distribution type
     #[serde(rename = "distribution")]
     pub distribution: TexturedDotsDistribution,
@@ -37,10 +34,9 @@ impl Default for TexturedOptions {
     fn default() -> Self {
         Self {
             seed: None,
-            stroke_width: Self::WIDTH_DEFAULT,
-            density: Self::DENSITY_DEFAULT,
+            stroke_width: 6.0,
+            density: 5.0,
             stroke_color: Some(Color::BLACK),
-            radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
             pressure_curve: PressureCurve::default(),
         }
@@ -48,10 +44,17 @@ impl Default for TexturedOptions {
 }
 
 impl TexturedOptions {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 1.0;
-    /// Density default
-    pub const DENSITY_DEFAULT: f64 = 5.0;
-    /// Radii default
-    pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![2.0, 0.3];
+    /// dots dadii default (without width weight)
+    pub(super) const DOTS_RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
+    /// The weight factor the stroke width has to the radii of the dots
+    pub(super) const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
+    /// The minimum dots density
+    pub const DENSITY_MIN: f64 = 0.1;
+    /// The maximum dots density
+    pub const DENSITY_MAX: f64 = 100.0;
+
+    /// Advances the seed
+    pub fn advance_seed(&mut self) {
+        self.seed = self.seed.map(crate::utils::seed_advance)
+    }
 }

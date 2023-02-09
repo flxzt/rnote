@@ -1,10 +1,12 @@
 use gtk4::Align;
-use gtk4::{glib::prelude::*, prelude::*, Image, Label, Orientation, SignalListItemFactory};
-use rnote_engine::pens::penholder::PenStyle;
+use gtk4::{
+    glib::prelude::*, prelude::*, Image, Label, ListItem, Orientation, SignalListItemFactory,
+};
+use rnote_engine::pens::PenStyle;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Debug, Clone)]
-pub struct ChangePenStyleListModel(adw::EnumListModel);
+pub(crate) struct ChangePenStyleListModel(adw::EnumListModel);
 
 impl Default for ChangePenStyleListModel {
     fn default() -> Self {
@@ -27,12 +29,14 @@ impl DerefMut for ChangePenStyleListModel {
 }
 
 #[derive(Debug, Clone)]
-pub struct ChangePenStyleListFactory(SignalListItemFactory);
+pub(crate) struct ChangePenStyleListFactory(SignalListItemFactory);
 
 impl Default for ChangePenStyleListFactory {
     fn default() -> Self {
         let factory = SignalListItemFactory::new();
-        factory.connect_setup(move |_factory, item| {
+        factory.connect_setup(move |_factory, list_item| {
+            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+
             let item_box = gtk4::Box::builder()
                 .orientation(Orientation::Horizontal)
                 .build();
@@ -45,10 +49,12 @@ impl Default for ChangePenStyleListFactory {
 
             item_box.prepend(&image);
             item_box.append(&label);
-            item.set_child(Some(&item_box));
+            list_item.set_child(Some(&item_box));
         });
-        factory.connect_bind(move |_factory, item| {
-            let pen_style = item
+        factory.connect_bind(move |_factory, list_item| {
+            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+
+            let pen_style = list_item
                 .item()
                 .expect("ChangePenStyleListFactory bind() failed, item is None")
                 .downcast::<adw::EnumListItem>()
@@ -56,7 +62,7 @@ impl Default for ChangePenStyleListFactory {
             let pen_style =
                 PenStyle::try_from(pen_style.value() as u32).expect("PenStyle try_from() failed");
 
-            let item_box = item
+            let item_box = list_item
                 .child()
                 .expect("ChangePenStyleListFactory bind() failed, item child is None")
                 .downcast::<gtk4::Box>()
@@ -100,18 +106,21 @@ impl DerefMut for ChangePenStyleListFactory {
 }
 
 #[derive(Debug, Clone)]
-pub struct ChangePenStyleIconFactory(SignalListItemFactory);
+pub(crate) struct ChangePenStyleIconFactory(SignalListItemFactory);
 
 impl Default for ChangePenStyleIconFactory {
     fn default() -> Self {
         let factory = SignalListItemFactory::new();
-        factory.connect_setup(move |_factory, item| {
-            let image = Image::builder().build();
+        factory.connect_setup(move |_factory, list_item| {
+            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
 
-            item.set_child(Some(&image));
+            let image = Image::builder().build();
+            list_item.set_child(Some(&image));
         });
-        factory.connect_bind(move |_factory, item| {
-            let pen_style = item
+        factory.connect_bind(move |_factory, list_item| {
+            let list_item = list_item.downcast_ref::<ListItem>().unwrap();
+
+            let pen_style = list_item
                 .item()
                 .expect("ChangePenStyleIconFactory bind() failed, item is None")
                 .downcast::<adw::EnumListItem>()
@@ -121,7 +130,7 @@ impl Default for ChangePenStyleIconFactory {
             let pen_style =
                 PenStyle::try_from(pen_style.value() as u32).expect("PenStyle try_from() failed");
 
-            let image = item
+            let image = list_item
                 .child()
                 .expect("ChangePenStyleIconFactory bind() failed, item child is None")
                 .downcast::<Image>()

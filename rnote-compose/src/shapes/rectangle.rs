@@ -1,7 +1,7 @@
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AABBHelpers, Vector2Helpers};
+use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
@@ -13,7 +13,7 @@ use super::Line;
 /// A rectangle
 pub struct Rectangle {
     #[serde(rename = "cuboid")]
-    /// The cuboid, consisting of half extents.
+    /// The cuboid, specifies the extents.
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]
     /// The transform of the center of the cuboid
@@ -30,7 +30,7 @@ impl Default for Rectangle {
 }
 
 impl ShapeBehaviour for Rectangle {
-    fn bounds(&self) -> AABB {
+    fn bounds(&self) -> Aabb {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
         let half_extents = na::Vector2::from_homogeneous(
@@ -40,10 +40,10 @@ impl ShapeBehaviour for Rectangle {
         .unwrap()
         .abs();
 
-        AABB::from_half_extents(center, half_extents)
+        Aabb::from_half_extents(center, half_extents)
     }
 
-    fn hitboxes(&self) -> Vec<AABB> {
+    fn hitboxes(&self) -> Vec<Aabb> {
         self.outline_lines()
             .into_iter()
             .flat_map(|line| line.hitboxes())
@@ -52,11 +52,11 @@ impl ShapeBehaviour for Rectangle {
 }
 
 impl TransformBehaviour for Rectangle {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.transform.append_rotation_wrt_point_mut(angle, center)
     }
 
@@ -66,8 +66,27 @@ impl TransformBehaviour for Rectangle {
 }
 
 impl Rectangle {
+    /// From center and half extents
+    pub fn from_half_extents(center: na::Vector2<f64>, half_extents: na::Vector2<f64>) -> Self {
+        let cuboid = p2d::shape::Cuboid::new(half_extents);
+        let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
+
+        Self { cuboid, transform }
+    }
+
+    /// From corners (across from each other)
+    pub fn from_corners(first: na::Vector2<f64>, second: na::Vector2<f64>) -> Self {
+        let half_extents = (second - first).abs() * 0.5;
+        let center = first + (second - first) * 0.5;
+
+        let cuboid = p2d::shape::Cuboid::new(half_extents);
+        let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
+
+        Self { cuboid, transform }
+    }
+
     /// New from bounds
-    pub fn from_p2d_aabb(mut bounds: AABB) -> Self {
+    pub fn from_p2d_aabb(mut bounds: Aabb) -> Self {
         bounds.ensure_positive();
         let cuboid = p2d::shape::Cuboid::new(bounds.half_extents());
         let transform = Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0));

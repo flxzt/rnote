@@ -10,7 +10,11 @@ git submodule update --init --recursive
 ## Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
-Make sure you have `flatpak` and `flatkpak-builder` installed on your system.
+Make sure you have `flatpak` and `flatkpak-builder` installed on your system. You also need the Gnome 43 Runtime, SDK and some extensions:
+
+```bash
+flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14//22.08
+```
 
 Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode) to build and run the application for you. **This is the easiest and recommended way.**
 
@@ -21,14 +25,9 @@ Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.vis
 
 - Building the flatpak aborts randomly with status `137` out of memory: Reset the flatpak app-id permissions with `flatpak permission-reset com.github.flxzt.rnote`, so it is able to run in the background. (see [this issue](https://github.com/flatpak/xdg-desktop-portal/issues/478))
 
-### Prerequisites
+### Manual flatpak build
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
-First the Gnome 43 SDK and some extensions are needed:
-
-```bash
-flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14
-```
 ### Build
 Building the app with flatpak is done with:
 
@@ -72,7 +71,7 @@ If a native build on the host is wanted, meson can be called directly.
 
 Install all needed dependencies and build tools, e.g. for fedora 37:
 ```bash
-sudo dnf install gcc gcc-c++ clang clang-devel make automake cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install gcc gcc-c++ clang clang-devel make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:
@@ -82,8 +81,20 @@ meson setup --prefix=/usr _mesonbuild
 ```
 Meson will ask for the user password when needed.
 
-To enable the development profile, set `-Dprofile=devel` as a parameter. Else the `default` profile will be set. ( This can be reconfigured later )
+### Configuration
+To enable the development profile, set `-Dprofile=devel` as a parameter. Else the `default` profile will be set.
 
+To enable building the `rnote-cli` binary, set `-Dcli=true`.
+
+**Reconfigure**
+
+reconfiguring the meson build options can be done with:
+
+```bash
+meson configure -D<option>=<value> _mesonbuild
+```
+
+For example if the profile needs to be changed.
 ### Compile
 Once the project is configured, it can be compiled with:
 
@@ -113,15 +124,6 @@ Meson has some tests to validate the desktop, gresources, ... files.
 ```bash
 meson test -v -C _mesonbuild
 ```
-
-### Reconfigure
-reconfiguring the meson build can be done with:
-
-```bash
-meson configure -Dprofile=default _mesonbuild
-```
-
-For example if the profile needs to be changed.
 
 ### Uninstall
 If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:
@@ -168,13 +170,23 @@ and a `launch.json` entry:
         {
             "type": "lldb",
             "request": "launch",
-            "name": "launch debug build of 'rnote'",
+            "name": "compile and launch debug build of 'rnote'",
             "args": [],
             "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
-            "preLaunchTask": "meson compile"
+            "preLaunchTask": "meson compile",
+            "env": {"RUST_LOG": "rnote=debug"}
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "install and launch debug build of 'rnote'",
+            "args": [],
+            "program": "${workspaceFolder}/_mesonbuild/target/debug/rnote",
+            "preLaunchTask": "meson install",
+            "env": {"RUST_LOG": "rnote=debug"}
         }
     ]
 }
 ```
 
-This launch configuration can then be launched through `Run -> Start Debugging` or by selecting and running it in the `Run and Debug` panel. 
+These configurations can then be selected in the `Run and Debug` panel and launched there or through `Run -> Start Debugging`.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="EraserPage" parent="GtkWidget">
+  <template class="RnEraserPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBoxLayout">
         <property name="spacing">6</property>
@@ -10,55 +10,29 @@
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
     <child>
-      <object class="GtkImage">
-        <property name="icon_name">pen-eraser-symbolic</property>
-        <property name="margin-top">9</property>
-        <property name="margin-bottom">9</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox" id="eraserstyle_togglebox">
         <property name="orientation">vertical</property>
         <property name="homogeneous">true</property>
-        <property name="vexpand">false</property>
         <style>
           <class name="linked" />
         </style>
         <child>
           <object class="GtkToggleButton" id="eraserstyle_trash_colliding_strokes_toggle">
-            <property name="tooltip_text" translatable="yes">Trash strokes</property>
-            <property name="vexpand">true</property>
-            <property name="active">true</property>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="icon_name">pen-eraser-trash-colliding-strokes-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="tooltip_text" translatable="yes">Trash Strokes</property>
+            <property name="icon_name">pen-eraser-trash-colliding-strokes-symbolic</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="eraserstyle_split_colliding_strokes_toggle">
             <property name="group">eraserstyle_trash_colliding_strokes_toggle</property>
-            <property name="tooltip_text" translatable="yes">Split strokes</property>
-            <property name="vexpand">true</property>
-            <child>
-              <object class="GtkImage">
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
-                <property name="icon_name">pen-eraser-split-colliding-strokes-symbolic</property>
-                <property name="icon-size">large</property>
-              </object>
-            </child>
+            <property name="tooltip_text" translatable="yes">Split Strokes</property>
+            <property name="icon_name">pen-eraser-split-colliding-strokes-symbolic</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
           </object>
         </child>
       </object>

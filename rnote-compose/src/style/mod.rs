@@ -1,6 +1,6 @@
 mod composer;
 /// Draw helpers
-pub mod drawhelpers;
+pub mod indicators;
 /// The rough module for rough styles
 pub mod rough;
 /// The smooth module for smooth styles
@@ -12,9 +12,9 @@ pub mod textured;
 use self::rough::RoughOptions;
 use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
+use anyhow::Context;
 pub use composer::Composer;
 
-use crate::penpath::Segment;
 use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
 use crate::{PenPath, Shape};
 use serde::{Deserialize, Serialize};
@@ -49,10 +49,28 @@ impl Style {
             Style::Textured(options) => options.stroke_width,
         }
     }
+
+    /// The margins for bounds in which the shape fits
+    pub fn bounds_margin(&self) -> f64 {
+        match self {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width + RoughOptions::ROUGH_BOUNDS_MARGIN,
+            Style::Textured(options) => options.stroke_width,
+        }
+    }
+
+    /// Advances the seed for styles that have one
+    pub fn advance_seed(&mut self) {
+        match self {
+            Style::Smooth(_) => {}
+            Style::Rough(options) => options.advance_seed(),
+            Style::Textured(options) => options.advance_seed(),
+        }
+    }
 }
 
 impl Composer<Style> for Line {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -70,7 +88,7 @@ impl Composer<Style> for Line {
 }
 
 impl Composer<Style> for Rectangle {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -88,7 +106,7 @@ impl Composer<Style> for Rectangle {
 }
 
 impl Composer<Style> for Ellipse {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -106,7 +124,7 @@ impl Composer<Style> for Ellipse {
 }
 
 impl Composer<Style> for QuadraticBezier {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -124,7 +142,7 @@ impl Composer<Style> for QuadraticBezier {
 }
 
 impl Composer<Style> for CubicBezier {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
@@ -137,33 +155,15 @@ impl Composer<Style> for CubicBezier {
             Style::Smooth(options) => self.draw_composed(cx, options),
             Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
-        }
-    }
-}
-
-impl Composer<Style> for Segment {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
-        match options {
-            Style::Smooth(options) => self.composed_bounds(options),
-            Style::Rough(options) => self.composed_bounds(options),
-            Style::Textured(options) => self.composed_bounds(options),
-        }
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
-        match options {
-            Style::Smooth(options) => self.draw_composed(cx, options),
-            Style::Rough(options) => self.draw_composed(cx, options),
-            Style::Textured(options) => self.draw_composed(cx, options),
         }
     }
 }
 
 impl Composer<Style> for PenPath {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
-            Style::Rough(options) => self.composed_bounds(options),
+            Style::Rough(_) => unimplemented!(),
             Style::Textured(options) => self.composed_bounds(options),
         }
     }
@@ -171,21 +171,20 @@ impl Composer<Style> for PenPath {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
         match options {
             Style::Smooth(options) => self.draw_composed(cx, options),
-            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Rough(_) => unimplemented!(),
             Style::Textured(options) => self.draw_composed(cx, options),
         }
     }
 }
 
 impl Composer<Style> for Shape {
-    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match self {
             Shape::Line(line) => line.composed_bounds(options),
             Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
             Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.composed_bounds(options),
             Shape::CubicBezier(cubic_bezier) => cubic_bezier.composed_bounds(options),
-            Shape::Segment(segment) => segment.composed_bounds(options),
         }
     }
 
@@ -196,7 +195,6 @@ impl Composer<Style> for Shape {
             Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
             Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.draw_composed(cx, options),
             Shape::CubicBezier(cubic_bezier) => cubic_bezier.draw_composed(cx, options),
-            Shape::Segment(segment) => segment.draw_composed(cx, options),
         }
     }
 }
@@ -251,11 +249,7 @@ impl TryFrom<u32> for PressureCurve {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
-            anyhow::anyhow!(
-                "PressureProfile try_from::<u32>() for value {} failed",
-                value
-            )
-        })
+        num_traits::FromPrimitive::from_u32(value)
+            .with_context(|| format!("PressureCurve try_from::<u32>() for value {value} failed"))
     }
 }

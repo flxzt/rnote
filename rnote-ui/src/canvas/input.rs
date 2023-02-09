@@ -1,24 +1,278 @@
-use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
-use rnote_compose::penevents::KeyboardKey;
+use gtk4::{gdk, prelude::*, Inhibit};
 use rnote_compose::penevents::PenEvent;
 use rnote_compose::penevents::ShortcutKey;
+use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penpath::Element;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
-use std::collections::VecDeque;
 use std::time::Instant;
 
 use super::RnCanvas;
 
-/// Returns true if input should be rejected
-pub(crate) fn filter_mouse_input(mouse_drawing_gesture: &GestureDrag) -> bool {
-    match mouse_drawing_gesture.current_button() {
-        gdk::BUTTON_PRIMARY | gdk::BUTTON_SECONDARY => {}
-        _ => {
-            return true;
+// Returns whether the event should be inhibited from propagating, and the new pen state
+pub(crate) fn handle_pointer_controller_event(
+    canvas: &RnCanvas,
+    event: &gdk::Event,
+    mut state: PenState,
+) -> (Inhibit, PenState) {
+    //std::thread::sleep(std::time::Duration::from_millis(100));
+    let touch_drawing = canvas.touch_drawing();
+    let event_type = event.event_type();
+
+    if event_type != gdk::EventType::MotionNotify {
+        super::input::debug_gdk_event(event);
+    }
+
+    if reject_pointer_input(event, touch_drawing) {
+        return (Inhibit(false), state);
+    }
+
+    let now = Instant::now();
+    let mut widget_flags = WidgetFlags::default();
+    let modifiers = event.modifier_state();
+    let _input_source = event.device().unwrap().source();
+    let is_stylus = event_is_stylus(event);
+    let mut handle_pen_event = false;
+    let mut inhibit = false;
+
+    match event_type {
+        gdk::EventType::MotionNotify => {
+            if is_stylus {
+                // As in gtk4 'gesturestylus.c:120' proximity with stylus is also detected in this way, in case ProximityIn & Out is not reported
+                if modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
+                    state = PenState::Down;
+                } else {
+                    state = PenState::Proximity;
+                }
+            }
+
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::ButtonPress => {
+            let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
+            let gdk_button = button_event.button();
+
+            let shortcut_key = if is_stylus {
+                if gdk_button == gdk::BUTTON_PRIMARY {
+                    state = PenState::Down;
+                    None
+                } else if gdk_button == gdk::BUTTON_SECONDARY {
+                    Some(ShortcutKey::StylusPrimaryButton)
+                } else if gdk_button == gdk::BUTTON_MIDDLE {
+                    Some(ShortcutKey::StylusSecondaryButton)
+                } else {
+                    None
+                }
+            } else {
+                if gdk_button == gdk::BUTTON_PRIMARY {
+                    state = PenState::Down;
+                    None
+                } else if gdk_button == gdk::BUTTON_SECONDARY {
+                    state = PenState::Down;
+                    Some(ShortcutKey::MouseSecondaryButton)
+                } else {
+                    None
+                }
+            };
+
+            if let Some(shortcut_key) = shortcut_key {
+                widget_flags.merge(
+                    canvas
+                        .engine()
+                        .borrow_mut()
+                        .handle_pressed_shortcut_key(shortcut_key, now),
+                );
+            }
+
+            // even though it is a button press, we handle it also as pointer event so the engine gets the chance to switch pen mode, pen style, etc.
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::ButtonRelease => {
+            let button_event = event.downcast_ref::<gdk::ButtonEvent>().unwrap();
+            let gdk_button = button_event.button();
+
+            if is_stylus {
+                if gdk_button == gdk::BUTTON_PRIMARY {
+                    state = PenState::Up;
+                }
+                // we don't handle stylus buttons, because they shouldn't modify the state
+            } else {
+                if gdk_button == gdk::BUTTON_PRIMARY {
+                    state = PenState::Up;
+                } else if gdk_button == gdk::BUTTON_SECONDARY {
+                    state = PenState::Up;
+                }
+            };
+
+            // even though it is a button press, we handle it also as pointer event so the engine gets the chance to switch pen mode, pen style, etc.
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::ProximityIn => {
+            state = PenState::Proximity;
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::ProximityOut => {
+            state = PenState::Up;
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        // We early-returned when detecting touch input and touch-drawing is not enabled, so it is fine to always handle it here
+        gdk::EventType::TouchBegin => {
+            state = PenState::Down;
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::TouchUpdate => {
+            state = PenState::Down;
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::TouchEnd => {
+            state = PenState::Up;
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        gdk::EventType::TouchCancel => {
+            state = PenState::Up;
+            handle_pen_event = true;
+            inhibit = true;
+        }
+        _ => {}
+    };
+
+    if handle_pen_event {
+        let Some(element) = retrieve_pointer_element(&canvas, event) else {
+                    return (Inhibit(false), state);
+                };
+        let shortcut_keys = retrieve_modifier_shortcut_keys(event.modifier_state());
+        let pen_mode = retrieve_pen_mode(event);
+
+        log::debug!("handle event, state: {state:?}, shortcut_keys: {shortcut_keys:?}, pen_mode: {pen_mode:?}");
+
+        match state {
+            PenState::Up => {
+                canvas.switch_between_cursors(false);
+
+                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                    PenEvent::Up {
+                        element,
+                        shortcut_keys,
+                    },
+                    pen_mode,
+                    now,
+                ));
+            }
+            PenState::Proximity => {
+                canvas.switch_between_cursors(false);
+
+                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                    PenEvent::Proximity {
+                        element,
+                        shortcut_keys,
+                    },
+                    pen_mode,
+                    now,
+                ));
+            }
+            PenState::Down => {
+                canvas.grab_focus();
+                canvas.switch_between_cursors(true);
+
+                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                    PenEvent::Down {
+                        element,
+                        shortcut_keys,
+                    },
+                    pen_mode,
+                    now,
+                ));
+            }
         }
     }
-    if let Some(event) = mouse_drawing_gesture.current_event() {
+
+    canvas.emit_handle_widget_flags(widget_flags);
+    (Inhibit(inhibit), state)
+}
+
+pub(crate) fn handle_key_controller_key_pressed(
+    canvas: &RnCanvas,
+    key: gdk::Key,
+    modifier: gdk::ModifierType,
+) -> Inhibit {
+    //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+    canvas.grab_focus();
+
+    let now = Instant::now();
+    let keyboard_key = retrieve_keyboard_key(key);
+    let shortcut_keys = retrieve_modifier_shortcut_keys(modifier);
+
+    //log::debug!("keyboard key: {:?}", keyboard_key);
+
+    let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
+        PenEvent::KeyPressed {
+            keyboard_key,
+            shortcut_keys,
+        },
+        None,
+        now,
+    );
+    canvas.emit_handle_widget_flags(widget_flags);
+
+    Inhibit(true)
+}
+
+#[allow(unused)]
+pub(crate) fn handle_key_controller_modifiers(
+    canvas: &RnCanvas,
+    modifier: gdk::ModifierType,
+) -> Inhibit {
+    let now = Instant::now();
+    let shortcut_keys = retrieve_modifier_shortcut_keys(modifier);
+    let mut widget_flags = WidgetFlags::default();
+
+    for shortcut_key in shortcut_keys {
+        widget_flags.merge(
+            canvas
+                .engine()
+                .borrow_mut()
+                .handle_pressed_shortcut_key(shortcut_key, now),
+        );
+    }
+    canvas.emit_handle_widget_flags(widget_flags);
+
+    Inhibit(true)
+}
+
+pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
+    let now = Instant::now();
+    let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
+        PenEvent::Text {
+            text: text.to_string(),
+        },
+        None,
+        now,
+    );
+    canvas.emit_handle_widget_flags(widget_flags);
+}
+
+#[allow(unused)]
+fn debug_gdk_event(event: &gdk::Event) {
+    log::debug!(
+        "pos: {:?}, modifier: {:?}, event_type: {:?}, input source: {:?}",
+        event.position(),
+        event.modifier_state(),
+        event.event_type(),
+        event.device().map(|d| d.source())
+    );
+}
+
+/// Returns true if input should be rejected
+fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
+    if !touch_drawing {
         let event_type = event.event_type();
         if event.is_pointer_emulated()
             || event_type == gdk::EventType::TouchBegin
@@ -32,115 +286,59 @@ pub(crate) fn filter_mouse_input(mouse_drawing_gesture: &GestureDrag) -> bool {
     false
 }
 
-/// Returns true if input should be rejected
-pub(crate) fn filter_touch_input(_touch_drawing_gesture: &GestureDrag) -> bool {
-    false
+fn event_is_stylus(event: &gdk::Event) -> bool {
+    // As in gtk4 'gtkgesturestylus.c:106' we detect if the pointer is a stylus when it has a device_tool
+    event.device_tool().is_some()
 }
 
-/// Returns true if input should be rejected
-pub(crate) fn filter_stylus_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
-    false
-}
+fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Element> {
+    let Some((x, y)) = event.position() else {
+        return None;
+    };
+    let root = canvas.root().unwrap();
+    let (surface_trans_x, surface_trans_y) = root.surface_transform();
 
-#[allow(unused)]
-pub(crate) fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
-    log::debug!(
-        "stylus_gesture | modifier: {:?}, current_button: {:?}, tool_type: {:?}, event.event_type: {:?}",
-        stylus_gesture.current_event_state(),
-        stylus_gesture.current_button(),
-        stylus_gesture
-            .device_tool()
-            .map(|device_tool| { device_tool.tool_type() }),
-        stylus_gesture
-            .current_event()
-            .map(|event| { event.event_type() })
-    );
-}
+    let pos = root
+        .translate_coordinates(canvas, x - surface_trans_x, y - surface_trans_y)
+        .map(|(x, y)| {
+            let pos = na::vector![x, y];
+            (canvas.engine().borrow().camera.transform().inverse() * na::Point2::from(pos)).coords
+        })
+        .unwrap();
 
-#[allow(unused)]
-pub(crate) fn debug_drag_gesture(drag_gesture: &GestureDrag) {
-    log::debug!(
-        "gesture modifier: {:?}, current_button: {:?}, event.event_type: {:?}",
-        drag_gesture.current_event_state(),
-        drag_gesture.current_button(),
-        drag_gesture
-            .current_event()
-            .map(|event| { event.event_type() })
-    );
-}
+    // getting the pressure only works when the event has a device tool (== is a stylus),
+    // else we get SIGSEGV when trying to access (TODO: report this to bindings)
+    let is_stylus = event_is_stylus(event);
 
-/// retrieve elements from a (emulated) pointer
-/// X and Y is already available from closure, and should not retrieved from .axis() (because of gtk weirdness)
-pub(crate) fn retrieve_pointer_elements(
-    _mouse_drawing_gesture: &GestureDrag,
-    x: f64,
-    y: f64,
-) -> VecDeque<Element> {
-    let mut data_entries: VecDeque<Element> = VecDeque::with_capacity(1);
-    //std::thread::sleep(std::time::Duration::from_millis(100));
-
-    data_entries.push_back(Element::new(na::vector![x, y], Element::PRESSURE_DEFAULT));
-    data_entries
-}
-
-pub(crate) fn retrieve_mouse_shortcut_keys(
-    mouse_drawing_gesture: &GestureDrag,
-) -> Vec<ShortcutKey> {
-    let mut shortcut_keys = vec![];
-
-    match mouse_drawing_gesture.current_button() {
-        gdk::BUTTON_SECONDARY => {
-            shortcut_keys.push(ShortcutKey::MouseSecondaryButton);
-        }
-        _ => {}
-    }
-
-    shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
-        mouse_drawing_gesture.current_event_state(),
-    ));
-
-    shortcut_keys
-}
-
-pub(crate) fn retrieve_touch_shortcut_keys(
-    touch_drawing_gesture: &GestureDrag,
-) -> Vec<ShortcutKey> {
-    let mut shortcut_keys = vec![];
-
-    shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
-        touch_drawing_gesture.current_event_state(),
-    ));
-
-    shortcut_keys
-}
-
-/// Retrieving the shortcut keys for the stylus gesture
-pub(crate) fn retrieve_stylus_shortcut_keys(
-    stylus_drawing_gesture: &GestureStylus,
-) -> Vec<ShortcutKey> {
-    let mut shortcut_keys = vec![];
-
-    // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent.
-    // Also, libinput sometimes picks one button as tool_type: Eraser, but this is not supported by all devices.
-    match stylus_drawing_gesture.current_button() {
-        gdk::BUTTON_MIDDLE => {
-            shortcut_keys.push(ShortcutKey::StylusPrimaryButton);
-        }
-        gdk::BUTTON_SECONDARY => {
-            shortcut_keys.push(ShortcutKey::StylusSecondaryButton);
-        }
-        _ => {}
+    let pressure = if is_stylus {
+        event.axis(gdk::AxisUse::Pressure).unwrap()
+    } else {
+        Element::PRESSURE_DEFAULT
     };
 
-    shortcut_keys.append(&mut retrieve_modifier_shortcut_key(
-        stylus_drawing_gesture.current_event_state(),
-    ));
+    Some(Element::new(pos, pressure))
+}
 
+pub(crate) fn retrieve_modifier_shortcut_keys(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
+    let mut shortcut_keys = vec![];
+
+    if modifier.contains(gdk::ModifierType::BUTTON2_MASK) {
+        shortcut_keys.push(ShortcutKey::MouseSecondaryButton);
+    }
+    if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
+        shortcut_keys.push(ShortcutKey::KeyboardShift);
+    }
+    if modifier.contains(gdk::ModifierType::CONTROL_MASK) {
+        shortcut_keys.push(ShortcutKey::KeyboardCtrl);
+    }
+    if modifier.contains(gdk::ModifierType::ALT_MASK) {
+        shortcut_keys.push(ShortcutKey::KeyboardAlt);
+    }
     shortcut_keys
 }
 
-pub(crate) fn retrieve_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Option<PenMode> {
-    if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
+fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
+    if let Some(device_tool) = event.device_tool() {
         match device_tool.tool_type() {
             gdk::DeviceToolType::Pen => {
                 return Some(PenMode::Pen);
@@ -157,207 +355,4 @@ pub(crate) fn retrieve_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -
 
 pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
     rnote_engine::utils::keyboard_key_from_gdk(gdk_key)
-}
-
-/// Retrieving modifier shortcut keys. Note that here Button modifiers are skipped, they have different meanings with different kind of pointers and have to be handled individually
-pub(crate) fn retrieve_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
-    let mut shortcut_keys = vec![];
-    if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
-        shortcut_keys.push(ShortcutKey::KeyboardShift);
-    }
-    if modifier.contains(gdk::ModifierType::CONTROL_MASK) {
-        shortcut_keys.push(ShortcutKey::KeyboardCtrl);
-    }
-    if modifier.contains(gdk::ModifierType::ALT_MASK) {
-        shortcut_keys.push(ShortcutKey::KeyboardAlt);
-    }
-
-    shortcut_keys
-}
-
-/// retrieves available input axes, defaults if not available.
-/// X and Y is already available from closure, and should not retrieved from .axis() (because of gtk weirdness)
-pub(crate) fn retrieve_stylus_elements(
-    stylus_drawing_gesture: &GestureStylus,
-    x: f64,
-    y: f64,
-) -> VecDeque<Element> {
-    let mut data_entries: VecDeque<Element> = VecDeque::new();
-    //std::thread::sleep(std::time::Duration::from_millis(100));
-
-    // Get newest data
-    let pressure = if let Some(pressure) = stylus_drawing_gesture.axis(gdk::AxisUse::Pressure) {
-        pressure
-    } else {
-        Element::PRESSURE_DEFAULT
-    };
-
-    data_entries.push_back(Element::new(na::vector![x, y], pressure));
-
-    data_entries
-}
-
-/// Process "Pen down"
-pub(crate) fn process_pen_down(
-    canvas: &RnCanvas,
-    element: Element,
-    shortcut_keys: Vec<ShortcutKey>,
-    pen_mode: Option<PenMode>,
-    now: Instant,
-) -> WidgetFlags {
-    let mut widget_flags = WidgetFlags::default();
-
-    canvas.switch_between_cursors(true);
-
-    // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
-    // so we skip handling those as a Pen Events and emit pressed shortcut key events
-    // TODO: handle this better
-    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        widget_flags.merge(
-            canvas
-                .engine()
-                .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton, now),
-        );
-
-        return widget_flags;
-    }
-    if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        widget_flags.merge(
-            canvas
-                .engine()
-                .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton, now),
-        );
-
-        return widget_flags;
-    }
-
-    // Handle all other events as pen down
-    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-        PenEvent::Down {
-            element,
-            shortcut_keys,
-        },
-        pen_mode,
-        now,
-    ));
-
-    widget_flags
-}
-
-/// Process "Pen up"
-pub(crate) fn process_pen_up(
-    canvas: &RnCanvas,
-    element: Element,
-    shortcut_keys: Vec<ShortcutKey>,
-    pen_mode: Option<PenMode>,
-    now: Instant,
-) -> WidgetFlags {
-    let mut widget_flags = WidgetFlags::default();
-
-    canvas.switch_between_cursors(false);
-
-    // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
-    // so we skip handling those as a Pen Events and emit pressed shortcut key events
-    // TODO: handle this better
-    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        widget_flags.merge(
-            canvas
-                .engine()
-                .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton, now),
-        );
-
-        return widget_flags;
-    }
-    if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        widget_flags.merge(
-            canvas
-                .engine()
-                .borrow_mut()
-                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton, now),
-        );
-
-        return widget_flags;
-    }
-
-    // Handle all other events as pen up
-    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-        PenEvent::Up {
-            element,
-            shortcut_keys,
-        },
-        pen_mode,
-        now,
-    ));
-
-    widget_flags
-}
-
-/// Process "Pen proximity"
-pub(crate) fn process_pen_proximity(
-    canvas: &RnCanvas,
-    element: Element,
-    shortcut_keys: Vec<ShortcutKey>,
-    pen_mode: Option<PenMode>,
-    now: Instant,
-) -> WidgetFlags {
-    let mut widget_flags = WidgetFlags::default();
-
-    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-        PenEvent::Proximity {
-            element,
-            shortcut_keys,
-        },
-        pen_mode,
-        now,
-    ));
-
-    widget_flags
-}
-
-/// Process shortcut key pressed
-#[allow(unused)]
-pub(crate) fn process_shortcut_key_pressed(
-    canvas: &RnCanvas,
-    shortcut_key: ShortcutKey,
-    now: Instant,
-) -> WidgetFlags {
-    let widget_flags = canvas
-        .engine()
-        .borrow_mut()
-        .handle_pen_pressed_shortcut_key(shortcut_key, now);
-
-    widget_flags
-}
-
-/// Process keyboard key pressed
-pub(crate) fn process_keyboard_key_pressed(
-    canvas: &RnCanvas,
-    keyboard_key: KeyboardKey,
-    shortcut_keys: Vec<ShortcutKey>,
-    now: Instant,
-) -> WidgetFlags {
-    let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
-        PenEvent::KeyPressed {
-            keyboard_key,
-            shortcut_keys,
-        },
-        None,
-        now,
-    );
-
-    widget_flags
-}
-
-/// Process keyboard text
-pub(crate) fn process_keyboard_text(canvas: &RnCanvas, text: String, now: Instant) -> WidgetFlags {
-    let widget_flags =
-        canvas
-            .engine()
-            .borrow_mut()
-            .handle_pen_event(PenEvent::Text { text }, None, now);
-
-    widget_flags
 }

@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -65,12 +63,5 @@ impl Element {
     /// Transforms the element position by the transform
     pub fn transform_by(&mut self, transform: na::Affine2<f64>) {
         self.pos = (transform * na::Point2::from(self.pos)).coords;
-    }
-
-    /// transform pen input data entries
-    pub fn transform_elements(els: &mut VecDeque<Self>, transform: na::Affine2<f64>) {
-        els.iter_mut().for_each(|element| {
-            element.transform_by(transform);
-        });
     }
 }

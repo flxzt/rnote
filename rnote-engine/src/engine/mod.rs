@@ -621,7 +621,7 @@ impl RnoteEngine {
     }
 
     /// Handle a pressed shortcut key
-    pub fn handle_pen_pressed_shortcut_key(
+    pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
         now: Instant,

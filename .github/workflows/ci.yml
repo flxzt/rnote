@@ -49,11 +49,22 @@ jobs:
         run: meson compile app-cargo-check -C _mesonbuild
       - name: Check CLI
         run: meson compile cli-cargo-check -C _mesonbuild
+      - name: Compile
+        run: meson compile -v -C _mesonbuild
+      - name: Install
+        run: meson install -v -C _mesonbuild
+      - name: Run tests
+        run: meson test -v -C _mesonbuild
       - name: Run clippy for app
         run: meson compile app-cargo-clippy -C _mesonbuild
         continue-on-error: true
       - name: Run clippy for CLI
         run: meson compile cli-cargo-clippy -C _mesonbuild
         continue-on-error: true
-      - name: Run tests
-        run: meson test -v -C _mesonbuild
+      - name: Run file compatibility tests
+        run: |
+          rnote_cli test\
+            misc/screenshots-pages/main_window.rnote\
+            misc/screenshots-pages/pdf_annotation.rnote\
+            misc/screenshots-pages/lecture_note_1.rnote\
+            misc/screenshots-pages/lecture_note_2.rnote

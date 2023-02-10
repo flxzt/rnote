@@ -19,6 +19,11 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
+    /// Tests if the specified file(s) can be opened and is a valid rnote file.
+    Test {
+        /// the rnote files
+        rnote_files: Vec<PathBuf>,
+    },
     /// Imports the specified input file and saves it as a rnote save file.{n}
     /// Currently only `.xopp` files can be imported.
     Import {
@@ -65,6 +70,35 @@ pub(crate) async fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
+        Commands::Test { rnote_files } => {
+            // setup progress bars
+            let multiprogress =
+                indicatif::MultiProgress::with_draw_target(indicatif::ProgressDrawTarget::stdout());
+            let progresses = rnote_files
+                .iter()
+                .map(|file| {
+                    multiprogress
+                        .add(indicatif::ProgressBar::new_spinner())
+                        .with_message(format!("Testing \"{}\"", file.display(),))
+                })
+                .collect::<Vec<indicatif::ProgressBar>>();
+
+            // Start tests
+            println!("Start test..");
+            for (i, rnote_file) in rnote_files.into_iter().enumerate() {
+                progresses[i].enable_steady_tick(Duration::from_millis(8));
+                if let Err(e) = test_file(&mut engine, rnote_file).await {
+                    for pb in progresses.iter().skip(i) {
+                        pb.finish_and_clear();
+                    }
+                    println!("Test failed, Err: {e:?}");
+                    return Err(e);
+                } else {
+                    progresses[i].finish();
+                }
+            }
+            println!("Test finished successfully!");
+        }
         Commands::Import {
             rnote_file,
             input_file,
@@ -196,6 +230,21 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         }
     }
 
+    Ok(())
+}
+
+pub(crate) async fn test_file(
+    _engine: &mut RnoteEngine,
+    rnote_file: PathBuf,
+) -> anyhow::Result<()> {
+    let mut rnote_bytes = vec![];
+    File::open(rnote_file)
+        .await?
+        .read_to_end(&mut rnote_bytes)
+        .await?;
+
+    let _ = EngineSnapshot::load_from_rnote_bytes(rnote_bytes).await?;
+    // Loading a valid engine snapshot can't fail, so we skip it
     Ok(())
 }
 

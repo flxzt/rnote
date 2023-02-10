@@ -19,7 +19,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+          sudo dnf install -y gcc gcc-c++ clang make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
       - name: Install toolchain
         id: toolchain
         uses: actions-rs/toolchain@v1

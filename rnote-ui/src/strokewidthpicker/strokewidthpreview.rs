@@ -1,6 +1,6 @@
 // Imports
 use gtk4::{
-    glib, graphene, prelude::*, subclass::prelude::*, Align, Orientation, Overflow,
+    gdk, glib, graphene, prelude::*, subclass::prelude::*, Align, Orientation, Overflow,
     SizeRequestMode, Widget,
 };
 use once_cell::sync::Lazy;
@@ -97,7 +97,7 @@ mod imp {
             let window_fg_color = inst
                 .style_context()
                 .lookup_color("window_fg_color")
-                .unwrap();
+                .unwrap_or(gdk::RGBA::BLACK);
 
             // Intentionally a bit larger than half widget size, indicating that it is bigger than what can be displayed
             const MAX_RADIUS: f64 = 22.0;

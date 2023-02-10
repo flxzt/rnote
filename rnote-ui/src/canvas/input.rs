@@ -318,7 +318,7 @@ pub(crate) fn retrieve_button_shortcut_key(
             if is_stylus {
                 Some(ShortcutKey::StylusPrimaryButton)
             } else {
-                Some(ShortcutKey::StylusSecondaryButton)
+                Some(ShortcutKey::MouseSecondaryButton)
             }
         }
         gdk::BUTTON_MIDDLE => {

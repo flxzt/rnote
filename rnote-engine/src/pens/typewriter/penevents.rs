@@ -183,16 +183,16 @@ impl Typewriter {
                                 if let Some(Stroke::TextStroke(textstroke)) =
                                     engine_view.store.get_stroke_ref(*stroke_key)
                                 {
-                                    // If selecting is finished, return to modifying with the current pen position as cursor
                                     if *finished {
                                         if let Ok(new_cursor) =
                                             textstroke.get_cursor_for_global_coord(element.pos)
                                         {
+                                            // If selecting is finished, return to modifying with the current pen position as cursor
                                             self.state = TypewriterState::Modifying {
                                                 modify_state: ModifyState::Up,
                                                 stroke_key: *stroke_key,
                                                 cursor: new_cursor,
-                                                pen_down: false,
+                                                pen_down: true,
                                             };
                                         }
                                     } else {
@@ -297,7 +297,7 @@ impl Typewriter {
 
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        // hover state
+                        // detect hover state
                         *modify_state = if typewriter_bounds
                             .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
                             .unwrap_or(false)
@@ -387,6 +387,7 @@ impl Typewriter {
                 pen_down,
                 ..
             } => {
+                // detect hover state
                 *modify_state = if typewriter_bounds
                     .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
                     .unwrap_or(false)
@@ -396,6 +397,7 @@ impl Typewriter {
                     ModifyState::Up
                 };
                 *pen_down = false;
+
                 PenProgress::InProgress
             }
         };
@@ -430,8 +432,8 @@ impl Typewriter {
                         }
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
-                        textstroke.move_cursor_forward(&mut cursor);
 
+                        textstroke.move_cursor_forward(&mut cursor);
                         let stroke_key = engine_view
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
@@ -466,7 +468,6 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        //log::debug!("key: {:?}", keyboard_key);
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
@@ -533,11 +534,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        let mut new_cursor = cursor.clone();
-                                        textstroke.move_cursor_back(&mut new_cursor);
-                                        *cursor = new_cursor;
+                                        let old_cursor = cursor.clone();
+                                        textstroke.move_cursor_back(cursor);
+
                                         *modify_state = ModifyState::Selecting {
-                                            selection_cursor: cursor.clone(),
+                                            selection_cursor: old_cursor,
                                             finished: false,
                                         }
                                     } else {
@@ -546,11 +547,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavRight => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        let mut new_cursor = cursor.clone();
-                                        textstroke.move_cursor_forward(&mut new_cursor);
-                                        *cursor = new_cursor;
+                                        let old_cursor = cursor.clone();
+                                        textstroke.move_cursor_forward(cursor);
+
                                         *modify_state = ModifyState::Selecting {
-                                            selection_cursor: cursor.clone(),
+                                            selection_cursor: old_cursor,
                                             finished: false,
                                         };
                                     } else {
@@ -559,11 +560,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavUp => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        let mut new_cursor = cursor.clone();
-                                        textstroke.move_cursor_line_up(&mut new_cursor);
-                                        *cursor = new_cursor;
+                                        let old_cursor = cursor.clone();
+                                        textstroke.move_cursor_line_up(cursor);
+
                                         *modify_state = ModifyState::Selecting {
-                                            selection_cursor: cursor.clone(),
+                                            selection_cursor: old_cursor,
                                             finished: false,
                                         };
                                     } else {
@@ -572,11 +573,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavDown => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        let mut new_cursor = cursor.clone();
-                                        textstroke.move_cursor_line_down(&mut new_cursor);
-                                        *cursor = new_cursor;
+                                        let old_cursor = cursor.clone();
+                                        textstroke.move_cursor_line_down(cursor);
+
                                         *modify_state = ModifyState::Selecting {
-                                            selection_cursor: cursor.clone(),
+                                            selection_cursor: old_cursor,
                                             finished: false,
                                         };
                                     } else {
@@ -597,7 +598,6 @@ impl Typewriter {
                         selection_cursor,
                         finished,
                     } => {
-                        //log::debug!("key: {:?}", keyboard_key);
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 

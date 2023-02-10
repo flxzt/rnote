@@ -394,7 +394,7 @@ impl DrawOnDocBehaviour for Selector {
 
 static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
 static SELECTION_FILL_COLOR: Lazy<piet::Color> =
-    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.090));
+    Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.050));
 
 impl Selector {
     /// The threshold where a translation is applied ( in offset magnitude, surface coords )

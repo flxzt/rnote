@@ -116,16 +116,19 @@ pub fn draw_rectangular_node(
     zoom: f64,
 ) {
     static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);
-    static FILL_COLOR_STATE_DOWN: Lazy<piet::Color> =
-        Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.5));
+    static FILL_STATE_PROXIMITY: Lazy<piet::Color> =
+        Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.3));
+    static FILL_STATE_DOWN: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.5));
 
     let rectangular_node = rectangular_node_shape(node_state, bounds, zoom);
 
     match node_state {
         PenState::Up => {}
-        PenState::Proximity => {}
+        PenState::Proximity => {
+            cx.fill(rectangular_node, &*FILL_STATE_PROXIMITY);
+        }
         PenState::Down => {
-            cx.fill(rectangular_node, &*FILL_COLOR_STATE_DOWN);
+            cx.fill(rectangular_node, &*FILL_STATE_DOWN);
         }
     }
 
@@ -163,7 +166,9 @@ pub fn draw_circular_node(
     zoom: f64,
 ) {
     static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[4]);
-    static FILL_STATE_DOWN: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.5));
+    static FILL_STATE_PROXIMITY: Lazy<piet::Color> =
+        Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.3));
+    static FILL_STATE_DOWN: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.5));
 
     let circular_node = circular_node_shape(node_state, bounding_sphere, zoom);
 
@@ -175,7 +180,9 @@ pub fn draw_circular_node(
 
     match node_state {
         PenState::Up => {}
-        PenState::Proximity => {}
+        PenState::Proximity => {
+            cx.fill(circular_node, &*FILL_STATE_PROXIMITY);
+        }
         PenState::Down => {
             cx.fill(circular_node, &*FILL_STATE_DOWN);
         }
@@ -224,6 +231,8 @@ pub fn draw_triangular_down_node(
     zoom: f64,
 ) {
     static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_ORANGES[4]);
+    static FILL_STATE_PROXIMITY: Lazy<piet::Color> =
+        Lazy::new(|| color::GNOME_ORANGES[0].with_alpha(0.3));
     static FILL_STATE_DOWN: Lazy<piet::Color> =
         Lazy::new(|| color::GNOME_ORANGES[3].with_alpha(0.5));
 
@@ -237,7 +246,9 @@ pub fn draw_triangular_down_node(
 
     match node_state {
         PenState::Up => {}
-        PenState::Proximity => {}
+        PenState::Proximity => {
+            cx.fill(triangular_down_node, &*FILL_STATE_PROXIMITY);
+        }
         PenState::Down => {
             cx.fill(triangular_down_node, &*FILL_STATE_DOWN);
         }

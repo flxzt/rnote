@@ -52,13 +52,7 @@ impl PenBehaviour for Eraser {
         let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
-            (
-                EraserState::Up | EraserState::Proximity { .. },
-                PenEvent::Down {
-                    element,
-                    shortcut_keys: _,
-                },
-            ) => {
+            (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
                 widget_flags.merge(engine_view.store.record(Instant::now()));
 
                 match &engine_view.pens_config.eraser_config.style {

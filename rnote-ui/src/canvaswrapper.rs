@@ -169,27 +169,6 @@ mod imp {
                     canvaswrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
                 }),
             );
-
-            self.canvas.stylus_drawing_gesture().connect_down(
-                clone!(@weak inst as canvaswrapper => move |_,_,_| {
-                    // disable drag and zoom gestures entirely while drawing with stylus
-                    canvaswrapper.canvas_touch_drag_gesture_enable(false);
-                    canvaswrapper.canvas_zoom_gesture_enable(false);
-                    canvaswrapper.canvas_drag_empty_area_gesture_enable(false);
-                }),
-            );
-
-            self.canvas.stylus_drawing_gesture().connect_up(
-                clone!(@weak inst as canvaswrapper => move |_,_,_| {
-                    // enable drag and zoom gestures again
-                    canvaswrapper.canvas_touch_drag_gesture_enable(true);
-                    canvaswrapper.canvas_drag_empty_area_gesture_enable(true);
-
-                    if !canvaswrapper.canvas().touch_drawing() {
-                        canvaswrapper.canvas_zoom_gesture_enable(true);
-                    }
-                }),
-            );
         }
 
         fn dispose(&self) {
@@ -509,7 +488,7 @@ mod imp {
                     let widget_flags = canvaswrapper.canvas()
                         .engine()
                         .borrow_mut()
-                        .handle_pen_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
+                        .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
 
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                 }));
@@ -626,30 +605,6 @@ impl RnCanvasWrapper {
     /// disconnects existing bindings / handlers to old tab pages.
     pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
         self.canvas().connect_to_tab_page(page);
-    }
-
-    pub(crate) fn canvas_touch_drag_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_touch_drag_gesture
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_touch_drag_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
-    }
-
-    pub(crate) fn canvas_drag_empty_area_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_drag_empty_area_gesture
-                .set_propagation_phase(PropagationPhase::Bubble);
-        } else {
-            self.imp()
-                .canvas_drag_empty_area_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
     }
 
     pub(crate) fn canvas_zoom_gesture_enable(&self, enable: bool) {

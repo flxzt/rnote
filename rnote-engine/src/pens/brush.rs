@@ -60,13 +60,7 @@ impl PenBehaviour for Brush {
         let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
-            (
-                BrushState::Idle,
-                PenEvent::Down {
-                    element,
-                    shortcut_keys: _,
-                },
-            ) => {
+            (BrushState::Idle, PenEvent::Down { element, .. }) => {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {

@@ -16,8 +16,11 @@ use crate::Constraints;
 
 #[derive(Debug, Clone, Copy)]
 enum GridBuilderState {
-    Start(na::Vector2<f64>),
     FirstCell {
+        start: na::Vector2<f64>,
+        current: na::Vector2<f64>,
+    },
+    FirstCellFinished {
         start: na::Vector2<f64>,
         current: na::Vector2<f64>,
     },
@@ -37,7 +40,10 @@ pub struct GridBuilder {
 impl ShapeBuilderCreator for GridBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
-            state: GridBuilderState::Start(element.pos),
+            state: GridBuilderState::FirstCell {
+                start: element.pos,
+                current: element.pos,
+            },
         }
     }
 }
@@ -52,24 +58,27 @@ impl ShapeBuilderBehaviour for GridBuilder {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
-            (GridBuilderState::Start(start), PenEvent::Down { element, .. }) => {
-                self.state = GridBuilderState::FirstCell {
-                    start: *start,
-                    current: element.pos,
-                };
-            }
-            (GridBuilderState::Start(_), ..) => {}
             (GridBuilderState::FirstCell { start, current }, PenEvent::Down { element, .. }) => {
                 *current = constraints.constrain(element.pos - *start) + *start;
             }
-            (GridBuilderState::FirstCell { start, current }, PenEvent::Up { element, .. }) => {
+            (GridBuilderState::FirstCell { start, .. }, PenEvent::Up { element, .. }) => {
+                self.state = GridBuilderState::FirstCellFinished {
+                    start: *start,
+                    current: constraints.constrain(element.pos - *start) + *start,
+                };
+            }
+            (GridBuilderState::FirstCell { .. }, ..) => {}
+            (
+                GridBuilderState::FirstCellFinished { start, current },
+                PenEvent::Down { element, .. },
+            ) => {
                 self.state = GridBuilderState::Grids {
                     start: *start,
                     cell_size: (*current - *start),
                     current: constraints.constrain(element.pos - *start) + *start,
                 };
             }
-            (GridBuilderState::FirstCell { .. }, ..) => {}
+            (GridBuilderState::FirstCellFinished { .. }, ..) => {}
             (GridBuilderState::Grids { current, .. }, PenEvent::Down { element, .. }) => {
                 // The grid is already constrained by the cell size
                 *current = element.pos;
@@ -89,11 +98,8 @@ impl ShapeBuilderBehaviour for GridBuilder {
         let bounds_margin = style.bounds_margin().max(indicators::POS_INDICATOR_RADIUS) / zoom;
 
         match &self.state {
-            GridBuilderState::Start(start) => Some(Aabb::from_half_extents(
-                na::Point2::from(*start),
-                na::Vector2::repeat(bounds_margin),
-            )),
             GridBuilderState::FirstCell { start, current }
+            | GridBuilderState::FirstCellFinished { start, current }
             | GridBuilderState::Grids { start, current, .. } => Some(
                 Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*current))
                     .loosened(bounds_margin),
@@ -113,10 +119,8 @@ impl ShapeBuilderBehaviour for GridBuilder {
         }
 
         match &self.state {
-            GridBuilderState::Start(start) => {
-                indicators::draw_pos_indicator(cx, PenState::Down, *start, zoom);
-            }
-            GridBuilderState::FirstCell { start, current } => {
+            GridBuilderState::FirstCell { start, current }
+            | GridBuilderState::FirstCellFinished { start, current } => {
                 indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
                 indicators::draw_pos_indicator(cx, PenState::Down, *current, zoom);
             }
@@ -149,8 +153,8 @@ impl ShapeBuilderBehaviour for GridBuilder {
 impl GridBuilder {
     fn state_as_lines(&self) -> Vec<Line> {
         match &self.state {
-            GridBuilderState::Start(_) => vec![],
-            GridBuilderState::FirstCell { start, current } => {
+            GridBuilderState::FirstCell { start, current }
+            | GridBuilderState::FirstCellFinished { start, current } => {
                 Rectangle::from_corners(*start, *current)
                     .outline_lines()
                     .into_iter()

@@ -19,7 +19,7 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand)]
 pub(crate) enum Commands {
-    /// Tests if the specified file(s) can be opened and is a valid rnote file.
+    /// Tests if the specified files can be opened and are valid rnote files.
     Test {
         /// the rnote files
         rnote_files: Vec<PathBuf>,

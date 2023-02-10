@@ -413,16 +413,25 @@ impl Selector {
                 selection,
                 selection_bounds,
             } => {
-                engine_view.store.update_geometry_for_strokes(selection);
-                engine_view.store.regenerate_rendering_in_viewport_threaded(
-                    engine_view.tasks_tx.clone(),
-                    false,
-                    engine_view.camera.viewport(),
-                    engine_view.camera.image_scale(),
-                );
+                match modify_state {
+                    ModifyState::Translate { .. }
+                    | ModifyState::Rotate { .. }
+                    | ModifyState::Resize { .. } => {
+                        // When transitioning from translating, rotating and resizing, we need to update the selection
+                        log::debug!("up");
+                        engine_view.store.update_geometry_for_strokes(selection);
+                        engine_view.store.regenerate_rendering_in_viewport_threaded(
+                            engine_view.tasks_tx.clone(),
+                            false,
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
+                        );
 
-                if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
-                    *selection_bounds = new_bounds;
+                        if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
+                            *selection_bounds = new_bounds;
+                        }
+                    }
+                    _ => {}
                 }
 
                 *modify_state = if selector_bounds

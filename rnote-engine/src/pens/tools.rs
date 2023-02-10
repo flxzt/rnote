@@ -199,13 +199,7 @@ impl PenBehaviour for Tools {
         let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
-            (
-                ToolsState::Idle,
-                PenEvent::Down {
-                    element,
-                    shortcut_keys: _,
-                },
-            ) => {
+            (ToolsState::Idle, PenEvent::Down { element, .. }) => {
                 widget_flags.merge(engine_view.store.record(Instant::now()));
 
                 match engine_view.pens_config.tools_config.style {
@@ -234,13 +228,7 @@ impl PenBehaviour for Tools {
                 PenProgress::InProgress
             }
             (ToolsState::Idle, _) => PenProgress::Idle,
-            (
-                ToolsState::Active,
-                PenEvent::Down {
-                    element,
-                    shortcut_keys: _,
-                },
-            ) => {
+            (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 let pen_progress = match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
                         let y_offset = element.pos[1] - self.verticalspace_tool.current_pos_y;

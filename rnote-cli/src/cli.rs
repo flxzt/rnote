@@ -73,7 +73,6 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         Commands::Test { rnote_files } => {
             println!("Testing..");
 
-            // Start tests
             for rnote_file in rnote_files.into_iter() {
                 let file_disp = rnote_file.display().to_string();
                 let pb = indicatif::ProgressBar::new_spinner();
@@ -81,11 +80,20 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                 pb.set_message(format!("Testing file \"{file_disp}\""));
                 pb.enable_steady_tick(Duration::from_millis(8));
 
+                // test
                 if let Err(e) = test_file(&mut engine, rnote_file).await {
-                    pb.abandon_with_message(format!("Test failed, Err: {e:?}"));
+                    let msg = format!("Test failed, Err: {e:?}");
+                    if pb.is_hidden() {
+                        println!("{msg}");
+                    }
+                    pb.abandon_with_message(msg);
                     return Err(e);
                 } else {
-                    pb.finish_with_message(format!("Test succeeded for file \"{file_disp}\""));
+                    let msg = format!("Test succeeded for file \"{file_disp}\"");
+                    if pb.is_hidden() {
+                        println!("{msg}");
+                    }
+                    pb.finish_with_message(msg);
                 }
             }
 
@@ -106,22 +114,28 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             let rnote_file_disp = rnote_file.display().to_string();
             let input_file_disp = input_file.display().to_string();
             let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
-                "Importing \"{}\" to: \"{}\"",
-                input_file_disp, rnote_file_disp
+                "Importing \"{input_file_disp}\" to: \"{rnote_file_disp}\""
             ));
             pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-
-            // import file
             pb.enable_steady_tick(Duration::from_millis(8));
+
+            // import
             if let Err(e) = import_file(&mut engine, input_file, rnote_file).await {
-                pb.abandon_with_message(format!(
+                let msg = format!(
                     "Import \"{input_file_disp}\" to \"{rnote_file_disp}\" failed, Err: {e:?}"
-                ));
+                );
+                if pb.is_hidden() {
+                    println!("{msg}");
+                }
+                pb.abandon_with_message(msg);
                 return Err(e);
             } else {
-                pb.finish_with_message(format!(
-                    "Import \"{input_file_disp}\" to \"{rnote_file_disp}\" succeeded"
-                ));
+                let msg =
+                    format!("Import \"{input_file_disp}\" to \"{rnote_file_disp}\" succeeded");
+                if pb.is_hidden() {
+                    println!("{msg}");
+                }
+                pb.finish_with_message(msg);
             }
 
             println!("Import finished!");
@@ -153,22 +167,27 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         let rnote_file_disp = rnote_file.display().to_string();
                         let output_file_disp = output_file.display().to_string();
                         let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
-                            "Exporting \"{}\" to: \"{}\"",
-                            rnote_file_disp, output_file_disp
+                            "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
                         ));
                         pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
-
-                        // export file
                         pb.enable_steady_tick(Duration::from_millis(8));
+
+                        // export
                         if let Err(e) = export_to_file(&mut engine, rnote_file, output_file).await {
-                            pb.abandon_with_message(
-                            format!("Export \"{rnote_file_disp}\" to \"{output_file_disp}\" failed, Err: {e:?}"));
+                            let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
+                            if pb.is_hidden() {
+                                println!("{msg}")
+                            }
+                            pb.abandon_with_message(msg);
                             return Err(e);
                         } else {
-                            pb.finish_with_message(format!(
-                                "Export \"{}\" to: \"{}\" succeeded",
-                                rnote_file_disp, output_file_disp
-                            ));
+                            let msg = format!(
+                                "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
+                            );
+                            if pb.is_hidden() {
+                                println!("{msg}")
+                            }
+                            pb.finish_with_message(msg);
                         }
                     }
                     None => return Err(anyhow::anyhow!("Failed to get filename from rnote_files")),
@@ -195,24 +214,27 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         let pb = indicatif::ProgressBar::new_spinner();
                         pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
                         pb.set_message(format!(
-                            "Exporting \"{}\" to: \"{}\"",
-                            rnote_file_disp, output_file_disp
+                            "Exporting \"{rnote_file_disp}\" to: \"{output_file_disp}\""
                         ));
-
-                        // export file
                         pb.enable_steady_tick(Duration::from_millis(8));
+
+                        // export
                         if let Err(e) = export_to_file(&mut engine, &rnote_file, &output_file).await
                         {
-                            pb.abandon_with_message(format!(
-                                "Export \"{}\" to: \"{}\" failed, Err {e:?}",
-                                rnote_file_disp, output_file_disp
-                            ));
+                            let msg = format!("Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" failed, Err {e:?}");
+                            if pb.is_hidden() {
+                                println!("{msg}")
+                            }
+                            pb.abandon_with_message(msg);
                             return Err(e);
                         } else {
-                            pb.finish_with_message(format!(
-                                "Export \"{}\" to: \"{}\" succeeded",
-                                rnote_file_disp, output_file_disp
-                            ));
+                            let msg = format!(
+                                "Export \"{rnote_file_disp}\" to: \"{output_file_disp}\" succeeded"
+                            );
+                            if pb.is_hidden() {
+                                println!("{msg}")
+                            }
+                            pb.finish_with_message(msg);
                         }
                     }
                 }

@@ -71,63 +71,60 @@ pub(crate) async fn run() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Test { rnote_files } => {
-            // setup progress bars
-            let multiprogress =
-                indicatif::MultiProgress::with_draw_target(indicatif::ProgressDrawTarget::stdout());
-            let progresses = rnote_files
-                .iter()
-                .map(|file| {
-                    multiprogress
-                        .add(indicatif::ProgressBar::new_spinner())
-                        .with_message(format!("Testing \"{}\"", file.display(),))
-                })
-                .collect::<Vec<indicatif::ProgressBar>>();
+            println!("Testing..");
 
             // Start tests
-            println!("Start test..");
-            for (i, rnote_file) in rnote_files.into_iter().enumerate() {
-                progresses[i].enable_steady_tick(Duration::from_millis(8));
+            for rnote_file in rnote_files.into_iter() {
+                let file_disp = rnote_file.display().to_string();
+                let pb = indicatif::ProgressBar::new_spinner();
+                pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
+                pb.set_message(format!("Testing file \"{file_disp}\""));
+                pb.enable_steady_tick(Duration::from_millis(8));
+
                 if let Err(e) = test_file(&mut engine, rnote_file).await {
-                    for pb in progresses.iter().skip(i) {
-                        pb.finish_and_clear();
-                    }
-                    println!("Test failed, Err: {e:?}");
+                    pb.abandon_with_message(format!("Test failed, Err: {e:?}"));
                     return Err(e);
                 } else {
-                    progresses[i].finish();
+                    pb.finish_with_message(format!("Test succeeded for file \"{file_disp}\""));
                 }
             }
-            println!("Test finished successfully!");
+
+            println!("Tests finished successfully!");
         }
         Commands::Import {
             rnote_file,
             input_file,
             xopp_dpi,
         } => {
+            println!("Importing..");
+
             // apply given arguments to import prefs
             if let Some(xopp_dpi) = xopp_dpi {
                 engine.import_prefs.xopp_import_prefs.dpi = xopp_dpi;
             }
 
-            // setup progress bar
+            let rnote_file_disp = rnote_file.display().to_string();
+            let input_file_disp = input_file.display().to_string();
             let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
                 "Importing \"{}\" to: \"{}\"",
-                input_file.display(),
-                rnote_file.display()
+                input_file_disp, rnote_file_disp
             ));
             pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
 
             // import file
-            println!("Importing..");
             pb.enable_steady_tick(Duration::from_millis(8));
             if let Err(e) = import_file(&mut engine, input_file, rnote_file).await {
-                pb.abandon();
-                println!("Import failed, Err: {e:?}");
+                pb.abandon_with_message(format!(
+                    "Import \"{input_file_disp}\" to \"{rnote_file_disp}\" failed, Err: {e:?}"
+                ));
                 return Err(e);
             } else {
-                pb.finish();
-                println!("Import finished!");
+                pb.finish_with_message(format!(
+                    "Import \"{input_file_disp}\" to \"{rnote_file_disp}\" succeeded"
+                ));
             }
+
+            println!("Import finished!");
         }
         Commands::Export {
             rnote_files,
@@ -136,6 +133,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             with_background,
             with_pattern,
         } => {
+            println!("Exporting..");
+
             // apply given arguments to export prefs
             engine.export_prefs.doc_export_prefs = create_doc_export_prefs_from_args(
                 output_file.as_deref(),
@@ -145,30 +144,31 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             )?;
 
             match output_file {
-                Some(ref output) => match rnote_files.get(0) {
-                    Some(file) => {
+                Some(ref output_file) => match rnote_files.get(0) {
+                    Some(rnote_file) => {
                         if rnote_files.len() > 1 {
                             return Err(anyhow::anyhow!("Was expecting only 1 file. Use --output-format when exporting multiple files."));
                         }
 
-                        // setup progress bar
+                        let rnote_file_disp = rnote_file.display().to_string();
+                        let output_file_disp = output_file.display().to_string();
                         let pb = indicatif::ProgressBar::new_spinner().with_message(format!(
                             "Exporting \"{}\" to: \"{}\"",
-                            file.display(),
-                            output.display()
+                            rnote_file_disp, output_file_disp
                         ));
                         pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
 
                         // export file
-                        println!("Exporting..");
                         pb.enable_steady_tick(Duration::from_millis(8));
-                        if let Err(e) = export_to_file(&mut engine, file, output).await {
-                            pb.abandon();
-                            println!("Export failed, Err: {e:?}");
+                        if let Err(e) = export_to_file(&mut engine, rnote_file, output_file).await {
+                            pb.abandon_with_message(
+                            format!("Export \"{rnote_file_disp}\" to \"{output_file_disp}\" failed, Err: {e:?}"));
                             return Err(e);
                         } else {
-                            pb.finish();
-                            println!("Export finished!");
+                            pb.finish_with_message(format!(
+                                "Export \"{}\" to: \"{}\" succeeded",
+                                rnote_file_disp, output_file_disp
+                            ));
                         }
                     }
                     None => return Err(anyhow::anyhow!("Failed to get filename from rnote_files")),
@@ -189,44 +189,36 @@ pub(crate) async fn run() -> anyhow::Result<()> {
                         })
                         .collect::<Vec<PathBuf>>();
 
-                    // setup progress bars
-                    let multiprogress = indicatif::MultiProgress::with_draw_target(
-                        indicatif::ProgressDrawTarget::stdout(),
-                    );
-                    let progresses = rnote_files
-                        .iter()
-                        .zip(output_files.iter())
-                        .map(|(file, output)| {
-                            multiprogress
-                                .add(indicatif::ProgressBar::new_spinner())
-                                .with_message(format!(
-                                    "Exporting \"{}\" to: \"{}\"",
-                                    file.display(),
-                                    output.display()
-                                ))
-                        })
-                        .collect::<Vec<indicatif::ProgressBar>>();
+                    for (rnote_file, output_file) in rnote_files.iter().zip(output_files.iter()) {
+                        let rnote_file_disp = rnote_file.display().to_string();
+                        let output_file_disp = output_file.display().to_string();
+                        let pb = indicatif::ProgressBar::new_spinner();
+                        pb.set_draw_target(indicatif::ProgressDrawTarget::stdout());
+                        pb.set_message(format!(
+                            "Exporting \"{}\" to: \"{}\"",
+                            rnote_file_disp, output_file_disp
+                        ));
 
-                    // export files
-                    println!("Exporting..");
-                    for (i, (file, output)) in
-                        rnote_files.iter().zip(output_files.iter()).enumerate()
-                    {
-                        progresses[i].enable_steady_tick(Duration::from_millis(8));
-
-                        if let Err(e) = export_to_file(&mut engine, &file, &output).await {
-                            for pb in progresses.iter().skip(i) {
-                                pb.finish_and_clear();
-                            }
-                            println!("Export failed, Err: {e:?}");
+                        // export file
+                        pb.enable_steady_tick(Duration::from_millis(8));
+                        if let Err(e) = export_to_file(&mut engine, &rnote_file, &output_file).await
+                        {
+                            pb.abandon_with_message(format!(
+                                "Export \"{}\" to: \"{}\" failed, Err {e:?}",
+                                rnote_file_disp, output_file_disp
+                            ));
                             return Err(e);
                         } else {
-                            progresses[i].finish();
+                            pb.finish_with_message(format!(
+                                "Export \"{}\" to: \"{}\" succeeded",
+                                rnote_file_disp, output_file_disp
+                            ));
                         }
                     }
-                    println!("Export finished!");
                 }
             }
+
+            println!("Export Finished!");
         }
     }
 

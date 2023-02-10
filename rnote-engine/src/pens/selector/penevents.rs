@@ -418,7 +418,6 @@ impl Selector {
                     | ModifyState::Rotate { .. }
                     | ModifyState::Resize { .. } => {
                         // When transitioning from translating, rotating and resizing, we need to update the selection
-                        log::debug!("up");
                         engine_view.store.update_geometry_for_strokes(selection);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),

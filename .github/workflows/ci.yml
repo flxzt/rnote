@@ -56,7 +56,7 @@ jobs:
       - name: Compile
         run: meson compile -v -C _mesonbuild
       - name: Install
-        run: meson install -v -C _mesonbuild
+        run: meson install -C _mesonbuild
       - name: Run tests
         run: meson test -v -C _mesonbuild
       - name: Run clippy for app

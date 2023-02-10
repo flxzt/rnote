@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-08 18:55+0000\n"
+"PO-Revision-Date: 2023-02-10 10:01+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1389,151 +1389,100 @@ msgid "Open Document"
 msgstr "ஆவணத்தைத் திற"
 
 #: rnote-ui/data/ui/shortcuts.ui:162 rnote-ui/src/dialogs/export.rs:23
-#, fuzzy
-#| msgid "Save document as"
 msgid "Save Document As"
 msgstr "ஆவணத்தை இவ்வாறு சேமிக்கவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Print Document"
 msgid "Print Document"
 msgstr "ஆவணத்தை அச்சிடுங்கள்"
 
 #: rnote-ui/data/ui/shortcuts.ui:180 rnote-ui/src/dialogs/import.rs:138
-#, fuzzy
-#| msgid "Import file"
 msgid "Import File"
 msgstr "கோப்பு இறக்குமதி"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing"
 msgstr "வரைதல்"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy to clipboard"
 msgid "Copy to Clipboard"
 msgstr "கிளிப்போர்டுக்கு நகலெடுக்கவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Cut to clipboard"
 msgid "Cut to Clipboard"
 msgstr "கிளிப்போர்டுக்கு வெட்டுங்கள்"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste clipboard"
 msgid "Paste Clipboard"
 msgstr "கிளிப்போர்டை ஒட்டவும்"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
-#, fuzzy
-#| msgid "Move directory up"
 msgid "Move Directory up"
 msgstr "கோப்பகத்தை மேலே நகர்த்தவும்"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:70
-#, fuzzy
-#| msgid "Workspace directory actions"
 msgid "Workspace Directory Actions"
 msgstr "பணியிட அடைவு செயல்கள்"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
-#, fuzzy
-#| msgid "Create new folder"
 msgid "Create new Folder"
 msgstr "புதிய கோப்புறையை உருவாக்கவும்"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
-#, fuzzy
-#| msgid "Move selected workspace up"
 msgid "Move Selected Workspace Up"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை மேலே நகர்த்தவும்"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
-#, fuzzy
-#| msgid "Move selected workspace down"
 msgid "Move Selected Workspace Down"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை கீழே நகர்த்தவும்"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
-#, fuzzy
-#| msgid "Add workspace"
 msgid "Add Workspace"
 msgstr "பணியிடத்தைச் சேர்க்கவும்"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
-#, fuzzy
-#| msgid "Remove selected workspace"
 msgid "Remove Selected Workspace"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தை அகற்று"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
-#, fuzzy
-#| msgid "Edit selected workspace"
 msgid "Edit Selected Workspace"
 msgstr "தேர்ந்தெடுக்கப்பட்ட பணியிடத்தைத் திருத்தவும்"
 
 #: rnote-ui/src/appwindow/mod.rs:505
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
-msgstr ".rnote கோப்பை திறக்க முடியவில்லை."
+msgstr ".rnote கோப்பை திறக்க முடியவில்லை"
 
 #: rnote-ui/src/appwindow/mod.rs:516
-#, fuzzy
-#| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
-msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி."
+msgstr "திசையன் படக் கோப்பைத் திறப்பதில் தோல்வி"
 
 #: rnote-ui/src/appwindow/mod.rs:527
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
-msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி."
+msgstr "பிட்மேப் படக் கோப்பைத் திறப்பதில் தோல்வி"
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
-#, fuzzy
-#| msgid "Opening Xournal++ file failed."
 msgid "Opening Xournal++ file failed"
-msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி."
+msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி"
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-#, fuzzy
-#| msgid "Opening PDF file failed."
 msgid "Opening PDF file failed"
-msgstr "PDF கோப்பை திறக்க முடியவில்லை."
+msgstr "PDF கோப்பை திறக்க முடியவில்லை"
 
 #: rnote-ui/src/appwindow/mod.rs:558
-#, fuzzy
-#| msgid "Error: Tried opening folder as file"
 msgid "Failed to open file, tried to open folder as file"
-msgstr "பிழை: கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
+msgstr "கோப்பை திறக்க முடியவில்லை, கோப்புறையை கோப்பாக திறக்க முயற்சித்தேன்"
 
 #: rnote-ui/src/appwindow/mod.rs:563
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file, unsupported file type"
-msgstr "கோப்பைத் திறக்க முடியவில்லை: ஆதரிக்கப்படாத கோப்பு வகை."
+msgstr "கோப்பைத் திறக்க முடியவில்லை, ஆதரிக்கப்படாத கோப்பு வகை"
 
 #: rnote-ui/src/appwindow/imp.rs:272
 #: rnote-ui/src/appwindow/appwindowactions.rs:522
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-#, fuzzy
-#| msgid "Saving document failed."
 msgid "Saving document failed"
-msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி."
+msgstr "ஆவணத்தைச் சேமிப்பதில் தோல்வி"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:640
 msgid "Printed document successfully"
@@ -1544,10 +1493,8 @@ msgid "Printing document failed"
 msgstr "ஆவணத்தை அச்சிட முடியவில்லை"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:677
-#, fuzzy
-#| msgid "Export selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
-msgstr "ஏற்றுமதி தேர்வு தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
+msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/canvas/mod.rs:994
 msgid "- invalid file name -"
@@ -1558,60 +1505,45 @@ msgid "- invalid folder path -"
 msgstr "- தவறான கோப்புறை பாதை -"
 
 #: rnote-ui/src/canvas/mod.rs:1031
-#, fuzzy
-#| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
-msgstr "திறக்கப்பட்ட கோப்பு வட்டில் மாற்றப்பட்டது."
+msgstr "திறக்கப்பட்ட கோப்பு வட்டில் மாற்றப்பட்டது"
 
 #: rnote-ui/src/canvas/mod.rs:1032
 msgid "Reload"
 msgstr "மறுஏற்றம்"
 
 #: rnote-ui/src/canvas/mod.rs:1038
-#, fuzzy
-#| msgid "Reloading .rnote file from disk failed."
 msgid "Reloading .rnote file from disk failed"
-msgstr "வட்டில் இருந்து .rnote கோப்பை மீண்டும் ஏற்றுவது தோல்வியடைந்தது."
+msgstr "வட்டில் இருந்து .rnote கோப்பை மீண்டும் ஏற்றுவது தோல்வியடைந்தது"
 
 #: rnote-ui/src/canvas/mod.rs:1087
-#, fuzzy
-#| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
-msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது."
+msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது"
 
 #: rnote-ui/src/canvas/mod.rs:1100
-#, fuzzy
-#| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
-msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது."
+msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது"
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
 msgid ".rnote"
 msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/export.rs:62
-#, fuzzy
-#| msgid "Saved document successfully."
 msgid "Saved document successfully"
-msgstr "ஆவணம் வெற்றிகரமாகச் சேமிக்கப்பட்டது."
+msgstr "ஆவணம் வெற்றிகரமாகச் சேமிக்கப்பட்டது"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Export document failed."
 msgid "Exporting document failed"
-msgstr "ஆவணத்தை ஏற்றுமதி செய்ய முடியவில்லை."
+msgstr "ஆவணத்தை ஏற்றுமதி செய்ய முடியவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:197
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document successfully"
-msgstr "ஆவணம் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
+msgstr "ஆவணம் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது"
 
 #: rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Export document failed, no file selected."
 msgid "Exporting document failed, no file selected"
-msgstr "ஏற்றுமதி ஆவணம் தோல்வியடைந்தது, கோப்பு தேர்ந்தெடுக்கப்படவில்லை."
+msgstr ""
+"ஆவணத்தை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:468
 #, fuzzy

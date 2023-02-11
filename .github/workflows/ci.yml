@@ -62,7 +62,7 @@ jobs:
       - name: Run file compatibility tests
         run: |
           rnote_cli test\
-            misc/screenshots-pages/main_window.rnote\
-            misc/screenshots-pages/pdf_annotation.rnote\
-            misc/screenshots-pages/lecture_note_1.rnote\
-            misc/screenshots-pages/lecture_note_2.rnote
+            misc/file-tests/v0-5-13-main_window.rnote\
+            misc/file-tests/v0-5-13-pdf_annotation.rnote\
+            misc/file-tests/v0-5-13-lecture_note_1.rnote\
+            misc/file-tests/v0-5-13-lecture_note_2.rnote

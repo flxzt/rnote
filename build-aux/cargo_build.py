@@ -24,12 +24,12 @@ bin_output: {bin_output}
 output_file: {output_file}
 
 ###
-""")
+""", file=sys.stderr)
 
 cargo_call = f"env {cargo_env} {cargo_cmd} build {cargo_options}"
 cp_call = f"cp {bin_output} {output_file}"
 
-print(cargo_call)
+print(cargo_call, file=sys.stderr)
 os.system(cargo_call)
-print(cp_call)
+print(cp_call, file=sys.stderr)
 os.system(cp_call)

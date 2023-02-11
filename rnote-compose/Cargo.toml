@@ -8,8 +8,6 @@ rust-version = "1.65"
 
 [dependencies]
 ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "7d22efddd1c8830fd0cb908ddd90e2296378e324" }
-roughr = { git = "https://github.com/orhanbalci/rough-rs", rev = "71100d17f87bd9d6dc9081c2681f9ac710fac389"}
-rough_piet = { git = "https://github.com/orhanbalci/rough-rs", rev = "71100d17f87bd9d6dc9081c2681f9ac710fac389"}
 log = "0.4"
 anyhow = "1"
 serde = {version = "1", features = ["derive"]}
@@ -26,5 +24,7 @@ piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9"
 svg = "0.13.0"
+roughr = "0.4"
+rough_piet = "0.4"
 
 [dev-dependencies]

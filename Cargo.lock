@@ -5018,13 +5018,3 @@ name = "xmlwriter"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec7a2a501ed189703dba8b08142f057e887dfc4b2cc4db2d343ac6376ba3e0b9"
-
-[[patch.unused]]
-name = "rough_piet"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
-
-[[patch.unused]]
-name = "roughr"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"

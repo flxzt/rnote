@@ -34,6 +34,8 @@ jobs:
           override: true
       - name: Cache
         uses: actions/cache@v3
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 10
         with:
           path: |
             _mesonbuild/cargo-home/bin/
@@ -41,7 +43,7 @@ jobs:
             _mesonbuild/cargo-home/registry/cache/
             _mesonbuild/cargo-home/git/db/
             _mesonbuild/target/
-          key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.workflow_sha }}
           restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.rustc_hash }}
       - name: Configure
         run: |
@@ -49,22 +51,18 @@ jobs:
           meson configure -Dprofile=devel -Dcli=true _mesonbuild
       - name: Run cargo fmt
         run: meson compile cargo-fmt-check -C _mesonbuild
-      - name: Check app
-        run: meson compile app-cargo-check -C _mesonbuild
-      - name: Check CLI
-        run: meson compile cli-cargo-check -C _mesonbuild
       - name: Compile
         run: meson compile -v -C _mesonbuild
       - name: Install
         run: meson install -C _mesonbuild
-      - name: Run tests
-        run: meson test -v -C _mesonbuild
       - name: Run clippy for app
         run: meson compile app-cargo-clippy -C _mesonbuild
         continue-on-error: true
       - name: Run clippy for CLI
         run: meson compile cli-cargo-clippy -C _mesonbuild
         continue-on-error: true
+      - name: Run meson test
+        run: meson test -v -C _mesonbuild
       - name: Run file compatibility tests
         run: |
           rnote_cli test\

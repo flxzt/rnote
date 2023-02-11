@@ -285,8 +285,8 @@ pub struct ExportPrefs {
 }
 
 impl RnoteEngine {
-    /// The used image scale factor for any strokes that are converted to bitmap images on export.
-    pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.5;
+    /// The used image scale-factor for any strokes that are converted to bitmap images on export.
+    pub const STROKE_EXPORT_IMAGE_SCALE: f64 = 1.8;
 
     /// Saves the current document as a .rnote file.
     pub fn save_as_rnote_bytes(

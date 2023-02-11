@@ -17,6 +17,6 @@ lto = "fat"
 codegen-units = 1
 
 [patch.crates-io]
-# patched to include bezier curve stroke fixes. Once a new release is out (v0.5) on crates-io this can be removed
-roughr = {git = "https://github.com/orhanbalci/rough-rs", rev = "7cbdff4e4442af33996d8d28603ff2e19b5f5c2c" }
-rough_piet = {git = "https://github.com/orhanbalci/rough-rs", rev = "7cbdff4e4442af33996d8d28603ff2e19b5f5c2c" }
+# patched to include bezier curve stroke & hachure fill fixes. Once a new release is out (v0.5) on crates-io this can be removed
+roughr = {git = "https://github.com/orhanbalci/rough-rs", rev = "71100d17f87bd9d6dc9081c2681f9ac710fac389" }
+rough_piet = {git = "https://github.com/orhanbalci/rough-rs", rev = "71100d17f87bd9d6dc9081c2681f9ac710fac389" }

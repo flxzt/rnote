@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-10 10:01+0000\n"
+"PO-Revision-Date: 2023-02-12 20:38+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1546,41 +1546,31 @@ msgstr ""
 "ஆவணத்தை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Export document pages failed."
 msgid "Exporting document pages failed"
-msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்ய முடியவில்லை."
+msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்வதில் தோல்வி"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document pages successfully."
 msgid "Exported document pages successfully"
-msgstr "ஆவணப் பக்கங்கள் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டன."
+msgstr "ஆவணப் பக்கங்கள் வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டன"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Export document pages failed, no directory selected."
 msgid "Exporting document pages failed, no directory selected"
 msgstr ""
-"ஆவணப் பக்கங்களை ஏற்றுமதி செய்ய முடியவில்லை, கோப்பகம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
+"ஆவணப் பக்கங்களை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பகம் எதுவும் "
+"தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:716
-#, fuzzy
-#| msgid "Export selection failed."
 msgid "Exporting selection failed"
-msgstr "ஏற்றுமதி தேர்வு தோல்வியடைந்தது."
+msgstr "தேர்வை ஏற்றுமதி செய்ய முடியவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:718
-#, fuzzy
-#| msgid "Exported selection successfully."
 msgid "Exported selection successfully"
-msgstr "தேர்வு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
+msgstr "தேர்வு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது"
 
 #: rnote-ui/src/dialogs/export.rs:724
-#, fuzzy
-#| msgid "Export selection failed, no file selected."
 msgid "Exporting selection failed, no file selected"
-msgstr "ஏற்றுமதி தேர்வு தோல்வியடைந்தது, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை."
+msgstr ""
+"தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
@@ -1673,7 +1663,7 @@ msgstr "பக்கங்கள்:"
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs/mod.rs:44
 msgid "translator-credits"
-msgstr "மொழிபெயர்ப்பாளர்-வரவுகள்"
+msgstr "'க.பா.தருண் கிருஷ்ணா <kbdharunkrishna@gmail.com>'"
 
 #: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"

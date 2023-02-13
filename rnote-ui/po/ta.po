@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-12 20:38+0000\n"
+"PO-Revision-Date: 2023-02-13 15:02+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1574,55 +1574,39 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
-msgstr ""
+msgstr "Json (ஜேசன்)"
 
 #: rnote-ui/src/dialogs/export.rs:814
-#, fuzzy
-#| msgid "Export engine state"
 msgid "Export Engine State"
 msgstr "ஏற்றுமதி இயந்திர நிலை"
 
 #: rnote-ui/src/dialogs/export.rs:852
-#, fuzzy
-#| msgid "Export engine state failed."
 msgid "Exporting engine state failed"
-msgstr "ஏற்றுமதி இயந்திர நிலை தோல்வியடைந்தது."
+msgstr "இயந்திர நிலையை ஏற்றுமதி செய்வதில் தோல்வி"
 
 #: rnote-ui/src/dialogs/export.rs:854
-#, fuzzy
-#| msgid "Exported engine state successfully."
 msgid "Exported engine state successfully"
-msgstr "எஞ்சின் நிலை வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
+msgstr "இயந்திர நிலை வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது"
 
 #: rnote-ui/src/dialogs/export.rs:878
-#, fuzzy
-#| msgid "Export engine config"
 msgid "Export Engine Config"
 msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு"
 
 #: rnote-ui/src/dialogs/export.rs:916
-#, fuzzy
-#| msgid "Export engine config failed."
 msgid "Exporting engine config failed"
-msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு தோல்வியடைந்தது."
+msgstr "இயந்திர உள்ளமைவை ஏற்றுமதி செய்வதில் தோல்வி"
 
 #: rnote-ui/src/dialogs/export.rs:918
-#, fuzzy
-#| msgid "Exported engine config successfully."
 msgid "Exported engine config successfully"
-msgstr "இயந்திர கட்டமைப்பு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது."
+msgstr "இயந்திர கட்டமைப்பு வெற்றிகரமாக ஏற்றுமதி செய்யப்பட்டது"
 
 #: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Opening file failed"
-msgstr "கோப்பைத் திறப்பதில் தோல்வி."
+msgstr "கோப்பைத் திறப்பதில் தோல்வி"
 
 #: rnote-ui/src/dialogs/import.rs:135
-#, fuzzy
-#| msgid "JPG, PDF, PNG, SVG, Xopp"
 msgid "Jpg, Pdf, Png, Svg, Xopp"
-msgstr "JPG, PDF, PNG, SVG, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp"
 
 #: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
@@ -1670,194 +1654,178 @@ msgid "- unable to find a valid save folder -"
 msgstr "- சரியான சேமிப்பு கோப்புறையை கண்டுபிடிக்க முடியவில்லை -"
 
 #: rnote-ui/src/dialogs/mod.rs:375
-#, fuzzy
-#| msgid "Change workspace directory"
 msgid "Change Workspace Directory"
 msgstr "பணியிட கோப்பகத்தை மாற்றவும்"
 
 #: rnote-ui/src/dialogs/mod.rs:526
 msgid "Band-Aid"
-msgstr ""
+msgstr "பிளாஸ்திரி"
 
 #: rnote-ui/src/dialogs/mod.rs:527
 msgid "Bank"
-msgstr ""
+msgstr "வங்கி"
 
 #: rnote-ui/src/dialogs/mod.rs:528
 msgid "Bookmark"
-msgstr ""
+msgstr "புத்தககுறி"
 
 #: rnote-ui/src/dialogs/mod.rs:529
 msgid "Book"
-msgstr ""
+msgstr "புத்தகம்"
 
 #: rnote-ui/src/dialogs/mod.rs:530
 msgid "Bread"
-msgstr ""
+msgstr "ரொட்டி"
 
 #: rnote-ui/src/dialogs/mod.rs:531
 msgid "Calendar"
-msgstr ""
+msgstr "நாட்காட்டி"
 
 #: rnote-ui/src/dialogs/mod.rs:532
 msgid "Camera"
-msgstr ""
+msgstr "புகைப்பட கருவி"
 
 #: rnote-ui/src/dialogs/mod.rs:533
 msgctxt "as in computer chip"
 msgid "Chip"
-msgstr ""
+msgstr "சிம்பு"
 
 #: rnote-ui/src/dialogs/mod.rs:534
 msgid "Code"
-msgstr ""
+msgstr "குறியீடு"
 
 #: rnote-ui/src/dialogs/mod.rs:535
 msgid "Compose"
-msgstr ""
+msgstr "எழுது"
 
 #: rnote-ui/src/dialogs/mod.rs:537
 msgid "Drinks"
-msgstr ""
+msgstr "பானங்கள்"
 
 #: rnote-ui/src/dialogs/mod.rs:538
 msgid "Flag"
-msgstr ""
+msgstr "கொடி"
 
 #: rnote-ui/src/dialogs/mod.rs:539
-#, fuzzy
-#| msgid "Folder name"
 msgid "Folder"
-msgstr "கோப்புறை பெயர்"
+msgstr "கோப்புறை"
 
 #: rnote-ui/src/dialogs/mod.rs:540
-#, fuzzy
-#| msgid "Constraints"
 msgid "Footprints"
-msgstr "கட்டுப்பாடுகள்"
+msgstr "கால்தடங்கள்"
 
 #: rnote-ui/src/dialogs/mod.rs:541
 msgid "Gamepad"
-msgstr ""
+msgstr "விளையாட்டு திண்டு"
 
 #: rnote-ui/src/dialogs/mod.rs:542
 msgid "Gear"
-msgstr ""
+msgstr "துணைக்கருவி"
 
 #: rnote-ui/src/dialogs/mod.rs:543
 msgid "Hammer"
-msgstr ""
+msgstr "சுத்தியல்"
 
 #: rnote-ui/src/dialogs/mod.rs:544
 msgid "Heart"
-msgstr ""
+msgstr "இதயம்"
 
 #: rnote-ui/src/dialogs/mod.rs:545
 msgid "Hourglass"
-msgstr ""
+msgstr "மணிக் கண்ணாடி"
 
 #: rnote-ui/src/dialogs/mod.rs:546
 msgid "Key"
-msgstr ""
+msgstr "சாவி"
 
 #: rnote-ui/src/dialogs/mod.rs:547
 msgid "Language"
-msgstr ""
+msgstr "மொழி"
 
 #: rnote-ui/src/dialogs/mod.rs:548
 msgid "Lightbulb"
-msgstr ""
+msgstr "ஒளி விளக்கு"
 
 #: rnote-ui/src/dialogs/mod.rs:549
 msgid "Mathematics"
-msgstr ""
+msgstr "கணிதம்"
 
 #: rnote-ui/src/dialogs/mod.rs:550
-#, fuzzy
-#| msgid "Settings"
 msgid "Meeting"
-msgstr "அமைப்புகள்"
+msgstr "சந்தித்தல்"
 
 #: rnote-ui/src/dialogs/mod.rs:551
 msgid "Money"
-msgstr ""
+msgstr "பணம்"
 
 #: rnote-ui/src/dialogs/mod.rs:552
 msgid "Musical Note"
-msgstr ""
+msgstr "இசைக் குறிப்பு"
 
 #: rnote-ui/src/dialogs/mod.rs:553
 msgid "Paintbrush"
-msgstr ""
+msgstr "வண்ணப்பூச்சு தூரிகை"
 
 #: rnote-ui/src/dialogs/mod.rs:554
 msgid "Pencil and Paper"
-msgstr ""
+msgstr "எழுதுகோல் மற்றும் காகிதம்"
 
 #: rnote-ui/src/dialogs/mod.rs:555
 msgid "People"
-msgstr ""
+msgstr "மக்கள்"
 
 #: rnote-ui/src/dialogs/mod.rs:556
 msgid "Person"
-msgstr ""
+msgstr "நபர்"
 
 #: rnote-ui/src/dialogs/mod.rs:557
-#, fuzzy
-#| msgid "Directory"
 msgid "Projector"
-msgstr "கோப்பகம்"
+msgstr "புரொஜெக்டர்"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Scratchpad"
-msgstr ""
+msgstr "கீறல் திண்டு"
 
 #: rnote-ui/src/dialogs/mod.rs:559
-#, fuzzy
-#| msgid "Shaper"
 msgid "Shapes"
-msgstr "வடிவமைப்பவர்"
+msgstr "வடிவங்கள்"
 
 #: rnote-ui/src/dialogs/mod.rs:560
 msgid "Shopping"
-msgstr ""
+msgstr "கடையில் பொருட்கள் வாங்குதல்"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Speech Bubble"
-msgstr ""
+msgstr "பேச்சு குமிழ்"
 
 #: rnote-ui/src/dialogs/mod.rs:562
 msgid "Speedometer"
-msgstr ""
+msgstr "வேகமானி"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Star"
-msgstr ""
+msgstr "நட்சத்திரம்"
 
 #: rnote-ui/src/dialogs/mod.rs:565
 msgctxt "as in terminal software"
 msgid "Terminal"
-msgstr ""
+msgstr "முனையம்"
 
 #: rnote-ui/src/dialogs/mod.rs:567
-#, fuzzy
-#| msgid "Textured"
 msgid "Text"
-msgstr "டெக்ஸ்சர்டு"
+msgstr "உரை"
 
 #: rnote-ui/src/dialogs/mod.rs:568
 msgid "Travel"
-msgstr ""
+msgstr "பயணம்"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Weather"
-msgstr ""
+msgstr "வானிலை"
 
 #: rnote-ui/src/dialogs/mod.rs:570
-#, fuzzy
-#| msgid "Height"
 msgid "Weight"
-msgstr "உயரம்"
+msgstr "எடை"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:348
 msgid "Miscellaneous"
@@ -1913,85 +1881,81 @@ msgstr "க்யூபிக் பெஜியர் வளைவு"
 
 #: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Crosshair (Small)"
-msgstr ""
+msgstr "குறுக்கு முடி (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Crosshair (Medium)"
-msgstr ""
+msgstr "குறுக்கு முடி (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Crosshair (Large)"
-msgstr ""
+msgstr "குறுக்கு முடி (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Dot (Small)"
-msgstr ""
+msgstr "புள்ளி (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Dot (Medium)"
-msgstr ""
+msgstr "புள்ளி (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Dot (Large)"
-msgstr ""
+msgstr "புள்ளி (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North-West (Small)"
-msgstr ""
+msgstr "கண்ணீர் வடமேற்கு (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Teardrop North-West (Medium)"
-msgstr ""
+msgstr "கண்ணீர் வடமேற்கு (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Teardrop North-West (Large)"
-msgstr ""
+msgstr "கண்ணீர் வடமேற்கு (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Teardrop North-East (Small)"
-msgstr ""
+msgstr "கண்ணீர் வடகிழக்கு (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:828
 msgid "Teardrop North-East (Medium)"
-msgstr ""
+msgstr "கண்ணீர் வடகிழக்கு (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:829
 msgid "Teardrop North-East (Large)"
-msgstr ""
+msgstr "கண்ணீர் வடகிழக்கு (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:830
 msgid "Teardrop North (Small)"
-msgstr ""
+msgstr "கண்ணீர் வடக்கில் (சிறியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:831
 msgid "Teardrop North (Medium)"
-msgstr ""
+msgstr "கண்ணீர் வடக்கில் (நடுத்தர)"
 
 #: rnote-ui/src/settingspanel/mod.rs:832
 msgid "Teardrop North (Large)"
-msgstr ""
+msgstr "கண்ணீர் வடக்கில் (பெரியது)"
 
 #: rnote-ui/src/settingspanel/mod.rs:833
 msgid "Beam (Small)"
-msgstr ""
+msgstr "கற்றை (சிறிய)"
 
 #: rnote-ui/src/settingspanel/mod.rs:834
 msgid "Beam (Medium)"
-msgstr ""
+msgstr "கற்றை (நடுத்தரம்)"
 
 #: rnote-ui/src/settingspanel/mod.rs:835
 msgid "Beam (Large)"
-msgstr ""
+msgstr "கற்றை (பெரியது)"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
-#, fuzzy
-#| msgid "Folder name"
 msgid "Folder Name"
 msgstr "கோப்புறை பெயர்"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
-#, fuzzy
-#| msgid "New folder"
 msgid "New Folder"
 msgstr "புதிய அடைவு"
 

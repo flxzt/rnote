@@ -3074,8 +3074,9 @@ dependencies = [
 
 [[package]]
 name = "points_on_curve"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=71100d17f87bd9d6dc9081c2681f9ac710fac389#71100d17f87bd9d6dc9081c2681f9ac710fac389"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbd55aaa619ef3e710ba6515663cb9afdf54ab4b09b2b3d069622f3a71736295"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3597,8 +3598,9 @@ dependencies = [
 
 [[package]]
 name = "rough_piet"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=71100d17f87bd9d6dc9081c2681f9ac710fac389#71100d17f87bd9d6dc9081c2681f9ac710fac389"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5a14e818382f4a369057267528444e6b72df2a536a3df23bf330085fd21d0b9"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3609,8 +3611,9 @@ dependencies = [
 
 [[package]]
 name = "roughr"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=71100d17f87bd9d6dc9081c2681f9ac710fac389#71100d17f87bd9d6dc9081c2681f9ac710fac389"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69f4d01f4086c813a8781c699dde7dcfddc87dbfc7a9cb316fbc789734987f6a"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -4170,8 +4173,9 @@ checksum = "e715e0c3fc987f4c435dc7189641fd9caa6919a74675ace605c38e201d278001"
 
 [[package]]
 name = "svg_path_ops"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=71100d17f87bd9d6dc9081c2681f9ac710fac389#71100d17f87bd9d6dc9081c2681f9ac710fac389"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9f934257a2a95c29314aceebc68a34b201e9c1fc875fc1c5d63e96895ace8cd"
 dependencies = [
  "svgtypes",
 ]

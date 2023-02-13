@@ -24,7 +24,7 @@ piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9"
 svg = "0.13.0"
-roughr = "0.4"
-rough_piet = "0.4"
+roughr = "0.5"
+rough_piet = "0.5"
 
 [dev-dependencies]

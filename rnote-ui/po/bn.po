@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-12 20:38+0000\n"
+"PO-Revision-Date: 2023-02-16 01:36+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -1319,10 +1319,8 @@ msgid "Touch Two-Finger Long-Press Action"
 msgstr "টাচের দুই-আঙ্গুলের দীর্ঘ-প্রেস অ্যাকশন"
 
 #: rnote-ui/data/ui/settingspanel.ui:406
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid "Set the action for the touch two-finger long-press gesture"
-msgstr "গৌণ মাউস বোতামের জন্য ক্রিয়া সেট করুন"
+msgstr "দুই আঙ্গুল দিরঘ-প্রেস টাচের জন্য ক্রিয়া সেট করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1767,7 +1765,6 @@ msgid "Paintbrush"
 msgstr "রংতুলি"
 
 #: rnote-ui/src/dialogs/mod.rs:554
-#, fuzzy
 msgid "Pencil and Paper"
 msgstr "কাগজ ও কলম"
 
@@ -1833,10 +1830,8 @@ msgid "Miscellaneous"
 msgstr "বিবিধ"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:356
-#, fuzzy
-#| msgid "2D coordinate system"
 msgid "Coordinate Systems"
-msgstr "দ্বিমাত্রিক স্থানাঙ্ক"
+msgstr "স্থানাঙ্ক"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:364
 msgid "Ellipses"
@@ -1864,7 +1859,7 @@ msgstr "ত্রিমাত্রিক স্থানাঙ্ক"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D single quadrant coordinate system"
-msgstr ""
+msgstr "দ্বিমাত্রিক একক চতুর্থাংশ স্থানাঙ্ক"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "Ellipse"

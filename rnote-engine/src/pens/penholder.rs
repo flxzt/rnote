@@ -180,13 +180,6 @@ impl PenHolder {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-        widget_flags.redraw = true;
-
-        if let Some(pen_mode) = pen_mode {
-            widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));
-        }
-
         /*
                log::debug!(
                    "handle_pen_event(), event: {:?}, pen_mode_state: {:?}",
@@ -194,27 +187,14 @@ impl PenHolder {
                    self.pen_mode_state,
                );
         */
+        let mut widget_flags = WidgetFlags::default();
+        widget_flags.redraw = true;
 
-        // First we handle certain pointer shortcut keys
-        // TODO: handle this better
-        match &event {
-            PenEvent::Down { shortcut_keys, .. }
-            | PenEvent::Up { shortcut_keys, .. }
-            | PenEvent::Proximity { shortcut_keys, .. } => {
-                if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
-                    widget_flags.merge(self.handle_pressed_shortcut_key(
-                        ShortcutKey::MouseSecondaryButton,
-                        now,
-                        engine_view,
-                    ));
-                }
-            }
-            PenEvent::KeyPressed { .. } => {}
-            PenEvent::Text { .. } => {}
-            PenEvent::Cancel => {}
+        if let Some(pen_mode) = pen_mode {
+            widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));
         }
 
-        // Handle the events with the current pen
+        // Handle the event with the current pen
         let (pen_progress, other_widget_flags) =
             self.current_pen.handle_event(event, now, engine_view);
 

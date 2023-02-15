@@ -18,15 +18,12 @@ use crate::Constraints;
 #[derive(Debug, Clone)]
 /// The foci ellipse builder state
 pub enum FociEllipseBuilderState {
-    /// first
-    First(na::Vector2<f64>),
-    /// foci
+    Start(na::Vector2<f64>),
+    StartFinished(na::Vector2<f64>),
     Foci([na::Vector2<f64>; 2]),
-    /// foci and point
+    FociFinished([na::Vector2<f64>; 2]),
     FociAndPoint {
-        /// The foci
         foci: [na::Vector2<f64>; 2],
-        /// the point
         point: na::Vector2<f64>,
     },
 }
@@ -41,7 +38,7 @@ pub struct FociEllipseBuilder {
 impl ShapeBuilderCreator for FociEllipseBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
-            state: FociEllipseBuilderState::First(element.pos),
+            state: FociEllipseBuilderState::Start(element.pos),
         }
     }
 }
@@ -56,27 +53,50 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
-            (FociEllipseBuilderState::First(first), PenEvent::Down { element, .. }) => {
+            (FociEllipseBuilderState::Start(first), PenEvent::Down { element, .. }) => {
                 *first = element.pos;
             }
-            (FociEllipseBuilderState::First(first), PenEvent::Up { element, .. }) => {
-                self.state = FociEllipseBuilderState::Foci([*first, element.pos])
+            (FociEllipseBuilderState::Start(_), PenEvent::Up { element, .. }) => {
+                self.state = FociEllipseBuilderState::StartFinished(element.pos);
             }
-            (FociEllipseBuilderState::First(_), _) => {}
-            (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
+            (FociEllipseBuilderState::Start(_), _) => {}
+            (FociEllipseBuilderState::StartFinished(first), PenEvent::Down { element, .. }) => {
                 // we want to allow horizontal and vertical constraints while setting the second foci
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
+                self.state = FociEllipseBuilderState::Foci([
+                    *first,
+                    constraints.constrain(element.pos - *first) + *first,
+                ]);
+            }
+            (FociEllipseBuilderState::StartFinished(_), _) => {}
+            (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
                 constraints.ratios.insert(ConstraintRatio::Horizontal);
                 constraints.ratios.insert(ConstraintRatio::Vertical);
 
                 foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
-                self.state = FociEllipseBuilderState::FociAndPoint {
-                    foci: *foci,
-                    point: element.pos,
-                };
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
+                self.state = FociEllipseBuilderState::FociFinished([
+                    foci[0],
+                    constraints.constrain(element.pos - foci[0]) + foci[0],
+                ]);
             }
             (FociEllipseBuilderState::Foci(_), _) => {}
+            (FociEllipseBuilderState::FociFinished(foci), PenEvent::Down { element, .. }) => {
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
+                self.state = FociEllipseBuilderState::FociAndPoint {
+                    foci: *foci,
+                    point: constraints.constrain(element.pos - foci[1]) + foci[1],
+                };
+            }
+            (FociEllipseBuilderState::FociFinished(_), _) => {}
             (
                 FociEllipseBuilderState::FociAndPoint { foci: _, point },
                 PenEvent::Down { element, .. },
@@ -98,14 +118,17 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            FociEllipseBuilderState::First(point) => Some(Aabb::from_half_extents(
-                na::Point2::from(*point),
+            FociEllipseBuilderState::Start(first)
+            | FociEllipseBuilderState::StartFinished(first) => Some(Aabb::from_half_extents(
+                na::Point2::from(*first),
                 na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             )),
-            FociEllipseBuilderState::Foci(foci) => Some(
-                Aabb::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
-            ),
+            FociEllipseBuilderState::Foci(foci) | FociEllipseBuilderState::FociFinished(foci) => {
+                Some(
+                    Aabb::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                        .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
+                )
+            }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
 
@@ -121,16 +144,16 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
         match &self.state {
-            FociEllipseBuilderState::First(point) => {
-                indicators::draw_pos_indicator(cx, PenState::Down, *point, zoom);
+            FociEllipseBuilderState::Start(first)
+            | FociEllipseBuilderState::StartFinished(first) => {
+                indicators::draw_pos_indicator(cx, PenState::Down, *first, zoom);
             }
-            FociEllipseBuilderState::Foci(foci) => {
+            FociEllipseBuilderState::Foci(foci) | FociEllipseBuilderState::FociFinished(foci) => {
                 indicators::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
                 indicators::draw_pos_indicator(cx, PenState::Down, foci[1], zoom);
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-
                 ellipse.draw_composed(cx, style);
 
                 indicators::draw_vec_indicator(cx, PenState::Down, foci[0], *point, zoom);

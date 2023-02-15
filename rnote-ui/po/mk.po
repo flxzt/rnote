@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-02 13:26+0100\n"
+"POT-Creation-Date: 2023-02-08 15:26+0100\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -54,19 +54,21 @@ msgid "Main window in light colors"
 msgstr "Главен прозорец во светли бои"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
-msgid "Main window in dark colors"
-msgstr "Главен прозорец во темни бои"
+msgid "Lecture Note 1"
+msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
 msgstr "PDF бележење"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
-msgid "A selection"
-msgstr "Избор"
+msgid "Lecture Note 2"
+msgstr ""
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:5
-msgid "Clear document"
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
+#, fuzzy
+#| msgid "Clear document"
+msgid "Clear Document"
 msgstr "Избриши го документот"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
@@ -86,7 +88,7 @@ msgstr "Оваа акција го брише целиот документ. В�
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:379
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr "Одкажи"
@@ -95,7 +97,8 @@ msgstr "Одкажи"
 msgid "Clear"
 msgstr "Избриши"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
 msgid "New Document"
 msgstr "Нов документ"
 
@@ -127,7 +130,7 @@ msgstr "Зачувај"
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close tab"
+msgid "Close Tab"
 msgstr "Затвори го активниот прозорец"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
@@ -140,7 +143,7 @@ msgstr ""
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgid "Close window"
+msgid "Close Window"
 msgstr "Затвори го активниот прозорец"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
@@ -152,17 +155,19 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 #, fuzzy
 #| msgid "Save document"
-msgid "Unsaved documents"
+msgid "Unsaved Documents"
 msgstr "Зачувај документ"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
 #, fuzzy
 #| msgid "Discard"
-msgid "Discard all"
+msgid "Discard All"
 msgstr "Одфрли"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-msgid "Edit workspace"
+#, fuzzy
+#| msgid "Edit workspace"
+msgid "Edit Workspace"
 msgstr "Уреди ја работната површина"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
@@ -201,7 +206,7 @@ msgstr "Промени ја папката на раб. површина"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:436
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
 msgid "- no directory selected -"
 msgstr "- не е одбрана ниту една папка -"
 
@@ -211,7 +216,7 @@ msgstr "- не е одбрана ниту една папка -"
 msgid "Change the directory"
 msgstr "Промени ја папката на раб. површина"
 
-#: rnote-ui/data/ui/dialogs/import.ui:5
+#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:85
 msgid "Open File"
 msgstr "Отвори датотека"
 
@@ -237,20 +242,24 @@ msgid "Info"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-msgid "PDF import preferences"
+#, fuzzy
+#| msgid "PDF import preferences"
+msgid "PDF Import Preferences"
 msgstr "Нагодувања при внес на PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
-msgid "Start page"
+msgid "Start Page"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
 #, fuzzy
-msgid "End page"
+msgid "End Page"
 msgstr "Додај страница"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
-msgid "Page width (%)"
+#, fuzzy
+#| msgid "Page width (%)"
+msgid "Page Width (%)"
 msgstr "Ширина на страница (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
@@ -258,7 +267,9 @@ msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "Одбери ја ширината на внесениот PDF во проценти од ширината на формата"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
-msgid "Page spacing"
+#, fuzzy
+#| msgid "Page spacing"
+msgid "Page Spacing"
 msgstr "Проред"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
@@ -270,11 +281,15 @@ msgid "Continuous"
 msgstr "Во продолжение"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
-msgid "One per document page"
+#, fuzzy
+#| msgid "One per document page"
+msgid "One per Document Page"
 msgstr "Еден документ по страница"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
-msgid "Pages type"
+#, fuzzy
+#| msgid "Pages type"
+msgid "Pages Type"
 msgstr "Вид на страници"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
@@ -292,7 +307,7 @@ msgstr "Слика"
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-msgid "Bitmap scale factor"
+msgid "Bitmap Scale-Factor"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
@@ -306,16 +321,16 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/import.ui:220
 #, fuzzy
 #| msgid "Import file"
-msgid "Import Xournal++ file"
+msgid "Import Xournal++ File"
 msgstr "Внеси датотека"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Xournal++ file import preferences"
+msgid "Xournal++ File Import Preferences"
 msgstr "Нагодувања при внес на PDF"
 
-#: rnote-ui/data/ui/dialogs/import.ui:263 rnote-ui/data/ui/settingspanel.ui:234
+#: rnote-ui/data/ui/dialogs/import.ui:263
 msgid "DPI"
 msgstr "ТПИ"
 
@@ -324,7 +339,9 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
-msgid "Export document"
+#, fuzzy
+#| msgid "Export document"
+msgid "Export Document"
 msgstr "Извади документ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
@@ -336,7 +353,7 @@ msgstr "Извади"
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
 #, fuzzy
 #| msgid "Import file"
-msgid "Export file"
+msgid "Export File"
 msgstr "Внеси датотека"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
@@ -359,14 +376,14 @@ msgstr "- не е одбрана ниту една папка -"
 #: rnote-ui/data/ui/dialogs/export.ui:421
 #, fuzzy
 #| msgid "PDF import preferences"
-msgid "Export preferences"
+msgid "Export Preferences"
 msgstr "Нагодувања при внес на PDF"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
 #, fuzzy
 #| msgid "Document background"
-msgid "With background"
+msgid "With Background"
 msgstr "Позадина на документ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
@@ -380,7 +397,7 @@ msgstr "Одреди ја позадинската боја"
 #: rnote-ui/data/ui/dialogs/export.ui:436
 #, fuzzy
 #| msgid "Pattern"
-msgid "With pattern"
+msgid "With Pattern"
 msgstr "Шара"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
@@ -395,7 +412,7 @@ msgstr "Одреди ја позадинската боја"
 #: rnote-ui/data/ui/dialogs/export.ui:447
 #, fuzzy
 #| msgid "Export document"
-msgid "Export format"
+msgid "Export Format"
 msgstr "Извади документ"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
@@ -423,19 +440,19 @@ msgstr ""
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 #, fuzzy
 #| msgid "Export document as SVG"
-msgid "Export document pages"
+msgid "Export Document Pages"
 msgstr "Извади го документот во SVG"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
 #, fuzzy
 #| msgid "Page spacing"
-msgid "Page files naming:"
+msgid "Page Files Naming:"
 msgstr "Проред"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 #, fuzzy
 #| msgid "Create Directory"
-msgid "Export directory"
+msgid "Export Directory"
 msgstr "Создај папка"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
@@ -447,7 +464,7 @@ msgstr "Одбери ја ширината на формата"
 #: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy
 #| msgid "Export engine state"
-msgid "Export files stem name"
+msgid "Export Files Stem Name"
 msgstr "Извади ја внатрешната состојба на програмот"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
@@ -464,7 +481,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
-msgid "Jpeg quality"
+msgid "Jpeg Quality"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:316
@@ -473,9 +490,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
-#, fuzzy
-#| msgid "Export Selection"
-msgid "Export selection"
+msgid "Export Selection"
 msgstr "Извади го одбраното"
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
@@ -491,47 +506,55 @@ msgid "Set the margin around the selected area"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
-msgid "Brush style"
+#, fuzzy
+#| msgid "Brush style"
+msgid "Brush Style"
 msgstr "Вид на четка"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:132
-msgid "Brush configuration"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:133
+#, fuzzy
+#| msgid "Brush configuration"
+msgid "Brush Configuration"
 msgstr "Нагодувања за четката"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:62
-msgid "Brush styles"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:64
+#, fuzzy
+#| msgid "Brush styles"
+msgid "Brush Styles"
 msgstr "Видови на четки"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:80
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
 msgstr "Означувач"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 #, fuzzy
 #| msgid "Mark underneath other brush strokes"
 msgid "Mark underneath other strokes"
 msgstr "Означи под другите потези со четка"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:92
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
 msgstr "Полно"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
 msgstr "Цртај полни обоени линии"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:104
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
 msgstr "Текстурирано"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
 msgstr "Цртај текстурирани линии"
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:141
-msgid "Path modelling"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:142
+#, fuzzy
+#| msgid "Path modelling"
+msgid "Path Modelling"
 msgstr "Моделирање на патека"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
@@ -563,11 +586,15 @@ msgstr ""
 "Резултира во најдобар ракопис."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
-msgid "Solid style"
+#, fuzzy
+#| msgid "Solid style"
+msgid "Solid Style"
 msgstr "Полна линија"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
-msgid "Pressure curve"
+#, fuzzy
+#| msgid "Pressure curve"
+msgid "Pressure Curve"
 msgstr "Крива на притисок"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
@@ -599,7 +626,9 @@ msgid "Cubic Parabola"
 msgstr "Кубна парабола"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
-msgid "Textured style"
+#, fuzzy
+#| msgid "Textured style"
+msgid "Textured Style"
 msgstr "Вид на текстурирање"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
@@ -611,7 +640,9 @@ msgid "The density is the amount of dots per 10x10 area"
 msgstr "Густината е бројот на точки на површина од 10х10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
-msgid "Stroke dots position distribution"
+#, fuzzy
+#| msgid "Stroke dots position distribution"
+msgid "Stroke Dots Position Distribution"
 msgstr "Позиционен распоред на цртежните точки"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:227
@@ -635,11 +666,15 @@ msgid "Reverse Exponential"
 msgstr "Обратно експоненцијално"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
-msgid "Trash strokes"
+#, fuzzy
+#| msgid "Trash strokes"
+msgid "Trash Strokes"
 msgstr "Расипани црти"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
-msgid "Split strokes"
+#, fuzzy
+#| msgid "Split strokes"
+msgid "Split Strokes"
 msgstr "Подели црти"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
@@ -675,55 +710,74 @@ msgstr "Алатки"
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 #, fuzzy
 #| msgid "Selecting with a polygon"
-msgid "Select with a polygon"
+msgid "Select With a Polygon"
 msgstr "Одбирање преку полигон"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 #, fuzzy
 #| msgid "Selecting with a rectangle"
-msgid "Select with a rectangle"
+msgid "Select With a Rectangle"
 msgstr "Одбирање преку правоаголник"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
-msgid "Select one by one"
+msgid "Select One by One"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
-msgid "Select intersecting path"
+#, fuzzy
+#| msgid "Select intersecting path"
+msgid "Select Intersecting Path"
 msgstr "Одбери патека на пресек"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
-msgid "Lock aspectratio while resizing the selection"
+#, fuzzy
+#| msgid "Lock aspectratio while resizing the selection"
+msgid "Lock Aspectratio While Resizing the Selection"
 msgstr "Заклучи го соодносот при предимензионирање"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
-msgid "Select all strokes"
+#, fuzzy
+#| msgid "Select all strokes"
+msgid "Select All Strokes"
 msgstr "Одбери ги сите црти"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
-msgid "Deselect all strokes"
+#, fuzzy
+#| msgid "Deselect all strokes"
+msgid "Deselect All Strokes"
 msgstr "Онебери ги сите црти"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
-msgid "Duplicate selection"
+#: rnote-ui/data/ui/shortcuts.ui:207
+#, fuzzy
+#| msgid "Duplicate selection"
+msgid "Duplicate Selection"
 msgstr "Удвои го одбраното"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-msgid "Delete selection"
+#, fuzzy
+#| msgid "Delete selection"
+msgid "Delete Selection"
 msgstr "Избриши го одбраното"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
-msgid "Shaper style"
+#, fuzzy
+#| msgid "Shaper style"
+msgid "Shaper Style"
 msgstr "Вид на оформувач"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
-msgid "Shape configuration"
+#, fuzzy
+#| msgid "Shape configuration"
+msgid "Shape Configuration"
 msgstr "Распоред на форма"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
-msgid "Shape builders"
+#, fuzzy
+#| msgid "Shape builders"
+msgid "Shape Builders"
 msgstr "Создавање на форма"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
@@ -732,7 +786,9 @@ msgid "Constraints"
 msgstr "Ограничувања"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
-msgid "Shaper styles"
+#, fuzzy
+#| msgid "Shaper styles"
+msgid "Shaper Styles"
 msgstr "Видови на оформувач(и)"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
@@ -750,7 +806,7 @@ msgstr "Груб вид"
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 #, fuzzy
 #| msgid "Solid style"
-msgid "Fill style"
+msgid "Fill Style"
 msgstr "Полна линија"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
@@ -785,7 +841,7 @@ msgid "Dashed"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-msgid "Hachure angle"
+msgid "Hachure Angle"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
@@ -820,20 +876,30 @@ msgid "3:2"
 msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
-msgid "Golden ratio (1:1.618)"
+#, fuzzy
+#| msgid "Golden ratio (1:1.618)"
+msgid "Golden Ratio (1:1.618)"
 msgstr "Златен пресек (1:1,618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
-msgid "Insert vertical space"
+#, fuzzy
+#| msgid "Insert vertical space"
+msgid "Insert Vertical Space"
 msgstr "Внеси вертикален простор"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
-msgid "Offset the camera by dragging"
-msgstr "При влечење мрдај го погледот"
+#: rnote-ui/data/ui/shortcuts.ui:91
+msgid "Move View"
+msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
+#, fuzzy
+#| msgid ""
+#| "Font chooser\n"
+#| "(double-click, click on select\n"
+#| "or press Enter to select a new font)"
 msgid ""
-"Font chooser\n"
+"Font Chooser\n"
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
@@ -842,11 +908,15 @@ msgstr ""
 "или притисни Enter за да одбереш нов фонт)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
-msgid "Pick and insert an emoji"
+#, fuzzy
+#| msgid "Pick and insert an emoji"
+msgid "Pick And Insert Emoji"
 msgstr "Одбери и внеси емоџи"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:73
-msgid "Reset text attributes"
+#, fuzzy
+#| msgid "Reset text attributes"
+msgid "Reset Text Attributes"
 msgstr "Врати ги оригиналните одлики на текстот"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:82
@@ -866,15 +936,21 @@ msgid "Strikethrough"
 msgstr "Прецртано"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
-msgid "Align left"
+#, fuzzy
+#| msgid "Align left"
+msgid "Align Left"
 msgstr "Порамни по лево"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
-msgid "Align center"
+#, fuzzy
+#| msgid "Align center"
+msgid "Align Center"
 msgstr "Порамни по средина"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
-msgid "Align right"
+#, fuzzy
+#| msgid "Align right"
+msgid "Align Right"
 msgstr "Порамни по десно"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
@@ -884,62 +960,62 @@ msgstr "Порамни по двата раба"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:374
+#: rnote-ui/src/dialogs/mod.rs:378
 msgid "Select"
 msgstr "Одбери"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 #, fuzzy
 #| msgid "Color scheme"
-msgid "Co_lor scheme"
+msgid "Co_lor Scheme"
 msgstr "Шема на бои"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 #, fuzzy
 #| msgid "Use system colors"
-msgid "Use _system colors"
+msgid "Use _System Colors"
 msgstr "Користи системски бои"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 #, fuzzy
 #| msgid "Use light colors"
-msgid "Use _light colors"
+msgid "Use _Light Colors"
 msgstr "Користи светли бои"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 #, fuzzy
 #| msgid "Use dark colors"
-msgid "Use _dark colors"
+msgid "Use _Dark Colors"
 msgstr "Користи темни бои"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 #, fuzzy
 #| msgid "Developer mode"
-msgid "De_veloper mode"
+msgid "De_veloper Mode"
 msgstr "Развоен модус"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 #, fuzzy
 #| msgid "Developer menu"
-msgid "Developer _menu"
+msgid "Developer _Menu"
 msgstr "Развојно мени"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 #, fuzzy
 #| msgid "Visual debugging"
-msgid "Visual _debugging"
+msgid "Visual _Debugging"
 msgstr "Визуелно одстранување на проблеми"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 #, fuzzy
 #| msgid "Export engine state"
-msgid "Export engine _state"
+msgid "Export Engine _State"
 msgstr "Извади ја внатрешната состојба на програмот"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 #, fuzzy
 #| msgid "Export engine config"
-msgid "Export engine _config"
+msgid "Export Engine _Config"
 msgstr "Извади ги внатрешните нагодувања на програмот"
 
 #: rnote-ui/data/ui/appmenu.ui:68
@@ -961,7 +1037,7 @@ msgstr "Зачувај"
 #: rnote-ui/data/ui/appmenu.ui:80
 #, fuzzy
 #| msgid "Save as"
-msgid "Save _as"
+msgid "Save _As"
 msgstr "Зачувај како"
 
 #: rnote-ui/data/ui/appmenu.ui:86
@@ -973,7 +1049,7 @@ msgstr "Печати"
 #: rnote-ui/data/ui/appmenu.ui:90
 #, fuzzy
 #| msgid "Import file"
-msgid "_Import file"
+msgid "_Import File"
 msgstr "Внеси датотека"
 
 #: rnote-ui/data/ui/appmenu.ui:94
@@ -1004,19 +1080,19 @@ msgstr "Извади…"
 #: rnote-ui/data/ui/appmenu.ui:111
 #, fuzzy
 #| msgid "Export document"
-msgid "Export _document"
+msgid "Export _Document"
 msgstr "Извади документ"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 #, fuzzy
 #| msgid "Export document as SVG"
-msgid "Export document _pages"
+msgid "Export Document _Pages"
 msgstr "Извади го документот во SVG"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 #, fuzzy
 #| msgid "Export Selection"
-msgid "Export _selection"
+msgid "Export _Selection"
 msgstr "Извади го одбраното"
 
 #: rnote-ui/data/ui/appmenu.ui:126
@@ -1028,7 +1104,7 @@ msgstr "Поставки"
 #: rnote-ui/data/ui/appmenu.ui:130
 #, fuzzy
 #| msgid "Keyboard shortcuts"
-msgid "_Keyboard shortcuts"
+msgid "_Keyboard Shortcuts"
 msgstr "Тастатурни кратенки"
 
 #: rnote-ui/data/ui/appmenu.ui:134
@@ -1044,19 +1120,27 @@ msgid "A_bout Rnote"
 msgstr "За Rnote"
 
 #: rnote-ui/data/ui/appmenu.ui:169
-msgid "Sidebar on the left side"
+#, fuzzy
+#| msgid "Sidebar on the left side"
+msgid "Sidebar on the Left Side"
 msgstr "Странична лента на лева страна"
 
 #: rnote-ui/data/ui/appmenu.ui:178
-msgid "Sidebar on the right side"
+#, fuzzy
+#| msgid "Sidebar on the right side"
+msgid "Sidebar on the Right Side"
 msgstr "Странична лента на десна страна"
 
-#: rnote-ui/data/ui/appmenu.ui:188
-msgid "Toggle fullscreen"
+#: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
+#, fuzzy
+#| msgid "Toggle fullscreen"
+msgid "Toggle Fullscreen"
 msgstr "Влези на цел екран"
 
 #: rnote-ui/data/ui/appwindow.ui:109
-msgid "Close the folded flap"
+#, fuzzy
+#| msgid "Close the folded flap"
+msgid "Close the Folded Flap"
 msgstr "Затвори ја свитканата клапа"
 
 #: rnote-ui/data/ui/appwindow.ui:126
@@ -1070,25 +1154,25 @@ msgstr "Поставки"
 #: rnote-ui/data/ui/canvasmenu.ui:24
 #, fuzzy
 #| msgid "Document layout"
-msgid "_Document layout"
+msgid "_Document Layout"
 msgstr "Распоред на документ"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 #, fuzzy
 #| msgid "Fixed size"
-msgid "_Fixed size"
+msgid "_Fixed Size"
 msgstr "Фиксна величина"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 #, fuzzy
 #| msgid "Continuous vertical"
-msgid "_Continuous vertical"
+msgid "_Continuous Vertical"
 msgstr "Продолжена вертикала"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 #, fuzzy
 #| msgid "Infinite"
-msgid "_Semi infinite"
+msgid "_Semi Infinite"
 msgstr "Бесконечно"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
@@ -1100,59 +1184,65 @@ msgstr "Бесконечно"
 #: rnote-ui/data/ui/canvasmenu.ui:49
 #, fuzzy
 #| msgid "Show format borders"
-msgid "Show _format borders"
+msgid "Show _Format Borders"
 msgstr "Покажи ги границите на формата"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 #, fuzzy
 #| msgid "Draw with touch input"
-msgid "Draw with _touch input"
+msgid "Draw With _Touch Input"
 msgstr "Цртај со допир"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 #, fuzzy
 #| msgid "Pen sounds"
-msgid "_Pen sounds"
+msgid "_Pen Sounds"
 msgstr "Звуци на пенкалото"
 
 #: rnote-ui/data/ui/canvasmenu.ui:66
 #, fuzzy
 #| msgid "Clear document"
-msgid "C_lear document"
+msgid "C_lear Document"
 msgstr "Избриши го документот"
 
 #: rnote-ui/data/ui/canvasmenu.ui:70
 #, fuzzy
 #| msgid "Return to the origin page"
-msgid "_Return to origin page"
+msgid "_Return to Origin Page"
 msgstr "Врати се на почетната страница"
 
-#: rnote-ui/data/ui/canvasmenu.ui:100
+#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "Оддалечи"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-msgid "Reset the zoom"
+#, fuzzy
+#| msgid "Reset the zoom"
+msgid "Reset Zoom"
 msgstr "Далечина на 100%"
 
-#: rnote-ui/data/ui/canvasmenu.ui:116
+#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "Доближи"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-msgid "Zoom to fit page width"
+#, fuzzy
+#| msgid "Zoom to fit page width"
+msgid "Zoom to Page Width"
 msgstr "Поклопи далечина со ширина на страница"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
 #, fuzzy
 #| msgid "Stroke dots radii"
-msgid "Stroke color"
+msgid "Stroke Color"
 msgstr "Радиус на точките"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
 #, fuzzy
 #| msgid "Solid style"
-msgid "Fill color"
+msgid "Fill Color"
 msgstr "Полна линија"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
@@ -1165,65 +1255,62 @@ msgid "Rename"
 msgstr "Преименувај"
 
 #: rnote-ui/data/ui/filerow.ui:66
-msgid "Move into trash"
+#, fuzzy
+#| msgid "Move into trash"
+msgid "Move to Trash"
 msgstr "Премести во канта"
 
 #: rnote-ui/data/ui/filerow.ui:70
 msgid "Duplicate"
 msgstr "Удвои"
 
-#: rnote-ui/data/ui/mainheader.ui:18
-msgid "New document"
-msgstr "Нов документ"
-
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
 msgid "Draft"
 msgstr "Урнек"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-msgid "Reveal / hide flap"
+msgid "Reveal/Hide Flap"
 msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:46
-msgid "New tab"
+msgid "New Tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:68
+#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
 msgstr "Поврати"
 
-#: rnote-ui/data/ui/mainheader.ui:76
+#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:219
 msgid "Redo"
 msgstr "Повтори"
 
 #: rnote-ui/data/ui/mainheader.ui:87
-msgid "Add page"
+#, fuzzy
+#| msgid "Add page"
+msgid "Add Page"
 msgstr "Додај страница"
 
 #: rnote-ui/data/ui/mainheader.ui:94
-msgid "Resize document to fit the strokes"
+#, fuzzy
+#| msgid "Resize document to fit the strokes"
+msgid "Resize Document to Fit Strokes"
 msgstr "Предимензионирај го документот за да се поклопи со цртањата"
 
-#: rnote-ui/data/ui/mainheader.ui:109
-msgid "Save document"
+#: rnote-ui/data/ui/mainheader.ui:109 rnote-ui/data/ui/shortcuts.ui:156
+#, fuzzy
+#| msgid "Save document"
+msgid "Save Document"
 msgstr "Зачувај документ"
 
 #: rnote-ui/data/ui/overlays.ui:151
-msgid "Move _left"
+msgid "Move _Left"
 msgstr ""
 
 #: rnote-ui/data/ui/overlays.ui:155
-msgid "Move _right"
+msgid "Move _Right"
 msgstr ""
 
 #: rnote-ui/data/ui/overlays.ui:161
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
-msgid "Close all _other tabs"
-msgstr "Затвори го активниот прозорец"
-
-#: rnote-ui/data/ui/overlays.ui:165
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
@@ -1234,7 +1321,7 @@ msgstr "Затвори го активниот прозорец"
 msgid "perm."
 msgstr "пост."
 
-#: rnote-ui/data/ui/settingspanel.ui:41
+#: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
 msgstr "Општо"
 
@@ -1247,7 +1334,9 @@ msgid "Enable or disable autosave"
 msgstr "Овозможи или поништи авто-зачувување"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
-msgid "Autosave interval (secs)"
+#, fuzzy
+#| msgid "Autosave interval (secs)"
+msgid "Autosave Interval (secs)"
 msgstr "Интервал на авто-зачувување (секунди)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
@@ -1255,7 +1344,9 @@ msgid "Set the autosave interval in seconds"
 msgstr "Одбери го интервалот на авто-зачувување во секунди"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
-msgid "Format border color"
+#, fuzzy
+#| msgid "Format border color"
+msgid "Format Border Color"
 msgstr "Боја на границите на формата"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
@@ -1263,7 +1354,7 @@ msgid "Set the format border color"
 msgstr "Одбери ја бојата на границите на формата"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
-msgid "Show scrollbars"
+msgid "Show Scrollbars"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:95
@@ -1274,7 +1365,9 @@ msgstr ""
 "Одбери дали страничните водилки на платното треба секогаш да се скриени"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
-msgid "Regular cursor"
+#, fuzzy
+#| msgid "Regular cursor"
+msgid "Regular Cursor"
 msgstr "Нормален покажувач"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
@@ -1282,7 +1375,9 @@ msgid "Set the regular cursor"
 msgstr "Одбери го нормалниот покажувач"
 
 #: rnote-ui/data/ui/settingspanel.ui:128
-msgid "Drawing cursor"
+#, fuzzy
+#| msgid "Drawing cursor"
+msgid "Drawing Cursor"
 msgstr "Покажувач за цртање"
 
 #: rnote-ui/data/ui/settingspanel.ui:129
@@ -1290,7 +1385,9 @@ msgid "Set the drawing cursor"
 msgstr "Одбери го покажувачот за цртање"
 
 #: rnote-ui/data/ui/settingspanel.ui:154
-msgid "Page format"
+#, fuzzy
+#| msgid "Page format"
+msgid "Page Format"
 msgstr "Форма на страница"
 
 #: rnote-ui/data/ui/settingspanel.ui:157
@@ -1365,8 +1462,14 @@ msgstr "Висина"
 msgid "Set the format height"
 msgstr "Одбери ја висината на формата"
 
+#: rnote-ui/data/ui/settingspanel.ui:234
+msgid "Dpi"
+msgstr ""
+
 #: rnote-ui/data/ui/settingspanel.ui:235
-msgid "Set the DPI (dots per inch). Defaults to 96"
+#, fuzzy
+#| msgid "Set the DPI (dots per inch). Defaults to 96"
+msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr "Одбери ТПИ (точки по инч). Вообичаено е 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
@@ -1374,7 +1477,9 @@ msgid "Revert"
 msgstr "Врати"
 
 #: rnote-ui/data/ui/settingspanel.ui:280
-msgid "Document background"
+#, fuzzy
+#| msgid "Document background"
+msgid "Document Background"
 msgstr "Позадина на документ"
 
 #: rnote-ui/data/ui/settingspanel.ui:284
@@ -1398,7 +1503,7 @@ msgid "Lines"
 msgstr "Линии"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
-#: rnote-ui/src/penssidebar/shaperpage.rs:269
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Grid"
 msgstr "Мрежа"
 
@@ -1431,7 +1536,9 @@ msgid "Button Shortcuts"
 msgstr "Копчиња-кратенки"
 
 #: rnote-ui/data/ui/settingspanel.ui:369
-msgid "Stylus primary button action"
+#, fuzzy
+#| msgid "Stylus primary button action"
+msgid "Stylus Primary Button Action"
 msgstr "Примарна акција на пенкалото"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
@@ -1439,7 +1546,9 @@ msgid "Set the action for the primary stylus button"
 msgstr "Одреди ја акцијата за првото копче на пенкалото"
 
 #: rnote-ui/data/ui/settingspanel.ui:381
-msgid "Stylus secondary button action"
+#, fuzzy
+#| msgid "Stylus secondary button action"
+msgid "Stylus Secondary Button Action"
 msgstr "Секундарна акција на пенкалото"
 
 #: rnote-ui/data/ui/settingspanel.ui:382
@@ -1447,7 +1556,9 @@ msgid "Set the action for the secondary stylus button"
 msgstr "Одреди ја акцијата за второто копче на пенкалото"
 
 #: rnote-ui/data/ui/settingspanel.ui:393
-msgid "Mouse secondary button action"
+#, fuzzy
+#| msgid "Mouse secondary button action"
+msgid "Mouse Secondary Button Action"
 msgstr "Акција на второто копче на глувчето"
 
 #: rnote-ui/data/ui/settingspanel.ui:394
@@ -1455,7 +1566,7 @@ msgid "Set the action for the secondary mouse button"
 msgstr "Одреди ја акцијата на второто копче на глувчето"
 
 #: rnote-ui/data/ui/settingspanel.ui:405
-msgid "Touch two-finger long-press action"
+msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:406
@@ -1464,266 +1575,259 @@ msgstr ""
 msgid "Set the action for the touch two-finger long-press gesture"
 msgstr "Одреди ја акцијата на второто копче на глувчето"
 
-#: rnote-ui/data/ui/shortcuts.ui:11
-msgctxt "shortcut window"
-msgid "General"
-msgstr "Општо"
-
 #: rnote-ui/data/ui/shortcuts.ui:14
-msgctxt "shortcut window"
-msgid "Show keyboard shortcuts"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Show keyboard shortcuts"
+msgid "Show Keyboard Shortcuts"
 msgstr "Покажи ги кратенките"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
-msgctxt "shortcut window"
-msgid "Close the active tab"
+msgid "Close the Active Tab"
 msgstr "Затвори го активниот прозорец"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
-msgctxt "shortcut window"
-msgid "Quit the application"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Quit the application"
+msgid "Quit the Application"
 msgstr "Затвори ја апликацијата"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
-msgctxt "shortcut window"
-msgid "Open the canvas menu"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Open the canvas menu"
+msgid "Open the Canvas-Menu"
 msgstr "Отвори го менито за платното"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
-msgctxt "shortcut window"
-msgid "Open the app menu"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Open the app menu"
+msgid "Open the App-Menu"
 msgstr "Отвори го апликациското мени"
 
-#: rnote-ui/data/ui/shortcuts.ui:44
-msgctxt "shortcut window"
-msgid "Toggle fullscreen"
-msgstr "Влези / излези од приказ на цел екран"
-
 #: rnote-ui/data/ui/shortcuts.ui:52
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Navigation"
 msgid "Navigation"
 msgstr "Насочување"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-msgctxt "shortcut window"
 msgid "Switch to the 'Brush'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-msgctxt "shortcut window"
 msgid "Switch to the 'Shaper'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-msgctxt "shortcut window"
 msgid "Switch to the 'Typewriter'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-msgctxt "shortcut window"
 msgid "Switch to the 'Eraser'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-msgctxt "shortcut window"
 msgid "Switch to the 'Selector'"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-msgctxt "shortcut window"
 msgid "Switch to the 'Tools'"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:91 rnote-ui/data/ui/shortcuts.ui:97
-#: rnote-ui/data/ui/shortcuts.ui:103
-msgctxt "shortcut window"
-msgid "Zoom in"
-msgstr "Доближи"
+#: rnote-ui/data/ui/shortcuts.ui:92
+msgid "Alt + Drag"
+msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:109 rnote-ui/data/ui/shortcuts.ui:115
-#: rnote-ui/data/ui/shortcuts.ui:121
-msgctxt "shortcut window"
-msgid "Zoom out"
+#: rnote-ui/data/ui/shortcuts.ui:133
+#, fuzzy
+#| msgid "Zoom out"
+msgid "Zoom in/out"
 msgstr "Оддалечи"
 
-#: rnote-ui/data/ui/shortcuts.ui:129
-msgctxt "shortcut window"
+#: rnote-ui/data/ui/shortcuts.ui:134
+msgid "Alt + Shift + Drag"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Document"
 msgid "Document"
 msgstr "Документ"
 
-#: rnote-ui/data/ui/shortcuts.ui:132
-msgctxt "shortcut window"
-msgid "New document"
-msgstr "Нов документ"
-
-#: rnote-ui/data/ui/shortcuts.ui:138
-msgctxt "shortcut window"
-msgid "Open document"
+#: rnote-ui/data/ui/shortcuts.ui:150
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Open document"
+msgid "Open Document"
 msgstr "Отвори документ"
 
-#: rnote-ui/data/ui/shortcuts.ui:144
-msgctxt "shortcut window"
-msgid "Save document"
-msgstr "Зачувај документ"
-
-#: rnote-ui/data/ui/shortcuts.ui:150
-msgctxt "shortcut window"
-msgid "Save document as"
-msgstr "Зачувај документ како"
-
-#: rnote-ui/data/ui/shortcuts.ui:156
-msgctxt "shortcut window"
-msgid "Clear document"
-msgstr "Избриши документ"
-
-#: rnote-ui/data/ui/shortcuts.ui:162
-msgctxt "shortcut window"
-msgid "Print document"
-msgstr "Испечати документ"
-
-#: rnote-ui/data/ui/shortcuts.ui:168
-msgctxt "shortcut window"
-msgid "Import file"
-msgstr "Внеси датотека"
+#: rnote-ui/data/ui/shortcuts.ui:162 rnote-ui/src/dialogs/export.rs:23
+#, fuzzy
+#| msgid "Save document as"
+msgid "Save Document As"
+msgstr "Зачувај го документот како"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
-msgctxt "shortcut window"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Print document"
+msgid "Print Document"
+msgstr "Испечати документ"
+
+#: rnote-ui/data/ui/shortcuts.ui:180 rnote-ui/src/dialogs/import.rs:138
+#, fuzzy
+#| msgid "Import file"
+msgid "Import File"
+msgstr "Внеси датотека"
+
+#: rnote-ui/data/ui/shortcuts.ui:186
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Drawing"
 msgid "Drawing"
 msgstr "Цртање"
 
-#: rnote-ui/data/ui/shortcuts.ui:177
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgctxt "shortcut window"
-msgid "Copy to clipboard"
-msgstr "Копирај кај привремена меморија"
-
-#: rnote-ui/data/ui/shortcuts.ui:183
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy into clipboard"
-msgctxt "shortcut window"
-msgid "Cut to clipboard"
-msgstr "Копирај кај привремена меморија"
-
 #: rnote-ui/data/ui/shortcuts.ui:189
-msgctxt "shortcut window"
-msgid "Paste clipboard"
-msgstr "Налепи од привремената меморија"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Copy into clipboard"
+msgid "Copy to Clipboard"
+msgstr "Копирај кај привремена меморија"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
 #, fuzzy
-#| msgid "Duplicate selection"
-msgctxt "shortcut window"
-msgid "Duplicate selection"
-msgstr "Удвои го одбраното"
+#| msgctxt "shortcut window"
+#| msgid "Copy into clipboard"
+msgid "Cut to Clipboard"
+msgstr "Копирај кај привремена меморија"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
-msgctxt "shortcut window"
-msgid "Undo"
-msgstr "Поврат"
-
-#: rnote-ui/data/ui/shortcuts.ui:207
-msgctxt "shortcut window"
-msgid "Redo"
-msgstr "Повтори"
+#, fuzzy
+#| msgctxt "shortcut window"
+#| msgid "Paste clipboard"
+msgid "Paste Clipboard"
+msgstr "Налепи од привремената меморија"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
-msgid "Move directory up"
+#, fuzzy
+#| msgid "Move directory up"
+msgid "Move Directory up"
 msgstr "Придвижи ја папката нагоре"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:70
-msgid "Workspace directory actions"
+#, fuzzy
+#| msgid "Workspace directory actions"
+msgid "Workspace Directory Actions"
 msgstr "Акции за работна папка"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
 #, fuzzy
 #| msgid "Create Directory"
-msgid "Create new folder"
+msgid "Create new Folder"
 msgstr "Создај папка"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 #, fuzzy
 #| msgid "Remove workspace"
-msgid "Move selected workspace up"
+msgid "Move Selected Workspace Up"
 msgstr "Одстрани работна површина"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 #, fuzzy
 #| msgid "Change the workspace icon"
-msgid "Move selected workspace down"
+msgid "Move Selected Workspace Down"
 msgstr "Промени ја иконата на раб. површина"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
-msgid "Add workspace"
+#, fuzzy
+#| msgid "Add workspace"
+msgid "Add Workspace"
 msgstr "Додај работна површина"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 #, fuzzy
 #| msgid "Remove workspace"
-msgid "Remove selected workspace"
+msgid "Remove Selected Workspace"
 msgstr "Одстрани работна површина"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 #, fuzzy
 #| msgid "Edit workspace"
-msgid "Edit selected workspace"
+msgid "Edit Selected Workspace"
 msgstr "Уреди ја работната површина"
 
 #: rnote-ui/src/appwindow/mod.rs:505
-msgid "Opening .rnote file failed."
+#, fuzzy
+#| msgid "Opening .rnote file failed."
+msgid "Opening .rnote file failed"
 msgstr "Неуспешно отворање на .rnote датотеката."
 
 #: rnote-ui/src/appwindow/mod.rs:516
-msgid "Opening vector image file failed."
+#, fuzzy
+#| msgid "Opening vector image file failed."
+msgid "Opening vector image file failed"
 msgstr "Неуспешно отворање на векторската датотека."
 
 #: rnote-ui/src/appwindow/mod.rs:527
-msgid "Opening bitmap image file failed."
+#, fuzzy
+#| msgid "Opening bitmap image file failed."
+msgid "Opening bitmap image file failed"
 msgstr "Неуспешно отворање на сликата."
 
 #: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening .xopp file failed."
-msgid "Opening Xournal++ file failed."
+msgid "Opening Xournal++ file failed"
 msgstr "Неуспешно отворање на .xopp датотеката."
 
 #: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
-msgid "Opening PDF file failed."
+#, fuzzy
+#| msgid "Opening PDF file failed."
+msgid "Opening PDF file failed"
 msgstr "Отворањето на PDF-от беше неуспешно."
 
 #: rnote-ui/src/appwindow/mod.rs:558
-msgid "Error: Tried opening folder as file"
+#, fuzzy
+#| msgid "Error: Tried opening folder as file"
+msgid "Failed to open file, tried to open folder as file"
 msgstr "Грешка: Папка не може да се отвора како датотека"
 
 #: rnote-ui/src/appwindow/mod.rs:563
-msgid "Failed to open file: Unsupported file type."
+#, fuzzy
+#| msgid "Failed to open file: Unsupported file type."
+msgid "Failed to open file, unsupported file type"
 msgstr "Неуспех: Неподдржан датотечен вид."
 
 #: rnote-ui/src/appwindow/imp.rs:272
-#: rnote-ui/src/appwindow/appwindowactions.rs:525
+#: rnote-ui/src/appwindow/appwindowactions.rs:522
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:318
-msgid "Saving document failed."
+#, fuzzy
+#| msgid "Saving document failed."
+msgid "Saving document failed"
 msgstr "Зачувувањето на документот беше неуспешно."
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:643
+#: rnote-ui/src/appwindow/appwindowactions.rs:640
 msgid "Printed document successfully"
 msgstr "Документот беше успешно испечатен"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:652
+#: rnote-ui/src/appwindow/appwindowactions.rs:649
 msgid "Printing document failed"
 msgstr "Печатењето на документот беше неуспешно"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:680
+#: rnote-ui/src/appwindow/appwindowactions.rs:677
 #, fuzzy
 #| msgid "Export selection as SVG failed."
-msgid "Export selection failed, nothing selected."
+msgid "Exporting selection failed, nothing selected"
 msgstr "Неуспешно вадење на одбраното како SVG."
 
 #: rnote-ui/src/canvas/mod.rs:994
@@ -1737,7 +1841,7 @@ msgid "- invalid folder path -"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1031
-msgid "Opened file was modified on disk."
+msgid "Opened file was modified on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1032
@@ -1747,15 +1851,15 @@ msgstr ""
 #: rnote-ui/src/canvas/mod.rs:1038
 #, fuzzy
 #| msgid "Opening .rnote file failed."
-msgid "Reloading .rnote file from disk failed."
+msgid "Reloading .rnote file from disk failed"
 msgstr "Неуспешно отворање на .rnote датотеката."
 
 #: rnote-ui/src/canvas/mod.rs:1087
-msgid "Opened file was renamed on disk."
+msgid "Opened file was renamed on disk"
 msgstr ""
 
 #: rnote-ui/src/canvas/mod.rs:1100
-msgid "Opened file was moved or deleted on disk."
+msgid "Opened file was moved or deleted on disk"
 msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
@@ -1764,113 +1868,115 @@ msgstr ""
 msgid ".rnote"
 msgstr ".rnote датотека"
 
-#: rnote-ui/src/dialogs/export.rs:23
-msgid "Save document as"
-msgstr "Зачувај го документот како"
-
 #: rnote-ui/src/dialogs/export.rs:62
-msgid "Saved document successfully."
+#, fuzzy
+#| msgid "Saved document successfully."
+msgid "Saved document successfully"
 msgstr "Документот е успешно зачуван."
 
 #: rnote-ui/src/dialogs/export.rs:195
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Export document failed."
+msgid "Exporting document failed"
 msgstr "Неуспешно вадење на документот како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:197
 #, fuzzy
 #| msgid "Exported document as SVG successfully."
-msgid "Exported document successfully."
+msgid "Exported document successfully"
 msgstr "Успешно вадење на документот како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:203
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Export document failed, no file selected."
+msgid "Exporting document failed, no file selected"
 msgstr "Неуспешно вадење на документот како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:468
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Export document pages failed."
+msgid "Exporting document pages failed"
 msgstr "Неуспешно вадење на документот како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:470
 #, fuzzy
 #| msgid "Exported document as SVG successfully."
-msgid "Exported document pages successfully."
+msgid "Exported document pages successfully"
 msgstr "Успешно вадење на документот како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:476
 #, fuzzy
 #| msgid "Export document as SVG failed."
-msgid "Export document pages failed, no directory selected."
+msgid "Exporting document pages failed, no directory selected"
 msgstr "Неуспешно вадење на документот како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:716
 #, fuzzy
 #| msgid "Export selection as SVG failed."
-msgid "Export selection failed."
+msgid "Exporting selection failed"
 msgstr "Неуспешно вадење на одбраното како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:718
 #, fuzzy
 #| msgid "Exported selection as SVG successfully."
-msgid "Exported selection successfully."
+msgid "Exported selection successfully"
 msgstr "Успешно вадење на одбраното како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:724
 #, fuzzy
 #| msgid "Export selection as SVG failed."
-msgid "Export selection failed, no file selected."
+msgid "Exporting selection failed, no file selected"
 msgstr "Неуспешно вадење на одбраното како SVG."
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
-#, fuzzy
-#| msgid "JSON file"
-msgid "JSON"
-msgstr "JSON датотека"
+msgid "Json"
+msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:814
-msgid "Export engine state"
+#, fuzzy
+#| msgid "Export engine state"
+msgid "Export Engine State"
 msgstr "Извади ја внатрешната состојба на програмот"
 
 #: rnote-ui/src/dialogs/export.rs:852
-msgid "Export engine state failed."
+#, fuzzy
+#| msgid "Export engine state failed."
+msgid "Exporting engine state failed"
 msgstr "Неуспешно вадење на внатрешната состојба."
 
 #: rnote-ui/src/dialogs/export.rs:854
-msgid "Exported engine state successfully."
+#, fuzzy
+#| msgid "Exported engine state successfully."
+msgid "Exported engine state successfully"
 msgstr "Успешно вадење на внатрешната состојба."
 
 #: rnote-ui/src/dialogs/export.rs:878
-msgid "Export engine config"
+#, fuzzy
+#| msgid "Export engine config"
+msgid "Export Engine Config"
 msgstr "Извади ги внатрешните нагодувања на програмот"
 
 #: rnote-ui/src/dialogs/export.rs:916
-msgid "Export engine config failed."
+#, fuzzy
+#| msgid "Export engine config failed."
+msgid "Exporting engine config failed"
 msgstr "Неуспешно вадење на внатрешните нагодувања."
 
 #: rnote-ui/src/dialogs/export.rs:918
-msgid "Exported engine config successfully."
+#, fuzzy
+#| msgid "Exported engine config successfully."
+msgid "Exported engine config successfully"
 msgstr "Успешно вадење на внатрешните нагодувања."
 
 #: rnote-ui/src/dialogs/import.rs:34
-msgid "Opening file failed."
+#, fuzzy
+#| msgid "Opening file failed."
+msgid "Opening file failed"
 msgstr "Отворањето на датотеката беше неуспешно."
 
-#: rnote-ui/src/dialogs/import.rs:85
-msgid "Open file"
-msgstr "Отвори датотека"
-
 #: rnote-ui/src/dialogs/import.rs:135
-msgid "JPG, PDF, PNG, SVG, Xopp"
+msgid "Jpg, Pdf, Png, Svg, Xopp"
 msgstr ""
-
-#: rnote-ui/src/dialogs/import.rs:138
-msgid "Import file"
-msgstr "Внеси датотека"
 
 #: rnote-ui/src/dialogs/import.rs:271
 msgid "- no file name -"
@@ -1917,75 +2023,469 @@ msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 msgid "- unable to find a valid save folder -"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:371
-msgid "Change workspace directory"
+#: rnote-ui/src/dialogs/mod.rs:375
+#, fuzzy
+#| msgid "Change workspace directory"
+msgid "Change Workspace Directory"
 msgstr "Промени ја папката на раб. површина"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:234
+#: rnote-ui/src/dialogs/mod.rs:526
+msgid "Band-Aid"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:527
+msgid "Bank"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:528
+msgid "Bookmark"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:529
+msgid "Book"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:530
+msgid "Bread"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:531
+msgid "Calendar"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:532
+msgid "Camera"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:533
+msgctxt "as in computer chip"
+msgid "Chip"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:534
+msgid "Code"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:535
+msgid "Compose"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:537
+msgid "Drinks"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:538
+msgid "Flag"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:539
+#, fuzzy
+#| msgid "File name:"
+msgid "Folder"
+msgstr "Име на датотека:"
+
+#: rnote-ui/src/dialogs/mod.rs:540
+#, fuzzy
+#| msgid "Constraints"
+msgid "Footprints"
+msgstr "Ограничувања"
+
+#: rnote-ui/src/dialogs/mod.rs:541
+msgid "Gamepad"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:542
+msgid "Gear"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:543
+msgid "Hammer"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:544
+msgid "Heart"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:545
+msgid "Hourglass"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:546
+msgid "Key"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:547
+msgid "Language"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:548
+msgid "Lightbulb"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:549
+msgid "Mathematics"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:550
+#, fuzzy
+#| msgid "Settings"
+msgid "Meeting"
+msgstr "Поставки"
+
+#: rnote-ui/src/dialogs/mod.rs:551
+msgid "Money"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:552
+msgid "Musical Note"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:553
+msgid "Paintbrush"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:554
+msgid "Pencil and Paper"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:555
+msgid "People"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:556
+msgid "Person"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:557
+#, fuzzy
+#| msgid "Directory"
+msgid "Projector"
+msgstr "Папка"
+
+#: rnote-ui/src/dialogs/mod.rs:558
+msgid "Scratchpad"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:559
+#, fuzzy
+#| msgid "Shaper"
+msgid "Shapes"
+msgstr "Оформувач"
+
+#: rnote-ui/src/dialogs/mod.rs:560
+msgid "Shopping"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:561
+msgid "Speech Bubble"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:562
+msgid "Speedometer"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:563
+msgid "Star"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:565
+msgctxt "as in terminal software"
+msgid "Terminal"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:567
+#, fuzzy
+#| msgid "Textured"
+msgid "Text"
+msgstr "Текстурирано"
+
+#: rnote-ui/src/dialogs/mod.rs:568
+msgid "Travel"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:569
+msgid "Weather"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:570
+#, fuzzy
+#| msgid "Height"
+msgid "Weight"
+msgstr "Висина"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:348
 msgid "Miscellaneous"
 msgstr ""
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:242
+#: rnote-ui/src/penssidebar/shaperpage.rs:356
 msgid "Coordinate Systems"
 msgstr ""
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:250
+#: rnote-ui/src/penssidebar/shaperpage.rs:364
 #, fuzzy
 #| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "Елипса"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:257
+#: rnote-ui/src/penssidebar/shaperpage.rs:371
 #, fuzzy
 #| msgid "Curved"
 msgid "Curves"
 msgstr "Закривено"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:267
+#: rnote-ui/src/penssidebar/shaperpage.rs:384
 msgid "Line"
 msgstr "Линија"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:268
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Rectangle"
 msgstr "Правоаголник"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:270
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "2D coordinate system"
 msgstr ""
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:271
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "3D coordinate system"
 msgstr ""
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:273
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:275
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "Ellipse"
 msgstr "Елипса"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:276
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "Ellipse with foci"
 msgstr "Елипса со фокус"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:277
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Quadratic bezier curve"
 msgstr "Квадратна безиерна кривула"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:278
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Cubic bezier curve"
 msgstr "Кубна безиерна кривула"
+
+#: rnote-ui/src/settingspanel/mod.rs:818
+msgid "Crosshair (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:819
+msgid "Crosshair (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:820
+msgid "Crosshair (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:821
+msgid "Dot (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:822
+msgid "Dot (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:823
+msgid "Dot (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:824
+msgid "Teardrop North-West (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:825
+msgid "Teardrop North-West (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:826
+msgid "Teardrop North-West (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:827
+msgid "Teardrop North-East (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:828
+msgid "Teardrop North-East (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:829
+msgid "Teardrop North-East (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:830
+msgid "Teardrop North (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:831
+msgid "Teardrop North (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:832
+msgid "Teardrop North (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:833
+msgid "Beam (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:834
+msgid "Beam (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:835
+msgid "Beam (Large)"
+msgstr ""
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 #, fuzzy
 #| msgid "File name:"
-msgid "Folder name"
+msgid "Folder Name"
 msgstr "Име на датотека:"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
-msgid "New folder"
+msgid "New Folder"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Offset the camera by dragging"
+#~ msgid "Offset the Camera"
+#~ msgstr "При влечење мрдај го погледот"
+
+#~ msgctxt "shortcut window"
+#~ msgid "General"
+#~ msgstr "Општо"
+
+#, fuzzy
+#~| msgid "Toggle fullscreen"
+#~ msgctxt "shortcut window"
+#~ msgid "Toggle Fullscreen"
+#~ msgstr "Влези на цел екран"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Zoom in"
+#~ msgstr "Доближи"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Zoom out"
+#~ msgstr "Оддалечи"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Document"
+#~ msgstr "Документ"
+
+#, fuzzy
+#~| msgid "New Document"
+#~ msgctxt "shortcut window"
+#~ msgid "New Document"
+#~ msgstr "Нов документ"
+
+#, fuzzy
+#~| msgid "Save document"
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document"
+#~ msgstr "Зачувај документ"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Save document as"
+#~ msgctxt "shortcut window"
+#~ msgid "Save Document As"
+#~ msgstr "Зачувај документ како"
+
+#, fuzzy
+#~| msgid "Clear document"
+#~ msgctxt "shortcut window"
+#~ msgid "Clear Document"
+#~ msgstr "Избриши го документот"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Import file"
+#~ msgctxt "shortcut window"
+#~ msgid "Import File"
+#~ msgstr "Внеси датотека"
+
+#, fuzzy
+#~| msgid "Duplicate selection"
+#~ msgctxt "shortcut window"
+#~ msgid "Duplicate Selection"
+#~ msgstr "Удвои го одбраното"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Undo"
+#~ msgstr "Поврат"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Redo"
+#~ msgstr "Повтори"
+
+#~ msgid "Main window in dark colors"
+#~ msgstr "Главен прозорец во темни бои"
+
+#~ msgid "A selection"
+#~ msgstr "Избор"
+
+#~ msgid "Export document"
+#~ msgstr "Извади документ"
+
+#, fuzzy
+#~| msgid "Export Selection"
+#~ msgid "Export selection"
+#~ msgstr "Извади го одбраното"
+
+#, fuzzy
+#~| msgid "Export document"
+#~ msgid "Export _document"
+#~ msgstr "Извади документ"
+
+#, fuzzy
+#~| msgid "Export Selection"
+#~ msgid "Export _selection"
+#~ msgstr "Извади го одбраното"
+
+#~ msgid "New document"
+#~ msgstr "Нов документ"
+
+#, fuzzy
+#~| msgctxt "shortcut window"
+#~| msgid "Close the active window"
+#~ msgid "Close all _other tabs"
+#~ msgstr "Затвори го активниот прозорец"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Toggle fullscreen"
+#~ msgstr "Влези / излези од приказ на цел екран"
+
+#~ msgctxt "shortcut window"
+#~ msgid "New document"
+#~ msgstr "Нов документ"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Save document"
+#~ msgstr "Зачувај документ"
+
+#~ msgctxt "shortcut window"
+#~ msgid "Clear document"
+#~ msgstr "Избриши документ"
+
+#, fuzzy
+#~| msgid "Duplicate selection"
+#~ msgctxt "shortcut window"
+#~ msgid "Duplicate selection"
+#~ msgstr "Удвои го одбраното"
+
+#, fuzzy
+#~| msgid "JSON file"
+#~ msgid "JSON"
+#~ msgstr "JSON датотека"
+
+#~ msgid "Open file"
+#~ msgstr "Отвори датотека"
 
 #~ msgid "Permanently hidden scrollbars"
 #~ msgstr "Секогаш скриени странични водилки"
@@ -2108,14 +2608,6 @@ msgstr ""
 #~| msgid "Import file"
 #~ msgid "Select export file"
 #~ msgstr "Внеси датотека"
-
-#, fuzzy
-#~| msgid "Export document"
-#~ msgid "Export Document"
-#~ msgstr "Извади документ"
-
-#~ msgid "Export Selection"
-#~ msgstr "Извади го одбраното"
 
 #~ msgid "Export selection as SVG"
 #~ msgstr "Извади го одбраното како SVG"

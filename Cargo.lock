@@ -828,9 +828,9 @@ checksum = "b365fabc795046672053e29c954733ec3b05e4be654ab130fe8f1f94d7051f35"
 
 [[package]]
 name = "cxx"
-version = "1.0.89"
+version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc831ee6a32dd495436e317595e639a587aa9907bef96fe6e6abc290ab6204e9"
+checksum = "90d59d9acd2a682b4e40605a242f6670eaa58c5957471cbf85e8aa6a0b97a5e8"
 dependencies = [
  "cc",
  "cxxbridge-flags",
@@ -840,9 +840,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.89"
+version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94331d54f1b1a8895cd81049f7eaaaef9d05a7dcb4d1fd08bf3ff0806246789d"
+checksum = "ebfa40bda659dd5c864e65f4c9a2b0aff19bea56b017b9b77c73d3766a453a38"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -855,9 +855,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-gen"
-version = "0.7.89"
+version = "0.7.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79fbcee8fed340f02188825f751fb2ff806625e5f29cd8f52a4588d4ae68d36d"
+checksum = "ca6081e0b4657c178b4508051eb84d86fdcc54f03c29bce76615214b8f94d37b"
 dependencies = [
  "codespan-reporting",
  "proc-macro2",
@@ -867,15 +867,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.89"
+version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48dcd35ba14ca9b40d6e4b4b39961f23d835dbb8eed74565ded361d93e1feb8a"
+checksum = "457ce6757c5c70dc6ecdbda6925b958aae7f959bda7d8fb9bde889e34a09dc03"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.89"
+version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81bbeb29798b407ccd82a3324ade1a7286e0d29851475990b612670f6f5124d2"
+checksum = "ebf883b7aacd7b2aeb2a7b338648ee19f57c140d4ee8e52c68979c6b2f7f2263"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -884,9 +884,9 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.14.2"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0dd3cd20dc6b5a876612a6e5accfe7f3dd883db6d07acfbf14c128f61550dfa"
+checksum = "c0808e1bd8671fb44a113a14e13497557533369847788fa2ae912b6ebfce9fa8"
 dependencies = [
  "darling_core",
  "darling_macro",
@@ -894,9 +894,9 @@ dependencies = [
 
 [[package]]
 name = "darling_core"
-version = "0.14.2"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a784d2ccaf7c98501746bf0be29b2022ba41fd62a2e622af997a03e9f972859f"
+checksum = "001d80444f28e193f30c2f293455da62dcf9a6b29918a4253152ae2b1de592cb"
 dependencies = [
  "fnv",
  "ident_case",
@@ -908,9 +908,9 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.14.2"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7618812407e9402654622dd402b0a89dff9ba93badd6540781526117b92aab7e"
+checksum = "b36230598a2d5de7ec1c6f51f72d8a99a9208daff41de2084d06e3fd3ea56685"
 dependencies = [
  "darling_core",
  "quote",
@@ -1819,9 +1819,9 @@ dependencies = [
 
 [[package]]
 name = "hermit-abi"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "856b5cb0902c2b6d65d5fd97dfa30f9b70c7538e770b98eab5ed52d8db923e01"
+checksum = "fed44880c466736ef9a5c5b5facefb5ed0785676d0c02d612db14e54f0d84286"
 
 [[package]]
 name = "humantime"
@@ -1971,7 +1971,7 @@ version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22e18b0a45d56fe973d6db23972bf5bc46f988a4a2385deac9cc29572f09daef"
 dependencies = [
- "hermit-abi 0.3.0",
+ "hermit-abi 0.3.1",
  "io-lifetimes",
  "rustix",
  "windows-sys 0.45.0",
@@ -2889,9 +2889,9 @@ checksum = "478c572c3d73181ff3c2539045f6eb99e5491218eae919370993b890cdbdd98e"
 
 [[package]]
 name = "pest"
-version = "2.5.4"
+version = "2.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ab62d2fa33726dbe6321cc97ef96d8cde531e3eeaf858a058de53a8a6d40d8f"
+checksum = "028accff104c4e513bad663bbcd2ad7cfd5304144404c31ed0a77ac103d00660"
 dependencies = [
  "thiserror",
  "ucd-trie",
@@ -3074,8 +3074,9 @@ dependencies = [
 
 [[package]]
 name = "points_on_curve"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbd55aaa619ef3e710ba6515663cb9afdf54ab4b09b2b3d069622f3a71736295"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3432,16 +3433,16 @@ dependencies = [
 
 [[package]]
 name = "rgb"
-version = "0.8.34"
+version = "0.8.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3603b7d71ca82644f79b5a06d1220e9a58ede60bd32255f698cb1af8838b8db3"
+checksum = "7495acf66551cdb696b7711408144bcd3194fc78e32f3a09e809bfe7dd4a7ce3"
 dependencies = [
  "bytemuck",
 ]
 
 [[package]]
 name = "rnote"
-version = "0.5.13"
+version = "0.5.14"
 dependencies = [
  "anyhow",
  "cairo-rs",
@@ -3482,7 +3483,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-cli"
-version = "0.5.13"
+version = "0.5.14"
 dependencies = [
  "anyhow",
  "clap 4.1.4",
@@ -3597,8 +3598,9 @@ dependencies = [
 
 [[package]]
 name = "rough_piet"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5a14e818382f4a369057267528444e6b72df2a536a3df23bf330085fd21d0b9"
 dependencies = [
  "euclid",
  "num-traits",
@@ -3609,8 +3611,9 @@ dependencies = [
 
 [[package]]
 name = "roughr"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69f4d01f4086c813a8781c699dde7dcfddc87dbfc7a9cb316fbc789734987f6a"
 dependencies = [
  "derive_builder",
  "euclid",
@@ -3859,9 +3862,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.92"
+version = "1.0.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7434af0dc1cbd59268aa98b4c22c131c0584d2232f6fb166efb993e2832e896a"
+checksum = "cad406b69c91885b5107daf2c29572f6c8cdb3c66826821e286c533490c0bc76"
 dependencies = [
  "itoa 1.0.5",
  "ryu",
@@ -3901,9 +3904,9 @@ checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
 
 [[package]]
 name = "signal-hook"
-version = "0.3.14"
+version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a253b5e89e2698464fc26b545c9edceb338e18a89effeeecfea192c3025be29d"
+checksum = "732768f1176d21d09e076c23a93123d40bba92d50c4058da34d45c8de8e682b9"
 dependencies = [
  "libc",
  "signal-hook-registry",
@@ -3911,9 +3914,9 @@ dependencies = [
 
 [[package]]
 name = "signal-hook-registry"
-version = "1.4.0"
+version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e51e73328dc4ac0c7ccbda3a494dfa03df1de2f46018127f60c693f2648455b0"
+checksum = "d8229b473baa5980ac72ef434c4415e70c4b5e71b423043adb4ba059f89c99a1"
 dependencies = [
  "libc",
 ]
@@ -4018,9 +4021,9 @@ dependencies = [
 
 [[package]]
 name = "spin"
-version = "0.9.4"
+version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f6002a767bff9e83f8eeecf883ecb8011875a21ae8da43bffb817a57e78cc09"
+checksum = "7dccf47db1b41fa1573ed27ccf5e08e3ca771cb994f776668c5ebda893b248fc"
 dependencies = [
  "lock_api",
 ]
@@ -4170,8 +4173,9 @@ checksum = "e715e0c3fc987f4c435dc7189641fd9caa6919a74675ace605c38e201d278001"
 
 [[package]]
 name = "svg_path_ops"
-version = "0.4.0"
-source = "git+https://github.com/orhanbalci/rough-rs?rev=7cbdff4e4442af33996d8d28603ff2e19b5f5c2c#7cbdff4e4442af33996d8d28603ff2e19b5f5c2c"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9f934257a2a95c29314aceebc68a34b201e9c1fc875fc1c5d63e96895ace8cd"
 dependencies = [
  "svgtypes",
 ]

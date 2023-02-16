@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-07 18:44+0000\n"
+"PO-Revision-Date: 2023-02-16 03:38+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -772,10 +772,8 @@ msgstr "Dikey Boşluk Ekle"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgid "Move _Left"
 msgid "Move View"
-msgstr "_Sola Taşı"
+msgstr "Görünümü Taşı"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1012,8 +1010,6 @@ msgid "Zoom out"
 msgstr "Uzaklaştır"
 
 #: rnote-ui/data/ui/canvasmenu.ui:109
-#, fuzzy
-#| msgid "Reset the Zoom"
 msgid "Reset Zoom"
 msgstr "Yakınlaştırmayı Sıfırla"
 
@@ -1023,10 +1019,8 @@ msgid "Zoom in"
 msgstr "Yakınlaştır"
 
 #: rnote-ui/data/ui/canvasmenu.ui:128
-#, fuzzy
-#| msgid "Zoom to Fit Page Width"
 msgid "Zoom to Page Width"
-msgstr "Sayfa Genişliğine Sığdırmak İçin Yakınlaştır"
+msgstr "Sayfa Genişliğine Yakınlaştır"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
@@ -1046,8 +1040,6 @@ msgid "Rename"
 msgstr "Yeniden adlandır"
 
 #: rnote-ui/data/ui/filerow.ui:66
-#, fuzzy
-#| msgid "Move Into Trash"
 msgid "Move to Trash"
 msgstr "Çöpe Taşı"
 

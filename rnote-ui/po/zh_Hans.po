@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-01-23 18:19+0000\n"
-"Last-Translator: Coned Zot <conedcm@gmail.com>\n"
+"PO-Revision-Date: 2023-02-17 08:12+0000\n"
+"Last-Translator: Fogberry <newopen@tuta.io>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -65,8 +65,6 @@ msgid "Lecture Note 2"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
-#, fuzzy
-#| msgid "Clear document"
 msgid "Clear Document"
 msgstr "清空文档"
 
@@ -122,46 +120,34 @@ msgid "Save"
 msgstr "保存"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Tab"
-msgstr "关闭活动窗口"
+msgstr "关闭标签"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
-msgstr ""
+msgstr "此选项包含未保存的更改。未保存的更改将永久丢失。"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Window"
-msgstr "关闭活动窗口"
+msgstr "关闭窗口"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
-msgstr ""
+msgstr "某些打开的文件包含未保存的更改。未保存的更改将永久丢失。"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Save document"
 msgid "Unsaved Documents"
-msgstr "保存文档"
+msgstr "未保存的文档"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard All"
-msgstr "不保存"
+msgstr "全部不保存"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
 msgstr "编辑工作区"
 
@@ -206,10 +192,8 @@ msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
-#| msgid "Change the workspace directory"
 msgid "Change the directory"
-msgstr "更改工作区目录"
+msgstr "更改目录"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:85
 msgid "Open File"
@@ -232,29 +216,21 @@ msgstr "导入"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "信息"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "PDF Import Preferences"
 msgstr "PDF 导入偏好"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
-#, fuzzy
-#| msgid "Start page"
 msgid "Start Page"
 msgstr "开始页面"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
-#| msgid "End page"
 msgid "End Page"
 msgstr "最后一页"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
-#, fuzzy
-#| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "页面宽度(%)"
 
@@ -263,8 +239,6 @@ msgid "Set the width of imported PDF's in percentage to the format width"
 msgstr "设置导入 PDF 相对页面的宽度百分比"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "页间距"
 
@@ -277,14 +251,10 @@ msgid "Continuous"
 msgstr "连续"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
-#, fuzzy
-#| msgid "One per document page"
 msgid "One per Document Page"
 msgstr "分页"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
-#, fuzzy
-#| msgid "Pages type"
 msgid "Pages Type"
 msgstr "页面类型"
 
@@ -303,8 +273,6 @@ msgstr "位图"
 #: rnote-ui/data/ui/dialogs/import.ui:189
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
-#, fuzzy
-#| msgid "Bitmap scale factor"
 msgid "Bitmap Scale-Factor"
 msgstr "位图缩放系数"
 
@@ -319,14 +287,10 @@ msgstr ""
 "设置位图缩放倍数"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
-#, fuzzy
-#| msgid "Import Xournal++ file"
 msgid "Import Xournal++ File"
 msgstr "导入Xournal++文件"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
-#, fuzzy
-#| msgid "Xournal++ file import preferences"
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++文件导入设定"
 
@@ -339,8 +303,6 @@ msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "为Xournal++文件设置推荐的DPI"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Document"
 msgstr "导出文档"
 
@@ -351,8 +313,6 @@ msgid "Export"
 msgstr "导出"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Export file"
 msgid "Export File"
 msgstr "导出文件"
 
@@ -370,15 +330,11 @@ msgstr "— 没有文件被选中 —"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
-#, fuzzy
-#| msgid "Export preferences"
 msgid "Export Preferences"
 msgstr "导出设定"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
-#, fuzzy
-#| msgid "With background"
 msgid "With Background"
 msgstr "包含背景"
 
@@ -389,8 +345,6 @@ msgstr "设置导出时的背景颜色"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
-#, fuzzy
-#| msgid "With pattern"
 msgid "With Pattern"
 msgstr "包含纹理"
 
@@ -402,8 +356,6 @@ msgstr "设置导出时包含的背景图案"
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
-#, fuzzy
-#| msgid "Export format"
 msgid "Export Format"
 msgstr "导出格式"
 
@@ -428,8 +380,6 @@ msgid "Xopp"
 msgstr "Xournal++ 笔记本（Xopp）"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
-#, fuzzy
-#| msgid "Export document pages"
 msgid "Export Document Pages"
 msgstr "导出文档页面"
 
@@ -440,8 +390,6 @@ msgid "Page Files Naming:"
 msgstr "页间距"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
-#| msgid "Export directory"
 msgid "Export Directory"
 msgstr "导出目录"
 
@@ -450,8 +398,6 @@ msgid "Select the export directory"
 msgstr "选择导出时的目录"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
-#, fuzzy
-#| msgid "Export files stem name"
 msgid "Export Files Stem Name"
 msgstr "导出文件主名称"
 
@@ -469,8 +415,6 @@ msgstr "联合图像标准（JPEG）"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
-#, fuzzy
-#| msgid "Jpeg quality"
 msgid "Jpeg Quality"
 msgstr "Jpeg图像质量"
 
@@ -496,15 +440,11 @@ msgid "Set the margin around the selected area"
 msgstr "设置选区周围的边距"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
 msgid "Brush Style"
 msgstr "刷子样式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:133
-#, fuzzy
-#| msgid "Brush configuration"
 msgid "Brush Configuration"
 msgstr "刷子设置"
 
@@ -878,7 +818,7 @@ msgstr "插入竖直空白"
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:91
 msgid "Move View"
-msgstr ""
+msgstr "移动视图"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 #, fuzzy
@@ -1245,7 +1185,7 @@ msgstr "显示/隐藏翻页菜单"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
-msgstr ""
+msgstr "新标签页"
 
 #: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
@@ -1275,11 +1215,11 @@ msgstr "保存文档"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _Left"
-msgstr ""
+msgstr "左移"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _Right"
-msgstr ""
+msgstr "右移"
 
 #: rnote-ui/data/ui/overlays.ui:161
 #, fuzzy
@@ -1326,7 +1266,7 @@ msgstr "设置格式界线颜色"
 
 #: rnote-ui/data/ui/settingspanel.ui:94
 msgid "Show Scrollbars"
-msgstr ""
+msgstr "显示滚动条"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 #, fuzzy
@@ -1434,7 +1374,7 @@ msgstr "设置纸张高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:234
 msgid "Dpi"
-msgstr ""
+msgstr "分辨率"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
 #, fuzzy
@@ -1826,7 +1766,7 @@ msgstr "—— 没有文件名 ——"
 
 #: rnote-ui/src/canvas/mod.rs:1007
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "-无效的文件夹路径-"
 
 #: rnote-ui/src/canvas/mod.rs:1031
 #, fuzzy
@@ -2015,7 +1955,7 @@ msgstr "译者注"
 
 #: rnote-ui/src/dialogs/mod.rs:274
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "-无法找到有效的保存文件夹-"
 
 #: rnote-ui/src/dialogs/mod.rs:375
 #, fuzzy
@@ -2033,7 +1973,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:528
 msgid "Bookmark"
-msgstr ""
+msgstr "书签"
 
 #: rnote-ui/src/dialogs/mod.rs:529
 msgid "Book"
@@ -2045,11 +1985,11 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:531
 msgid "Calendar"
-msgstr ""
+msgstr "日历"
 
 #: rnote-ui/src/dialogs/mod.rs:532
 msgid "Camera"
-msgstr ""
+msgstr "相机"
 
 #: rnote-ui/src/dialogs/mod.rs:533
 msgctxt "as in computer chip"

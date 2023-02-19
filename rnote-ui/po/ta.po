@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:26+0100\n"
+"POT-Creation-Date: 2023-02-19 15:04+0100\n"
 "PO-Revision-Date: 2023-02-13 15:02+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "தெளிவு"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
 msgid "New Document"
 msgstr "புதிய ஆவணம்"
 
@@ -1043,7 +1043,7 @@ msgstr "குப்பைக்கு நகர்த்தவும்"
 msgid "Duplicate"
 msgstr "நகல்"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:494
 msgid "Draft"
 msgstr "வரைவு"
 
@@ -1087,9 +1087,17 @@ msgstr "நகர்த்து _வலதுபுறம்"
 msgid "_Close"
 msgstr "_ மூடவும்"
 
-#: rnote-ui/data/ui/penshortcutrow.ui:8
-msgid "perm."
-msgstr "பெர்ம்."
+#: rnote-ui/data/ui/penshortcutrow.ui:11
+msgid "Temporary"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:12
+msgid "Permanent"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:13
+msgid "Toggle"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1293,31 +1301,47 @@ msgid "Stylus Primary Button Action"
 msgstr "எழுத்தாணி முதன்மை பொத்தான் நடவடிக்கை"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-msgid "Set the action for the primary stylus button"
+#, fuzzy
+#| msgid "Set the action for the primary stylus button"
+msgid ""
+"Set the action for the\n"
+"primary stylus button"
 msgstr "முதன்மை ஸ்டைலஸ் பட்டனுக்கான செயலை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:381
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "எழுத்தாணி இரண்டாம் நிலை பொத்தான் செயல்"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
-msgid "Set the action for the secondary stylus button"
+#: rnote-ui/data/ui/settingspanel.ui:383
+#, fuzzy
+#| msgid "Set the action for the secondary stylus button"
+msgid ""
+"Set the action for the\n"
+"secondary stylus button"
 msgstr "இரண்டாம் நிலை ஸ்டைலஸ் பொத்தானுக்கு செயலை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:393
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "சுட்டி இரண்டாம் நிலை பொத்தான் செயல்"
 
-#: rnote-ui/data/ui/settingspanel.ui:394
-msgid "Set the action for the secondary mouse button"
+#: rnote-ui/data/ui/settingspanel.ui:396
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid ""
+"Set the action for the\n"
+"secondary mouse button"
 msgstr "இரண்டாம் நிலை சுட்டி பொத்தானின் செயலை அமைக்கவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:405
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
 
-#: rnote-ui/data/ui/settingspanel.ui:406
-msgid "Set the action for the touch two-finger long-press gesture"
+#: rnote-ui/data/ui/settingspanel.ui:409
+#, fuzzy
+#| msgid "Set the action for the touch two-finger long-press gesture"
+msgid ""
+"Set the action for the touch\n"
+"two-finger long-press gesture"
 msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
@@ -1496,31 +1520,31 @@ msgstr "ஆவணத்தை அச்சிட முடியவில்ல�
 msgid "Exporting selection failed, nothing selected"
 msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
-#: rnote-ui/src/canvas/mod.rs:994
+#: rnote-ui/src/canvas/mod.rs:725
 msgid "- invalid file name -"
 msgstr "- தவறான கோப்பு பெயர் -"
 
-#: rnote-ui/src/canvas/mod.rs:1007
+#: rnote-ui/src/canvas/mod.rs:738
 msgid "- invalid folder path -"
 msgstr "- தவறான கோப்புறை பாதை -"
 
-#: rnote-ui/src/canvas/mod.rs:1031
+#: rnote-ui/src/canvas/mod.rs:762
 msgid "Opened file was modified on disk"
 msgstr "திறக்கப்பட்ட கோப்பு வட்டில் மாற்றப்பட்டது"
 
-#: rnote-ui/src/canvas/mod.rs:1032
+#: rnote-ui/src/canvas/mod.rs:763
 msgid "Reload"
 msgstr "மறுஏற்றம்"
 
-#: rnote-ui/src/canvas/mod.rs:1038
+#: rnote-ui/src/canvas/mod.rs:769
 msgid "Reloading .rnote file from disk failed"
 msgstr "வட்டில் இருந்து .rnote கோப்பை மீண்டும் ஏற்றுவது தோல்வியடைந்தது"
 
-#: rnote-ui/src/canvas/mod.rs:1087
+#: rnote-ui/src/canvas/mod.rs:818
 msgid "Opened file was renamed on disk"
 msgstr "திறந்த கோப்பு வட்டில் மறுபெயரிடப்பட்டது"
 
-#: rnote-ui/src/canvas/mod.rs:1100
+#: rnote-ui/src/canvas/mod.rs:831
 msgid "Opened file was moved or deleted on disk"
 msgstr "திறக்கப்பட்ட கோப்பு வட்டில் நகர்த்தப்பட்டது அல்லது நீக்கப்பட்டது"
 
@@ -1542,8 +1566,7 @@ msgstr "ஆவணம் வெற்றிகரமாக ஏற்றுமத�
 
 #: rnote-ui/src/dialogs/export.rs:203
 msgid "Exporting document failed, no file selected"
-msgstr ""
-"ஆவணத்தை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+msgstr "ஆவணத்தை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:468
 msgid "Exporting document pages failed"
@@ -1555,9 +1578,7 @@ msgstr "ஆவணப் பக்கங்கள் வெற்றிகரம�
 
 #: rnote-ui/src/dialogs/export.rs:476
 msgid "Exporting document pages failed, no directory selected"
-msgstr ""
-"ஆவணப் பக்கங்களை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பகம் எதுவும் "
-"தேர்ந்தெடுக்கப்படவில்லை"
+msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பகம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:716
 msgid "Exporting selection failed"
@@ -1569,8 +1590,7 @@ msgstr "தேர்வு வெற்றிகரமாக ஏற்றும�
 
 #: rnote-ui/src/dialogs/export.rs:724
 msgid "Exporting selection failed, no file selected"
-msgstr ""
-"தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
@@ -1879,75 +1899,75 @@ msgstr "இருபடி பெஜியர் வளைவு"
 msgid "Cubic bezier curve"
 msgstr "க்யூபிக் பெஜியர் வளைவு"
 
-#: rnote-ui/src/settingspanel/mod.rs:818
+#: rnote-ui/src/settingspanel/mod.rs:810
 msgid "Crosshair (Small)"
 msgstr "குறுக்கு முடி (சிறியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:819
+#: rnote-ui/src/settingspanel/mod.rs:811
 msgid "Crosshair (Medium)"
 msgstr "குறுக்கு முடி (நடுத்தர)"
 
-#: rnote-ui/src/settingspanel/mod.rs:820
+#: rnote-ui/src/settingspanel/mod.rs:812
 msgid "Crosshair (Large)"
 msgstr "குறுக்கு முடி (பெரியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:821
+#: rnote-ui/src/settingspanel/mod.rs:813
 msgid "Dot (Small)"
 msgstr "புள்ளி (சிறியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:822
+#: rnote-ui/src/settingspanel/mod.rs:814
 msgid "Dot (Medium)"
 msgstr "புள்ளி (நடுத்தர)"
 
-#: rnote-ui/src/settingspanel/mod.rs:823
+#: rnote-ui/src/settingspanel/mod.rs:815
 msgid "Dot (Large)"
 msgstr "புள்ளி (பெரியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:824
+#: rnote-ui/src/settingspanel/mod.rs:816
 msgid "Teardrop North-West (Small)"
 msgstr "கண்ணீர் வடமேற்கு (சிறியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:825
+#: rnote-ui/src/settingspanel/mod.rs:817
 msgid "Teardrop North-West (Medium)"
 msgstr "கண்ணீர் வடமேற்கு (நடுத்தர)"
 
-#: rnote-ui/src/settingspanel/mod.rs:826
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Teardrop North-West (Large)"
 msgstr "கண்ணீர் வடமேற்கு (பெரியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:827
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Teardrop North-East (Small)"
 msgstr "கண்ணீர் வடகிழக்கு (சிறியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:828
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Teardrop North-East (Medium)"
 msgstr "கண்ணீர் வடகிழக்கு (நடுத்தர)"
 
-#: rnote-ui/src/settingspanel/mod.rs:829
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Teardrop North-East (Large)"
 msgstr "கண்ணீர் வடகிழக்கு (பெரியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:830
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Teardrop North (Small)"
 msgstr "கண்ணீர் வடக்கில் (சிறியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:831
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Teardrop North (Medium)"
 msgstr "கண்ணீர் வடக்கில் (நடுத்தர)"
 
-#: rnote-ui/src/settingspanel/mod.rs:832
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North (Large)"
 msgstr "கண்ணீர் வடக்கில் (பெரியது)"
 
-#: rnote-ui/src/settingspanel/mod.rs:833
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Beam (Small)"
 msgstr "கற்றை (சிறிய)"
 
-#: rnote-ui/src/settingspanel/mod.rs:834
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Beam (Medium)"
 msgstr "கற்றை (நடுத்தரம்)"
 
-#: rnote-ui/src/settingspanel/mod.rs:835
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Beam (Large)"
 msgstr "கற்றை (பெரியது)"
 
@@ -1958,6 +1978,9 @@ msgstr "கோப்புறை பெயர்"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "புதிய அடைவு"
+
+#~ msgid "perm."
+#~ msgstr "பெர்ம்."
 
 #~ msgid "Offset the Camera"
 #~ msgstr "புகைப்பட கருவியை ஆஃப்செட் செய்யவும்"

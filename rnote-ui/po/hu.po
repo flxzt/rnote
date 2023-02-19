@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:26+0100\n"
+"POT-Creation-Date: 2023-02-19 15:04+0100\n"
 "PO-Revision-Date: 2023-02-07 11:36+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
@@ -96,7 +96,7 @@ msgid "Clear"
 msgstr "Törlés"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
 msgid "New Document"
 msgstr "Új dokumentum"
 
@@ -1054,7 +1054,7 @@ msgstr "Áthelyezés a kukába"
 msgid "Duplicate"
 msgstr "Megkettőzés"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:494
 msgid "Draft"
 msgstr "Piszkozat"
 
@@ -1100,9 +1100,17 @@ msgstr "Áthelyezés _jobbra"
 msgid "_Close"
 msgstr "_Bezárás"
 
-#: rnote-ui/data/ui/penshortcutrow.ui:8
-msgid "perm."
-msgstr "perm."
+#: rnote-ui/data/ui/penshortcutrow.ui:11
+msgid "Temporary"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:12
+msgid "Permanent"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:13
+msgid "Toggle"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1308,31 +1316,47 @@ msgid "Stylus Primary Button Action"
 msgstr "Ceruza elsődleges gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-msgid "Set the action for the primary stylus button"
+#, fuzzy
+#| msgid "Set the action for the primary stylus button"
+msgid ""
+"Set the action for the\n"
+"primary stylus button"
 msgstr "A ceruza elsődleges gombjának műveletének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:381
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "Ceruza másodlagos gombjának művelete"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
-msgid "Set the action for the secondary stylus button"
+#: rnote-ui/data/ui/settingspanel.ui:383
+#, fuzzy
+#| msgid "Set the action for the secondary stylus button"
+msgid ""
+"Set the action for the\n"
+"secondary stylus button"
 msgstr "A ceruza elsődleges gombjának műveletének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:393
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "Egér másodlagos gombjának művelete"
 
-#: rnote-ui/data/ui/settingspanel.ui:394
-msgid "Set the action for the secondary mouse button"
+#: rnote-ui/data/ui/settingspanel.ui:396
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid ""
+"Set the action for the\n"
+"secondary mouse button"
 msgstr "A másodlagos egérgomb műveletének beállítása"
 
-#: rnote-ui/data/ui/settingspanel.ui:405
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "Kétujjas, hosszan megnyomott érintési művelet"
 
-#: rnote-ui/data/ui/settingspanel.ui:406
-msgid "Set the action for the touch two-finger long-press gesture"
+#: rnote-ui/data/ui/settingspanel.ui:409
+#, fuzzy
+#| msgid "Set the action for the touch two-finger long-press gesture"
+msgid ""
+"Set the action for the touch\n"
+"two-finger long-press gesture"
 msgstr "Állítsa be a kétujjas, hosszan megnyomott érintési mozdulat műveletét"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
@@ -1592,37 +1616,37 @@ msgstr "A dokumentum nyomtatása nem sikerült"
 msgid "Exporting selection failed, nothing selected"
 msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi."
 
-#: rnote-ui/src/canvas/mod.rs:994
+#: rnote-ui/src/canvas/mod.rs:725
 msgid "- invalid file name -"
 msgstr "- érvénytelen fáljnév -"
 
-#: rnote-ui/src/canvas/mod.rs:1007
+#: rnote-ui/src/canvas/mod.rs:738
 msgid "- invalid folder path -"
 msgstr "- érvénytelen mappa elérési út -"
 
-#: rnote-ui/src/canvas/mod.rs:1031
+#: rnote-ui/src/canvas/mod.rs:762
 #, fuzzy
 #| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
 msgstr "A megnyitott fájl módosításra került a lemezen."
 
-#: rnote-ui/src/canvas/mod.rs:1032
+#: rnote-ui/src/canvas/mod.rs:763
 msgid "Reload"
 msgstr "Újratöltés"
 
-#: rnote-ui/src/canvas/mod.rs:1038
+#: rnote-ui/src/canvas/mod.rs:769
 #, fuzzy
 #| msgid "Reloading .rnote file from disk failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr "Az .rnote fájl újratöltése a lemezről sikertelen."
 
-#: rnote-ui/src/canvas/mod.rs:1087
+#: rnote-ui/src/canvas/mod.rs:818
 #, fuzzy
 #| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
 msgstr "A megnyitott fájl át lett nevezve a lemezen."
 
-#: rnote-ui/src/canvas/mod.rs:1100
+#: rnote-ui/src/canvas/mod.rs:831
 #, fuzzy
 #| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
@@ -2013,75 +2037,75 @@ msgstr "Kvadratikus bezier-görbe"
 msgid "Cubic bezier curve"
 msgstr "Köbös bezier-görbe"
 
-#: rnote-ui/src/settingspanel/mod.rs:818
+#: rnote-ui/src/settingspanel/mod.rs:810
 msgid "Crosshair (Small)"
 msgstr "Hajszálkereszt (kicsi)"
 
-#: rnote-ui/src/settingspanel/mod.rs:819
+#: rnote-ui/src/settingspanel/mod.rs:811
 msgid "Crosshair (Medium)"
 msgstr "Hajszálkereszt (közepes)"
 
-#: rnote-ui/src/settingspanel/mod.rs:820
+#: rnote-ui/src/settingspanel/mod.rs:812
 msgid "Crosshair (Large)"
 msgstr "Hajszálkereszt (nagy)"
 
-#: rnote-ui/src/settingspanel/mod.rs:821
+#: rnote-ui/src/settingspanel/mod.rs:813
 msgid "Dot (Small)"
 msgstr "Pont (kicsi)"
 
-#: rnote-ui/src/settingspanel/mod.rs:822
+#: rnote-ui/src/settingspanel/mod.rs:814
 msgid "Dot (Medium)"
 msgstr "Pont (közepes)"
 
-#: rnote-ui/src/settingspanel/mod.rs:823
+#: rnote-ui/src/settingspanel/mod.rs:815
 msgid "Dot (Large)"
 msgstr "Pont (nagy)"
 
-#: rnote-ui/src/settingspanel/mod.rs:824
+#: rnote-ui/src/settingspanel/mod.rs:816
 msgid "Teardrop North-West (Small)"
 msgstr "Könnycsepp északnyugat (kicsi)"
 
-#: rnote-ui/src/settingspanel/mod.rs:825
+#: rnote-ui/src/settingspanel/mod.rs:817
 msgid "Teardrop North-West (Medium)"
 msgstr "Könnycsepp északnyugat (közepes)"
 
-#: rnote-ui/src/settingspanel/mod.rs:826
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Teardrop North-West (Large)"
 msgstr "Könnycsepp északnyugat (nagy)"
 
-#: rnote-ui/src/settingspanel/mod.rs:827
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Teardrop North-East (Small)"
 msgstr "Könnycsepp északkeleti (kicsi)"
 
-#: rnote-ui/src/settingspanel/mod.rs:828
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Teardrop North-East (Medium)"
 msgstr "Könnycsepp északkelet (közepes)"
 
-#: rnote-ui/src/settingspanel/mod.rs:829
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Teardrop North-East (Large)"
 msgstr "Könnycsepp északkeleti (nagy)"
 
-#: rnote-ui/src/settingspanel/mod.rs:830
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Teardrop North (Small)"
 msgstr "Könnycsepp észak (kicsi)"
 
-#: rnote-ui/src/settingspanel/mod.rs:831
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Teardrop North (Medium)"
 msgstr "Könnycsepp észak (közepes)"
 
-#: rnote-ui/src/settingspanel/mod.rs:832
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North (Large)"
 msgstr "Könnycsepp észak (nagy)"
 
-#: rnote-ui/src/settingspanel/mod.rs:833
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Beam (Small)"
 msgstr "Gerenda (kicsi)"
 
-#: rnote-ui/src/settingspanel/mod.rs:834
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Beam (Medium)"
 msgstr "Gerenda (közepes)"
 
-#: rnote-ui/src/settingspanel/mod.rs:835
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Beam (Large)"
 msgstr "Gerenda (nagy)"
 
@@ -2092,6 +2116,9 @@ msgstr "Mappanév"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Új mappa"
+
+#~ msgid "perm."
+#~ msgstr "perm."
 
 #~ msgid "Offset the Camera"
 #~ msgstr "Fényképezőgép eltolása"

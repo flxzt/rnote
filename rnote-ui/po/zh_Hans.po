@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:26+0100\n"
+"POT-Creation-Date: 2023-02-19 15:04+0100\n"
 "PO-Revision-Date: 2023-02-17 08:12+0000\n"
 "Last-Translator: Fogberry <newopen@tuta.io>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "清空"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
 msgid "New Document"
 msgstr "新建文档"
 
@@ -1173,7 +1173,7 @@ msgstr "移至回收站"
 msgid "Duplicate"
 msgstr "重复所选内容"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:494
 msgid "Draft"
 msgstr "草稿"
 
@@ -1228,9 +1228,17 @@ msgstr "右移"
 msgid "_Close"
 msgstr "关闭活动窗口"
 
-#: rnote-ui/data/ui/penshortcutrow.ui:8
-msgid "perm."
-msgstr "perm."
+#: rnote-ui/data/ui/penshortcutrow.ui:11
+msgid "Temporary"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:12
+msgid "Permanent"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:13
+msgid "Toggle"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1452,37 +1460,51 @@ msgid "Stylus Primary Button Action"
 msgstr "手写笔主按键动作"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-msgid "Set the action for the primary stylus button"
+#, fuzzy
+#| msgid "Set the action for the primary stylus button"
+msgid ""
+"Set the action for the\n"
+"primary stylus button"
 msgstr "设置手写笔主按键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:381
+#: rnote-ui/data/ui/settingspanel.ui:382
 #, fuzzy
 #| msgid "Stylus secondary button action"
 msgid "Stylus Secondary Button Action"
 msgstr "手写笔副按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
-msgid "Set the action for the secondary stylus button"
+#: rnote-ui/data/ui/settingspanel.ui:383
+#, fuzzy
+#| msgid "Set the action for the secondary stylus button"
+msgid ""
+"Set the action for the\n"
+"secondary stylus button"
 msgstr "设置手写笔副按键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:393
+#: rnote-ui/data/ui/settingspanel.ui:395
 #, fuzzy
 #| msgid "Mouse secondary button action"
 msgid "Mouse Secondary Button Action"
 msgstr "鼠标次键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:394
-msgid "Set the action for the secondary mouse button"
+#: rnote-ui/data/ui/settingspanel.ui:396
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid ""
+"Set the action for the\n"
+"secondary mouse button"
 msgstr "设置鼠标次键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:405
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:406
+#: rnote-ui/data/ui/settingspanel.ui:409
 #, fuzzy
 #| msgid "Set the action for the secondary mouse button"
-msgid "Set the action for the touch two-finger long-press gesture"
+msgid ""
+"Set the action for the touch\n"
+"two-finger long-press gesture"
 msgstr "设置鼠标次键执行的动作"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
@@ -1758,39 +1780,39 @@ msgstr "打印失败"
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容。"
 
-#: rnote-ui/src/canvas/mod.rs:994
+#: rnote-ui/src/canvas/mod.rs:725
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
 msgstr "—— 没有文件名 ——"
 
-#: rnote-ui/src/canvas/mod.rs:1007
+#: rnote-ui/src/canvas/mod.rs:738
 msgid "- invalid folder path -"
 msgstr "-无效的文件夹路径-"
 
-#: rnote-ui/src/canvas/mod.rs:1031
+#: rnote-ui/src/canvas/mod.rs:762
 #, fuzzy
 #| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
 msgstr "打开的文件已在磁盘上被修改过。"
 
-#: rnote-ui/src/canvas/mod.rs:1032
+#: rnote-ui/src/canvas/mod.rs:763
 msgid "Reload"
 msgstr "重新加载"
 
-#: rnote-ui/src/canvas/mod.rs:1038
+#: rnote-ui/src/canvas/mod.rs:769
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr ".rnote 文件打开失败。"
 
-#: rnote-ui/src/canvas/mod.rs:1087
+#: rnote-ui/src/canvas/mod.rs:818
 #, fuzzy
 #| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
 msgstr "打开的文件已在磁盘上被重命名。"
 
-#: rnote-ui/src/canvas/mod.rs:1100
+#: rnote-ui/src/canvas/mod.rs:831
 #, fuzzy
 #| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
@@ -2205,75 +2227,75 @@ msgstr "二次贝塞尔曲线"
 msgid "Cubic bezier curve"
 msgstr "三次贝塞尔曲线"
 
-#: rnote-ui/src/settingspanel/mod.rs:818
+#: rnote-ui/src/settingspanel/mod.rs:810
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:819
+#: rnote-ui/src/settingspanel/mod.rs:811
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:820
+#: rnote-ui/src/settingspanel/mod.rs:812
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:821
+#: rnote-ui/src/settingspanel/mod.rs:813
 msgid "Dot (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:822
+#: rnote-ui/src/settingspanel/mod.rs:814
 msgid "Dot (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:823
+#: rnote-ui/src/settingspanel/mod.rs:815
 msgid "Dot (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:824
+#: rnote-ui/src/settingspanel/mod.rs:816
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:825
+#: rnote-ui/src/settingspanel/mod.rs:817
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:826
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:827
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:828
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:829
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:830
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:831
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:832
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:833
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Beam (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:834
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Beam (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:835
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Beam (Large)"
 msgstr ""
 
@@ -2288,6 +2310,9 @@ msgstr "文件夹名称"
 #| msgid "New folder"
 msgid "New Folder"
 msgstr "新建文件夹"
+
+#~ msgid "perm."
+#~ msgstr "perm."
 
 #, fuzzy
 #~| msgid "Offset the camera by dragging"

@@ -1,3 +1,6 @@
+use super::penshortcutmodels::{
+    ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
+};
 use adw::{prelude::*, subclass::prelude::*};
 use gtk4::{glib, glib::clone, glib::subclass::*, CompositeTemplate, DropDown};
 use num_traits::ToPrimitive;
@@ -8,15 +11,15 @@ use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
 mod imp {
+
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penshortcutrow.ui")]
     pub(crate) struct RnPenShortcutRow {
         pub(crate) action: RefCell<ShortcutAction>,
+        pub(crate) changepenstyle_model: ChangePenStyleListModel,
 
-        #[template_child]
-        pub(crate) style_dropdown: TemplateChild<DropDown>,
         #[template_child]
         pub(crate) mode_dropdown: TemplateChild<DropDown>,
     }
@@ -28,8 +31,8 @@ mod imp {
                     style: PenStyle::Eraser,
                     mode: ShortcutMode::Temporary,
                 }),
+                changepenstyle_model: ChangePenStyleListModel::default(),
 
-                style_dropdown: TemplateChild::default(),
                 mode_dropdown: TemplateChild::default(),
             }
         }
@@ -39,7 +42,7 @@ mod imp {
     impl ObjectSubclass for RnPenShortcutRow {
         const NAME: &'static str = "RnPenShortcutRow";
         type Type = super::RnPenShortcutRow;
-        type ParentType = adw::ActionRow;
+        type ParentType = adw::ComboRow;
         type Interfaces = ();
 
         fn class_init(klass: &mut Self::Class) {
@@ -56,16 +59,23 @@ mod imp {
             self.parent_constructed();
             let inst = self.instance();
 
-            self.style_dropdown.get().connect_selected_notify(
-                clone!(@weak inst as penshortcutrow => move |_| {
-                    match &mut *penshortcutrow.imp().action.borrow_mut() {
-                        ShortcutAction::ChangePenStyle { style, .. } => {
-                            *style = penshortcutrow.pen_style();
-                        }
+            let list_factory = ChangePenStyleListFactory::default();
+            let icon_factory = ChangePenStyleIconFactory::default();
+
+            inst.set_model(Some(&*self.changepenstyle_model));
+            inst.set_list_factory(Some(&*list_factory));
+            inst.set_factory(Some(&*icon_factory));
+
+            inst.connect_selected_item_notify(move |row| {
+                let new_pen_style = row.pen_style();
+
+                match &mut *row.imp().action.borrow_mut() {
+                    ShortcutAction::ChangePenStyle { style, .. } => {
+                        *style = new_pen_style;
                     }
-                    penshortcutrow.emit_by_name::<()>("action-changed", &[]);
-                }),
-            );
+                }
+                row.emit_by_name::<()>("action-changed", &[]);
+            });
 
             self.mode_dropdown.get().connect_selected_notify(
                 clone!(@weak inst as penshortcutrow => move |_| {
@@ -104,13 +114,12 @@ mod imp {
     impl ListBoxRowImpl for RnPenShortcutRow {}
     impl PreferencesRowImpl for RnPenShortcutRow {}
     impl ActionRowImpl for RnPenShortcutRow {}
-
-    impl RnPenShortcutRow {}
+    impl ComboRowImpl for RnPenShortcutRow {}
 }
 
 glib::wrapper! {
     pub(crate) struct RnPenShortcutRow(ObjectSubclass<imp::RnPenShortcutRow>)
-        @extends adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
+        @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
 }
 
@@ -133,13 +142,11 @@ impl RnPenShortcutRow {
     }
 
     pub(crate) fn pen_style(&self) -> PenStyle {
-        PenStyle::try_from(self.imp().style_dropdown.selected()).unwrap()
+        PenStyle::try_from(self.selected()).unwrap()
     }
 
     pub(crate) fn set_pen_style(&self, style: PenStyle) {
-        self.imp()
-            .style_dropdown
-            .set_selected(style.to_u32().unwrap())
+        self.set_selected(style.to_u32().unwrap())
     }
 
     pub(crate) fn shortcut_mode(&self) -> ShortcutMode {

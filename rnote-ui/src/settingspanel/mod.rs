@@ -1,3 +1,4 @@
+mod penshortcutmodels;
 mod penshortcutrow;
 
 // Re-exports

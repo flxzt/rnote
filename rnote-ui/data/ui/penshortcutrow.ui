@@ -1,42 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="RnPenShortcutRow" parent="AdwActionRow">
+  <template class="RnPenShortcutRow" parent="AdwComboRow">
     <child type="suffix">
-      <object class="GtkBox">
+      <object class="GtkDropDown" id="mode_dropdown">
         <property name="halign">end</property>
         <property name="valign">center</property>
-        <style>
-          <class name="linked" />
-        </style>
-        <child>
-          <object class="GtkDropDown" id="style_dropdown">
-            <property name="model">
-              <object class="GtkStringList">
-                <items>
-                  <item translatable="yes">Brush</item>
-                  <item translatable="yes">Shaper</item>
-                  <item translatable="yes">Typewriter</item>
-                  <item translatable="yes">Eraser</item>
-                  <item translatable="yes">Selector</item>
-                  <item translatable="yes">Tools</item>
-                </items>
-              </object>
-            </property>
+        <property name="model">
+          <object class="GtkStringList">
+            <items>
+              <item translatable="yes">Temporary</item>
+              <item translatable="yes">Permanent</item>
+              <item translatable="yes">Toggle</item>
+            </items>
           </object>
-        </child>
-        <child>
-          <object class="GtkDropDown" id="mode_dropdown">
-            <property name="model">
-              <object class="GtkStringList">
-                <items>
-                  <item translatable="yes">Temporary</item>
-                  <item translatable="yes">Permanent</item>
-                  <item translatable="yes">Toggle</item>
-                </items>
-              </object>
-            </property>
-          </object>
-        </child>
+        </property>
       </object>
     </child>
   </template>

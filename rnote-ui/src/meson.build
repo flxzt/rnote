@@ -76,6 +76,7 @@ rnote_ui_sources = files(
     'penssidebar/typewriterpage.rs',
     'settingspanel/mod.rs',
     'settingspanel/penshortcutrow.rs',
+    'settingspanel/penshortcutmodels.rs',
     'workspacebrowser/filerow/actions/duplicate.rs',
     'workspacebrowser/filerow/actions/mod.rs',
     'workspacebrowser/filerow/actions/open.rs',

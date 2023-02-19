@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-12 20:38+0000\n"
-"Last-Translator: Heisenberg <erickushi17@gmail.com>\n"
+"PO-Revision-Date: 2023-02-19 16:48+0000\n"
+"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -2052,7 +2052,7 @@ msgstr "Pennello"
 
 #: rnote-ui/src/dialogs/mod.rs:554
 msgid "Pencil and Paper"
-msgstr ""
+msgstr "Matita e Carta"
 
 #: rnote-ui/src/dialogs/mod.rs:555
 msgid "People"
@@ -2068,7 +2068,7 @@ msgstr "Proiettore"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Scratchpad"
-msgstr ""
+msgstr "Blocco per appunti"
 
 #: rnote-ui/src/dialogs/mod.rs:559
 msgid "Shapes"
@@ -2080,7 +2080,7 @@ msgstr "Shopping"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Speech Bubble"
-msgstr ""
+msgstr "Nuvoletta"
 
 #: rnote-ui/src/dialogs/mod.rs:562
 msgid "Speedometer"
@@ -2181,15 +2181,15 @@ msgstr ""
 
 #: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Dot (Small)"
-msgstr ""
+msgstr "Punto (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Dot (Medium)"
-msgstr ""
+msgstr "Punto (medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Dot (Large)"
-msgstr ""
+msgstr "Punto (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North-West (Small)"

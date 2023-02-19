@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-09 20:26+0000\n"
+"PO-Revision-Date: 2023-02-20 12:34+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1093,15 +1093,15 @@ msgstr "_Sluiten"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Tijdelijk"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Permanent"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Omschakelen"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1307,8 +1307,6 @@ msgid "Stylus Primary Button Action"
 msgstr "Primaire penknop"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1319,8 +1317,6 @@ msgid "Stylus Secondary Button Action"
 msgstr "Secundaire penknop"
 
 #: rnote-ui/data/ui/settingspanel.ui:383
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1331,8 +1327,6 @@ msgid "Mouse Secondary Button Action"
 msgstr "Secundaire muisknop"
 
 #: rnote-ui/data/ui/settingspanel.ui:396
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1343,8 +1337,6 @@ msgid "Touch Two-Finger Long-Press Action"
 msgstr "Actie bij lang indrukken met twee vingers"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
-#, fuzzy
-#| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"

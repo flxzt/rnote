@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
+use super::shortcuts::ShortcutMode;
 use super::{
     Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
     Typewriter,
@@ -32,6 +33,10 @@ pub struct PenHolder {
     pub(super) current_pen: Pen,
     #[serde(skip)]
     pen_progress: PenProgress,
+    #[serde(skip)]
+    toggle_pen_style: Option<PenStyle>,
+    #[serde(skip)]
+    prev_shortcut_key: Option<ShortcutKey>,
 }
 
 impl Default for PenHolder {
@@ -42,6 +47,8 @@ impl Default for PenHolder {
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
+            toggle_pen_style: None,
+            prev_shortcut_key: None,
         }
     }
 }
@@ -74,7 +81,7 @@ impl PenHolder {
     }
 
     /// Gets the style without the temporary override.
-    pub fn pen_style(&self) -> PenStyle {
+    pub fn current_pen_style(&self) -> PenStyle {
         self.pen_mode_state.style()
     }
 
@@ -102,16 +109,10 @@ impl PenHolder {
         new_style: PenStyle,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        if self.pen_mode_state.style() != new_style {
-            // Deselecting when changing the style
-            let all_strokes = engine_view.store.selection_keys_as_rendered();
-            engine_view.store.set_selected_keys(&all_strokes, false);
-
-            self.pen_mode_state.set_style(new_style);
-            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
-        }
+        let widget_flags = self.change_style_int(new_style, engine_view);
+        // When the style is changed externally, the toggle mode / internal states are reset
+        self.toggle_pen_style = None;
+        self.prev_shortcut_key = None;
 
         widget_flags
     }
@@ -205,6 +206,25 @@ impl PenHolder {
         widget_flags
     }
 
+    fn change_style_int(
+        &mut self,
+        new_style: PenStyle,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if self.pen_mode_state.style() != new_style {
+            // Deselecting when changing the style
+            let all_strokes = engine_view.store.selection_keys_as_rendered();
+            engine_view.store.set_selected_keys(&all_strokes, false);
+
+            self.pen_mode_state.set_style(new_style);
+            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+        }
+
+        widget_flags
+    }
+
     fn handle_pen_progress(
         &mut self,
         pen_progress: PenProgress,
@@ -259,19 +279,38 @@ impl PenHolder {
 
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
-                ShortcutAction::ChangePenStyle {
-                    style: new_style,
-                    permanent,
-                } => {
-                    if permanent {
-                        widget_flags.merge(self.change_style(new_style, engine_view));
-                    } else {
-                        widget_flags
-                            .merge(self.change_style_override(Some(new_style), engine_view));
+                ShortcutAction::ChangePenStyle { style, mode } => match mode {
+                    ShortcutMode::Temporary => {
+                        widget_flags.merge(self.change_style_override(Some(style), engine_view));
                     }
-                }
+                    ShortcutMode::Permanent => {
+                        self.toggle_pen_style = None;
+                        widget_flags.merge(self.change_style_int(style, engine_view));
+                    }
+                    ShortcutMode::Toggle => {
+                        if let Some(toggle_pen_style) = self.toggle_pen_style {
+                            // if the previous key was different, but also in toggle mode, we switch to the new style instead of toggling back
+                            if self
+                                .prev_shortcut_key
+                                .map(|k| k != shortcut_key)
+                                .unwrap_or(true)
+                            {
+                                widget_flags.merge(self.change_style_int(style, engine_view));
+                            } else {
+                                self.toggle_pen_style = None;
+                                widget_flags
+                                    .merge(self.change_style_int(toggle_pen_style, engine_view));
+                            }
+                        } else {
+                            self.toggle_pen_style = Some(self.current_pen_style());
+                            widget_flags.merge(self.change_style_int(style, engine_view));
+                        }
+                    }
+                },
             }
         }
+
+        self.prev_shortcut_key = Some(shortcut_key);
 
         widget_flags
     }

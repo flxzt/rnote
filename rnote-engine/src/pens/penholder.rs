@@ -295,7 +295,6 @@ impl PenHolder {
                                 .map(|k| k != shortcut_key)
                                 .unwrap_or(true)
                             {
-                                self.toggle_pen_style = Some(self.current_pen_style());
                                 widget_flags.merge(self.change_style_int(style, engine_view));
                             } else {
                                 self.toggle_pen_style = None;

@@ -367,7 +367,8 @@
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_stylus_button_primary_row">
                         <property name="title" translatable="yes">Stylus Primary Button Action</property>
-                        <property name="subtitle" translatable="yes">Set the action for the primary stylus button</property>
+                        <property name="subtitle" translatable="yes">Set the action for the
+primary stylus button</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">stylus-button-primary-symbolic</property>
@@ -379,7 +380,8 @@
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_stylus_button_secondary_row">
                         <property name="title" translatable="yes">Stylus Secondary Button Action</property>
-                        <property name="subtitle" translatable="yes">Set the action for the secondary stylus button</property>
+                        <property name="subtitle" translatable="yes">Set the action for the
+secondary stylus button</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">stylus-button-secondary-symbolic</property>
@@ -391,7 +393,8 @@
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_mouse_button_secondary_row">
                         <property name="title" translatable="yes">Mouse Secondary Button Action</property>
-                        <property name="subtitle" translatable="yes">Set the action for the secondary mouse button</property>
+                        <property name="subtitle" translatable="yes">Set the action for the
+secondary mouse button</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">mouse-button-secondary-symbolic</property>
@@ -403,7 +406,8 @@
                     <child>
                       <object class="RnPenShortcutRow" id="penshortcut_touch_two_finger_long_press_row">
                         <property name="title" translatable="yes">Touch Two-Finger Long-Press Action</property>
-                        <property name="subtitle" translatable="yes">Set the action for the touch two-finger long-press gesture</property>
+                        <property name="subtitle" translatable="yes">Set the action for the touch
+two-finger long-press gesture</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">touch-two-finger-long-press-symbolic</property>

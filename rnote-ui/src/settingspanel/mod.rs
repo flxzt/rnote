@@ -1,4 +1,3 @@
-pub(crate) mod penshortcutmodels;
 mod penshortcutrow;
 
 // Re-exports
@@ -737,32 +736,24 @@ impl RnSettingsPanel {
         let penshortcut_touch_two_finger_long_press_row =
             imp.penshortcut_touch_two_finger_long_press_row.get();
 
-        imp.penshortcut_stylus_button_primary_row
-            .set_key(Some(ShortcutKey::StylusPrimaryButton));
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
             appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
-        imp.penshortcut_stylus_button_secondary_row
-            .set_key(Some(ShortcutKey::StylusSecondaryButton));
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
             appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
-        imp.penshortcut_mouse_button_secondary_row
-            .set_key(Some(ShortcutKey::MouseSecondaryButton));
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
             appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
 
-        imp.penshortcut_touch_two_finger_long_press_row
-            .set_key(Some(ShortcutKey::TouchTwoFingerLongPress));
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
             appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);

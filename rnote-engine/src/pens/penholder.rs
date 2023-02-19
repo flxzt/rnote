@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
+use super::shortcuts::ShortcutMode;
 use super::{
     Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
     Typewriter,
@@ -32,6 +33,8 @@ pub struct PenHolder {
     pub(super) current_pen: Pen,
     #[serde(skip)]
     pen_progress: PenProgress,
+    #[serde(skip)]
+    toggle_pen_style: Option<PenStyle>,
 }
 
 impl Default for PenHolder {
@@ -42,6 +45,7 @@ impl Default for PenHolder {
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
+            toggle_pen_style: None,
         }
     }
 }
@@ -74,7 +78,7 @@ impl PenHolder {
     }
 
     /// Gets the style without the temporary override.
-    pub fn pen_style(&self) -> PenStyle {
+    pub fn current_pen_style(&self) -> PenStyle {
         self.pen_mode_state.style()
     }
 
@@ -259,17 +263,24 @@ impl PenHolder {
 
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
-                ShortcutAction::ChangePenStyle {
-                    style: new_style,
-                    permanent,
-                } => {
-                    if permanent {
-                        widget_flags.merge(self.change_style(new_style, engine_view));
-                    } else {
-                        widget_flags
-                            .merge(self.change_style_override(Some(new_style), engine_view));
+                ShortcutAction::ChangePenStyle { style, mode } => match mode {
+                    ShortcutMode::Temporary => {
+                        widget_flags.merge(self.change_style_override(Some(style), engine_view));
                     }
-                }
+                    ShortcutMode::Permanent => {
+                        widget_flags.merge(self.change_style(style, engine_view));
+                        self.toggle_pen_style = None;
+                    }
+                    ShortcutMode::Toggle => {
+                        if let Some(toggle_pen_style) = self.toggle_pen_style {
+                            self.toggle_pen_style = None;
+                            widget_flags.merge(self.change_style(toggle_pen_style, engine_view));
+                        } else {
+                            self.toggle_pen_style = Some(self.current_pen_style());
+                            widget_flags.merge(self.change_style(style, engine_view));
+                        }
+                    }
+                },
             }
         }
 

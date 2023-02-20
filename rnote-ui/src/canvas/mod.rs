@@ -1127,10 +1127,8 @@ impl RnCanvas {
     // updates the camera offset with a new one ( for example from touch drag gestures )
     // update_engine_rendering() then needs to be called.
     pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
-        self.engine().borrow_mut().update_camera_offset(new_offset);
-
-        // By setting new adjustment values, the callback connected to their value property is called,
-        // Which is where the engine rendering is updated.
+        // By setting new adjustment values, the callback connected to their `value` property is called,
+        // Which is where the engine camera offset, size and the rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
     }

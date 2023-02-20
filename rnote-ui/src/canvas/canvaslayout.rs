@@ -134,9 +134,8 @@ mod imp {
                 canvas_size[1],
             );
 
-            // Update the camera
-            engine.camera.offset = na::vector![hadj_val, vadj_val];
-            engine.camera.size = canvas_size;
+            // Update the camera in the engine
+            engine.update_camera_offset_size(na::vector![hadj_val, vadj_val], canvas_size);
 
             // always update the background rendering
             if let Err(e) = engine.update_background_rendering_current_viewport() {

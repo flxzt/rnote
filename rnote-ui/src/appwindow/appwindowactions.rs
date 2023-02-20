@@ -255,7 +255,7 @@ impl RnAppWindow {
                     }
                 }
 
-                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                canvas.engine().borrow_mut().resize_autoexpand();
                 canvas.update_engine_rendering();
             }));
 

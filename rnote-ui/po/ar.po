@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-09 20:26+0000\n"
+"PO-Revision-Date: 2023-02-20 12:34+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -1090,15 +1090,15 @@ msgstr "أغلق"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "مؤقَّت"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "دائم"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "بدِّل"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1302,48 +1302,48 @@ msgid "Stylus Primary Button Action"
 msgstr "إجراء الزرِّ الرئيس للقلم"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "عيِّن إجراء الزرِّ الرئيس للقلم"
+msgstr ""
+"عيِّن إجراء الزرِّ\n"
+"الرئيس للقلم"
 
 #: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "إجراء الزرِّ الثانويِّ للقلم"
 
 #: rnote-ui/data/ui/settingspanel.ui:383
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "عيِّن إجراء الزرِّ الثانويِّ للقلم"
+msgstr ""
+"عيِّن إجراء الزرِّ\n"
+"الثانويِّ للقلم"
 
 #: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "إجراء الزرِّ الثانويِّ للفأرة"
 
 #: rnote-ui/data/ui/settingspanel.ui:396
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
-msgstr "عيِّن إجراء الزرِّ الثانويِّ للفأرة"
+msgstr ""
+"عيِّن إجراء الزرِّ\n"
+"الثانويِّ للفأرة"
 
 #: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "إجراء اللمس بإصبعين طويلًا"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
-#, fuzzy
-#| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
-msgstr "عيِّن إجراء اللمس بإصبعين طويلًا"
+msgstr ""
+"عيِّن إجراء اللمس\n"
+"بإصبعين طويلًا"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"

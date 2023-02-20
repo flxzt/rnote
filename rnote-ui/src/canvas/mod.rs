@@ -322,16 +322,16 @@ mod imp {
                     }
                 }
                 "hadjustment" => {
-                    let hadjustment = value.get().unwrap();
-                    inst.set_hadjustment(hadjustment);
+                    let hadj = value.get().unwrap();
+                    self.set_hadjustment_prop(hadj);
                 }
                 "hscroll-policy" => {
                     let hscroll_policy = value.get().unwrap();
                     self.hscroll_policy.replace(hscroll_policy);
                 }
                 "vadjustment" => {
-                    let vadjustment = value.get().unwrap();
-                    inst.set_vadjustment(vadjustment);
+                    let vadj = value.get().unwrap();
+                    self.set_vadjustment_prop(vadj);
                 }
                 "vscroll-policy" => {
                     let vscroll_policy = value.get().unwrap();
@@ -473,6 +473,46 @@ mod imp {
                        );
             */
         }
+
+        fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
+            let inst = self.instance();
+
+            if let Some(signal_id) = self.handlers.borrow_mut().hadjustment.take() {
+                let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
+                old_adj.disconnect(signal_id);
+            }
+
+            if let Some(ref hadj) = hadj {
+                let signal_id =
+                    hadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        canvas.queue_resize();
+                    }));
+
+                self.handlers.borrow_mut().hadjustment.replace(signal_id);
+            }
+            self.hadjustment.replace(hadj);
+        }
+
+        fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
+            let inst = self.instance();
+
+            if let Some(signal_id) = self.handlers.borrow_mut().vadjustment.take() {
+                let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
+                old_adj.disconnect(signal_id);
+            }
+
+            if let Some(ref vadj) = vadj {
+                let signal_id =
+                    vadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        canvas.queue_resize();
+                    }));
+
+                self.handlers.borrow_mut().vadjustment.replace(signal_id);
+            }
+            self.vadjustment.replace(vadj);
+        }
     }
 }
 
@@ -595,52 +635,6 @@ impl RnCanvas {
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
         self.imp().engine.clone()
-    }
-
-    fn set_hadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().handlers.borrow_mut().hadjustment.take() {
-            let old_adj = self.imp().hadjustment.borrow().as_ref().unwrap().clone();
-            old_adj.disconnect(signal_id);
-        }
-
-        if let Some(ref hadjustment) = adj {
-            let signal_id = hadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_hadjustment| {
-                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
-                    canvas.queue_resize();
-                }),
-            );
-
-            self.imp()
-                .handlers
-                .borrow_mut()
-                .hadjustment
-                .replace(signal_id);
-        }
-        self.imp().hadjustment.replace(adj);
-    }
-
-    fn set_vadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().handlers.borrow_mut().vadjustment.take() {
-            let old_adj = self.imp().vadjustment.borrow().as_ref().unwrap().clone();
-            old_adj.disconnect(signal_id);
-        }
-
-        if let Some(ref vadjustment) = adj {
-            let signal_id = vadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_vadjustment| {
-                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
-                    canvas.queue_resize();
-                }),
-            );
-
-            self.imp()
-                .handlers
-                .borrow_mut()
-                .vadjustment
-                .replace(signal_id);
-        }
-        self.imp().vadjustment.replace(adj);
     }
 
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {

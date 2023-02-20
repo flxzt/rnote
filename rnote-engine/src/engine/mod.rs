@@ -763,11 +763,16 @@ impl RnoteEngine {
         self.document.resize_autoexpand(&self.store, &self.camera);
     }
 
-    /// Updates the camera and expands doc dimensions with offset
+    /// Updates the camera and updates doc dimensions with the new offset and size.
     ///
     /// Document background rendering then needs to be updated.
-    pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
+    pub fn update_camera_offset_size(
+        &mut self,
+        new_offset: na::Vector2<f64>,
+        new_size: na::Vector2<f64>,
+    ) {
         self.camera.offset = new_offset;
+        self.camera.size = new_size;
 
         match self.document.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {

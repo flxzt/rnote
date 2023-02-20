@@ -97,6 +97,18 @@
       <default>12.0</default>
       <summary>the third shaper stroke palette width</summary>
     </key>
+    <key name="eraser-width-1" type="d">
+      <default>4.0</default>
+      <summary>the first eraser palette width</summary>
+    </key>
+    <key name="eraser-width-2" type="d">
+      <default>9.0</default>
+      <summary>the second eraser palette width</summary>
+    </key>
+    <key name="eraser-width-3" type="d">
+      <default>24.0</default>
+      <summary>the third eraser palette width</summary>
+    </key>
     <key name="selected-workspace-index" type="u">
       <default>0</default>
       <summary>the selected workspace index</summary>

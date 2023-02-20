@@ -1,8 +1,9 @@
 use adw::prelude::*;
-use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton, ToggleButton};
+use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, ToggleButton};
 use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
 use rnote_engine::pens::pensconfig::EraserConfig;
 
+use crate::RnStrokeWidthPicker;
 use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
@@ -16,7 +17,7 @@ mod imp {
         #[template_child]
         pub(crate) eraserstyle_split_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) width_spinbutton: TemplateChild<SpinButton>,
+        pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
     }
 
     #[glib::object_subclass]
@@ -98,6 +99,10 @@ impl RnEraserPage {
         }
     }
 
+    pub(crate) fn stroke_width_picker(&self) -> RnStrokeWidthPicker {
+        self.imp().stroke_width_picker.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
@@ -113,14 +118,23 @@ impl RnEraserPage {
             }
         }));
 
-        imp.width_spinbutton.set_increments(1.0, 5.0);
-        imp.width_spinbutton
+        // width
+        imp.stroke_width_picker.spinbutton().set_digits(0);
+        imp.stroke_width_picker
+            .spinbutton()
+            .set_increments(1.0, 5.0);
+        imp.stroke_width_picker
+            .spinbutton()
             .set_range(EraserConfig::WIDTH_MIN, EraserConfig::WIDTH_MAX);
-        imp.width_spinbutton.set_value(EraserConfig::WIDTH_DEFAULT);
+        // set value after the range!
+        imp.stroke_width_picker
+            .set_stroke_width(EraserConfig::WIDTH_DEFAULT);
 
-        imp.width_spinbutton.connect_value_changed(
-            clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.width = width_spinbutton.value();
+        imp.stroke_width_picker.connect_notify_local(
+            Some("stroke-width"),
+            clone!(@weak appwindow => move |picker, _| {
+                let stroke_width = picker.stroke_width();
+                appwindow.active_tab().canvas().engine().borrow_mut().pens_config.eraser_config.width = stroke_width;
             }),
         );
     }
@@ -136,7 +150,8 @@ impl RnEraserPage {
             .eraser_config
             .clone();
 
-        imp.width_spinbutton.set_value(eraser_config.width);
+        imp.stroke_width_picker
+            .set_stroke_width(eraser_config.width);
 
         self.set_eraser_style(eraser_config.style);
     }

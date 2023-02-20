@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-01-23 18:19+0000\n"
-"Last-Translator: Hersa37 <bernardus.hersa37@gmail.com>\n"
+"PO-Revision-Date: 2023-02-21 10:20+0000\n"
+"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
 ">\n"
 "Language: id\n"
@@ -27,7 +27,7 @@ msgstr "Buat skesta dan catatan tulis tangan"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "Gnome;GTK;Office;Graphics;Catatan;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -46,6 +46,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
+"Penafian: Format file masih belum stabil. Format ini dapat berubah dan "
+"merusak kompatibilitas antar versi."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
@@ -53,25 +55,23 @@ msgstr "Jendela utama dalam warna cerah"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "Catatan Kuliah 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
-msgstr ""
+msgstr "Anotasi PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "Catatan Kuliah 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
-#, fuzzy
-#| msgid "New Document"
 msgid "Clear Document"
-msgstr "Dokumen Baru"
+msgstr "Bersihkan Dokumen"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "Ini akan menghapus seluruh dokumen. Mohon konfirmasi."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -93,7 +93,7 @@ msgstr "Batalkan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "Bersihkan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
 #: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
@@ -105,6 +105,8 @@ msgid ""
 "Creating a new document will discard any unsaved changes.\n"
 "Do you want to save the current document?"
 msgstr ""
+"Membuat dokumen baru akan membuang semua perubahan yang belum disimpan. \n"
+"Apakah Anda ingin menyimpan dokumen saat ini?"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:23
 #: rnote-ui/data/ui/dialogs/dialogs.ui:35 rnote-ui/data/ui/dialogs/import.ui:11
@@ -120,19 +122,19 @@ msgstr "Simpan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "Tutup tab"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Tab ini berisi perubahan yang belum disimpan. Perubahan yang tidak disimpan "
+"akan hilang secara permanen."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgid "Close window"
 msgid "Close Window"
-msgstr "Tutup jendela"
+msgstr "Tutup Jendela"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -143,27 +145,21 @@ msgstr ""
 "disimpan akan hilang secara permanen."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Unsaved documents"
 msgid "Unsaved Documents"
-msgstr "Dokumen belum tersimpan"
+msgstr "Dokumen yang belum disimpan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:52
-#, fuzzy
-#| msgid "Discard"
 msgid "Discard All"
-msgstr "Buang"
+msgstr "Buang Semua"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
-msgstr "Ubah ruang kerja"
+msgstr "Ubah Ruang kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/settingspanel.ui:267
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:38
 msgid "Apply"
-msgstr ""
+msgstr "Terapkan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:110
 msgid "Workspace Name"
@@ -188,7 +184,7 @@ msgstr "Ubah warna ruang kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:149
 msgid "Directory"
-msgstr ""
+msgstr "Direktori"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:150
 msgid "Change the workspace directory"

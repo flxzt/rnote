@@ -184,34 +184,22 @@ impl VectorImage {
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
         let page_width = format.width * (pdf_import_prefs.page_width_perc / 100.0);
+        // calculate the page zoom based on the width of the first page.
+        let page_zoom = if let Some(first_page) = doc.page(0) {
+            page_width / first_page.size().0
+        } else {
+            return Ok(vec![]);
+        };
 
-        let svgs = page_range.enumerate().filter_map(|(i, page_i)| {
+        let x = insert_pos[0];
+        let mut y = insert_pos[1];
+
+        let svgs = page_range.filter_map(|page_i| {
             let page = doc.page(page_i as i32)?;
             let intrinsic_size = page.size();
 
-            let (width, height, _zoom) = {
-                let zoom = page_width / intrinsic_size.0;
-
-                (
-                    page_width.round(),
-                    intrinsic_size.1 * zoom,
-                    zoom,
-                )
-            };
-
-            let x = insert_pos[0];
-            let y = match pdf_import_prefs.page_spacing {
-                PdfImportPageSpacing::Continuous => {
-                    insert_pos[1]
-                        + f64::from(i as u32)
-                            * (height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
-                }
-                PdfImportPageSpacing::OnePerDocumentPage => {
-                    insert_pos[1]
-                        + f64::from(i as u32) *  format.height
-                }
-            };
-
+            let width = intrinsic_size.0 * page_zoom;
+            let height = intrinsic_size.1 * page_zoom;
 
             let res = || -> anyhow::Result<String> {
                 let svg_stream: Vec<u8> = vec![];
@@ -263,13 +251,20 @@ impl VectorImage {
                         .downcast::<Vec<u8>>()
                         .map_err(|_e| anyhow::anyhow!("failed to downcast svg surface content in VectorImage import_from_pdf_bytes()"))?)?;
 
+
                 Ok(svg_content)
             };
+
+            let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
+                y += match pdf_import_prefs.page_spacing {
+                    PdfImportPageSpacing::Continuous => height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5,
+                    PdfImportPageSpacing::OnePerDocumentPage => format.height
+                };
 
             match res() {
                 Ok(svg_data) => Some(render::Svg {
                     svg_data,
-                    bounds: Aabb::new(na::point![x, y], na::point![x + width, y + height])
+                    bounds,
                 }),
                 Err(e) => {
                     log::error!("importing page {page} from pdf failed with Err: {e:?}");

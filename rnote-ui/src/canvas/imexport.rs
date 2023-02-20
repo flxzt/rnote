@@ -3,6 +3,7 @@ use std::path::Path;
 
 use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
+use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
@@ -63,6 +64,10 @@ impl RnCanvas {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
+            .maxs(&na::vector![
+                self.engine().borrow().document.x,
+                self.engine().borrow().document.y
+            ])
         });
 
         // we need the split the import operation between generate_vectorimage_from_bytes() which returns a receiver and import_generated_strokes(),
@@ -93,6 +98,10 @@ impl RnCanvas {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
+            .maxs(&na::vector![
+                self.engine().borrow().document.x,
+                self.engine().borrow().document.y
+            ])
         });
 
         let bitmapimage_receiver = self
@@ -143,6 +152,10 @@ impl RnCanvas {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
+            .maxs(&na::vector![
+                self.engine().borrow().document.x,
+                self.engine().borrow().document.y
+            ])
         });
 
         let strokes_receiver = self
@@ -167,6 +180,10 @@ impl RnCanvas {
             (self.engine().borrow().camera.transform().inverse()
                 * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
             .coords
+            .maxs(&na::vector![
+                self.engine().borrow().document.x,
+                self.engine().borrow().document.y
+            ])
         });
 
         let widget_flags = self.engine().borrow_mut().insert_text(text, pos)?;
@@ -191,7 +208,11 @@ impl RnCanvas {
         let content = oneshot_receiver.await??;
         let pos = (self.engine().borrow().camera.transform().inverse()
             * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-        .coords;
+        .coords
+        .maxs(&na::vector![
+            self.engine().borrow().document.x,
+            self.engine().borrow().document.y
+        ]);
 
         let widget_flags = self
             .engine()

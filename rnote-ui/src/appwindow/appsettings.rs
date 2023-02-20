@@ -303,6 +303,47 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
+
+        // eraser widths
+        self.app_settings()
+            .bind(
+                "eraser-width-1",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .eraser_page()
+                    .stroke_width_picker()
+                    .setter_1(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "eraser-width-2",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .eraser_page()
+                    .stroke_width_picker()
+                    .setter_2(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
+        self.app_settings()
+            .bind(
+                "eraser-width-3",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .eraser_page()
+                    .stroke_width_picker()
+                    .setter_3(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
     }
 
     /// load settings at startup that are not bound as binding. Setting changes through gsettings / dconf might not be applied until app restarts

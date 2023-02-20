@@ -1125,6 +1125,8 @@ impl RnCanvas {
         // Which is where the engine camera offset, size and the rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
+        // This expands the doc size for autoexpanding layouts
+        self.engine().borrow_mut().expand_doc_autoexpand();
     }
 
     /// returns the center of the current view on the doc

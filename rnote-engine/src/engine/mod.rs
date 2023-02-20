@@ -763,17 +763,8 @@ impl RnoteEngine {
         self.document.resize_autoexpand(&self.store, &self.camera);
     }
 
-    /// Updates the camera and updates doc dimensions with the new offset and size.
-    ///
-    /// Document background rendering then needs to be updated.
-    pub fn update_camera_offset_size(
-        &mut self,
-        new_offset: na::Vector2<f64>,
-        new_size: na::Vector2<f64>,
-    ) {
-        self.camera.offset = new_offset;
-        self.camera.size = new_size;
-
+    /// Expands the doc when in autoexpanding layouts. e.g. when dragging with touch
+    pub fn expand_doc_autoexpand(&mut self) {
         match self.document.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
                 // not resizing in these modes, the size is not dependent on the camera
@@ -789,6 +780,18 @@ impl RnoteEngine {
                     .expand_doc_infinite_layout(self.camera.viewport());
             }
         }
+    }
+
+    /// Updates the camera and updates doc dimensions with the new offset and size.
+    ///
+    /// background and strokes rendering then need to be updated.
+    pub fn update_camera_offset_size(
+        &mut self,
+        new_offset: na::Vector2<f64>,
+        new_size: na::Vector2<f64>,
+    ) {
+        self.camera.offset = new_offset;
+        self.camera.size = new_size;
     }
 
     /// Updates the current pen with the current engine state.

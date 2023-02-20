@@ -31,8 +31,8 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_light.png</image>
-      <caption>Main window in light colors</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png</image>
+      <caption>Overview</caption>
     </screenshot>
     <screenshot>
       <image>

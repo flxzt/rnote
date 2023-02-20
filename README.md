@@ -70,7 +70,7 @@ $ flatpak mask --remove com.github.flxzt.rnote
 Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Screenshots
-![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
+![overview](./rnote-ui/data/screenshots/overview.png)
 ![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)
 ![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
 ![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)

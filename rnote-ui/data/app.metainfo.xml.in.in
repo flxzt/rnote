@@ -72,7 +72,7 @@
 
   <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.5.14-beta1" date="2023-02-12">
+    <release version="0.5.14-beta2" date="2023-02-20">
       <description>
         <p>this release changes: (BETA)</p>
         <ul>
@@ -81,6 +81,8 @@
           <li>improvement: reduce toolbar overlays margins when scrollbar is disabled</li>
           <li>improvement: indicate hover over nodes in the selector and typewriter</li>
           <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>
+          <li>fix: image and pdf import offsets now take the document bounds into account</li>
+          <li>fix: broken resizing in fixed-size document layout</li>
           <li>fix: crash when navigating up/down into non-ASCII text</li>
           <li>fix: crash on launch when using a custom stylesheet</li>
           <li>fix: rough style fill calculation</li>

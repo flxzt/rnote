@@ -1,15 +1,16 @@
-use std::cell::Cell;
-
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
+use rnote_engine::{document::Layout, render};
+use std::cell::Cell;
 
 use crate::canvas::RnCanvas;
-use rnote_engine::{document::Layout, render};
+use crate::canvaswrapper::RnCanvasWrapper;
 
 mod imp {
+
     use super::*;
 
     #[derive(Debug)]
@@ -70,15 +71,19 @@ mod imp {
 
         fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
+            let wrapper = canvas
+                .ancestor(RnCanvasWrapper::static_type())
+                .unwrap()
+                .downcast::<RnCanvasWrapper>()
+                .unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
-
             let engine = canvas.engine();
             let mut engine = engine.borrow_mut();
             let total_zoom = engine.camera.total_zoom();
             let document = engine.document;
-
             let canvas_size = na::vector![f64::from(width), f64::from(height)];
+            let wrapper_size = na::vector![f64::from(wrapper.width()), f64::from(wrapper.height())];
 
             // Update the adjustments
             let (h_lower, h_upper) = match document.layout {
@@ -113,8 +118,12 @@ mod imp {
                 ),
             };
 
-            let hadj_val = hadj.value().clamp(h_lower, h_upper);
-            let vadj_val = vadj.value().clamp(v_lower, v_upper);
+            let hadj_val = hadj
+                .value()
+                .clamp(h_lower, (h_upper - wrapper_size[0]).max(h_lower));
+            let vadj_val = vadj
+                .value()
+                .clamp(v_lower, (v_upper - wrapper_size[1]).max(v_lower));
 
             hadj.configure(
                 hadj_val,

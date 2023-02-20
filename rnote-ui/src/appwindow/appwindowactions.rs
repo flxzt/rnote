@@ -232,30 +232,34 @@ impl RnAppWindow {
                 action_doc_layout.set_state(&doc_layout.to_variant());
                 let canvas = appwindow.active_tab().canvas();
 
-                match doc_layout {
+                let doc_layout = match doc_layout {
                     "fixed-size" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::FixedSize;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(true);
+                        Layout::FixedSize
                     },
                     "continuous-vertical" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::ContinuousVertical;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                        Layout::ContinuousVertical
                     },
                     "semi-infinite" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::SemiInfinite;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                        Layout::SemiInfinite
                     },
                     "infinite" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::Infinite;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                        Layout::Infinite
                     },
                     other => {
                         log::error!("doc-layout action activated with invalid target string: {other}");
                         unimplemented!()
                     }
-                }
+                };
 
-                canvas.engine().borrow_mut().resize_autoexpand();
+                let prev_layout = canvas.engine().borrow().document.layout;
+
+                if prev_layout != doc_layout {
+                    appwindow.mainheader().fixedsize_quickactions_box().set_visible(doc_layout == Layout::FixedSize);
+                    canvas.engine().borrow_mut().document.layout = doc_layout;
+                    canvas.engine().borrow_mut().resize_to_fit_strokes();
+                } else {
+                    canvas.engine().borrow_mut().resize_autoexpand();
+                }
                 canvas.update_engine_rendering();
             }));
 

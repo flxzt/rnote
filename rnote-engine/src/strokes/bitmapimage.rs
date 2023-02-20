@@ -167,99 +167,92 @@ impl BitmapImage {
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
         let page_width = format.width * (pdf_import_prefs.page_width_perc / 100.0);
+        // calculate the page zoom based on the width of the first page.
+        let page_zoom = if let Some(first_page) = doc.page(0) {
+            page_width / first_page.size().0
+        } else {
+            return Ok(vec![]);
+        };
+        let x = insert_pos[0];
+        let mut y = insert_pos[1];
 
         let pngs = page_range
-            .enumerate()
-            .filter_map(|(i, page_i)| {
+            .filter_map(|page_i| {
                 let page = doc.page(page_i as i32)?;
-                let result = || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)> {
-                    let intrinsic_size = page.size();
+                let intrinsic_size = page.size();
+                let width = intrinsic_size.0 * page_zoom;
+                let height = intrinsic_size.1 * page_zoom;
 
-                    let (width_on_doc, height_on_doc, zoom) = {
-                        let zoom = page_width / intrinsic_size.0;
+                let res =
+                    move || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)> {
+                        let surface_width =
+                            (width * pdf_import_prefs.bitmap_scalefactor).round() as i32;
+                        let surface_height =
+                            (height * pdf_import_prefs.bitmap_scalefactor).round() as i32;
 
-                        (
-                            page_width.round() as i32,
-                            (intrinsic_size.1 * zoom).round() as i32,
-                            zoom,
+                        let surface = cairo::ImageSurface::create(
+                            cairo::Format::ARgb32,
+                            surface_width,
+                            surface_height,
                         )
+                        .map_err(|e| {
+                            anyhow::anyhow!(
+                                "create image surface while importing bitmapimage failed, {e:?}"
+                            )
+                        })?;
+
+                        {
+                            let cx = cairo::Context::new(&surface)
+                                .context("new cairo::Context failed")?;
+
+                            // Scale with the bitmap scalefactor pref
+                            cx.scale(
+                                page_zoom * pdf_import_prefs.bitmap_scalefactor,
+                                page_zoom * pdf_import_prefs.bitmap_scalefactor,
+                            );
+
+                            // Set margin to white
+                            cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+                            cx.paint()?;
+
+                            page.render(&cx);
+
+                            // Draw outline around page
+                            cx.set_source_rgba(
+                                color::GNOME_REDS[4].as_rgba().0,
+                                color::GNOME_REDS[4].as_rgba().1,
+                                color::GNOME_REDS[4].as_rgba().2,
+                                1.0,
+                            );
+
+                            let line_width = 1.0;
+                            cx.set_line_width(line_width);
+                            cx.rectangle(
+                                line_width * 0.5,
+                                line_width * 0.5,
+                                intrinsic_size.0 - line_width,
+                                intrinsic_size.1 - line_width,
+                            );
+                            cx.stroke()?;
+                        }
+
+                        let mut png_data: Vec<u8> = Vec::new();
+                        surface.write_to_png(&mut png_data)?;
+
+                        let image_pos = na::vector![x, y];
+                        let image_size = na::vector![width, height];
+
+                        Ok((png_data, image_pos, image_size))
                     };
 
-                    let x_on_doc = insert_pos[0];
-                    let y_on_doc = match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
-                            insert_pos[1]
-                                + f64::from(i as u32)
-                                    * (f64::from(height_on_doc)
-                                        + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
-                        }
-                        PdfImportPageSpacing::OnePerDocumentPage => {
-                            insert_pos[1] + f64::from(i as u32) * format.height
-                        }
-                    };
-
-                    let surface_width =
-                        (width_on_doc as f64 * pdf_import_prefs.bitmap_scalefactor).round() as i32;
-                    let surface_height =
-                        (height_on_doc as f64 * pdf_import_prefs.bitmap_scalefactor).round() as i32;
-
-                    let surface = cairo::ImageSurface::create(
-                        cairo::Format::ARgb32,
-                        surface_width,
-                        surface_height,
-                    )
-                    .map_err(|e| {
-                        anyhow::anyhow!(
-                            "create image surface while importing bitmapimage failed, {e:?}"
-                        )
-                    })?;
-
-                    {
-                        let cx =
-                            cairo::Context::new(&surface).context("new cairo::Context failed")?;
-
-                        // Scale with the bitmap scalefactor pref
-                        cx.scale(
-                            zoom * pdf_import_prefs.bitmap_scalefactor,
-                            zoom * pdf_import_prefs.bitmap_scalefactor,
-                        );
-
-                        // Set margin to white
-                        cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
-                        cx.paint()?;
-
-                        page.render(&cx);
-
-                        // Draw outline around page
-                        cx.set_source_rgba(
-                            color::GNOME_REDS[4].as_rgba().0,
-                            color::GNOME_REDS[4].as_rgba().1,
-                            color::GNOME_REDS[4].as_rgba().2,
-                            1.0,
-                        );
-
-                        let line_width = 1.0;
-                        cx.set_line_width(line_width);
-                        cx.rectangle(
-                            line_width * 0.5,
-                            line_width * 0.5,
-                            intrinsic_size.0 - line_width,
-                            intrinsic_size.1 - line_width,
-                        );
-                        cx.stroke()?;
+                y += match pdf_import_prefs.page_spacing {
+                    PdfImportPageSpacing::Continuous => {
+                        height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                     }
-
-                    let mut png_data: Vec<u8> = Vec::new();
-                    surface.write_to_png(&mut png_data)?;
-
-                    Ok((
-                        png_data,
-                        na::vector![x_on_doc, y_on_doc],
-                        na::vector![width_on_doc as f64, height_on_doc as f64],
-                    ))
+                    PdfImportPageSpacing::OnePerDocumentPage => format.height,
                 };
 
-                match result() {
+                match res() {
                     Ok(ret) => Some(ret),
                     Err(e) => {
                         log::error!("bitmapimage import_from_pdf_bytes() failed with Err: {e:?}");

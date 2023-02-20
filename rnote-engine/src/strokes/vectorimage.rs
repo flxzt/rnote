@@ -190,18 +190,16 @@ impl VectorImage {
         } else {
             return Ok(vec![]);
         };
-
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
         let svgs = page_range.filter_map(|page_i| {
             let page = doc.page(page_i as i32)?;
             let intrinsic_size = page.size();
-
             let width = intrinsic_size.0 * page_zoom;
             let height = intrinsic_size.1 * page_zoom;
 
-            let res = || -> anyhow::Result<String> {
+            let res = move || -> anyhow::Result<String> {
                 let svg_stream: Vec<u8> = vec![];
 
                 let mut svg_surface =
@@ -256,10 +254,11 @@ impl VectorImage {
             };
 
             let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
-                y += match pdf_import_prefs.page_spacing {
-                    PdfImportPageSpacing::Continuous => height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5,
-                    PdfImportPageSpacing::OnePerDocumentPage => format.height
-                };
+
+            y += match pdf_import_prefs.page_spacing {
+                PdfImportPageSpacing::Continuous => height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5,
+                PdfImportPageSpacing::OnePerDocumentPage => format.height
+            };
 
             match res() {
                 Ok(svg_data) => Some(render::Svg {
@@ -267,7 +266,7 @@ impl VectorImage {
                     bounds,
                 }),
                 Err(e) => {
-                    log::error!("importing page {page} from pdf failed with Err: {e:?}");
+                    log::error!("importing page {page_i} from pdf failed with Err: {e:?}");
                     None
                 }
             }

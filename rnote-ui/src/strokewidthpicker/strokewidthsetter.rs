@@ -9,7 +9,7 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnStrokeWidthSetter {
-        preview: RnStrokeWidthPreview,
+        pub(crate) preview: RnStrokeWidthPreview,
         stroke_width: Cell<f64>,
     }
 
@@ -115,5 +115,9 @@ impl RnStrokeWidthSetter {
     #[allow(unused)]
     pub(crate) fn set_stroke_width(&self, stroke_width: f64) {
         self.set_property("stroke-width", stroke_width.to_value());
+    }
+
+    pub(crate) fn preview(&self) -> RnStrokeWidthPreview {
+        self.imp().preview.clone()
     }
 }

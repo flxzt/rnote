@@ -11,10 +11,10 @@ use crate::{
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
     penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
     strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
-    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
-    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
-    RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
-    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
+    workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
+    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
+    RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 
 mod imp {
@@ -140,6 +140,7 @@ mod imp {
             RnStrokeWidthPicker::static_type();
             RnStrokeWidthSetter::static_type();
             RnStrokeWidthPreview::static_type();
+            StrokeWidthPreviewStyle::static_type();
 
             self.instance()
                 .set_resource_base_path(Some(config::APP_IDPATH));

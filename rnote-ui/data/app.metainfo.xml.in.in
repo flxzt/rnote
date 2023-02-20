@@ -77,6 +77,7 @@
         <p>this release changes: (BETA)</p>
         <ul>
           <li>feature: toggle mode for shortcuts</li>
+          <li>feature: eraser size picker</li>
           <li>improvement: reduce toolbar overlays margins when scrollbar is disabled</li>
           <li>improvement: indicate hover over nodes in the selector and typewriter</li>
           <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>

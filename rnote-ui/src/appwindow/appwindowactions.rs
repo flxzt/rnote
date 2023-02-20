@@ -229,8 +229,9 @@ impl RnAppWindow {
         action_doc_layout.connect_activate(
             clone!(@weak self as appwindow => move |action_doc_layout, target| {
                 let doc_layout = target.unwrap().str().unwrap();
-                action_doc_layout.set_state(&doc_layout.to_variant());
                 let canvas = appwindow.active_tab().canvas();
+                let prev_layout = canvas.engine().borrow().document.layout;
+                action_doc_layout.set_state(&doc_layout.to_variant());
 
                 let doc_layout = match doc_layout {
                     "fixed-size" => {
@@ -251,10 +252,9 @@ impl RnAppWindow {
                     }
                 };
 
-                let prev_layout = canvas.engine().borrow().document.layout;
+                appwindow.mainheader().fixedsize_quickactions_box().set_visible(doc_layout == Layout::FixedSize);
 
                 if prev_layout != doc_layout {
-                    appwindow.mainheader().fixedsize_quickactions_box().set_visible(doc_layout == Layout::FixedSize);
                     canvas.engine().borrow_mut().document.layout = doc_layout;
                     canvas.engine().borrow_mut().resize_to_fit_strokes();
                 } else {

@@ -16,7 +16,7 @@ use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
 use crate::pens::{PenMode, PensConfig};
-use crate::store::{ChronoComponent, StrokeKey};
+use crate::store::{render_comp, ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
 use crate::{render, AudioPlayer, WidgetFlags};
@@ -77,6 +77,8 @@ pub enum EngineTask {
     UpdateStrokeWithImages {
         key: StrokeKey,
         images: GeneratedStrokeImages,
+        /// The scale-factor which the task is rendering the images with
+        scale: f64,
     },
     /// Appends the images to the rendering of the stroke
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
@@ -580,8 +582,22 @@ impl RnoteEngine {
         let mut quit = false;
 
         match task {
-            EngineTask::UpdateStrokeWithImages { key, images } => {
-                self.store.replace_rendering_with_images(key, images);
+            EngineTask::UpdateStrokeWithImages { key, images, scale } => {
+                // If the image scale lies in the tolerance, the rendered image is considered valid (sharp)
+                if ((scale - render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
+                    ..(scale + render_comp::RENDER_IMAGE_SCALE_TOLERANCE))
+                    .contains(&self.camera.image_scale())
+                {
+                    self.store.replace_rendering_with_images(key, images);
+                } else {
+                    // If the image scale has changed in the meantime, try again
+                    self.store.regenerate_rendering_for_stroke_threaded(
+                        self.tasks_tx.clone(),
+                        key,
+                        self.camera.viewport(),
+                        self.camera.image_scale(),
+                    );
+                }
 
                 widget_flags.redraw = true;
             }

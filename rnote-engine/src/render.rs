@@ -24,20 +24,10 @@ pub static USVG_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
     usvg_options
 });
 
-pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
-    id_prefix: None,
-    writer_opts: xmlwriter::Options {
-        use_single_quote: false,
-        indent: xmlwriter::Indent::None,
-        attributes_indent: xmlwriter::Indent::None,
-    },
-};
-
 // Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor
 pub const PX_TO_POINT_CONV_FACTOR: f64 = 96.0 / 72.0;
 // Point unit ( 72 DPI ) to Px unit (96 DPI ) conversion factor
 pub const POINT_TO_PX_CONV_FACTOR: f64 = 72.0 / 96.0;
-
 // the factor the rendering for the current viewport is extended. e.g.: 1.0 means the viewport is extended by its extents on all sides.
 // Used when checking rendering for new zooms or a moved viewport.
 // There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view

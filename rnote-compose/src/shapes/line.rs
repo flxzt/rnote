@@ -11,10 +11,10 @@ use crate::Transform;
 #[serde(default, rename = "line")]
 /// A line
 pub struct Line {
-    #[serde(rename = "start")]
+    #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The line start
     pub start: na::Vector2<f64>,
-    #[serde(rename = "end")]
+    #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The line end
     pub end: na::Vector2<f64>,
 }

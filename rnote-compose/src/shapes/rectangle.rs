@@ -12,7 +12,7 @@ use super::Line;
 #[serde(default, rename = "rectangle")]
 /// A rectangle
 pub struct Rectangle {
-    #[serde(rename = "cuboid")]
+    #[serde(rename = "cuboid", with = "crate::serialize::p2d_cuboid_dp3")]
     /// The cuboid, specifies the extents.
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]

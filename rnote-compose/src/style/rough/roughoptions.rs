@@ -11,7 +11,7 @@ pub struct RoughOptions {
     #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
     /// the stroke width
-    #[serde(rename = "stroke_width")]
+    #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
     pub stroke_width: f64,
     /// an optional fill color. When set to None no fill is produced.
     #[serde(rename = "fill_color")]
@@ -20,7 +20,7 @@ pub struct RoughOptions {
     #[serde(rename = "fill_style")]
     pub fill_style: FillStyle,
     /// the hachure angle (in rad)
-    #[serde(rename = "hachure_angle")]
+    #[serde(rename = "hachure_angle", with = "crate::serialize::f64_dp3")]
     pub hachure_angle: f64,
     /// An optional seed to generate reproducible shapes
     #[serde(rename = "seed")]

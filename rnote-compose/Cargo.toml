@@ -13,6 +13,7 @@ anyhow = "1"
 serde = {version = "1", features = ["derive"]}
 num-derive = "0.3"
 num-traits = "0.2"
+base64 = "0.20"
 rand = "0.8"
 rand_pcg = "0.3"
 rand_distr = "0.4"

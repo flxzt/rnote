@@ -22,7 +22,10 @@ use serde::{Deserialize, Serialize};
 pub struct VectorImage {
     #[serde(rename = "svg_data")]
     pub svg_data: String,
-    #[serde(rename = "intrinsic_size")]
+    #[serde(
+        rename = "intrinsic_size",
+        with = "rnote_compose::serialize::na_vector2_f64_dp3"
+    )]
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,

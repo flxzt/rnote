@@ -7,10 +7,10 @@ use crate::transform::TransformBehaviour;
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename = "element")]
 pub struct Element {
-    #[serde(rename = "pos")]
+    #[serde(rename = "pos", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The position of the element
     pub pos: na::Vector2<f64>,
-    #[serde(rename = "pressure")]
+    #[serde(rename = "pressure", with = "crate::serialize::f64_dp3")]
     /// The pen pressure. The valid range is [0.0, 1.0]
     pub pressure: f64,
 }

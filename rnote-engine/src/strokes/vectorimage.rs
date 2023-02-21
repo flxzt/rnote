@@ -230,7 +230,7 @@ impl VectorImage {
                     cx.paint()?;
 
                     // Render the poppler page
-                    page.render(&cx);
+                    page.render_for_printing(&cx);
 
                     // Draw outline around page
                     cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);

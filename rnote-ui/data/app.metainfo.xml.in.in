@@ -80,7 +80,9 @@
           <li>feature: eraser size picker</li>
           <li>improvement: reduce toolbar overlays margins when scrollbar is disabled</li>
           <li>improvement: indicate hover over nodes in the selector and typewriter</li>
+          <li>improvement: reduced save and xopp export file sizes</li>
           <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>
+          <li>fix: pdf import with different size pages</li>
           <li>fix: image and pdf import offsets now take the document bounds into account</li>
           <li>fix: broken resizing in fixed-size document layout</li>
           <li>fix: crash when navigating up/down into non-ASCII text</li>

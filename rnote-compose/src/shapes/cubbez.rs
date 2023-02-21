@@ -13,16 +13,16 @@ use super::quadbez::QuadraticBezier;
 #[serde(default, rename = "cubic_bezier")]
 /// A cubic bezier curve
 pub struct CubicBezier {
-    #[serde(rename = "start")]
+    #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
     /// the cubic curve start
     pub start: na::Vector2<f64>,
-    #[serde(rename = "cp1")]
+    #[serde(rename = "cp1", with = "crate::serialize::na_vector2_f64_dp3")]
     /// the cubic curve first control point
     pub cp1: na::Vector2<f64>,
-    #[serde(rename = "cp2")]
+    #[serde(rename = "cp2", with = "crate::serialize::na_vector2_f64_dp3")]
     /// the cubic curve second control point
     pub cp2: na::Vector2<f64>,
-    #[serde(rename = "end")]
+    #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
     /// the cubic curve end
     pub end: na::Vector2<f64>,
 }

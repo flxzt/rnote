@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(default, rename = "smooth_options")]
 pub struct SmoothOptions {
     /// The stroke width
-    #[serde(rename = "stroke_width")]
+    #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
     pub stroke_width: f64,
     /// The stroke color
     #[serde(rename = "stroke_color")]

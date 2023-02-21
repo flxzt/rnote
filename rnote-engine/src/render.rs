@@ -13,7 +13,7 @@ use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::Node;
 
-use crate::utils::{base64, GrapheneRectHelpers};
+use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
@@ -95,7 +95,7 @@ impl TryFrom<ImageMemoryFormat> for piet::ImageFormat {
 #[serde(default, rename = "image")]
 pub struct Image {
     /// The image data. is (de) serialized in base64 encoding
-    #[serde(rename = "data", with = "base64")]
+    #[serde(rename = "data", with = "rnote_compose::serialize::vecu8_base64")]
     pub data: Vec<u8>,
     /// the target rect in the coordinate space of the doc
     #[serde(rename = "rectangle")]

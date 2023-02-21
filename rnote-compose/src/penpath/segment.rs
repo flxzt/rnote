@@ -17,7 +17,7 @@ pub enum Segment {
     #[serde(rename = "quadbezto", alias = "quadbez")]
     /// A quadratic bezier to segment
     QuadBezTo {
-        #[serde(rename = "cp")]
+        #[serde(rename = "cp", with = "crate::serialize::na_vector2_f64_dp3")]
         /// The quadratic curve control point
         cp: na::Vector2<f64>,
         #[serde(rename = "end")]
@@ -27,10 +27,10 @@ pub enum Segment {
     #[serde(rename = "cubbezto", alias = "cubbez")]
     /// A cubic bezier to segment.
     CubBezTo {
-        #[serde(rename = "cp1")]
+        #[serde(rename = "cp1", with = "crate::serialize::na_vector2_f64_dp3")]
         /// The cubic curve first control point
         cp1: na::Vector2<f64>,
-        #[serde(rename = "cp2")]
+        #[serde(rename = "cp2", with = "crate::serialize::na_vector2_f64_dp3")]
         /// The cubic curve second control point
         cp2: na::Vector2<f64>,
         #[serde(rename = "end")]

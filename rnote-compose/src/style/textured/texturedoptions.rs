@@ -14,13 +14,13 @@ pub struct TexturedOptions {
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
     /// The width
-    #[serde(rename = "stroke_width")]
+    #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
     pub stroke_width: f64,
     /// The color of the stroke
     #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
     /// Amount dots per 10x10 area
-    #[serde(rename = "density")]
+    #[serde(rename = "density", with = "crate::serialize::f64_dp3")]
     pub density: f64,
     /// the distribution type
     #[serde(rename = "distribution")]

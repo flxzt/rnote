@@ -12,7 +12,7 @@ use crate::helpers::{AabbHelpers, Affine2Helpers};
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
 pub struct Transform {
-    #[serde(rename = "affine")]
+    #[serde(rename = "affine", with = "crate::serialize::na_affine2_f64_dp3")]
     /// The affine transform matrix
     pub affine: na::Affine2<f64>,
 }

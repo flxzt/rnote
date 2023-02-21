@@ -186,7 +186,10 @@ pub struct Background {
     pub color: Color,
     #[serde(rename = "pattern")]
     pub pattern: PatternStyle,
-    #[serde(rename = "pattern_size")]
+    #[serde(
+        rename = "pattern_size",
+        with = "rnote_compose::serialize::na_vector2_f64_dp3"
+    )]
     pub pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
     pub pattern_color: Color,

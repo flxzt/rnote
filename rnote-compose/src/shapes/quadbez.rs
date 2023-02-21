@@ -13,13 +13,13 @@ use super::CubicBezier;
 #[serde(default, rename = "quadratic_bezier")]
 /// A quadratic bezier curve
 pub struct QuadraticBezier {
-    #[serde(rename = "start")]
+    #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The curve start
     pub start: na::Vector2<f64>,
-    #[serde(rename = "cp")]
+    #[serde(rename = "cp", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The curve control point
     pub cp: na::Vector2<f64>,
-    #[serde(rename = "end")]
+    #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The curve end
     pub end: na::Vector2<f64>,
 }

@@ -215,7 +215,7 @@ impl BitmapImage {
                             cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
                             cx.paint()?;
 
-                            page.render(&cx);
+                            page.render_for_printing(&cx);
 
                             // Draw outline around page
                             cx.set_source_rgba(

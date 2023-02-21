@@ -10,9 +10,13 @@ use super::{StrokeKey, StrokeStore};
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq)]
 #[serde(rename = "stroke_layer")]
 pub enum StrokeLayer {
+    #[serde(rename = "user_layer", alias = "UserLayer")]
     UserLayer(u32),
+    #[serde(rename = "highlighter", alias = "Highlighter")]
     Highlighter,
+    #[serde(rename = "image", alias = "Image")]
     Image,
+    #[serde(rename = "document", alias = "Document")]
     Document,
 }
 

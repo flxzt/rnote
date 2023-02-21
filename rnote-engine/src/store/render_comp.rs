@@ -12,10 +12,6 @@ use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
 
-/// when a stroke was rendered asynchronously in a task and the image sacle changed in the meantime,
-/// this is the tolerance where the render is still considered valid.
-pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
     Complete,
@@ -196,8 +192,6 @@ impl StrokeStore {
                 return;
             }
 
-            let stroke = stroke.clone();
-
             // extending the viewport by the factor
             let viewport_render_margins =
                 viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
@@ -205,6 +199,7 @@ impl StrokeStore {
 
             // indicates that a task is now started rendering the stroke
             render_comp.state = RenderCompState::BusyRenderingInTask;
+            let stroke = stroke.clone();
 
             // Spawn a new thread for image rendering
             rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
@@ -212,7 +207,6 @@ impl StrokeStore {
                     tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
-                            scale: image_scale,
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
@@ -257,7 +251,6 @@ impl StrokeStore {
             {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
-
                 // extending the viewport by the factor
                 let viewport_render_margins = viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
                 let viewport = viewport.extend_by(viewport_render_margins);
@@ -267,7 +260,6 @@ impl StrokeStore {
                     render_comp.rendernodes = vec![];
                     render_comp.images = vec![];
                     render_comp.state = RenderCompState::Dirty;
-
                     return;
                 }
 
@@ -280,7 +272,6 @@ impl StrokeStore {
                         RenderCompState::ForViewport(old_viewport) => {
                             // We don't skip if we pass the threshold in context to the margin, so the stroke gets rerendered in time. between 0.0 and 1.0
                             const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
-
                             let diff  = (old_viewport.center().coords - viewport.center().coords).abs();
                             if diff[0] < viewport_render_margins[0] * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margins[1] * SKIP_RERENDER_MARGIN_THRESHOLD {
                                 // We don't update the state, to have the old bounds on the next call
@@ -294,10 +285,7 @@ impl StrokeStore {
 
                 // indicates that a task is now started rendering the stroke
                 render_comp.state = RenderCompState::BusyRenderingInTask;
-
                 let stroke = stroke.clone();
-
-                //log::debug!("updating stroke with viewport: {:#?}", viewport);
 
                 // Spawn a new thread for image rendering
                 rayon::spawn(move || {
@@ -306,7 +294,6 @@ impl StrokeStore {
                             tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
-                                scale: image_scale
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), with Err, {e}");
                             });

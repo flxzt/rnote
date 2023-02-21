@@ -11,6 +11,11 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
+
+/// when a stroke was rendered asynchronously in a task and the image sacle changed in the meantime,
+/// this is the tolerance where the render is still considered valid.
+pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
     Complete,
@@ -207,6 +212,7 @@ impl StrokeStore {
                     tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
+                            scale: image_scale,
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
@@ -300,6 +306,7 @@ impl StrokeStore {
                             tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
+                                scale: image_scale
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), with Err, {e}");
                             });

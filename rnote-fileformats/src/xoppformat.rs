@@ -7,6 +7,9 @@ use crate::FromXmlAttributeValue;
 
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
 
+/// The decimal places when serializing values
+pub const VALS_DEC_PLACES: usize = 3;
+
 /// Compress bytes with gzip
 fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
     let compressed_bytes = Vec::<u8>::new();
@@ -196,8 +199,8 @@ impl XmlLoadable for XoppPage {
 impl XmlWritable for XoppPage {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("page");
-        w.write_attribute("width", &format!("{}", self.width));
-        w.write_attribute("height", &format!("{}", self.height));
+        w.write_attribute("width", &format!("{:.*}", VALS_DEC_PLACES, self.width));
+        w.write_attribute("height", &format!("{:.*}", VALS_DEC_PLACES, self.height));
         self.background.write_to_xml(w);
         for layer in self.layers.iter() {
             layer.write_to_xml(w);
@@ -779,7 +782,7 @@ impl XmlWritable for XoppStroke {
             &self
                 .width
                 .iter()
-                .map(|&width| format!("{width}"))
+                .map(|&width| format!("{width:.*}", VALS_DEC_PLACES))
                 .collect::<Vec<String>>()
                 .join(" "),
         );
@@ -788,7 +791,12 @@ impl XmlWritable for XoppStroke {
             &self
                 .coords
                 .iter()
-                .map(|coord| format!("{} {}", coord[0], coord[1]))
+                .map(|coord| {
+                    format!(
+                        "{:.*} {:.*}",
+                        VALS_DEC_PLACES, coord[0], VALS_DEC_PLACES, coord[1]
+                    )
+                })
                 .collect::<Vec<String>>()
                 .join(" "),
         );
@@ -905,9 +913,9 @@ impl XmlWritable for XoppText {
         w.set_preserve_whitespaces(true);
         w.start_element("text");
         w.write_attribute("font", &self.font);
-        w.write_attribute("size", &self.size);
-        w.write_attribute("x", &self.x);
-        w.write_attribute("y", &self.y);
+        w.write_attribute("size", &format!("{:.*}", VALS_DEC_PLACES, self.size));
+        w.write_attribute("x", &format!("{:.*}", VALS_DEC_PLACES, self.x));
+        w.write_attribute("y", &format!("{:.*}", VALS_DEC_PLACES, self.y));
         w.write_attribute("color", &self.color.as_xml_attr_value());
 
         w.write_text(&self.text);
@@ -993,10 +1001,10 @@ impl XmlWritable for XoppImage {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.set_preserve_whitespaces(true);
         w.start_element("image");
-        w.write_attribute("left", &self.left);
-        w.write_attribute("top", &self.top);
-        w.write_attribute("right", &self.right);
-        w.write_attribute("bottom", &self.bottom);
+        w.write_attribute("left", &format!("{:.*}", VALS_DEC_PLACES, self.left));
+        w.write_attribute("top", &format!("{:.*}", VALS_DEC_PLACES, self.top));
+        w.write_attribute("right", &format!("{:.*}", VALS_DEC_PLACES, self.right));
+        w.write_attribute("bottom", &format!("{:.*}", VALS_DEC_PLACES, self.bottom));
         w.write_text(&self.data);
         w.end_element();
         w.set_preserve_whitespaces(false);

@@ -16,7 +16,7 @@ use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
 use crate::pens::{PenMode, PensConfig};
-use crate::store::render_comp::RenderCompState;
+use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
@@ -80,6 +80,8 @@ pub enum EngineTask {
         key: StrokeKey,
         /// The generated images
         images: GeneratedStrokeImages,
+        /// The image scale-factor the render task was using while generating the images
+        image_scale: f64,
     },
     /// Appends the images to the rendering of the stroke
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
@@ -585,7 +587,11 @@ impl RnoteEngine {
         let mut quit = false;
 
         match task {
-            EngineTask::UpdateStrokeWithImages { key, images } => {
+            EngineTask::UpdateStrokeWithImages {
+                key,
+                images,
+                image_scale,
+            } => {
                 if let Some(state) = self.store.render_comp_state(key) {
                     match state {
                         RenderCompState::Complete | RenderCompState::ForViewport(_) => {
@@ -593,8 +599,26 @@ impl RnoteEngine {
                             // so we just discard the the task rendering by not replacing the images
                         }
                         RenderCompState::BusyRenderingInTask => {
-                            // Only when the state still is as we set it when starting the render task, we replace the images
+                            // Only when the state still is as we set it when starting
+                            // the render task, we replace the images
                             self.store.replace_rendering_with_images(key, images);
+
+                            // If the image scale has changed in the meantime,
+                            // we mark the rendering dirty again and trigger another render
+                            if !((self.camera.image_scale()
+                                - render_comp::RENDER_IMAGE_SCALE_TOLERANCE
+                                ..self.camera.image_scale()
+                                    + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
+                                .contains(&image_scale))
+                            {
+                                self.store.set_rendering_dirty(key);
+                                self.store.regenerate_rendering_for_stroke_threaded(
+                                    self.tasks_tx.clone(),
+                                    key,
+                                    self.camera.viewport(),
+                                    self.camera.image_scale(),
+                                );
+                            }
                             widget_flags.redraw = true;
                         }
                         RenderCompState::Dirty => {

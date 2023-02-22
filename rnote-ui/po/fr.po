@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-07 18:44+0000\n"
+"PO-Revision-Date: 2023-02-22 19:45+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -1185,15 +1185,16 @@ msgstr "_Fermer"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Temporaire"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Permanent"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
+#, fuzzy
 msgid "Toggle"
-msgstr ""
+msgstr "Basculer"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1336,8 +1337,9 @@ msgid "Set the format height"
 msgstr "Définir la hauteur du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:234
+#, fuzzy
 msgid "Dpi"
-msgstr ""
+msgstr "Dpi"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
 #, fuzzy
@@ -1452,7 +1454,7 @@ msgstr "Définir l’action du bouton secondaire de la souris"
 
 #: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
-msgstr ""
+msgstr "Appui long à deux doigts"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
 #, fuzzy
@@ -1547,8 +1549,9 @@ msgid "Switch to the 'Tools'"
 msgstr "Basculer vers \"Outils\""
 
 #: rnote-ui/data/ui/shortcuts.ui:92
+#, fuzzy
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + Glisser"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 #, fuzzy
@@ -1557,8 +1560,9 @@ msgid "Zoom in/out"
 msgstr "Zoom arrière"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
+#, fuzzy
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Maj + Glisser"
 
 #: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
 #, fuzzy
@@ -1842,7 +1846,7 @@ msgstr "Échec de l’exportation de la sélection, aucun fichier sélectionné.
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
-msgstr ""
+msgstr "Json"
 
 #: rnote-ui/src/dialogs/export.rs:814
 #, fuzzy
@@ -1945,20 +1949,23 @@ msgid "Change Workspace Directory"
 msgstr "Changer d'espace de travail"
 
 #: rnote-ui/src/dialogs/mod.rs:526
+#, fuzzy
 msgid "Band-Aid"
-msgstr ""
+msgstr "Aide-Mémoire"
 
 #: rnote-ui/src/dialogs/mod.rs:527
+#, fuzzy
 msgid "Bank"
-msgstr ""
+msgstr "Coffre"
 
 #: rnote-ui/src/dialogs/mod.rs:528
 msgid "Bookmark"
-msgstr ""
+msgstr "Signet"
 
 #: rnote-ui/src/dialogs/mod.rs:529
+#, fuzzy
 msgid "Book"
-msgstr ""
+msgstr "Carnet"
 
 #: rnote-ui/src/dialogs/mod.rs:530
 msgid "Bread"
@@ -1966,11 +1973,11 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:531
 msgid "Calendar"
-msgstr ""
+msgstr "Calendrier"
 
 #: rnote-ui/src/dialogs/mod.rs:532
 msgid "Camera"
-msgstr ""
+msgstr "Camera"
 
 #: rnote-ui/src/dialogs/mod.rs:533
 msgctxt "as in computer chip"

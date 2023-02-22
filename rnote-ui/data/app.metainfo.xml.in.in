@@ -72,9 +72,9 @@
 
   <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.5.14-beta2" date="2023-02-20">
+    <release version="0.5.14" date="2023-02-20">
       <description>
-        <p>this release changes: (BETA)</p>
+        <p>this release changes:</p>
         <ul>
           <li>feature: toggle mode for shortcuts</li>
           <li>feature: eraser size picker</li>
@@ -82,12 +82,12 @@
           <li>improvement: indicate hover over nodes in the selector and typewriter</li>
           <li>improvement: reduced save and xopp export file sizes</li>
           <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>
-          <li>fix: pdf import with different size pages</li>
-          <li>fix: image and pdf import offsets now take the document bounds into account</li>
+          <li>fix: Pdf import with different size pages</li>
+          <li>fix: image and Pdf import offsets now take the document bounds into account</li>
           <li>fix: broken resizing in fixed-size document layout</li>
           <li>fix: crash when navigating up/down into non-ASCII text</li>
           <li>fix: crash on launch when using a custom stylesheet</li>
-          <li>fix: rough style fill calculation</li>
+          <li>fix: rough style fill calculations</li>
         </ul>
       </description>
     </release>

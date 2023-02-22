@@ -782,7 +782,7 @@ impl XmlWritable for XoppStroke {
             &self
                 .width
                 .iter()
-                .map(|&width| format!("{width:.*}", VALS_DEC_PLACES))
+                .map(|&width| format!("{width:.VALS_DEC_PLACES$}"))
                 .collect::<Vec<String>>()
                 .join(" "),
         );

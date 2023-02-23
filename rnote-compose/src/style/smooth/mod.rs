@@ -254,6 +254,11 @@ fn compose_lines_variable_width(
     end_width: f64,
     _options: &SmoothOptions,
 ) -> kurbo::BezPath {
+    // Whe ghost the lines variable, making sure we can only use the filtered
+    let lines = lines
+        .into_iter()
+        .filter(|line| (line.end - line.start).magnitude() > 0.0)
+        .collect::<Vec<&Line>>();
     let n_lines = lines.len();
     if n_lines == 0 {
         return kurbo::BezPath::new();
@@ -262,7 +267,6 @@ fn compose_lines_variable_width(
     let (pos_offset_coords, neg_offset_coords): (Vec<_>, Vec<_>) = lines
         .iter()
         .enumerate()
-        .filter(|(_, line)| (line.end - line.start).magnitude() > 0.0)
         .flat_map(|(i, line)| {
             let line_start_width = start_width
                 + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_lines as u32));
@@ -283,11 +287,6 @@ fn compose_lines_variable_width(
             ]
         })
         .unzip();
-
-    // Check either, both have the same length
-    if pos_offset_coords.len() < 2 {
-        return kurbo::BezPath::new();
-    }
 
     let first_line = lines.first().unwrap();
     let last_line = lines.last().unwrap();

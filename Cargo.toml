@@ -17,3 +17,5 @@ lto = "fat"
 codegen-units = 1
 
 [patch.crates-io]
+# this patch fixes usvg's (v0.27.0) incorrect export jpg mime type
+usvg = {git = "https://github.com/flxzt/resvg", branch = "v-0-27-0-jpeg_mime_fix"}

@@ -4695,8 +4695,7 @@ dependencies = [
 [[package]]
 name = "usvg"
 version = "0.27.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18f21439baebaab1773fd5c9f70a04491946ef1480ea813e2d46b61fa632a82b"
+source = "git+https://github.com/flxzt/resvg?branch=v-0-27-0-jpeg_mime_fix#909decf1d61791439202bbd3c4af5d0cbbb4cfcb"
 dependencies = [
  "base64 0.13.1",
  "data-url 0.2.0",

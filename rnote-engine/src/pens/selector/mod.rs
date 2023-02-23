@@ -706,7 +706,7 @@ impl Selector {
     ) -> PenProgress {
         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
             // Select all keys
-            let all_strokes = engine_view.store.keys_sorted_chrono();
+            let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);

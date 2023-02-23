@@ -256,7 +256,7 @@ fn compose_lines_variable_width(
 ) -> kurbo::BezPath {
     // Whe ghost the lines variable, making sure we can only use the filtered
     let lines = lines
-        .into_iter()
+        .iter()
         .filter(|line| (line.end - line.start).magnitude() > 0.0)
         .collect::<Vec<&Line>>();
     let n_lines = lines.len();

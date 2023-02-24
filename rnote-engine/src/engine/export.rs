@@ -944,6 +944,13 @@ fn gen_doc_svg(
         doc_w_content_bounds,
     )?]);
 
+    if let Err(e) = doc_svg.simplify() {
+        log::warn!(
+            "simplifying svg in gen_doc_svg() failed, Err: {e:?}\nsvg:\n\"{}\n\"",
+            doc_svg.svg_data
+        );
+    };
+
     Ok(doc_svg)
 }
 
@@ -981,6 +988,10 @@ fn gen_doc_pages_svgs(
             },
             page_bounds,
         )?]);
+
+        if let Err(e) = page_svg.simplify() {
+            log::warn!("simplifying svg in gen_doc_pages_svgs() failed, Err: {e:?}");
+        };
 
         pages_svgs.push(page_svg);
     }
@@ -1024,6 +1035,10 @@ fn gen_selection_svg(
         },
         selection_bounds,
     )?]);
+
+    if let Err(e) = selection_svg.simplify() {
+        log::warn!("simplifying svg in gen_selection_svg() failed, Err: {e:?}");
+    };
 
     Ok(Some(selection_svg))
 }

@@ -143,6 +143,7 @@ impl VectorImage {
     ) -> Result<Self, anyhow::Error> {
         let xml_options = usvg_export::ExportOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
+            n_decimal_places: 3,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,

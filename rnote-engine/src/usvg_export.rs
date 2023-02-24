@@ -31,12 +31,24 @@ impl TreeExportExt for usvg::Tree {
 }
 
 /// Export options
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct ExportOptions {
     /// Used to add a custom prefix to each element ID during writing.
     pub id_prefix: Option<String>,
+    /// limit decimal places
+    pub n_decimal_places: u32,
     /// `xmlwriter` options.
     pub writer_opts: xmlwriter::Options,
+}
+
+impl Default for ExportOptions {
+    fn default() -> Self {
+        Self {
+            id_prefix: None,
+            n_decimal_places: 8,
+            writer_opts: xmlwriter::Options::default(),
+        }
+    }
 }
 
 pub(crate) fn convert(tree: &Tree, opt: &ExportOptions) -> String {
@@ -512,7 +524,7 @@ fn conv_defs(tree: &Tree, opt: &ExportOptions, xml: &mut XmlWriter) {
                 xml.write_svg_attribute(AttributeId::Y1, &lg.y1);
                 xml.write_svg_attribute(AttributeId::X2, &lg.x2);
                 xml.write_svg_attribute(AttributeId::Y2, &lg.y2);
-                write_base_grad(&lg.base, xml);
+                write_base_grad(&lg.base, opt, xml);
                 xml.end_element();
             }
             Paint::RadialGradient(rg) => {
@@ -523,7 +535,7 @@ fn conv_defs(tree: &Tree, opt: &ExportOptions, xml: &mut XmlWriter) {
                 xml.write_svg_attribute(AttributeId::R, &rg.r.get());
                 xml.write_svg_attribute(AttributeId::Fx, &rg.fx);
                 xml.write_svg_attribute(AttributeId::Fy, &rg.fy);
-                write_base_grad(&rg.base, xml);
+                write_base_grad(&rg.base, opt, xml);
                 xml.end_element();
             }
             Paint::Pattern(pattern) => {
@@ -540,7 +552,7 @@ fn conv_defs(tree: &Tree, opt: &ExportOptions, xml: &mut XmlWriter) {
                     pattern.content_units,
                     Units::UserSpaceOnUse,
                 );
-                xml.write_transform(AttributeId::PatternTransform, pattern.transform);
+                xml.write_transform(AttributeId::PatternTransform, pattern.transform, opt);
 
                 if let Some(ref vbox) = pattern.view_box {
                     xml.write_viewbox(vbox);
@@ -565,7 +577,7 @@ fn conv_defs(tree: &Tree, opt: &ExportOptions, xml: &mut XmlWriter) {
             clip.units,
             Units::UserSpaceOnUse,
         );
-        xml.write_transform(AttributeId::Transform, clip.transform);
+        xml.write_transform(AttributeId::Transform, clip.transform, opt);
 
         if let Some(ref clip) = clip.clip_path {
             xml.write_func_iri(AttributeId::ClipPath, &clip.id, opt);
@@ -633,7 +645,7 @@ fn conv_element(node: &Node, is_clip_path: bool, opt: &ExportOptions, xml: &mut 
                 }
             }
 
-            xml.write_transform(AttributeId::Transform, img.transform);
+            xml.write_transform(AttributeId::Transform, img.transform, opt);
             xml.write_image_data(&img.kind);
 
             xml.end_element();
@@ -687,7 +699,7 @@ fn conv_element(node: &Node, is_clip_path: bool, opt: &ExportOptions, xml: &mut 
                 xml.write_svg_attribute(AttributeId::Opacity, &g.opacity.get());
             }
 
-            xml.write_transform(AttributeId::Transform, g.transform);
+            xml.write_transform(AttributeId::Transform, g.transform, opt);
 
             if let Some(eb) = g.enable_background {
                 xml.write_enable_background(eb);
@@ -737,7 +749,7 @@ trait XmlWriterExt {
     fn write_viewbox(&mut self, view_box: &ViewBox);
     fn write_aspect(&mut self, aspect: AspectRatio);
     fn write_units(&mut self, id: AttributeId, units: Units, def: Units);
-    fn write_transform(&mut self, id: AttributeId, units: Transform);
+    fn write_transform(&mut self, id: AttributeId, units: Transform, opt: &ExportOptions);
     fn write_enable_background(&mut self, eb: EnableBackground);
     fn write_visibility(&mut self, value: Visibility);
     fn write_func_iri(&mut self, aid: AttributeId, id: &str, opt: &ExportOptions);
@@ -845,21 +857,21 @@ impl XmlWriterExt for XmlWriter {
         }
     }
 
-    fn write_transform(&mut self, id: AttributeId, ts: Transform) {
+    fn write_transform(&mut self, id: AttributeId, ts: Transform, opt: &ExportOptions) {
         if !ts.is_default() {
             self.write_attribute_raw(id.to_str(), |buf| {
                 buf.extend_from_slice(b"matrix(");
-                write_num(ts.a, buf);
+                write_num(ts.a, buf, opt.n_decimal_places);
                 buf.push(b' ');
-                write_num(ts.b, buf);
+                write_num(ts.b, buf, opt.n_decimal_places);
                 buf.push(b' ');
-                write_num(ts.c, buf);
+                write_num(ts.c, buf, opt.n_decimal_places);
                 buf.push(b' ');
-                write_num(ts.d, buf);
+                write_num(ts.d, buf, opt.n_decimal_places);
                 buf.push(b' ');
-                write_num(ts.e, buf);
+                write_num(ts.e, buf, opt.n_decimal_places);
                 buf.push(b' ');
-                write_num(ts.f, buf);
+                write_num(ts.f, buf, opt.n_decimal_places);
                 buf.extend_from_slice(b")");
             });
         }
@@ -1043,13 +1055,13 @@ fn has_xlink(tree: &Tree) -> bool {
     false
 }
 
-fn write_base_grad(g: &BaseGradient, xml: &mut XmlWriter) {
+fn write_base_grad(g: &BaseGradient, opt: &ExportOptions, xml: &mut XmlWriter) {
     xml.write_units(
         AttributeId::GradientUnits,
         g.units,
         Units::ObjectBoundingBox,
     );
-    xml.write_transform(AttributeId::GradientTransform, g.transform);
+    xml.write_transform(AttributeId::GradientTransform, g.transform, opt);
 
     match g.spread_method {
         SpreadMethod::Pad => {}
@@ -1104,23 +1116,23 @@ fn write_path(
         xml.write_func_iri(AttributeId::ClipPath, id, opt);
     }
 
-    xml.write_transform(AttributeId::Transform, path.transform);
+    xml.write_transform(AttributeId::Transform, path.transform, opt);
 
     xml.write_attribute_raw("d", |buf| {
         for seg in path.data.segments() {
             match seg {
                 PathSegment::MoveTo { x, y } => {
                     buf.extend_from_slice(b"M ");
-                    write_num(x, buf);
+                    write_num(x, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(y, buf);
+                    write_num(y, buf, opt.n_decimal_places);
                     buf.push(b' ');
                 }
                 PathSegment::LineTo { x, y } => {
                     buf.extend_from_slice(b"L ");
-                    write_num(x, buf);
+                    write_num(x, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(y, buf);
+                    write_num(y, buf, opt.n_decimal_places);
                     buf.push(b' ');
                 }
                 PathSegment::CurveTo {
@@ -1132,17 +1144,17 @@ fn write_path(
                     y,
                 } => {
                     buf.extend_from_slice(b"C ");
-                    write_num(x1, buf);
+                    write_num(x1, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(y1, buf);
+                    write_num(y1, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(x2, buf);
+                    write_num(x2, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(y2, buf);
+                    write_num(y2, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(x, buf);
+                    write_num(x, buf, opt.n_decimal_places);
                     buf.push(b' ');
-                    write_num(y, buf);
+                    write_num(y, buf, opt.n_decimal_places);
                     buf.push(b' ');
                 }
                 PathSegment::ClosePath => {
@@ -1264,21 +1276,21 @@ fn write_light_source(light: &filter::LightSource, xml: &mut XmlWriter) {
     xml.end_element();
 }
 
-fn write_num(num: f64, buf: &mut Vec<u8>) {
+fn write_num(num: f64, buf: &mut Vec<u8>, n_dec_places: u32) {
     // If number is an integer, it's faster to write it as i32.
     if num.fract().is_fuzzy_zero() {
         write!(buf, "{}", num as i32).unwrap();
         return;
     }
 
-    // Round numbers up to 8 digits to prevent writing
+    // Round numbers up to the specified number of decimal places to prevent writing
     // ugly numbers like 29.999999999999996.
     // It's not 100% correct, but differences are insignificant.
     //
     // Note that at least in Rust 1.64 the number formatting in debug and release modes
     // can be slightly different. So having a lower precision makes
     // our output and tests reproducible.
-    let v = (num * 100_000_000.0).round() / 100_000_000.0;
+    let v = (num * (10_u32.pow(n_dec_places) as f64)).round() / (10_u32.pow(n_dec_places) as f64);
 
     write!(buf, "{v}").unwrap();
 }

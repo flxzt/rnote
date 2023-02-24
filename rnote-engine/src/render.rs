@@ -713,20 +713,23 @@ impl Svg {
         Ok(())
     }
 
-    /// Simplifies the svg by passing it through usvg. Should reduce the size
+    /// Simplifies the svg by passing it through usvg. Expects that no xml header is present.
     pub fn simplify(&mut self) -> anyhow::Result<()> {
         let xml_options = usvg_export::ExportOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
+            n_decimal_places: 3,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
+        let svg_data =
+            rnote_compose::utils::wrap_svg_root(&self.svg_data, Some(self.bounds), None, false);
 
-        let mut svg_tree = usvg::Tree::from_str(&self.svg_data, &usvg::Options::default())?;
-        svg_tree.convert_text_to_paths(&USVG_FONTDB);
-        self.svg_data = svg_tree.to_string(&xml_options);
+        let mut usvg_tree = usvg::Tree::from_str(&svg_data, &usvg::Options::default())?;
+        usvg_tree.convert_text_to_paths(&USVG_FONTDB);
+        self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
 
         Ok(())
     }

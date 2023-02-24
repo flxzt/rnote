@@ -945,10 +945,7 @@ fn gen_doc_svg(
     )?]);
 
     if let Err(e) = doc_svg.simplify() {
-        log::warn!(
-            "simplifying svg in gen_doc_svg() failed, Err: {e:?}\nsvg:\n\"{}\n\"",
-            doc_svg.svg_data
-        );
+        log::warn!("simplifying svg in gen_doc_svg() failed, Err: {e:?}");
     };
 
     Ok(doc_svg)

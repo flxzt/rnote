@@ -13,15 +13,15 @@ use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::Node;
 
+use crate::usvg_export::{self, TreeExportExt};
 use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
-pub static USVG_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
-    let mut usvg_options = usvg::Options::default();
-    usvg_options.fontdb.load_system_fonts();
-
-    usvg_options
+pub static USVG_FONTDB: Lazy<usvg_text_layout::fontdb::Database> = Lazy::new(|| {
+    let mut db = usvg_text_layout::fontdb::Database::new();
+    db.load_system_fonts();
+    db
 });
 
 // Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor
@@ -715,8 +715,8 @@ impl Svg {
 
     /// Simplifies the svg by passing it through usvg. Should reduce the size
     pub fn simplify(&mut self) -> anyhow::Result<()> {
-        let xml_options = usvg::XmlOptions {
-            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+        let xml_options = usvg_export::ExportOptions {
+            id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -724,8 +724,9 @@ impl Svg {
             },
         };
 
-        let rtree = usvg::Tree::from_str(&self.svg_data, &USVG_OPTIONS.to_ref())?;
-        self.svg_data = rtree.to_string(&xml_options);
+        let mut svg_tree = usvg::Tree::from_str(&self.svg_data, &usvg::Options::default())?;
+        svg_tree.convert_text_to_paths(&USVG_FONTDB);
+        self.svg_data = svg_tree.to_string(&xml_options);
 
         Ok(())
     }

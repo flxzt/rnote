@@ -1,10 +1,5 @@
-use std::ops::Range;
-
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::{Stroke, StrokeBehaviour};
-use crate::document::Format;
-use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{render, DrawBehaviour};
+use gtk4::glib;
+use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
@@ -12,10 +7,15 @@ use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
-
-use gtk4::glib;
-use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
+use std::ops::Range;
+
+use super::strokebehaviour::GeneratedStrokeImages;
+use super::{Stroke, StrokeBehaviour};
+use crate::document::Format;
+use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::usvg_export::{self, TreeExportExt};
+use crate::{render, DrawBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -141,8 +141,8 @@ impl VectorImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let xml_options = usvg::XmlOptions {
-            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+        let xml_options = usvg_export::ExportOptions {
+            id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -150,7 +150,8 @@ impl VectorImage {
             },
         };
 
-        let svg_tree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
+        let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
+        svg_tree.convert_text_to_paths(&render::USVG_FONTDB);
         let svg_data = svg_tree.to_string(&xml_options);
         let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
 

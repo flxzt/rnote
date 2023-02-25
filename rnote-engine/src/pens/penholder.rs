@@ -63,6 +63,13 @@ fn deserialize_shortcuts<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Short
             mode: ShortcutMode::Temporary,
         },
     );
+    sc.insert(
+        ShortcutKey::DrawingPadButton3,
+        ShortcutAction::ChangePenStyle {
+            style: PenStyle::Eraser,
+            mode: ShortcutMode::Temporary,
+        },
+    );
     Ok(sc)
 }
 

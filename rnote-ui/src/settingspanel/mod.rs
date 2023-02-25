@@ -98,6 +98,8 @@ mod imp {
         pub(crate) penshortcut_drawing_pad_button_1: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
     }
 
     #[glib::object_subclass]
@@ -436,6 +438,9 @@ impl RnSettingsPanel {
                 ShortcutKey::DrawingPadButton2 => {
                     imp.penshortcut_drawing_pad_button_2.set_action(action);
                 }
+                ShortcutKey::DrawingPadButton3 => {
+                    imp.penshortcut_drawing_pad_button_3.set_action(action);
+                }
                 _ => {}
             });
     }
@@ -654,6 +659,7 @@ impl RnSettingsPanel {
         let penshortcut_drawing_pad_button_0 = imp.penshortcut_drawing_pad_button_0.get();
         let penshortcut_drawing_pad_button_1 = imp.penshortcut_drawing_pad_button_1.get();
         let penshortcut_drawing_pad_button_2 = imp.penshortcut_drawing_pad_button_2.get();
+        let penshortcut_drawing_pad_button_3 = imp.penshortcut_drawing_pad_button_3.get();
 
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
@@ -694,6 +700,12 @@ impl RnSettingsPanel {
         imp.penshortcut_drawing_pad_button_2.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_2, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_drawing_pad_button_2.action();
             appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_3.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_3, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_3.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
     }

@@ -150,18 +150,9 @@ impl RnAppWindow {
         let action_drawing_pad_pressed_button_2 =
             gio::SimpleAction::new("drawing-pad-pressed-button-2", None);
         self.add_action(&action_drawing_pad_pressed_button_2);
-        let action_drawing_pad_pressed_strip_0 =
-            gio::SimpleAction::new("drawing-pad-pressed-strip-0", None);
-        self.add_action(&action_drawing_pad_pressed_strip_0);
-        let action_drawing_pad_pressed_strip_1 =
-            gio::SimpleAction::new("drawing-pad-pressed-strip-1", None);
-        self.add_action(&action_drawing_pad_pressed_strip_1);
-        let action_drawing_pad_pressed_ring_0 =
-            gio::SimpleAction::new("drawing-pad-pressed-ring-0", None);
-        self.add_action(&action_drawing_pad_pressed_ring_0);
-        let action_drawing_pad_pressed_ring_1 =
-            gio::SimpleAction::new("drawing-pad-pressed-ring-1", None);
-        self.add_action(&action_drawing_pad_pressed_ring_1);
+        let action_drawing_pad_pressed_button_3 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-3", None);
+        self.add_action(&action_drawing_pad_pressed_button_3);
 
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -382,27 +373,12 @@ impl RnAppWindow {
             }),
         );
 
-        action_drawing_pad_pressed_strip_0.connect_activate(
+        action_drawing_pad_pressed_button_3.connect_activate(
             clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("drawing pad pressed strip 0");
-            }),
-        );
-
-        action_drawing_pad_pressed_strip_1.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("drawing pad pressed strip 1");
-            }),
-        );
-
-        action_drawing_pad_pressed_ring_0.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("drawing pad pressed ring 0");
-            }),
-        );
-
-        action_drawing_pad_pressed_ring_1.connect_activate(
-            clone!(@weak self as appwindow => move |_, _| {
-                log::debug!("drawing pad pressed ring 1");
+                log::debug!("drawing pad pressed button 3");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 

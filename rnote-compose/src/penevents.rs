@@ -130,6 +130,9 @@ pub enum ShortcutKey {
     /// Button 2 on a drawing pad
     #[serde(rename = "drawing_pad_button_2")]
     DrawingPadButton2,
+    /// Button 3 on a drawing pad
+    #[serde(rename = "drawing_pad_button_3")]
+    DrawingPadButton3,
 }
 
 /// A modifier key

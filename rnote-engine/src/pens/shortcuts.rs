@@ -106,6 +106,13 @@ impl Default for Shortcuts {
                 mode: ShortcutMode::Temporary,
             },
         );
+        map.insert(
+            ShortcutKey::DrawingPadButton3,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Eraser,
+                mode: ShortcutMode::Temporary,
+            },
+        );
 
         Self(map)
     }

@@ -478,22 +478,50 @@ impl RnAppWindow {
             PadActionType::Button,
             0,
             -1,
-            &gettext("Drawing Pad Button 0"),
+            &gettext("Button 0"),
             "drawing-pad-pressed-button-0",
         );
         drawing_pad_controller.set_action(
             PadActionType::Button,
             1,
             -1,
-            &gettext("Drawing Pad Button 1"),
+            &gettext("Button 1"),
             "drawing-pad-pressed-button-1",
         );
         drawing_pad_controller.set_action(
             PadActionType::Button,
             2,
             -1,
-            &gettext("Drawing Pad Button 2"),
+            &gettext("Button 2"),
             "drawing-pad-pressed-button-2",
+        );
+        drawing_pad_controller.set_action(
+            PadActionType::Ring,
+            0,
+            -1,
+            &gettext("Ring 0"),
+            "drawing-pad-pressed-ring-0",
+        );
+        drawing_pad_controller.set_action(
+            PadActionType::Ring,
+            1,
+            -1,
+            &gettext("Ring 1"),
+            "drawing-pad-pressed-ring-1",
+        );
+        drawing_pad_controller.set_action(
+            PadActionType::Strip,
+            0,
+            -1,
+            &gettext("Strip 0"),
+            "drawing-pad-pressed-strip-0",
+        );
+        drawing_pad_controller.set_action(
+            PadActionType::Strip,
+            1,
+            -1,
+            &gettext("Strip 1"),
+            "drawing-pad-pressed-strip-1",
         );
 
         inst.add_controller(&drawing_pad_controller);

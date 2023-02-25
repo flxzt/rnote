@@ -92,6 +92,12 @@ mod imp {
         pub(crate) penshortcut_mouse_button_secondary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_touch_two_finger_long_press_row: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_0: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_1: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
     }
 
     #[glib::object_subclass]
@@ -421,6 +427,15 @@ impl RnSettingsPanel {
                     imp.penshortcut_touch_two_finger_long_press_row
                         .set_action(action);
                 }
+                ShortcutKey::DrawingPadButton0 => {
+                    imp.penshortcut_drawing_pad_button_0.set_action(action);
+                }
+                ShortcutKey::DrawingPadButton1 => {
+                    imp.penshortcut_drawing_pad_button_1.set_action(action);
+                }
+                ShortcutKey::DrawingPadButton2 => {
+                    imp.penshortcut_drawing_pad_button_2.set_action(action);
+                }
                 _ => {}
             });
     }
@@ -636,28 +651,49 @@ impl RnSettingsPanel {
             imp.penshortcut_mouse_button_secondary_row.get();
         let penshortcut_touch_two_finger_long_press_row =
             imp.penshortcut_touch_two_finger_long_press_row.get();
+        let penshortcut_drawing_pad_button_0 = imp.penshortcut_drawing_pad_button_0.get();
+        let penshortcut_drawing_pad_button_1 = imp.penshortcut_drawing_pad_button_1.get();
+        let penshortcut_drawing_pad_button_2 = imp.penshortcut_drawing_pad_button_2.get();
 
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
 
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_0.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_0, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_0.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_1.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_1, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_1.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_2.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_2, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_2.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
             None
         }));
     }

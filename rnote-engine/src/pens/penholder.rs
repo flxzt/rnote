@@ -84,8 +84,8 @@ impl PenHolder {
     pub fn clear_shortcuts(&mut self) {
         self.shortcuts.clear();
     }
-    /// Registers a new shortcut key and action
-    pub fn register_new_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
+    /// Registers a shortcut key and action
+    pub fn register_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);
     }
 

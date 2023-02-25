@@ -85,6 +85,27 @@ impl Default for Shortcuts {
                 mode: ShortcutMode::Temporary,
             },
         );
+        map.insert(
+            ShortcutKey::DrawingPadButton0,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Eraser,
+                mode: ShortcutMode::Temporary,
+            },
+        );
+        map.insert(
+            ShortcutKey::DrawingPadButton1,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Eraser,
+                mode: ShortcutMode::Temporary,
+            },
+        );
+        map.insert(
+            ShortcutKey::DrawingPadButton2,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Eraser,
+                mode: ShortcutMode::Temporary,
+            },
+        );
 
         Self(map)
     }

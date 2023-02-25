@@ -4,6 +4,7 @@ use crate::config;
 use crate::{dialogs, RnCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
@@ -139,6 +140,16 @@ impl RnAppWindow {
         self.add_action(&action_active_tab_move_right);
         let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
         self.add_action(&action_active_tab_close);
+
+        let action_drawing_pad_pressed_button_0 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-0", None);
+        self.add_action(&action_drawing_pad_pressed_button_0);
+        let action_drawing_pad_pressed_button_1 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-1", None);
+        self.add_action(&action_drawing_pad_pressed_button_1);
+        let action_drawing_pad_pressed_button_2 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-2", None);
+        self.add_action(&action_drawing_pad_pressed_button_2);
 
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -330,6 +341,34 @@ impl RnAppWindow {
                 appwindow.overlays().tabview().close_page(&active_tab_page);
             }
         }));
+
+        // Drawing pad buttons
+        action_drawing_pad_pressed_button_0.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 0");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
+        action_drawing_pad_pressed_button_1.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 1");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
+        action_drawing_pad_pressed_button_2.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 2");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
 
         // Trash Selection
         action_selection_trash.connect_activate(

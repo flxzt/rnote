@@ -121,6 +121,15 @@ pub enum ShortcutKey {
     /// Touch two finger long press gesture
     #[serde(rename = "touch_two_finger_long_press")]
     TouchTwoFingerLongPress,
+    /// Button 0 on a drawing pad
+    #[serde(rename = "drawing_pad_button_0")]
+    DrawingPadButton0,
+    /// Button 1 on a drawing pad
+    #[serde(rename = "drawing_pad_button_1")]
+    DrawingPadButton1,
+    /// Button 2 on a drawing pad
+    #[serde(rename = "drawing_pad_button_2")]
+    DrawingPadButton2,
 }
 
 /// A modifier key

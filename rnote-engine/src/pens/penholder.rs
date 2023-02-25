@@ -24,7 +24,7 @@ use super::{
 #[derive(Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
-    #[serde(rename = "shortcuts")]
+    #[serde(rename = "shortcuts", deserialize_with = "deserialize_shortcuts")]
     pub shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
     pub pen_mode_state: PenModeState,
@@ -37,6 +37,33 @@ pub struct PenHolder {
     toggle_pen_style: Option<PenStyle>,
     #[serde(skip)]
     prev_shortcut_key: Option<ShortcutKey>,
+}
+
+// Just for testing purposes
+fn deserialize_shortcuts<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Shortcuts, D::Error> {
+    let mut sc = Shortcuts::deserialize(d)?;
+    sc.insert(
+        ShortcutKey::DrawingPadButton0,
+        ShortcutAction::ChangePenStyle {
+            style: PenStyle::Eraser,
+            mode: ShortcutMode::Temporary,
+        },
+    );
+    sc.insert(
+        ShortcutKey::DrawingPadButton1,
+        ShortcutAction::ChangePenStyle {
+            style: PenStyle::Eraser,
+            mode: ShortcutMode::Temporary,
+        },
+    );
+    sc.insert(
+        ShortcutKey::DrawingPadButton2,
+        ShortcutAction::ChangePenStyle {
+            style: PenStyle::Eraser,
+            mode: ShortcutMode::Temporary,
+        },
+    );
+    Ok(sc)
 }
 
 impl Default for PenHolder {

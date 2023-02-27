@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-13 15:02+0000\n"
+"PO-Revision-Date: 2023-02-28 11:24+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -1089,15 +1089,15 @@ msgstr "_ மூடவும்"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "தற்காலிகமானது"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "நிரந்தரமானது"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "நிலைமாற்று"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1301,48 +1301,48 @@ msgid "Stylus Primary Button Action"
 msgstr "எழுத்தாணி முதன்மை பொத்தான் நடவடிக்கை"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "முதன்மை ஸ்டைலஸ் பட்டனுக்கான செயலை அமைக்கவும்"
+msgstr ""
+"முதன்மை ஸ்டைலஸ் பட்டனுக்கான \n"
+"செயலை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "எழுத்தாணி இரண்டாம் நிலை பொத்தான் செயல்"
 
 #: rnote-ui/data/ui/settingspanel.ui:383
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "இரண்டாம் நிலை ஸ்டைலஸ் பொத்தானுக்கு செயலை அமைக்கவும்"
+msgstr ""
+"இரண்டாம் நிலை ஸ்டைலஸ் பொத்தானுக்கு \n"
+" செயலை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "சுட்டி இரண்டாம் நிலை பொத்தான் செயல்"
 
 #: rnote-ui/data/ui/settingspanel.ui:396
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
-msgstr "இரண்டாம் நிலை சுட்டி பொத்தானின் செயலை அமைக்கவும்"
+msgstr ""
+"இரண்டாம் நிலை சுட்டி பொத்தானின் \n"
+"செயலை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
-#, fuzzy
-#| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
-msgstr "இரண்டு விரல்களால் நீண்ட அழுத்த செயலைத் தொடவும்"
+msgstr ""
+"தொடுதலுக்கான செயலை அமைக்கவும் \n"
+"இரண்டு விரல் நீண்ட அழுத்த சைகை"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"

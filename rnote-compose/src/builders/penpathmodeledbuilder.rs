@@ -202,19 +202,15 @@ impl PenPathModeledBuilder {
             0.0,
         );
 
-        //log::debug!("{modeler_input}");
+        match self.stroke_modeler.update(modeler_input) {
+            Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
+                let pos = r.get_pos();
+                let pressure = r.get_pressure();
 
-        self.buffer.extend(
-            self.stroke_modeler
-                .update(modeler_input)
-                .into_iter()
-                .map(|r| {
-                    let pos = r.get_pos();
-                    let pressure = r.get_pressure();
-
-                    Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
-                }),
-        );
+                Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+            })),
+            Err(e) => log::error!("stroke modeler update() failed, Err: {e:?}"),
+        }
 
         // The prediction start is the last buffer element (which will get drained)
         if let Some(last) = self.buffer.last() {
@@ -225,17 +221,20 @@ impl PenPathModeledBuilder {
         if event_type == ModelerInputEventType::kUp {
             self.prediction_buffer.clear();
         } else {
-            self.prediction_buffer = self
-                .stroke_modeler
-                .predict()
-                .into_iter()
-                .map(|r| {
-                    let pos = r.get_pos();
-                    let pressure = r.get_pressure();
-
-                    Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
-                })
-                .collect::<Vec<Element>>();
+            self.prediction_buffer = match self.stroke_modeler.predict() {
+                Ok(results) => results
+                    .into_iter()
+                    .map(|r| {
+                        let pos = r.get_pos();
+                        let pressure = r.get_pressure();
+                        Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
+                    })
+                    .collect::<Vec<Element>>(),
+                Err(e) => {
+                    log::error!("stroke modeler predict() failed, Err: {e:?}");
+                    Vec::new()
+                }
+            }
         }
     }
 
@@ -245,25 +244,28 @@ impl PenPathModeledBuilder {
         self.start_time = now;
         self.last_element_time = now;
         self.last_element = element;
-        self.stroke_modeler.reset_w_params(*MODELER_PARAMS);
+        if let Err(e) = self.stroke_modeler.reset_w_params(*MODELER_PARAMS) {
+            log::error!("stroke modeler reset_w_params() failed while restarting, Err: {e:?}");
+            return;
+        }
 
-        self.buffer.extend(
-            self.stroke_modeler
-                .update(ModelerInput::new(
-                    ModelerInputEventType::kDown,
-                    (element.pos[0] as f32, element.pos[1] as f32),
-                    0.0,
-                    element.pressure as f32,
-                    0.0,
-                    0.0,
-                ))
-                .into_iter()
-                .map(|r| {
+        match self.stroke_modeler.update(ModelerInput::new(
+            ModelerInputEventType::kDown,
+            (element.pos[0] as f32, element.pos[1] as f32),
+            0.0,
+            element.pressure as f32,
+            0.0,
+            0.0,
+        )) {
+            Ok(results) => {
+                self.buffer.extend(results.into_iter().map(|r| {
                     let pos = r.get_pos();
                     let pressure = r.get_pressure();
 
                     Element::new(na::vector![pos.0 as f64, pos.1 as f64], pressure as f64)
-                }),
-        );
+                }));
+            }
+            Err(e) => log::error!("stroke modeler update() failed while restarting, Err: {e:?}"),
+        }
     }
 }

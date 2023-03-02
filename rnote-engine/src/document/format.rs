@@ -109,7 +109,7 @@ impl MeasureUnit {
         match desired_unit {
             MeasureUnit::Px => value_in_px,
             MeasureUnit::Mm => (value_in_px / desired_dpi) * Self::AMOUNT_MM_IN_INCH,
-            MeasureUnit::Cm => (value_in_px / desired_dpi) * Self::AMOUNT_MM_IN_INCH * 10.0,
+            MeasureUnit::Cm => (value_in_px / desired_dpi) * Self::AMOUNT_MM_IN_INCH / 10.0,
         }
     }
 }

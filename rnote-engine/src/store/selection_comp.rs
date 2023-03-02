@@ -1,6 +1,7 @@
-use crate::strokes::Stroke;
-
+use super::render_comp::RenderCompState;
 use super::{StrokeKey, StrokeStore};
+use crate::strokes::strokebehaviour::GeneratedStrokeImages;
+use crate::strokes::Stroke;
 
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -111,16 +112,33 @@ impl StrokeStore {
 
         let new_selected = old_selected
             .iter()
-            .filter_map(|&key| {
+            .filter_map(|&old_key| {
                 let new_key =
-                    self.insert_stroke((**self.stroke_components.get(key)?).clone(), None);
+                    self.insert_stroke((**self.stroke_components.get(old_key)?).clone(), None);
                 self.set_selected(new_key, true);
+
+                // duplicate and insert the render images of the old stroke to avoid flickering
+                if let Some(render_comp) = self.render_components.get(old_key) {
+                    let images = render_comp.images.clone();
+                    if let RenderCompState::ForViewport(viewport) = render_comp.state {
+                        self.replace_rendering_with_images(
+                            new_key,
+                            GeneratedStrokeImages::Partial { images, viewport },
+                        );
+                    } else if render_comp.state == RenderCompState::Complete {
+                        self.replace_rendering_with_images(
+                            new_key,
+                            GeneratedStrokeImages::Full(images),
+                        );
+                    }
+                }
                 Some(new_key)
             })
             .collect::<Vec<StrokeKey>>();
 
         // Offsetting the new selected stroke to make the duplication apparent
         self.translate_strokes(&new_selected, Stroke::IMPORT_OFFSET_DEFAULT);
+        self.translate_strokes_images(&new_selected, Stroke::IMPORT_OFFSET_DEFAULT);
 
         new_selected
     }

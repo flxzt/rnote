@@ -5,7 +5,7 @@ use rnote_compose::penevents::{ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use super::RnCanvas;
 
@@ -156,7 +156,7 @@ pub(crate) fn handle_pointer_controller_event(
     };
 
     if handle_pen_event {
-        let Some(element) = retrieve_pointer_element(canvas, event) else {
+        let Some(elements) = retrieve_pointer_elements(canvas, event) else {
                     return (Inhibit(false), state);
                 };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
@@ -164,43 +164,45 @@ pub(crate) fn handle_pointer_controller_event(
 
         //log::debug!("handle event, state: {state:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}");
 
-        match state {
-            PenState::Up => {
-                canvas.switch_between_cursors(false);
+        for (element, event_time) in elements {
+            match state {
+                PenState::Up => {
+                    canvas.switch_between_cursors(false);
 
-                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-                    PenEvent::Up {
-                        element,
-                        modifier_keys,
-                    },
-                    pen_mode,
-                    now,
-                ));
-            }
-            PenState::Proximity => {
-                canvas.switch_between_cursors(false);
+                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                        PenEvent::Up {
+                            element,
+                            modifier_keys: modifier_keys.clone(),
+                        },
+                        pen_mode,
+                        event_time,
+                    ));
+                }
+                PenState::Proximity => {
+                    canvas.switch_between_cursors(false);
 
-                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-                    PenEvent::Proximity {
-                        element,
-                        modifier_keys,
-                    },
-                    pen_mode,
-                    now,
-                ));
-            }
-            PenState::Down => {
-                canvas.grab_focus();
-                canvas.switch_between_cursors(true);
+                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                        PenEvent::Proximity {
+                            element,
+                            modifier_keys: modifier_keys.clone(),
+                        },
+                        pen_mode,
+                        event_time,
+                    ));
+                }
+                PenState::Down => {
+                    canvas.grab_focus();
+                    canvas.switch_between_cursors(true);
 
-                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-                    PenEvent::Down {
-                        element,
-                        modifier_keys,
-                    },
-                    pen_mode,
-                    now,
-                ));
+                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                        PenEvent::Down {
+                            element,
+                            modifier_keys: modifier_keys.clone(),
+                        },
+                        pen_mode,
+                        event_time,
+                    ));
+                }
             }
         }
     }
@@ -280,24 +282,63 @@ fn event_is_stylus(event: &gdk::Event) -> bool {
     event.device_tool().is_some()
 }
 
-fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Element> {
-    let Some((x, y)) = event.position() else {
-        return None;
-    };
+fn retrieve_pointer_elements(
+    canvas: &RnCanvas,
+    event: &gdk::Event,
+) -> Option<Vec<(Element, Instant)>> {
+    let now = Instant::now();
     let root = canvas.root().unwrap();
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
-
-    let pos = root
-        .translate_coordinates(canvas, x - surface_trans_x, y - surface_trans_y)
-        .map(|(x, y)| {
-            let pos = na::vector![x, y];
-            (canvas.engine().borrow().camera.transform().inverse() * na::Point2::from(pos)).coords
-        })
-        .unwrap();
-
-    // getting the pressure only works when the event has a device tool (== is a stylus),
-    // else we get SIGSEGV when trying to access (TODO: report this to bindings)
+    // retreiving the pressure only works when the event has a device tool (== is a stylus),
+    // else we get SIGSEGV when trying to access (TODO: report this to gtk-rs)
     let is_stylus = event_is_stylus(event);
+    let event_time = event.time();
+
+    let mut elements = Vec::with_capacity(1);
+
+    // Transforms the pos given in surface coordinate space to the canvas document coordinate space
+    let transform_pos = |pos: na::Vector2<f64>| -> na::Vector2<f64> {
+        root.translate_coordinates(canvas, pos[0] - surface_trans_x, pos[1] - surface_trans_y)
+            .map(|(x, y)| {
+                (canvas.engine().borrow().camera.transform().inverse()
+                    * na::Point2::from(na::vector![x, y]))
+                .coords
+            })
+            .unwrap()
+    };
+
+    if event.event_type() == gdk::EventType::MotionNotify {
+        elements.extend(event.history().into_iter().filter_map(|c| {
+            let available_axes = c.flags();
+            if !(available_axes.contains(gdk::AxisFlags::X)
+                && available_axes.contains(gdk::AxisFlags::Y))
+            {
+                return None;
+            }
+
+            let time = now
+                .checked_sub(Duration::from_millis(
+                    event_time.saturating_sub(c.time()) as u64
+                ))
+                .unwrap_or(now);
+            let axes = c.axes();
+            let pos = transform_pos(na::vector![
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::X)],
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)]
+            ]);
+            let pressure = if is_stylus {
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::Pressure)]
+            } else {
+                Element::PRESSURE_DEFAULT
+            };
+
+            Some((Element::new(pos, pressure), time))
+        }));
+    }
+
+    let pos = event
+        .position()
+        .map(|(x, y)| transform_pos(na::vector![x, y]))?;
 
     let pressure = if is_stylus {
         event.axis(gdk::AxisUse::Pressure).unwrap()
@@ -305,7 +346,9 @@ fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Ele
         Element::PRESSURE_DEFAULT
     };
 
-    Some(Element::new(pos, pressure))
+    elements.push((Element::new(pos, pressure), now));
+
+    Some(elements)
 }
 
 pub(crate) fn retrieve_button_shortcut_key(

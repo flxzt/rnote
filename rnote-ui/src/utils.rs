@@ -1,4 +1,4 @@
-use gtk4::{gio, glib, prelude::*, Widget};
+use gtk4::{gdk, gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::Aabb;
 
 /// File types supported by Rnote
@@ -160,4 +160,25 @@ pub(crate) fn str_from_u8_nul_utf8(utf8_src: &[u8]) -> Result<&str, std::str::Ut
         .position(|&c| c == b'\0')
         .unwrap_or(utf8_src.len()); // default to length if no `\0` present
     std::str::from_utf8(&utf8_src[0..nul_range_end])
+}
+
+/// Gets the index of the AxisUse enum
+///
+/// TODO: Report to gtk-rs that AxisUse needs a Into<Index> implementation for usage to retreive pointer axes in `TimeCoord`
+pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
+    match a {
+        gdk::AxisUse::Ignore => 0,
+        gdk::AxisUse::X => 1,
+        gdk::AxisUse::Y => 2,
+        gdk::AxisUse::DeltaX => 3,
+        gdk::AxisUse::DeltaY => 4,
+        gdk::AxisUse::Pressure => 5,
+        gdk::AxisUse::Xtilt => 6,
+        gdk::AxisUse::Ytilt => 7,
+        gdk::AxisUse::Wheel => 8,
+        gdk::AxisUse::Distance => 9,
+        gdk::AxisUse::Rotation => 10,
+        gdk::AxisUse::Slider => 11,
+        _ => unreachable!(),
+    }
 }

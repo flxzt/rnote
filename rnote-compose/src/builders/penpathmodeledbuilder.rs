@@ -4,7 +4,7 @@ use ink_stroke_modeler_rs::{
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
@@ -174,8 +174,10 @@ impl PenPathModeledBuilder {
         event_type: ModelerInputEventType,
         now: Instant,
     ) {
-        if self.last_element == element {
-            // Can't feed modeler with duplicate elements, or results in `INVALID_ARGUMENT` errors
+        if self.last_element == element
+            || now.duration_since(self.last_element_time) <= Duration::ZERO
+        {
+            // Can't feed modeler with duplicate elements or with same or reverse time, would results in `INVALID_ARGUMENT` errors
             return;
         }
         self.last_element = element;

@@ -64,7 +64,12 @@ pub const COLOR_DOC_BOUNDS: Color = Color {
     a: 1.0,
 };
 
-pub fn draw_bounds(bounds: Aabb, color: Color, snapshot: &Snapshot, width: f64) {
+pub(crate) fn draw_bounds_to_gtk_snapshot(
+    bounds: Aabb,
+    color: Color,
+    snapshot: &Snapshot,
+    width: f64,
+) {
     let bounds = graphene::Rect::new(
         bounds.mins[0] as f32,
         bounds.mins[1] as f32,
@@ -92,7 +97,12 @@ pub fn draw_bounds(bounds: Aabb, color: Color, snapshot: &Snapshot, width: f64) 
     )
 }
 
-pub fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width: f64) {
+pub(crate) fn draw_pos_to_gtk_snapshot(
+    snapshot: &Snapshot,
+    pos: na::Vector2<f64>,
+    color: Color,
+    width: f64,
+) {
     snapshot.append_color(
         &gdk::RGBA::from_compose_color(color),
         &graphene::Rect::new(
@@ -104,7 +114,7 @@ pub fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width:
     );
 }
 
-pub fn draw_fill(rect: Aabb, color: Color, snapshot: &Snapshot) {
+pub(crate) fn draw_fill_to_gtk_snapshot(snapshot: &Snapshot, rect: Aabb, color: Color) {
     snapshot.append_color(
         &gdk::RGBA::from_compose_color(color),
         &graphene::Rect::from_p2d_aabb(rect),
@@ -113,7 +123,7 @@ pub fn draw_fill(rect: Aabb, color: Color, snapshot: &Snapshot) {
 
 // Draw bounds, positions, .. for visual debugging purposes
 // Expects snapshot in surface coords
-pub fn draw_statistics_overlay(
+pub(crate) fn draw_statistics_overlay_to_gtk_snapshot(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
     surface_bounds: Aabb,
@@ -177,7 +187,7 @@ pub fn draw_statistics_overlay(
 }
 
 // Draw bounds, positions, .. for visual debugging purposes
-pub fn draw_debug(
+pub(crate) fn draw_debug_to_gtk_snapshot(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
     surface_bounds: Aabb,
@@ -187,10 +197,10 @@ pub fn draw_debug(
     let doc_bounds = engine.document.bounds();
     let border_widths = 1.0 / total_zoom;
 
-    draw_bounds(doc_bounds, COLOR_DOC_BOUNDS, snapshot, border_widths);
+    draw_bounds_to_gtk_snapshot(doc_bounds, COLOR_DOC_BOUNDS, snapshot, border_widths);
 
     let tightened_viewport = viewport.tightened(2.0 / total_zoom);
-    draw_bounds(
+    draw_bounds_to_gtk_snapshot(
         tightened_viewport,
         COLOR_STROKE_BOUNDS,
         snapshot,
@@ -198,7 +208,9 @@ pub fn draw_debug(
     );
 
     // Draw the strokes and selection
-    engine.store.draw_debug(snapshot, engine, surface_bounds)?;
+    engine
+        .store
+        .draw_debug_to_gtk_snapshot(snapshot, engine, surface_bounds)?;
 
     // Draw the pens bounds
     if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
@@ -209,7 +221,7 @@ pub fn draw_debug(
         camera: &engine.camera,
         audioplayer: &engine.audioplayer,
     }) {
-        draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
+        draw_bounds_to_gtk_snapshot(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
     }
 
     Ok(())

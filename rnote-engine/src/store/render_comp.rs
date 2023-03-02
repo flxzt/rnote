@@ -324,7 +324,9 @@ impl StrokeStore {
         }
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completely
+    /// generates images and appends them to the render component for the last segments of brushstrokes.
+    ///
+    /// For other strokes the rendering is regenerated completely.
     pub fn append_rendering_last_segments(
         &mut self,
         tasks_tx: EngineTaskSender,
@@ -543,7 +545,7 @@ impl StrokeStore {
     }
 
     /// Draws bounds, positions, etc. for all strokes for visual debugging
-    pub fn draw_debug(
+    pub fn draw_debug_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
         engine: &RnoteEngine,
@@ -563,23 +565,23 @@ impl StrokeStore {
                 if let Some(render_comp) = self.render_components.get(key) {
                     match render_comp.state {
                         RenderCompState::Dirty => {
-                            visual_debug::draw_fill(
+                            visual_debug::draw_fill_to_gtk_snapshot(
+                                snapshot,
                                 stroke.bounds(),
                                 visual_debug::COLOR_STROKE_RENDERING_DIRTY,
-                                snapshot,
                             );
                         }
                         RenderCompState::BusyRenderingInTask => {
-                            visual_debug::draw_fill(
+                            visual_debug::draw_fill_to_gtk_snapshot(
+                                snapshot,
                                 stroke.bounds(),
                                 visual_debug::COLOR_STROKE_RENDERING_BUSY,
-                                snapshot,
                             );
                         }
                         _ => {}
                     }
                     render_comp.images.iter().for_each(|image| {
-                        visual_debug::draw_bounds(
+                        visual_debug::draw_bounds_to_gtk_snapshot(
                             // a little tightened not to overlap with other bounds
                             image.rect.bounds().tightened(2.0 * border_widths),
                             visual_debug::COLOR_IMAGE_BOUNDS,
@@ -590,7 +592,7 @@ impl StrokeStore {
                 }
 
                 for &hitbox_elem in stroke.hitboxes().iter() {
-                    visual_debug::draw_bounds(
+                    visual_debug::draw_bounds_to_gtk_snapshot(
                         hitbox_elem,
                         visual_debug::COLOR_STROKE_HITBOX,
                         snapshot,
@@ -598,7 +600,7 @@ impl StrokeStore {
                     );
                 }
 
-                visual_debug::draw_bounds(
+                visual_debug::draw_bounds_to_gtk_snapshot(
                     stroke.bounds(),
                     visual_debug::COLOR_STROKE_BOUNDS,
                     snapshot,
@@ -609,10 +611,10 @@ impl StrokeStore {
                     // Draw positions for brushstrokes
                     Stroke::BrushStroke(brushstroke) => {
                         for element in brushstroke.path.clone().into_elements().iter() {
-                            visual_debug::draw_pos(
+                            visual_debug::draw_pos_to_gtk_snapshot(
+                                snapshot,
                                 element.pos,
                                 visual_debug::COLOR_POS,
-                                snapshot,
                                 border_widths * 4.0,
                             )
                         }

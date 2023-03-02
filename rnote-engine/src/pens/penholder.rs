@@ -117,6 +117,26 @@ impl PenHolder {
         widget_flags
     }
 
+    fn change_style_int(
+        &mut self,
+        new_style: PenStyle,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if self.pen_mode_state.style() != new_style {
+            // Deselecting when changing the style
+            let all_strokes = engine_view.store.selection_keys_as_rendered();
+            engine_view.store.set_selected_keys(&all_strokes, false);
+
+            self.pen_mode_state.set_style(new_style);
+            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags.refresh_ui = true;
+        }
+
+        widget_flags
+    }
+
     /// change the style override
     pub fn change_style_override(
         &mut self,
@@ -133,8 +153,8 @@ impl PenHolder {
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style_override(new_style_override);
-
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags.refresh_ui = true;
         }
 
         widget_flags
@@ -152,6 +172,7 @@ impl PenHolder {
             self.pen_mode_state.set_pen_mode(new_pen_mode);
 
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags.refresh_ui = true;
         }
 
         widget_flags
@@ -163,8 +184,8 @@ impl PenHolder {
 
     /// Installs the pen for the current style
     pub fn reinstall_pen_current_style(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
-        let (new_pen, mut widget_flags) =
-            new_pen_for_style(self.current_pen_style_w_override(), engine_view);
+        let new_pen_style = self.current_pen_style_w_override();
+        let (new_pen, mut widget_flags) = new_pen_for_style(new_pen_style, engine_view);
         self.current_pen = new_pen;
         widget_flags.merge(self.current_pen.update_state(engine_view));
         widget_flags.merge(self.handle_changed_pen_style());
@@ -202,25 +223,6 @@ impl PenHolder {
         widget_flags.merge(other_widget_flags);
 
         widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));
-
-        widget_flags
-    }
-
-    fn change_style_int(
-        &mut self,
-        new_style: PenStyle,
-        engine_view: &mut EngineViewMut,
-    ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        if self.pen_mode_state.style() != new_style {
-            // Deselecting when changing the style
-            let all_strokes = engine_view.store.selection_keys_as_rendered();
-            engine_view.store.set_selected_keys(&all_strokes, false);
-
-            self.pen_mode_state.set_style(new_style);
-            widget_flags.merge(self.reinstall_pen_current_style(engine_view));
-        }
 
         widget_flags
     }
@@ -263,7 +265,6 @@ impl PenHolder {
             }
         }
         widget_flags.redraw = true;
-        widget_flags.refresh_ui = true;
 
         widget_flags
     }

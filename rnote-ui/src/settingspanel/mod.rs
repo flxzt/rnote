@@ -155,6 +155,8 @@ mod imp {
                     settings_panel.imp().update_temporary_format_from_rows();
                     settings_panel.imp().format_width_unitentry.set_dpi(format_dpi_adj.value());
                     settings_panel.imp().format_height_unitentry.set_dpi(format_dpi_adj.value());
+                    settings_panel.imp().background_pattern_width_unitentry.set_dpi(format_dpi_adj.value());
+                    settings_panel.imp().background_pattern_height_unitentry.set_dpi(format_dpi_adj.value());
                 }),
             );
         }
@@ -249,44 +251,24 @@ mod imp {
                 }
             };
 
-            if let Some(mut preconfigured_dimensions) = preconfigured_dimensions {
+            if let Some(mut format_dimensions_mm) = preconfigured_dimensions {
                 if self.temporary_format.borrow().orientation == format::Orientation::Landscape {
-                    std::mem::swap(
-                        &mut preconfigured_dimensions.0,
-                        &mut preconfigured_dimensions.1,
-                    );
+                    std::mem::swap(&mut format_dimensions_mm.0, &mut format_dimensions_mm.1);
                 }
 
-                let converted_width_mm = format::MeasureUnit::convert_measurement(
-                    preconfigured_dimensions.0,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                );
-                let converted_height_mm = format::MeasureUnit::convert_measurement(
-                    preconfigured_dimensions.1,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                );
-
-                // Setting the unit dropdowns to Mm
+                // reset to mm as default for presets
                 self.format_width_unitentry
                     .get()
                     .set_unit(format::MeasureUnit::Mm);
                 self.format_height_unitentry
                     .get()
                     .set_unit(format::MeasureUnit::Mm);
-
-                // setting the values
                 self.format_width_unitentry
                     .get()
-                    .set_value(converted_width_mm);
+                    .set_value(format_dimensions_mm.0);
                 self.format_height_unitentry
                     .get()
-                    .set_value(converted_height_mm);
+                    .set_value(format_dimensions_mm.1);
             }
         }
     }
@@ -392,8 +374,8 @@ impl RnSettingsPanel {
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
         imp.format_dpi_adj.set_value(format.dpi);
-        imp.format_width_unitentry.set_value(format.width);
-        imp.format_height_unitentry.set_value(format.height);
+        imp.format_width_unitentry.set_value_in_px(format.width);
+        imp.format_height_unitentry.set_value_in_px(format.height);
     }
 
     fn refresh_background_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -409,10 +391,10 @@ impl RnSettingsPanel {
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
         imp.background_pattern_width_unitentry.set_dpi(format.dpi);
         imp.background_pattern_width_unitentry
-            .set_value(background.pattern_size[0]);
+            .set_value_in_px(background.pattern_size[0]);
         imp.background_pattern_height_unitentry.set_dpi(format.dpi);
         imp.background_pattern_height_unitentry
-            .set_value(background.pattern_size[1]);
+            .set_value_in_px(background.pattern_size[1]);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
@@ -560,10 +542,8 @@ impl RnSettingsPanel {
             let canvas = appwindow.active_tab().canvas();
 
             canvas.engine().borrow_mut().document.format.border_color = format_border_color;
-
             // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-
             canvas.update_engine_rendering();
         }));
     }
@@ -680,22 +660,17 @@ impl RnSettingsPanel {
     fn revert_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let canvas = appwindow.active_tab().canvas();
-
         *imp.temporary_format.borrow_mut() = canvas.engine().borrow().document.format;
         let revert_format = canvas.engine().borrow().document.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
-
         imp.format_dpi_adj.set_value(revert_format.dpi);
 
-        // Setting the unit dropdowns to Px
-        imp.format_width_unitentry.set_unit(format::MeasureUnit::Px);
-        imp.format_height_unitentry
-            .set_unit(format::MeasureUnit::Px);
-
         // Setting the entries, which have callbacks to update the temporary format
-        imp.format_width_unitentry.set_value(revert_format.width);
-        imp.format_height_unitentry.set_value(revert_format.height);
+        imp.format_width_unitentry
+            .set_value_in_px(revert_format.width);
+        imp.format_height_unitentry
+            .set_value_in_px(revert_format.height);
     }
 }
 

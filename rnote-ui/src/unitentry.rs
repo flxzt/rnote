@@ -100,15 +100,13 @@ mod imp {
                             .nick()
                             .as_str()
                         {
-                            "px" => Some(format::MeasureUnit::Px),
-                            "mm" => Some(format::MeasureUnit::Mm),
-                            "cm" => Some(format::MeasureUnit::Cm),
-                            _ => None,
+                            "px" => format::MeasureUnit::Px,
+                            "mm" => format::MeasureUnit::Mm,
+                            "cm" => format::MeasureUnit::Cm,
+                            _ => unreachable!(),
                         };
 
-                        if let Some(unit) = unit {
-                            unit_entry.set_unit(unit);
-                        }
+                        unit_entry.set_unit(unit);
                     };
                 }),
             );
@@ -324,5 +322,15 @@ impl RnUnitEntry {
             format::MeasureUnit::Px,
             self.dpi(),
         )
+    }
+
+    pub(crate) fn set_value_in_px(&self, val_px: f64) {
+        self.set_value(format::MeasureUnit::convert_measurement(
+            val_px,
+            format::MeasureUnit::Px,
+            self.dpi(),
+            self.unit(),
+            self.dpi(),
+        ));
     }
 }

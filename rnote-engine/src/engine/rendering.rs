@@ -77,8 +77,8 @@ impl RnoteEngine {
         self.update_background_rendering_current_viewport()?;
         Ok(())
     }
-    /// Draws the entire engine (doc, pens, strokes, selection, ..) on a GTK snapshot.
-    pub fn draw_on_gtk_snapshot(
+    /// Draws the entire engine (doc, pens, strokes, selection, ..) to a GTK snapshot.
+    pub fn draw_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
         surface_bounds: Aabb,
@@ -92,9 +92,8 @@ impl RnoteEngine {
 
         self.draw_document_shadow_to_gtk_snapshot(snapshot);
         self.draw_background_to_gtk_snapshot(snapshot)?;
-        self.draw_format_borders_to_gtk4_snapshot(snapshot)?;
-        self.draw_origin_indicator(snapshot)?;
-
+        self.draw_format_borders_to_gtk_snapshot(snapshot)?;
+        self.draw_origin_indicator_to_gtk_snapshot(snapshot)?;
         self.store
             .draw_strokes_to_gtk_snapshot(snapshot, doc_bounds, viewport);
 
@@ -112,50 +111,17 @@ impl RnoteEngine {
             },
         )?;
 
-        /*
-               {
-                   use crate::utils::GrapheneRectHelpers;
-                   use gtk4::graphene;
-                   use piet::RenderContext;
-                   use rnote_compose::helpers::Affine2Helpers;
-
-                   let zoom = self.camera.zoom();
-
-                   let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
-                   let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-                   // Transform to doc coordinate space
-                   piet_cx.transform(self.camera.transform().to_kurbo());
-
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                   self.store
-                       .draw_strokes_immediate_w_piet(&mut piet_cx, doc_bounds, viewport, zoom)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   self.penholder
-                       .draw_on_doc(&mut piet_cx, doc_bounds, &self.camera)?;
-                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-               }
-        */
-
-        // Overlay the visual debug on the canvas
         if self.visual_debug {
             snapshot.save();
             snapshot.transform(Some(&camera_transform));
 
             // visual debugging
-            visual_debug::draw_debug(snapshot, self, surface_bounds)?;
+            visual_debug::draw_debug_to_gtk_snapshot(snapshot, self, surface_bounds)?;
 
             snapshot.restore();
-        }
 
-        // Show some statistics
-        if self.visual_debug {
-            visual_debug::draw_statistics_overlay(snapshot, self, surface_bounds)?;
+            // draw the statistics overlay
+            visual_debug::draw_statistics_overlay_to_gtk_snapshot(snapshot, self, surface_bounds)?;
         }
 
         Ok(())
@@ -209,7 +175,7 @@ impl RnoteEngine {
         Ok(())
     }
 
-    fn draw_format_borders_to_gtk4_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    fn draw_format_borders_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
         if self.document.format.show_borders {
             let total_zoom = self.camera.total_zoom();
             let border_width = 1.0 / total_zoom;
@@ -257,7 +223,7 @@ impl RnoteEngine {
         Ok(())
     }
 
-    fn draw_origin_indicator(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
+    fn draw_origin_indicator_to_gtk_snapshot(&self, snapshot: &Snapshot) -> anyhow::Result<()> {
         const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
         let path_width: f64 = 1.0 / self.camera.total_zoom();
 

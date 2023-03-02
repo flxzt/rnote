@@ -419,20 +419,15 @@ mod imp {
                 } else {
                     inst.bounds()
                 };
-                // pushing the clip
+                // push the clip
                 snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
-
-                // Save the original coordinate space
-                snapshot.save();
 
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_on_gtk_snapshot(snapshot, inst.bounds())?;
+                    .draw_to_gtk_snapshot(snapshot, inst.bounds())?;
 
-                // Restore original coordinate space
-                snapshot.restore();
-                // End the clip of widget bounds
+                // pop the clip
                 snapshot.pop();
                 Ok(())
             }() {
@@ -601,7 +596,9 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        self.set_property("unsaved-changes", unsaved_changes.to_value());
+        if self.imp().unsaved_changes.get() != unsaved_changes {
+            self.set_property("unsaved-changes", unsaved_changes.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -611,7 +608,9 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_empty(&self, empty: bool) {
-        self.set_property("empty", empty.to_value());
+        if self.imp().empty.get() != empty {
+            self.set_property("empty", empty.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -621,7 +620,9 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
-        self.set_property("touch-drawing", touch_drawing.to_value());
+        if self.imp().touch_drawing.get() != touch_drawing {
+            self.set_property("touch-drawing", touch_drawing.to_value());
+        }
     }
 
     #[allow(unused)]

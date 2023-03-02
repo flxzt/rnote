@@ -11,15 +11,14 @@
     <child>
       <object class="GtkAdjustment" id="value_adj">
         <property name="step-increment">1</property>
-        <property name="upper">99999</property>
-        <property name="lower">-99999</property>
-        <property name="value">32</property>
       </object>
       <object class="GtkSpinButton" id="value_spinner">
         <property name="adjustment">value_adj</property>
         <property name="vexpand">false</property>
         <property name="valign">center</property>
         <property name="wrap">false</property>
+        <property name="numeric">true</property>
+        <property name="width-chars">6</property>
       </object>
     </child>
     <child>

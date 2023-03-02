@@ -136,78 +136,17 @@ mod imp {
                 }),
             );
 
-            self.format_width_unitentry.get().value_adj().set_lower(1.0);
-            self.format_width_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(10.0, 1000.0);
-            self.format_width_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            self.format_height_unitentry
-                .get()
-                .value_adj()
-                .set_lower(1.0);
-            self.format_height_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(10.0, 1000.0);
-            self.format_height_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            self.background_pattern_width_unitentry
-                .get()
-                .value_adj()
-                .set_lower(1.0);
-            self.background_pattern_width_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(1.0, 10.0);
-            self.background_pattern_width_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            self.background_pattern_height_unitentry
-                .get()
-                .value_adj()
-                .set_lower(1.0);
-            self.background_pattern_height_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(1.0, 10.0);
-            self.background_pattern_height_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            /*             self.temporary_format.connect_notify_local(
-                Some("dpi"),
-                clone!(@weak inst as settings_panel => move |format, _pspec| {
-                    settings_panel.format_width_unitentry().set_dpi(format.dpi());
-                    settings_panel.format_height_unitentry().set_dpi(format.dpi());
-                }),
-            ); */
-
-            self.format_width_unitentry.get().connect_local(
-                "measurement-changed",
-                false,
-                clone!(@weak inst as settings_panel => @default-return None, move |_args| {
+            self.format_width_unitentry.get().connect_notify_local(
+                Some("value"),
+                clone!(@weak inst as settings_panel => move |_, _| {
                         settings_panel.imp().update_temporary_format_from_rows();
-                        None
                 }),
             );
 
-            self.format_height_unitentry.get().connect_local(
-                "measurement-changed",
-                false,
-                clone!(@weak inst as settings_panel => @default-return None, move |_args| {
+            self.format_height_unitentry.get().connect_notify_local(
+                Some("value"),
+                clone!(@weak inst as settings_panel => move |_, _| {
                         settings_panel.imp().update_temporary_format_from_rows();
-                        None
                 }),
             );
 
@@ -447,47 +386,31 @@ impl RnSettingsPanel {
     fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-
         let format = canvas.engine().borrow().document.format;
-
         *self.imp().temporary_format.borrow_mut() = format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
         imp.format_dpi_adj.set_value(format.dpi);
-
-        imp.format_width_unitentry.set_unit(format::MeasureUnit::Px);
         imp.format_width_unitentry.set_value(format.width);
-
-        imp.format_height_unitentry
-            .set_unit(format::MeasureUnit::Px);
         imp.format_height_unitentry.set_value(format.height);
     }
 
     fn refresh_background_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-
         let background = canvas.engine().borrow().document.background;
         let format = canvas.engine().borrow().document.format;
 
         imp.background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
-
         self.set_background_pattern(background.pattern);
         imp.background_pattern_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
-
-        // Background pattern Unit Entries
         imp.background_pattern_width_unitentry.set_dpi(format.dpi);
         imp.background_pattern_width_unitentry
-            .set_unit(format::MeasureUnit::Px);
-        imp.background_pattern_width_unitentry
             .set_value(background.pattern_size[0]);
-
         imp.background_pattern_height_unitentry.set_dpi(format.dpi);
-        imp.background_pattern_height_unitentry
-            .set_unit(format::MeasureUnit::Px);
         imp.background_pattern_height_unitentry
             .set_value(background.pattern_size[1]);
     }
@@ -495,7 +418,6 @@ impl RnSettingsPanel {
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-
         let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
 
         current_shortcuts
@@ -694,35 +616,28 @@ impl RnSettingsPanel {
             canvas.update_engine_rendering();
         }));
 
-        imp.background_pattern_width_unitentry.get().connect_local(
-            "measurement-changed",
-            false,
-            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+        imp.background_pattern_width_unitentry.get().connect_notify_local(
+            Some("value"),
+            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
                     let canvas = appwindow.active_tab().canvas();
 
                     let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = settings_panel.imp().background_pattern_width_unitentry.value_in_px();
+                    pattern_size[0] = unit_entry.value_in_px();
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
                     canvas.regenerate_background_pattern();
                     canvas.update_engine_rendering();
-
-                    None
             }),
         );
 
-        imp.background_pattern_height_unitentry.get().connect_local(
-            "measurement-changed",
-            false,
-            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+        imp.background_pattern_height_unitentry.get().connect_notify_local(
+            Some("value"),
+            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
                     let canvas = appwindow.active_tab().canvas();
-
                     let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = settings_panel.imp().background_pattern_height_unitentry.value_in_px();
+                    pattern_size[1] = unit_entry.value_in_px();
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
                     canvas.regenerate_background_pattern();
                     canvas.update_engine_rendering();
-
-                    None
             }),
         );
     }

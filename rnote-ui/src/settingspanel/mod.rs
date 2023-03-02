@@ -155,8 +155,6 @@ mod imp {
                     settings_panel.imp().update_temporary_format_from_rows();
                     settings_panel.imp().format_width_unitentry.set_dpi(format_dpi_adj.value());
                     settings_panel.imp().format_height_unitentry.set_dpi(format_dpi_adj.value());
-                    settings_panel.imp().background_pattern_width_unitentry.set_dpi(format_dpi_adj.value());
-                    settings_panel.imp().background_pattern_height_unitentry.set_dpi(format_dpi_adj.value());
                 }),
             );
         }

@@ -69,19 +69,19 @@ impl QuadraticBezier {
         let p1 = self.cp;
         let p2 = self.end;
 
-        let first_splitted = QuadraticBezier {
+        let first_split = QuadraticBezier {
             start: p0,
             cp: z * p1 - (z - 1.0) * p0,
             end: z.powi(2) * p2 - 2.0 * z * (z - 1.0) * p1 + (z - 1.0).powi(2) * p0,
         };
 
-        let second_splitted = QuadraticBezier {
+        let second_split = QuadraticBezier {
             start: z.powi(2) * p2 - 2.0 * z * (z - 1.0) * p1 + (z - 1.0).powi(2) * p0,
             cp: z * p2 - (z - 1.0) * p1,
             end: p2,
         };
 
-        (first_splitted, second_splitted)
+        (first_split, second_split)
     }
 
     /// convert to a cubic bezier ( raising the order is without losses)

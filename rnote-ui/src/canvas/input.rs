@@ -289,7 +289,7 @@ fn retrieve_pointer_elements(
     let now = Instant::now();
     let root = canvas.root().unwrap();
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
-    // retreiving the pressure only works when the event has a device tool (== is a stylus),
+    // retrieving the pressure only works when the event has a device tool (== is a stylus),
     // else we get SIGSEGV when trying to access (TODO: report this to gtk-rs)
     let is_stylus = event_is_stylus(event);
     let event_time = event.time();

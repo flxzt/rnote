@@ -734,7 +734,7 @@ impl XmlLoadable for XoppStroke {
                 )
             })?
             .split(' ')
-            .filter_map(|splitted| splitted.parse::<f64>().ok())
+            .filter_map(|split| split.parse::<f64>().ok())
             .collect::<Vec<f64>>();
 
         self.timestamp = if let Some(_ts) = node.attribute("ts") {
@@ -754,7 +754,7 @@ impl XmlLoadable for XoppStroke {
                 .trim_start_matches([' ', '\n'])
                 .trim_end_matches([' ', '\n'])
                 .split(' ')
-                .filter_map(|splitted| splitted.parse::<f64>().ok());
+                .filter_map(|split| split.parse::<f64>().ok());
 
             self.coords = coords
                 .clone()

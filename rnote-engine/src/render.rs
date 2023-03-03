@@ -515,19 +515,19 @@ impl Image {
         bounds = bounds.ceil().loosened(1.0);
         bounds.assert_valid()?;
 
-        let splitted_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let splitted_height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
+        let split_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
+        let split_height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
 
         let mut image_surface = cairo::ImageSurface::create(
             cairo::Format::ARgb32,
-            splitted_width_scaled as i32,
-            splitted_height_scaled as i32,
+            split_width_scaled as i32,
+            split_height_scaled as i32,
         )
         .map_err(|e| {
             anyhow::anyhow!(
                 "create ImageSurface with dimensions ({}, {}) failed in Image gen_with_piet(), {}",
-                splitted_width_scaled,
-                splitted_height_scaled,
+                split_width_scaled,
+                split_height_scaled,
                 e
             )
         })?;
@@ -561,8 +561,8 @@ impl Image {
         Ok(Image {
             data,
             rect: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: splitted_width_scaled,
-            pixel_height: splitted_height_scaled,
+            pixel_width: split_width_scaled,
+            pixel_height: split_height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
         })
     }

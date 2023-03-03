@@ -25,15 +25,15 @@ impl RnoteEngine {
                 .to_memtexture()
                 .context("image to_memtexture() failed in gen_rendernode() of background")?;
 
-            for splitted_bounds in
+            for split_bounds in
                 viewport.split_extended_origin_aligned(self.document.background.tile_size())
             {
-                //log::debug!("splitted_bounds: {splitted_bounds:?}");
+                //log::debug!("split_bounds: {split_bounds:?}");
 
                 rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,
-                        &graphene::Rect::from_p2d_aabb(splitted_bounds),
+                        &graphene::Rect::from_p2d_aabb(split_bounds),
                     )
                     .upcast(),
                 );

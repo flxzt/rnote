@@ -10,8 +10,9 @@ use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
-use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
-use gtk4::{PrintStatus, Window};
+use gtk4::{
+    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
+};
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -639,12 +640,6 @@ impl RnAppWindow {
 
             print_op.connect_status_changed(clone!(@weak appwindow => move |print_op| {
                 log::debug!("{:?}", print_op.status());
-                match print_op.status() {
-                    PrintStatus::Finished => {
-                        appwindow.overlays().dispatch_toast_text(&gettext("Printed document successfully"));
-                    }
-                    _ => {}
-                }
             }));
 
             // Run the print op

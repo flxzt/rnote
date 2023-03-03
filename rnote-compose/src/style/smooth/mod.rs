@@ -1,11 +1,12 @@
 mod smoothoptions;
 
+use kurbo::Shape;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
 use super::Composer;
 use crate::helpers::Vector2Helpers;
-use crate::penpath::Segment;
+use crate::penpath::{self, Segment};
 use crate::shapes::CubicBezier;
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
@@ -166,16 +167,15 @@ impl Composer<SmoothOptions> for PenPath {
                                 .apply(options.stroke_width, end.pressure),
                         );
 
-                        let n_splits = 5;
-
                         let quadbez = QuadraticBezier {
                             start: prev.pos,
                             cp: *cp,
                             end: end.pos,
                         };
-
+                        let n_splits = penpath::no_subsegments_for_segment_len(
+                            quadbez.to_kurbo().perimeter(0.25),
+                        );
                         let lines = quadbez.approx_with_lines(n_splits);
-
                         let bez_path =
                             compose_lines_variable_width(&lines, width_start, width_end, options);
 
@@ -192,16 +192,16 @@ impl Composer<SmoothOptions> for PenPath {
                                 .apply(options.stroke_width, end.pressure),
                         );
 
-                        let n_splits = 5;
-
                         let cubbez = CubicBezier {
                             start: prev.pos,
                             cp1: *cp1,
                             cp2: *cp2,
                             end: end.pos,
                         };
+                        let n_splits = penpath::no_subsegments_for_segment_len(
+                            cubbez.to_kurbo().perimeter(0.25),
+                        );
                         let lines = cubbez.approx_with_lines(n_splits);
-
                         let bez_path =
                             compose_lines_variable_width(&lines, width_start, width_end, options);
 

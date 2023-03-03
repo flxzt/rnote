@@ -333,4 +333,10 @@ impl RnUnitEntry {
             self.dpi(),
         ));
     }
+
+    pub(crate) fn set_dpi_keep_value(&self, dpi: f64) {
+        let value = self.value();
+        self.set_dpi(dpi);
+        self.set_value(value);
+    }
 }

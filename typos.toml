@@ -2,11 +2,12 @@
 extend-glob = ["*.po"]
 check-file = false
 
-[default.extend-words]
-splitted = "splitted"
+[default.extend-identifiers]
+flate2 = "flate2"
 
 [files]
 extend-exclude = [
+    "typos.toml",
     "*.pot",
     "*LICENSE*",
 ]

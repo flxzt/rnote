@@ -164,7 +164,7 @@ pub(crate) fn str_from_u8_nul_utf8(utf8_src: &[u8]) -> Result<&str, std::str::Ut
 
 /// Gets the index of the AxisUse enum
 ///
-/// TODO: Report to gtk-rs that AxisUse needs a Into<Index> implementation for usage to retreive pointer axes in `TimeCoord`
+/// TODO: Report to gtk-rs that AxisUse needs a Into<Index> implementation for usage to retrieve pointer axes in `TimeCoord`
 pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
     match a {
         gdk::AxisUse::Ignore => 0,

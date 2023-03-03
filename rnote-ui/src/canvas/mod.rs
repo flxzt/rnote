@@ -1126,7 +1126,7 @@ impl RnCanvas {
     pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
         // This is a bit of a hack: we first set the new offset unrestricted,
         // so the camera transform is immediately updated on zooms instead of the asynchronous update when calling queue_draw().
-        // This ensures that when we retreive the current center on the document, the value is more consistent.
+        // This ensures that when we retrieve the current center on the document, the value is more consistent.
         // TODO: clean up this mess
         self.engine().borrow_mut().camera.offset = new_offset;
         // This expands the doc size for autoexpanding layouts

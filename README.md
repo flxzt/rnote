@@ -76,11 +76,25 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 ![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)
 
 ## Pitfalls & Known Issues
-* Drag & Drop not working - Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
-* odd location for current file - when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
-    Again, granting them in Flatseal fixes this issue.
-* Stylus buttons move canvas / are not functional - make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
-* While hovering with the stylus, other input events are blocked in some regions of the screen - Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't do much to disable this unfortunately. ( discussed in issue #329 )
+* Drag & Drop not working -  
+    Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+
+* odd location for current file -  
+    When the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
+
+* Stylus buttons move canvas / are not functional -  
+    Make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+
+* While hovering with the stylus, other input events are blocked in some regions of the screen -  
+    Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
+
+* One of the stylus button shortcut mappings does not work as intended -  
+On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:  
+    * Hover over the canvas, and press and hold the button that that is suspected to be mapped to the "Eraser" mode
+    * Switch to the desired pen style while keeping the button pressed
+    * When releasing the pressed button, it should switch back to the previous pen style
+    * The pen style in the "Eraser" mode should now be remembered
+
 
 ## Credits
 - A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!

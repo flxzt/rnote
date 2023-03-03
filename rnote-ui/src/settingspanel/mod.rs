@@ -117,21 +117,21 @@ mod imp {
             self.format_predefined_formats_row
                 .connect_selected_item_notify(
                     clone!(@weak inst as settings_panel => move |_format_predefined_formats_row| {
-                        settings_panel.imp().update_temporary_format_from_rows();
+                        settings_panel.imp().update_temporary_format_from_ui();
                         settings_panel.imp().apply_predefined_format();
                     }),
                 );
 
             self.format_orientation_portrait_toggle.connect_toggled(
                 clone!(@weak inst as settings_panel => move |_format_orientation_portrait_toggle| {
-                    settings_panel.imp().update_temporary_format_from_rows();
+                    settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().apply_predefined_format();
                 }),
             );
 
             self.format_orientation_landscape_toggle.connect_toggled(
                 clone!(@weak inst as settings_panel => move |_format_orientation_landscape_toggle| {
-                    settings_panel.imp().update_temporary_format_from_rows();
+                    settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().apply_predefined_format();
                 }),
             );
@@ -139,22 +139,22 @@ mod imp {
             self.format_width_unitentry.get().connect_notify_local(
                 Some("value"),
                 clone!(@weak inst as settings_panel => move |_, _| {
-                        settings_panel.imp().update_temporary_format_from_rows();
+                        settings_panel.imp().update_temporary_format_from_ui();
                 }),
             );
 
             self.format_height_unitentry.get().connect_notify_local(
                 Some("value"),
                 clone!(@weak inst as settings_panel => move |_, _| {
-                        settings_panel.imp().update_temporary_format_from_rows();
+                        settings_panel.imp().update_temporary_format_from_ui();
                 }),
             );
 
             self.format_dpi_adj.connect_value_changed(
                 clone!(@weak inst as settings_panel => move |format_dpi_adj| {
-                    settings_panel.imp().update_temporary_format_from_rows();
-                    settings_panel.imp().format_width_unitentry.set_dpi(format_dpi_adj.value());
-                    settings_panel.imp().format_height_unitentry.set_dpi(format_dpi_adj.value());
+                    settings_panel.imp().update_temporary_format_from_ui();
+                    settings_panel.imp().format_width_unitentry.set_dpi_keep_value(format_dpi_adj.value());
+                    settings_panel.imp().format_height_unitentry.set_dpi_keep_value(format_dpi_adj.value());
                 }),
             );
         }
@@ -169,7 +169,7 @@ mod imp {
     impl WidgetImpl for RnSettingsPanel {}
 
     impl RnSettingsPanel {
-        pub(crate) fn update_temporary_format_from_rows(&self) {
+        pub(crate) fn update_temporary_format_from_ui(&self) {
             // border color
             self.temporary_format.borrow_mut().border_color = self
                 .general_format_border_color_choosebutton
@@ -200,6 +200,7 @@ mod imp {
                 .value_in_px()
                 .clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX);
         }
+
         fn apply_predefined_format(&self) {
             let predefined_format = self.instance().format_predefined_format();
 
@@ -372,7 +373,9 @@ impl RnSettingsPanel {
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
         imp.format_dpi_adj.set_value(format.dpi);
+        imp.format_width_unitentry.set_dpi(format.dpi);
         imp.format_width_unitentry.set_value_in_px(format.width);
+        imp.format_height_unitentry.set_dpi(format.dpi);
         imp.format_height_unitentry.set_value_in_px(format.height);
     }
 
@@ -525,13 +528,17 @@ impl RnSettingsPanel {
 
         // Apply format
         imp.format_apply_button.get().connect_clicked(
-            clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
+            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_format_apply_button| {
+                let imp = settingspanel.imp();
                 let temporary_format = *temporary_format.borrow();
                 let canvas = appwindow.active_tab().canvas();
 
                 canvas.engine().borrow_mut().document.format = temporary_format;
                 canvas.engine().borrow_mut().resize_to_fit_strokes();
                 canvas.update_engine_rendering();
+
+                imp.background_pattern_width_unitentry.set_dpi_keep_value(temporary_format.dpi);
+                imp.background_pattern_height_unitentry.set_dpi_keep_value(temporary_format.dpi);
             }),
         );
 

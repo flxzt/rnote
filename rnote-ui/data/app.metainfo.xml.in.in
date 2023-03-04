@@ -77,7 +77,7 @@
         <p>this release changes:</p>
         <ul>
           <li>feature: configurable shortcuts for drawing pad buttons</li>
-          <li>improvement: input events for rate-limited devices (Epd, low-frequency displays)</li>
+          <li>improvement: input events for rate-limited devices (E-Paper/ low-frequency displays)</li>
           <li>improvement: reduced Svg export size</li>
           <li>fix: artifacts when printing</li>
           <li>fix: Jpeg images embedded in Pdfs were not rendered</li>

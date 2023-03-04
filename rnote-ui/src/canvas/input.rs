@@ -3,6 +3,7 @@ use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penevents::{ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
+use rnote_engine::pens::penholder::BackLogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::time::{Duration, Instant};
@@ -30,7 +31,7 @@ pub(crate) fn handle_pointer_controller_event(
     let modifiers = event.modifier_state();
     let _input_source = event.device().unwrap().source();
     let is_stylus = event_is_stylus(event);
-    let retrieve_backlog = canvas.engine().borrow().penholder.retrieve_backlog;
+    let backlog_policy = canvas.engine().borrow().penholder.backlog_policy;
     let mut handle_pen_event = false;
     let mut inhibit = false;
 
@@ -157,15 +158,15 @@ pub(crate) fn handle_pointer_controller_event(
     };
 
     if handle_pen_event {
-        let Some(elements) = retrieve_pointer_elements(canvas, event, retrieve_backlog) else {
+        let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
                     return (Inhibit(false), state);
                 };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
-        //log::debug!("handle event, state: {state:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}");
-
         for (element, event_time) in elements {
+            //log::debug!("handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+
             match state {
                 PenState::Up => {
                     canvas.switch_between_cursors(false);
@@ -285,10 +286,10 @@ fn event_is_stylus(event: &gdk::Event) -> bool {
 
 fn retrieve_pointer_elements(
     canvas: &RnCanvas,
+    now: Instant,
     event: &gdk::Event,
-    retrieve_backlog: bool,
+    backlog_policy: BackLogPolicy,
 ) -> Option<Vec<(Element, Instant)>> {
-    let now = Instant::now();
     let root = canvas.root().unwrap();
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
     // retrieving the pressure only works when the event has a device tool (== is a stylus),
@@ -309,21 +310,34 @@ fn retrieve_pointer_elements(
             .unwrap()
     };
 
-    if event.event_type() == gdk::EventType::MotionNotify && retrieve_backlog {
-        elements.extend(event.history().into_iter().filter_map(|c| {
-            let available_axes = c.flags();
+    if event.event_type() == gdk::EventType::MotionNotify
+        && backlog_policy != BackLogPolicy::DisableBacklog
+    {
+        let mut prev_delta = Duration::ZERO;
+
+        let mut entries = vec![];
+        for entry in event.history().into_iter().rev() {
+            let available_axes = entry.flags();
             if !(available_axes.contains(gdk::AxisFlags::X)
                 && available_axes.contains(gdk::AxisFlags::Y))
             {
-                return None;
+                continue;
             }
 
-            let time = now
-                .checked_sub(Duration::from_millis(
-                    event_time.saturating_sub(c.time()) as u64
-                ))
-                .unwrap_or(now);
-            let axes = c.axes();
+            let entry_delta = Duration::from_millis(event_time.saturating_sub(entry.time()) as u64);
+            let Some(entry_time) = now.checked_sub(entry_delta) else {continue;};
+
+            if let BackLogPolicy::Limit(delta_limit) = backlog_policy {
+                // We go back in time, so `entry_delta` will increase
+                //
+                // If the backlog input rate is higher than the limit, filter it out
+                if entry_delta.saturating_sub(prev_delta) < delta_limit {
+                    continue;
+                }
+            }
+            prev_delta = entry_delta;
+
+            let axes = entry.axes();
             let pos = transform_pos(na::vector![
                 axes[crate::utils::axis_use_idx(gdk::AxisUse::X)],
                 axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)]
@@ -334,8 +348,10 @@ fn retrieve_pointer_elements(
                 Element::PRESSURE_DEFAULT
             };
 
-            Some((Element::new(pos, pressure), time))
-        }));
+            entries.push((Element::new(pos, pressure), entry_time));
+        }
+
+        elements.extend(entries.into_iter().rev());
     }
 
     let pos = event

@@ -1,15 +1,8 @@
-use std::time::Instant;
-
-use crate::engine::{EngineView, EngineViewMut};
-use crate::pens::shortcuts::ShortcutAction;
-
-use crate::widgetflags::WidgetFlags;
-use crate::DrawOnDocBehaviour;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
-
-use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
+use std::time::{Duration, Instant};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
@@ -18,6 +11,17 @@ use super::{
     Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
     Typewriter,
 };
+use crate::engine::{EngineView, EngineViewMut};
+use crate::pens::shortcuts::ShortcutAction;
+use crate::widgetflags::WidgetFlags;
+use crate::DrawOnDocBehaviour;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum BackLogPolicy {
+    NoLimit,
+    Limit(Duration),
+    DisableBacklog,
+}
 
 /// This holds the pens and related state and handles pen events.
 #[allow(missing_debug_implementations)]
@@ -28,9 +32,9 @@ pub struct PenHolder {
     pub shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
     pub pen_mode_state: PenModeState,
-    /// Indicates if event backlog should be retrieved
+    /// Indicates the policy for the retrieval of the event backlog
     #[serde(skip)]
-    pub retrieve_backlog: bool,
+    pub backlog_policy: BackLogPolicy,
 
     #[serde(skip)]
     pub(super) current_pen: Pen,
@@ -47,7 +51,7 @@ impl Default for PenHolder {
         Self {
             shortcuts: Shortcuts::default(),
             pen_mode_state: PenModeState::default(),
-            retrieve_backlog: false,
+            backlog_policy: BackLogPolicy::NoLimit,
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
@@ -260,8 +264,14 @@ impl PenHolder {
         let mut widget_flags = WidgetFlags::default();
         let current_style = self.pen_mode_state.current_style_w_override();
 
-        // Only enable event backlog for brush
-        self.retrieve_backlog = current_style == PenStyle::Brush;
+        self.backlog_policy = match current_style {
+            PenStyle::Brush => BackLogPolicy::NoLimit,
+            PenStyle::Shaper => BackLogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Typewriter => BackLogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Eraser => BackLogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Selector => BackLogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Tools => BackLogPolicy::Limit(Duration::from_millis(16)),
+        };
 
         // Enable text preprocessing for typewriter
         widget_flags.enable_text_preprocessing = Some(current_style == PenStyle::Typewriter);

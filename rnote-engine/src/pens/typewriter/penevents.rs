@@ -239,25 +239,31 @@ impl Typewriter {
                         start_pos,
                         current_pos,
                     } => {
+                        let x_offset = element.pos[0] - current_pos[0];
+
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
-                            let abs_x_offset = element.pos[0] - start_pos[0];
-                            engine_view.pens_config.typewriter_config.text_width =
-                                (*start_text_width + abs_x_offset).max(2.0);
-                            if let Some(max_width) = &mut textstroke.text_style.max_width {
-                                *max_width = *start_text_width + abs_x_offset;
+                            if x_offset.abs()
+                                > Self::ADJ_TEXT_WIDTH_THRESHOLD / engine_view.camera.total_zoom()
+                            {
+                                let abs_x_offset = element.pos[0] - start_pos[0];
+                                engine_view.pens_config.typewriter_config.text_width =
+                                    (*start_text_width + abs_x_offset).max(2.0);
+                                if let Some(max_width) = &mut textstroke.text_style.max_width {
+                                    *max_width = *start_text_width + abs_x_offset;
+                                }
+                                engine_view.store.regenerate_rendering_for_stroke(
+                                    *stroke_key,
+                                    engine_view.camera.viewport(),
+                                    engine_view.camera.image_scale(),
+                                );
+                                *current_pos = element.pos;
+
+                                widget_flags.redraw = true;
+                                widget_flags.store_modified = true;
                             }
                         }
-                        engine_view.store.regenerate_rendering_for_stroke(
-                            *stroke_key,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        );
-                        *current_pos = element.pos;
-
-                        widget_flags.redraw = true;
-                        widget_flags.store_modified = true;
 
                         PenProgress::InProgress
                     }

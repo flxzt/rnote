@@ -398,7 +398,7 @@ static SELECTION_FILL_COLOR: Lazy<piet::Color> =
 
 impl Selector {
     /// The threshold where a translation is applied ( in offset magnitude, surface coords )
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
+    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
     /// The threshold angle (rad) where a rotation is applied
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
 

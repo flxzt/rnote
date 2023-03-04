@@ -30,6 +30,7 @@ pub(crate) fn handle_pointer_controller_event(
     let modifiers = event.modifier_state();
     let _input_source = event.device().unwrap().source();
     let is_stylus = event_is_stylus(event);
+    let retrieve_backlog = canvas.engine().borrow().penholder.retrieve_backlog;
     let mut handle_pen_event = false;
     let mut inhibit = false;
 
@@ -156,7 +157,7 @@ pub(crate) fn handle_pointer_controller_event(
     };
 
     if handle_pen_event {
-        let Some(elements) = retrieve_pointer_elements(canvas, event) else {
+        let Some(elements) = retrieve_pointer_elements(canvas, event, retrieve_backlog) else {
                     return (Inhibit(false), state);
                 };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
@@ -285,6 +286,7 @@ fn event_is_stylus(event: &gdk::Event) -> bool {
 fn retrieve_pointer_elements(
     canvas: &RnCanvas,
     event: &gdk::Event,
+    retrieve_backlog: bool,
 ) -> Option<Vec<(Element, Instant)>> {
     let now = Instant::now();
     let root = canvas.root().unwrap();
@@ -307,7 +309,7 @@ fn retrieve_pointer_elements(
             .unwrap()
     };
 
-    if event.event_type() == gdk::EventType::MotionNotify {
+    if event.event_type() == gdk::EventType::MotionNotify && retrieve_backlog {
         elements.extend(event.history().into_iter().filter_map(|c| {
             let available_axes = c.flags();
             if !(available_axes.contains(gdk::AxisFlags::X)

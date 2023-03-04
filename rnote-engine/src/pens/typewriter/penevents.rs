@@ -226,11 +226,6 @@ impl Typewriter {
                             engine_view
                                 .store
                                 .translate_strokes_images(&[*stroke_key], offset);
-                            engine_view.store.regenerate_rendering_for_stroke(
-                                *stroke_key,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
                             *current_pos = element.pos;
 
                             widget_flags.redraw = true;

@@ -28,6 +28,9 @@ pub struct PenHolder {
     pub shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
     pub pen_mode_state: PenModeState,
+    /// Indicates if event backlog should be retrieved
+    #[serde(skip)]
+    pub retrieve_backlog: bool,
 
     #[serde(skip)]
     pub(super) current_pen: Pen,
@@ -44,6 +47,7 @@ impl Default for PenHolder {
         Self {
             shortcuts: Shortcuts::default(),
             pen_mode_state: PenModeState::default(),
+            retrieve_backlog: false,
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
@@ -254,16 +258,13 @@ impl PenHolder {
 
     fn handle_changed_pen_style(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
+        let current_style = self.pen_mode_state.current_style_w_override();
 
-        match self.pen_mode_state.current_style_w_override() {
-            PenStyle::Typewriter => {
-                // Enable text preprocessing for typewriter
-                widget_flags.enable_text_preprocessing = Some(true);
-            }
-            _ => {
-                widget_flags.enable_text_preprocessing = Some(false);
-            }
-        }
+        // Only enable event backlog for brush
+        self.retrieve_backlog = current_style == PenStyle::Brush;
+
+        // Enable text preprocessing for typewriter
+        widget_flags.enable_text_preprocessing = Some(current_style == PenStyle::Typewriter);
         widget_flags.redraw = true;
 
         widget_flags

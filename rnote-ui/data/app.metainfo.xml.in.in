@@ -76,7 +76,7 @@
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>fix: export simplification when bounds are not origin aligned</li>
+          <li>fix: vector export when bounds are not origin aligned</li>
         </ul>
       </description>
     </release>

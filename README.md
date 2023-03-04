@@ -71,7 +71,7 @@ Pick the commit from the desired version and downgrade with:
 sudo flatpak update --commit=<commit-hash> com.github.flxzt.rnote 
 ```
 
-After downgrading, the flatpak can be pinned or unpinned with:
+After downgrading, the flatpak version can be pinned or unpinned with:
 
 ```
 $ flatpak mask com.github.flxzt.rnote

@@ -265,8 +265,8 @@ impl PenHolder {
         let current_style = self.pen_mode_state.current_style_w_override();
 
         self.backlog_policy = match current_style {
-            PenStyle::Brush => BacklogPolicy::NoLimit,
-            PenStyle::Shaper => BacklogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Brush => BacklogPolicy::Limit(Duration::from_millis(4)),
+            PenStyle::Shaper => BacklogPolicy::Limit(Duration::from_millis(8)),
             PenStyle::Typewriter => BacklogPolicy::Limit(Duration::from_millis(33)),
             PenStyle::Eraser => BacklogPolicy::Limit(Duration::from_millis(33)),
             PenStyle::Selector => BacklogPolicy::Limit(Duration::from_millis(33)),

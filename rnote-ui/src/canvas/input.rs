@@ -169,7 +169,7 @@ pub(crate) fn handle_pointer_controller_event(
 
             match state {
                 PenState::Up => {
-                    canvas.switch_between_cursors(false);
+                    canvas.enable_drawing_cursor(false);
 
                     widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
                         PenEvent::Up {
@@ -181,7 +181,7 @@ pub(crate) fn handle_pointer_controller_event(
                     ));
                 }
                 PenState::Proximity => {
-                    canvas.switch_between_cursors(false);
+                    canvas.enable_drawing_cursor(false);
 
                     widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
                         PenEvent::Proximity {
@@ -194,7 +194,7 @@ pub(crate) fn handle_pointer_controller_event(
                 }
                 PenState::Down => {
                     canvas.grab_focus();
-                    canvas.switch_between_cursors(true);
+                    canvas.enable_drawing_cursor(true);
 
                     widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
                         PenEvent::Down {

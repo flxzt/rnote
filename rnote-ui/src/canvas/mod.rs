@@ -70,6 +70,7 @@ mod imp {
         pub(crate) key_controller: EventControllerKey,
         pub(crate) key_controller_im_context: IMMulticontext,
         pub(crate) drop_target: DropTarget,
+        pub(crate) drawing_cursor_enabled: Cell<bool>,
 
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
@@ -81,7 +82,6 @@ mod imp {
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
-
         pub(crate) touch_drawing: Cell<bool>,
     }
 
@@ -148,6 +148,7 @@ mod imp {
                 key_controller,
                 key_controller_im_context,
                 drop_target,
+                drawing_cursor_enabled: Cell::new(false),
 
                 engine: Rc::new(RefCell::new(engine)),
 
@@ -159,7 +160,6 @@ mod imp {
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
-
                 touch_drawing: Cell::new(false),
             }
         }
@@ -702,7 +702,12 @@ impl RnCanvas {
     }
 
     /// Switches between the regular and the drawing cursor
-    pub(crate) fn switch_between_cursors(&self, drawing_cursor: bool) {
+    pub(crate) fn enable_drawing_cursor(&self, drawing_cursor: bool) {
+        if drawing_cursor == self.imp().drawing_cursor_enabled.get() {
+            return;
+        };
+        self.imp().drawing_cursor_enabled.set(drawing_cursor);
+
         if drawing_cursor {
             self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
         } else {

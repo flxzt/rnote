@@ -209,7 +209,8 @@ impl StrokeStore {
                     tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
-                            image_scale
+                            image_scale,
+                            stroke_bounds: stroke.bounds(),
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
@@ -302,7 +303,8 @@ impl StrokeStore {
                         tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
-                                image_scale
+                                image_scale,
+                                stroke_bounds: stroke.bounds(),
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), with Err, {e}");
                             });

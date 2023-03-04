@@ -29,6 +29,7 @@ use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::shapes::ShapeBehaviour;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -82,6 +83,8 @@ pub enum EngineTask {
         images: GeneratedStrokeImages,
         /// The image scale-factor the render task was using while generating the images
         image_scale: f64,
+        /// The stroke bounds at the time when the render task has launched
+        stroke_bounds: Aabb,
     },
     /// Appends the images to the rendering of the stroke
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
@@ -591,44 +594,38 @@ impl RnoteEngine {
                 key,
                 images,
                 image_scale,
+                stroke_bounds,
             } => {
                 if let Some(state) = self.store.render_comp_state(key) {
+                    //log::debug!("key: {key:?} - render state: {state:?}");
+
                     match state {
                         RenderCompState::Complete | RenderCompState::ForViewport(_) => {
                             // The rendering was already regenerated in the meantime,
                             // so we just discard the the task rendering by not replacing the images
                         }
                         RenderCompState::BusyRenderingInTask => {
-                            // Only when the state still is as we set it when starting
-                            // the render task, we replace the images
-                            self.store.replace_rendering_with_images(key, images);
-
-                            // If the image scale has changed in the meantime,
-                            // we mark the rendering dirty again and trigger another render
-                            if !((self.camera.image_scale()
+                            if (self.camera.image_scale()
                                 - render_comp::RENDER_IMAGE_SCALE_TOLERANCE
                                 ..self.camera.image_scale()
                                     + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
-                                .contains(&image_scale))
+                                .contains(&image_scale)
+                                && self
+                                    .store
+                                    .get_stroke_ref(key)
+                                    .map(|s| s.bounds() == stroke_bounds)
+                                    .unwrap_or(true)
                             {
-                                self.store.set_rendering_dirty(key);
-                                self.store.regenerate_rendering_for_stroke_threaded(
-                                    self.tasks_tx.clone(),
-                                    key,
-                                    self.camera.viewport(),
-                                    self.camera.image_scale(),
-                                );
+                                // Only when the image scale and stroke bounds are the same
+                                // as when the render task was started, the new images are considered valid
+                                // and can replace the old
+                                self.store.replace_rendering_with_images(key, images);
                             }
                             widget_flags.redraw = true;
                         }
                         RenderCompState::Dirty => {
-                            // If the state was flagged dirty in the meantime, try again
-                            self.store.regenerate_rendering_for_stroke_threaded(
-                                self.tasks_tx.clone(),
-                                key,
-                                self.camera.viewport(),
-                                self.camera.image_scale(),
-                            );
+                            // If the state was flagged dirty in the meantime,
+                            // it is expected that retriggering rendering will be handled elsewhere
                         }
                     }
                 }

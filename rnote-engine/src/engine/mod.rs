@@ -602,7 +602,7 @@ impl RnoteEngine {
                     match state {
                         RenderCompState::Complete | RenderCompState::ForViewport(_) => {
                             // The rendering was already regenerated in the meantime,
-                            // so we just discard the the task rendering by not replacing the images
+                            // so we just discard the the render task results
                         }
                         RenderCompState::BusyRenderingInTask => {
                             if (self.camera.image_scale()

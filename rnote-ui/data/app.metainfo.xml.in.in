@@ -72,7 +72,22 @@
 
   <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.5.14" date="2023-02-20">
+    <release version="0.5.15" date="2023-03-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: configurable shortcuts for drawing pad buttons</li>
+          <li>improvement: input events for rate-limited devices (Epd, low-frequency displays)</li>
+          <li>improvement: reduced Svg export size</li>
+          <li>fix: artifacts when printing</li>
+          <li>fix: Jpeg images embedded in Pdfs were not rendered</li>
+          <li>fix: select-all with "ctrl+a" included trashed strokes</li>
+          <li>fix: units in settings kept resetting to "Px"</li>
+          <li>fix: flicker when duplicating large selections</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.14" date="2023-02-22">
       <description>
         <p>this release changes:</p>
         <ul>

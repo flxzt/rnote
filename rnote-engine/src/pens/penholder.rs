@@ -17,7 +17,7 @@ use crate::widgetflags::WidgetFlags;
 use crate::DrawOnDocBehaviour;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum BackLogPolicy {
+pub enum BacklogPolicy {
     NoLimit,
     Limit(Duration),
     DisableBacklog,
@@ -34,7 +34,7 @@ pub struct PenHolder {
     pub pen_mode_state: PenModeState,
     /// Indicates the policy for the retrieval of the event backlog
     #[serde(skip)]
-    pub backlog_policy: BackLogPolicy,
+    pub backlog_policy: BacklogPolicy,
 
     #[serde(skip)]
     pub(super) current_pen: Pen,
@@ -51,7 +51,7 @@ impl Default for PenHolder {
         Self {
             shortcuts: Shortcuts::default(),
             pen_mode_state: PenModeState::default(),
-            backlog_policy: BackLogPolicy::NoLimit,
+            backlog_policy: BacklogPolicy::NoLimit,
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
@@ -265,12 +265,12 @@ impl PenHolder {
         let current_style = self.pen_mode_state.current_style_w_override();
 
         self.backlog_policy = match current_style {
-            PenStyle::Brush => BackLogPolicy::NoLimit,
-            PenStyle::Shaper => BackLogPolicy::Limit(Duration::from_millis(16)),
-            PenStyle::Typewriter => BackLogPolicy::Limit(Duration::from_millis(16)),
-            PenStyle::Eraser => BackLogPolicy::Limit(Duration::from_millis(16)),
-            PenStyle::Selector => BackLogPolicy::Limit(Duration::from_millis(16)),
-            PenStyle::Tools => BackLogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Brush => BacklogPolicy::NoLimit,
+            PenStyle::Shaper => BacklogPolicy::Limit(Duration::from_millis(16)),
+            PenStyle::Typewriter => BacklogPolicy::Limit(Duration::from_millis(33)),
+            PenStyle::Eraser => BacklogPolicy::Limit(Duration::from_millis(33)),
+            PenStyle::Selector => BacklogPolicy::Limit(Duration::from_millis(33)),
+            PenStyle::Tools => BacklogPolicy::DisableBacklog,
         };
 
         // Enable text preprocessing for typewriter

@@ -3,7 +3,7 @@ use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penevents::{ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
-use rnote_engine::pens::penholder::BackLogPolicy;
+use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::time::{Duration, Instant};
@@ -288,7 +288,7 @@ fn retrieve_pointer_elements(
     canvas: &RnCanvas,
     now: Instant,
     event: &gdk::Event,
-    backlog_policy: BackLogPolicy,
+    backlog_policy: BacklogPolicy,
 ) -> Option<Vec<(Element, Instant)>> {
     let root = canvas.root().unwrap();
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
@@ -311,7 +311,7 @@ fn retrieve_pointer_elements(
     };
 
     if event.event_type() == gdk::EventType::MotionNotify
-        && backlog_policy != BackLogPolicy::DisableBacklog
+        && backlog_policy != BacklogPolicy::DisableBacklog
     {
         let mut prev_delta = Duration::ZERO;
 
@@ -327,7 +327,7 @@ fn retrieve_pointer_elements(
             let entry_delta = Duration::from_millis(event_time.saturating_sub(entry.time()) as u64);
             let Some(entry_time) = now.checked_sub(entry_delta) else {continue;};
 
-            if let BackLogPolicy::Limit(delta_limit) = backlog_policy {
+            if let BacklogPolicy::Limit(delta_limit) = backlog_policy {
                 // We go back in time, so `entry_delta` will increase
                 //
                 // If the backlog input rate is higher than the limit, filter it out

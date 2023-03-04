@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-20 12:34+0000\n"
+"PO-Revision-Date: 2023-02-28 11:24+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1081,11 +1081,11 @@ msgstr "Dokument Speichern"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _Left"
-msgstr "Nach _Links Verschieben"
+msgstr "Nach _links verschieben"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _Right"
-msgstr "Nach _Rechts Verschieben"
+msgstr "Nach _rechts verschieben"
 
 #: rnote-ui/data/ui/overlays.ui:161
 msgid "_Close"

@@ -72,6 +72,14 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.5.16" date="2023-03-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: export simplification when bounds are not origin aligned</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.15" date="2023-03-04">
       <description>
         <p>this release changes:</p>

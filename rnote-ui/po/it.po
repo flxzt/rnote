@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-19 16:48+0000\n"
+"PO-Revision-Date: 2023-03-06 11:40+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -121,8 +121,6 @@ msgid "Save"
 msgstr "Salva"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgid "Close tab"
 msgid "Close Tab"
 msgstr "Chiudi Scheda"
 
@@ -135,10 +133,8 @@ msgstr ""
 "andranno perse."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgid "Close window"
 msgid "Close Window"
-msgstr "Chiudi la finestra"
+msgstr "Chiudi Finestra"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -149,8 +145,6 @@ msgstr ""
 "salvate andranno perse."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
-#, fuzzy
-#| msgid "Unsaved documents"
 msgid "Unsaved Documents"
 msgstr "Documenti non salvati"
 
@@ -159,8 +153,6 @@ msgid "Discard All"
 msgstr "Scarta Tutto"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
 msgstr "Modifica area di lavoro"
 
@@ -234,8 +226,6 @@ msgid "Info"
 msgstr "Informazioni"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "PDF Import Preferences"
 msgstr "Preferenze sull'importazione dei PDF"
 
@@ -258,8 +248,6 @@ msgstr ""
 "formato"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "Spaziatura delle pagine"
 
@@ -1220,15 +1208,15 @@ msgstr "_Chiudi"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Temporaneo"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Permanente"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Attiva/disattiva"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1581,7 +1569,7 @@ msgstr "Passa agli 'Strumenti'"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + Trascina"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 #, fuzzy
@@ -1591,7 +1579,7 @@ msgstr "Diminuisci Zoom"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + Trascina"
 
 #: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
 msgid "Document"
@@ -1989,7 +1977,7 @@ msgstr "Calendario"
 
 #: rnote-ui/src/dialogs/mod.rs:532
 msgid "Camera"
-msgstr ""
+msgstr "Camera"
 
 #: rnote-ui/src/dialogs/mod.rs:533
 msgctxt "as in computer chip"
@@ -2002,7 +1990,7 @@ msgstr "Codice"
 
 #: rnote-ui/src/dialogs/mod.rs:535
 msgid "Compose"
-msgstr ""
+msgstr "Componi"
 
 #: rnote-ui/src/dialogs/mod.rs:537
 msgid "Drinks"
@@ -2193,15 +2181,15 @@ msgstr "Curva di Bézier cubica"
 
 #: rnote-ui/src/settingspanel/mod.rs:810
 msgid "Crosshair (Small)"
-msgstr ""
+msgstr "Mirino (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:811
 msgid "Crosshair (Medium)"
-msgstr ""
+msgstr "Mirino (Medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:812
 msgid "Crosshair (Large)"
-msgstr ""
+msgstr "Mirino (Grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:813
 msgid "Dot (Small)"
@@ -2217,39 +2205,39 @@ msgstr "Punto (grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:816
 msgid "Teardrop North-West (Small)"
-msgstr ""
+msgstr "A Goccia Nord-Ovest (Piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:817
 msgid "Teardrop North-West (Medium)"
-msgstr ""
+msgstr "A Goccia Nord-Ovest (Medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Teardrop North-West (Large)"
-msgstr ""
+msgstr "A Goccia Nord-Ovest (Grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Teardrop North-East (Small)"
-msgstr ""
+msgstr "A Goccia Nord-Est (Piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Teardrop North-East (Medium)"
-msgstr ""
+msgstr "A Goccia Nord-Est (Medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Teardrop North-East (Large)"
-msgstr ""
+msgstr "A Goccia Nord-Est (Grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Teardrop North (Small)"
-msgstr ""
+msgstr "A Goccia Nord (piccolo)"
 
 #: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Teardrop North (Medium)"
-msgstr ""
+msgstr "A Goccia Nord (Medio)"
 
 #: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North (Large)"
-msgstr ""
+msgstr "A Goccia Nord (Grande)"
 
 #: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Beam (Small)"

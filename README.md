@@ -13,13 +13,15 @@
 
 
 # Rnote
+
 > Sketch and take handwritten notes.  
 
 Rnote is an open-source vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures. Targeted at students, teachers and those who own a drawing tablet, it provides features like PDF and picture import and export, an infinite canvas and an adaptive UI for big and small screens.
 
 Written in Rust and GTK4.
 
-**Features**  
+**Features**
+
 - Adaptive UI focused on stylus input
 - Pressure-sensitive stylus input with different and configurable stroke styles
 - Create many different shapes with the shape tool
@@ -37,52 +39,77 @@ Written in Rust and GTK4.
 - Tabs to work on multiple documents at the same time
 - Autosave, printing
 
-**Disclaimer**  
+**Disclaimer**
+
 The file format is still unstable. It might change and break compatibility between versions.
 
 ## Website
+
 Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 
 ## Installation
+
 Rnote is available as a flatpak on Flathub:
 
 <br><div align="start">
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 </div><br>
 
-**Downgrading**  
-Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
+**Downgrading**
 
-| version | command                                                                                                                |
-| ------- | ---------------------------------------------------------------------------------------------------------------------- |
-| v0.4.0  | `sudo flatpak update --commit=2ee585842334ad976802f08a1952c3fdc40f6f3afe2e056f3597fe4a029d54d2 com.github.flxzt.rnote` |
-| v0.3.5  | `sudo flatpak update --commit=34115ec5896cbe1b7c1b7a589ec2b6da45e9fcbd81ae53c665c08f2fc42bb52f com.github.flxzt.rnote` |
-| v0.2.5  | `sudo flatpak update --commit=2036a51c8118a30eb4ceb2e16ba2f84fa8ca4dc814fb88d9424709380093a6c6 com.github.flxzt.rnote` |
-| v0.1.6  | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
+Because the file format still is unstable, downgrading to a specific version might be necessary.
 
-After downgrading, the version can be pinned or unpinned with:
+List all available past versions on flathub:
+
+```bash
+flatpak remote-info --log flathub com.github.flxzt.rnote
+```
+
+Pick the commit from the desired version and downgrade with:
+
+```bash
+sudo flatpak update --commit=<commit-hash> com.github.flxzt.rnote 
+```
+
+After downgrading, the flatpak version can be pinned or unpinned with:
 
 ```
 $ flatpak mask com.github.flxzt.rnote
 $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
-Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
+To update to the lastest version again, unpin and run `flatpak update`.
 
 ## Screenshots
-![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
-![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)
-![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
-![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)
+
+![overview](./rnote-ui/data/screenshots/overview.png)  
+![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)  
+![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)  
+![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)  
 
 ## Pitfalls & Known Issues
-* Drag & Drop not working - Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
-* odd location for current file - when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
-    Again, granting them in Flatseal fixes this issue.
-* Stylus buttons move canvas / are not functional - make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
-* While hovering with the stylus, other input events are blocked in some regions of the screen - Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't do much to disable this unfortunately. ( discussed in issue #329 )
+
+* Drag & Drop not working -  
+    Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+
+* Odd location for current file -  
+    When the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
+
+* Stylus buttons move canvas / are not functional -  
+    Make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+
+* While hovering with the stylus, other input events are blocked in some regions of the screen -  
+    Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
+
+* One of the stylus buttons shortcut mapping does not work as intended -  
+On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:  
+    * Hover over the canvas, and press and hold the button that that is suspected to be mapped to the "Eraser" mode
+    * Switch to the desired pen style while keeping the button pressed
+    * When releasing the pressed button, it should switch back to the previous pen style
+    * The pen style in the "Eraser" mode should now be remembered
 
 ## Credits
+
 - A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
 - [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
 - [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
@@ -100,12 +127,13 @@ A great way to contribute to the project without writing code is adding a new or
 - take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit". Add the new translation language to `LINGUAS` and submit a PR with both changed files.
 - use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
 
-
 ## Community
+
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  
 There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) chat room.  
 
 ## File Format
+
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
 
 So far breaking changes in the format happened in versions:
@@ -118,14 +146,17 @@ So far breaking changes in the format happened in versions:
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 
 ## Drawings Created With Rnote
+
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
 <div align="center" spacing="20px">
         <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" height="400">
         <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" height="400">
         <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
+        <img alt="Suits" src="./misc/drawings/suits.png" height="400">
 </div><br>
 
 
 ## Building
+
 Build instructions for Linux are documented in [BUILDING.md](./BUILDING.md) and for other platforms [here](./misc/building)

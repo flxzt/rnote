@@ -109,80 +109,14 @@ impl RnShaperPage {
 
     pub(crate) fn shapeconfig_menubutton(&self) -> MenuButton {
         self.imp().shapeconfig_menubutton.get()
-        self.imp().shapebuildertype_arrow_row.get()
     }
 
-    pub fn shapebuildertype_line_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_line_row.get()
-    }
-
-    pub fn shapebuildertype_rectangle_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_rectangle_row.get()
-    }
-
-    pub fn shapebuildertype_coordsystem2d_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_coordsystem2d_row.get()
-    }
-
-    pub fn shapebuildertype_coordsystem3d_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_coordsystem3d_row.get()
-    }
-
-    pub fn shapebuildertype_quadrantcoordsystem2d_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_quadrantcoordsystem2d_row.get()
-    }
-
-    pub fn shapebuildertype_ellipse_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_ellipse_row.get()
-    }
-
-    pub fn shapebuildertype_fociellipse_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_fociellipse_row.get()
-    }
-
-    pub fn shapebuildertype_quadbez_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_quadbez_row.get()
-    }
-
-    pub fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_cubbez_row.get()
+    pub(crate) fn shapebuildertype_menubutton(&self) -> MenuButton {
+        self.imp().shapebuildertype_menubutton.get()
     }
 
     pub(crate) fn constraint_menubutton(&self) -> MenuButton {
         self.imp().shapebuildertype_menubutton.get()
-    }
-
-    pub fn shapebuildertype_coordsystem2d_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_coordsystem2d_row.get()
-    }
-
-    pub fn shapebuildertype_coordsystem3d_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_coordsystem3d_row.get()
-    }
-
-    pub(crate) fn shapebuildertype(&self) -> Option<ShapeBuilderType> {
-        let icon_name = self.imp().shapebuildertype_picker.picked()?;
-        ShapeBuilderType::from_icon_name(icon_name.as_str())
-    }
-
-    pub fn shapebuildertype_ellipse_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_ellipse_row.get()
-    }
-
-    pub fn shapebuildertype_fociellipse_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_fociellipse_row.get()
-    }
-
-    pub fn shapebuildertype_quadbez_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_quadbez_row.get()
-    }
-
-    pub fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
-        self.imp().shapebuildertype_cubbez_row.get()
-    }
-
-    pub(crate) fn stroke_width_picker(&self) -> RnStrokeWidthPicker {
-        self.imp().stroke_width_picker.get()
     }
 
     pub(crate) fn shaper_style(&self) -> Option<ShaperStyle> {

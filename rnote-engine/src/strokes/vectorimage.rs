@@ -1,10 +1,5 @@
-use std::ops::Range;
-
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::{Stroke, StrokeBehaviour};
-use crate::document::Format;
-use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{render, DrawBehaviour};
+use gtk4::glib;
+use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
@@ -12,17 +7,25 @@ use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
-
-use gtk4::glib;
-use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
+use std::ops::Range;
+
+use super::strokebehaviour::GeneratedStrokeImages;
+use super::{Stroke, StrokeBehaviour};
+use crate::document::Format;
+use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::usvg_export::{self, TreeExportExt};
+use crate::{render, DrawBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
 pub struct VectorImage {
     #[serde(rename = "svg_data")]
     pub svg_data: String,
-    #[serde(rename = "intrinsic_size")]
+    #[serde(
+        rename = "intrinsic_size",
+        with = "rnote_compose::serialize::na_vector2_f64_dp3"
+    )]
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,
@@ -138,8 +141,9 @@ impl VectorImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let xml_options = usvg::XmlOptions {
-            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+        let xml_options = usvg_export::ExportOptions {
+            id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
+            n_decimal_places: 3,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -147,7 +151,8 @@ impl VectorImage {
             },
         };
 
-        let svg_tree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
+        let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
+        svg_tree.convert_text_to_paths(&render::USVG_FONTDB);
         let svg_data = svg_tree.to_string(&xml_options);
         let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
 
@@ -184,36 +189,22 @@ impl VectorImage {
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
         let page_width = format.width * (pdf_import_prefs.page_width_perc / 100.0);
+        // calculate the page zoom based on the width of the first page.
+        let page_zoom = if let Some(first_page) = doc.page(0) {
+            page_width / first_page.size().0
+        } else {
+            return Ok(vec![]);
+        };
+        let x = insert_pos[0];
+        let mut y = insert_pos[1];
 
-        let svgs = page_range.enumerate().filter_map(|(i, page_i)| {
+        let svgs = page_range.filter_map(|page_i| {
             let page = doc.page(page_i as i32)?;
             let intrinsic_size = page.size();
+            let width = intrinsic_size.0 * page_zoom;
+            let height = intrinsic_size.1 * page_zoom;
 
-            let (width, height, _zoom) = {
-                let zoom = page_width / intrinsic_size.0;
-
-                (
-                    page_width.round(),
-                    intrinsic_size.1 * zoom,
-                    zoom,
-                )
-            };
-
-            let x = insert_pos[0];
-            let y = match pdf_import_prefs.page_spacing {
-                PdfImportPageSpacing::Continuous => {
-                    insert_pos[1]
-                        + f64::from(i as u32)
-                            * (height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5)
-                }
-                PdfImportPageSpacing::OnePerDocumentPage => {
-                    insert_pos[1]
-                        + f64::from(i as u32) *  format.height
-                }
-            };
-
-
-            let res = || -> anyhow::Result<String> {
+            let res = move || -> anyhow::Result<String> {
                 let svg_stream: Vec<u8> = vec![];
 
                 let mut svg_surface =
@@ -241,7 +232,7 @@ impl VectorImage {
                     cx.paint()?;
 
                     // Render the poppler page
-                    page.render(&cx);
+                    page.render_for_printing(&cx);
 
                     // Draw outline around page
                     cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);
@@ -263,16 +254,24 @@ impl VectorImage {
                         .downcast::<Vec<u8>>()
                         .map_err(|_e| anyhow::anyhow!("failed to downcast svg surface content in VectorImage import_from_pdf_bytes()"))?)?;
 
+
                 Ok(svg_content)
+            };
+
+            let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
+
+            y += match pdf_import_prefs.page_spacing {
+                PdfImportPageSpacing::Continuous => height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5,
+                PdfImportPageSpacing::OnePerDocumentPage => format.height
             };
 
             match res() {
                 Ok(svg_data) => Some(render::Svg {
                     svg_data,
-                    bounds: Aabb::new(na::point![x, y], na::point![x + width, y + height])
+                    bounds,
                 }),
                 Err(e) => {
-                    log::error!("importing page {page} from pdf failed with Err: {e:?}");
+                    log::error!("importing page {page_i} from pdf failed with Err: {e:?}");
                     None
                 }
             }

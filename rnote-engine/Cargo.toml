@@ -11,6 +11,8 @@ rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
 librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.55.90" }
+# This needs to be this exact version, the latest (v0.8.6) causes panics when importing pdfs
+string_cache = "=0.8.4"
 
 log = "0.4"
 anyhow = "1"
@@ -42,11 +44,13 @@ kurbo = "0.9"
 image = "0.23"
 svg = "0.13"
 geo = "0.23"
-xmlwriter = "0.1"
-usvg = "0.27"
 rodio = {version = "0.16", default-features=false, features = ["symphonia-wav"] }
 semver = { version = "1"}
 unicode-segmentation = "1"
+usvg = "0.29"
+usvg-text-layout = "0.29"
+rosvgtree = "0.1"
+xmlwriter = "0.1"
 
 [dev-dependencies]
 approx = "0.5.1"

@@ -13,13 +13,13 @@ use super::CubicBezier;
 #[serde(default, rename = "quadratic_bezier")]
 /// A quadratic bezier curve
 pub struct QuadraticBezier {
-    #[serde(rename = "start")]
+    #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The curve start
     pub start: na::Vector2<f64>,
-    #[serde(rename = "cp")]
+    #[serde(rename = "cp", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The curve control point
     pub cp: na::Vector2<f64>,
-    #[serde(rename = "end")]
+    #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The curve end
     pub end: na::Vector2<f64>,
 }
@@ -69,19 +69,19 @@ impl QuadraticBezier {
         let p1 = self.cp;
         let p2 = self.end;
 
-        let first_splitted = QuadraticBezier {
+        let first_split = QuadraticBezier {
             start: p0,
             cp: z * p1 - (z - 1.0) * p0,
             end: z.powi(2) * p2 - 2.0 * z * (z - 1.0) * p1 + (z - 1.0).powi(2) * p0,
         };
 
-        let second_splitted = QuadraticBezier {
+        let second_split = QuadraticBezier {
             start: z.powi(2) * p2 - 2.0 * z * (z - 1.0) * p1 + (z - 1.0).powi(2) * p0,
             cp: z * p2 - (z - 1.0) * p1,
             end: p2,
         };
 
-        (first_splitted, second_splitted)
+        (first_split, second_split)
     }
 
     /// convert to a cubic bezier ( raising the order is without losses)

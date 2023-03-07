@@ -145,15 +145,15 @@ where
     /// Splits the Aabb vertically in the center
     fn vsplit(&self) -> [Self; 2];
     /// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
-    /// the splitted bounds are exactly fitted to not overlap, or extend the given bounds
-    fn split(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
+    /// the split bounds are exactly fitted to not overlap, or extend the given bounds
+    fn split(self, split_size: na::Vector2<f64>) -> Vec<Self>;
     /// splits a aabb into multiple of the given size. Their union contains the given aabb.
     /// The boxes on the edges most likely extend beyond the given aabb.
-    fn split_extended(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
+    fn split_extended(self, split_size: na::Vector2<f64>) -> Vec<Self>;
     /// splits a aabb into multiple of the given size. Their union contains the given aabb.
     /// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
     /// The boxes on the edges most likely extend beyond the given aabb.
-    fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
+    fn split_extended_origin_aligned(self, split_size: na::Vector2<f64>) -> Vec<Self>;
     /// Converts a Aabb to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
@@ -314,87 +314,87 @@ impl AabbHelpers for Aabb {
         ]
     }
 
-    fn split(self, splitted_size: na::Vector2<f64>) -> Vec<Self> {
-        let mut splitted_aabbs = vec![self];
+    fn split(self, split_size: na::Vector2<f64>) -> Vec<Self> {
+        let mut split_aabbs = vec![self];
 
         // Split them horizontally
-        while splitted_size[0] < splitted_aabbs[0].extents()[0] {
-            let old_splitted = splitted_aabbs.clone();
-            splitted_aabbs.clear();
+        while split_size[0] < split_aabbs[0].extents()[0] {
+            let old_split = split_aabbs.clone();
+            split_aabbs.clear();
 
-            for old in old_splitted.iter() {
-                splitted_aabbs.append(&mut old.hsplit().to_vec());
+            for old in old_split.iter() {
+                split_aabbs.append(&mut old.hsplit().to_vec());
             }
         }
 
         // Split them vertically
-        while splitted_size[1] < splitted_aabbs[0].extents()[1] {
-            let old_splitted = splitted_aabbs.clone();
-            splitted_aabbs.clear();
+        while split_size[1] < split_aabbs[0].extents()[1] {
+            let old_split = split_aabbs.clone();
+            split_aabbs.clear();
 
-            for old in old_splitted.iter() {
-                splitted_aabbs.append(&mut old.vsplit().to_vec());
+            for old in old_split.iter() {
+                split_aabbs.append(&mut old.vsplit().to_vec());
             }
         }
 
-        splitted_aabbs
+        split_aabbs
     }
 
-    fn split_extended(self, mut splitted_size: na::Vector2<f64>) -> Vec<Self> {
-        let mut splitted_aabbs = Vec::new();
+    fn split_extended(self, mut split_size: na::Vector2<f64>) -> Vec<Self> {
+        let mut split_aabbs = Vec::new();
 
         let mut offset_x = self.mins[0];
         let mut offset_y = self.mins[1];
         let width = self.extents()[0];
         let height = self.extents()[1];
 
-        if width <= splitted_size[0] {
-            splitted_size[0] = width;
+        if width <= split_size[0] {
+            split_size[0] = width;
         }
-        if height <= splitted_size[1] {
-            splitted_size[1] = height;
+        if height <= split_size[1] {
+            split_size[1] = height;
         }
 
         while offset_y < height {
             while offset_x < width {
-                splitted_aabbs.push(Aabb::new(
+                split_aabbs.push(Aabb::new(
                     na::point![offset_x, offset_y],
-                    na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
+                    na::point![offset_x + split_size[0], offset_y + split_size[1]],
                 ));
 
-                offset_x += splitted_size[0];
+                offset_x += split_size[0];
             }
 
             offset_x = self.mins[0];
-            offset_y += splitted_size[1];
+            offset_y += split_size[1];
         }
 
-        splitted_aabbs
+        split_aabbs
     }
 
-    fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self> {
-        let mut splitted_aabbs = Vec::new();
+    fn split_extended_origin_aligned(self, split_size: na::Vector2<f64>) -> Vec<Self> {
+        let mut split_aabbs = Vec::new();
 
-        if splitted_size[0] <= 0.0 || splitted_size[1] <= 0.0 {
+        if split_size[0] <= 0.0 || split_size[1] <= 0.0 {
             return vec![];
         }
 
-        let mut offset_y = (self.mins[1] / splitted_size[1]).floor() * splitted_size[1];
+        let mut offset_y = (self.mins[1] / split_size[1]).floor() * split_size[1];
 
         while offset_y < self.maxs[1] {
-            let mut offset_x = (self.mins[0] / splitted_size[0]).floor() * splitted_size[0];
+            let mut offset_x = (self.mins[0] / split_size[0]).floor() * split_size[0];
 
             while offset_x < self.maxs[0] {
                 let mins = na::point![offset_x, offset_y];
-                splitted_aabbs.push(Aabb::new(mins, mins + splitted_size));
+                split_aabbs.push(Aabb::new(mins, mins + split_size));
 
-                offset_x += splitted_size[0];
+                offset_x += split_size[0];
             }
 
-            offset_y += splitted_size[1];
+            offset_y += split_size[1];
         }
 
-        splitted_aabbs
+        split_aabbs
     }
 
     fn to_kurbo_rect(&self) -> kurbo::Rect {

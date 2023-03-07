@@ -13,31 +13,21 @@ use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::Node;
 
-use crate::utils::{base64, GrapheneRectHelpers};
+use crate::usvg_export::{self, TreeExportExt};
+use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
-pub static USVG_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
-    let mut usvg_options = usvg::Options::default();
-    usvg_options.fontdb.load_system_fonts();
-
-    usvg_options
+pub static USVG_FONTDB: Lazy<usvg_text_layout::fontdb::Database> = Lazy::new(|| {
+    let mut db = usvg_text_layout::fontdb::Database::new();
+    db.load_system_fonts();
+    db
 });
-
-pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
-    id_prefix: None,
-    writer_opts: xmlwriter::Options {
-        use_single_quote: false,
-        indent: xmlwriter::Indent::None,
-        attributes_indent: xmlwriter::Indent::None,
-    },
-};
 
 // Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor
 pub const PX_TO_POINT_CONV_FACTOR: f64 = 96.0 / 72.0;
 // Point unit ( 72 DPI ) to Px unit (96 DPI ) conversion factor
 pub const POINT_TO_PX_CONV_FACTOR: f64 = 72.0 / 96.0;
-
 // the factor the rendering for the current viewport is extended. e.g.: 1.0 means the viewport is extended by its extents on all sides.
 // Used when checking rendering for new zooms or a moved viewport.
 // There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view
@@ -95,7 +85,7 @@ impl TryFrom<ImageMemoryFormat> for piet::ImageFormat {
 #[serde(default, rename = "image")]
 pub struct Image {
     /// The image data. is (de) serialized in base64 encoding
-    #[serde(rename = "data", with = "base64")]
+    #[serde(rename = "data", with = "rnote_compose::serialize::vecu8_base64")]
     pub data: Vec<u8>,
     /// the target rect in the coordinate space of the doc
     #[serde(rename = "rectangle")]
@@ -525,19 +515,19 @@ impl Image {
         bounds = bounds.ceil().loosened(1.0);
         bounds.assert_valid()?;
 
-        let splitted_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let splitted_height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
+        let split_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
+        let split_height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
 
         let mut image_surface = cairo::ImageSurface::create(
             cairo::Format::ARgb32,
-            splitted_width_scaled as i32,
-            splitted_height_scaled as i32,
+            split_width_scaled as i32,
+            split_height_scaled as i32,
         )
         .map_err(|e| {
             anyhow::anyhow!(
                 "create ImageSurface with dimensions ({}, {}) failed in Image gen_with_piet(), {}",
-                splitted_width_scaled,
-                splitted_height_scaled,
+                split_width_scaled,
+                split_height_scaled,
                 e
             )
         })?;
@@ -571,8 +561,8 @@ impl Image {
         Ok(Image {
             data,
             rect: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: splitted_width_scaled,
-            pixel_height: splitted_height_scaled,
+            pixel_width: split_width_scaled,
+            pixel_height: split_height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
         })
     }
@@ -723,19 +713,26 @@ impl Svg {
         Ok(())
     }
 
-    /// Simplifies the svg by passing it through usvg. Should reduce the size
+    /// Simplifies the svg by passing it through usvg
     pub fn simplify(&mut self) -> anyhow::Result<()> {
-        let xml_options = usvg::XmlOptions {
-            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+        let xml_options = usvg_export::ExportOptions {
+            id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
+            n_decimal_places: 3,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-
-        let rtree = usvg::Tree::from_str(&self.svg_data, &USVG_OPTIONS.to_ref())?;
-        self.svg_data = rtree.to_string(&xml_options);
+        let svg_data = rnote_compose::utils::wrap_svg_root(
+            &rnote_compose::utils::remove_xml_header(&self.svg_data),
+            None,
+            None,
+            false,
+        );
+        let mut usvg_tree = usvg::Tree::from_str(&svg_data, &usvg::Options::default())?;
+        usvg_tree.convert_text_to_paths(&USVG_FONTDB);
+        self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
 
         Ok(())
     }

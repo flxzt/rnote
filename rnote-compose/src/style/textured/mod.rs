@@ -7,7 +7,7 @@ pub use texturedoptions::TexturedOptions;
 
 use crate::helpers::Vector2Helpers;
 use crate::penpath::Segment;
-use crate::shapes::{Arrow, Line, ShapeBehaviour};
+use crate::shapes::{Line, ShapeBehaviour};
 use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -16,80 +16,6 @@ use rand_distr::{Distribution, Uniform};
 
 use super::Composer;
 
-impl Composer<TexturedOptions> for Arrow {
-    fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width * 0.5)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
-        cx.save().unwrap();
-        let bez_path = {
-            // Return early if line has no length, else Uniform::new() will panic for range with low >= high
-            if (self.tip - self.start).magnitude() <= 0.0 {
-                return;
-            };
-
-            let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
-
-            let line_vec = self.tip - self.start;
-            let line_rect = self.line_w_width_to_rect(options.stroke_width);
-
-            let area = 4.0 * line_rect.cuboid.half_extents[0] * line_rect.cuboid.half_extents[1];
-
-            // Ranges for randomization
-            let range_x = -line_rect.cuboid.half_extents[0]..line_rect.cuboid.half_extents[0];
-            let range_y = -line_rect.cuboid.half_extents[1]..line_rect.cuboid.half_extents[1];
-            let range_dots_rot = -std::f64::consts::FRAC_PI_8..std::f64::consts::FRAC_PI_8;
-            let range_dots_rx = options.radii[0] * 0.8..options.radii[0] * 1.25;
-            let range_dots_ry = options.radii[1] * 0.8..options.radii[1] * 1.25;
-
-            let distr_x = Uniform::from(range_x);
-            let distr_dots_rot = Uniform::from(range_dots_rot);
-            let distr_dots_rx = Uniform::from(range_dots_rx);
-            let distr_dots_ry = Uniform::from(range_dots_ry);
-
-            let n_dots = (area * 0.1 * options.density).round() as i32;
-
-            let mut bez_path = kurbo::BezPath::new();
-
-            for _ in 0..n_dots {
-                let x_pos = distr_x.sample(&mut rng);
-                let y_pos = options
-                    .distribution
-                    .sample_for_range_symmetrical_clipped(&mut rng, range_y.clone());
-
-                let pos = line_rect.transform.affine * na::point![x_pos, y_pos];
-
-                let rotation_angle = na::Rotation2::rotation_between(&na::Vector2::x(), &line_vec)
-                    .angle()
-                    + distr_dots_rot.sample(&mut rng);
-                let radii = na::vector![
-                    distr_dots_rx.sample(&mut rng),
-                    distr_dots_ry.sample(&mut rng)
-                ];
-
-                let ellipse = kurbo::Ellipse::new(
-                    kurbo::Point {
-                        x: pos[0],
-                        y: pos[1],
-                    },
-                    radii.to_kurbo_vec(),
-                    rotation_angle,
-                );
-
-                bez_path.extend(ellipse.to_path(0.1));
-            }
-
-            bez_path
-        };
-
-        if let Some(fill_color) = options.stroke_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(bez_path, &fill_brush);
-        }
-        cx.restore().unwrap();
-    }
-}
 impl Composer<TexturedOptions> for Line {
     fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)

@@ -398,7 +398,7 @@ static SELECTION_FILL_COLOR: Lazy<piet::Color> =
 
 impl Selector {
     /// The threshold where a translation is applied ( in offset magnitude, surface coords )
-    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
+    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
     /// The threshold angle (rad) where a rotation is applied
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
 
@@ -706,7 +706,7 @@ impl Selector {
     ) -> PenProgress {
         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
             // Select all keys
-            let all_strokes = engine_view.store.keys_sorted_chrono();
+            let all_strokes = engine_view.store.stroke_keys_as_rendered();
 
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);

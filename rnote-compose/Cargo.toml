@@ -7,12 +7,13 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "7d22efddd1c8830fd0cb908ddd90e2296378e324" }
+ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "6a3f2f1e8691ad09f36a231c7defe78fc448f709" }
 log = "0.4"
 anyhow = "1"
 serde = {version = "1", features = ["derive"]}
 num-derive = "0.3"
 num-traits = "0.2"
+base64 = "0.20"
 rand = "0.8"
 rand_pcg = "0.3"
 rand_distr = "0.4"

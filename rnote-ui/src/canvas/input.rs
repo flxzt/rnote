@@ -3,9 +3,10 @@ use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penevents::{ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
+use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use super::RnCanvas;
 
@@ -30,6 +31,7 @@ pub(crate) fn handle_pointer_controller_event(
     let modifiers = event.modifier_state();
     let _input_source = event.device().unwrap().source();
     let is_stylus = event_is_stylus(event);
+    let backlog_policy = canvas.engine().borrow().penholder.backlog_policy;
     let mut handle_pen_event = false;
     let mut inhibit = false;
 
@@ -156,51 +158,53 @@ pub(crate) fn handle_pointer_controller_event(
     };
 
     if handle_pen_event {
-        let Some(element) = retrieve_pointer_element(canvas, event) else {
+        let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
                     return (Inhibit(false), state);
                 };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
-        //log::debug!("handle event, state: {state:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}");
+        for (element, event_time) in elements {
+            //log::debug!("handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
 
-        match state {
-            PenState::Up => {
-                canvas.switch_between_cursors(false);
+            match state {
+                PenState::Up => {
+                    canvas.enable_drawing_cursor(false);
 
-                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-                    PenEvent::Up {
-                        element,
-                        modifier_keys,
-                    },
-                    pen_mode,
-                    now,
-                ));
-            }
-            PenState::Proximity => {
-                canvas.switch_between_cursors(false);
+                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                        PenEvent::Up {
+                            element,
+                            modifier_keys: modifier_keys.clone(),
+                        },
+                        pen_mode,
+                        event_time,
+                    ));
+                }
+                PenState::Proximity => {
+                    canvas.enable_drawing_cursor(false);
 
-                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-                    PenEvent::Proximity {
-                        element,
-                        modifier_keys,
-                    },
-                    pen_mode,
-                    now,
-                ));
-            }
-            PenState::Down => {
-                canvas.grab_focus();
-                canvas.switch_between_cursors(true);
+                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                        PenEvent::Proximity {
+                            element,
+                            modifier_keys: modifier_keys.clone(),
+                        },
+                        pen_mode,
+                        event_time,
+                    ));
+                }
+                PenState::Down => {
+                    canvas.grab_focus();
+                    canvas.enable_drawing_cursor(true);
 
-                widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
-                    PenEvent::Down {
-                        element,
-                        modifier_keys,
-                    },
-                    pen_mode,
-                    now,
-                ));
+                    widget_flags.merge(canvas.engine().borrow_mut().handle_pen_event(
+                        PenEvent::Down {
+                            element,
+                            modifier_keys: modifier_keys.clone(),
+                        },
+                        pen_mode,
+                        event_time,
+                    ));
+                }
             }
         }
     }
@@ -280,24 +284,79 @@ fn event_is_stylus(event: &gdk::Event) -> bool {
     event.device_tool().is_some()
 }
 
-fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Element> {
-    let Some((x, y)) = event.position() else {
-        return None;
-    };
+fn retrieve_pointer_elements(
+    canvas: &RnCanvas,
+    now: Instant,
+    event: &gdk::Event,
+    backlog_policy: BacklogPolicy,
+) -> Option<Vec<(Element, Instant)>> {
     let root = canvas.root().unwrap();
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
-
-    let pos = root
-        .translate_coordinates(canvas, x - surface_trans_x, y - surface_trans_y)
-        .map(|(x, y)| {
-            let pos = na::vector![x, y];
-            (canvas.engine().borrow().camera.transform().inverse() * na::Point2::from(pos)).coords
-        })
-        .unwrap();
-
-    // getting the pressure only works when the event has a device tool (== is a stylus),
-    // else we get SIGSEGV when trying to access (TODO: report this to bindings)
+    // retrieving the pressure only works when the event has a device tool (== is a stylus),
+    // else we get SIGSEGV when trying to access (TODO: report this to gtk-rs)
     let is_stylus = event_is_stylus(event);
+    let event_time = event.time();
+
+    let mut elements = Vec::with_capacity(1);
+
+    // Transforms the pos given in surface coordinate space to the canvas document coordinate space
+    let transform_pos = |pos: na::Vector2<f64>| -> na::Vector2<f64> {
+        root.translate_coordinates(canvas, pos[0] - surface_trans_x, pos[1] - surface_trans_y)
+            .map(|(x, y)| {
+                (canvas.engine().borrow().camera.transform().inverse()
+                    * na::Point2::from(na::vector![x, y]))
+                .coords
+            })
+            .unwrap()
+    };
+
+    if event.event_type() == gdk::EventType::MotionNotify
+        && backlog_policy != BacklogPolicy::DisableBacklog
+    {
+        let mut prev_delta = Duration::ZERO;
+
+        let mut entries = vec![];
+        for entry in event.history().into_iter().rev() {
+            let available_axes = entry.flags();
+            if !(available_axes.contains(gdk::AxisFlags::X)
+                && available_axes.contains(gdk::AxisFlags::Y))
+            {
+                continue;
+            }
+
+            let entry_delta = Duration::from_millis(event_time.saturating_sub(entry.time()) as u64);
+            let Some(entry_time) = now.checked_sub(entry_delta) else {continue;};
+
+            if let BacklogPolicy::Limit(delta_limit) = backlog_policy {
+                // We go back in time, so `entry_delta` will increase
+                //
+                // If the backlog input rate is higher than the limit, filter it out
+                if entry_delta.saturating_sub(prev_delta) < delta_limit {
+                    continue;
+                }
+            }
+            prev_delta = entry_delta;
+
+            let axes = entry.axes();
+            let pos = transform_pos(na::vector![
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::X)],
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)]
+            ]);
+            let pressure = if is_stylus {
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::Pressure)]
+            } else {
+                Element::PRESSURE_DEFAULT
+            };
+
+            entries.push((Element::new(pos, pressure), entry_time));
+        }
+
+        elements.extend(entries.into_iter().rev());
+    }
+
+    let pos = event
+        .position()
+        .map(|(x, y)| transform_pos(na::vector![x, y]))?;
 
     let pressure = if is_stylus {
         event.axis(gdk::AxisUse::Pressure).unwrap()
@@ -305,7 +364,9 @@ fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Ele
         Element::PRESSURE_DEFAULT
     };
 
-    Some(Element::new(pos, pressure))
+    elements.push((Element::new(pos, pressure), now));
+
+    Some(elements)
 }
 
 pub(crate) fn retrieve_button_shortcut_key(

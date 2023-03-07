@@ -1,22 +1,27 @@
-use std::time::Instant;
-
-use crate::engine::{EngineView, EngineViewMut};
-use crate::pens::shortcuts::ShortcutAction;
-
-use crate::widgetflags::WidgetFlags;
-use crate::DrawOnDocBehaviour;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
-
-use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
+use std::time::{Duration, Instant};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
+use super::shortcuts::ShortcutMode;
 use super::{
     Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Shortcuts, Tools,
     Typewriter,
 };
+use crate::engine::{EngineView, EngineViewMut};
+use crate::pens::shortcuts::ShortcutAction;
+use crate::widgetflags::WidgetFlags;
+use crate::DrawOnDocBehaviour;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum BacklogPolicy {
+    NoLimit,
+    Limit(Duration),
+    DisableBacklog,
+}
 
 /// This holds the pens and related state and handles pen events.
 #[allow(missing_debug_implementations)]
@@ -27,11 +32,18 @@ pub struct PenHolder {
     pub shortcuts: Shortcuts,
     #[serde(rename = "pen_mode_state")]
     pub pen_mode_state: PenModeState,
+    /// Indicates the policy for the retrieval of the event backlog
+    #[serde(skip)]
+    pub backlog_policy: BacklogPolicy,
 
     #[serde(skip)]
     pub(super) current_pen: Pen,
     #[serde(skip)]
     pen_progress: PenProgress,
+    #[serde(skip)]
+    toggle_pen_style: Option<PenStyle>,
+    #[serde(skip)]
+    prev_shortcut_key: Option<ShortcutKey>,
 }
 
 impl Default for PenHolder {
@@ -39,9 +51,12 @@ impl Default for PenHolder {
         Self {
             shortcuts: Shortcuts::default(),
             pen_mode_state: PenModeState::default(),
+            backlog_policy: BacklogPolicy::NoLimit,
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
+            toggle_pen_style: None,
+            prev_shortcut_key: None,
         }
     }
 }
@@ -50,8 +65,8 @@ impl PenHolder {
     pub fn clear_shortcuts(&mut self) {
         self.shortcuts.clear();
     }
-    /// Registers a new shortcut key and action
-    pub fn register_new_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
+    /// Registers a shortcut key and action
+    pub fn register_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);
     }
 
@@ -74,7 +89,7 @@ impl PenHolder {
     }
 
     /// Gets the style without the temporary override.
-    pub fn pen_style(&self) -> PenStyle {
+    pub fn current_pen_style(&self) -> PenStyle {
         self.pen_mode_state.style()
     }
 
@@ -102,6 +117,19 @@ impl PenHolder {
         new_style: PenStyle,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
+        let widget_flags = self.change_style_int(new_style, engine_view);
+        // When the style is changed externally, the toggle mode / internal states are reset
+        self.toggle_pen_style = None;
+        self.prev_shortcut_key = None;
+
+        widget_flags
+    }
+
+    fn change_style_int(
+        &mut self,
+        new_style: PenStyle,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         if self.pen_mode_state.style() != new_style {
@@ -111,6 +139,7 @@ impl PenHolder {
 
             self.pen_mode_state.set_style(new_style);
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags.refresh_ui = true;
         }
 
         widget_flags
@@ -132,8 +161,8 @@ impl PenHolder {
             engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style_override(new_style_override);
-
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags.refresh_ui = true;
         }
 
         widget_flags
@@ -151,6 +180,7 @@ impl PenHolder {
             self.pen_mode_state.set_pen_mode(new_pen_mode);
 
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
+            widget_flags.refresh_ui = true;
         }
 
         widget_flags
@@ -162,8 +192,8 @@ impl PenHolder {
 
     /// Installs the pen for the current style
     pub fn reinstall_pen_current_style(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
-        let (new_pen, mut widget_flags) =
-            new_pen_for_style(self.current_pen_style_w_override(), engine_view);
+        let new_pen_style = self.current_pen_style_w_override();
+        let (new_pen, mut widget_flags) = new_pen_for_style(new_pen_style, engine_view);
         self.current_pen = new_pen;
         widget_flags.merge(self.current_pen.update_state(engine_view));
         widget_flags.merge(self.handle_changed_pen_style());
@@ -232,18 +262,20 @@ impl PenHolder {
 
     fn handle_changed_pen_style(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
+        let current_style = self.pen_mode_state.current_style_w_override();
 
-        match self.pen_mode_state.current_style_w_override() {
-            PenStyle::Typewriter => {
-                // Enable text preprocessing for typewriter
-                widget_flags.enable_text_preprocessing = Some(true);
-            }
-            _ => {
-                widget_flags.enable_text_preprocessing = Some(false);
-            }
-        }
+        self.backlog_policy = match current_style {
+            PenStyle::Brush => BacklogPolicy::Limit(Duration::from_millis(4)),
+            PenStyle::Shaper => BacklogPolicy::Limit(Duration::from_millis(8)),
+            PenStyle::Typewriter => BacklogPolicy::Limit(Duration::from_millis(33)),
+            PenStyle::Eraser => BacklogPolicy::Limit(Duration::from_millis(33)),
+            PenStyle::Selector => BacklogPolicy::Limit(Duration::from_millis(33)),
+            PenStyle::Tools => BacklogPolicy::DisableBacklog,
+        };
+
+        // Enable text preprocessing for typewriter
+        widget_flags.enable_text_preprocessing = Some(current_style == PenStyle::Typewriter);
         widget_flags.redraw = true;
-        widget_flags.refresh_ui = true;
 
         widget_flags
     }
@@ -259,19 +291,38 @@ impl PenHolder {
 
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
-                ShortcutAction::ChangePenStyle {
-                    style: new_style,
-                    permanent,
-                } => {
-                    if permanent {
-                        widget_flags.merge(self.change_style(new_style, engine_view));
-                    } else {
-                        widget_flags
-                            .merge(self.change_style_override(Some(new_style), engine_view));
+                ShortcutAction::ChangePenStyle { style, mode } => match mode {
+                    ShortcutMode::Temporary => {
+                        widget_flags.merge(self.change_style_override(Some(style), engine_view));
                     }
-                }
+                    ShortcutMode::Permanent => {
+                        self.toggle_pen_style = None;
+                        widget_flags.merge(self.change_style_int(style, engine_view));
+                    }
+                    ShortcutMode::Toggle => {
+                        if let Some(toggle_pen_style) = self.toggle_pen_style {
+                            // if the previous key was different, but also in toggle mode, we switch to the new style instead of toggling back
+                            if self
+                                .prev_shortcut_key
+                                .map(|k| k != shortcut_key)
+                                .unwrap_or(true)
+                            {
+                                widget_flags.merge(self.change_style_int(style, engine_view));
+                            } else {
+                                self.toggle_pen_style = None;
+                                widget_flags
+                                    .merge(self.change_style_int(toggle_pen_style, engine_view));
+                            }
+                        } else {
+                            self.toggle_pen_style = Some(self.current_pen_style());
+                            widget_flags.merge(self.change_style_int(style, engine_view));
+                        }
+                    }
+                },
             }
         }
+
+        self.prev_shortcut_key = Some(shortcut_key);
 
         widget_flags
     }

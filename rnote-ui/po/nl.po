@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:26+0100\n"
-"PO-Revision-Date: 2023-02-09 20:26+0000\n"
+"POT-Creation-Date: 2023-02-19 15:04+0100\n"
+"PO-Revision-Date: 2023-02-20 12:34+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "Leegmaken"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
 msgid "New Document"
 msgstr "Nieuw document"
 
@@ -1047,7 +1047,7 @@ msgstr "Verplaatsen naar prullenbak"
 msgid "Duplicate"
 msgstr "Klonen"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:494
 msgid "Draft"
 msgstr "Concept"
 
@@ -1091,9 +1091,17 @@ msgstr "Naar _rechts verplaatsen"
 msgid "_Close"
 msgstr "_Sluiten"
 
-#: rnote-ui/data/ui/penshortcutrow.ui:8
-msgid "perm."
-msgstr "perm."
+#: rnote-ui/data/ui/penshortcutrow.ui:11
+msgid "Temporary"
+msgstr "Tijdelijk"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:12
+msgid "Permanent"
+msgstr "Permanent"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:13
+msgid "Toggle"
+msgstr "Omschakelen"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1299,31 +1307,39 @@ msgid "Stylus Primary Button Action"
 msgstr "Primaire penknop"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-msgid "Set the action for the primary stylus button"
+msgid ""
+"Set the action for the\n"
+"primary stylus button"
 msgstr "Ken een actie toe aan de primaire penknop"
 
-#: rnote-ui/data/ui/settingspanel.ui:381
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "Secundaire penknop"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
-msgid "Set the action for the secondary stylus button"
+#: rnote-ui/data/ui/settingspanel.ui:383
+msgid ""
+"Set the action for the\n"
+"secondary stylus button"
 msgstr "Ken een actie toe aan de secundaire penknop"
 
-#: rnote-ui/data/ui/settingspanel.ui:393
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "Secundaire muisknop"
 
-#: rnote-ui/data/ui/settingspanel.ui:394
-msgid "Set the action for the secondary mouse button"
+#: rnote-ui/data/ui/settingspanel.ui:396
+msgid ""
+"Set the action for the\n"
+"secondary mouse button"
 msgstr "Ken een actie toe aan de secundaire muisknop"
 
-#: rnote-ui/data/ui/settingspanel.ui:405
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "Actie bij lang indrukken met twee vingers"
 
-#: rnote-ui/data/ui/settingspanel.ui:406
-msgid "Set the action for the touch two-finger long-press gesture"
+#: rnote-ui/data/ui/settingspanel.ui:409
+msgid ""
+"Set the action for the touch\n"
+"two-finger long-press gesture"
 msgstr "Stelt de actie in wanneer met 2 vingers lang wordt vastgehouden"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
@@ -1502,31 +1518,31 @@ msgstr "Het afdrukken is mislukt"
 msgid "Exporting selection failed, nothing selected"
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
 
-#: rnote-ui/src/canvas/mod.rs:994
+#: rnote-ui/src/canvas/mod.rs:725
 msgid "- invalid file name -"
 msgstr "- ongeldige bestandsnaam -"
 
-#: rnote-ui/src/canvas/mod.rs:1007
+#: rnote-ui/src/canvas/mod.rs:738
 msgid "- invalid folder path -"
 msgstr "- ongeldige bestandslocatie -"
 
-#: rnote-ui/src/canvas/mod.rs:1031
+#: rnote-ui/src/canvas/mod.rs:762
 msgid "Opened file was modified on disk"
 msgstr "Het geopende bestand is elders bewerkt"
 
-#: rnote-ui/src/canvas/mod.rs:1032
+#: rnote-ui/src/canvas/mod.rs:763
 msgid "Reload"
 msgstr "Herladen"
 
-#: rnote-ui/src/canvas/mod.rs:1038
+#: rnote-ui/src/canvas/mod.rs:769
 msgid "Reloading .rnote file from disk failed"
 msgstr "Rnote-bestand herladen mislukt"
 
-#: rnote-ui/src/canvas/mod.rs:1087
+#: rnote-ui/src/canvas/mod.rs:818
 msgid "Opened file was renamed on disk"
 msgstr "Het geopende bestand is van naam gewijzigd"
 
-#: rnote-ui/src/canvas/mod.rs:1100
+#: rnote-ui/src/canvas/mod.rs:831
 msgid "Opened file was moved or deleted on disk"
 msgstr "Het geopende bestand is verplaatst of verwijderd"
 
@@ -1883,75 +1899,75 @@ msgstr "Kwadratische bezier-kromme"
 msgid "Cubic bezier curve"
 msgstr "Kubieke bezier-kromme"
 
-#: rnote-ui/src/settingspanel/mod.rs:818
+#: rnote-ui/src/settingspanel/mod.rs:810
 msgid "Crosshair (Small)"
 msgstr "Vizier (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:819
+#: rnote-ui/src/settingspanel/mod.rs:811
 msgid "Crosshair (Medium)"
 msgstr "Vizier (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:820
+#: rnote-ui/src/settingspanel/mod.rs:812
 msgid "Crosshair (Large)"
 msgstr "Vizier (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:821
+#: rnote-ui/src/settingspanel/mod.rs:813
 msgid "Dot (Small)"
 msgstr "Stip (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:822
+#: rnote-ui/src/settingspanel/mod.rs:814
 msgid "Dot (Medium)"
 msgstr "Stip (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:823
+#: rnote-ui/src/settingspanel/mod.rs:815
 msgid "Dot (Large)"
 msgstr "Stip (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:824
+#: rnote-ui/src/settingspanel/mod.rs:816
 msgid "Teardrop North-West (Small)"
 msgstr "Druppel noordwest (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:825
+#: rnote-ui/src/settingspanel/mod.rs:817
 msgid "Teardrop North-West (Medium)"
 msgstr "Druppel noordwest (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:826
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Teardrop North-West (Large)"
 msgstr "Druppel noordwest (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:827
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Teardrop North-East (Small)"
 msgstr "Druppel noordoost (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:828
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Teardrop North-East (Medium)"
 msgstr "Druppel noordoost (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:829
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Teardrop North-East (Large)"
 msgstr "Druppel noordoost (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:830
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Teardrop North (Small)"
 msgstr "Druppel noord (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:831
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Teardrop North (Medium)"
 msgstr "Druppel noord (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:832
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North (Large)"
 msgstr "Druppel noord (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:833
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Beam (Small)"
 msgstr "Balk (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:834
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Beam (Medium)"
 msgstr "Balk (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:835
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Beam (Large)"
 msgstr "Balk (groot)"
 
@@ -1962,6 +1978,9 @@ msgstr "Mapnaam"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Nieuwe map"
+
+#~ msgid "perm."
+#~ msgstr "perm."
 
 #~ msgid "Offset the Camera"
 #~ msgstr "Camerahoek verschuiven door te verslepen"

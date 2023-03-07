@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-08 15:26+0100\n"
+"POT-Creation-Date: 2023-02-19 15:04+0100\n"
 "PO-Revision-Date: 2023-02-09 20:26+0000\n"
 "Last-Translator: 이정희 <daemul72@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/rnote/repo/ko/>\n"
@@ -36,15 +36,17 @@ msgstr "새 창"
 msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
-msgstr "Rnote는 스케치하기, 필기 메모, 문서, 그림에 주석을 달 수 있는 벡터 기반 "
-"드로잉 앱입니다."
+msgstr ""
+"Rnote는 스케치하기, 필기 메모, 문서, 그림에 주석을 달 수 있는 벡터 기반 드로"
+"잉 앱입니다."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
-msgstr "고지 사항: 파일 형식이 여전히 불안정합니다. 버전 간 호환성이 변경되거나 "
-"중단될 수 있습니다."
+msgstr ""
+"고지 사항: 파일 형식이 여전히 불안정합니다. 버전 간 호환성이 변경되거나 중단"
+"될 수 있습니다."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "Main window in light colors"
@@ -93,7 +95,7 @@ msgid "Clear"
 msgstr "지우기"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:757
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
 msgid "New Document"
 msgstr "새 문서"
 
@@ -125,8 +127,9 @@ msgstr "탭 닫기"
 msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
-msgstr "이 탭에는 저장되지 않은 변경 사항이 포함되어 있습니다. 저장되지 않은 변경 "
-"사항은 영구적으로 손실됩니다."
+msgstr ""
+"이 탭에는 저장되지 않은 변경 사항이 포함되어 있습니다. 저장되지 않은 변경 사"
+"항은 영구적으로 손실됩니다."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Close Window"
@@ -136,8 +139,9 @@ msgstr "창 닫기"
 msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
-msgstr "일부 열린 파일에는 저장되지 않은 변경 사항이 포함되어 있습니다. 저장되지 "
-"않은 변경 사항은 영구적으로 손실됩니다."
+msgstr ""
+"일부 열린 파일에는 저장되지 않은 변경 사항이 포함되어 있습니다. 저장되지 않"
+"은 변경 사항은 영구적으로 손실됩니다."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Unsaved Documents"
@@ -203,8 +207,9 @@ msgstr "파일 열기"
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "이 파일을 열면 저장되지 않은 변경 사항을 덮어씁니다. 현재 문서를 "
-"저장하시겠습니까?"
+msgstr ""
+"이 파일을 열면 저장되지 않은 변경 사항을 덮어씁니다. 현재 문서를 저장하시겠습"
+"니까?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import PDF"
@@ -1039,7 +1044,7 @@ msgstr "휴지통으로 이동하기"
 msgid "Duplicate"
 msgstr "복제하기"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:759
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:494
 msgid "Draft"
 msgstr "초안"
 
@@ -1083,9 +1088,17 @@ msgstr "오른쪽으로 이동(_R)"
 msgid "_Close"
 msgstr "닫기(_C)"
 
-#: rnote-ui/data/ui/penshortcutrow.ui:8
-msgid "perm."
-msgstr "영구."
+#: rnote-ui/data/ui/penshortcutrow.ui:11
+msgid "Temporary"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:12
+msgid "Permanent"
+msgstr ""
+
+#: rnote-ui/data/ui/penshortcutrow.ui:13
+msgid "Toggle"
+msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1289,31 +1302,47 @@ msgid "Stylus Primary Button Action"
 msgstr "스타일러스 기본 버튼 동작"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-msgid "Set the action for the primary stylus button"
+#, fuzzy
+#| msgid "Set the action for the primary stylus button"
+msgid ""
+"Set the action for the\n"
+"primary stylus button"
 msgstr "기본 스타일러스 버튼의 동작을 설정합니다"
 
-#: rnote-ui/data/ui/settingspanel.ui:381
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "스타일러스 보조 버튼 동작"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
-msgid "Set the action for the secondary stylus button"
+#: rnote-ui/data/ui/settingspanel.ui:383
+#, fuzzy
+#| msgid "Set the action for the secondary stylus button"
+msgid ""
+"Set the action for the\n"
+"secondary stylus button"
 msgstr "보조 스타일러스 버튼의 동작을 설정합니다"
 
-#: rnote-ui/data/ui/settingspanel.ui:393
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "마우스 보조 버튼 동작"
 
-#: rnote-ui/data/ui/settingspanel.ui:394
-msgid "Set the action for the secondary mouse button"
+#: rnote-ui/data/ui/settingspanel.ui:396
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid ""
+"Set the action for the\n"
+"secondary mouse button"
 msgstr "보조 마우스 버튼에 대한 동작을 설정합니다"
 
-#: rnote-ui/data/ui/settingspanel.ui:405
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "두 손가락 터치 길게 누르기 동작"
 
-#: rnote-ui/data/ui/settingspanel.ui:406
-msgid "Set the action for the touch two-finger long-press gesture"
+#: rnote-ui/data/ui/settingspanel.ui:409
+#, fuzzy
+#| msgid "Set the action for the touch two-finger long-press gesture"
+msgid ""
+"Set the action for the touch\n"
+"two-finger long-press gesture"
 msgstr "두 손가락 터치 길게 누르기 제스처에 대한 동작을 설정합니다"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
@@ -1492,31 +1521,31 @@ msgstr "문서 인쇄에 실패했습니다"
 msgid "Exporting selection failed, nothing selected"
 msgstr "선택항목 내보내기에 실패했습니다. 선택한 항목이 없습니다"
 
-#: rnote-ui/src/canvas/mod.rs:994
+#: rnote-ui/src/canvas/mod.rs:725
 msgid "- invalid file name -"
 msgstr "- 잘못된 파일 이름 -"
 
-#: rnote-ui/src/canvas/mod.rs:1007
+#: rnote-ui/src/canvas/mod.rs:738
 msgid "- invalid folder path -"
 msgstr "- 잘못된 폴더 경로 -"
 
-#: rnote-ui/src/canvas/mod.rs:1031
+#: rnote-ui/src/canvas/mod.rs:762
 msgid "Opened file was modified on disk"
 msgstr "디스크에서 열린 파일이 수정되었습니다"
 
-#: rnote-ui/src/canvas/mod.rs:1032
+#: rnote-ui/src/canvas/mod.rs:763
 msgid "Reload"
 msgstr "다시 불러오기"
 
-#: rnote-ui/src/canvas/mod.rs:1038
+#: rnote-ui/src/canvas/mod.rs:769
 msgid "Reloading .rnote file from disk failed"
 msgstr "디스크에서 .rnote 파일을 다시 불러오기에 실패했습니다"
 
-#: rnote-ui/src/canvas/mod.rs:1087
+#: rnote-ui/src/canvas/mod.rs:818
 msgid "Opened file was renamed on disk"
 msgstr "디스크에서 열린 파일의 이름이 변경되었습니다"
 
-#: rnote-ui/src/canvas/mod.rs:1100
+#: rnote-ui/src/canvas/mod.rs:831
 msgid "Opened file was moved or deleted on disk"
 msgstr "디스크에서 열린 파일이 이동 또는 삭제되었습니다"
 
@@ -1871,75 +1900,75 @@ msgstr "2차 베지어 곡선"
 msgid "Cubic bezier curve"
 msgstr "3차 베지어 곡선"
 
-#: rnote-ui/src/settingspanel/mod.rs:818
+#: rnote-ui/src/settingspanel/mod.rs:810
 msgid "Crosshair (Small)"
 msgstr "십자선 (소)"
 
-#: rnote-ui/src/settingspanel/mod.rs:819
+#: rnote-ui/src/settingspanel/mod.rs:811
 msgid "Crosshair (Medium)"
 msgstr "십자선 (중)"
 
-#: rnote-ui/src/settingspanel/mod.rs:820
+#: rnote-ui/src/settingspanel/mod.rs:812
 msgid "Crosshair (Large)"
 msgstr "십자선 (대)"
 
-#: rnote-ui/src/settingspanel/mod.rs:821
+#: rnote-ui/src/settingspanel/mod.rs:813
 msgid "Dot (Small)"
 msgstr "점 (소)"
 
-#: rnote-ui/src/settingspanel/mod.rs:822
+#: rnote-ui/src/settingspanel/mod.rs:814
 msgid "Dot (Medium)"
 msgstr "점 (중)"
 
-#: rnote-ui/src/settingspanel/mod.rs:823
+#: rnote-ui/src/settingspanel/mod.rs:815
 msgid "Dot (Large)"
 msgstr "점 (대)"
 
-#: rnote-ui/src/settingspanel/mod.rs:824
+#: rnote-ui/src/settingspanel/mod.rs:816
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:825
+#: rnote-ui/src/settingspanel/mod.rs:817
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:826
+#: rnote-ui/src/settingspanel/mod.rs:818
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:827
+#: rnote-ui/src/settingspanel/mod.rs:819
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:828
+#: rnote-ui/src/settingspanel/mod.rs:820
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:829
+#: rnote-ui/src/settingspanel/mod.rs:821
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:830
+#: rnote-ui/src/settingspanel/mod.rs:822
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:831
+#: rnote-ui/src/settingspanel/mod.rs:823
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:832
+#: rnote-ui/src/settingspanel/mod.rs:824
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:833
+#: rnote-ui/src/settingspanel/mod.rs:825
 msgid "Beam (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:834
+#: rnote-ui/src/settingspanel/mod.rs:826
 msgid "Beam (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:835
+#: rnote-ui/src/settingspanel/mod.rs:827
 msgid "Beam (Large)"
 msgstr ""
 
@@ -1950,6 +1979,9 @@ msgstr "폴더 이름"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "새 폴더"
+
+#~ msgid "perm."
+#~ msgstr "영구."
 
 #, fuzzy
 #~| msgid "Toggle fullscreen"

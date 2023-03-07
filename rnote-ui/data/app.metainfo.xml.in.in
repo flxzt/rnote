@@ -31,8 +31,8 @@
   <screenshots>
     <screenshot type="default">
       <image>
-        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_light.png</image>
-      <caption>Main window in light colors</caption>
+        https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png</image>
+      <caption>An Overview</caption>
     </screenshot>
     <screenshot>
       <image>
@@ -72,16 +72,45 @@
 
   <!-- The changelog should not be translated -->
   <releases>
-    <release version="0.5.14-beta1" date="2023-02-12">
+    <release version="0.5.16" date="2023-03-04">
       <description>
-        <p>this release changes: (BETA)</p>
+        <p>this release changes:</p>
         <ul>
+          <li>fix: vector export when bounds are not origin aligned</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.15" date="2023-03-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: configurable shortcuts for drawing pad buttons</li>
+          <li>improvement: input events for rate-limited devices (E-Paper/ low-frequency displays)</li>
+          <li>improvement: reduced Svg export size</li>
+          <li>fix: artifacts when printing</li>
+          <li>fix: Jpeg images embedded in Pdfs were not rendered</li>
+          <li>fix: select-all with "ctrl+a" included trashed strokes</li>
+          <li>fix: units in settings kept resetting to "Px"</li>
+          <li>fix: flicker when duplicating large selections</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.14" date="2023-02-22">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: toggle mode for shortcuts</li>
+          <li>feature: eraser size picker</li>
           <li>improvement: reduce toolbar overlays margins when scrollbar is disabled</li>
-          <li>improvement: Indicate hover over nodes in the selector and typewriter</li>
-          <li>UI: following Gnome HIG writing style more closely and fixed string inconsistencies</li>
+          <li>improvement: indicate hover over nodes in the selector and typewriter</li>
+          <li>improvement: reduced save and xopp export file sizes</li>
+          <li>UI: follow Gnome HIG writing style more closely and fixed string inconsistencies</li>
+          <li>fix: Pdf import with different size pages</li>
+          <li>fix: image and Pdf import offsets now take the document bounds into account</li>
+          <li>fix: broken resizing in fixed-size document layout</li>
           <li>fix: crash when navigating up/down into non-ASCII text</li>
           <li>fix: crash on launch when using a custom stylesheet</li>
-          <li>fix: rough style fill calculation</li>
+          <li>fix: rough style fill calculations</li>
         </ul>
       </description>
     </release>

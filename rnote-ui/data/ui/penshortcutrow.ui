@@ -2,12 +2,18 @@
 <interface>
   <template class="RnPenShortcutRow" parent="AdwComboRow">
     <child type="suffix">
-      <object class="GtkBox">
-        <child>
-          <object class="GtkCheckButton" id="permanent_checker">
-            <property name="label" translatable="yes">perm.</property>
+      <object class="GtkDropDown" id="mode_dropdown">
+        <property name="halign">end</property>
+        <property name="valign">center</property>
+        <property name="model">
+          <object class="GtkStringList">
+            <items>
+              <item translatable="yes">Temporary</item>
+              <item translatable="yes">Permanent</item>
+              <item translatable="yes">Toggle</item>
+            </items>
           </object>
-        </child>
+        </property>
       </object>
     </child>
   </template>

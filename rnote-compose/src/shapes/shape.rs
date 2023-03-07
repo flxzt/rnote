@@ -1,7 +1,6 @@
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use super::Arrow;
 use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
@@ -10,10 +9,6 @@ use crate::transform::TransformBehaviour;
 #[serde(rename = "shape")]
 /// A Shape type, holding the actual shape inside it
 pub enum Shape {
-    #[serde(rename = "")]
-    /// An arrow shape
-    Arrow(Arrow),
-
     #[serde(rename = "line")]
     /// A line shape
     Line(Line),
@@ -40,9 +35,6 @@ impl Default for Shape {
 impl TransformBehaviour for Shape {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
-            Self::Arrow(arrow) => {
-                arrow.translate(offset);
-            }
             Self::Line(line) => {
                 line.translate(offset);
             }
@@ -63,9 +55,6 @@ impl TransformBehaviour for Shape {
 
     fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         match self {
-            Self::Arrow(arrow) => {
-                arrow.rotate(angle, center);
-            }
             Self::Line(line) => {
                 line.rotate(angle, center);
             }
@@ -86,9 +75,6 @@ impl TransformBehaviour for Shape {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         match self {
-            Self::Arrow(arrow) => {
-                arrow.scale(scale);
-            }
             Self::Line(line) => {
                 line.scale(scale);
             }
@@ -111,7 +97,6 @@ impl TransformBehaviour for Shape {
 impl ShapeBehaviour for Shape {
     fn bounds(&self) -> Aabb {
         match self {
-            Self::Arrow(arrow) => arrow.bounds(),
             Self::Line(line) => line.bounds(),
             Self::Rectangle(rectangle) => rectangle.bounds(),
             Self::Ellipse(ellipse) => ellipse.bounds(),
@@ -121,7 +106,6 @@ impl ShapeBehaviour for Shape {
     }
     fn hitboxes(&self) -> Vec<Aabb> {
         match self {
-            Self::Arrow(arrow) => arrow.hitboxes(),
             Self::Line(line) => line.hitboxes(),
             Self::Rectangle(rectangle) => rectangle.hitboxes(),
             Self::Ellipse(ellipse) => ellipse.hitboxes(),

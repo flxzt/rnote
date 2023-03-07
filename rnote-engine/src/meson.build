@@ -48,6 +48,7 @@ rnote_engine_sources = files(
     'drawbehaviour.rs',
     'lib.rs',
     'render.rs',
+    'usvg_export.rs',
     'utils.rs',
     'widgetflags.rs',
 )

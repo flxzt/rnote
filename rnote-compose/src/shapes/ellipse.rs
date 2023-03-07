@@ -14,7 +14,7 @@ use super::Line;
 /// A Ellipse
 pub struct Ellipse {
     /// The radii of the ellipse
-    #[serde(rename = "radii")]
+    #[serde(rename = "radii", with = "crate::serialize::na_vector2_f64_dp3")]
     pub radii: na::Vector2<f64>,
     /// The transform of the  center of the ellipse
     #[serde(rename = "transform")]

@@ -161,6 +161,7 @@ impl DrawOnDocBehaviour for Pen {
     Ord,
     Hash,
     num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
 )]
 #[repr(u32)]
 #[enum_type(name = "PenStyle")]

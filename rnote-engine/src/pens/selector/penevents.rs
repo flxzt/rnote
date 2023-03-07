@@ -181,7 +181,7 @@ impl Selector {
                                 .translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
 
-                            // strokes that were far away previously might come into view
+                            // strokes that were not visible previously might come into view
                             engine_view.store.regenerate_rendering_in_viewport_threaded(
                                 engine_view.tasks_tx.clone(),
                                 false,
@@ -265,8 +265,11 @@ impl Selector {
                         } else {
                             start_bounds.extents() + pos_offset
                         }
-                        .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / engine_view.camera.total_zoom()));
-
+                        .maxs(
+                            &((Self::RESIZE_NODE_SIZE
+                                + na::Vector2::<f64>::from_element(Self::ROTATE_NODE_SIZE))
+                                / engine_view.camera.total_zoom()),
+                        );
                         let scale = new_extents.component_div(&selection_bounds.extents());
 
                         engine_view

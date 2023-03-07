@@ -1,5 +1,4 @@
-mod arrow;
-/// Cubic bezier curves
+/// cubic bezier curves
 pub mod cubbez;
 mod ellipse;
 mod line;
@@ -10,7 +9,6 @@ mod shape;
 mod shapebehaviour;
 
 // Re-exports
-pub use arrow::Arrow;
 pub use cubbez::CubicBezier;
 pub use ellipse::Ellipse;
 pub use line::Line;

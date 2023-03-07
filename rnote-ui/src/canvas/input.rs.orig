@@ -284,6 +284,21 @@ fn event_is_stylus(event: &gdk::Event) -> bool {
     event.device_tool().is_some()
 }
 
+<<<<<<< HEAD
+fn retrieve_pointer_elements(
+    canvas: &RnCanvas,
+    now: Instant,
+    event: &gdk::Event,
+    backlog_policy: BacklogPolicy,
+) -> Option<Vec<(Element, Instant)>> {
+    let root = canvas.root().unwrap();
+||||||| merged common ancestors
+fn retrieve_pointer_element(canvas: &RnCanvas, event: &gdk::Event) -> Option<Element> {
+    let Some((x, y)) = event.position() else {
+        return None;
+    };
+    let root = canvas.root().unwrap();
+=======
 fn retrieve_pointer_elements(
     canvas: &RnCanvas,
     now: Instant,
@@ -292,6 +307,7 @@ fn retrieve_pointer_elements(
 ) -> Option<Vec<(Element, Instant)>> {
     // Retreive the transform directly from the event, just like in `gtkgesturestylus.c`'s `get_backlog()`
     let root = Native::for_surface(&event.surface()?)?;
+>>>>>>> main
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
     // retrieving the pressure only works when the event has a device tool (== is a stylus),
     // else we get SIGSEGV when trying to access (TODO: report this to gtk-rs)

@@ -1,4 +1,4 @@
-use gtk4::{gdk, prelude::*, Inhibit};
+use gtk4::{gdk, prelude::*, Inhibit, Native};
 use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
 use rnote_compose::penevents::{ModifierKey, PenEvent};
@@ -290,7 +290,8 @@ fn retrieve_pointer_elements(
     event: &gdk::Event,
     backlog_policy: BacklogPolicy,
 ) -> Option<Vec<(Element, Instant)>> {
-    let root = canvas.root().unwrap();
+    // Retreive the transform directly from the event, just like in `gtkgesturestylus.c`'s `get_backlog()`
+    let root = Native::for_surface(&event.surface()?)?;
     let (surface_trans_x, surface_trans_y) = root.surface_transform();
     // retrieving the pressure only works when the event has a device tool (== is a stylus),
     // else we get SIGSEGV when trying to access (TODO: report this to gtk-rs)

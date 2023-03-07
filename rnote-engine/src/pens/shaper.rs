@@ -9,7 +9,7 @@ use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
-use rnote_compose::builders::GridBuilder;
+use rnote_compose::builders::{ArrowBuilder, GridBuilder};
 use rnote_compose::builders::{
     CoordSystem2DBuilder, CoordSystem3DBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder,
     QuadrantCoordSystem2DBuilder, RectangleBuilder, ShapeBuilderBehaviour,
@@ -239,6 +239,7 @@ fn new_builder(
     now: Instant,
 ) -> Box<dyn ShapeBuilderBehaviour> {
     match builder_type {
+        ShapeBuilderType::Arrow => Box::new(ArrowBuilder::start(element, now)),
         ShapeBuilderType::Line => Box::new(LineBuilder::start(element, now)),
         ShapeBuilderType::Rectangle => Box::new(RectangleBuilder::start(element, now)),
         ShapeBuilderType::Grid => Box::new(GridBuilder::start(element, now)),

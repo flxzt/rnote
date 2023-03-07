@@ -1,11 +1,12 @@
 mod smoothoptions;
 
+use kurbo::Shape;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
 use super::Composer;
 use crate::helpers::Vector2Helpers;
-use crate::penpath::Segment;
+use crate::penpath::{self, Segment};
 use crate::shapes::CubicBezier;
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
@@ -166,16 +167,16 @@ impl Composer<SmoothOptions> for PenPath {
                                 .apply(options.stroke_width, end.pressure),
                         );
 
-                        let n_splits = 5;
-
                         let quadbez = QuadraticBezier {
                             start: prev.pos,
                             cp: *cp,
                             end: end.pos,
                         };
-
+                        let n_splits = penpath::no_subsegments_for_segment_len(
+                            quadbez.to_kurbo().perimeter(0.25),
+                        )
+                        .max(2);
                         let lines = quadbez.approx_with_lines(n_splits);
-
                         let bez_path =
                             compose_lines_variable_width(&lines, width_start, width_end, options);
 
@@ -192,16 +193,17 @@ impl Composer<SmoothOptions> for PenPath {
                                 .apply(options.stroke_width, end.pressure),
                         );
 
-                        let n_splits = 5;
-
                         let cubbez = CubicBezier {
                             start: prev.pos,
                             cp1: *cp1,
                             cp2: *cp2,
                             end: end.pos,
                         };
+                        let n_splits = penpath::no_subsegments_for_segment_len(
+                            cubbez.to_kurbo().perimeter(0.25),
+                        )
+                        .max(2);
                         let lines = cubbez.approx_with_lines(n_splits);
-
                         let bez_path =
                             compose_lines_variable_width(&lines, width_start, width_end, options);
 
@@ -254,6 +256,11 @@ fn compose_lines_variable_width(
     end_width: f64,
     _options: &SmoothOptions,
 ) -> kurbo::BezPath {
+    // The the lines variable is ghosted here, to make sure we can only use the filtered
+    let lines = lines
+        .iter()
+        .filter(|line| (line.end - line.start).magnitude() > 0.0)
+        .collect::<Vec<&Line>>();
     let n_lines = lines.len();
     if n_lines == 0 {
         return kurbo::BezPath::new();
@@ -295,12 +302,16 @@ fn compose_lines_variable_width(
     let mut bez_path = kurbo::BezPath::new();
 
     // Start cap
-    bez_path.move_to(start_neg_offset_coord.to_kurbo_point());
-    bez_path.curve_to(
-        (start_neg_offset_coord - start_dir_unit * start_width * (2.0 / 3.0)).to_kurbo_point(),
-        (start_pos_offset_coord - start_dir_unit * start_width * (2.0 / 3.0)).to_kurbo_point(),
-        start_pos_offset_coord.to_kurbo_point(),
-    );
+    if start_width > 0.0 && start_pos_offset_coord != start_neg_offset_coord {
+        bez_path.move_to(start_neg_offset_coord.to_kurbo_point());
+        bez_path.curve_to(
+            (start_neg_offset_coord - start_dir_unit * start_width * (2.0 / 3.0)).to_kurbo_point(),
+            (start_pos_offset_coord - start_dir_unit * start_width * (2.0 / 3.0)).to_kurbo_point(),
+            start_pos_offset_coord.to_kurbo_point(),
+        );
+    } else {
+        bez_path.move_to(start_pos_offset_coord.to_kurbo_point());
+    }
 
     // Positive offset path
     bez_path.extend(
@@ -310,11 +321,15 @@ fn compose_lines_variable_width(
     );
 
     // End cap
-    bez_path.curve_to(
-        (end_pos_offset_coord + end_dir_unit * end_width * (2.0 / 3.0)).to_kurbo_point(),
-        (end_neg_offset_coord + end_dir_unit * end_width * (2.0 / 3.0)).to_kurbo_point(),
-        end_neg_offset_coord.to_kurbo_point(),
-    );
+    if end_width > 0.0 && end_pos_offset_coord != end_neg_offset_coord {
+        bez_path.curve_to(
+            (end_pos_offset_coord + end_dir_unit * end_width * (2.0 / 3.0)).to_kurbo_point(),
+            (end_neg_offset_coord + end_dir_unit * end_width * (2.0 / 3.0)).to_kurbo_point(),
+            end_neg_offset_coord.to_kurbo_point(),
+        );
+    } else {
+        bez_path.line_to(end_neg_offset_coord.to_kurbo_point());
+    }
 
     // Negative offset path (needs to be reversed)
     bez_path.extend(

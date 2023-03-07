@@ -10,29 +10,29 @@ pub enum PenEvent {
     Down {
         /// The element for the down event
         element: Element,
-        /// pressed shortcut keys pressed during the down event
-        shortcut_keys: Vec<ShortcutKey>,
+        /// pressed modifier keys pressed during the down event
+        modifier_keys: Vec<ModifierKey>,
     },
     /// A pen up event.
     Up {
         /// The element for the up event
         element: Element,
-        /// pressed shortcut keys pressed during the up event
-        shortcut_keys: Vec<ShortcutKey>,
+        /// pressed modifier keys pressed during the up event
+        modifier_keys: Vec<ModifierKey>,
     },
     /// A pen down event. Is repeatedly emitted while the pen is in proximity and moved
     Proximity {
         /// The element for the proximity event
         element: Element,
-        /// pressed shortcut keys during the proximity event
-        shortcut_keys: Vec<ShortcutKey>,
+        /// pressed modifier keys pressed during the proximity event
+        modifier_keys: Vec<ModifierKey>,
     },
     /// A keyboard key pressed event
     KeyPressed {
         /// the key
         keyboard_key: KeyboardKey,
-        /// pressed shortcut keys during the keyboard key event
-        shortcut_keys: Vec<ShortcutKey>,
+        /// pressed modifier keys pressed during the key event
+        modifier_keys: Vec<ModifierKey>,
     },
     /// Text input
     Text {
@@ -121,6 +121,24 @@ pub enum ShortcutKey {
     /// Touch two finger long press gesture
     #[serde(rename = "touch_two_finger_long_press")]
     TouchTwoFingerLongPress,
+    /// Button 0 on a drawing pad
+    #[serde(rename = "drawing_pad_button_0")]
+    DrawingPadButton0,
+    /// Button 1 on a drawing pad
+    #[serde(rename = "drawing_pad_button_1")]
+    DrawingPadButton1,
+    /// Button 2 on a drawing pad
+    #[serde(rename = "drawing_pad_button_2")]
+    DrawingPadButton2,
+    /// Button 3 on a drawing pad
+    #[serde(rename = "drawing_pad_button_3")]
+    DrawingPadButton3,
+}
+
+/// A modifier key
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[serde(rename = "modifier_key")]
+pub enum ModifierKey {
     /// Shift
     #[serde(rename = "keyboard_shift")]
     KeyboardShift,

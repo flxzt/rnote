@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -9,10 +7,10 @@ use crate::transform::TransformBehaviour;
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename = "element")]
 pub struct Element {
-    #[serde(rename = "pos")]
+    #[serde(rename = "pos", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The position of the element
     pub pos: na::Vector2<f64>,
-    #[serde(rename = "pressure")]
+    #[serde(rename = "pressure", with = "crate::serialize::f64_dp3")]
     /// The pen pressure. The valid range is [0.0, 1.0]
     pub pressure: f64,
 }
@@ -65,12 +63,5 @@ impl Element {
     /// Transforms the element position by the transform
     pub fn transform_by(&mut self, transform: na::Affine2<f64>) {
         self.pos = (transform * na::Point2::from(self.pos)).coords;
-    }
-
-    /// transform pen input data entries
-    pub fn transform_elements(els: &mut VecDeque<Self>, transform: na::Affine2<f64>) {
-        els.iter_mut().for_each(|element| {
-            element.transform_by(transform);
-        });
     }
 }

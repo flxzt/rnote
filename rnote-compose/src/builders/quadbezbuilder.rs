@@ -17,8 +17,11 @@ use crate::Constraints;
 #[derive(Debug, Clone)]
 /// The quadbez builder state
 enum QuadBezBuilderState {
-    Start(na::Vector2<f64>),
     Cp {
+        start: na::Vector2<f64>,
+        cp: na::Vector2<f64>,
+    },
+    CpFinished {
         start: na::Vector2<f64>,
         cp: na::Vector2<f64>,
     },
@@ -38,7 +41,10 @@ pub struct QuadBezBuilder {
 impl ShapeBuilderCreator for QuadBezBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
-            state: QuadBezBuilderState::Start(element.pos),
+            state: QuadBezBuilderState::Cp {
+                start: element.pos,
+                cp: element.pos,
+            },
         }
     }
 }
@@ -57,26 +63,24 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         constraints.ratios.insert(ConstraintRatio::Vertical);
 
         match (&mut self.state, event) {
-            (QuadBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
-                *start = element.pos;
-
-                self.state = QuadBezBuilderState::Cp {
-                    start: *start,
-                    cp: element.pos,
-                };
-            }
-            (QuadBezBuilderState::Start(_), ..) => {}
             (QuadBezBuilderState::Cp { start, cp }, PenEvent::Down { element, .. }) => {
                 *cp = constraints.constrain(element.pos - *start) + *start;
             }
-            (QuadBezBuilderState::Cp { start, cp }, PenEvent::Up { element, .. }) => {
-                self.state = QuadBezBuilderState::End {
+            (QuadBezBuilderState::Cp { start, .. }, PenEvent::Up { element, .. }) => {
+                self.state = QuadBezBuilderState::CpFinished {
                     start: *start,
-                    cp: *cp,
-                    end: element.pos,
+                    cp: constraints.constrain(element.pos - *start) + *start,
                 };
             }
             (QuadBezBuilderState::Cp { .. }, ..) => {}
+            (QuadBezBuilderState::CpFinished { start, cp }, PenEvent::Down { element, .. }) => {
+                self.state = QuadBezBuilderState::End {
+                    start: *start,
+                    cp: *cp,
+                    end: constraints.constrain(element.pos - *cp) + *cp,
+                };
+            }
+            (QuadBezBuilderState::CpFinished { .. }, ..) => {}
             (QuadBezBuilderState::End { end, cp, .. }, PenEvent::Down { element, .. }) => {
                 *end = constraints.constrain(element.pos - *cp) + *cp;
             }
@@ -99,17 +103,12 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
-                Some(Aabb::from_half_extents(
-                    na::Point2::from(*start),
-                    na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
-                ))
-            }
-            crate::builders::quadbezbuilder::QuadBezBuilderState::Cp { start, cp } => Some(
+            QuadBezBuilderState::Cp { start, cp }
+            | QuadBezBuilderState::CpFinished { start, cp } => Some(
                 Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
                     .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
-            crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
+            QuadBezBuilderState::End { start, cp, end } => {
                 let stroke_width = style.stroke_width();
 
                 let mut aabb = Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*end));
@@ -122,10 +121,8 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         match &self.state {
-            QuadBezBuilderState::Start(start) => {
-                indicators::draw_pos_indicator(cx, PenState::Down, *start, zoom);
-            }
-            QuadBezBuilderState::Cp { start, cp } => {
+            QuadBezBuilderState::Cp { start, cp }
+            | QuadBezBuilderState::CpFinished { start, cp } => {
                 indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
                 indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
                 indicators::draw_pos_indicator(cx, PenState::Down, *cp, zoom);

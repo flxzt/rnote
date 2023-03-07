@@ -1,7 +1,9 @@
+mod previewstyle;
 mod strokewidthpreview;
 mod strokewidthsetter;
 
 // Re-exports
+pub(crate) use previewstyle::StrokeWidthPreviewStyle;
 pub(crate) use strokewidthpreview::RnStrokeWidthPreview;
 pub(crate) use strokewidthsetter::RnStrokeWidthSetter;
 
@@ -21,6 +23,7 @@ mod imp {
     pub(crate) struct RnStrokeWidthPicker {
         pub(crate) position: Cell<PositionType>,
         pub(crate) stroke_width: Cell<f64>,
+        pub(crate) preview_style: Cell<StrokeWidthPreviewStyle>,
 
         #[template_child]
         pub(crate) spinbutton: TemplateChild<SpinButton>,
@@ -39,6 +42,7 @@ mod imp {
             Self {
                 position: Cell::new(PositionType::Right),
                 stroke_width: Cell::new(1.0),
+                preview_style: Cell::new(StrokeWidthPreviewStyle::Circle),
 
                 spinbutton: TemplateChild::default(),
                 setter_box: TemplateChild::default(),
@@ -74,6 +78,15 @@ mod imp {
             inst.bind_property("stroke-width", &*self.spinbutton, "value")
                 .sync_create()
                 .bidirectional()
+                .build();
+            inst.bind_property("preview-style", &self.setter_1.preview(), "preview-style")
+                .sync_create()
+                .build();
+            inst.bind_property("preview-style", &self.setter_2.preview(), "preview-style")
+                .sync_create()
+                .build();
+            inst.bind_property("preview-style", &self.setter_3.preview(), "preview-style")
+                .sync_create()
                 .build();
 
             self.setter_1.set_stroke_width(2.0);
@@ -144,6 +157,14 @@ mod imp {
                         1.0,
                         glib::ParamFlags::READWRITE,
                     ),
+                    glib::ParamSpecEnum::new(
+                        "preview-style",
+                        "preview-style",
+                        "preview-style",
+                        StrokeWidthPreviewStyle::static_type(),
+                        StrokeWidthPreviewStyle::Circle as i32,
+                        glib::ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -153,6 +174,7 @@ mod imp {
             match pspec.name() {
                 "position" => self.position.get().to_value(),
                 "stroke-width" => self.stroke_width.get().to_value(),
+                "preview-style" => self.preview_style.get().to_value(),
                 _ => panic!("invalid property name"),
             }
         }
@@ -201,6 +223,13 @@ mod imp {
                     self.stroke_width
                         .set(value.get::<f64>().expect("value not of type `f64`"));
                 }
+                "preview-style" => {
+                    let preview_style = value
+                        .get::<StrokeWidthPreviewStyle>()
+                        .expect("value not of type `StrokeWidthPreviewStyle`");
+                    self.preview_style.set(preview_style);
+                    inst.queue_draw();
+                }
                 _ => panic!("invalid property name"),
             }
         }
@@ -246,6 +275,16 @@ impl RnStrokeWidthPicker {
     #[allow(unused)]
     pub(crate) fn set_stroke_width(&self, stroke_width: f64) {
         self.set_property("stroke-width", stroke_width.to_value());
+    }
+
+    #[allow(unused)]
+    pub(crate) fn preview_style(&self) -> StrokeWidthPreviewStyle {
+        self.property::<StrokeWidthPreviewStyle>("preview-style")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_preview_style(&self, preview_style: f64) {
+        self.set_property("preview-style", preview_style.to_value());
     }
 
     pub(crate) fn spinbutton(&self) -> SpinButton {

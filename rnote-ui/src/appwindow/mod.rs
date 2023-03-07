@@ -840,7 +840,8 @@ impl RnAppWindow {
             active_engine.pens_config = prev_engine.pens_config.clone();
             active_engine.penholder.shortcuts = prev_engine.penholder.shortcuts.clone();
             active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
-            widget_flags.merge(active_engine.change_pen_style(prev_engine.penholder.pen_style()));
+            widget_flags
+                .merge(active_engine.change_pen_style(prev_engine.penholder.current_pen_style()));
             // ensures a clean state for the current pen
             widget_flags.merge(active_engine.reinstall_pen_current_style());
             active_engine.import_prefs = prev_engine.import_prefs;

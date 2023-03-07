@@ -16,6 +16,8 @@ pub mod helpers;
 pub mod penevents;
 /// module for pen paths
 pub mod penpath;
+/// utilities for serializing / deserializing
+pub mod serialize;
 /// module for shapes
 pub mod shapes;
 /// module for styles, that can be applied onto shapes

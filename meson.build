@@ -1,7 +1,7 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.5.13',
+    version: '0.5.16',
     meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
@@ -15,7 +15,7 @@ app_name = 'rnote'
 app_name_capitalized = 'Rnote'
 # the name of the produced binary of the cli crate
 cli_name = 'rnote-cli'
-# We need to rename the cli, because else the output file would collide with the rnote-cli folder
+# We need to rename the cli, because else the output file name would collide with the rnote-cli folder
 cli_output_name = 'rnote_cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
@@ -298,11 +298,19 @@ if get_option('cli') == true
     )
 endif
 
-# meson >= 0.64 will include `update-mime-database` in the gnome module.
-# Then this script can be replaced by `gnome.post_install(..)`
 meson.add_install_script(
     'build-aux/meson_post_install.py',
     datadir,
     bindir,
     app_name,
 )
+
+# meson >= 0.64 will include `update-mime-database` in the gnome module.
+# As soon as that is available on supported platforms ( fedora 37, msys2, flatpak gnome platform )
+# the post-install script can be replaced by:
+#gnome.post_install(
+#    glib_compile_schemas: true,
+#    gtk_update_icon_cache: true,
+#    update_desktop_database: true,
+#    update_mime_database: true,
+#)

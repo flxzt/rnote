@@ -11,6 +11,9 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
+
+pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
     Complete,
@@ -191,8 +194,6 @@ impl StrokeStore {
                 return;
             }
 
-            let stroke = stroke.clone();
-
             // extending the viewport by the factor
             let viewport_render_margins =
                 viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
@@ -200,6 +201,7 @@ impl StrokeStore {
 
             // indicates that a task is now started rendering the stroke
             render_comp.state = RenderCompState::BusyRenderingInTask;
+            let stroke = stroke.clone();
 
             // Spawn a new thread for image rendering
             rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
@@ -207,6 +209,8 @@ impl StrokeStore {
                     tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
+                            image_scale,
+                            stroke_bounds: stroke.bounds(),
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {key:?}, with Err, {e:?}");
                         });
@@ -245,15 +249,16 @@ impl StrokeStore {
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
-        keys.iter().for_each(|&key| {
-            if let (Some(stroke), Some(render_comp)) =
-                (self.stroke_components.get(key), self.render_components.get_mut(key))
-            {
+        for key in keys {
+            if let (Some(stroke), Some(render_comp)) = (
+                self.stroke_components.get(key),
+                self.render_components.get_mut(key),
+            ) {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
-
                 // extending the viewport by the factor
-                let viewport_render_margins = viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+                let viewport_render_margins =
+                    viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
                 let viewport = viewport.extend_by(viewport_render_margins);
 
                 // skip and empty image buffer if stroke is not in viewport
@@ -261,25 +266,27 @@ impl StrokeStore {
                     render_comp.rendernodes = vec![];
                     render_comp.images = vec![];
                     render_comp.state = RenderCompState::Dirty;
-
-                    return;
+                    continue;
                 }
 
                 // only check if rerendering is not forced
                 if !force_regenerate {
                     match render_comp.state {
                         RenderCompState::Complete | RenderCompState::BusyRenderingInTask => {
-                            return;
+                            continue;
                         }
                         RenderCompState::ForViewport(old_viewport) => {
                             // We don't skip if we pass the threshold in context to the margin, so the stroke gets rerendered in time. between 0.0 and 1.0
                             const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
-
-                            let diff  = (old_viewport.center().coords - viewport.center().coords).abs();
-                            if diff[0] < viewport_render_margins[0] * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margins[1] * SKIP_RERENDER_MARGIN_THRESHOLD {
+                            let diff =
+                                (old_viewport.center().coords - viewport.center().coords).abs();
+                            if diff[0] < viewport_render_margins[0] * SKIP_RERENDER_MARGIN_THRESHOLD
+                                && diff[1]
+                                    < viewport_render_margins[1] * SKIP_RERENDER_MARGIN_THRESHOLD
+                            {
                                 // We don't update the state, to have the old bounds on the next call
-                                // so we only update the rendering after it crossed the margin threshold
-                                return;
+                                // so the rendering is only updated after it crossed the margin threshold
+                                continue;
                             }
                         }
                         RenderCompState::Dirty => {}
@@ -288,29 +295,26 @@ impl StrokeStore {
 
                 // indicates that a task is now started rendering the stroke
                 render_comp.state = RenderCompState::BusyRenderingInTask;
-
                 let stroke = stroke.clone();
 
-                //log::debug!("updating stroke with viewport: {:#?}", viewport);
-
                 // Spawn a new thread for image rendering
-                rayon::spawn(move || {
-                    match stroke.gen_images(viewport, image_scale) {
-                        Ok(images) => {
-                            tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
+                rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
+                    Ok(images) => {
+                        tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
+                                image_scale,
+                                stroke_bounds: stroke.bounds(),
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded(), with Err, {e}");
                             });
-                        }
-                        Err(e) => {
-                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), with Err: {e:?}");
-                        }
+                    }
+                    Err(e) => {
+                        log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded(), with Err: {e:?}");
                     }
                 });
             }
-        })
+        }
     }
 
     /// clears the rendering for all strokes
@@ -322,7 +326,9 @@ impl StrokeStore {
         }
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completely
+    /// generates images and appends them to the render component for the last segments of brushstrokes.
+    ///
+    /// For other strokes the rendering is regenerated completely.
     pub fn append_rendering_last_segments(
         &mut self,
         tasks_tx: EngineTaskSender,
@@ -541,7 +547,7 @@ impl StrokeStore {
     }
 
     /// Draws bounds, positions, etc. for all strokes for visual debugging
-    pub fn draw_debug(
+    pub fn draw_debug_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
         engine: &RnoteEngine,
@@ -561,23 +567,23 @@ impl StrokeStore {
                 if let Some(render_comp) = self.render_components.get(key) {
                     match render_comp.state {
                         RenderCompState::Dirty => {
-                            visual_debug::draw_fill(
+                            visual_debug::draw_fill_to_gtk_snapshot(
+                                snapshot,
                                 stroke.bounds(),
                                 visual_debug::COLOR_STROKE_RENDERING_DIRTY,
-                                snapshot,
                             );
                         }
                         RenderCompState::BusyRenderingInTask => {
-                            visual_debug::draw_fill(
+                            visual_debug::draw_fill_to_gtk_snapshot(
+                                snapshot,
                                 stroke.bounds(),
                                 visual_debug::COLOR_STROKE_RENDERING_BUSY,
-                                snapshot,
                             );
                         }
                         _ => {}
                     }
                     render_comp.images.iter().for_each(|image| {
-                        visual_debug::draw_bounds(
+                        visual_debug::draw_bounds_to_gtk_snapshot(
                             // a little tightened not to overlap with other bounds
                             image.rect.bounds().tightened(2.0 * border_widths),
                             visual_debug::COLOR_IMAGE_BOUNDS,
@@ -588,7 +594,7 @@ impl StrokeStore {
                 }
 
                 for &hitbox_elem in stroke.hitboxes().iter() {
-                    visual_debug::draw_bounds(
+                    visual_debug::draw_bounds_to_gtk_snapshot(
                         hitbox_elem,
                         visual_debug::COLOR_STROKE_HITBOX,
                         snapshot,
@@ -596,7 +602,7 @@ impl StrokeStore {
                     );
                 }
 
-                visual_debug::draw_bounds(
+                visual_debug::draw_bounds_to_gtk_snapshot(
                     stroke.bounds(),
                     visual_debug::COLOR_STROKE_BOUNDS,
                     snapshot,
@@ -607,10 +613,10 @@ impl StrokeStore {
                     // Draw positions for brushstrokes
                     Stroke::BrushStroke(brushstroke) => {
                         for element in brushstroke.path.clone().into_elements().iter() {
-                            visual_debug::draw_pos(
+                            visual_debug::draw_pos_to_gtk_snapshot(
+                                snapshot,
                                 element.pos,
                                 visual_debug::COLOR_POS,
-                                snapshot,
                                 border_widths * 4.0,
                             )
                         }

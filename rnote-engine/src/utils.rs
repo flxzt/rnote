@@ -4,7 +4,7 @@ use geo::line_string;
 use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use rnote_compose::{penevents::KeyboardKey, Transform};
+use rnote_compose::Transform;
 use rnote_fileformats::xoppformat;
 
 pub trait GdkRGBAHelpers
@@ -190,32 +190,6 @@ pub fn p2d_aabb_to_geo_polygon(aabb: Aabb) -> geo::Polygon<f64> {
     geo::Polygon::new(line_string, vec![])
 }
 
-pub fn keyboard_key_from_gdk(gdk_key: gdk::Key) -> KeyboardKey {
-    //log::debug!("gdk: pressed key: {:?}", gdk_key);
-
-    if let Some(keychar) = gdk_key.to_unicode() {
-        KeyboardKey::Unicode(keychar).filter_convert_unicode_control_chars()
-    } else {
-        match gdk_key {
-            gdk::Key::BackSpace => KeyboardKey::BackSpace,
-            gdk::Key::Tab => KeyboardKey::HorizontalTab,
-            gdk::Key::Linefeed => KeyboardKey::Linefeed,
-            gdk::Key::Return => KeyboardKey::CarriageReturn,
-            gdk::Key::Escape => KeyboardKey::Escape,
-            gdk::Key::Delete => KeyboardKey::Delete,
-            gdk::Key::Down => KeyboardKey::NavDown,
-            gdk::Key::Up => KeyboardKey::NavUp,
-            gdk::Key::Left => KeyboardKey::NavLeft,
-            gdk::Key::Right => KeyboardKey::NavRight,
-            gdk::Key::Shift_L => KeyboardKey::ShiftLeft,
-            gdk::Key::Shift_R => KeyboardKey::ShiftRight,
-            gdk::Key::Control_L => KeyboardKey::CtrlLeft,
-            gdk::Key::Control_R => KeyboardKey::CtrlRight,
-            _ => KeyboardKey::Unsupported,
-        }
-    }
-}
-
 pub fn positive_range<I>(first: I, second: I) -> Range<I>
 where
     I: PartialOrd,
@@ -224,22 +198,5 @@ where
         first..second
     } else {
         second..first
-    }
-}
-
-pub mod base64 {
-    use serde::{Deserialize, Serialize};
-    use serde::{Deserializer, Serializer};
-
-    /// Serialize a Vec<u8> as base64 encoded
-    pub fn serialize<S: Serializer>(v: &Vec<u8>, s: S) -> Result<S::Ok, S::Error> {
-        let base64 = base64::encode(v);
-        String::serialize(&base64, s)
-    }
-
-    /// Deserialize base64 encoded Vec<u8>
-    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
-        let base64 = String::deserialize(d)?;
-        base64::decode(base64.as_bytes()).map_err(serde::de::Error::custom)
     }
 }

@@ -74,13 +74,13 @@ impl Layout {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "document")]
 pub struct Document {
-    #[serde(rename = "x")]
+    #[serde(rename = "x", with = "rnote_compose::serialize::f64_dp3")]
     pub x: f64,
-    #[serde(rename = "y")]
+    #[serde(rename = "y", with = "rnote_compose::serialize::f64_dp3")]
     pub y: f64,
-    #[serde(rename = "width")]
+    #[serde(rename = "width", with = "rnote_compose::serialize::f64_dp3")]
     pub width: f64,
-    #[serde(rename = "height")]
+    #[serde(rename = "height", with = "rnote_compose::serialize::f64_dp3")]
     pub height: f64,
     #[serde(rename = "format")]
     pub format: Format,

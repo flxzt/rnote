@@ -1,4 +1,4 @@
-pub(crate) mod penshortcutmodels;
+mod penshortcutmodels;
 mod penshortcutrow;
 
 // Re-exports
@@ -92,6 +92,14 @@ mod imp {
         pub(crate) penshortcut_mouse_button_secondary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_touch_two_finger_long_press_row: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_0: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_1: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
     }
 
     #[glib::object_subclass]
@@ -117,105 +125,44 @@ mod imp {
             self.format_predefined_formats_row
                 .connect_selected_item_notify(
                     clone!(@weak inst as settings_panel => move |_format_predefined_formats_row| {
-                        settings_panel.imp().update_temporary_format_from_rows();
+                        settings_panel.imp().update_temporary_format_from_ui();
                         settings_panel.imp().apply_predefined_format();
                     }),
                 );
 
             self.format_orientation_portrait_toggle.connect_toggled(
                 clone!(@weak inst as settings_panel => move |_format_orientation_portrait_toggle| {
-                    settings_panel.imp().update_temporary_format_from_rows();
+                    settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().apply_predefined_format();
                 }),
             );
 
             self.format_orientation_landscape_toggle.connect_toggled(
                 clone!(@weak inst as settings_panel => move |_format_orientation_landscape_toggle| {
-                    settings_panel.imp().update_temporary_format_from_rows();
+                    settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().apply_predefined_format();
                 }),
             );
 
-            self.format_width_unitentry.get().value_adj().set_lower(1.0);
-            self.format_width_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(10.0, 1000.0);
-            self.format_width_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            self.format_height_unitentry
-                .get()
-                .value_adj()
-                .set_lower(1.0);
-            self.format_height_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(10.0, 1000.0);
-            self.format_height_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            self.background_pattern_width_unitentry
-                .get()
-                .value_adj()
-                .set_lower(1.0);
-            self.background_pattern_width_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(1.0, 10.0);
-            self.background_pattern_width_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            self.background_pattern_height_unitentry
-                .get()
-                .value_adj()
-                .set_lower(1.0);
-            self.background_pattern_height_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(1.0, 10.0);
-            self.background_pattern_height_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1);
-
-            /*             self.temporary_format.connect_notify_local(
-                Some("dpi"),
-                clone!(@weak inst as settings_panel => move |format, _pspec| {
-                    settings_panel.format_width_unitentry().set_dpi(format.dpi());
-                    settings_panel.format_height_unitentry().set_dpi(format.dpi());
-                }),
-            ); */
-
-            self.format_width_unitentry.get().connect_local(
-                "measurement-changed",
-                false,
-                clone!(@weak inst as settings_panel => @default-return None, move |_args| {
-                        settings_panel.imp().update_temporary_format_from_rows();
-                        None
+            self.format_width_unitentry.get().connect_notify_local(
+                Some("value"),
+                clone!(@weak inst as settings_panel => move |_, _| {
+                        settings_panel.imp().update_temporary_format_from_ui();
                 }),
             );
 
-            self.format_height_unitentry.get().connect_local(
-                "measurement-changed",
-                false,
-                clone!(@weak inst as settings_panel => @default-return None, move |_args| {
-                        settings_panel.imp().update_temporary_format_from_rows();
-                        None
+            self.format_height_unitentry.get().connect_notify_local(
+                Some("value"),
+                clone!(@weak inst as settings_panel => move |_, _| {
+                        settings_panel.imp().update_temporary_format_from_ui();
                 }),
             );
 
             self.format_dpi_adj.connect_value_changed(
                 clone!(@weak inst as settings_panel => move |format_dpi_adj| {
-                    settings_panel.imp().update_temporary_format_from_rows();
-                    settings_panel.imp().format_width_unitentry.set_dpi(format_dpi_adj.value());
-                    settings_panel.imp().format_height_unitentry.set_dpi(format_dpi_adj.value());
+                    settings_panel.imp().update_temporary_format_from_ui();
+                    settings_panel.imp().format_width_unitentry.set_dpi_keep_value(format_dpi_adj.value());
+                    settings_panel.imp().format_height_unitentry.set_dpi_keep_value(format_dpi_adj.value());
                 }),
             );
         }
@@ -230,7 +177,7 @@ mod imp {
     impl WidgetImpl for RnSettingsPanel {}
 
     impl RnSettingsPanel {
-        pub(crate) fn update_temporary_format_from_rows(&self) {
+        pub(crate) fn update_temporary_format_from_ui(&self) {
             // border color
             self.temporary_format.borrow_mut().border_color = self
                 .general_format_border_color_choosebutton
@@ -261,6 +208,7 @@ mod imp {
                 .value_in_px()
                 .clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX);
         }
+
         fn apply_predefined_format(&self) {
             let predefined_format = self.instance().format_predefined_format();
 
@@ -310,44 +258,24 @@ mod imp {
                 }
             };
 
-            if let Some(mut preconfigured_dimensions) = preconfigured_dimensions {
+            if let Some(mut format_dimensions_mm) = preconfigured_dimensions {
                 if self.temporary_format.borrow().orientation == format::Orientation::Landscape {
-                    std::mem::swap(
-                        &mut preconfigured_dimensions.0,
-                        &mut preconfigured_dimensions.1,
-                    );
+                    std::mem::swap(&mut format_dimensions_mm.0, &mut format_dimensions_mm.1);
                 }
 
-                let converted_width_mm = format::MeasureUnit::convert_measurement(
-                    preconfigured_dimensions.0,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                );
-                let converted_height_mm = format::MeasureUnit::convert_measurement(
-                    preconfigured_dimensions.1,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                    format::MeasureUnit::Mm,
-                    self.temporary_format.borrow().dpi,
-                );
-
-                // Setting the unit dropdowns to Mm
+                // reset to mm as default for presets
                 self.format_width_unitentry
                     .get()
                     .set_unit(format::MeasureUnit::Mm);
                 self.format_height_unitentry
                     .get()
                     .set_unit(format::MeasureUnit::Mm);
-
-                // setting the values
                 self.format_width_unitentry
                     .get()
-                    .set_value(converted_width_mm);
+                    .set_value(format_dimensions_mm.0);
                 self.format_height_unitentry
                     .get()
-                    .set_value(converted_height_mm);
+                    .set_value(format_dimensions_mm.1);
             }
         }
     }
@@ -447,55 +375,40 @@ impl RnSettingsPanel {
     fn refresh_format_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-
         let format = canvas.engine().borrow().document.format;
-
         *self.imp().temporary_format.borrow_mut() = format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
         imp.format_dpi_adj.set_value(format.dpi);
-
-        imp.format_width_unitentry.set_unit(format::MeasureUnit::Px);
-        imp.format_width_unitentry.set_value(format.width);
-
-        imp.format_height_unitentry
-            .set_unit(format::MeasureUnit::Px);
-        imp.format_height_unitentry.set_value(format.height);
+        imp.format_width_unitentry.set_dpi(format.dpi);
+        imp.format_width_unitentry.set_value_in_px(format.width);
+        imp.format_height_unitentry.set_dpi(format.dpi);
+        imp.format_height_unitentry.set_value_in_px(format.height);
     }
 
     fn refresh_background_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-
         let background = canvas.engine().borrow().document.background;
         let format = canvas.engine().borrow().document.format;
 
         imp.background_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
-
         self.set_background_pattern(background.pattern);
         imp.background_pattern_color_choosebutton
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
-
-        // Background pattern Unit Entries
         imp.background_pattern_width_unitentry.set_dpi(format.dpi);
         imp.background_pattern_width_unitentry
-            .set_unit(format::MeasureUnit::Px);
-        imp.background_pattern_width_unitentry
-            .set_value(background.pattern_size[0]);
-
+            .set_value_in_px(background.pattern_size[0]);
         imp.background_pattern_height_unitentry.set_dpi(format.dpi);
         imp.background_pattern_height_unitentry
-            .set_unit(format::MeasureUnit::Px);
-        imp.background_pattern_height_unitentry
-            .set_value(background.pattern_size[1]);
+            .set_value_in_px(background.pattern_size[1]);
     }
 
     fn refresh_shortcuts_ui(&self, active_tab: &RnCanvasWrapper) {
         let imp = self.imp();
         let canvas = active_tab.canvas();
-
         let current_shortcuts = canvas.engine().borrow().penholder.list_current_shortcuts();
 
         current_shortcuts
@@ -515,6 +428,18 @@ impl RnSettingsPanel {
                 ShortcutKey::TouchTwoFingerLongPress => {
                     imp.penshortcut_touch_two_finger_long_press_row
                         .set_action(action);
+                }
+                ShortcutKey::DrawingPadButton0 => {
+                    imp.penshortcut_drawing_pad_button_0.set_action(action);
+                }
+                ShortcutKey::DrawingPadButton1 => {
+                    imp.penshortcut_drawing_pad_button_1.set_action(action);
+                }
+                ShortcutKey::DrawingPadButton2 => {
+                    imp.penshortcut_drawing_pad_button_2.set_action(action);
+                }
+                ShortcutKey::DrawingPadButton3 => {
+                    imp.penshortcut_drawing_pad_button_3.set_action(action);
                 }
                 _ => {}
             });
@@ -623,13 +548,17 @@ impl RnSettingsPanel {
 
         // Apply format
         imp.format_apply_button.get().connect_clicked(
-            clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
+            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_format_apply_button| {
+                let imp = settingspanel.imp();
                 let temporary_format = *temporary_format.borrow();
                 let canvas = appwindow.active_tab().canvas();
 
                 canvas.engine().borrow_mut().document.format = temporary_format;
                 canvas.engine().borrow_mut().resize_to_fit_strokes();
                 canvas.update_engine_rendering();
+
+                imp.background_pattern_width_unitentry.set_dpi_keep_value(temporary_format.dpi);
+                imp.background_pattern_height_unitentry.set_dpi_keep_value(temporary_format.dpi);
             }),
         );
 
@@ -638,10 +567,8 @@ impl RnSettingsPanel {
             let canvas = appwindow.active_tab().canvas();
 
             canvas.engine().borrow_mut().document.format.border_color = format_border_color;
-
             // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-
             canvas.update_engine_rendering();
         }));
     }
@@ -694,35 +621,28 @@ impl RnSettingsPanel {
             canvas.update_engine_rendering();
         }));
 
-        imp.background_pattern_width_unitentry.get().connect_local(
-            "measurement-changed",
-            false,
-            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+        imp.background_pattern_width_unitentry.get().connect_notify_local(
+            Some("value"),
+            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
                     let canvas = appwindow.active_tab().canvas();
 
                     let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = settings_panel.imp().background_pattern_width_unitentry.value_in_px();
+                    pattern_size[0] = unit_entry.value_in_px();
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
                     canvas.regenerate_background_pattern();
                     canvas.update_engine_rendering();
-
-                    None
             }),
         );
 
-        imp.background_pattern_height_unitentry.get().connect_local(
-            "measurement-changed",
-            false,
-            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+        imp.background_pattern_height_unitentry.get().connect_notify_local(
+            Some("value"),
+            clone!(@weak self as settings_panel, @weak appwindow => move |unit_entry, _| {
                     let canvas = appwindow.active_tab().canvas();
-
                     let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = settings_panel.imp().background_pattern_height_unitentry.value_in_px();
+                    pattern_size[1] = unit_entry.value_in_px();
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
                     canvas.regenerate_background_pattern();
                     canvas.update_engine_rendering();
-
-                    None
             }),
         );
     }
@@ -736,36 +656,56 @@ impl RnSettingsPanel {
             imp.penshortcut_mouse_button_secondary_row.get();
         let penshortcut_touch_two_finger_long_press_row =
             imp.penshortcut_touch_two_finger_long_press_row.get();
+        let penshortcut_drawing_pad_button_0 = imp.penshortcut_drawing_pad_button_0.get();
+        let penshortcut_drawing_pad_button_1 = imp.penshortcut_drawing_pad_button_1.get();
+        let penshortcut_drawing_pad_button_2 = imp.penshortcut_drawing_pad_button_2.get();
+        let penshortcut_drawing_pad_button_3 = imp.penshortcut_drawing_pad_button_3.get();
 
-        imp.penshortcut_stylus_button_primary_row
-            .set_key(Some(ShortcutKey::StylusPrimaryButton));
         imp.penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
-        imp.penshortcut_stylus_button_secondary_row
-            .set_key(Some(ShortcutKey::StylusSecondaryButton));
         imp.penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
-        imp.penshortcut_mouse_button_secondary_row
-            .set_key(Some(ShortcutKey::MouseSecondaryButton));
         imp.penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
 
-        imp.penshortcut_touch_two_finger_long_press_row
-            .set_key(Some(ShortcutKey::TouchTwoFingerLongPress));
         imp.penshortcut_touch_two_finger_long_press_row.connect_local("action-changed", false, clone!(@weak penshortcut_touch_two_finger_long_press_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_touch_two_finger_long_press_row.action();
-            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::TouchTwoFingerLongPress, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_0.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_0, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_0.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton0, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_1.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_1, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_1.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton1, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_2.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_2, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_2.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton2, action);
+            None
+        }));
+
+        imp.penshortcut_drawing_pad_button_3.connect_local("action-changed", false, clone!(@weak penshortcut_drawing_pad_button_3, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_drawing_pad_button_3.action();
+            appwindow.active_tab().canvas().engine().borrow_mut().penholder.register_shortcut(ShortcutKey::DrawingPadButton3, action);
             None
         }));
     }
@@ -773,22 +713,17 @@ impl RnSettingsPanel {
     fn revert_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         let canvas = appwindow.active_tab().canvas();
-
         *imp.temporary_format.borrow_mut() = canvas.engine().borrow().document.format;
         let revert_format = canvas.engine().borrow().document.format;
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
-
         imp.format_dpi_adj.set_value(revert_format.dpi);
 
-        // Setting the unit dropdowns to Px
-        imp.format_width_unitentry.set_unit(format::MeasureUnit::Px);
-        imp.format_height_unitentry
-            .set_unit(format::MeasureUnit::Px);
-
         // Setting the entries, which have callbacks to update the temporary format
-        imp.format_width_unitentry.set_value(revert_format.width);
-        imp.format_height_unitentry.set_value(revert_format.height);
+        imp.format_width_unitentry
+            .set_value_in_px(revert_format.width);
+        imp.format_height_unitentry
+            .set_value_in_px(revert_format.height);
     }
 }
 

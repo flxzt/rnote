@@ -52,7 +52,7 @@ pub fn gen_hline_pattern(
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_hline_pattern";
+    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_hline_pattern";
 
     let line_offset = line_width * 0.5;
 
@@ -94,7 +94,7 @@ pub fn gen_grid_pattern(
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_grid_pattern";
+    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_grid_pattern";
 
     let line_offset = line_width * 0.5;
 
@@ -145,7 +145,7 @@ pub fn gen_dots_pattern(
     color: Color,
     dots_width: f64,
 ) -> svg::node::element::Element {
-    let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_dots_pattern";
+    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_dots_pattern";
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -186,7 +186,10 @@ pub struct Background {
     pub color: Color,
     #[serde(rename = "pattern")]
     pub pattern: PatternStyle,
-    #[serde(rename = "pattern_size")]
+    #[serde(
+        rename = "pattern_size",
+        with = "rnote_compose::serialize::na_vector2_f64_dp3"
+    )]
     pub pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
     pub pattern_color: Color,

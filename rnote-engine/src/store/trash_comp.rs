@@ -157,7 +157,7 @@ impl StrokeStore {
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
-                            let mut splitted = Vec::new();
+                            let mut split = Vec::new();
 
                             let mut hits = brushstroke
                                 .path
@@ -167,11 +167,11 @@ impl StrokeStore {
                             if let Some(first_hit) = hits.next() {
                                 let mut prev = first_hit;
                                 for hit in hits {
-                                    let split = &brushstroke.path.segments[prev..hit];
+                                    let split_slice = &brushstroke.path.segments[prev..hit];
 
                                     // skip splits that don't have at least two segments (one's end as path start, one additional)
-                                    if split.len() > 1 {
-                                        splitted.push(split.to_vec());
+                                    if split_slice.len() > 1 {
+                                        split.push(split_slice.to_vec());
                                     }
 
                                     prev = hit;
@@ -180,10 +180,10 @@ impl StrokeStore {
                                 // Catch the last
                                 let last_split = &brushstroke.path.segments[prev..];
                                 if last_split.len() > 1 {
-                                    splitted.push(last_split.to_vec());
+                                    split.push(last_split.to_vec());
                                 }
 
-                                for next_split in splitted {
+                                for next_split in split {
                                     let mut next_split_iter = next_split.into_iter();
                                     let next_start = next_split_iter.next().unwrap().end();
 

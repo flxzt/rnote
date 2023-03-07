@@ -16,6 +16,7 @@ use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
 use crate::pens::{PenMode, PensConfig};
+use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
@@ -28,6 +29,7 @@ use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::shapes::ShapeBehaviour;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -72,17 +74,25 @@ impl<'a> EngineViewMut<'a> {
 /// A engine task, usually coming from a spawned thread and to be processed with `process_received_task()`.
 pub enum EngineTask {
     /// Replace the images of the render_comp.
-    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// Note that the state of the render component should be set **before** spawning a thread, generating images and sending this task,
     /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
     UpdateStrokeWithImages {
+        /// The stroke key
         key: StrokeKey,
+        /// The generated images
         images: GeneratedStrokeImages,
+        /// The image scale-factor the render task was using while generating the images
+        image_scale: f64,
+        /// The stroke bounds at the time when the render task has launched
+        stroke_bounds: Aabb,
     },
     /// Appends the images to the rendering of the stroke
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
     /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
     AppendImagesToStroke {
+        /// The stroke key
         key: StrokeKey,
+        /// The generated images
         images: GeneratedStrokeImages,
     },
     /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
@@ -580,10 +590,45 @@ impl RnoteEngine {
         let mut quit = false;
 
         match task {
-            EngineTask::UpdateStrokeWithImages { key, images } => {
-                self.store.replace_rendering_with_images(key, images);
+            EngineTask::UpdateStrokeWithImages {
+                key,
+                images,
+                image_scale,
+                stroke_bounds,
+            } => {
+                if let Some(state) = self.store.render_comp_state(key) {
+                    //log::debug!("key: {key:?} - render state: {state:?}");
 
-                widget_flags.redraw = true;
+                    match state {
+                        RenderCompState::Complete | RenderCompState::ForViewport(_) => {
+                            // The rendering was already regenerated in the meantime,
+                            // so we just discard the the render task results
+                        }
+                        RenderCompState::BusyRenderingInTask => {
+                            if (self.camera.image_scale()
+                                - render_comp::RENDER_IMAGE_SCALE_TOLERANCE
+                                ..self.camera.image_scale()
+                                    + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
+                                .contains(&image_scale)
+                                && self
+                                    .store
+                                    .get_stroke_ref(key)
+                                    .map(|s| s.bounds() == stroke_bounds)
+                                    .unwrap_or(true)
+                            {
+                                // Only when the image scale and stroke bounds are the same
+                                // as when the render task was started, the new images are considered valid
+                                // and can replace the old
+                                self.store.replace_rendering_with_images(key, images);
+                            }
+                            widget_flags.redraw = true;
+                        }
+                        RenderCompState::Dirty => {
+                            // If the state was flagged dirty in the meantime,
+                            // it is expected that retriggering rendering will be handled elsewhere
+                        }
+                    }
+                }
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 self.store.append_rendering_images(key, images);
@@ -621,7 +666,7 @@ impl RnoteEngine {
     }
 
     /// Handle a pressed shortcut key
-    pub fn handle_pen_pressed_shortcut_key(
+    pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
         now: Instant,
@@ -763,12 +808,8 @@ impl RnoteEngine {
         self.document.resize_autoexpand(&self.store, &self.camera);
     }
 
-    /// Updates the camera and expands doc dimensions with offset
-    ///
-    /// Document background rendering then needs to be updated.
-    pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
-        self.camera.offset = new_offset;
-
+    /// Expands the doc when in autoexpanding layouts. e.g. when dragging with touch
+    pub fn expand_doc_autoexpand(&mut self) {
         match self.document.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
                 // not resizing in these modes, the size is not dependent on the camera
@@ -784,6 +825,18 @@ impl RnoteEngine {
                     .expand_doc_infinite_layout(self.camera.viewport());
             }
         }
+    }
+
+    /// Updates the camera and updates doc dimensions with the new offset and size.
+    ///
+    /// background and strokes rendering then need to be updated.
+    pub fn update_camera_offset_size(
+        &mut self,
+        new_offset: na::Vector2<f64>,
+        new_size: na::Vector2<f64>,
+    ) {
+        self.camera.offset = new_offset;
+        self.camera.size = new_size;
     }
 
     /// Updates the current pen with the current engine state.

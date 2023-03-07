@@ -101,7 +101,7 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
 }
 
 /// generates a alphanumeric random prefix for svg ids to avoid id collisions.
-pub fn random_id_prefix() -> String {
+pub fn svg_random_id_prefix() -> String {
     rand::thread_rng()
         .sample_iter(&rand::distributions::Alphanumeric)
         .take(8)

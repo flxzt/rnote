@@ -8,16 +8,16 @@ pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 #[serde(default, rename = "color")]
 pub struct Color {
     /// red, ranging [0.0, 1.0]
-    #[serde(rename = "r")]
+    #[serde(rename = "r", with = "crate::serialize::f64_dp3")]
     pub r: f64,
     /// green, ranging [0.0, 1.0]
-    #[serde(rename = "g")]
+    #[serde(rename = "g", with = "crate::serialize::f64_dp3")]
     pub g: f64,
     /// blue, ranging [0.0, 1.0]
-    #[serde(rename = "b")]
+    #[serde(rename = "b", with = "crate::serialize::f64_dp3")]
     pub b: f64,
     /// alpha, ranging [0.0, 1.0]
-    #[serde(rename = "a")]
+    #[serde(rename = "a", with = "crate::serialize::f64_dp3")]
     pub a: f64,
 }
 

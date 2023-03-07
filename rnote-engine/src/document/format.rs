@@ -109,7 +109,7 @@ impl MeasureUnit {
         match desired_unit {
             MeasureUnit::Px => value_in_px,
             MeasureUnit::Mm => (value_in_px / desired_dpi) * Self::AMOUNT_MM_IN_INCH,
-            MeasureUnit::Cm => (value_in_px / desired_dpi) * Self::AMOUNT_MM_IN_INCH * 10.0,
+            MeasureUnit::Cm => (value_in_px / desired_dpi) * Self::AMOUNT_MM_IN_INCH / 10.0,
         }
     }
 }
@@ -136,11 +136,11 @@ impl Default for Orientation {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "format")]
 pub struct Format {
-    #[serde(rename = "width")]
+    #[serde(rename = "width", with = "rnote_compose::serialize::f64_dp3")]
     pub width: f64,
-    #[serde(rename = "height")]
+    #[serde(rename = "height", with = "rnote_compose::serialize::f64_dp3")]
     pub height: f64,
-    #[serde(rename = "dpi")]
+    #[serde(rename = "dpi", with = "rnote_compose::serialize::f64_dp3")]
     pub dpi: f64,
     #[serde(rename = "orientation")]
     pub orientation: Orientation,

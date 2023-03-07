@@ -4,14 +4,16 @@ use crate::config;
 use crate::{dialogs, RnCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
-use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
-use gtk4::{PrintStatus, Window};
+use gtk4::{
+    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
+};
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -140,6 +142,19 @@ impl RnAppWindow {
         let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
         self.add_action(&action_active_tab_close);
 
+        let action_drawing_pad_pressed_button_0 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-0", None);
+        self.add_action(&action_drawing_pad_pressed_button_0);
+        let action_drawing_pad_pressed_button_1 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-1", None);
+        self.add_action(&action_drawing_pad_pressed_button_1);
+        let action_drawing_pad_pressed_button_2 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-2", None);
+        self.add_action(&action_drawing_pad_pressed_button_2);
+        let action_drawing_pad_pressed_button_3 =
+            gio::SimpleAction::new("drawing-pad-pressed-button-3", None);
+        self.add_action(&action_drawing_pad_pressed_button_3);
+
         // Open settings
         action_open_settings.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             appwindow.flap_stack().set_visible_child_name("settings_page");
@@ -229,33 +244,37 @@ impl RnAppWindow {
         action_doc_layout.connect_activate(
             clone!(@weak self as appwindow => move |action_doc_layout, target| {
                 let doc_layout = target.unwrap().str().unwrap();
-                action_doc_layout.set_state(&doc_layout.to_variant());
                 let canvas = appwindow.active_tab().canvas();
+                let prev_layout = canvas.engine().borrow().document.layout;
+                action_doc_layout.set_state(&doc_layout.to_variant());
 
-                match doc_layout {
+                let doc_layout = match doc_layout {
                     "fixed-size" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::FixedSize;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(true);
+                        Layout::FixedSize
                     },
                     "continuous-vertical" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::ContinuousVertical;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                        Layout::ContinuousVertical
                     },
                     "semi-infinite" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::SemiInfinite;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                        Layout::SemiInfinite
                     },
                     "infinite" => {
-                        canvas.engine().borrow_mut().document.layout = Layout::Infinite;
-                        appwindow.mainheader().fixedsize_quickactions_box().set_visible(false);
+                        Layout::Infinite
                     },
                     other => {
                         log::error!("doc-layout action activated with invalid target string: {other}");
                         unimplemented!()
                     }
-                }
+                };
 
-                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                appwindow.mainheader().fixedsize_quickactions_box().set_visible(doc_layout == Layout::FixedSize);
+
+                if prev_layout != doc_layout {
+                    canvas.engine().borrow_mut().document.layout = doc_layout;
+                    canvas.engine().borrow_mut().resize_to_fit_strokes();
+                } else {
+                    canvas.engine().borrow_mut().resize_autoexpand();
+                }
                 canvas.update_engine_rendering();
             }));
 
@@ -326,6 +345,43 @@ impl RnAppWindow {
                 appwindow.overlays().tabview().close_page(&active_tab_page);
             }
         }));
+
+        // Drawing pad buttons
+        action_drawing_pad_pressed_button_0.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 0");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton0, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
+        action_drawing_pad_pressed_button_1.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 1");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton1, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
+        action_drawing_pad_pressed_button_2.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 2");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton2, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
+        action_drawing_pad_pressed_button_3.connect_activate(
+            clone!(@weak self as appwindow => move |_, _| {
+                log::debug!("drawing pad pressed button 3");
+                let canvas = appwindow.active_tab().canvas();
+                let widget_flags = canvas.engine().borrow_mut().handle_pressed_shortcut_key(ShortcutKey::DrawingPadButton3, Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
 
         // Trash Selection
         action_selection_trash.connect_activate(
@@ -635,12 +691,6 @@ impl RnAppWindow {
 
             print_op.connect_status_changed(clone!(@weak appwindow => move |print_op| {
                 log::debug!("{:?}", print_op.status());
-                match print_op.status() {
-                    PrintStatus::Finished => {
-                        appwindow.overlays().dispatch_toast_text(&gettext("Printed document successfully"));
-                    }
-                    _ => {}
-                }
             }));
 
             // Run the print op

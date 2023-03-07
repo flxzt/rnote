@@ -4,34 +4,30 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
-use gettextrs::gettext;
-use rnote_engine::pens::PenMode;
 
 // Imports
-use std::cell::{Cell, RefCell};
-use std::path::PathBuf;
-use std::rc::Rc;
-
-use crate::config;
-use rnote_engine::{RnoteEngine, WidgetFlags};
-
+use futures::StreamExt;
+use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
-    Adjustment, DropTarget, EventControllerKey, EventSequenceState, GestureDrag, GestureStylus,
-    IMMulticontext, Inhibit, PropagationPhase, Scrollable, ScrollablePolicy, Widget,
+    Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext, Inhibit,
+    PropagationPhase, Scrollable, ScrollablePolicy, Widget,
 };
-
-use crate::appwindow::RnAppWindow;
-use futures::StreamExt;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
-use rnote_compose::penpath::Element;
+use rnote_compose::penevents::PenState;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
+use rnote_engine::{RnoteEngine, WidgetFlags};
+use std::cell::{Cell, RefCell};
+use std::path::PathBuf;
+use std::rc::Rc;
+use std::time::Duration;
 
-use std::collections::VecDeque;
-use std::time::{self, Instant};
+use crate::appwindow::RnAppWindow;
+use crate::canvaswrapper::RnCanvasWrapper;
+use crate::config;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -70,12 +66,11 @@ mod imp {
         pub(crate) regular_cursor_icon_name: RefCell<String>,
         pub(crate) drawing_cursor: RefCell<gdk::Cursor>,
         pub(crate) drawing_cursor_icon_name: RefCell<String>,
-        pub(crate) stylus_drawing_gesture: GestureStylus,
-        pub(crate) mouse_drawing_gesture: GestureDrag,
-        pub(crate) touch_drawing_gesture: GestureDrag,
+        pub(crate) pointer_controller: EventControllerLegacy,
         pub(crate) key_controller: EventControllerKey,
         pub(crate) key_controller_im_context: IMMulticontext,
         pub(crate) drop_target: DropTarget,
+        pub(crate) drawing_cursor_enabled: Cell<bool>,
 
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
@@ -87,30 +82,13 @@ mod imp {
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
-
         pub(crate) touch_drawing: Cell<bool>,
     }
 
     impl Default for RnCanvas {
         fn default() -> Self {
-            let stylus_drawing_gesture = GestureStylus::builder()
-                .name("stylus_drawing_gesture")
-                .propagation_phase(PropagationPhase::Target)
-                // Listen for any button
-                .button(0)
-                .build();
-
-            // mouse gesture handlers have a guard to not handle emulated pointer events ( e.g. coming from touch input )
-            // matching different input methods with gdk4::InputSource or gdk4::DeviceToolType did NOT WORK unfortunately, dont know why
-            let mouse_drawing_gesture = GestureDrag::builder()
-                .name("mouse_drawing_gesture")
-                .button(0)
-                .propagation_phase(PropagationPhase::Bubble)
-                .build();
-
-            let touch_drawing_gesture = GestureDrag::builder()
-                .name("touch_drawing_gesture")
-                .touch_only(true)
+            let pointer_controller = EventControllerLegacy::builder()
+                .name("pointer_controller")
                 .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
@@ -129,10 +107,6 @@ mod imp {
 
             // The order here is important: first files, then text
             drop_target.set_types(&[gio::File::static_type(), glib::types::Type::STRING]);
-
-            // Gesture grouping
-            mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
-            touch_drawing_gesture.group_with(&stylus_drawing_gesture);
 
             let regular_cursor_icon_name = String::from("cursor-dot-medium");
             let regular_cursor = gdk::Cursor::from_texture(
@@ -170,12 +144,11 @@ mod imp {
                 regular_cursor_icon_name: RefCell::new(regular_cursor_icon_name),
                 drawing_cursor: RefCell::new(drawing_cursor),
                 drawing_cursor_icon_name: RefCell::new(drawing_cursor_icon_name),
-                stylus_drawing_gesture,
-                mouse_drawing_gesture,
-                touch_drawing_gesture,
+                pointer_controller,
                 key_controller,
                 key_controller_im_context,
                 drop_target,
+                drawing_cursor_enabled: Cell::new(false),
 
                 engine: Rc::new(RefCell::new(engine)),
 
@@ -187,7 +160,6 @@ mod imp {
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
-
                 touch_drawing: Cell::new(false),
             }
         }
@@ -223,9 +195,7 @@ mod imp {
 
             inst.set_cursor(Some(&*self.regular_cursor.borrow()));
 
-            inst.add_controller(&self.stylus_drawing_gesture);
-            inst.add_controller(&self.mouse_drawing_gesture);
-            inst.add_controller(&self.touch_drawing_gesture);
+            inst.add_controller(&self.pointer_controller);
             inst.add_controller(&self.key_controller);
             inst.add_controller(&self.drop_target);
 
@@ -353,16 +323,16 @@ mod imp {
                     }
                 }
                 "hadjustment" => {
-                    let hadjustment = value.get().unwrap();
-                    inst.set_hadjustment(hadjustment);
+                    let hadj = value.get().unwrap();
+                    self.set_hadjustment_prop(hadj);
                 }
                 "hscroll-policy" => {
                     let hscroll_policy = value.get().unwrap();
                     self.hscroll_policy.replace(hscroll_policy);
                 }
                 "vadjustment" => {
-                    let vadjustment = value.get().unwrap();
-                    inst.set_vadjustment(vadjustment);
+                    let vadj = value.get().unwrap();
+                    self.set_vadjustment_prop(vadj);
                 }
                 "vscroll-policy" => {
                     let vscroll_policy = value.get().unwrap();
@@ -372,13 +342,6 @@ mod imp {
                     let touch_drawing: bool =
                         value.get().expect("The value needs to be of type `bool`");
                     self.touch_drawing.replace(touch_drawing);
-                    if touch_drawing {
-                        self.touch_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::Bubble);
-                    } else {
-                        self.touch_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::None);
-                    }
                 }
                 "regular-cursor" => {
                     let icon_name = value.get().unwrap();
@@ -456,20 +419,15 @@ mod imp {
                 } else {
                     inst.bounds()
                 };
-                // pushing the clip
+                // push the clip
                 snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
-
-                // Save the original coordinate space
-                snapshot.save();
 
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_on_gtk_snapshot(snapshot, inst.bounds())?;
+                    .draw_to_gtk_snapshot(snapshot, inst.bounds())?;
 
-                // Restore original coordinate space
-                snapshot.restore();
-                // End the clip of widget bounds
+                // pop the clip
                 snapshot.pop();
                 Ok(())
             }() {
@@ -484,259 +442,72 @@ mod imp {
         fn setup_input(&self) {
             let inst = self.instance();
 
-            // Stylus Drawing
-            self.stylus_drawing_gesture.connect_down(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
-            //log::debug!("stylus_drawing_gesture down");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-            stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
-            canvas.grab_focus();
-
-            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-           Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now(), ));
-            }
-
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-            self.stylus_drawing_gesture.connect_motion(clone!(@weak inst as canvas => move |stylus_drawing_gesture, x, y| {
-            //log::debug!("stylus_drawing_gesture motion");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-
-            let mut data_entries: VecDeque<Element> = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-            self.stylus_drawing_gesture.connect_up(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
-            //log::debug!("stylus_drawing_gesture up");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-
-            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            if let Some(last) = data_entries.pop_back() {
-                let mut widget_flags = WidgetFlags::default();
-                for element in data_entries {
-                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
-                }
-                widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, pen_mode, Instant::now()));
-                canvas.emit_handle_widget_flags(widget_flags);
-            }
-        }));
-
-            self.stylus_drawing_gesture.connect_proximity(clone!(@weak inst as canvas => move |stylus_drawing_gesture,x,y| {
-            //log::debug!("stylus_drawing_gesture proximity");
-            //input::debug_stylus_gesture(stylus_drawing_gesture);
-
-            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
-
-            let mut data_entries = input::retrieve_stylus_elements(stylus_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_stylus_shortcut_keys(stylus_drawing_gesture);
-            let pen_mode = input::retrieve_stylus_pen_mode(stylus_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_proximity(&canvas, element, shortcut_keys.clone(), pen_mode, Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-            // Mouse drawing
-            self.mouse_drawing_gesture.connect_drag_begin(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
-            //log::debug!("mouse_drawing_gesture begin");
-            //input::debug_drag_gesture(mouse_drawing_gesture);
-
-            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
-            mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
-            canvas.grab_focus();
-
-            let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-            self.mouse_drawing_gesture.connect_drag_update(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
-            //log::debug!("mouse_drawing_gesture motion");
-            //input::debug_drag_gesture(mouse_drawing_gesture);
-
-            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
-
-            if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
-
-                let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
-
-                let mut widget_flags = WidgetFlags::default();
-                for element in data_entries {
-                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                }
-                canvas.emit_handle_widget_flags(widget_flags);
-            }
-        }));
-
-            self.mouse_drawing_gesture.connect_drag_end(clone!(@weak inst as canvas => move |mouse_drawing_gesture, x, y| {
-            //log::debug!("mouse_drawing_gesture end");
-            //input::debug_drag_gesture(mouse_drawing_gesture);
-
-            if input::filter_mouse_input(mouse_drawing_gesture) { return; }
-
-            if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let mut data_entries = input::retrieve_pointer_elements(mouse_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1) );
-
-                let shortcut_keys = input::retrieve_mouse_shortcut_keys(mouse_drawing_gesture);
-
-                if let Some(last) = data_entries.pop_back() {
-                    let mut widget_flags = WidgetFlags::default();
-                    for element in data_entries {
-                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                    }
-                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
-                    canvas.emit_handle_widget_flags(widget_flags);
-                }
-            }
-        }));
-
-            // Touch drawing
-            self.touch_drawing_gesture.connect_drag_begin(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
-            //log::debug!("touch_drawing_gesture begin");
-
-            if input::filter_touch_input(touch_drawing_gesture) { return; }
-            touch_drawing_gesture.set_state(EventSequenceState::Claimed);
-            canvas.grab_focus();
-
-            let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
-            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
-
-            let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
-
-            let mut widget_flags = WidgetFlags::default();
-            for element in data_entries {
-                widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-            }
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
-
-            self.touch_drawing_gesture.connect_drag_update(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
-            if let Some(start_point) = touch_drawing_gesture.start_point() {
-                //log::debug!("touch_drawing_gesture motion");
-
-                if input::filter_touch_input(touch_drawing_gesture) { return; }
-
-                let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
-
-                let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
-
-                let mut widget_flags = WidgetFlags::default();
-                for element in data_entries {
-                    widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                }
-                canvas.emit_handle_widget_flags(widget_flags);
-            }
-        }));
-
-            self.touch_drawing_gesture.connect_drag_end(clone!(@weak inst as canvas => move |touch_drawing_gesture, x, y| {
-            if let Some(start_point) = touch_drawing_gesture.start_point() {
-                //log::debug!("touch_drawing_gesture end");
-
-                if input::filter_touch_input(touch_drawing_gesture) { return; }
-
-                let mut data_entries = input::retrieve_pointer_elements(touch_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
-
-                let shortcut_keys = input::retrieve_touch_shortcut_keys(touch_drawing_gesture);
-
-                if let Some(last) = data_entries.pop_back() {
-                    let mut widget_flags = WidgetFlags::default();
-                    for element in data_entries {
-                        widget_flags.merge(input::process_pen_down(&canvas, element, shortcut_keys.clone(), Some(PenMode::Pen), Instant::now()));
-                    }
-                    widget_flags.merge(input::process_pen_up(&canvas, last, shortcut_keys, Some(PenMode::Pen), Instant::now()));
-                    canvas.emit_handle_widget_flags(widget_flags);
-                }
-            }
-        }));
-
-            // Key controller
-
-            self.key_controller.connect_key_pressed(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
-            //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-            canvas.grab_focus();
-
-            let keyboard_key = input::retrieve_keyboard_key(key);
-            let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
-
-            //log::debug!("keyboard key: {:?}", keyboard_key);
-
-            let widget_flags = input::process_keyboard_key_pressed(&canvas, keyboard_key, shortcut_keys, Instant::now());
-            canvas.emit_handle_widget_flags(widget_flags);
-
-            Inhibit(true)
-        }));
+            // Pointer controller
+            let pen_state = Cell::new(PenState::Up);
+            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak inst as canvas => @default-return Inhibit(false), move |_controller, event| {
+                let (inhibit, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
+                pen_state.set(new_state);
+                inhibit
+            }));
 
             // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
-            self.key_controller_im_context.connect_commit(clone!(@weak inst as canvas => move |_cx, text| {
-            let widget_flags = input::process_keyboard_text(&canvas, text.to_string(), Instant::now());
-            canvas.emit_handle_widget_flags(widget_flags);
-        }));
+            self.key_controller_im_context.connect_commit(
+                clone!(@weak inst as canvas => move |_cx, text| {
+                    super::input::handle_imcontext_text_commit(&canvas, text);
+                }),
+            );
 
+            // Key controller
+            self.key_controller.connect_key_pressed(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+                super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
+            }));
             /*
-            self.imp().key_controller.connect_key_released(clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
-                //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
-            }));
-
-            self.imp().key_controller.connect_modifiers(clone!(@weak inst as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
-                //log::debug!("key_controller modifier pressed: {:?}", modifier);
-
-                let shortcut_keys = input::retrieve_modifier_shortcut_key(modifier);
-                canvas.grab_focus();
-
-                let mut widget_flags = WidgetFlags::default();
-                for shortcut_key in shortcut_keys {
-                    log::debug!("shortcut key pressed: {:?}", shortcut_key);
-
-                    widget_flags.merge(input::process_shortcut_key_pressed(self, shortcut_key));
-                }
-                canvas.emit_handle_widget_flags(widget_flags);
-
-                Inhibit(true)
-            }));
+                       self.key_controller.connect_key_released(
+                           clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {
+                               //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+                           }),
+                       );
             */
+        }
+
+        fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
+            let inst = self.instance();
+
+            if let Some(signal_id) = self.handlers.borrow_mut().hadjustment.take() {
+                let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
+                old_adj.disconnect(signal_id);
+            }
+
+            if let Some(ref hadj) = hadj {
+                let signal_id =
+                    hadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        canvas.queue_resize();
+                    }));
+
+                self.handlers.borrow_mut().hadjustment.replace(signal_id);
+            }
+            self.hadjustment.replace(hadj);
+        }
+
+        fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
+            let inst = self.instance();
+
+            if let Some(signal_id) = self.handlers.borrow_mut().vadjustment.take() {
+                let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
+                old_adj.disconnect(signal_id);
+            }
+
+            if let Some(ref vadj) = vadj {
+                let signal_id =
+                    vadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                        // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
+                        canvas.queue_resize();
+                    }));
+
+                self.handlers.borrow_mut().vadjustment.replace(signal_id);
+            }
+            self.vadjustment.replace(vadj);
         }
     }
 }
@@ -760,7 +531,7 @@ pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
 
 impl RnCanvas {
     // the zoom timeout time
-    pub(crate) const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
+    pub(crate) const ZOOM_TIMEOUT_TIME: Duration = Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub(crate) const ZOOM_STEP: f64 = 0.1;
 
@@ -825,7 +596,9 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        self.set_property("unsaved-changes", unsaved_changes.to_value());
+        if self.imp().unsaved_changes.get() != unsaved_changes {
+            self.set_property("unsaved-changes", unsaved_changes.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -835,7 +608,9 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_empty(&self, empty: bool) {
-        self.set_property("empty", empty.to_value());
+        if self.imp().empty.get() != empty {
+            self.set_property("empty", empty.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -845,7 +620,9 @@ impl RnCanvas {
 
     #[allow(unused)]
     pub(crate) fn set_touch_drawing(&self, touch_drawing: bool) {
-        self.set_property("touch-drawing", touch_drawing.to_value());
+        if self.imp().touch_drawing.get() != touch_drawing {
+            self.set_property("touch-drawing", touch_drawing.to_value());
+        }
     }
 
     #[allow(unused)]
@@ -860,56 +637,6 @@ impl RnCanvas {
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
         self.imp().engine.clone()
-    }
-
-    fn set_hadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().handlers.borrow_mut().hadjustment.take() {
-            let old_adj = self.imp().hadjustment.borrow().as_ref().unwrap().clone();
-            old_adj.disconnect(signal_id);
-        }
-
-        if let Some(ref hadjustment) = adj {
-            let signal_id = hadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_hadjustment| {
-                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
-                    canvas.queue_resize();
-                }),
-            );
-
-            self.imp()
-                .handlers
-                .borrow_mut()
-                .hadjustment
-                .replace(signal_id);
-        }
-        self.imp().hadjustment.replace(adj);
-    }
-
-    fn set_vadjustment(&self, adj: Option<Adjustment>) {
-        if let Some(signal_id) = self.imp().handlers.borrow_mut().vadjustment.take() {
-            let old_adj = self.imp().vadjustment.borrow().as_ref().unwrap().clone();
-            old_adj.disconnect(signal_id);
-        }
-
-        if let Some(ref vadjustment) = adj {
-            let signal_id = vadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_vadjustment| {
-                    // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
-                    canvas.queue_resize();
-                }),
-            );
-
-            self.imp()
-                .handlers
-                .borrow_mut()
-                .vadjustment
-                .replace(signal_id);
-        }
-        self.imp().vadjustment.replace(adj);
-    }
-
-    pub(crate) fn stylus_drawing_gesture(&self) -> GestureStylus {
-        self.imp().stylus_drawing_gesture.clone()
     }
 
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {
@@ -975,7 +702,12 @@ impl RnCanvas {
     }
 
     /// Switches between the regular and the drawing cursor
-    pub(crate) fn switch_between_cursors(&self, drawing_cursor: bool) {
+    pub(crate) fn enable_drawing_cursor(&self, drawing_cursor: bool) {
+        if drawing_cursor == self.imp().drawing_cursor_enabled.get() {
+            return;
+        };
+        self.imp().drawing_cursor_enabled.set(drawing_cursor);
+
         if drawing_cursor {
             self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
         } else {
@@ -1394,40 +1126,60 @@ impl RnCanvas {
     }
 
     // updates the camera offset with a new one ( for example from touch drag gestures )
-    // update_engine_rendering() then needs to be called.
-    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
-        self.engine().borrow_mut().update_camera_offset(new_offset);
 
-        // By setting new adjustment values, the callback connected to their value property is called,
-        // Which is where the engine rendering is updated.
+    // the rendering then needs to be updated.
+    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+        // This is a bit of a hack: we first set the new offset unrestricted,
+        // so the camera transform is immediately updated on zooms instead of the asynchronous update when calling queue_draw().
+        // This ensures that when we retrieve the current center on the document, the value is more consistent.
+        // TODO: clean up this mess
+        self.engine().borrow_mut().camera.offset = new_offset;
+        // This expands the doc size for autoexpanding layouts
+        self.engine().borrow_mut().expand_doc_autoexpand();
+        // By setting new adjustment values, the callback connected to their `value` property is called,
+        // Which is where the engine camera offset, size and the rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
     }
 
     /// returns the center of the current view on the doc
     pub(crate) fn current_center_on_doc(&self) -> na::Vector2<f64> {
-        (self.engine().borrow().camera.transform().inverse()
-            * na::point![
-                f64::from(self.width()) * 0.5,
-                f64::from(self.height()) * 0.5
-            ])
-        .coords
+        let wrapper = self
+            .ancestor(RnCanvasWrapper::static_type())
+            .unwrap()
+            .downcast::<RnCanvasWrapper>()
+            .unwrap();
+        let center = wrapper
+            .translate_coordinates(
+                self,
+                wrapper.width() as f64 * 0.5,
+                wrapper.height() as f64 * 0.5,
+            )
+            .unwrap();
+
+        (self.engine().borrow().camera.transform().inverse() * na::point![center.0, center.1])
+            .coords
     }
 
     /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
     // update_engine_rendering() then needs to be called.
     pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
-        let Some(parent) = self.parent() else {
-            log::debug!("self.parent() is None in `center_around_coord_on_doc()");
-            return
-        };
-
-        let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
+        let wrapper = self
+            .ancestor(RnCanvasWrapper::static_type())
+            .unwrap()
+            .downcast::<RnCanvasWrapper>()
+            .unwrap();
+        let center = wrapper
+            .translate_coordinates(
+                self,
+                wrapper.width() as f64 * 0.5,
+                wrapper.height() as f64 * 0.5,
+            )
+            .unwrap();
         let total_zoom = self.engine().borrow().camera.total_zoom();
-
         let new_offset = na::vector![
-            ((coord[0]) * total_zoom) - parent_width * 0.5,
-            ((coord[1]) * total_zoom) - parent_height * 0.5
+            ((coord[0]) * total_zoom) - center.0,
+            ((coord[1]) * total_zoom) - center.1
         ];
 
         self.update_camera_offset(new_offset);

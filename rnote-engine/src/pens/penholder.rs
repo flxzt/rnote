@@ -210,6 +210,7 @@ impl PenHolder {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         /*
                log::debug!(
                    "handle_pen_event(), event: {:?}, pen_mode_state: {:?}",
@@ -217,9 +218,6 @@ impl PenHolder {
                    self.pen_mode_state,
                );
         */
-        let mut widget_flags = WidgetFlags::default();
-        widget_flags.redraw = true;
-
         if let Some(pen_mode) = pen_mode {
             widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));
         }
@@ -227,10 +225,11 @@ impl PenHolder {
         // Handle the event with the current pen
         let (pen_progress, other_widget_flags) =
             self.current_pen.handle_event(event, now, engine_view);
-
         widget_flags.merge(other_widget_flags);
 
         widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));
+
+        widget_flags.redraw = true;
 
         widget_flags
     }
@@ -323,6 +322,7 @@ impl PenHolder {
         }
 
         self.prev_shortcut_key = Some(shortcut_key);
+        widget_flags.redraw = true;
 
         widget_flags
     }

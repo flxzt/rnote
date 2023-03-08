@@ -37,11 +37,13 @@ pub(crate) fn handle_pointer_controller_event(
 
     match event_type {
         gdk::EventType::MotionNotify => {
+            //log::debug!("MotionNotify - modifiers: {modifiers:?}, is_stylus: {is_stylus}");
+
             if is_stylus {
                 handle_pen_event = true;
                 inhibit = true;
 
-                // As in gtk4 'gesturestylus.c:120' proximity with stylus is also detected in this way, in case ProximityIn & ProximityOut is not reported
+                // like in gtk4 'gesturestylus.c:120' stylus proximity is detected this way, in case ProximityIn & ProximityOut is not reported
                 if modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
                     state = PenState::Down;
                 } else {
@@ -70,13 +72,11 @@ pub(crate) fn handle_pointer_controller_event(
                     || gdk_button == gdk::BUTTON_SECONDARY
                     || gdk_button == gdk::BUTTON_MIDDLE
                 {
-                    handle_pen_event = true;
                     inhibit = true;
                 }
             } else {
                 #[allow(clippy::collapsible_else_if)]
                 if gdk_button == gdk::BUTTON_PRIMARY || gdk_button == gdk::BUTTON_SECONDARY {
-                    handle_pen_event = true;
                     inhibit = true;
                     state = PenState::Down;
                 }
@@ -280,7 +280,7 @@ fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
 }
 
 fn event_is_stylus(event: &gdk::Event) -> bool {
-    // As in gtk4 'gtkgesturestylus.c:106' we detect if the pointer is a stylus when it has a device_tool
+    // As in gtk4 'gtkgesturestylus.c:106' we detect if the pointer is a stylus when it has a device tool
     event.device_tool().is_some()
 }
 
@@ -375,23 +375,12 @@ pub(crate) fn retrieve_button_shortcut_key(
     gdk_button: u32,
     is_stylus: bool,
 ) -> Option<ShortcutKey> {
-    match gdk_button {
-        gdk::BUTTON_PRIMARY => None,
-        gdk::BUTTON_SECONDARY => {
-            if is_stylus {
-                Some(ShortcutKey::StylusPrimaryButton)
-            } else {
-                Some(ShortcutKey::MouseSecondaryButton)
-            }
-        }
-        gdk::BUTTON_MIDDLE => {
-            if is_stylus {
-                Some(ShortcutKey::StylusSecondaryButton)
-            } else {
-                None
-            }
-        }
-        _ => None,
+    match (is_stylus, gdk_button) {
+        (_, gdk::BUTTON_PRIMARY) => None,
+        (false, gdk::BUTTON_SECONDARY) => Some(ShortcutKey::MouseSecondaryButton),
+        (true, gdk::BUTTON_SECONDARY) => Some(ShortcutKey::StylusPrimaryButton),
+        (true, gdk::BUTTON_MIDDLE) => Some(ShortcutKey::StylusSecondaryButton),
+        (_, _) => None,
     }
 }
 
@@ -411,19 +400,12 @@ pub(crate) fn retrieve_modifier_keys(modifier: gdk::ModifierType) -> Vec<Modifie
 }
 
 fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
-    if let Some(device_tool) = event.device_tool() {
-        match device_tool.tool_type() {
-            gdk::DeviceToolType::Pen => {
-                return Some(PenMode::Pen);
-            }
-            gdk::DeviceToolType::Eraser => {
-                return Some(PenMode::Eraser);
-            }
-            _ => {}
-        }
+    let device_tool = event.device_tool()?;
+    match device_tool.tool_type() {
+        gdk::DeviceToolType::Pen => Some(PenMode::Pen),
+        gdk::DeviceToolType::Eraser => Some(PenMode::Eraser),
+        _ => None,
     }
-
-    None
 }
 
 pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {

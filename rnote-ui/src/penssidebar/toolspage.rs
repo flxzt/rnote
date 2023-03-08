@@ -13,6 +13,8 @@ mod imp {
         pub(crate) toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) restrict_zoom_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -98,6 +100,12 @@ impl RnToolsPage {
                 appwindow.active_tab().canvas().engine().borrow_mut().pens_config.tools_config.style = ToolStyle::OffsetCamera;
             }
         }));
+
+        imp.restrict_zoom_toggle.connect_toggled(
+            clone!(@weak appwindow = > move |restrict_zoom_toggle| {
+                appwindow.active_tab().set_restrict_zoom(restrict_zoom_toggle.is_active());
+            }),
+        );
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {

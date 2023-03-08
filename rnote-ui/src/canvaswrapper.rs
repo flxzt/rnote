@@ -22,6 +22,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,
+        pub(crate) restrict_zoom: Cell<bool>,
 
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
@@ -101,6 +102,7 @@ mod imp {
 
             Self {
                 show_scrollbars: Cell::new(false),
+                restrict_zoom: Cell::new(true),
 
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
@@ -179,13 +181,22 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecBoolean::new(
-                    "show-scrollbars",
-                    "show-scrollbars",
-                    "show-scrollbars",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![
+                    glib::ParamSpecBoolean::new(
+                        "show-scrollbars",
+                        "show-scrollbars",
+                        "show-scrollbars",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpecBoolean::new(
+                        "restrict-zoom",
+                        "restrict-zoom",
+                        "restrict-zoom",
+                        true,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                ]
             });
             PROPERTIES.as_ref()
         }
@@ -193,6 +204,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
+                "restrict-zoom" => self.show_scrollbars.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -203,12 +215,20 @@ mod imp {
                     let show_scrollbars = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
-
                     self.show_scrollbars.replace(show_scrollbars);
 
                     self.scroller.hscrollbar().set_visible(show_scrollbars);
                     self.scroller.vscrollbar().set_visible(show_scrollbars);
                 }
+                "restrict-zoom" => {
+                    let restrict_zoom = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`");
+                    println!("restrictzoom2: {}", restrict_zoom);
+                    self.restrict_zoom.replace(restrict_zoom);
+                    println!("restrictzoom3: {}", self.restrict_zoom.get());
+                }
+
                 _ => unimplemented!(),
             }
         }
@@ -219,16 +239,18 @@ mod imp {
     impl RnCanvasWrapper {
         fn setup_input(&self) {
             let inst = self.instance();
-
+            let restrict_zoom = || self.restrict_zoom.get();
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(@weak inst as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
+                        if restrict_zoom() {
+                            let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
 
-                        let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
-                        canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                        canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+                            let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+                            canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                            canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+                        }
 
                         // Stop event propagation
                         Inhibit(true)
@@ -333,6 +355,9 @@ mod imp {
                     @strong bbcenter_begin,
                     @strong adjs_begin,
                     @weak inst as canvaswrapper => move |gesture, _| {
+                        if restrict_zoom() {
+                            return;
+                        }
                         gesture.set_state(EventSequenceState::Claimed);
                         let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
@@ -438,6 +463,9 @@ mod imp {
                     @strong zoom_begin,
                     @strong prev_offset,
                     @weak inst as canvaswrapper => move |gesture, _, _| {
+                        if restrict_zoom() {
+                            return;
+                        }
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
@@ -533,6 +561,16 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_show_scrollbars(&self, show_scrollbars: bool) {
         self.set_property("show-scrollbars", show_scrollbars.to_value());
+    }
+    #[allow(unused)]
+    pub(crate) fn restrict_zoom(&self) -> bool {
+        self.property::<bool>("show-scrollbars")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_restrict_zoom(&self, restrict_zoom: bool) {
+        println!("restrictzoom: {}", restrict_zoom);
+        self.set_property("restrict-zoom", restrict_zoom.to_value());
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {

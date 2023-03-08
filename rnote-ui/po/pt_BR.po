@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-26 03:39+0000\n"
+"PO-Revision-Date: 2023-03-08 19:39+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -125,11 +125,8 @@ msgid "Save"
 msgstr "Salvar"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:29
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Tab"
-msgstr "Fechar janela ativa"
+msgstr "Fechar aba"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
@@ -138,11 +135,8 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the active window"
 msgid "Close Window"
-msgstr "Fechar janela ativa"
+msgstr "Fechar janela"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:42
 msgid ""
@@ -161,8 +155,6 @@ msgid "Discard All"
 msgstr "Descartar tudo"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:60
-#, fuzzy
-#| msgid "Edit workspace"
 msgid "Edit Workspace"
 msgstr "Editar área de trabalho"
 
@@ -172,7 +164,6 @@ msgid "Apply"
 msgstr "Aplicar"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:110
-#, fuzzy
 msgid "Workspace Name"
 msgstr "Área de trabalho"
 
@@ -198,9 +189,8 @@ msgid "Directory"
 msgstr "Diretório"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:150
-#, fuzzy
 msgid "Change the workspace directory"
-msgstr "Trocar o diretório da área de trabalho"
+msgstr "Alterar o diretório da área de trabalho"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
@@ -209,9 +199,8 @@ msgid "- no directory selected -"
 msgstr "- nenhum diretório selecionado -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:173
-#, fuzzy
 msgid "Change the directory"
-msgstr "Trocar o diretório da área de trabalho"
+msgstr "Alterar o diretório"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:85
 msgid "Open File"
@@ -253,8 +242,6 @@ msgid "End Page"
 msgstr "Adicionar página"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
-#, fuzzy
-#| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "Largura da página (%)"
 
@@ -264,8 +251,6 @@ msgstr ""
 "Definir a largura do PDF importado em porcentagem para a largura do modelo"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "Espaçamento da página"
 
@@ -284,8 +269,6 @@ msgid "One per Document Page"
 msgstr "Um por página do documento"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
-#, fuzzy
-#| msgid "Pages type"
 msgid "Pages Type"
 msgstr "Tipo de páginas"
 
@@ -351,10 +334,8 @@ msgid "Export"
 msgstr "Exportar"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Import file"
 msgid "Export File"
-msgstr "Importar arquivo"
+msgstr "Exportar arquivo"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 #, fuzzy
@@ -410,10 +391,8 @@ msgstr "Definir cor do plano de fundo"
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
-#, fuzzy
-#| msgid "Export document"
 msgid "Export Format"
-msgstr "Exportar documento"
+msgstr "Exportar formato"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279
@@ -498,7 +477,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr ""
+msgstr "Margem"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"

@@ -76,13 +76,16 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
             lib_dir()?.join("/gdk-pixbuf-2.0/2.10.0/loaders"),
         );
     } else if cfg!(target_os = "macos") {
-        let data_dir = data_dir()?;
-        let lib_dir = lib_dir()?;
-        std::env::set_var("XDG_DATA_DIRS", data_dir);
-        std::env::set_var(
-            "GDK_PIXBUF_MODULE_FILE",
-            lib_dir.join("gdk-pixbuf-2.0/2.10.0/loaders.cache"),
-        );
+        let exec_dir = std::env::current_dir()?.canonicalize()?;
+        if macos_is_in_app_bundle(exec_dir) {
+            let data_dir = data_dir()?;
+            let lib_dir = lib_dir()?;
+            std::env::set_var("XDG_DATA_DIRS", data_dir);
+            std::env::set_var(
+                "GDK_PIXBUF_MODULE_FILE",
+                lib_dir.join("gdk-pixbuf-2.0/2.10.0/loaders.cache"),
+            );
+        }
     }
     Ok(())
 }

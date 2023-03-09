@@ -1,6 +1,6 @@
 use super::RnAppWindow;
 use crate::canvas::RnCanvasLayout;
-use crate::config;
+use crate::{config, env};
 use crate::{dialogs, RnCanvas};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
@@ -283,7 +283,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
 
-                appwindow.active_tab().canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKGDATADIR)));
+                appwindow.active_tab().canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, env::pkg_data_dir().ok());
 
                 action_pen_sounds.set_state(&pen_sounds.to_variant());
             }),

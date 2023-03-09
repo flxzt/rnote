@@ -1,20 +1,21 @@
 mod appactions;
 
+// Imports
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::pens::PenStyle;
-use std::path::Path;
 
 use crate::{
-    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, penssidebar::RnBrushPage,
-    penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
-    penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
-    strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
-    strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
-    workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
-    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
-    RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, env, globals,
+    penssidebar::RnBrushPage, penssidebar::RnEraserPage, penssidebar::RnSelectorPage,
+    penssidebar::RnShaperPage, penssidebar::RnToolsPage, penssidebar::RnTypewriterPage,
+    settingspanel::RnPenShortcutRow, strokewidthpicker::RnStrokeWidthPreview,
+    strokewidthpicker::RnStrokeWidthSetter, strokewidthpicker::StrokeWidthPreviewStyle,
+    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
+    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
+    RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
+    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 
 mod imp {
@@ -102,8 +103,11 @@ mod imp {
 
         fn setup_i18n(&self) {
             gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
-            gettextrs::bindtextdomain(config::GETTEXT_PACKAGE, config::LOCALEDIR)
-                .expect("Unable to bind the text domain");
+            gettextrs::bindtextdomain(
+                config::GETTEXT_PACKAGE,
+                env::locale_dir().expect("Could not get locale dir while setting up i18n"),
+            )
+            .expect("Unable to bind the text domain");
             gettextrs::textdomain(config::GETTEXT_PACKAGE)
                 .expect("Unable to switch to the text domain");
         }
@@ -144,8 +148,12 @@ mod imp {
 
             self.instance()
                 .set_resource_base_path(Some(config::APP_IDPATH));
-            let resource = gio::Resource::load(Path::new(config::RESOURCES_FILE))
-                .expect("Could not load gresource file");
+            let resource = gio::Resource::load(
+                env::pkg_data_dir()
+                    .expect("Could not retrieve pkg data dir")
+                    .join(globals::GRESOURCES_FILENAME),
+            )
+            .expect("Could not load gresource file");
             gio::resources_register(&resource);
         }
     }

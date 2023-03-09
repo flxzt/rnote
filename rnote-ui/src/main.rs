@@ -12,6 +12,7 @@ mod canvaswrapper;
 mod colorpicker;
 pub(crate) mod config;
 pub(crate) mod dialogs;
+pub(crate) mod env;
 pub(crate) mod globals;
 pub(crate) mod groupediconpicker;
 mod iconpicker;
@@ -48,74 +49,12 @@ extern crate parry2d_f64 as p2d;
 use gtk4::prelude::*;
 
 fn main() -> anyhow::Result<()> {
-    #[cfg(target_os = "windows")]
-    if let Err(e) = setup_windows_env() {
-        eprintln!("failed to setup env for windows, Err: {e:?}");
-    }
-    #[cfg(target_os = "macos")]
-    if let Err(e) = setup_macos_env() {
-        eprintln!("failed to setup env for macos, Err: {e:?}");
+    if let Err(e) = env::setup_env() {
+        eprintln!("failed to setup env, Err: {e:?}");
     }
 
     let app = RnApp::new();
     app.run();
 
-    Ok(())
-}
-
-/// we need to set some env vars on windows
-#[cfg(target_os = "windows")]
-fn setup_windows_env() -> anyhow::Result<()> {
-    use std::path::PathBuf;
-
-    std::env::set_var(
-        "XDG_DATA_DIRS",
-        PathBuf::from(config::DATADIR).canonicalize()?,
-    );
-    std::env::set_var(
-        "GDK_PIXBUF_MODULEDIR",
-        PathBuf::from(config::LIBDIR)
-            .canonicalize()?
-            .join("/gdk-pixbuf-2.0/2.10.0/loaders"),
-    );
-    // for debugging
-    //std::env::set_var("RUST_LOG", "rnote=debug");
-    Ok(())
-}
-
-/// we need to set some env vars for macos app bundles
-#[cfg(target_os = "macos")]
-fn setup_macos_env() -> anyhow::Result<()> {
-    use std::ffi::OsStr;
-    use std::path::Component;
-
-    let current_dir = std::env::current_dir()?.canonicalize()?;
-    if current_dir
-        .components()
-        .zip(current_dir.components().skip(1))
-        .any(|(a, b)| {
-            if let (Component::Normal(a), Component::Normal(b)) = (a, b) {
-                a == OsStr::new("Contents") && b == OsStr::new("MacOS")
-            } else {
-                false
-            }
-        })
-    {
-        let exec_dir_name = current_dir
-            .file_name()
-            .ok_or(anyhow::anyhow!(
-                "Failed to retrieve name of the executable directory while setting up macos env."
-            ))?
-            .to_owned();
-        let mut xdg_data_dir = exec_dir_name.clone();
-        xdg_data_dir.push(OsStr::new("/../Resources/share"));
-        std::env::set_var("XDG_DATA_DIRS", &xdg_data_dir);
-
-        let mut pixbuf_module_file = exec_dir_name.clone();
-        pixbuf_module_file.push(OsStr::new(
-            "/../Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache",
-        ));
-        std::env::set_var("GDK_PIXBUF_MODULE_FILE", pixbuf_module_file);
-    }
     Ok(())
 }

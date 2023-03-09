@@ -87,7 +87,7 @@ fn setup_windows_env() -> anyhow::Result<()> {
 #[cfg(target_os = "macos")]
 fn setup_macos_env() -> anyhow::Result<()> {
     use std::ffi::OsStr;
-    use std::path::{Component, PathBuf};
+    use std::path::Component;
 
     let current_dir = std::env::current_dir()?.canonicalize()?;
     if current_dir
@@ -101,13 +101,21 @@ fn setup_macos_env() -> anyhow::Result<()> {
             }
         })
     {
-        std::env::set_var("XDG_DATA_DIRS", &current_dir.join("/../Resources/share"));
-        std::env::set_var(
-            "GDK_PIXBUF_MODULE_FILE",
-            current_dir.join(PathBuf::from(
-                "/../Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders/loaders.cache",
-            )),
-        );
+        let exec_dir_name = current_dir
+            .file_name()
+            .ok_or(anyhow::anyhow!(
+                "Failed to retrieve name of the executable directory while setting up macos env."
+            ))?
+            .to_owned();
+        let mut xdg_data_dir = exec_dir_name.clone();
+        xdg_data_dir.push(OsStr::new("/../Resources/share"));
+        std::env::set_var("XDG_DATA_DIRS", &xdg_data_dir);
+
+        let mut pixbuf_module_file = exec_dir_name.clone();
+        pixbuf_module_file.push(OsStr::new(
+            "/../Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache",
+        ));
+        std::env::set_var("GDK_PIXBUF_MODULE_FILE", pixbuf_module_file);
     }
     Ok(())
 }

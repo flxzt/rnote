@@ -3,26 +3,11 @@ use std::path::{Component, Path, PathBuf};
 
 use crate::config;
 
-// this returns true when the app is packaged as a relocatable application bundle
-fn macos_is_in_app_bundle(exec_dir: impl AsRef<Path>) -> bool {
-    exec_dir
-        .as_ref()
-        .components()
-        .zip(exec_dir.as_ref().components().skip(1))
-        .any(|(a, b)| {
-            if let (Component::Normal(a), Component::Normal(b)) = (a, b) {
-                a == OsStr::new("Contents") && b == OsStr::new("MacOS")
-            } else {
-                false
-            }
-        })
-}
-
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
         Ok(PathBuf::from("../").join(config::LIBDIR))
     } else if cfg!(target_os = "macos") {
-        let exec_dir = std::env::current_dir()?.canonicalize()?;
+        let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(&exec_dir) {
             let exec_dir_name = PathBuf::from(exec_dir.file_name().ok_or(anyhow::anyhow!(
                 "Could not get name of the executable directory while retrieving the lib dir"
@@ -40,7 +25,7 @@ pub(crate) fn data_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
         Ok(PathBuf::from("../").join(config::DATADIR))
     } else if cfg!(target_os = "macos") {
-        let exec_dir = std::env::current_dir()?.canonicalize()?;
+        let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(&exec_dir) {
             let exec_dir_name = PathBuf::from(exec_dir.file_name().ok_or(anyhow::anyhow!(
                 "Could not get name of the executable directory while retrieving the data dir"
@@ -76,7 +61,7 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
             lib_dir()?.join("/gdk-pixbuf-2.0/2.10.0/loaders"),
         );
     } else if cfg!(target_os = "macos") {
-        let exec_dir = std::env::current_dir()?.canonicalize()?;
+        let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(exec_dir) {
             let data_dir = data_dir()?;
             let lib_dir = lib_dir()?;
@@ -88,4 +73,28 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
         }
     }
     Ok(())
+}
+
+fn canonicalized_exec_parent_dir() -> anyhow::Result<PathBuf> {
+    Ok(std::env::current_exe()?
+        .parent()
+        .ok_or(anyhow::anyhow!(
+            "could not get parent dir of executable path"
+        ))?
+        .canonicalize()?)
+}
+
+// this returns true when the app is packaged as a relocatable application bundle
+fn macos_is_in_app_bundle(exec_dir: impl AsRef<Path>) -> bool {
+    exec_dir
+        .as_ref()
+        .components()
+        .zip(exec_dir.as_ref().components().skip(1))
+        .any(|(a, b)| {
+            if let (Component::Normal(a), Component::Normal(b)) = (a, b) {
+                a == OsStr::new("Contents") && b == OsStr::new("MacOS")
+            } else {
+                false
+            }
+        })
 }

@@ -7,15 +7,14 @@ use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::pens::PenStyle;
 
 use crate::{
-    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, env, globals,
-    penssidebar::RnBrushPage, penssidebar::RnEraserPage, penssidebar::RnSelectorPage,
-    penssidebar::RnShaperPage, penssidebar::RnToolsPage, penssidebar::RnTypewriterPage,
-    settingspanel::RnPenShortcutRow, strokewidthpicker::RnStrokeWidthPreview,
-    strokewidthpicker::RnStrokeWidthSetter, strokewidthpicker::StrokeWidthPreviewStyle,
-    workspacebrowser::workspacesbar::RnWorkspaceRow, workspacebrowser::RnFileRow,
-    workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu,
-    RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays, RnPensSideBar,
-    RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
+    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, globals, penssidebar::RnBrushPage,
+    penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
+    penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
+    strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
+    strokewidthpicker::StrokeWidthPreviewStyle, workspacebrowser::workspacesbar::RnWorkspaceRow,
+    workspacebrowser::RnFileRow, workspacebrowser::RnWorkspacesBar, RnAppMenu, RnAppWindow,
+    RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
+    RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
 
 mod imp {
@@ -105,7 +104,7 @@ mod imp {
             gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
             gettextrs::bindtextdomain(
                 config::GETTEXT_PACKAGE,
-                env::locale_dir().expect("Could not get locale dir while setting up i18n"),
+                crate::env::locale_dir().expect("Could not get locale dir while setting up i18n"),
             )
             .expect("Unable to bind the text domain");
             gettextrs::textdomain(config::GETTEXT_PACKAGE)
@@ -149,7 +148,7 @@ mod imp {
             self.instance()
                 .set_resource_base_path(Some(config::APP_IDPATH));
             let resource = gio::Resource::load(
-                env::pkg_data_dir()
+                crate::env::pkg_data_dir()
                     .expect("Could not retrieve pkg data dir")
                     .join(globals::GRESOURCES_FILENAME),
             )

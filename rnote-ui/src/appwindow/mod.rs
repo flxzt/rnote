@@ -18,7 +18,7 @@ use std::path::Path;
 use std::rc::Rc;
 
 use crate::{
-    config, env, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
+    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
     {dialogs, RnMainHeader},
 };
 
@@ -286,7 +286,7 @@ impl RnAppWindow {
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .load_engine_config(current_engine_config, env::pkg_data_dir().ok())
+                .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok())
             {
                 Ok(wf) => self.handle_widget_flags(wf, &new_wrapper.canvas()),
                 Err(e) => {
@@ -846,7 +846,7 @@ impl RnAppWindow {
             widget_flags.merge(active_engine.reinstall_pen_current_style());
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), env::pkg_data_dir().ok());
+            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
             active_engine.visual_debug = prev_engine.visual_debug;
         }
 

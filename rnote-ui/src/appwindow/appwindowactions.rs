@@ -1,7 +1,7 @@
-use super::RnAppWindow;
-use crate::canvas::RnCanvasLayout;
-use crate::{config, env};
-use crate::{dialogs, RnCanvas};
+use gettextrs::gettext;
+use gtk4::{
+    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
+};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penevents::ShortcutKey;
@@ -9,13 +9,10 @@ use rnote_engine::document::Layout;
 use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
-
-use gettextrs::gettext;
-use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
-};
 use std::path::PathBuf;
 use std::time::Instant;
+
+use crate::{canvas::RnCanvasLayout, config, dialogs, RnAppWindow, RnCanvas};
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
@@ -283,7 +280,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
 
-                appwindow.active_tab().canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, env::pkg_data_dir().ok());
+                appwindow.active_tab().canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
 
                 action_pen_sounds.set_state(&pen_sounds.to_variant());
             }),

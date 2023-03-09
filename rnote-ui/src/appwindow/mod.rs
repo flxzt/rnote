@@ -286,7 +286,7 @@ impl RnAppWindow {
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .load_engine_config(current_engine_config, Some(config::DATADIR.into()))
+                .load_engine_config(current_engine_config, Some(config::PKGDATADIR.into()))
             {
                 Ok(wf) => self.handle_widget_flags(wf, &new_wrapper.canvas()),
                 Err(e) => {
@@ -846,7 +846,7 @@ impl RnAppWindow {
             widget_flags.merge(active_engine.reinstall_pen_current_style());
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), Some(config::DATADIR.into()));
+            active_engine.set_pen_sounds(prev_engine.pen_sounds(), Some(config::PKGDATADIR.into()));
             active_engine.visual_debug = prev_engine.visual_debug;
         }
 

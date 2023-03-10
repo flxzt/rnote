@@ -5,7 +5,7 @@ use crate::config;
 
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
-        Ok(PathBuf::from("../").join(config::LIBDIR))
+        Ok(PathBuf::from(String::from("./..") + config::LIBDIR))
     } else if cfg!(target_os = "macos") {
         let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(&exec_dir) {
@@ -23,7 +23,7 @@ pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
 
 pub(crate) fn data_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
-        Ok(PathBuf::from("../").join(config::DATADIR))
+        Ok(PathBuf::from(String::from("./..") + config::DATADIR))
     } else if cfg!(target_os = "macos") {
         let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(&exec_dir) {
@@ -45,7 +45,7 @@ pub(crate) fn pkg_data_dir() -> anyhow::Result<PathBuf> {
 
 pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
-        Ok(PathBuf::from("../").join(config::LOCALEDIR))
+        Ok(PathBuf::from(String::from("./..") + config::LOCALEDIR))
     } else {
         Ok(PathBuf::from(config::LOCALEDIR))
     }
@@ -58,7 +58,7 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
         std::env::set_var("XDG_DATA_DIRS", data_dir);
         std::env::set_var(
             "GDK_PIXBUF_MODULEDIR",
-            lib_dir()?.join("/gdk-pixbuf-2.0/2.10.0/loaders"),
+            lib_dir()?.join("gdk-pixbuf-2.0/2.10.0/loaders"),
         );
     } else if cfg!(target_os = "macos") {
         let exec_dir = canonicalized_exec_parent_dir()?;

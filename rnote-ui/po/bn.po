@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-16 01:36+0000\n"
+"PO-Revision-Date: 2023-03-10 13:38+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -388,8 +388,6 @@ msgid "Export Document Pages"
 msgstr "নথির পৃষ্ঠা রপ্তানী করুন"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Files Naming:"
 msgstr "পৃষ্ঠা ফাইলের নামকরণ:"
 
@@ -514,8 +512,6 @@ msgstr ""
 "এর ফলে সবচেয়ে ভালো হাতের লেখা পাওয়া যায়।"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
-#, fuzzy
-#| msgid "Solid style"
 msgid "Solid Style"
 msgstr "পূর্ণ করা স্টাইল"
 
@@ -1091,15 +1087,15 @@ msgstr "_বন্ধ করুন"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "অস্থায়ী"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "স্থায়ী"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "টগল"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1303,48 +1299,48 @@ msgid "Stylus Primary Button Action"
 msgstr "স্টাইলাস প্রাথমিক বোতাম কর্ম"
 
 #: rnote-ui/data/ui/settingspanel.ui:370
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
-msgstr "প্রাথমিক স্টাইলাস বোতামের জন্য ক্রিয়া সেট করুন"
+msgstr ""
+"ক্রিয়া সেট করুন\n"
+"প্রাথমিক স্টাইলাস বোতামের জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "স্টাইলাস গৌণ বোতাম কর্ম"
 
 #: rnote-ui/data/ui/settingspanel.ui:383
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
-msgstr "গৌণ স্টাইলাস বোতামের জন্য ক্রিয়া সেট করুন"
+msgstr ""
+"ক্রিয়া সেট করুন\n"
+"গৌণ স্টাইলাস বোতামের জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "স্টাইলাস গৌণ বোতাম কর্ম"
 
 #: rnote-ui/data/ui/settingspanel.ui:396
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
-msgstr "গৌণ মাউস বোতামের জন্য ক্রিয়া সেট করুন"
+msgstr ""
+"ক্রিয়া সেট করুন\n"
+"গৌণ মাউস বোতামের জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "টাচের দুই-আঙ্গুলের দীর্ঘ-প্রেস অ্যাকশন"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
-#, fuzzy
-#| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
-msgstr "দুই আঙ্গুল দিরঘ-প্রেস টাচের জন্য ক্রিয়া সেট করুন"
+msgstr ""
+"ক্রিয়া সেট করুন\n"
+"দুই আঙ্গুল দীর্ঘ-প্রেস টাচের জন্য"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1395,16 +1391,18 @@ msgid "Switch to the 'Tools'"
 msgstr "'টুলস'-এ পরিবর্তন করুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
+#, fuzzy
 msgid "Alt + Drag"
-msgstr "Alt + Drag"
+msgstr "Alt + টেনে আনুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 msgid "Zoom in/out"
 msgstr "জুম ইন/আউট"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
+#, fuzzy
 msgid "Alt + Shift + Drag"
-msgstr "Alt + Shift + Drag"
+msgstr "Alt + Shift + টেনে আনুন"
 
 #: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
 msgid "Document"

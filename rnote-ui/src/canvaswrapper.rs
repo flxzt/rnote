@@ -355,9 +355,6 @@ mod imp {
                     @strong bbcenter_begin,
                     @strong adjs_begin,
                     @weak inst as canvaswrapper => move |gesture, _| {
-                        if restrict_zoom() {
-                            return;
-                        }
                         gesture.set_state(EventSequenceState::Claimed);
                         let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
 
@@ -570,7 +567,8 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_restrict_zoom(&self, restrict_zoom: bool) {
         println!("restrictzoom: {}", restrict_zoom);
-        self.set_property("restrict-zoom", restrict_zoom.to_value());
+        self.set_property("restrict-zoom", restrict_zoom);
+        self.canvas_zoom_gesture_enable(!restrict_zoom);
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {

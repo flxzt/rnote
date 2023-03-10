@@ -102,7 +102,7 @@ mod imp {
 
             Self {
                 show_scrollbars: Cell::new(false),
-                restrict_zoom: Cell::new(true),
+                restrict_zoom: Cell::new(false),
 
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
@@ -193,7 +193,7 @@ mod imp {
                         "restrict-zoom",
                         "restrict-zoom",
                         "restrict-zoom",
-                        true,
+                        false,
                         glib::ParamFlags::READWRITE,
                     ),
                 ]

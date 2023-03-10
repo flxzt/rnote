@@ -5,7 +5,8 @@ use crate::config;
 
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
-        Ok(PathBuf::from(String::from("./..") + config::LIBDIR))
+        let exec_dir = canonicalized_exec_parent_dir()?;
+        Ok(exec_dir.join("../lib"))
     } else if cfg!(target_os = "macos") {
         let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(&exec_dir) {
@@ -23,7 +24,8 @@ pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
 
 pub(crate) fn data_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
-        Ok(PathBuf::from(String::from("./..") + config::DATADIR))
+        let exec_dir = canonicalized_exec_parent_dir()?;
+        Ok(exec_dir.join("../share"))
     } else if cfg!(target_os = "macos") {
         let exec_dir = canonicalized_exec_parent_dir()?;
         if macos_is_in_app_bundle(&exec_dir) {
@@ -45,7 +47,18 @@ pub(crate) fn pkg_data_dir() -> anyhow::Result<PathBuf> {
 
 pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
-        Ok(PathBuf::from(String::from("./..") + config::LOCALEDIR))
+        let exec_dir = canonicalized_exec_parent_dir()?;
+        Ok(exec_dir.join("../share/locale"))
+    } else if cfg!(target_os = "macos") {
+        let exec_dir = canonicalized_exec_parent_dir()?;
+        if macos_is_in_app_bundle(&exec_dir) {
+            let exec_dir_name = PathBuf::from(exec_dir.file_name().ok_or(anyhow::anyhow!(
+                "Could not get name of the executable directory while retrieving the locale dir"
+            ))?);
+            Ok(exec_dir_name.join("../Resources/share/locale"))
+        } else {
+            Ok(PathBuf::from(config::LOCALEDIR))
+        }
     } else {
         Ok(PathBuf::from(config::LOCALEDIR))
     }

@@ -47,6 +47,20 @@ The file format is still unstable. It might change and break compatibility betwe
 
 Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 
+# License
+
+Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
 ## Installation
 
 Rnote is available as a flatpak on Flathub:
@@ -155,7 +169,6 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
         <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
         <img alt="Suits" src="./misc/drawings/suits.png" height="400">
 </div><br>
-
 
 ## Building
 

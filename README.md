@@ -47,25 +47,6 @@ The file format is still unstable. It might change and break compatibility betwe
 
 Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 
-# License
-
-Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
-
-    Copyright (C) 2023  The Rnote Authors
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 ## Installation
 
 Rnote is available as a flatpak on Flathub:
@@ -105,6 +86,25 @@ To update to the lastest version again, unpin and run `flatpak update`.
 ![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)  
 ![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)  
 ![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)  
+
+## License
+
+Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
+
+    Copyright (C) 2023  The Rnote Authors
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## Pitfalls & Known Issues
 

@@ -21,13 +21,10 @@ use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, RefCell};
-use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::Duration;
 
-use crate::appwindow::RnAppWindow;
-use crate::canvaswrapper::RnCanvasWrapper;
-use crate::config;
+use crate::{config, RnAppWindow, RnCanvasWrapper};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -662,7 +659,7 @@ impl RnCanvas {
         let widget_flags = match self
             .engine()
             .borrow_mut()
-            .import_engine_config_from_json(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
+            .import_engine_config_from_json(&engine_config, crate::env::pkg_data_dir().ok())
         {
             Err(e) => {
                 if engine_config.is_empty() {

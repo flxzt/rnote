@@ -12,6 +12,7 @@ mod canvaswrapper;
 mod colorpicker;
 pub(crate) mod config;
 pub(crate) mod dialogs;
+pub(crate) mod env;
 pub(crate) mod globals;
 pub(crate) mod groupediconpicker;
 mod iconpicker;
@@ -42,38 +43,18 @@ pub(crate) use strokewidthpicker::RnStrokeWidthPicker;
 pub(crate) use unitentry::RnUnitEntry;
 pub(crate) use workspacebrowser::RnWorkspaceBrowser;
 
-use gtk4::prelude::*;
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
+use gtk4::prelude::*;
+
 fn main() -> anyhow::Result<()> {
-    #[cfg(target_os = "windows")]
-    if let Err(e) = setup_windows_env() {
-        eprintln!("failed to setup env for windows, Err: {e:?}");
+    if let Err(e) = env::setup_env() {
+        eprintln!("failed to setup env, Err: {e:?}");
     }
 
     let app = RnApp::new();
     app.run();
 
-    Ok(())
-}
-
-/// we need to set some env vars on windows
-#[cfg(target_os = "windows")]
-fn setup_windows_env() -> anyhow::Result<()> {
-    use std::path::PathBuf;
-
-    std::env::set_var(
-        "XDG_DATA_DIRS",
-        PathBuf::from(config::DATADIR).canonicalize()?,
-    );
-    std::env::set_var(
-        "GDK_PIXBUF_MODULEDIR",
-        PathBuf::from(config::LIBDIR)
-            .canonicalize()?
-            .join("/gdk-pixbuf-2.0/2.10.0/loaders"),
-    );
-    // for debugging
-    //std::env::set_var("RUST_LOG", "rnote=debug");
     Ok(())
 }

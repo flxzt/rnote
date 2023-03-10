@@ -51,6 +51,8 @@ Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 
 Rnote is available under the GPL-3.0-or-later. See the LICENSE file for more info.
 
+    Copyright (C) 2023  The Rnote Authors
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or

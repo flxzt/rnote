@@ -12,7 +12,7 @@ pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
             let exec_dir_name = PathBuf::from(exec_dir.file_name().ok_or(anyhow::anyhow!(
                 "Could not get name of the executable directory while retrieving the lib dir"
             ))?);
-            Ok(exec_dir_name.join("/../Resources/lib"))
+            Ok(exec_dir_name.join("../Resources/lib"))
         } else {
             Ok(PathBuf::from(config::LIBDIR))
         }
@@ -30,7 +30,7 @@ pub(crate) fn data_dir() -> anyhow::Result<PathBuf> {
             let exec_dir_name = PathBuf::from(exec_dir.file_name().ok_or(anyhow::anyhow!(
                 "Could not get name of the executable directory while retrieving the data dir"
             ))?);
-            Ok(exec_dir_name.join("/../Resources/share"))
+            Ok(exec_dir_name.join("../Resources/share"))
         } else {
             Ok(PathBuf::from(config::DATADIR))
         }

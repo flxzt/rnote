@@ -28,8 +28,8 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         .modal(true)
         .transient_for(appwindow)
         .application_name(config::APP_NAME_CAPITALIZED)
-        .application_icon(&app_icon_name)
-        .comments(&gettext("Sketch and take handwritten notes"))
+        .application_icon(app_icon_name)
+        .comments(gettext("Sketch and take handwritten notes"))
         .website(config::APP_WEBSITE)
         .issue_url(config::APP_ISSUES_URL)
         .support_url(config::APP_SUPPORT_URL)
@@ -41,7 +41,7 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
                 .collect::<Vec<String>>(),
         ))
         // TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-        .translator_credits(&gettext("translator-credits"))
+        .translator_credits(gettext("translator-credits"))
         .license_type(globals::APP_LICENSE)
         .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
@@ -387,11 +387,11 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Change Workspace Directory"))
+        .title(gettext("Change Workspace Directory"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Select"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Select"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::SelectFolder)
         .select_multiple(false)
         .build();

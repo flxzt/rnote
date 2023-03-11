@@ -239,7 +239,7 @@ impl RnIconPicker {
 
             list_item.set_child(Some(&icon_image));
 
-            let list_item_expr = ConstantExpression::new(&list_item);
+            let list_item_expr = ConstantExpression::new(list_item);
 
             let icon_name_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item")

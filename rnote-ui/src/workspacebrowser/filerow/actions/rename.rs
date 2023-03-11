@@ -55,7 +55,7 @@ fn create_label() -> Label {
     let label = Label::builder()
         .margin_bottom(12)
         .halign(Align::Center)
-        .label(&gettext("Rename"))
+        .label(gettext("Rename"))
         .width_chars(24)
         .ellipsize(pango::EllipsizeMode::End)
         .build();

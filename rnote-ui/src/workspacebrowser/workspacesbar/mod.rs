@@ -261,7 +261,7 @@ impl RnWorkspacesBar {
 
         if let Err(e) = settings.set(
             "selected-workspace-index",
-            &self.selected_workspace_index().unwrap_or(0),
+            self.selected_workspace_index().unwrap_or(0),
         ) {
             log::error!("saving `selected-workspace-index` to settings failed with Err: {e:?}");
         }

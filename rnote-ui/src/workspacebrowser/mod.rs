@@ -197,7 +197,7 @@ fn setup_file_rows(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
 
         list_item.set_child(Some(&filerow));
 
-        let list_item_expr = ConstantExpression::new(&list_item);
+        let list_item_expr = ConstantExpression::new(list_item);
         let fileinfo_expr =
             PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
 

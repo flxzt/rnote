@@ -137,7 +137,7 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorsetter_color {colorsetter_color}; @define-color colorsetter_fg_color {colorsetter_fg_color};",
             );
-            css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(&custom_css);
 
             self.instance()
                 .style_context()
@@ -164,7 +164,7 @@ impl RnColorSetter {
     pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

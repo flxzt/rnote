@@ -199,7 +199,7 @@ impl RnCanvasLayout {
     pub(crate) const OVERSHOOT_HORIZONTAL: f64 = 96.0;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     // needs to be called after zooming

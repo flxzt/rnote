@@ -115,7 +115,7 @@ impl Default for RnGroupedIconPicker {
 
 impl RnGroupedIconPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

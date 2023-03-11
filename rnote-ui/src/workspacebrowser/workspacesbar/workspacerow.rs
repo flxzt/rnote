@@ -170,7 +170,7 @@ mod imp {
                 "@define-color workspacerow_color {workspacerow_color};@define-color workspacerow_fg_color {workspacerow_fg_color};",
             );
 
-            css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(&custom_css);
 
             self.instance()
                 .style_context()
@@ -194,7 +194,9 @@ impl Default for RnWorkspaceRow {
 
 impl RnWorkspaceRow {
     pub(crate) fn new(entry: &RnWorkspaceListEntry) -> Self {
-        glib::Object::new(&[("entry", &entry.to_value())])
+        glib::Object::builder()
+            .property("entry", &entry.to_value())
+            .build()
     }
 
     #[allow(unused)]

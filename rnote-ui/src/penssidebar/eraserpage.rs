@@ -63,7 +63,7 @@ impl Default for RnEraserPage {
 
 impl RnEraserPage {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

@@ -107,7 +107,7 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorpad_color {colorpad_color}; @define-color colorpad_fg_color {colorpad_fg_color};",
             );
-            css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(&custom_css);
 
             self.instance()
                 .style_context()
@@ -134,7 +134,7 @@ impl RnColorPad {
     pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

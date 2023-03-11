@@ -254,7 +254,7 @@ impl Default for RnStrokeWidthPicker {
 
 impl RnStrokeWidthPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

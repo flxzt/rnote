@@ -10,7 +10,7 @@ rust-version = "1.65"
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.55.90" }
+librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.55.91" }
 # This needs to be this exact version, the latest (v0.8.6) causes panics when importing pdfs
 string_cache = "=0.8.4"
 
@@ -34,10 +34,10 @@ slotmap = { version = "1", features = ["serde"] }
 rstar = "0.9"
 nalgebra = { version = "0.31", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.12", features = ["serde-serialize"] }
-gtk4 = {version = "0.5", features = ["v4_8"]}
-cairo-rs = {version = "0.16", features = ["png", "svg", "pdf"]}
+gtk4 = {version = "0.6", features = ["v4_8"]}
+cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
 # newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
-poppler-rs = {version = "0.20", features = ["v20_9"] }
+poppler-rs = {version = "0.21", features = ["v20_9"] }
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9"

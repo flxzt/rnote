@@ -172,9 +172,9 @@ impl Default for RnApp {
 
 impl RnApp {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[
-            ("application-id", &config::APP_ID),
-            ("flags", &gio::ApplicationFlags::HANDLES_OPEN),
-        ])
+        glib::Object::builder()
+            .property("application-id", &config::APP_ID)
+            .property("flags", &gio::ApplicationFlags::HANDLES_OPEN)
+            .build()
     }
 }

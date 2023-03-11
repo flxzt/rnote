@@ -96,7 +96,7 @@ impl Default for RnTypewriterPage {
 
 impl RnTypewriterPage {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

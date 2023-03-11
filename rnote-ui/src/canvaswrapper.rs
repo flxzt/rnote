@@ -142,19 +142,21 @@ mod imp {
 
             // Add input controllers
             self.scroller
-                .add_controller(&self.canvas_touch_drag_gesture);
+                .add_controller(self.canvas_touch_drag_gesture.clone());
             self.scroller
-                .add_controller(&self.canvas_drag_empty_area_gesture);
-            self.scroller.add_controller(&self.canvas_zoom_gesture);
+                .add_controller(self.canvas_drag_empty_area_gesture.clone());
             self.scroller
-                .add_controller(&self.canvas_zoom_scroll_controller);
+                .add_controller(self.canvas_zoom_gesture.clone());
             self.scroller
-                .add_controller(&self.canvas_mouse_drag_middle_gesture);
-            self.scroller.add_controller(&self.canvas_alt_drag_gesture);
+                .add_controller(self.canvas_zoom_scroll_controller.clone());
             self.scroller
-                .add_controller(&self.canvas_alt_shift_drag_gesture);
+                .add_controller(self.canvas_mouse_drag_middle_gesture.clone());
             self.scroller
-                .add_controller(&self.touch_two_finger_long_press_gesture);
+                .add_controller(self.canvas_alt_drag_gesture.clone());
+            self.scroller
+                .add_controller(self.canvas_alt_shift_drag_gesture.clone());
+            self.scroller
+                .add_controller(self.touch_two_finger_long_press_gesture.clone());
 
             // group
             self.touch_two_finger_long_press_gesture
@@ -522,7 +524,7 @@ impl Default for RnCanvasWrapper {
 
 impl RnCanvasWrapper {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

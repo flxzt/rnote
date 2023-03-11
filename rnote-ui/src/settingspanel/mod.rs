@@ -294,7 +294,7 @@ impl Default for RnSettingsPanel {
 
 impl RnSettingsPanel {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn format_predefined_format(&self) -> PredefinedFormat {

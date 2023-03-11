@@ -127,7 +127,7 @@ impl RnPenShortcutRow {
     #[allow(clippy::new_without_default)]
     #[allow(unused)]
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

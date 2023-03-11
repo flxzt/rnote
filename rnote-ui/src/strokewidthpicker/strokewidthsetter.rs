@@ -104,7 +104,7 @@ impl Default for RnStrokeWidthSetter {
 
 impl RnStrokeWidthSetter {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

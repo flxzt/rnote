@@ -118,13 +118,13 @@ mod imp {
     impl RnFileRow {
         fn setup_input(&self) {
             let inst = self.instance();
-            inst.add_controller(&self.drag_source);
+            inst.add_controller(self.drag_source.clone());
 
             let rightclick_gesture = GestureClick::builder()
                 .name("rightclick_gesture")
                 .button(gdk::BUTTON_SECONDARY)
                 .build();
-            inst.add_controller(&rightclick_gesture);
+            inst.add_controller(rightclick_gesture.clone());
             rightclick_gesture.connect_pressed(
                 clone!(@weak inst as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
                     filerow.imp().popovermenu.popup();
@@ -135,7 +135,7 @@ mod imp {
                 .name("longpress_gesture")
                 .touch_only(true)
                 .build();
-            inst.add_controller(&longpress_gesture);
+            inst.add_controller(longpress_gesture.clone());
             longpress_gesture.group_with(&rightclick_gesture);
 
             longpress_gesture.connect_pressed(
@@ -160,7 +160,7 @@ impl Default for RnFileRow {
 
 impl RnFileRow {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

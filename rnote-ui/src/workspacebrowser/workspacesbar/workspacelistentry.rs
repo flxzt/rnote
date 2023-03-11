@@ -146,15 +146,15 @@ impl RnWorkspaceListEntry {
     pub(crate) const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
 
     pub(crate) fn new(inner: RnWorkspaceListEntryInner) -> Self {
-        glib::Object::new(&[
-            ("dir", &inner.dir.to_string_lossy().to_string().to_value()),
-            ("icon", &inner.icon.to_value()),
-            (
+        glib::Object::builder()
+            .property("dir", &inner.dir.to_string_lossy().to_string().to_value())
+            .property("icon", &inner.icon.to_value())
+            .property(
                 "color",
                 &gdk::RGBA::from_compose_color(rnote_compose::Color::from(inner.color)).to_value(),
-            ),
-            ("name", &inner.name.to_value()),
-        ])
+            )
+            .property("name", &inner.name.to_value())
+            .build()
     }
 
     pub(crate) fn replace_data(&self, entry: &Self) {

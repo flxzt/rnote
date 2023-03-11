@@ -472,7 +472,7 @@ pub(crate) static FILL_COLOR_DEFAULT: Lazy<Color> =
 
 impl RnColorPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

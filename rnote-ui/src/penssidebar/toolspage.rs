@@ -58,7 +58,7 @@ impl Default for RnToolsPage {
 
 impl RnToolsPage {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

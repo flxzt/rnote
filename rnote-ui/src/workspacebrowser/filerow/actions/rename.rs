@@ -46,7 +46,9 @@ fn create_entry(current_path: impl AsRef<Path>) -> Entry {
         .map(|current_file_name| current_file_name.to_string_lossy().to_string())
         .unwrap_or_else(|| String::from(""));
 
-    Entry::builder().text(entry_name.as_ref()).build()
+    Entry::builder()
+        .text(glib::GString::from(entry_name))
+        .build()
 }
 
 fn create_label() -> Label {

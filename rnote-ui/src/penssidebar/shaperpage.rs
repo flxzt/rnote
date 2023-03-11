@@ -100,7 +100,7 @@ impl Default for RnShaperPage {
 
 impl RnShaperPage {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn shaperstyle_menubutton(&self) -> MenuButton {

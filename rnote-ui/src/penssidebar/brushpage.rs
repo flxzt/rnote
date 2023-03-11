@@ -93,7 +93,7 @@ impl Default for RnBrushPage {
 
 impl RnBrushPage {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn brushstyle_menubutton(&self) -> MenuButton {

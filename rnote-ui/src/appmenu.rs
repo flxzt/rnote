@@ -72,7 +72,7 @@ impl Default for RnAppMenu {
 
 impl RnAppMenu {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn popovermenu(&self) -> PopoverMenu {

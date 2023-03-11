@@ -17,3 +17,5 @@ lto = "fat"
 codegen-units = 1
 
 [patch.crates-io]
+piet = {git = "https://github.com/linebender/piet", rev = "413397445e6772e0a651d60cf58a823b98f67c23"}
+piet-cairo = {git = "https://github.com/linebender/piet", rev = "413397445e6772e0a651d60cf58a823b98f67c23"}

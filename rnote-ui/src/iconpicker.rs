@@ -120,7 +120,7 @@ impl Default for RnIconPicker {
 
 impl RnIconPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn list(&self) -> Option<StringList> {

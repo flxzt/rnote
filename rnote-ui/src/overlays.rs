@@ -108,7 +108,7 @@ impl Default for RnOverlays {
 
 impl RnOverlays {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn pens_toggles_box(&self) -> gtk4::Box {
@@ -424,7 +424,7 @@ impl RnOverlays {
             .build();
 
         text_notify_toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(&text_notify_toast);
+        self.toast_overlay().add_toast(text_notify_toast.clone());
 
         text_notify_toast
     }
@@ -457,7 +457,7 @@ impl RnOverlays {
             .timeout(5)
             .build();
 
-        self.toast_overlay().add_toast(&text_notify_toast);
+        self.toast_overlay().add_toast(text_notify_toast);
     }
 
     pub(crate) fn dispatch_toast_error(&self, error: &String) {
@@ -469,6 +469,6 @@ impl RnOverlays {
 
         log::error!("{error}");
 
-        self.toast_overlay().add_toast(&text_notify_toast);
+        self.toast_overlay().add_toast(text_notify_toast);
     }
 }

@@ -64,7 +64,7 @@ impl Default for RnSelectorPage {
 
 impl RnSelectorPage {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

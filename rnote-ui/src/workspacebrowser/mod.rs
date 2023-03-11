@@ -3,21 +3,21 @@ mod widgethelper;
 mod workspaceactions;
 pub(crate) mod workspacesbar;
 
-use std::path::PathBuf;
-
 // Re-exports
 pub(crate) use filerow::RnFileRow;
 pub(crate) use workspacesbar::RnWorkspacesBar;
 
 // Imports
-use crate::appwindow::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
-    CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, Grid, ListItem, ListView, MultiSorter, PropertyExpression, ScrolledWindow,
-    SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
+    CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList, FileFilter,
+    FilterChange, FilterListModel, GestureClick, Grid, ListItem, ListView, MultiSorter,
+    PropagationPhase, PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection,
+    SortListModel, SorterChange, Widget,
 };
-use gtk4::{CustomFilter, GestureClick, PropagationPhase};
+use std::path::PathBuf;
+
+use crate::appwindow::RnAppWindow;
 
 mod imp {
     use super::*;
@@ -107,7 +107,7 @@ impl Default for RnWorkspaceBrowser {
 
 impl RnWorkspaceBrowser {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn grid(&self) -> Grid {
@@ -174,7 +174,7 @@ fn setup_dir_controls(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
     wb.imp()
         .dir_controls_dir_up_button
         .get()
-        .add_controller(&dir_up_click_gesture);
+        .add_controller(dir_up_click_gesture.clone());
 
     dir_up_click_gesture.connect_released(clone!(@weak wb, @weak appwindow => move |_, n_press, _, _| {
         // Only activate on multi click
@@ -314,11 +314,11 @@ fn setup_file_rows(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
     });
 
     let filter_listmodel = FilterListModel::new(
-        Some(&FilterListModel::new(
-            Some(&wb.imp().files_dirlist),
-            Some(&filefilter),
+        Some(FilterListModel::new(
+            Some(wb.imp().files_dirlist.clone()),
+            Some(filefilter.clone()),
         )),
-        Some(&hidden_filter),
+        Some(hidden_filter),
     );
 
     let folder_sorter = CustomSorter::new(move |obj1, obj2| {
@@ -369,11 +369,11 @@ fn setup_file_rows(wb: &RnWorkspaceBrowser, appwindow: &RnAppWindow) {
     });
 
     let multisorter = MultiSorter::new();
-    multisorter.append(&folder_sorter);
-    multisorter.append(&alphanumeric_sorter);
-    let multi_sort_model = SortListModel::new(Some(&filter_listmodel), Some(&multisorter));
+    multisorter.append(folder_sorter);
+    multisorter.append(alphanumeric_sorter);
+    let multi_sort_model = SortListModel::new(Some(filter_listmodel), Some(multisorter.clone()));
 
-    let primary_selection_model = SingleSelection::new(Some(&multi_sort_model));
+    let primary_selection_model = SingleSelection::new(Some(multi_sort_model));
 
     wb.imp()
         .files_listview

@@ -79,7 +79,7 @@ impl Default for RnCanvasMenu {
 
 impl RnCanvasMenu {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn popovermenu(&self) -> PopoverMenu {

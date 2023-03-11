@@ -192,9 +192,9 @@ mod imp {
 
             inst.set_cursor(Some(&*self.regular_cursor.borrow()));
 
-            inst.add_controller(&self.pointer_controller);
-            inst.add_controller(&self.key_controller);
-            inst.add_controller(&self.drop_target);
+            inst.add_controller(self.pointer_controller.clone());
+            inst.add_controller(self.key_controller.clone());
+            inst.add_controller(self.drop_target.clone());
 
             // receive and handling engine tasks
             glib::MainContext::default().spawn_local(
@@ -533,7 +533,7 @@ impl RnCanvas {
     pub(crate) const ZOOM_STEP: f64 = 0.1;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

@@ -424,7 +424,8 @@ impl RnAppWindow {
             .name("resizer_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        self.flap_resizer.add_controller(&resizer_drag_gesture);
+        self.flap_resizer
+            .add_controller(resizer_drag_gesture.clone());
 
         // hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
         let prev_folded = Rc::new(Cell::new(self.flap.get().is_folded()));
@@ -503,7 +504,7 @@ impl RnAppWindow {
             "drawing-pad-pressed-button-3",
         );
 
-        inst.add_controller(&drawing_pad_controller);
+        inst.add_controller(drawing_pad_controller.clone());
         self.drawing_pad_controller
             .replace(Some(drawing_pad_controller));
     }

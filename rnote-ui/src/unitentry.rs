@@ -281,7 +281,7 @@ impl Default for RnUnitEntry {
 
 impl RnUnitEntry {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

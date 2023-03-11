@@ -75,7 +75,7 @@ impl Default for RnMainHeader {
 
 impl RnMainHeader {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn main_title(&self) -> adw::WindowTitle {

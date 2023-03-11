@@ -97,7 +97,7 @@ impl Default for RnPensSideBar {
 
 impl RnPensSideBar {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn sidebar_stack(&self) -> Stack {

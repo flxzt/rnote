@@ -199,7 +199,7 @@ impl Default for RnStrokeWidthPreview {
 
 impl RnStrokeWidthPreview {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

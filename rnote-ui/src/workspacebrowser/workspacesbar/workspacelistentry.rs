@@ -51,34 +51,16 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecString::new(
-                        "dir",
-                        "dir",
-                        "dir",
-                        None,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecString::new(
-                        "icon",
-                        "icon",
-                        "icon",
-                        None,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecBoxed::new(
-                        "color",
-                        "color",
-                        "color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecString::new(
-                        "name",
-                        "name",
-                        "name",
-                        None,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecString::builder("dir")
+                        .default_value(None)
+                        .build(),
+                    glib::ParamSpecString::builder("icon")
+                        .default_value(None)
+                        .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color").build(),
+                    glib::ParamSpecString::builder("name")
+                        .default_value(None)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -146,15 +128,15 @@ impl RnWorkspaceListEntry {
     pub(crate) const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
 
     pub(crate) fn new(inner: RnWorkspaceListEntryInner) -> Self {
-        glib::Object::new(&[
-            ("dir", &inner.dir.to_string_lossy().to_string().to_value()),
-            ("icon", &inner.icon.to_value()),
-            (
+        glib::Object::builder()
+            .property("dir", &inner.dir.to_string_lossy().to_string().to_value())
+            .property("icon", &inner.icon.to_value())
+            .property(
                 "color",
                 &gdk::RGBA::from_compose_color(rnote_compose::Color::from(inner.color)).to_value(),
-            ),
-            ("name", &inner.name.to_value()),
-        ])
+            )
+            .property("name", &inner.name.to_value())
+            .build()
     }
 
     pub(crate) fn replace_data(&self, entry: &Self) {

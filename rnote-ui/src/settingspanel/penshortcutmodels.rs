@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use gtk4::Align;
 use gtk4::{
     glib::prelude::*, prelude::*, Image, Label, ListItem, Orientation, SignalListItemFactory,
@@ -73,10 +74,18 @@ impl Default for ChangePenStyleListFactory {
             let mut child = item_box.first_child();
             while let Some(ref next_child) = child {
                 if next_child.type_() == Label::static_type() {
+                    let label = match pen_style {
+                        PenStyle::Brush => gettext("Brush"),
+                        PenStyle::Shaper => gettext("Shaper"),
+                        PenStyle::Typewriter => gettext("Typewriter"),
+                        PenStyle::Eraser => gettext("Eraser"),
+                        PenStyle::Selector => gettext("Selector"),
+                        PenStyle::Tools => gettext("Tools"),
+                    };
                     next_child
                         .downcast_ref::<Label>()
                         .unwrap()
-                        .set_label(pen_style.name().as_str());
+                        .set_label(&label);
                 } else if next_child.type_() == Image::static_type() {
                     next_child
                         .downcast_ref::<Image>()

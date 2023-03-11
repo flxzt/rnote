@@ -36,32 +36,25 @@ mod imp {
 
     impl ObjectImpl for RnColorPad {
         fn constructed(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
             self.parent_constructed();
 
-            inst.set_hexpand(false);
-            inst.set_vexpand(false);
-            inst.set_halign(Align::Fill);
-            inst.set_valign(Align::Center);
-            inst.set_width_request(34);
-            inst.set_height_request(34);
-            inst.set_css_classes(&["colorpad"]);
+            obj.set_hexpand(false);
+            obj.set_vexpand(false);
+            obj.set_halign(Align::Fill);
+            obj.set_valign(Align::Center);
+            obj.set_width_request(34);
+            obj.set_height_request(34);
+            obj.set_css_classes(&["colorpad"]);
 
             self.update_appearance(super::RnColorPad::COLOR_DEFAULT);
-            inst.style_context()
+            obj.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecBoxed::new(
-                    "color",
-                    "color",
-                    "color",
-                    gdk::RGBA::static_type(),
-                    glib::ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> =
+                Lazy::new(|| vec![glib::ParamSpecBoxed::builder::<gdk::RGBA>("color").build()]);
             PROPERTIES.as_ref()
         }
 
@@ -107,13 +100,13 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorpad_color {colorpad_color}; @define-color colorpad_fg_color {colorpad_fg_color};",
             );
-            css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(&custom_css);
 
-            self.instance()
+            self.obj()
                 .style_context()
                 .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-            self.instance().queue_draw();
+            self.obj().queue_draw();
         }
     }
 }
@@ -134,7 +127,7 @@ impl RnColorPad {
     pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

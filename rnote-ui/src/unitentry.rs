@@ -54,19 +54,19 @@ mod imp {
     impl ObjectImpl for RnUnitEntry {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.configure_spinner(self.unit.get(), self.dpi.get());
             self.value_spinner.set_value(10.0);
 
-            inst.bind_property("value", &self.value_spinner.get(), "value")
+            obj.bind_property("value", &self.value_spinner.get(), "value")
                 .transform_to(|_, val: f64| Some(val))
                 .transform_from(|_, val: f64| Some(val))
                 .sync_create()
                 .bidirectional()
                 .build();
 
-            inst.connect_notify_local(Some("unit"), |unit_entry, _pspec| {
+            obj.connect_notify_local(Some("unit"), |unit_entry, _pspec| {
                 let unit = unit_entry.unit();
 
                 let unit_dropdown_listmodel = unit_entry
@@ -84,7 +84,7 @@ mod imp {
             });
 
             self.unit_dropdown.get().connect_selected_notify(
-                clone!(@weak inst as unit_entry => move |unit_dropdown| {
+                clone!(@weak obj as unit_entry => move |unit_dropdown| {
                     let unit_dropdown_listmodel = unit_entry.imp()
                         .unit_dropdown
                         .model()
@@ -113,7 +113,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -121,32 +121,19 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecDouble::new(
-                        "value",
-                        "value",
-                        "value",
-                        f64::MIN,
-                        f64::MAX,
-                        1.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        "unit",
-                        "unit",
-                        "unit",
-                        format::MeasureUnit::static_type(),
-                        format::MeasureUnit::Px as i32,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecDouble::new(
-                        "dpi",
-                        "dpi",
-                        "dpi",
-                        f64::MIN,
-                        f64::MAX,
-                        96.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecDouble::builder("value")
+                        .minimum(f64::MIN)
+                        .maximum(f64::MAX)
+                        .default_value(1.0)
+                        .build(),
+                    glib::ParamSpecEnum::builder::<format::MeasureUnit>("unit")
+                        .default_value(format::MeasureUnit::Px)
+                        .build(),
+                    glib::ParamSpecDouble::builder("dpi")
+                        .minimum(f64::MIN)
+                        .maximum(f64::MAX)
+                        .default_value(96.0)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -162,7 +149,7 @@ mod imp {
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "value" => {
@@ -177,7 +164,7 @@ mod imp {
                         .expect("The value must be of type 'MeasureUnit'");
                     if unit != self.unit.get() {
                         self.configure_spinner(unit, self.dpi.get());
-                        inst.set_value(format::MeasureUnit::convert_measurement(
+                        obj.set_value(format::MeasureUnit::convert_measurement(
                             self.value.get(),
                             self.unit.get(),
                             self.dpi.get(),
@@ -191,7 +178,7 @@ mod imp {
                     let dpi = value.get::<f64>().expect("The value must be of type 'f64'");
                     if dpi != self.dpi.get() {
                         self.configure_spinner(self.unit.get(), dpi);
-                        inst.set_value(format::MeasureUnit::convert_measurement(
+                        obj.set_value(format::MeasureUnit::convert_measurement(
                             self.value.get(),
                             self.unit.get(),
                             self.dpi.get(),
@@ -281,7 +268,7 @@ impl Default for RnUnitEntry {
 
 impl RnUnitEntry {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

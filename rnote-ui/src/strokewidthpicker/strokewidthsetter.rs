@@ -32,12 +32,12 @@ mod imp {
     impl ObjectImpl for RnStrokeWidthSetter {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
-            inst.set_overflow(Overflow::Hidden);
-            inst.set_css_classes(&["strokewidthsetter"]);
-            inst.set_child(Some(&self.preview));
-            inst.bind_property("stroke-width", &self.preview, "stroke-width")
+            obj.set_overflow(Overflow::Hidden);
+            obj.set_css_classes(&["strokewidthsetter"]);
+            obj.set_child(Some(&self.preview));
+            obj.bind_property("stroke-width", &self.preview, "stroke-width")
                 .sync_create()
                 .build();
             self.update_appearance(self.stroke_width.get());
@@ -45,15 +45,11 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecDouble::new(
-                    "stroke-width",
-                    "stroke-width",
-                    "stroke-width",
-                    0.1,
-                    500.0,
-                    1.0,
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![glib::ParamSpecDouble::builder("stroke-width")
+                    .minimum(0.1)
+                    .maximum(500.0)
+                    .default_value(1.0)
+                    .build()]
             });
             PROPERTIES.as_ref()
         }
@@ -83,9 +79,8 @@ mod imp {
 
     impl RnStrokeWidthSetter {
         fn update_appearance(&self, stroke_width: f64) {
-            let inst = self.instance();
-
-            inst.set_tooltip_text(Some(&format!("{stroke_width:.1}")));
+            self.obj()
+                .set_tooltip_text(Some(&format!("{stroke_width:.1}")));
         }
     }
 }
@@ -104,7 +99,7 @@ impl Default for RnStrokeWidthSetter {
 
 impl RnStrokeWidthSetter {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

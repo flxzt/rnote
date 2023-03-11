@@ -79,12 +79,12 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.instance()
+            self.obj()
                 .insert_action_group("workspacesbar", Some(&self.action_group));
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -106,7 +106,7 @@ impl Default for RnWorkspacesBar {
 
 impl RnWorkspacesBar {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn action_group(&self) -> gio::SimpleActionGroup {
@@ -255,13 +255,13 @@ impl RnWorkspacesBar {
     }
 
     pub(crate) fn save_to_settings(&self, settings: &gio::Settings) {
-        if let Err(e) = settings.set("workspace-list", &self.imp().workspace_list) {
+        if let Err(e) = settings.set("workspace-list", self.imp().workspace_list.to_variant()) {
             log::error!("saving `workspace-list` to settings failed with Err: {e:?}");
         }
 
         if let Err(e) = settings.set(
             "selected-workspace-index",
-            &self.selected_workspace_index().unwrap_or(0),
+            self.selected_workspace_index().unwrap_or(0),
         ) {
             log::error!("saving `selected-workspace-index` to settings failed with Err: {e:?}");
         }

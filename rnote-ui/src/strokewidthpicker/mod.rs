@@ -9,8 +9,8 @@ pub(crate) use strokewidthsetter::RnStrokeWidthSetter;
 
 // Imports
 use gtk4::{
-    glib, glib::clone, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, BoxLayout,
-    CompositeTemplate, Orientation, PositionType, SpinButton, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, CompositeTemplate, Orientation,
+    PositionType, SpinButton, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;
@@ -71,21 +71,21 @@ mod imp {
     impl ObjectImpl for RnStrokeWidthPicker {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.spinbutton.set_increments(0.1, 2.0);
 
-            inst.bind_property("stroke-width", &*self.spinbutton, "value")
+            obj.bind_property("stroke-width", &*self.spinbutton, "value")
                 .sync_create()
                 .bidirectional()
                 .build();
-            inst.bind_property("preview-style", &self.setter_1.preview(), "preview-style")
+            obj.bind_property("preview-style", &self.setter_1.preview(), "preview-style")
                 .sync_create()
                 .build();
-            inst.bind_property("preview-style", &self.setter_2.preview(), "preview-style")
+            obj.bind_property("preview-style", &self.setter_2.preview(), "preview-style")
                 .sync_create()
                 .build();
-            inst.bind_property("preview-style", &self.setter_3.preview(), "preview-style")
+            obj.bind_property("preview-style", &self.setter_3.preview(), "preview-style")
                 .sync_create()
                 .build();
 
@@ -94,7 +94,7 @@ mod imp {
             self.setter_3.set_stroke_width(16.0);
 
             self.setter_1.connect_active_notify(
-                clone!(@weak inst as strokewidthpicker => move |setter| {
+                clone!(@weak obj as strokewidthpicker => move |setter| {
                     if setter.is_active() {
                         strokewidthpicker.setter_2().set_active(false);
                         strokewidthpicker.setter_3().set_active(false);
@@ -105,7 +105,7 @@ mod imp {
             );
 
             self.setter_2.connect_active_notify(
-                clone!(@weak inst as strokewidthpicker => move |setter| {
+                clone!(@weak obj as strokewidthpicker => move |setter| {
                     if setter.is_active() {
                         strokewidthpicker.setter_1().set_active(false);
                         strokewidthpicker.setter_3().set_active(false);
@@ -115,7 +115,7 @@ mod imp {
             );
 
             self.setter_3.connect_active_notify(
-                clone!(@weak inst as strokewidthpicker => move |setter| {
+                clone!(@weak obj as strokewidthpicker => move |setter| {
                     if setter.is_active() {
                         strokewidthpicker.setter_1().set_active(false);
                         strokewidthpicker.setter_2().set_active(false);
@@ -125,14 +125,14 @@ mod imp {
             );
 
             self.spinbutton.connect_value_changed(
-                clone!(@weak inst as strokewidthpicker => move |spinbutton| {
+                clone!(@weak obj as strokewidthpicker => move |spinbutton| {
                     strokewidthpicker.set_active_setter_stroke_width(spinbutton.value());
                 }),
             );
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -140,31 +140,16 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecEnum::new(
-                        "position",
-                        "position",
-                        "position",
-                        PositionType::static_type(),
-                        PositionType::Right.into_glib(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecDouble::new(
-                        "stroke-width",
-                        "stroke-width",
-                        "stroke-width",
-                        0.0,
-                        500.0,
-                        1.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        "preview-style",
-                        "preview-style",
-                        "preview-style",
-                        StrokeWidthPreviewStyle::static_type(),
-                        StrokeWidthPreviewStyle::Circle as i32,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecEnum::builder_with_default("position", PositionType::Right)
+                        .build(),
+                    glib::ParamSpecDouble::builder("stroke-width")
+                        .minimum(0.0)
+                        .maximum(500.0)
+                        .default_value(1.0)
+                        .build(),
+                    glib::ParamSpecEnum::builder::<StrokeWidthPreviewStyle>("preview-style")
+                        .default_value(StrokeWidthPreviewStyle::Circle)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -180,7 +165,7 @@ mod imp {
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "position" => {
@@ -189,7 +174,7 @@ mod imp {
                         .expect("value not of type `PositionType`");
                     self.position.replace(position);
 
-                    let layout_manager = inst
+                    let layout_manager = obj
                         .layout_manager()
                         .unwrap()
                         .downcast::<BoxLayout>()
@@ -228,7 +213,7 @@ mod imp {
                         .get::<StrokeWidthPreviewStyle>()
                         .expect("value not of type `StrokeWidthPreviewStyle`");
                     self.preview_style.set(preview_style);
-                    inst.queue_draw();
+                    obj.queue_draw();
                 }
                 _ => panic!("invalid property name"),
             }
@@ -254,7 +239,7 @@ impl Default for RnStrokeWidthPicker {
 
 impl RnStrokeWidthPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

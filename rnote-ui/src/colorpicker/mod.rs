@@ -9,9 +9,8 @@ pub(crate) use colorsetter::RnColorSetter;
 use std::cell::{Cell, RefCell};
 
 use gtk4::{
-    gdk, glib, glib::clone, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, BoxLayout,
-    Button, ColorChooserWidget, CompositeTemplate, MenuButton, Orientation, Popover, PositionType,
-    Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, Button,
+    ColorChooserWidget, CompositeTemplate, MenuButton, Orientation, Popover, PositionType, Widget,
 };
 
 use once_cell::sync::Lazy;
@@ -112,7 +111,7 @@ mod imp {
     impl ObjectImpl for RnColorPicker {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
             let colorchooser = self.colorchooser.get();
             let colorpicker_popover = self.colorpicker_popover.get();
@@ -130,7 +129,7 @@ mod imp {
             );
 
             self.colorchooser_editor_selectbutton.connect_clicked(
-                clone!(@weak inst as colorpicker, @weak colorchooser, @weak colorpicker_popover => move |_colorchooser_editor_selectbutton| {
+                clone!(@weak obj as colorpicker, @weak colorchooser, @weak colorpicker_popover => move |_colorchooser_editor_selectbutton| {
                     let color = colorchooser.rgba();
                     colorpicker.set_color_active_setter(color);
 
@@ -146,7 +145,7 @@ mod imp {
             );
 
             self.colorchooser.connect_rgba_notify(
-                clone!(@weak inst as colorpicker => move |colorchooser| {
+                clone!(@weak obj as colorpicker => move |colorchooser| {
                     let color = colorchooser.rgba();
 
                     colorpicker.set_color_active_pad(color);
@@ -155,32 +154,32 @@ mod imp {
             );
 
             self.stroke_color_pad
-                .bind_property("color", &*inst, "stroke-color")
+                .bind_property("color", &*obj, "stroke-color")
                 .sync_create()
                 .bidirectional()
                 .build();
 
             self.stroke_color_pad.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |_| {
+                clone!(@weak obj as colorpicker => move |_| {
                     colorpicker.deselect_setters();
                 }),
             );
 
             self.fill_color_pad
-                .bind_property("color", &*inst, "fill-color")
+                .bind_property("color", &*obj, "fill-color")
                 .sync_create()
                 .bidirectional()
                 .build();
 
             self.fill_color_pad.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |_| {
+                clone!(@weak obj as colorpicker => move |_| {
                     colorpicker.deselect_setters();
                 }),
             );
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -188,39 +187,24 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecEnum::new(
+                    glib::ParamSpecEnum::builder_with_default::<PositionType>(
                         "position",
-                        "position",
-                        "position",
-                        PositionType::static_type(),
-                        PositionType::Right.into_glib(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecBoxed::new(
-                        "stroke-color",
-                        "stroke-color",
-                        "stroke-color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecBoxed::new(
-                        "fill-color",
-                        "fill-color",
-                        "fill-color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
+                        PositionType::Right,
+                    )
+                    .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("stroke-color").build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("fill-color").build(),
                 ]
             });
             PROPERTIES.as_ref()
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "position" => {
-                    let layout_manager = inst
+                    let layout_manager = obj
                         .layout_manager()
                         .unwrap()
                         .downcast::<BoxLayout>()
@@ -304,7 +288,7 @@ mod imp {
 
     impl RnColorPicker {
         fn setup_setters(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.setter_1.set_color(Self::default_color(0, 8));
             self.setter_2.set_color(Self::default_color(1, 8));
@@ -315,8 +299,8 @@ mod imp {
             self.setter_7.set_color(Self::default_color(6, 8));
             self.setter_8.set_color(Self::default_color(7, 8));
 
-            self.setter_1.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_1
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_2().set_active(false);
                         colorpicker.setter_3().set_active(false);
@@ -328,11 +312,10 @@ mod imp {
                         // Must come after setting the other setters inactive
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_2.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_2
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_3().set_active(false);
@@ -343,11 +326,10 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_3.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_3
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -358,11 +340,10 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_4.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_4
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -373,11 +354,10 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_5.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_5
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -388,11 +368,10 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_6.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_6
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -403,11 +382,10 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_7.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_7
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -418,11 +396,10 @@ mod imp {
                         colorpicker.setter_8().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
 
-            self.setter_8.connect_active_notify(
-                clone!(@weak inst as colorpicker => move |setter| {
+            self.setter_8
+                .connect_active_notify(clone!(@weak obj as colorpicker => move |setter| {
                     if setter.is_active() {
                         colorpicker.setter_1().set_active(false);
                         colorpicker.setter_2().set_active(false);
@@ -433,8 +410,7 @@ mod imp {
                         colorpicker.setter_7().set_active(false);
                         colorpicker.set_color_active_pad(setter.color());
                     }
-                }),
-            );
+                }));
         }
 
         fn default_color(i: usize, amount_setters: usize) -> gdk::RGBA {
@@ -472,7 +448,7 @@ pub(crate) static FILL_COLOR_DEFAULT: Lazy<Color> =
 
 impl RnColorPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

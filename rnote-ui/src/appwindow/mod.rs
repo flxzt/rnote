@@ -34,7 +34,7 @@ impl RnAppWindow {
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub(crate) fn new(app: &Application) -> Self {
-        glib::Object::new(&[("application", app)])
+        glib::Object::builder().property("application", app).build()
     }
 
     #[allow(unused)]

@@ -11,8 +11,6 @@ rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
 librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.55.91" }
-# This needs to be this exact version, the latest (v0.8.6) causes panics when importing pdfs
-string_cache = "=0.8.4"
 
 log = "0.4"
 anyhow = "1"

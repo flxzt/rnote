@@ -138,39 +138,35 @@ impl ObjectImpl for RnAppWindow {
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![
                 // autosave
-                glib::ParamSpecBoolean::new(
-                    "autosave",
-                    "autosave",
-                    "autosave",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
+                glib::ParamSpecBoolean::builder("autosave")
+                    .nick("autosave")
+                    .blurb("autosave")
+                    .default_value(false)
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build(),
                 // autosave interval in secs
-                glib::ParamSpecUInt::new(
-                    "autosave-interval-secs",
-                    "autosave-interval-secs",
-                    "autosave-interval-secs",
-                    5,
-                    u32::MAX,
-                    super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT,
-                    glib::ParamFlags::READWRITE,
-                ),
+                glib::ParamSpecUInt::builder("autosave-interval-secs")
+                    .nick("autosave-interval-secs")
+                    .blurb("autosave-interval-secs")
+                    .minimum(5)
+                    .maximum(u32::MAX)
+                    .default_value(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT)
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build(),
                 // righthanded
-                glib::ParamSpecBoolean::new(
-                    "righthanded",
-                    "righthanded",
-                    "righthanded",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
+                glib::ParamSpecBoolean::builder("righthanded")
+                    .nick("righthanded")
+                    .blurb("righthanded")
+                    .default_value(false)
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build(),
                 // Whether to enable touch drawing
-                glib::ParamSpecBoolean::new(
-                    "touch-drawing",
-                    "touch-drawing",
-                    "touch-drawing",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
+                glib::ParamSpecBoolean::builder("touch-drawing")
+                    .nick("touch-drawing")
+                    .blurb("touch-drawing")
+                    .default_value(false)
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build(),
             ]
         });
         PROPERTIES.as_ref()

@@ -181,13 +181,12 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecBoolean::new(
-                    "show-scrollbars",
-                    "show-scrollbars",
-                    "show-scrollbars",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![glib::ParamSpecBoolean::builder("show-scrollbars")
+                    .nick("show-scrollbars")
+                    .blurb("show-scrollbars")
+                    .default_value(false)
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build()]
             });
             PROPERTIES.as_ref()
         }

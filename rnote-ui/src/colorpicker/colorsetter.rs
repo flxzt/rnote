@@ -1,8 +1,8 @@
 use std::cell::Cell;
 
 use gtk4::{
-    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Align, Button,
-    CssProvider, PositionType, ToggleButton, Widget,
+    gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, PositionType,
+    ToggleButton, Widget,
 };
 
 use once_cell::sync::Lazy;
@@ -59,27 +59,19 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecBoxed::new(
-                        "color",
-                        "color",
-                        "color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        // Name
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color")
+                        .nick("color")
+                        .blurb("color")
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecEnum::builder_with_default::<PositionType>(
                         "position",
-                        // Nickname
-                        "position",
-                        // Short description
-                        "position",
-                        // Enum type
-                        PositionType::static_type(),
-                        // Default value
-                        PositionType::Right.into_glib(),
-                        // The property can be read and written to
-                        glib::ParamFlags::READWRITE,
-                    ),
+                        PositionType::Right,
+                    )
+                    .nick("position")
+                    .blurb("position")
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build(),
                 ]
             });
             PROPERTIES.as_ref()

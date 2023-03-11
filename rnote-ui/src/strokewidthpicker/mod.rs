@@ -9,8 +9,8 @@ pub(crate) use strokewidthsetter::RnStrokeWidthSetter;
 
 // Imports
 use gtk4::{
-    glib, glib::clone, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, BoxLayout,
-    CompositeTemplate, Orientation, PositionType, SpinButton, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, CompositeTemplate, Orientation,
+    PositionType, SpinButton, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;
@@ -140,31 +140,25 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecEnum::new(
-                        "position",
-                        "position",
-                        "position",
-                        PositionType::static_type(),
-                        PositionType::Right.into_glib(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecDouble::new(
-                        "stroke-width",
-                        "stroke-width",
-                        "stroke-width",
-                        0.0,
-                        500.0,
-                        1.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        "preview-style",
-                        "preview-style",
-                        "preview-style",
-                        StrokeWidthPreviewStyle::static_type(),
-                        StrokeWidthPreviewStyle::Circle as i32,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecEnum::builder_with_default("position", PositionType::Right)
+                        .nick("position")
+                        .blurb("position")
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecDouble::builder("stroke-width")
+                        .nick("stroke-width")
+                        .blurb("stroke-width")
+                        .minimum(0.0)
+                        .maximum(500.0)
+                        .default_value(1.0)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecEnum::builder::<StrokeWidthPreviewStyle>("preview-style")
+                        .nick("preview-style")
+                        .blurb("preview-style")
+                        .default_value(StrokeWidthPreviewStyle::Circle)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()

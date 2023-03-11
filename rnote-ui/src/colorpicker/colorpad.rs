@@ -54,13 +54,11 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecBoxed::new(
-                    "color",
-                    "color",
-                    "color",
-                    gdk::RGBA::static_type(),
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![glib::ParamSpecBoxed::builder::<gdk::RGBA>("color")
+                    .nick("color")
+                    .blurb("color")
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build()]
             });
             PROPERTIES.as_ref()
         }

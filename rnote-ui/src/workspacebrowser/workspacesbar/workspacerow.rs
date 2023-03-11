@@ -66,13 +66,13 @@ mod imp {
         }
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecObject::new(
-                    "entry",
-                    "entry",
-                    "entry",
-                    RnWorkspaceListEntry::static_type(),
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![
+                    glib::ParamSpecObject::builder::<RnWorkspaceListEntry>("entry")
+                        .nick("entry")
+                        .blurb("entry")
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                ]
             });
             PROPERTIES.as_ref()
         }

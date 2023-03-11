@@ -51,34 +51,29 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecString::new(
-                        "dir",
-                        "dir",
-                        "dir",
-                        None,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecString::new(
-                        "icon",
-                        "icon",
-                        "icon",
-                        None,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecBoxed::new(
-                        "color",
-                        "color",
-                        "color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecString::new(
-                        "name",
-                        "name",
-                        "name",
-                        None,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecString::builder("dir")
+                        .nick("dir")
+                        .blurb("dir")
+                        .default_value(None)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecString::builder("icon")
+                        .nick("icon")
+                        .blurb("icon")
+                        .default_value(None)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color")
+                        .nick("color")
+                        .blurb("color")
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecString::builder("name")
+                        .nick("name")
+                        .blurb("name")
+                        .default_value(None)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()

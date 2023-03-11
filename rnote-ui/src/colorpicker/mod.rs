@@ -9,9 +9,8 @@ pub(crate) use colorsetter::RnColorSetter;
 use std::cell::{Cell, RefCell};
 
 use gtk4::{
-    gdk, glib, glib::clone, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, BoxLayout,
-    Button, ColorChooserWidget, CompositeTemplate, MenuButton, Orientation, Popover, PositionType,
-    Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, Button,
+    ColorChooserWidget, CompositeTemplate, MenuButton, Orientation, Popover, PositionType, Widget,
 };
 
 use once_cell::sync::Lazy;
@@ -188,28 +187,24 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecEnum::new(
+                    glib::ParamSpecEnum::builder_with_default::<PositionType>(
                         "position",
-                        "position",
-                        "position",
-                        PositionType::static_type(),
-                        PositionType::Right.into_glib(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecBoxed::new(
-                        "stroke-color",
-                        "stroke-color",
-                        "stroke-color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecBoxed::new(
-                        "fill-color",
-                        "fill-color",
-                        "fill-color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
+                        PositionType::Right,
+                    )
+                    .nick("position")
+                    .blurb("position")
+                    .flags(glib::ParamFlags::READWRITE)
+                    .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("stroke-color")
+                        .nick("stroke-color")
+                        .blurb("stroke-color")
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("fill-color")
+                        .nick("fill-color")
+                        .blurb("fill-color")
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()

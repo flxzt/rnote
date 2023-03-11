@@ -121,32 +121,28 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecDouble::new(
-                        "value",
-                        "value",
-                        "value",
-                        f64::MIN,
-                        f64::MAX,
-                        1.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        "unit",
-                        "unit",
-                        "unit",
-                        format::MeasureUnit::static_type(),
-                        format::MeasureUnit::Px as i32,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecDouble::new(
-                        "dpi",
-                        "dpi",
-                        "dpi",
-                        f64::MIN,
-                        f64::MAX,
-                        96.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecDouble::builder("value")
+                        .nick("value")
+                        .blurb("value")
+                        .minimum(f64::MIN)
+                        .maximum(f64::MAX)
+                        .default_value(1.0)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecEnum::builder::<format::MeasureUnit>("unit")
+                        .nick("unit")
+                        .blurb("unit")
+                        .default_value(format::MeasureUnit::Px)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
+                    glib::ParamSpecDouble::builder("dpi")
+                        .nick("dpi")
+                        .blurb("dpi")
+                        .minimum(f64::MIN)
+                        .maximum(f64::MAX)
+                        .default_value(96.0)
+                        .flags(glib::ParamFlags::READWRITE)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()

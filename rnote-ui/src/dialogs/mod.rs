@@ -5,7 +5,7 @@ use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
 use gtk4::CheckButton;
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, Builder, Button, ColorButton, Dialog, FileChooserAction,
+    gio, glib, glib::clone, Builder, Button, ColorButton, Dialog, FileChooserAction,
     FileChooserNative, Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
 

@@ -31,8 +31,8 @@ serde = {version = "1", features = ["derive", "rc"]}
 serde_json = { version="1" }
 futures = "0.3"
 rayon = "1"
-nalgebra = { version = "0.31", features = ["serde-serialize"] }
-parry2d-f64 = { version = "0.12", features = ["serde-serialize"] }
+nalgebra = { version = "0.32", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.13", features = ["serde-serialize"] }
 gtk4 = {version = "0.6", features = ["xml_validation", "v4_8"]}
 adw = {version = "0.3", package="libadwaita", features = ["v1_2"]}
 cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
@@ -48,5 +48,5 @@ unicode-segmentation = "1"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 fs_extra = "1"
 same-file = "1"
-regex = "1"
+regex = "1.7"
 directories = "4"

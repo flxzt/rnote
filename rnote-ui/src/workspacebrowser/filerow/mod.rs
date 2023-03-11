@@ -70,13 +70,13 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.instance().set_widget_name("filerow");
+            self.obj().set_widget_name("filerow");
 
             self.setup_input();
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -117,16 +117,16 @@ mod imp {
 
     impl RnFileRow {
         fn setup_input(&self) {
-            let inst = self.instance();
-            inst.add_controller(self.drag_source.clone());
+            let obj = self.obj();
+            obj.add_controller(self.drag_source.clone());
 
             let rightclick_gesture = GestureClick::builder()
                 .name("rightclick_gesture")
                 .button(gdk::BUTTON_SECONDARY)
                 .build();
-            inst.add_controller(rightclick_gesture.clone());
+            obj.add_controller(rightclick_gesture.clone());
             rightclick_gesture.connect_pressed(
-                clone!(@weak inst as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
+                clone!(@weak obj as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
                     filerow.imp().popovermenu.popup();
                 }),
             );
@@ -135,11 +135,11 @@ mod imp {
                 .name("longpress_gesture")
                 .touch_only(true)
                 .build();
-            inst.add_controller(longpress_gesture.clone());
+            obj.add_controller(longpress_gesture.clone());
             longpress_gesture.group_with(&rightclick_gesture);
 
             longpress_gesture.connect_pressed(
-                clone!(@weak inst as filerow => move |_rightclick_gesture, _x, _y| {
+                clone!(@weak obj as filerow => move |_rightclick_gesture, _x, _y| {
                     filerow.imp().popovermenu.popup();
                 }),
             );

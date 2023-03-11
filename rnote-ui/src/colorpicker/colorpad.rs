@@ -36,19 +36,19 @@ mod imp {
 
     impl ObjectImpl for RnColorPad {
         fn constructed(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
             self.parent_constructed();
 
-            inst.set_hexpand(false);
-            inst.set_vexpand(false);
-            inst.set_halign(Align::Fill);
-            inst.set_valign(Align::Center);
-            inst.set_width_request(34);
-            inst.set_height_request(34);
-            inst.set_css_classes(&["colorpad"]);
+            obj.set_hexpand(false);
+            obj.set_vexpand(false);
+            obj.set_halign(Align::Fill);
+            obj.set_valign(Align::Center);
+            obj.set_width_request(34);
+            obj.set_height_request(34);
+            obj.set_css_classes(&["colorpad"]);
 
             self.update_appearance(super::RnColorPad::COLOR_DEFAULT);
-            inst.style_context()
+            obj.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
@@ -109,11 +109,11 @@ mod imp {
             );
             css.load_from_data(&custom_css);
 
-            self.instance()
+            self.obj()
                 .style_context()
                 .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-            self.instance().queue_draw();
+            self.obj().queue_draw();
         }
     }
 }

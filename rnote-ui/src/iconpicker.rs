@@ -62,7 +62,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -95,7 +95,7 @@ mod imp {
                         .get::<Option<String>>()
                         .expect("The value needs to be of type `Option<String>`");
 
-                    self.instance().set_picked_intern(picked.clone());
+                    self.obj().set_picked_intern(picked.clone());
                     self.picked.replace(picked);
                 }
                 _ => unimplemented!(),

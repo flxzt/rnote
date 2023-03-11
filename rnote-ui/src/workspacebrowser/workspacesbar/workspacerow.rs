@@ -54,13 +54,13 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.instance().set_css_classes(&["workspacerow"]);
+            self.obj().set_css_classes(&["workspacerow"]);
 
             self.connect_entry();
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -104,32 +104,32 @@ mod imp {
 
     impl RnWorkspaceRow {
         fn connect_entry(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.entry.borrow().connect_notify_local(
                 Some("dir"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("icon"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("color"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("name"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
@@ -161,7 +161,7 @@ mod imp {
 
             self.name_label
                 .set_label(name.graphemes(true).take(2).collect::<String>().as_str());
-            self.instance()
+            self.obj()
                 .set_tooltip_text(Some(format!("{name}\n{dir}").as_str()));
 
             self.folder_image.set_icon_name(Some(&icon));
@@ -172,11 +172,11 @@ mod imp {
 
             css.load_from_data(&custom_css);
 
-            self.instance()
+            self.obj()
                 .style_context()
                 .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-            self.instance().queue_draw();
+            self.obj().queue_draw();
         }
     }
 }

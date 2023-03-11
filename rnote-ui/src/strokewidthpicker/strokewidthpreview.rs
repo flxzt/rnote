@@ -36,11 +36,11 @@ mod imp {
     impl ObjectImpl for RnStrokeWidthPreview {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
-            inst.set_overflow(Overflow::Hidden);
-            inst.set_halign(Align::Center);
-            inst.set_valign(Align::Center);
+            obj.set_overflow(Overflow::Hidden);
+            obj.set_halign(Align::Center);
+            obj.set_valign(Align::Center);
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -69,20 +69,20 @@ mod imp {
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "stroke-width" => {
                     let stroke_width = value.get::<f64>().expect("value not of type `f64`");
                     self.stroke_width.set(stroke_width);
-                    inst.queue_draw();
+                    obj.queue_draw();
                 }
                 "preview-style" => {
                     let preview_style = value
                         .get::<StrokeWidthPreviewStyle>()
                         .expect("value not of type `StrokeWidthPreviewStyle`");
                     self.preview_style.set(preview_style);
-                    inst.queue_draw();
+                    obj.queue_draw();
                 }
                 _ => panic!("invalid property name"),
             }
@@ -111,12 +111,12 @@ mod imp {
         }
 
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
-            let inst = self.instance();
-            let size = (inst.width() as f32, inst.height() as f32);
+            let obj = self.obj();
+            let size = (obj.width() as f32, obj.height() as f32);
             let center = (size.0 * 0.5, size.1 * 0.5);
             let stroke_width = self.stroke_width.get();
 
-            let window_fg_color = inst
+            let window_fg_color = obj
                 .style_context()
                 .lookup_color("window_fg_color")
                 .unwrap_or(gdk::RGBA::BLACK);

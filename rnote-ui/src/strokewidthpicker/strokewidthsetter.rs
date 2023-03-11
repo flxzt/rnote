@@ -32,12 +32,12 @@ mod imp {
     impl ObjectImpl for RnStrokeWidthSetter {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
-            inst.set_overflow(Overflow::Hidden);
-            inst.set_css_classes(&["strokewidthsetter"]);
-            inst.set_child(Some(&self.preview));
-            inst.bind_property("stroke-width", &self.preview, "stroke-width")
+            obj.set_overflow(Overflow::Hidden);
+            obj.set_css_classes(&["strokewidthsetter"]);
+            obj.set_child(Some(&self.preview));
+            obj.bind_property("stroke-width", &self.preview, "stroke-width")
                 .sync_create()
                 .build();
             self.update_appearance(self.stroke_width.get());
@@ -83,9 +83,8 @@ mod imp {
 
     impl RnStrokeWidthSetter {
         fn update_appearance(&self, stroke_width: f64) {
-            let inst = self.instance();
-
-            inst.set_tooltip_text(Some(&format!("{stroke_width:.1}")));
+            self.obj()
+                .set_tooltip_text(Some(&format!("{stroke_width:.1}")));
         }
     }
 }

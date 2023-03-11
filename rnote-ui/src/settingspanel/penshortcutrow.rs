@@ -57,16 +57,16 @@ mod imp {
     impl ObjectImpl for RnPenShortcutRow {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
             let list_factory = ChangePenStyleListFactory::default();
             let icon_factory = ChangePenStyleIconFactory::default();
 
-            inst.set_model(Some(&*self.changepenstyle_model));
-            inst.set_list_factory(Some(&*list_factory));
-            inst.set_factory(Some(&*icon_factory));
+            obj.set_model(Some(&*self.changepenstyle_model));
+            obj.set_list_factory(Some(&*list_factory));
+            obj.set_factory(Some(&*icon_factory));
 
-            inst.connect_selected_item_notify(move |row| {
+            obj.connect_selected_item_notify(move |row| {
                 let new_pen_style = row.pen_style();
 
                 match &mut *row.imp().action.borrow_mut() {
@@ -78,7 +78,7 @@ mod imp {
             });
 
             self.mode_dropdown.get().connect_selected_notify(
-                clone!(@weak inst as penshortcutrow => move |_| {
+                clone!(@weak obj as penshortcutrow => move |_| {
                     match &mut *penshortcutrow.imp().action.borrow_mut() {
                         ShortcutAction::ChangePenStyle { mode, .. } => {
                             *mode = penshortcutrow.shortcut_mode();
@@ -88,10 +88,10 @@ mod imp {
                 }),
             );
 
-            inst.connect_local(
+            obj.connect_local(
                 "action-changed",
                 false,
-                clone!(@weak inst as penshortcutrow => @default-return None, move |_values| {
+                clone!(@weak obj as penshortcutrow => @default-return None, move |_values| {
                     penshortcutrow.update_ui();
                     None
                 }),
@@ -99,7 +99,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }

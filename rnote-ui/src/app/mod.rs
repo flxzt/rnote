@@ -52,7 +52,7 @@ mod imp {
 
             let input_file = files.first().cloned();
             if let Some(appwindow) = self
-                .instance()
+                .obj()
                 .active_window()
                 .map(|w| w.downcast::<RnAppWindow>().unwrap())
             {
@@ -71,18 +71,18 @@ mod imp {
 
     impl RnApp {
         fn init(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.setup_logging();
             self.setup_i18n();
             self.setup_gresources();
-            inst.setup_actions();
-            inst.setup_action_accels();
+            obj.setup_actions();
+            obj.setup_action_accels();
         }
 
         /// Initializes and shows a new app window
         fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
-            let appwindow = RnAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
+            let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
             appwindow.init();
             appwindow.show();
 
@@ -145,8 +145,7 @@ mod imp {
             RnStrokeWidthPreview::static_type();
             StrokeWidthPreviewStyle::static_type();
 
-            self.instance()
-                .set_resource_base_path(Some(config::APP_IDPATH));
+            self.obj().set_resource_base_path(Some(config::APP_IDPATH));
             let resource = gio::Resource::load(
                 crate::env::pkg_data_dir()
                     .expect("Could not retrieve pkg data dir")

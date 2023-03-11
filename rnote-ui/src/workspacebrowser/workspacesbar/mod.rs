@@ -79,12 +79,12 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.instance()
+            self.obj()
                 .insert_action_group("workspacesbar", Some(&self.action_group));
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }

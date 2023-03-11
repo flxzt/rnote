@@ -182,23 +182,23 @@ mod imp {
     impl ObjectImpl for RnCanvas {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
-            inst.set_hexpand(false);
-            inst.set_vexpand(false);
+            obj.set_hexpand(false);
+            obj.set_vexpand(false);
             // keyboard focus needed for typewriter
-            inst.set_can_focus(true);
-            inst.set_focusable(true);
+            obj.set_can_focus(true);
+            obj.set_focusable(true);
 
-            inst.set_cursor(Some(&*self.regular_cursor.borrow()));
+            obj.set_cursor(Some(&*self.regular_cursor.borrow()));
 
-            inst.add_controller(self.pointer_controller.clone());
-            inst.add_controller(self.key_controller.clone());
-            inst.add_controller(self.drop_target.clone());
+            obj.add_controller(self.pointer_controller.clone());
+            obj.add_controller(self.key_controller.clone());
+            obj.add_controller(self.drop_target.clone());
 
             // receive and handling engine tasks
             glib::MainContext::default().spawn_local(
-                clone!(@weak inst as canvas => async move {
+                clone!(@weak obj as canvas => async move {
                     let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
 
                     loop {
@@ -218,7 +218,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -298,7 +298,7 @@ mod imp {
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "output-file" => {
@@ -316,7 +316,7 @@ mod imp {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`");
                     self.empty.replace(empty);
                     if empty {
-                        inst.set_unsaved_changes(false);
+                        obj.set_unsaved_changes(false);
                     }
                 }
                 "hadjustment" => {
@@ -360,7 +360,7 @@ mod imp {
 
                     self.regular_cursor.replace(cursor);
 
-                    inst.set_cursor(Some(&*self.regular_cursor.borrow()));
+                    obj.set_cursor(Some(&*self.regular_cursor.borrow()));
                 }
                 "drawing-cursor" => {
                     let icon_name = value.get().unwrap();
@@ -403,18 +403,18 @@ mod imp {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             if let Err(e) = || -> anyhow::Result<()> {
-                let clip_bounds = if let Some(parent) = inst.parent() {
+                let clip_bounds = if let Some(parent) = obj.parent() {
                     // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(&*inst, 0.0, 0.0).unwrap();
+                    let (clip_x, clip_y) = parent.translate_coordinates(&*obj, 0.0, 0.0).unwrap();
                     Aabb::new_positive(
                         na::point![clip_x, clip_y],
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
-                    inst.bounds()
+                    obj.bounds()
                 };
                 // push the clip
                 snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
@@ -422,7 +422,7 @@ mod imp {
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_to_gtk_snapshot(snapshot, inst.bounds())?;
+                    .draw_to_gtk_snapshot(snapshot, obj.bounds())?;
 
                 // pop the clip
                 snapshot.pop();
@@ -437,11 +437,11 @@ mod imp {
 
     impl RnCanvas {
         fn setup_input(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
-            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak inst as canvas => @default-return Inhibit(false), move |_controller, event| {
+            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return Inhibit(false), move |_, event| {
                 let (inhibit, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
                 pen_state.set(new_state);
                 inhibit
@@ -449,13 +449,13 @@ mod imp {
 
             // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
             self.key_controller_im_context.connect_commit(
-                clone!(@weak inst as canvas => move |_cx, text| {
+                clone!(@weak obj as canvas => move |_cx, text| {
                     super::input::handle_imcontext_text_commit(&canvas, text);
                 }),
             );
 
             // Key controller
-            self.key_controller.connect_key_pressed(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return Inhibit(false), move |_, key, _raw, modifier| {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
             /*
@@ -468,7 +468,7 @@ mod imp {
         }
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             if let Some(signal_id) = self.handlers.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
@@ -477,7 +477,7 @@ mod imp {
 
             if let Some(ref hadj) = hadj {
                 let signal_id =
-                    hadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                    hadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
                         // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
@@ -488,7 +488,7 @@ mod imp {
         }
 
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             if let Some(signal_id) = self.handlers.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
@@ -497,7 +497,7 @@ mod imp {
 
             if let Some(ref vadj) = vadj {
                 let signal_id =
-                    vadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                    vadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
                         // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));

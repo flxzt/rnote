@@ -140,9 +140,7 @@ impl BitmapImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let mut image = render::Image::try_from_encoded_bytes(bytes)?;
-        // Ensure we are in rgba8-remultiplied format, to be able to draw to piet
-        image.convert_to_rgba8pre()?;
+        let image = render::Image::try_from_encoded_bytes(bytes)?;
 
         let size = size.unwrap_or_else(|| {
             na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)]

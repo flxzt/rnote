@@ -6,12 +6,12 @@ rust-version = "1.65"
 
 [dependencies]
 log = "0.4"
-nalgebra = { version = "0.31", features = ["serde-serialize"] }
+nalgebra = { version = "0.32", features = ["serde-serialize"] }
 anyhow = "1"
 serde = {version = "1", features = ["derive"]}
 serde_json = { version="1" }
 flate2 = "1"
-roxmltree = "0.16"
+roxmltree = "0.18"
 xmlwriter = "0.1"
 semver = { version = "1", features = ["serde"]}
 

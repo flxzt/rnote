@@ -547,7 +547,6 @@ dependencies = [
  "js-sys",
  "num-integer",
  "num-traits",
- "time",
  "wasm-bindgen",
  "winapi",
 ]
@@ -781,15 +780,15 @@ dependencies = [
 
 [[package]]
 name = "cssparser"
-version = "0.28.1"
+version = "0.29.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1db8599a9761b371751fbf13e076fa03c6e1a78f8c5288e6ab9467f10a2322c1"
+checksum = "f93d03419cb5950ccfd3daf3ff1c7a36ace64609a1a8746d493df1ca0afde0fa"
 dependencies = [
  "cssparser-macros",
  "dtoa-short",
- "itoa 0.4.8",
+ "itoa",
  "matches",
- "phf 0.8.0",
+ "phf 0.10.1",
  "proc-macro2",
  "quote",
  "smallvec",
@@ -1985,12 +1984,6 @@ dependencies = [
 
 [[package]]
 name = "itoa"
-version = "0.4.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
-
-[[package]]
-name = "itoa"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
@@ -2137,8 +2130,8 @@ checksum = "348108ab3fba42ec82ff6e9564fc4ca0247bdccdc68dd8af9764bbc79c3c8ffb"
 
 [[package]]
 name = "librsvg"
-version = "2.55.91"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg?tag=2.55.91#89fe9d988089009b52bd9f3b09d7e3dfeafc6d0b"
+version = "2.55.92"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg?tag=2.55.92#69342757cb197c3a0ba2b66138d5008283d97209"
 dependencies = [
  "anyhow",
  "byteorder",
@@ -2159,7 +2152,7 @@ dependencies = [
  "libc",
  "locale_config",
  "markup5ever",
- "nalgebra",
+ "nalgebra 0.32.2",
  "num-traits",
  "once_cell",
  "pango",
@@ -2392,12 +2385,28 @@ checksum = "20bd243ab3dbb395b39ee730402d2e5405e448c75133ec49cc977762c4cba3d1"
 dependencies = [
  "approx",
  "matrixmultiply",
- "nalgebra-macros",
+ "nalgebra-macros 0.1.0",
  "num-complex",
  "num-rational 0.4.1",
  "num-traits",
  "serde",
- "simba",
+ "simba 0.7.3",
+ "typenum",
+]
+
+[[package]]
+name = "nalgebra"
+version = "0.32.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d68d47bba83f9e2006d117a9a33af1524e655516b8919caac694427a6fb1e511"
+dependencies = [
+ "approx",
+ "matrixmultiply",
+ "nalgebra-macros 0.2.0",
+ "num-complex",
+ "num-rational 0.4.1",
+ "num-traits",
+ "simba 0.8.0",
  "typenum",
 ]
 
@@ -2406,6 +2415,17 @@ name = "nalgebra-macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "01fcc0b8149b4632adc89ac3b7b31a12fb6099a0317a4eb2ebff574ef7de7218"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "nalgebra-macros"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d232c68884c0c99810a5a4d333ef7e47689cfd0edc85efc9e54e1e6bf5212766"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2811,12 +2831,12 @@ dependencies = [
  "bitflags",
  "downcast-rs",
  "either",
- "nalgebra",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "rustc-hash",
  "serde",
- "simba",
+ "simba 0.7.3",
  "slab",
  "smallvec",
  "spade",
@@ -2852,9 +2872,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3dfb61232e34fcb633f43d12c58f83c1df82962dcdfa565a4e866ffc17dafe12"
 dependencies = [
- "phf_macros 0.8.0",
  "phf_shared 0.8.0",
- "proc-macro-hack",
 ]
 
 [[package]]
@@ -2863,7 +2881,9 @@ version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fabbf1ead8a5bcbc20f5f8b939ee3f5b0f6f281b6ad3468b84656b658b455259"
 dependencies = [
+ "phf_macros 0.10.0",
  "phf_shared 0.10.0",
+ "proc-macro-hack",
 ]
 
 [[package]]
@@ -2928,12 +2948,12 @@ dependencies = [
 
 [[package]]
 name = "phf_macros"
-version = "0.8.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f6fde18ff429ffc8fe78e2bf7f8b7a5a5a6e2a8b58bc5a9ac69198bbda9189c"
+checksum = "58fdf3184dd560f160dd73922bea2d5cd6e8f064bf4b13110abd81b03697b4e0"
 dependencies = [
- "phf_generator 0.8.0",
- "phf_shared 0.8.0",
+ "phf_generator 0.10.0",
+ "phf_shared 0.10.0",
  "proc-macro-hack",
  "proc-macro2",
  "quote",
@@ -3399,7 +3419,7 @@ dependencies = [
  "kurbo 0.9.1",
  "libadwaita",
  "log",
- "nalgebra",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -3448,7 +3468,7 @@ dependencies = [
  "ink-stroke-modeler-rs",
  "kurbo 0.9.1",
  "log",
- "nalgebra",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -3482,7 +3502,7 @@ dependencies = [
  "kurbo 0.9.1",
  "librsvg",
  "log",
- "nalgebra",
+ "nalgebra 0.31.4",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -3518,7 +3538,7 @@ dependencies = [
  "anyhow",
  "flate2",
  "log",
- "nalgebra",
+ "nalgebra 0.31.4",
  "pretty_env_logger",
  "roxmltree 0.16.0",
  "semver 1.0.16",
@@ -3724,9 +3744,9 @@ checksum = "1792db035ce95be60c3f8853017b3999209281c24e2ba5bc8e59bf97a0c590c1"
 
 [[package]]
 name = "selectors"
-version = "0.23.0"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdea87c686be721aab36607728047801ee21561bfdbd6bf0da7ace2536d5879f"
+checksum = "0c37578180969d00692904465fb7f6b3d50b9a2b952b87c23d0e2e5cb5013416"
 dependencies = [
  "bitflags",
  "cssparser",
@@ -3790,7 +3810,7 @@ version = "1.0.94"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c533a59c9d8a93a09c6ab31f0fd5e5f4dd1b8fc9434804029839884765d04ea"
 dependencies = [
- "itoa 1.0.6",
+ "itoa",
  "ryu",
  "serde",
 ]
@@ -3806,9 +3826,9 @@ dependencies = [
 
 [[package]]
 name = "servo_arc"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d98238b800e0d1576d8b6e3de32827c2d74bee68bb97748dcf5071fb53965432"
+checksum = "d52aa42f8fdf0fed91e5ce7f23d8138441002fa31dca008acf47e6fd4721f741"
 dependencies = [
  "nodrop",
  "stable_deref_trait",
@@ -3859,6 +3879,19 @@ name = "simba"
 version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f3fd720c48c53cace224ae62bef1bbff363a70c68c4802a78b5cc6159618176"
+dependencies = [
+ "approx",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "wide",
+]
+
+[[package]]
+name = "simba"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "50582927ed6f77e4ac020c057f37a268fc6aebc29225050365aacbb9deeeddc4"
 dependencies = [
  "approx",
  "num-complex",
@@ -4380,17 +4413,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "time"
-version = "0.1.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
-dependencies = [
- "libc",
- "wasi 0.10.0+wasi-snapshot-preview1",
- "winapi",
-]
-
-[[package]]
 name = "tinyvec"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4668,12 +4690,6 @@ name = "wasi"
 version = "0.9.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
-
-[[package]]
-name = "wasi"
-version = "0.10.0+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasi"

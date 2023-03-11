@@ -354,71 +354,7 @@ impl Image {
         Ok(snapshot.to_node())
     }
 
-    // Join multiple images together. The resulted bounds is the union of all given images bounds
-    pub fn join_images(images: Vec<Self>) -> Result<Option<Image>, anyhow::Error> {
-        if images.is_empty() {
-            return Ok(None);
-        }
-
-        let mut bounds = images
-            .iter()
-            .map(|image| image.rect.bounds())
-            .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
-            .ceil();
-        bounds.ensure_positive();
-        bounds = bounds.ceil();
-        bounds.assert_valid()?;
-
-        let width = bounds.extents()[0].round() as u32;
-        let height = bounds.extents()[1].round() as u32;
-
-        let mut image_surface =
-            cairo::ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32)
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                "create ImageSurface with dimensions ({}, {}) failed in Image join_images(), {}",
-                width,
-                height,
-                e
-            )
-                })?;
-
-        {
-            let cairo_cx = cairo::Context::new(&image_surface)?;
-
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-            piet_cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-
-            for image in images {
-                image.draw(&mut piet_cx, 1.0)?;
-            }
-
-            piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
-            })?;
-        }
-        // Surface needs to be flushed before accessing its data
-        image_surface.flush();
-
-        let data = image_surface
-                   .data()
-                   .map_err(|e| {
-                       anyhow::Error::msg(format!(
-                   "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
-               ))
-                   })?
-                   .to_vec();
-
-        Ok(Some(Self {
-            data,
-            rect: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: width,
-            pixel_height: height,
-            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
-        }))
-    }
-
-    // create an image from an svg (using librsvg )
+    /// create an image from an svg (using librsvg )
     pub fn gen_image_from_svg(
         svg: Svg,
         mut bounds: Aabb,
@@ -445,53 +381,53 @@ impl Image {
             )
             .map_err(|e| {
                 anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg_librsvg(), Err: {e:?}"
+                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg(), Err: {e:?}"
                 )
             })?;
 
         // Context in new scope, else accessing the surface data fails with a borrow error
         {
             let cx = cairo::Context::new(&surface)
-                .context("new cairo::Context failed in gen_image_from_svg_librsvg()")?;
+                .context("new cairo::Context failed in gen_image_from_svg()")?;
             cx.scale(image_scale, image_scale);
             cx.translate(-bounds.mins[0], -bounds.mins[1]);
 
             let stream =
                 gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-            let handle = librsvg::Loader::new()
+            let handle = rsvg::Loader::new()
                 .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                     &stream, None, None,
                 )
-                .context("read stream to librsvg Loader failed in gen_image_from_svg_librsvg()")?;
-            let renderer = librsvg::CairoRenderer::new(&handle);
+                .context("read stream to librsvg Loader failed in gen_image_from_svg()")?;
+            let renderer = rsvg::CairoRenderer::new(&handle);
             renderer
-                    .render_document(
-                        &cx,
-                        &cairo::Rectangle::new(
-                            bounds.mins[0],
-                            bounds.mins[1],
-                            bounds.extents()[0],
-                            bounds.extents()[1],
-                        ),
-                    )
-                    .map_err(|e| {
-                        anyhow::Error::msg(format!(
-                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err: {e:?}"
-                        ))
-                    })?;
+                .render_document(
+                    &cx,
+                    &cairo::Rectangle::new(
+                        bounds.mins[0],
+                        bounds.mins[1],
+                        bounds.extents()[0],
+                        bounds.extents()[1],
+                    ),
+                )
+                .map_err(|e| {
+                    anyhow::Error::msg(format!(
+                        "librsvg render_document() failed in gen_image_from_svg() with Err: {e:?}"
+                    ))
+                })?;
         }
         // Surface needs to be flushed before accessing its data
         surface.flush();
 
         let data = surface
-                .data()
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err: {e:?}"
-                    ))
-                })?
-                .to_vec();
+            .data()
+            .map_err(|e| {
+                anyhow::Error::msg(format!(
+                    "accessing imagesurface data failed in gen_image_from_svg() with Err: {e:?}"
+                ))
+            })?
+            .to_vec();
 
         Ok(Self {
             data,
@@ -568,8 +504,8 @@ impl Image {
     }
 }
 
+/// A Svg Image
 #[derive(Debug, Clone)]
-/// A svg image
 pub struct Svg {
     /// the svg data as String
     pub svg_data: String,
@@ -687,13 +623,13 @@ impl Svg {
             let stream =
                 gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-            let handle = librsvg::Loader::new()
+            let handle = rsvg::Loader::new()
                 .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                     &stream, None, None,
                 )
                 .context("read stream to librsvg Loader failed")?;
 
-            let renderer = librsvg::CairoRenderer::new(&handle);
+            let renderer = rsvg::CairoRenderer::new(&handle);
             renderer
                 .render_document(
                     cx,
@@ -741,7 +677,7 @@ impl Svg {
     fn render_to_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
         if self.bounds.extents()[0] < 0.0 || self.bounds.extents()[1] < 0.0 {
             return Err(anyhow::anyhow!(
-                "gen_rendernode_librsvg() failed, bounds width/ height is < 0.0"
+                "render_to_caironode() failed, bounds width/ height is < 0.0"
             ));
         }
 

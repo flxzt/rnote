@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-02-20 19:06+0000\n"
-"Last-Translator: Isaias Carrillo <icarrillo1304@gmail.com>\n"
+"PO-Revision-Date: 2023-03-12 06:18+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -50,7 +50,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Una visión general"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -1355,52 +1355,52 @@ msgstr ""
 "de pulsación prolongada con dos dedos"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "Acción del botón principal del lápiz óptico"
+msgstr "Botón 1 del panel de dibujo Acción"
 
 #: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Establecer la acción para el botón 1\n"
+"en un bloc de dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "Acción del botón principal del lápiz óptico"
+msgstr "Botón 2 del panel de dibujo Acción"
 
 #: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Fijar la acción para el botón 2\n"
+"en un bloc de dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:447
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "Acción del botón principal del lápiz óptico"
+msgstr "Botón del panel de dibujo 3 Acción"
 
 #: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Fijar la acción para el botón 3\n"
+"en un bloc de dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "Acción del botón principal del lápiz óptico"
+msgstr "Botón del panel de dibujo 4 Acción"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Fijar la acción para el botón 4\n"
+"en un bloc de dibujo"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1570,19 +1570,19 @@ msgstr "No se ha podido guardar el documento"
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "Botón 1"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "Botón 2"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "Botón 3"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "Botón 4"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"

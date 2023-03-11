@@ -137,35 +137,19 @@ impl ObjectImpl for RnAppWindow {
     fn properties() -> &'static [glib::ParamSpec] {
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![
-                // autosave
                 glib::ParamSpecBoolean::builder("autosave")
-                    .nick("autosave")
-                    .blurb("autosave")
                     .default_value(false)
-                    .flags(glib::ParamFlags::READWRITE)
                     .build(),
-                // autosave interval in secs
                 glib::ParamSpecUInt::builder("autosave-interval-secs")
-                    .nick("autosave-interval-secs")
-                    .blurb("autosave-interval-secs")
                     .minimum(5)
                     .maximum(u32::MAX)
                     .default_value(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT)
-                    .flags(glib::ParamFlags::READWRITE)
                     .build(),
-                // righthanded
                 glib::ParamSpecBoolean::builder("righthanded")
-                    .nick("righthanded")
-                    .blurb("righthanded")
                     .default_value(false)
-                    .flags(glib::ParamFlags::READWRITE)
                     .build(),
-                // Whether to enable touch drawing
                 glib::ParamSpecBoolean::builder("touch-drawing")
-                    .nick("touch-drawing")
-                    .blurb("touch-drawing")
                     .default_value(false)
-                    .flags(glib::ParamFlags::READWRITE)
                     .build(),
             ]
         });

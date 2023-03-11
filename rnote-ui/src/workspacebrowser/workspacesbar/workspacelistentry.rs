@@ -52,27 +52,14 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     glib::ParamSpecString::builder("dir")
-                        .nick("dir")
-                        .blurb("dir")
                         .default_value(None)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     glib::ParamSpecString::builder("icon")
-                        .nick("icon")
-                        .blurb("icon")
                         .default_value(None)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
-                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color")
-                        .nick("color")
-                        .blurb("color")
-                        .flags(glib::ParamFlags::READWRITE)
-                        .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color").build(),
                     glib::ParamSpecString::builder("name")
-                        .nick("name")
-                        .blurb("name")
                         .default_value(None)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                 ]
             });

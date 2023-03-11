@@ -191,20 +191,9 @@ mod imp {
                         "position",
                         PositionType::Right,
                     )
-                    .nick("position")
-                    .blurb("position")
-                    .flags(glib::ParamFlags::READWRITE)
                     .build(),
-                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("stroke-color")
-                        .nick("stroke-color")
-                        .blurb("stroke-color")
-                        .flags(glib::ParamFlags::READWRITE)
-                        .build(),
-                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("fill-color")
-                        .nick("fill-color")
-                        .blurb("fill-color")
-                        .flags(glib::ParamFlags::READWRITE)
-                        .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("stroke-color").build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("fill-color").build(),
                 ]
             });
             PROPERTIES.as_ref()

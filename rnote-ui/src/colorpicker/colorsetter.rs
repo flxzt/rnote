@@ -59,18 +59,11 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color")
-                        .nick("color")
-                        .blurb("color")
-                        .flags(glib::ParamFlags::READWRITE)
-                        .build(),
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color").build(),
                     glib::ParamSpecEnum::builder_with_default::<PositionType>(
                         "position",
                         PositionType::Right,
                     )
-                    .nick("position")
-                    .blurb("position")
-                    .flags(glib::ParamFlags::READWRITE)
                     .build(),
                 ]
             });

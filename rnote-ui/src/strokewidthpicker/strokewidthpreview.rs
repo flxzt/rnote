@@ -47,18 +47,12 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     glib::ParamSpecDouble::builder("stroke-width")
-                        .nick("stroke-width")
-                        .blurb("stroke-width")
                         .minimum(0.1)
                         .maximum(500.0)
                         .default_value(1.0)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     glib::ParamSpecEnum::builder::<StrokeWidthPreviewStyle>("preview-style")
-                        .nick("preview-style")
-                        .blurb("preview-style")
                         .default_value(StrokeWidthPreviewStyle::Circle)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                 ]
             });

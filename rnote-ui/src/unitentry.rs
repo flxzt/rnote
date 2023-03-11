@@ -122,26 +122,17 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     glib::ParamSpecDouble::builder("value")
-                        .nick("value")
-                        .blurb("value")
                         .minimum(f64::MIN)
                         .maximum(f64::MAX)
                         .default_value(1.0)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     glib::ParamSpecEnum::builder::<format::MeasureUnit>("unit")
-                        .nick("unit")
-                        .blurb("unit")
                         .default_value(format::MeasureUnit::Px)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     glib::ParamSpecDouble::builder("dpi")
-                        .nick("dpi")
-                        .blurb("dpi")
                         .minimum(f64::MIN)
                         .maximum(f64::MAX)
                         .default_value(96.0)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                 ]
             });

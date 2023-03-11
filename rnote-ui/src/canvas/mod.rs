@@ -227,43 +227,21 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     // this is nullable, so it can be used to represent Option<gio::File>
-                    glib::ParamSpecObject::builder::<gio::File>("output-file")
-                        .nick("output-file")
-                        .blurb("output-file")
-                        .flags(glib::ParamFlags::READWRITE)
-                        .build(),
-                    // Flag to indicate that there are unsaved changes to the canvas
+                    glib::ParamSpecObject::builder::<gio::File>("output-file").build(),
                     glib::ParamSpecBoolean::builder("unsaved-changes")
-                        .nick("unsaved-changes")
-                        .blurb("unsaved-changes")
                         .default_value(false)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
-                    // Whether the canvas is empty
                     glib::ParamSpecBoolean::builder("empty")
-                        .nick("empty")
-                        .blurb("empty")
                         .default_value(true)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
-                    // Whether to enable touch drawing
                     glib::ParamSpecBoolean::builder("touch-drawing")
-                        .nick("touch-drawing")
-                        .blurb("touch-drawing")
                         .default_value(false)
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     glib::ParamSpecString::builder("regular-cursor")
-                        .nick("regular-cursor")
-                        .blurb("regular-cursor")
                         .default_value(Some("cursor-dot-medium"))
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     glib::ParamSpecString::builder("drawing-cursor")
-                        .nick("drawing-cursor")
-                        .blurb("drawing-cursor")
                         .default_value(Some("cursor-dot-small"))
-                        .flags(glib::ParamFlags::READWRITE)
                         .build(),
                     // Scrollable properties
                     glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),

@@ -84,11 +84,7 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     // this is nullable, so it can be used to represent Option<gio::File>
-                    glib::ParamSpecObject::builder::<gio::File>("current-file")
-                        .nick("current-file")
-                        .blurb("current-file")
-                        .flags(glib::ParamFlags::READWRITE)
-                        .build(),
+                    glib::ParamSpecObject::builder::<gio::File>("current-file").build(),
                 ]
             });
             PROPERTIES.as_ref()

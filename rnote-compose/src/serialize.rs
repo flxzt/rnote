@@ -80,16 +80,19 @@ pub mod p2d_cuboid_dp3 {
 
 /// (De)Serialize a Vec<u8> with base64 encoding
 pub mod vecu8_base64 {
+    use base64::Engine;
     use serde::{Deserialize, Serialize};
     use serde::{Deserializer, Serializer};
 
     /// Serialize a Vec<u8> as base64 encoded
     pub fn serialize<S: Serializer>(v: &Vec<u8>, s: S) -> Result<S::Ok, S::Error> {
-        String::serialize(&base64::encode(v), s)
+        String::serialize(&base64::engine::general_purpose::STANDARD.encode(v), s)
     }
 
     /// Deserialize base64 encoded Vec<u8>
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
-        base64::decode(String::deserialize(d)?.as_bytes()).map_err(serde::de::Error::custom)
+        base64::engine::general_purpose::STANDARD
+            .decode(String::deserialize(d)?.as_bytes())
+            .map_err(serde::de::Error::custom)
     }
 }

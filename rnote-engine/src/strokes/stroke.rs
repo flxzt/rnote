@@ -1,3 +1,15 @@
+use base64::Engine;
+use p2d::bounding_volume::Aabb;
+use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::penpath::Element;
+use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
+use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::transform::Transform;
+use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::{Color, PenPath, Style};
+use rnote_fileformats::xoppformat::{self, XoppColor};
+use serde::{Deserialize, Serialize};
+
 use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
 use super::shapestroke::ShapeStroke;
@@ -7,17 +19,6 @@ use super::{StrokeBehaviour, TextStroke};
 use crate::store::chrono_comp::StrokeLayer;
 use crate::{render, RnoteEngine};
 use crate::{utils, DrawBehaviour};
-use rnote_compose::helpers::AabbHelpers;
-use rnote_compose::penpath::Element;
-use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
-use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::TransformBehaviour;
-use rnote_compose::{Color, PenPath, Style};
-
-use p2d::bounding_volume::Aabb;
-use rnote_fileformats::xoppformat::{self, XoppColor};
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "stroke")]
@@ -284,7 +285,7 @@ impl Stroke {
         )
         .translate(offset);
 
-        let bytes = base64::decode(&xopp_image.data)?;
+        let bytes = base64::engine::general_purpose::STANDARD.decode(&xopp_image.data)?;
 
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
@@ -393,7 +394,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(png_data),
+                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
                     },
                 ))
             }
@@ -458,7 +459,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(png_data),
+                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
                     },
                 ))
             }
@@ -497,7 +498,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(png_data),
+                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
                     },
                 ))
             }
@@ -537,7 +538,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(png_data),
+                        data: base64::engine::general_purpose::STANDARD.encode(png_data),
                     },
                 ))
             }

@@ -39,7 +39,7 @@ cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
 # newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
 poppler-rs = {version = "0.21", features = ["v20_9"] }
 svg = "0.13"
-image = "0.23"
+image = "0.24"
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9"

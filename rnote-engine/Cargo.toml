@@ -39,7 +39,7 @@ poppler-rs = {version = "0.21", features = ["v20_9"] }
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9"
-image = "0.23"
+image = "0.24"
 svg = "0.13"
 geo = "0.23"
 rodio = {version = "0.16", default-features=false, features = ["symphonia-wav"] }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-02-20 12:34+0000\n"
+"PO-Revision-Date: 2023-03-13 09:11+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -51,7 +51,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "نظرة عامة"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -307,7 +307,7 @@ msgstr "نقطة في البوصة"
 
 #: rnote-ui/data/ui/dialogs/import.ui:264
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr "حدد العدد المفضَّل للنقاط في كلِّ بوصة لملفِّ Xournal++"
+msgstr "حدِّد العدد المفضَّل للنقاط في كلِّ بوصة لملفِّ Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export Document"
@@ -1104,7 +1104,7 @@ msgstr "دائم"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr "بدِّل"
+msgstr "يبدِّل"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1128,7 +1128,7 @@ msgstr "عيِّن الفاصل الزمنيَّ للحفظ التلقائيِّ
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Format Border Color"
-msgstr "تنسيق لون الحدود"
+msgstr "نسِّق لون الحدود"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 msgid "Set the format border color"
@@ -1140,11 +1140,11 @@ msgstr "أظهر شُرُط التمرير"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr "عين ما إذا كانت شُرُط التمرير على اللوحة تُعرض"
+msgstr "عيِّن ما إذا كانت شُرُط التمرير على اللوحة تُعرض"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular Cursor"
-msgstr "مؤشِّر عاديٌّ"
+msgstr "المؤشِّر العاديُّ"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 msgid "Set the regular cursor"
@@ -1228,7 +1228,7 @@ msgstr "عيِّن عرض التنسيق"
 
 #: rnote-ui/data/ui/settingspanel.ui:220
 msgid "Height"
-msgstr "الإرتفاع"
+msgstr "الارتفاع"
 
 #: rnote-ui/data/ui/settingspanel.ui:221
 msgid "Set the format height"
@@ -1240,7 +1240,7 @@ msgstr "عدد النقاط لكلِّ بوصة"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "حدد عدد النقاط في كلِّ بوصة. القيمة المبدئيَّة هي 96."
+msgstr "حدِّد عدد النقاط لكلِّ بوصة. القيمة المبدئيَّة هي 96."
 
 #: rnote-ui/data/ui/settingspanel.ui:258
 msgid "Revert"
@@ -1293,7 +1293,7 @@ msgstr "عيِّن عرض نمط الخلفيَّة"
 
 #: rnote-ui/data/ui/settingspanel.ui:349
 msgid "Pattern Height"
-msgstr "إرتفاع النمط"
+msgstr "ارتفاع النمط"
 
 #: rnote-ui/data/ui/settingspanel.ui:350
 msgid "Set the background pattern height"
@@ -1352,52 +1352,52 @@ msgstr ""
 "بإصبعين طويلًا"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "إجراء الزرِّ الرئيس للقلم"
+msgstr "إجراء الزرِّ الأوَّل في لوح الرسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"عيِّن إجراء الزرِّ الأوَّل\n"
+"في لوح رسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "إجراء الزرِّ الرئيس للقلم"
+msgstr "إجراء الزرِّ الثاني في لوح الرسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"عيِّن إجراء الزرِّ الثاني\n"
+"في لوح رسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:447
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "إجراء الزرِّ الرئيس للقلم"
+msgstr "إجراء الزرِّ الثالث في لوح الرسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"عيِّن إجراء الزرِّ الثالث\n"
+"في لوح رسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "إجراء الزرِّ الرئيس للقلم"
+msgstr "إجراء الزرِّ الرابع في لوح الرسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"عيِّن إجراء الزرِّ الرابع\n"
+"في لوح رسم"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1565,19 +1565,19 @@ msgstr "فشل حفظ المستند"
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "الزرُّ الأوَّل"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "الزرُّ الثاني"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "الزرُّ الثالث"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "الزرُّ الرابع"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"

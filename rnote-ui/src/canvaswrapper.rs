@@ -221,12 +221,10 @@ mod imp {
                     self.scroller.vscrollbar().set_visible(show_scrollbars);
                 }
                 "restrict-zoom" => {
-                    let restrict_zoom = value
+                    let restrict_zoom = dbg!(value
                         .get::<bool>()
-                        .expect("The value needs to be of type `bool`");
-                    println!("restrictzoom2: {}", restrict_zoom);
+                        .expect("The value needs to be of type `bool`"));
                     self.restrict_zoom.replace(restrict_zoom);
-                    println!("restrictzoom3: {}", self.restrict_zoom.get());
                 }
 
                 _ => unimplemented!(),
@@ -239,12 +237,12 @@ mod imp {
     impl RnCanvasWrapper {
         fn setup_input(&self) {
             let inst = self.instance();
-            let restrict_zoom = || self.restrict_zoom.get();
+
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(@weak inst as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        if restrict_zoom() {
+                        if !canvaswrapper.restrict_zoom() {
                             let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
 
                             let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
@@ -460,7 +458,7 @@ mod imp {
                     @strong zoom_begin,
                     @strong prev_offset,
                     @weak inst as canvaswrapper => move |gesture, _, _| {
-                        if restrict_zoom() {
+                        if canvaswrapper.restrict_zoom() {
                             return;
                         }
                         let modifiers = gesture.current_event_state();
@@ -561,13 +559,12 @@ impl RnCanvasWrapper {
     }
     #[allow(unused)]
     pub(crate) fn restrict_zoom(&self) -> bool {
-        self.property::<bool>("show-scrollbars")
+        dbg!(self.property::<bool>("restrict-zoom"))
     }
 
     #[allow(unused)]
     pub(crate) fn set_restrict_zoom(&self, restrict_zoom: bool) {
-        println!("restrictzoom: {}", restrict_zoom);
-        self.set_property("restrict-zoom", restrict_zoom);
+        self.set_property("restrict-zoom", dbg!(restrict_zoom));
         self.canvas_zoom_gesture_enable(!restrict_zoom);
     }
 

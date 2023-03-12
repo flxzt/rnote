@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-06 11:40+0000\n"
+"PO-Revision-Date: 2023-03-13 09:11+0000\n"
 "Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -50,7 +50,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Una panoramica"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -1500,6 +1500,8 @@ msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Impostare l'azione per il pulsante 1\n"
+"su un blocco da disegno"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
 #, fuzzy
@@ -1512,6 +1514,8 @@ msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Impostare l'azione per il pulsante 2\n"
+"su un blocco da disegno"
 
 #: rnote-ui/data/ui/settingspanel.ui:447
 #, fuzzy
@@ -1524,6 +1528,8 @@ msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Impostare l'azione per il pulsante 3\n"
+"su un blocco da disegno"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
 #, fuzzy
@@ -1536,6 +1542,8 @@ msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Impostare l'azione per il pulsante 4\n"
+"su un blocco da disegno"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 #, fuzzy
@@ -1794,19 +1802,19 @@ msgstr "Salvataggio del documento non riuscito."
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "Pulsante 1"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "Pulsante 2"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "Pulsante 3"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "Pulsante 4"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"
@@ -2048,7 +2056,7 @@ msgstr "Camera"
 #: rnote-ui/src/dialogs/mod.rs:548
 msgctxt "as in computer chip"
 msgid "Chip"
-msgstr ""
+msgstr "Chip"
 
 #: rnote-ui/src/dialogs/mod.rs:549
 msgid "Code"

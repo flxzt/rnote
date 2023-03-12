@@ -204,7 +204,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
-                "restrict-zoom" => self.show_scrollbars.get().to_value(),
+                "restrict-zoom" => self.restrict_zoom.get().to_value(),
                 _ => unimplemented!(),
             }
         }

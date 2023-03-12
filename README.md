@@ -1,5 +1,5 @@
 <div align="center">
-<img src="rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
+<img src="https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
 </div><br><br><br>
 
 <div align="center">
@@ -7,7 +7,7 @@
         <img alt="CI"src="https://github.com/flxzt/rnote/actions/workflows/ci.yml/badge.svg"></img>
     </a>
     <a href="https://liberapay.com/flxzt/donate">
-        <img alt="Donate using Liberapay" src="https://github.com/flxzt/rnote/blob/main/misc/assets/liberapay-donate-button.svg" width="60" height="20">
+        <img alt="Donate using Liberapay" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/liberapay-donate-button.svg" width="60" height="20">
     </a>
 </div>
 
@@ -54,7 +54,7 @@ Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 Download the official flatpak on Flathub [here](https://flathub.org/apps/details/com.github.flxzt.rnote).
 
 <div align="start">
-<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/flathub-badge.png'/></a>
 </div><br>
 
 ### MacOS
@@ -63,7 +63,7 @@ Thanks to @dehesselle the app is available on MacOS as an app bundle.
 Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the latest release can be downloaded [here](https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest).
 
 <div align="start">
-<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img height="150" alt='Download on Flathub' src='./misc/assets/rnote-macos-app-bundle-badge.png'/></a>
+<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img height="150" alt='Download MacOS app bundle' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/rnote-macos-app-bundle-badge.png'/></a>
 </div><br>
 
 ### Downgrading
@@ -93,10 +93,10 @@ To update to the lastest version again, unpin and run `flatpak update`.
 
 ## Screenshots
 
-![overview](./rnote-ui/data/screenshots/overview.png)  
-![lecture_note_1](./rnote-ui/data/screenshots/lecture_note_1.png)  
-![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)  
-![lecture_note_2](./rnote-ui/data/screenshots/lecture_note_2.png)  
+![overview](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/overview.png)  
+![lecture_note_1](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_1.png)  
+![pdf_annotation](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png)  
+![lecture_note_2](https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/lecture_note_2.png)  
 
 ## License
 
@@ -180,10 +180,9 @@ To be able to open and export older files that are incompatible with the newest 
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
 <div align="center" spacing="20px">
-        <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" height="400">
-        <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" height="400">
-        <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
-        <img alt="Suits" src="./misc/drawings/suits.png" height="400">
+        <img alt="Pikachu" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/pikachu.png" height="400">
+        <img alt="Love" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/love.png" height="400">
+        <img alt="Suits" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/suits.png" height="400">
 </div><br>
 
 ## Building

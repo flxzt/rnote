@@ -49,13 +49,24 @@ Rnote has a project website: [rnote.flxzt.net](https://rnote.flxzt.net/)
 
 ## Installation
 
-Rnote is available as a flatpak on Flathub:
+### Linux
 
-<br><div align="start">
-<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+Download the official flatpak on Flathub [here](https://flathub.org/apps/details/com.github.flxzt.rnote).
+
+<div align="start">
+<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="250" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 </div><br>
 
-**Downgrading**
+### MacOS
+
+Thanks to @dehesselle the app is available on MacOS as an app bundle.  
+Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the latest release can be downloaded [here](https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest).
+
+<div align="start">
+<a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img height="150" alt='Download on Flathub' src='./misc/assets/rnote-macos-app-bundle-badge.png'/></a>
+</div><br>
+
+### Downgrading
 
 Because the file format still is unstable, downgrading to a specific version might be necessary.
 

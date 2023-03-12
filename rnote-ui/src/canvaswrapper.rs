@@ -221,9 +221,9 @@ mod imp {
                     self.scroller.vscrollbar().set_visible(show_scrollbars);
                 }
                 "restrict-zoom" => {
-                    let restrict_zoom = dbg!(value
+                    let restrict_zoom = value
                         .get::<bool>()
-                        .expect("The value needs to be of type `bool`"));
+                        .expect("The value needs to be of type `bool`");
                     self.restrict_zoom.replace(restrict_zoom);
                 }
 
@@ -559,12 +559,12 @@ impl RnCanvasWrapper {
     }
     #[allow(unused)]
     pub(crate) fn restrict_zoom(&self) -> bool {
-        dbg!(self.property::<bool>("restrict-zoom"))
+        self.property::<bool>("restrict-zoom")
     }
 
     #[allow(unused)]
     pub(crate) fn set_restrict_zoom(&self, restrict_zoom: bool) {
-        self.set_property("restrict-zoom", dbg!(restrict_zoom));
+        self.set_property("restrict-zoom", restrict_zoom);
         self.canvas_zoom_gesture_enable(!restrict_zoom);
     }
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-02-28 11:24+0000\n"
+"PO-Revision-Date: 2023-03-12 09:01+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -50,7 +50,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Eine Übersicht"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -1355,52 +1355,52 @@ msgstr ""
 "Zwei-Finger Lange-Drücken Geste"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "Stylus Primäre Taste Aktion"
+msgstr "Zeichentablet Taste 1 Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Ändere die Aktion für Taste 1\n"
+"auf einem Zeichentablet"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "Stylus Primäre Taste Aktion"
+msgstr "Zeichentablet Taste 2 Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Ändere die Aktion für Taste 2\n"
+"auf einem Zeichentablet"
 
 #: rnote-ui/data/ui/settingspanel.ui:447
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "Stylus Primäre Taste Aktion"
+msgstr "Zeichentablet Taste 3 Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Ändere die Aktion für Taste 3\n"
+"auf einem Zeichentablet"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "Stylus Primäre Taste Aktion"
+msgstr "Zeichentablet Taste 4 Aktion"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Ändere die Aktion für Taste 4\n"
+"auf einem Zeichentablet"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1568,19 +1568,19 @@ msgstr "Dokument speichern gescheitert"
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "Taste 1"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "Taste 2"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "Taste 3"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "Taste 4"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"

@@ -5,7 +5,7 @@ use piet::RenderContext;
 
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
-use crate::shapes::Line;
+use crate::shapes::Arrow;
 use crate::style::{indicators, Composer};
 use crate::{Shape, Style};
 
@@ -48,7 +48,7 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
                 self.tip = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return ShapeBuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
+                return ShapeBuilderProgress::Finished(vec![Shape::Arrow(self.state_as_arrow())]);
             }
             _ => {}
         }
@@ -58,7 +58,7 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
 
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb> {
         Some(
-            self.state_as_line()
+            self.state_as_arrow()
                 .composed_bounds(style)
                 .loosened(indicators::POS_INDICATOR_RADIUS / zoom),
         )
@@ -66,8 +66,8 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
-        let line = self.state_as_line();
-        line.draw_composed(cx, style);
+        let arrow = self.state_as_arrow();
+        arrow.draw_composed(cx, style);
 
         indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
         indicators::draw_pos_indicator(cx, PenState::Down, self.tip, zoom);
@@ -77,10 +77,10 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
 
 impl ArrowBuilder {
     /// The current state as line
-    pub fn state_as_line(&self) -> Line {
-        Line {
+    pub fn state_as_arrow(&self) -> Arrow {
+        Arrow {
             start: self.start,
-            end: self.tip,
+            tip: self.tip,
         }
     }
 }

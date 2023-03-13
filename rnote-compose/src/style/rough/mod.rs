@@ -6,6 +6,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 pub use roughoptions::RoughOptions;
 
 use super::Composer;
+use crate::shapes::Arrow;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
 use crate::shapes::{CubicBezier, ShapeBehaviour};
@@ -55,6 +56,28 @@ impl Composer<RoughOptions> for Line {
             self.start[1],
             self.end[0],
             self.end[1],
+        );
+
+        drawable.draw(cx);
+
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<RoughOptions> for Arrow {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+
+        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+            self.start[0],
+            self.start[1],
+            self.tip[0],
+            self.tip[1],
         );
 
         drawable.draw(cx);
@@ -158,6 +181,7 @@ impl Composer<RoughOptions> for CubicBezier {
 impl Composer<RoughOptions> for crate::Shape {
     fn composed_bounds(&self, options: &RoughOptions) -> Aabb {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.composed_bounds(options),
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
@@ -168,6 +192,7 @@ impl Composer<RoughOptions> for crate::Shape {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
             crate::Shape::Line(line) => line.draw_composed(cx, options),
             crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),

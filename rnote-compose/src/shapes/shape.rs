@@ -1,7 +1,7 @@
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
+use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour, Arrow};
 use crate::transform::TransformBehaviour;
 
 // Container type to store shapes
@@ -12,6 +12,9 @@ pub enum Shape {
     #[serde(rename = "line")]
     /// A line shape
     Line(Line),
+    #[serde(rename = "arrow")]
+    /// nA arrow shape
+    Arrow(Arrow),
     #[serde(rename = "rect")]
     /// A rectangle shape
     Rectangle(Rectangle),
@@ -35,6 +38,9 @@ impl Default for Shape {
 impl TransformBehaviour for Shape {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
+            Self::Arrow(arrow) => {
+                arrow.translate(offset);
+            }
             Self::Line(line) => {
                 line.translate(offset);
             }
@@ -58,6 +64,9 @@ impl TransformBehaviour for Shape {
             Self::Line(line) => {
                 line.rotate(angle, center);
             }
+            Self::Arrow(arrow) => {
+                arrow.rotate(angle, center);
+            }
             Self::Rectangle(rectangle) => {
                 rectangle.rotate(angle, center);
             }
@@ -78,6 +87,9 @@ impl TransformBehaviour for Shape {
             Self::Line(line) => {
                 line.scale(scale);
             }
+            Self::Arrow(arrow) => {
+                arrow.scale(scale);
+            }
             Self::Rectangle(rectangle) => {
                 rectangle.scale(scale);
             }
@@ -97,6 +109,7 @@ impl TransformBehaviour for Shape {
 impl ShapeBehaviour for Shape {
     fn bounds(&self) -> Aabb {
         match self {
+            Self::Arrow(arrow) => arrow.bounds(),
             Self::Line(line) => line.bounds(),
             Self::Rectangle(rectangle) => rectangle.bounds(),
             Self::Ellipse(ellipse) => ellipse.bounds(),
@@ -106,6 +119,7 @@ impl ShapeBehaviour for Shape {
     }
     fn hitboxes(&self) -> Vec<Aabb> {
         match self {
+            Self::Arrow(arrow) => arrow.hitboxes(),
             Self::Line(line) => line.hitboxes(),
             Self::Rectangle(rectangle) => rectangle.hitboxes(),
             Self::Ellipse(ellipse) => ellipse.hitboxes(),

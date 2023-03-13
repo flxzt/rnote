@@ -1,13 +1,13 @@
 mod appactions;
 
+// Imports
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::pens::PenStyle;
-use std::path::Path;
 
 use crate::{
-    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, penssidebar::RnBrushPage,
+    colorpicker::RnColorPad, colorpicker::RnColorSetter, config, globals, penssidebar::RnBrushPage,
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
     penssidebar::RnToolsPage, penssidebar::RnTypewriterPage, settingspanel::RnPenShortcutRow,
     strokewidthpicker::RnStrokeWidthPreview, strokewidthpicker::RnStrokeWidthSetter,
@@ -52,7 +52,7 @@ mod imp {
 
             let input_file = files.first().cloned();
             if let Some(appwindow) = self
-                .instance()
+                .obj()
                 .active_window()
                 .map(|w| w.downcast::<RnAppWindow>().unwrap())
             {
@@ -71,18 +71,18 @@ mod imp {
 
     impl RnApp {
         fn init(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.setup_logging();
             self.setup_i18n();
             self.setup_gresources();
-            inst.setup_actions();
-            inst.setup_action_accels();
+            obj.setup_actions();
+            obj.setup_action_accels();
         }
 
         /// Initializes and shows a new app window
         fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
-            let appwindow = RnAppWindow::new(self.instance().upcast_ref::<gtk4::Application>());
+            let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
             appwindow.init();
             appwindow.show();
 
@@ -102,8 +102,11 @@ mod imp {
 
         fn setup_i18n(&self) {
             gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
-            gettextrs::bindtextdomain(config::GETTEXT_PACKAGE, config::LOCALEDIR)
-                .expect("Unable to bind the text domain");
+            gettextrs::bindtextdomain(
+                config::GETTEXT_PACKAGE,
+                crate::env::locale_dir().expect("Could not get locale dir while setting up i18n"),
+            )
+            .expect("Unable to bind the text domain");
             gettextrs::textdomain(config::GETTEXT_PACKAGE)
                 .expect("Unable to switch to the text domain");
         }
@@ -142,10 +145,13 @@ mod imp {
             RnStrokeWidthPreview::static_type();
             StrokeWidthPreviewStyle::static_type();
 
-            self.instance()
-                .set_resource_base_path(Some(config::APP_IDPATH));
-            let resource = gio::Resource::load(Path::new(config::RESOURCES_FILE))
-                .expect("Could not load gresource file");
+            self.obj().set_resource_base_path(Some(config::APP_IDPATH));
+            let resource = gio::Resource::load(
+                crate::env::pkg_data_dir()
+                    .expect("Could not retrieve pkg data dir")
+                    .join(globals::GRESOURCES_FILENAME),
+            )
+            .expect("Could not load gresource file");
             gio::resources_register(&resource);
         }
     }
@@ -165,9 +171,9 @@ impl Default for RnApp {
 
 impl RnApp {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[
-            ("application-id", &config::APP_ID),
-            ("flags", &gio::ApplicationFlags::HANDLES_OPEN),
-        ])
+        glib::Object::builder()
+            .property("application-id", &config::APP_ID)
+            .property("flags", &gio::ApplicationFlags::HANDLES_OPEN)
+            .build()
     }
 }

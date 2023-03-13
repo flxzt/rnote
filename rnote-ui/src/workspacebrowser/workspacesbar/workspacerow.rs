@@ -54,25 +54,19 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.instance().set_css_classes(&["workspacerow"]);
+            self.obj().set_css_classes(&["workspacerow"]);
 
             self.connect_entry();
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecObject::new(
-                    "entry",
-                    "entry",
-                    "entry",
-                    RnWorkspaceListEntry::static_type(),
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![glib::ParamSpecObject::builder::<RnWorkspaceListEntry>("entry").build()]
             });
             PROPERTIES.as_ref()
         }
@@ -104,32 +98,32 @@ mod imp {
 
     impl RnWorkspaceRow {
         fn connect_entry(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.entry.borrow().connect_notify_local(
                 Some("dir"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("icon"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("color"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
 
             self.entry.borrow().connect_notify_local(
                 Some("name"),
-                clone!(@weak inst as workspacerow => move |_, _| {
+                clone!(@weak obj as workspacerow => move |_, _| {
                     workspacerow.imp().update_apearance();
                 }),
             );
@@ -161,7 +155,7 @@ mod imp {
 
             self.name_label
                 .set_label(name.graphemes(true).take(2).collect::<String>().as_str());
-            self.instance()
+            self.obj()
                 .set_tooltip_text(Some(format!("{name}\n{dir}").as_str()));
 
             self.folder_image.set_icon_name(Some(&icon));
@@ -170,13 +164,13 @@ mod imp {
                 "@define-color workspacerow_color {workspacerow_color};@define-color workspacerow_fg_color {workspacerow_fg_color};",
             );
 
-            css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(&custom_css);
 
-            self.instance()
+            self.obj()
                 .style_context()
                 .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-            self.instance().queue_draw();
+            self.obj().queue_draw();
         }
     }
 }
@@ -194,7 +188,9 @@ impl Default for RnWorkspaceRow {
 
 impl RnWorkspaceRow {
     pub(crate) fn new(entry: &RnWorkspaceListEntry) -> Self {
-        glib::Object::new(&[("entry", &entry.to_value())])
+        glib::Object::builder()
+            .property("entry", &entry.to_value())
+            .build()
     }
 
     #[allow(unused)]

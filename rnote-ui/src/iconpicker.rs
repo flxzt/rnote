@@ -62,21 +62,17 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                // Since this is nullable we can use it to represent Option<String>
-                vec![glib::ParamSpecString::new(
-                    "picked",
-                    "picked",
-                    "picked",
-                    None,
-                    glib::ParamFlags::READWRITE,
-                )]
+                // we can use it to represent Option<String>
+                vec![glib::ParamSpecString::builder("picked")
+                    .default_value(None)
+                    .build()]
             });
             PROPERTIES.as_ref()
         }
@@ -95,7 +91,7 @@ mod imp {
                         .get::<Option<String>>()
                         .expect("The value needs to be of type `Option<String>`");
 
-                    self.instance().set_picked_intern(picked.clone());
+                    self.obj().set_picked_intern(picked.clone());
                     self.picked.replace(picked);
                 }
                 _ => unimplemented!(),
@@ -120,7 +116,7 @@ impl Default for RnIconPicker {
 
 impl RnIconPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn list(&self) -> Option<StringList> {
@@ -243,7 +239,7 @@ impl RnIconPicker {
 
             list_item.set_child(Some(&icon_image));
 
-            let list_item_expr = ConstantExpression::new(&list_item);
+            let list_item_expr = ConstantExpression::new(list_item);
 
             let icon_name_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item")

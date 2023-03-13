@@ -1024,7 +1024,8 @@ impl XmlWriterExt for XmlWriter {
             buf.extend_from_slice(mime.as_bytes());
             buf.extend_from_slice(b";base64, ");
 
-            let mut enc = base64::write::EncoderWriter::from(buf, &base64::engine::DEFAULT_ENGINE);
+            let mut enc =
+                base64::write::EncoderWriter::new(buf, &base64::engine::general_purpose::STANDARD);
             enc.write_all(data).unwrap();
             enc.finish().unwrap();
         });

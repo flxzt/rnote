@@ -30,12 +30,12 @@ pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton,
         .build();
     let cancel_button = Button::builder()
         .halign(Align::Start)
-        .label(&gettext("Cancel"))
+        .label(gettext("Cancel"))
         .build();
 
     let apply_button = Button::builder()
         .halign(Align::End)
-        .label(&gettext("Apply"))
+        .label(gettext("Apply"))
         .build();
     apply_button.style_context().add_class("suggested-action");
 

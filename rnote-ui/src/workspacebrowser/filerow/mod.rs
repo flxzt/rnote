@@ -70,25 +70,22 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            self.instance().set_widget_name("filerow");
+            self.obj().set_widget_name("filerow");
 
             self.setup_input();
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecObject::new(
-                    "current-file",
-                    "current-file",
-                    "current-file",
-                    Option::<gio::File>::static_type(),
-                    glib::ParamFlags::READWRITE,
-                )]
+                vec![
+                    // this is nullable, so it can be used to represent Option<gio::File>
+                    glib::ParamSpecObject::builder::<gio::File>("current-file").build(),
+                ]
             });
             PROPERTIES.as_ref()
         }
@@ -117,16 +114,16 @@ mod imp {
 
     impl RnFileRow {
         fn setup_input(&self) {
-            let inst = self.instance();
-            inst.add_controller(&self.drag_source);
+            let obj = self.obj();
+            obj.add_controller(self.drag_source.clone());
 
             let rightclick_gesture = GestureClick::builder()
                 .name("rightclick_gesture")
                 .button(gdk::BUTTON_SECONDARY)
                 .build();
-            inst.add_controller(&rightclick_gesture);
+            obj.add_controller(rightclick_gesture.clone());
             rightclick_gesture.connect_pressed(
-                clone!(@weak inst as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
+                clone!(@weak obj as filerow => move |_rightclick_gesture, _n_press, _x, _y| {
                     filerow.imp().popovermenu.popup();
                 }),
             );
@@ -135,11 +132,11 @@ mod imp {
                 .name("longpress_gesture")
                 .touch_only(true)
                 .build();
-            inst.add_controller(&longpress_gesture);
+            obj.add_controller(longpress_gesture.clone());
             longpress_gesture.group_with(&rightclick_gesture);
 
             longpress_gesture.connect_pressed(
-                clone!(@weak inst as filerow => move |_rightclick_gesture, _x, _y| {
+                clone!(@weak obj as filerow => move |_rightclick_gesture, _x, _y| {
                     filerow.imp().popovermenu.popup();
                 }),
             );
@@ -160,7 +157,7 @@ impl Default for RnFileRow {
 
 impl RnFileRow {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

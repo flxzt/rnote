@@ -54,7 +54,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -75,7 +75,7 @@ impl Default for RnMainHeader {
 
 impl RnMainHeader {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn main_title(&self) -> adw::WindowTitle {

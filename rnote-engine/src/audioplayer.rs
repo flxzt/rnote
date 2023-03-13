@@ -27,17 +27,14 @@ pub struct AudioPlayer {
 
 impl AudioPlayer {
     pub const PLAY_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(500);
-    /// Number of marker sound files installed in system-data-dir/rnote/sounds
-    pub const MARKER_N_FILES: usize = 15;
-
-    pub const BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
-
-    pub const TYPEWRITER_N_FILES: usize = 30;
+    pub const N_SOUND_FILES_MARKER: usize = 15;
+    pub const N_SOUND_FILES_TYPEWRITER: usize = 30;
+    pub const SOUND_FILE_BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
 
     /// create and initialize new audioplayer.
-    /// data_dir specifies is the app data directory in which the sounds lie in the "sounds" subfolder
-    pub fn new_init(mut data_dir: PathBuf) -> Result<Self, anyhow::Error> {
-        data_dir.push("sounds/");
+    /// pkg_data_dir is the app data directory which has a "sounds" subfolder containing the sound files
+    pub fn new_init(mut pkg_data_dir: PathBuf) -> Result<Self, anyhow::Error> {
+        pkg_data_dir.push("sounds/");
 
         let mut sounds = HashMap::new();
 
@@ -47,9 +44,9 @@ impl AudioPlayer {
             rodio::OutputStream::try_default()?;
 
         // Init marker sounds
-        for i in 0..Self::MARKER_N_FILES {
+        for i in 0..Self::N_SOUND_FILES_MARKER {
             let name = format!("marker_{i:02}");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
 
             sounds.insert(name, buffered);
         }
@@ -57,40 +54,40 @@ impl AudioPlayer {
         // Init brush sounds
         {
             let name = String::from("brush");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
 
         // Init typewriter sounds
         // the enumerated key sounds
-        for i in 0..Self::TYPEWRITER_N_FILES {
+        for i in 0..Self::N_SOUND_FILES_TYPEWRITER {
             let name = format!("typewriter_{i:02}");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
 
         // the custom sounds
         {
             let name = String::from("typewriter_insert");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
 
         {
             let name = String::from("typewriter_thump");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
 
         {
             let name = String::from("typewriter_bell");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
 
         {
             let name = String::from("typewriter_linefeed");
-            let buffered = load_sound_from_path(data_dir.clone(), &name, "wav")?;
+            let buffered = load_sound_from_path(pkg_data_dir.clone(), &name, "wav")?;
             sounds.insert(name, buffered);
         }
 
@@ -110,7 +107,7 @@ impl AudioPlayer {
 
     pub fn play_random_marker_sound(&self) {
         let mut rng = rand::thread_rng();
-        let marker_sound_index = rng.gen_range(0..Self::MARKER_N_FILES);
+        let marker_sound_index = rng.gen_range(0..Self::N_SOUND_FILES_MARKER);
 
         match rodio::Sink::try_new(&self.marker_outputstream_handle) {
             Ok(sink) => {
@@ -126,7 +123,8 @@ impl AudioPlayer {
 
     pub fn start_random_brush_sound(&mut self) {
         let mut rng = rand::thread_rng();
-        let brush_sound_seek_time_index = rng.gen_range(0..Self::BRUSH_SEEK_TIMES_SEC.len());
+        let brush_sound_seek_time_index =
+            rng.gen_range(0..Self::SOUND_FILE_BRUSH_SEEK_TIMES_SEC.len());
 
         match rodio::Sink::try_new(&self.brush_outputstream_handle) {
             Ok(sink) => {
@@ -135,7 +133,8 @@ impl AudioPlayer {
                         .clone()
                         .repeat_infinite()
                         .skip_duration(Duration::from_millis(
-                            (Self::BRUSH_SEEK_TIMES_SEC[brush_sound_seek_time_index] * 1000.0)
+                            (Self::SOUND_FILE_BRUSH_SEEK_TIMES_SEC[brush_sound_seek_time_index]
+                                * 1000.0)
                                 .round() as u64,
                         )),
                 );
@@ -176,7 +175,7 @@ impl AudioPlayer {
                 | Some(KeyboardKey::HorizontalTab)
                 | None => {
                     let mut rng = rand::thread_rng();
-                    let typewriter_sound_index = rng.gen_range(0..Self::TYPEWRITER_N_FILES);
+                    let typewriter_sound_index = rng.gen_range(0..Self::N_SOUND_FILES_TYPEWRITER);
 
                     sink.append(
                         self.sounds[&format!("typewriter_{typewriter_sound_index:02}")].clone(),

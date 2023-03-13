@@ -97,7 +97,10 @@ impl RnGroupedIconPickerGroup {
         grouped_icon_picker: &RnGroupedIconPicker,
         generate_display_name: fn(&str) -> String,
     ) -> Self {
-        let widget = glib::Object::new::<Self>(&[("name", name), ("icons", icons)]);
+        let widget = glib::Object::builder::<Self>()
+            .property("name", name)
+            .property("icons", icons)
+            .build();
         widget.init(grouped_icon_picker, generate_display_name);
         widget
     }

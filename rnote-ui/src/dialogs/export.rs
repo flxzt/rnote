@@ -20,11 +20,11 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas
     filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Save Document As"))
+        .title(gettext("Save Document As"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Save"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Save"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
@@ -220,11 +220,11 @@ fn create_filechooser_export_doc(
     doc_export_prefs: &DocExportPrefs,
 ) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Document"))
+        .title(gettext("Export Document"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Select"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Select"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
@@ -493,11 +493,11 @@ fn create_filechooser_export_doc_pages(
     doc_pages_export_prefs: &DocPagesExportPrefs,
 ) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Document Pages"))
+        .title(gettext("Export Document Pages"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Select"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Select"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::SelectFolder)
         .select_multiple(false)
         .build();
@@ -741,11 +741,11 @@ fn create_filechooser_export_selection(
     selection_export_prefs: &SelectionExportPrefs,
 ) -> FileChooserNative {
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Selection"))
+        .title(gettext("Export Selection"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Select"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Select"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
@@ -811,11 +811,11 @@ pub(crate) fn filechooser_export_engine_state(appwindow: &RnAppWindow, canvas: &
     filter.set_name(Some(&gettext("Json")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Engine State"))
+        .title(gettext("Export Engine State"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Export"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Export"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
@@ -875,11 +875,11 @@ pub(crate) fn filechooser_export_engine_config(appwindow: &RnAppWindow, canvas: 
     filter.set_name(Some(&gettext("Json")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Export Engine Config"))
+        .title(gettext("Export Engine Config"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Export"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Export"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();

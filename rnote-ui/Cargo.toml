@@ -31,15 +31,15 @@ serde = {version = "1", features = ["derive", "rc"]}
 serde_json = { version="1" }
 futures = "0.3"
 rayon = "1"
-nalgebra = { version = "0.31", features = ["serde-serialize"] }
-parry2d-f64 = { version = "0.12", features = ["serde-serialize"] }
-gtk4 = {version = "0.5", features = ["xml_validation", "v4_8"]}
-adw = {version = "0.2", package="libadwaita", features = ["v1_2"]}
-cairo-rs = {version = "0.16", features = ["png", "svg", "pdf"]}
+nalgebra = { version = "0.32", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.13", features = ["serde-serialize"] }
+gtk4 = {version = "0.6", features = ["xml_validation", "v4_8"]}
+adw = {version = "0.3", package="libadwaita", features = ["v1_2"]}
+cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
 # newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
-poppler-rs = {version = "0.20", features = ["v20_9"] }
+poppler-rs = {version = "0.21", features = ["v20_9"] }
 svg = "0.13"
-image = "0.23"
+image = "0.24"
 piet = "0.6"
 piet-cairo = "0.6"
 kurbo = "0.9"
@@ -48,5 +48,5 @@ unicode-segmentation = "1"
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 fs_extra = "1"
 same-file = "1"
-regex = "1"
+regex = "1.7"
 directories = "4"

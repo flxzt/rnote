@@ -51,3 +51,17 @@ meson install -C _mesonbuild
 ```
 
 the installed binary can now be executed. It is located in `C:/msys64/mingw64/bin/rnote.exe`. It depends on the environment provided by mingw64, so it is not portable.
+
+# Required Dynamic Libraries (dll's)
+
+Show which `.dll`'s are needed:  
+(taken from: [https://blog.janw.name/posts/2022-04-21-002-msys2-dlls/](https://blog.janw.name/posts/2022-04-21-002-msys2-dlls/))
+```bash
+ldd "C:\msys64\mingw64\bin\rnote.exe" | grep /mingw64 | awk '{print $3}'
+```
+
+To copy them into a folder:
+```bash
+mkdir -p ./temp/dlls
+ldd "C:\msys64\mingw64\bin\rnote.exe" | grep /mingw64 | awk '{print $3}' | xargs -i cp {} ./temp/dlls/
+```

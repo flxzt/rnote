@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-19 15:04+0100\n"
-"PO-Revision-Date: 2023-02-20 12:34+0000\n"
+"POT-Creation-Date: 2023-03-11 08:14+0100\n"
+"PO-Revision-Date: 2023-03-12 06:18+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -49,8 +49,8 @@ msgstr ""
 "in zitten of dingen misgaan."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
-msgid "Main window in light colors"
-msgstr "Hoofdvenster (licht thema)"
+msgid "An Overview"
+msgstr "Een overzicht"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -85,7 +85,7 @@ msgstr "Hierdoor wordt het gehele werkblad leeggemaakt. Weet u het zeker?"
 #: rnote-ui/src/dialogs/export.rs:500 rnote-ui/src/dialogs/export.rs:748
 #: rnote-ui/src/dialogs/export.rs:818 rnote-ui/src/dialogs/export.rs:882
 #: rnote-ui/src/dialogs/import.rs:89 rnote-ui/src/dialogs/import.rs:142
-#: rnote-ui/src/dialogs/mod.rs:379
+#: rnote-ui/src/dialogs/mod.rs:394
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:33
 msgid "Cancel"
 msgstr "Annuleren"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "Leegmaken"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:492
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:497
 msgid "New Document"
 msgstr "Nieuw document"
 
@@ -191,7 +191,7 @@ msgstr "Wijzig de werkbladmap"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159
 #: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:346
-#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:440
+#: rnote-ui/src/dialogs/export.rs:384 rnote-ui/src/dialogs/mod.rs:455
 msgid "- no directory selected -"
 msgstr "- Geen map gekozen -"
 
@@ -599,31 +599,37 @@ msgstr "Penseelstreken splitsen"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: rnote-ui/data/ui/overlays.ui:45
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:78
 msgid "Brush"
 msgstr "Kwast"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: rnote-ui/data/ui/overlays.ui:52
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
 msgid "Shaper"
 msgstr "Vormbepaling"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: rnote-ui/data/ui/overlays.ui:60
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
 msgid "Typewriter"
 msgstr "Typmachine"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
 #: rnote-ui/data/ui/overlays.ui:68
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Eraser"
 msgstr "Gum"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
 #: rnote-ui/data/ui/overlays.ui:76
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Selector"
 msgstr "Selectie"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
 #: rnote-ui/data/ui/overlays.ui:84
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Tools"
 msgstr "Gereedschappen"
 
@@ -828,7 +834,7 @@ msgstr "Vullen"
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
-#: rnote-ui/src/dialogs/mod.rs:378
+#: rnote-ui/src/dialogs/mod.rs:393
 msgid "Select"
 msgstr "Selecteren"
 
@@ -1035,7 +1041,7 @@ msgid "Open"
 msgstr "Openen"
 
 #: rnote-ui/data/ui/filerow.ui:62
-#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:58
 msgid "Rename"
 msgstr "Naam wijzigen"
 
@@ -1047,7 +1053,7 @@ msgstr "Verplaatsen naar prullenbak"
 msgid "Duplicate"
 msgstr "Klonen"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:494
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:499
 msgid "Draft"
 msgstr "Concept"
 
@@ -1342,6 +1348,46 @@ msgid ""
 "two-finger long-press gesture"
 msgstr "Stelt de actie in wanneer met 2 vingers lang wordt vastgehouden"
 
+#: rnote-ui/data/ui/settingspanel.ui:421
+msgid "Drawing Pad Button 1 Action"
+msgstr "Tekenblok – Actie knop 1"
+
+#: rnote-ui/data/ui/settingspanel.ui:422
+msgid ""
+"Set the action for button 1\n"
+"on a drawing pad"
+msgstr "De actie van knop 1 op een tekenblok"
+
+#: rnote-ui/data/ui/settingspanel.ui:434
+msgid "Drawing Pad Button 2 Action"
+msgstr "Tekenblok – Actie knop 2"
+
+#: rnote-ui/data/ui/settingspanel.ui:435
+msgid ""
+"Set the action for button 2\n"
+"on a drawing pad"
+msgstr "De actie van knop 2 op een tekenblok"
+
+#: rnote-ui/data/ui/settingspanel.ui:447
+msgid "Drawing Pad Button 3 Action"
+msgstr "Tekenblok – Actie knop 3"
+
+#: rnote-ui/data/ui/settingspanel.ui:448
+msgid ""
+"Set the action for button 3\n"
+"on a drawing pad"
+msgstr "De actie van knop 3 op een tekenblok"
+
+#: rnote-ui/data/ui/settingspanel.ui:460
+msgid "Drawing Pad Button 4 Action"
+msgstr "Tekenblok – Actie knop 4"
+
+#: rnote-ui/data/ui/settingspanel.ui:461
+msgid ""
+"Set the action for button 4\n"
+"on a drawing pad"
+msgstr "De actie van knop 4 op een tekenblok"
+
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
 msgstr "Sneltoetsen tonen"
@@ -1402,7 +1448,7 @@ msgstr "In-/uitzoomen"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + Slepen"
 
-#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:536
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:551
 msgid "Document"
 msgstr "Document"
 
@@ -1498,51 +1544,63 @@ msgstr "Een map kan niet als bestand worden geopend"
 msgid "Failed to open file, unsupported file type"
 msgstr "Dit bestandstype wordt niet ondersteund"
 
-#: rnote-ui/src/appwindow/imp.rs:272
-#: rnote-ui/src/appwindow/appwindowactions.rs:522
+#: rnote-ui/src/appwindow/imp.rs:254
+#: rnote-ui/src/appwindow/appwindowactions.rs:575
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
-#: rnote-ui/src/dialogs/mod.rs:318
+#: rnote-ui/src/dialogs/mod.rs:328
 msgid "Saving document failed"
 msgstr "Document opslaan mislukt"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:640
-msgid "Printed document successfully"
-msgstr "Document succesvol afgedrukt"
+#: rnote-ui/src/appwindow/imp.rs:470
+msgid "Button 1"
+msgstr "Knop 1"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:649
+#: rnote-ui/src/appwindow/imp.rs:477
+msgid "Button 2"
+msgstr "Knop 2"
+
+#: rnote-ui/src/appwindow/imp.rs:484
+msgid "Button 3"
+msgstr "Knop 3"
+
+#: rnote-ui/src/appwindow/imp.rs:491
+msgid "Button 4"
+msgstr "Knop 4"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"
 msgstr "Het afdrukken is mislukt"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:677
+#: rnote-ui/src/appwindow/appwindowactions.rs:724
 msgid "Exporting selection failed, nothing selected"
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
 
-#: rnote-ui/src/canvas/mod.rs:725
+#: rnote-ui/src/canvas/mod.rs:695
 msgid "- invalid file name -"
 msgstr "- ongeldige bestandsnaam -"
 
-#: rnote-ui/src/canvas/mod.rs:738
+#: rnote-ui/src/canvas/mod.rs:708
 msgid "- invalid folder path -"
 msgstr "- ongeldige bestandslocatie -"
 
-#: rnote-ui/src/canvas/mod.rs:762
+#: rnote-ui/src/canvas/mod.rs:732
 msgid "Opened file was modified on disk"
 msgstr "Het geopende bestand is elders bewerkt"
 
-#: rnote-ui/src/canvas/mod.rs:763
+#: rnote-ui/src/canvas/mod.rs:733
 msgid "Reload"
 msgstr "Herladen"
 
-#: rnote-ui/src/canvas/mod.rs:769
+#: rnote-ui/src/canvas/mod.rs:739
 msgid "Reloading .rnote file from disk failed"
 msgstr "Rnote-bestand herladen mislukt"
 
-#: rnote-ui/src/canvas/mod.rs:818
+#: rnote-ui/src/canvas/mod.rs:788
 msgid "Opened file was renamed on disk"
 msgstr "Het geopende bestand is van naam gewijzigd"
 
-#: rnote-ui/src/canvas/mod.rs:831
+#: rnote-ui/src/canvas/mod.rs:801
 msgid "Opened file was moved or deleted on disk"
 msgstr "Het geopende bestand is verplaatst of verwijderd"
 
@@ -1669,181 +1727,181 @@ msgstr ""
 "Heimen Stoffels <vistausss@fastmail.com>\n"
 "Philip Goto <philip.goto@gmail.com>"
 
-#: rnote-ui/src/dialogs/mod.rs:274
+#: rnote-ui/src/dialogs/mod.rs:273
 msgid "- unable to find a valid save folder -"
 msgstr "- er is geen geldige opslagmap aangetroffen -"
 
-#: rnote-ui/src/dialogs/mod.rs:375
+#: rnote-ui/src/dialogs/mod.rs:390
 msgid "Change Workspace Directory"
 msgstr "Werkbladmap wijzigen"
 
-#: rnote-ui/src/dialogs/mod.rs:526
+#: rnote-ui/src/dialogs/mod.rs:541
 msgid "Band-Aid"
 msgstr "Pleister"
 
-#: rnote-ui/src/dialogs/mod.rs:527
+#: rnote-ui/src/dialogs/mod.rs:542
 msgid "Bank"
 msgstr "Bank"
 
-#: rnote-ui/src/dialogs/mod.rs:528
+#: rnote-ui/src/dialogs/mod.rs:543
 msgid "Bookmark"
 msgstr "Bladwijzer"
 
-#: rnote-ui/src/dialogs/mod.rs:529
+#: rnote-ui/src/dialogs/mod.rs:544
 msgid "Book"
 msgstr "Boek"
 
-#: rnote-ui/src/dialogs/mod.rs:530
+#: rnote-ui/src/dialogs/mod.rs:545
 msgid "Bread"
 msgstr "Brood"
 
-#: rnote-ui/src/dialogs/mod.rs:531
+#: rnote-ui/src/dialogs/mod.rs:546
 msgid "Calendar"
 msgstr "Agenda"
 
-#: rnote-ui/src/dialogs/mod.rs:532
+#: rnote-ui/src/dialogs/mod.rs:547
 msgid "Camera"
 msgstr "Camera"
 
-#: rnote-ui/src/dialogs/mod.rs:533
+#: rnote-ui/src/dialogs/mod.rs:548
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Chip"
 
-#: rnote-ui/src/dialogs/mod.rs:534
+#: rnote-ui/src/dialogs/mod.rs:549
 msgid "Code"
 msgstr "Code"
 
-#: rnote-ui/src/dialogs/mod.rs:535
+#: rnote-ui/src/dialogs/mod.rs:550
 msgid "Compose"
 msgstr "Samenstellen"
 
-#: rnote-ui/src/dialogs/mod.rs:537
+#: rnote-ui/src/dialogs/mod.rs:552
 msgid "Drinks"
 msgstr "Drankjes"
 
-#: rnote-ui/src/dialogs/mod.rs:538
+#: rnote-ui/src/dialogs/mod.rs:553
 msgid "Flag"
 msgstr "Vlag"
 
-#: rnote-ui/src/dialogs/mod.rs:539
+#: rnote-ui/src/dialogs/mod.rs:554
 msgid "Folder"
 msgstr "Map"
 
-#: rnote-ui/src/dialogs/mod.rs:540
+#: rnote-ui/src/dialogs/mod.rs:555
 msgid "Footprints"
 msgstr "Voetafdrukken"
 
-#: rnote-ui/src/dialogs/mod.rs:541
+#: rnote-ui/src/dialogs/mod.rs:556
 msgid "Gamepad"
 msgstr "Controller"
 
-#: rnote-ui/src/dialogs/mod.rs:542
+#: rnote-ui/src/dialogs/mod.rs:557
 msgid "Gear"
 msgstr "Tandwiel"
 
-#: rnote-ui/src/dialogs/mod.rs:543
+#: rnote-ui/src/dialogs/mod.rs:558
 msgid "Hammer"
 msgstr "Hamer"
 
-#: rnote-ui/src/dialogs/mod.rs:544
+#: rnote-ui/src/dialogs/mod.rs:559
 msgid "Heart"
 msgstr "Hart"
 
-#: rnote-ui/src/dialogs/mod.rs:545
+#: rnote-ui/src/dialogs/mod.rs:560
 msgid "Hourglass"
 msgstr "Zandloper"
 
-#: rnote-ui/src/dialogs/mod.rs:546
+#: rnote-ui/src/dialogs/mod.rs:561
 msgid "Key"
 msgstr "Sleutel"
 
-#: rnote-ui/src/dialogs/mod.rs:547
+#: rnote-ui/src/dialogs/mod.rs:562
 msgid "Language"
 msgstr "Taal"
 
-#: rnote-ui/src/dialogs/mod.rs:548
+#: rnote-ui/src/dialogs/mod.rs:563
 msgid "Lightbulb"
 msgstr "Lamp"
 
-#: rnote-ui/src/dialogs/mod.rs:549
+#: rnote-ui/src/dialogs/mod.rs:564
 msgid "Mathematics"
 msgstr "Wiskunde"
 
-#: rnote-ui/src/dialogs/mod.rs:550
+#: rnote-ui/src/dialogs/mod.rs:565
 msgid "Meeting"
 msgstr "Vergadering"
 
-#: rnote-ui/src/dialogs/mod.rs:551
+#: rnote-ui/src/dialogs/mod.rs:566
 msgid "Money"
 msgstr "Geld"
 
-#: rnote-ui/src/dialogs/mod.rs:552
+#: rnote-ui/src/dialogs/mod.rs:567
 msgid "Musical Note"
 msgstr "Muzieknoot"
 
-#: rnote-ui/src/dialogs/mod.rs:553
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Paintbrush"
 msgstr "Kwast"
 
-#: rnote-ui/src/dialogs/mod.rs:554
+#: rnote-ui/src/dialogs/mod.rs:569
 msgid "Pencil and Paper"
 msgstr "Potlood en papier"
 
-#: rnote-ui/src/dialogs/mod.rs:555
+#: rnote-ui/src/dialogs/mod.rs:570
 msgid "People"
 msgstr "Mensen"
 
-#: rnote-ui/src/dialogs/mod.rs:556
+#: rnote-ui/src/dialogs/mod.rs:571
 msgid "Person"
 msgstr "Persoon"
 
-#: rnote-ui/src/dialogs/mod.rs:557
+#: rnote-ui/src/dialogs/mod.rs:572
 msgid "Projector"
 msgstr "Projector"
 
-#: rnote-ui/src/dialogs/mod.rs:558
+#: rnote-ui/src/dialogs/mod.rs:573
 msgid "Scratchpad"
 msgstr "Kladblok"
 
-#: rnote-ui/src/dialogs/mod.rs:559
+#: rnote-ui/src/dialogs/mod.rs:574
 msgid "Shapes"
 msgstr "Vormen"
 
-#: rnote-ui/src/dialogs/mod.rs:560
+#: rnote-ui/src/dialogs/mod.rs:575
 msgid "Shopping"
 msgstr "Winkelen"
 
-#: rnote-ui/src/dialogs/mod.rs:561
+#: rnote-ui/src/dialogs/mod.rs:576
 msgid "Speech Bubble"
 msgstr "Tekstbubbel"
 
-#: rnote-ui/src/dialogs/mod.rs:562
+#: rnote-ui/src/dialogs/mod.rs:577
 msgid "Speedometer"
 msgstr "Snelheidsmeter"
 
-#: rnote-ui/src/dialogs/mod.rs:563
+#: rnote-ui/src/dialogs/mod.rs:578
 msgid "Star"
 msgstr "Ster"
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:580
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminal"
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:582
 msgid "Text"
 msgstr "Tekst"
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:583
 msgid "Travel"
 msgstr "Reizen"
 
-#: rnote-ui/src/dialogs/mod.rs:569
+#: rnote-ui/src/dialogs/mod.rs:584
 msgid "Weather"
 msgstr "Weer"
 
-#: rnote-ui/src/dialogs/mod.rs:570
+#: rnote-ui/src/dialogs/mod.rs:585
 msgid "Weight"
 msgstr "Gewicht"
 
@@ -1899,75 +1957,75 @@ msgstr "Kwadratische bezier-kromme"
 msgid "Cubic bezier curve"
 msgstr "Kubieke bezier-kromme"
 
-#: rnote-ui/src/settingspanel/mod.rs:810
+#: rnote-ui/src/settingspanel/mod.rs:753
 msgid "Crosshair (Small)"
 msgstr "Vizier (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:811
+#: rnote-ui/src/settingspanel/mod.rs:754
 msgid "Crosshair (Medium)"
 msgstr "Vizier (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:812
+#: rnote-ui/src/settingspanel/mod.rs:755
 msgid "Crosshair (Large)"
 msgstr "Vizier (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:813
+#: rnote-ui/src/settingspanel/mod.rs:756
 msgid "Dot (Small)"
 msgstr "Stip (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:814
+#: rnote-ui/src/settingspanel/mod.rs:757
 msgid "Dot (Medium)"
 msgstr "Stip (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:815
+#: rnote-ui/src/settingspanel/mod.rs:758
 msgid "Dot (Large)"
 msgstr "Stip (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:816
+#: rnote-ui/src/settingspanel/mod.rs:759
 msgid "Teardrop North-West (Small)"
 msgstr "Druppel noordwest (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:817
+#: rnote-ui/src/settingspanel/mod.rs:760
 msgid "Teardrop North-West (Medium)"
 msgstr "Druppel noordwest (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:818
+#: rnote-ui/src/settingspanel/mod.rs:761
 msgid "Teardrop North-West (Large)"
 msgstr "Druppel noordwest (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:819
+#: rnote-ui/src/settingspanel/mod.rs:762
 msgid "Teardrop North-East (Small)"
 msgstr "Druppel noordoost (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:820
+#: rnote-ui/src/settingspanel/mod.rs:763
 msgid "Teardrop North-East (Medium)"
 msgstr "Druppel noordoost (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:821
+#: rnote-ui/src/settingspanel/mod.rs:764
 msgid "Teardrop North-East (Large)"
 msgstr "Druppel noordoost (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:822
+#: rnote-ui/src/settingspanel/mod.rs:765
 msgid "Teardrop North (Small)"
 msgstr "Druppel noord (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:823
+#: rnote-ui/src/settingspanel/mod.rs:766
 msgid "Teardrop North (Medium)"
 msgstr "Druppel noord (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:824
+#: rnote-ui/src/settingspanel/mod.rs:767
 msgid "Teardrop North (Large)"
 msgstr "Druppel noord (groot)"
 
-#: rnote-ui/src/settingspanel/mod.rs:825
+#: rnote-ui/src/settingspanel/mod.rs:768
 msgid "Beam (Small)"
 msgstr "Balk (klein)"
 
-#: rnote-ui/src/settingspanel/mod.rs:826
+#: rnote-ui/src/settingspanel/mod.rs:769
 msgid "Beam (Medium)"
 msgstr "Balk (gemiddeld)"
 
-#: rnote-ui/src/settingspanel/mod.rs:827
+#: rnote-ui/src/settingspanel/mod.rs:770
 msgid "Beam (Large)"
 msgstr "Balk (groot)"
 
@@ -1978,6 +2036,12 @@ msgstr "Mapnaam"
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:65
 msgid "New Folder"
 msgstr "Nieuwe map"
+
+#~ msgid "Main window in light colors"
+#~ msgstr "Hoofdvenster (licht thema)"
+
+#~ msgid "Printed document successfully"
+#~ msgstr "Document succesvol afgedrukt"
 
 #~ msgid "perm."
 #~ msgstr "perm."

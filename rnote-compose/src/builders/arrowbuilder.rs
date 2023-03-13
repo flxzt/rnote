@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 
@@ -18,14 +20,14 @@ pub struct ArrowBuilder {
     /// the start position
     start: na::Vector2<f64>,
     /// the current position
-    current: na::Vector2<f64>,
+    tip: na::Vector2<f64>,
 }
 
 impl ShapeBuilderCreator for ArrowBuilder {
     fn start(element: Element, _now: Instant) -> Self {
         Self {
             start: element.pos,
-            current: element.pos,
+            tip: element.pos,
         }
     }
 }
@@ -43,7 +45,7 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
 
         match event {
             PenEvent::Down { element, .. } => {
-                self.current = constraints.constrain(element.pos - self.start) + self.start;
+                self.tip = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
                 return ShapeBuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
@@ -68,7 +70,7 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
         line.draw_composed(cx, style);
 
         indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
-        indicators::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        indicators::draw_pos_indicator(cx, PenState::Down, self.tip, zoom);
         cx.restore().unwrap();
     }
 }
@@ -78,7 +80,7 @@ impl ArrowBuilder {
     pub fn state_as_line(&self) -> Line {
         Line {
             start: self.start,
-            end: self.current,
+            end: self.tip,
         }
     }
 }

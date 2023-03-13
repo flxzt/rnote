@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 

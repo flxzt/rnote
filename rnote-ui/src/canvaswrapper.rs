@@ -480,6 +480,9 @@ mod imp {
                     @strong zoom_begin,
                     @strong prev_offset,
                     @weak inst as canvaswrapper => move |_, offset_x, offset_y| {
+                        if canvaswrapper.restrict_zoom() {
+                            return;
+                        }
                         // 0.5% zoom for every pixel in y dir
                         const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
 

@@ -98,11 +98,8 @@ impl DrawBehaviour for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        let mut image =
-            render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
+        let image = render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
 
-        // draw() needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
-        image.convert_to_rgba8pre()?;
         // image_scale does not have a meaning here, as the pixel image is already provided
         image.draw(cx, image_scale)?;
 

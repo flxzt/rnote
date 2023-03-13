@@ -10,8 +10,6 @@ pub mod shortcuts;
 pub mod tools;
 pub mod typewriter;
 
-use std::time::Instant;
-
 // Re-exports
 pub use brush::Brush;
 pub use eraser::Eraser;
@@ -26,14 +24,15 @@ pub use tools::Tools;
 pub use typewriter::Typewriter;
 
 // Imports
-use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, WidgetFlags};
-use gtk4::{glib, glib::prelude::*};
+use gtk4::glib;
 use piet_cairo::CairoRenderContext;
 use rnote_compose::penevents::PenEvent;
 use serde::{Deserialize, Serialize};
+use std::time::Instant;
 
 use self::penbehaviour::PenProgress;
+use crate::engine::{EngineView, EngineViewMut};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 #[derive(Debug)]
 pub enum Pen {
@@ -204,22 +203,6 @@ impl TryFrom<u32> for PenStyle {
 }
 
 impl PenStyle {
-    pub fn name(self) -> String {
-        glib::EnumValue::from_value(&self.to_value())
-            .unwrap()
-            .1
-            .name()
-            .to_string()
-    }
-
-    pub fn nick(self) -> String {
-        glib::EnumValue::from_value(&self.to_value())
-            .unwrap()
-            .1
-            .nick()
-            .to_string()
-    }
-
     pub fn icon_name(self) -> String {
         match self {
             Self::Brush => String::from("pen-brush-symbolic"),

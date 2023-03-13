@@ -1,15 +1,14 @@
+use clap::{Parser, Subcommand};
 use rnote_engine::engine::export::{DocExportFormat, DocExportPrefs};
 use rnote_engine::engine::EngineSnapshot;
+use rnote_engine::RnoteEngine;
 use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use clap::{Parser, Subcommand};
-
-use rnote_engine::RnoteEngine;
-
-/// rnote-cli
+///    rnote_cli  Copyright (C) 2023  The Rnote Authors{n}{n}
+///    This program is free software; you can redistribute it and/or modify it under the terms of the GPL v3 or (at your option) any later version.
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub(crate) struct Cli {

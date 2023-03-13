@@ -36,53 +36,44 @@ mod imp {
     impl ObjectImpl for RnStrokeWidthPreview {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
-            inst.set_overflow(Overflow::Hidden);
-            inst.set_halign(Align::Center);
-            inst.set_valign(Align::Center);
+            obj.set_overflow(Overflow::Hidden);
+            obj.set_halign(Align::Center);
+            obj.set_valign(Align::Center);
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecDouble::new(
-                        "stroke-width",
-                        "stroke-width",
-                        "stroke-width",
-                        0.1,
-                        500.0,
-                        1.0,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        "preview-style",
-                        "preview-style",
-                        "preview-style",
-                        StrokeWidthPreviewStyle::static_type(),
-                        StrokeWidthPreviewStyle::Circle as i32,
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    glib::ParamSpecDouble::builder("stroke-width")
+                        .minimum(0.1)
+                        .maximum(500.0)
+                        .default_value(1.0)
+                        .build(),
+                    glib::ParamSpecEnum::builder::<StrokeWidthPreviewStyle>("preview-style")
+                        .default_value(StrokeWidthPreviewStyle::Circle)
+                        .build(),
                 ]
             });
             PROPERTIES.as_ref()
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "stroke-width" => {
                     let stroke_width = value.get::<f64>().expect("value not of type `f64`");
                     self.stroke_width.set(stroke_width);
-                    inst.queue_draw();
+                    obj.queue_draw();
                 }
                 "preview-style" => {
                     let preview_style = value
                         .get::<StrokeWidthPreviewStyle>()
                         .expect("value not of type `StrokeWidthPreviewStyle`");
                     self.preview_style.set(preview_style);
-                    inst.queue_draw();
+                    obj.queue_draw();
                 }
                 _ => panic!("invalid property name"),
             }
@@ -111,12 +102,12 @@ mod imp {
         }
 
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
-            let inst = self.instance();
-            let size = (inst.width() as f32, inst.height() as f32);
+            let obj = self.obj();
+            let size = (obj.width() as f32, obj.height() as f32);
             let center = (size.0 * 0.5, size.1 * 0.5);
             let stroke_width = self.stroke_width.get();
 
-            let window_fg_color = inst
+            let window_fg_color = obj
                 .style_context()
                 .lookup_color("window_fg_color")
                 .unwrap_or(gdk::RGBA::BLACK);
@@ -199,7 +190,7 @@ impl Default for RnStrokeWidthPreview {
 
 impl RnStrokeWidthPreview {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

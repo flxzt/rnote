@@ -2,40 +2,23 @@
 message('Configuring config.rs file')
 
 global_conf = configuration_data()
-global_conf.set_quoted('APP_ID', app_id)
-global_conf.set_quoted('APP_IDPATH', app_idpath)
 global_conf.set_quoted('APP_NAME', app_name)
 global_conf.set_quoted('APP_NAME_CAPITALIZED', app_name_capitalized)
+global_conf.set_quoted('APP_ID', app_id)
+global_conf.set_quoted('APP_IDPATH', app_idpath)
+global_conf.set_quoted('APP_VERSION', version)
+global_conf.set_quoted('APP_VERSION_SUFFIX', version_suffix)
+global_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
+global_conf.set_quoted('APP_AUTHORS', app_authors)
 global_conf.set_quoted('APP_WEBSITE', app_website)
 global_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
 global_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
 global_conf.set_quoted('APP_DONATE_URL', app_donate_url)
-global_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
-global_conf.set_quoted('APP_AUTHORS', app_authors)
 global_conf.set_quoted('PROFILE', profile)
-global_conf.set_quoted('VERSION', version)
-global_conf.set_quoted('VERSION_SUFFIX', version_suffix)
 global_conf.set_quoted('GETTEXT_PACKAGE', gettext_package)
-
-# Use relative paths for windows installations to make them portable
-if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-  win_datadir = '../' / get_option('datadir')
-  win_pkgdatadir = '../' / get_option('datadir') / app_name
-  win_libdir = '../' / get_option('libdir')
-  win_localedir = '../' / get_option('localedir')
-
-  global_conf.set_quoted('DATADIR', win_datadir)
-  global_conf.set_quoted('PKGDATADIR', win_pkgdatadir)
-  global_conf.set_quoted('LIBDIR', win_libdir)
-  global_conf.set_quoted('RESOURCES_FILE', win_pkgdatadir / 'resources.gresource')
-  global_conf.set_quoted('LOCALEDIR', win_localedir )
-else
-  global_conf.set_quoted('DATADIR', datadir)
-  global_conf.set_quoted('PKGDATADIR', pkgdatadir)
-  global_conf.set_quoted('LIBDIR', libdir)
-  global_conf.set_quoted('RESOURCES_FILE', pkgdatadir / 'resources.gresource')
-  global_conf.set_quoted('LOCALEDIR', localedir)
-endif
+global_conf.set_quoted('DATADIR', datadir)
+global_conf.set_quoted('LIBDIR', libdir)
+global_conf.set_quoted('LOCALEDIR', localedir)
 
 config = configure_file(
     input: 'config.rs.in',
@@ -104,6 +87,7 @@ rnote_ui_sources = files(
     'groupediconpicker/mod.rs',
     'groupediconpicker/group.rs',
     'main.rs',
+    'env.rs',
     'mainheader.rs',
     'unitentry.rs',
     'utils.rs',

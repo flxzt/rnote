@@ -254,11 +254,15 @@ pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
 
 #[allow(unused)]
 fn debug_gdk_event(event: &gdk::Event) {
+    let pos = event
+        .position()
+        .map(|(x, y)| format!("x: {x:.1}, y: {y:.1}"));
     log::debug!(
-        "pos: {:?}, modifier: {:?}, event_type: {:?}, input source: {:?}",
-        event.position(),
+        "(pos: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
+        pos,
         event.modifier_state(),
         event.event_type(),
+        event.device_tool().map(|t| t.tool_type()),
         event.device().map(|d| d.source())
     );
 }

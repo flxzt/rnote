@@ -109,11 +109,9 @@ mod imp {
                     (document.y + document.height) * total_zoom,
                 ),
             };
-            let hadj_val = hadj.value().clamp(h_lower, h_upper);
-            let vadj_val = vadj.value().clamp(v_lower, v_upper);
 
             hadj.configure(
-                hadj_val,
+                hadj.value(),
                 h_lower,
                 h_upper,
                 0.1 * new_size[0],
@@ -122,7 +120,7 @@ mod imp {
             );
 
             vadj.configure(
-                vadj_val,
+                vadj.value(),
                 v_lower,
                 v_upper,
                 0.1 * new_size[1],
@@ -131,7 +129,7 @@ mod imp {
             );
 
             // Update the camera in the engine
-            engine.update_camera_offset_size(na::vector![hadj_val, vadj_val], new_size);
+            engine.update_camera_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
             engine.expand_doc_autoexpand();
 
             // always update the background rendering

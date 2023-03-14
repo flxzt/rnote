@@ -223,10 +223,11 @@ mod imp {
                 self.canvas_zoom_scroll_controller.connect_scroll(
                     clone!(@weak obj as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
-                        let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
-                        canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                        canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+                        let canvas = canvaswrapper.canvas();
+                        let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
+                        let center_offset = canvas.current_view_center_offset();
+                        canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                        canvas.center_view_around_coords(center_offset);
 
                         // Stop event propagation
                         Inhibit(true)
@@ -446,9 +447,9 @@ mod imp {
                         let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+                            let current_doc_center = canvaswrapper.canvas().current_view_center_offset();
                             canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                            canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+                            canvaswrapper.canvas().center_view_around_coords(current_doc_center);
                         }
 
                         prev_offset.set(new_offset);

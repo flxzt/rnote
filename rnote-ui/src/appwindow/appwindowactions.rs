@@ -476,7 +476,7 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let new_zoom = Camera::ZOOM_DEFAULT;
-            let current_doc_center = canvas.current_view_center_offset();
+            let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_view_around_coords(current_doc_center);
         }));
@@ -486,7 +486,7 @@ impl RnAppWindow {
             let canvaswrapper = appwindow.active_tab();
 
             let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * RnCanvasLayout::OVERSHOOT_HORIZONTAL);
-            let current_doc_center = canvaswrapper.canvas().current_view_center_offset();
+            let current_doc_center = canvaswrapper.canvas().current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvaswrapper.canvas().center_view_around_coords(current_doc_center);
         }));
@@ -496,7 +496,7 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_STEP);
-            let current_doc_center = canvas.current_view_center_offset();
+            let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_view_around_coords(current_doc_center);
         }));
@@ -506,7 +506,7 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_STEP);
-            let current_doc_center = canvas.current_view_center_offset();
+            let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_view_around_coords(current_doc_center);
         }));

@@ -1111,8 +1111,9 @@ impl RnCanvas {
         self.vadjustment().unwrap().set_value(new_offset[1]);
     }
 
-    /// returns the current center in surface coordinate space
-    pub(crate) fn current_view_center_offset(&self) -> na::Vector2<f64> {
+    /// returns the current view center coords.
+    /// used together with `center_view_around_coords`.
+    pub(crate) fn current_view_center_coords(&self) -> na::Vector2<f64> {
         let wrapper = self
             .ancestor(RnCanvasWrapper::static_type())
             .unwrap()
@@ -1126,9 +1127,10 @@ impl RnCanvas {
         (self.adj_values() + wrapper_size * 0.5) / total_zoom
     }
 
-    /// Centers the view around coords in surface coordinate space.
+    /// centers the view around the given coords.
+    /// used together with `current_view_center`.
     ///
-    // engine rendering then needs to be updated.
+    /// engine rendering then needs to be updated.
     pub(crate) fn center_view_around_coords(&self, coords: na::Vector2<f64>) {
         let wrapper = self
             .ancestor(RnCanvasWrapper::static_type())

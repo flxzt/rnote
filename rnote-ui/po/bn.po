@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-10 13:38+0000\n"
+"PO-Revision-Date: 2023-03-15 17:53+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
 "Language: bn\n"
@@ -1349,10 +1349,8 @@ msgstr ""
 "দুই আঙ্গুল দীর্ঘ-প্রেস টাচের জন্য"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "স্টাইলাস প্রাথমিক বোতাম কর্ম"
+msgstr "অঙ্কন প্যাড বোতাম ১ ক্রিয়া"
 
 #: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
@@ -1361,10 +1359,8 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:434
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "স্টাইলাস প্রাথমিক বোতাম কর্ম"
+msgstr "অঙ্কন প্যাড বোতাম ২ ক্রিয়া"
 
 #: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
@@ -1373,10 +1369,8 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:447
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "স্টাইলাস প্রাথমিক বোতাম কর্ম"
+msgstr "অঙ্কন প্যাড বোতাম ৩ ক্রিয়া"
 
 #: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
@@ -1385,10 +1379,8 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:460
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "স্টাইলাস প্রাথমিক বোতাম কর্ম"
+msgstr "অঙ্কন প্যাড বোতাম ৪ ক্রিয়া"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
@@ -1564,19 +1556,19 @@ msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে"
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "বোতাম ১"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "বোতাম ২"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "বোতাম ৩"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "বোতাম ৪"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"

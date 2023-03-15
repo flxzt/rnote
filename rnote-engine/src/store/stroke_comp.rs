@@ -1,15 +1,16 @@
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::{helpers, Style};
 use std::sync::Arc;
 
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::engine::StrokeContent;
+use crate::strokes::textstroke::TextStyle;
 use crate::strokes::Stroke;
 use crate::{render, StrokeStore};
 
@@ -228,6 +229,38 @@ impl StrokeStore {
                     // rotate the stroke geometry
                     stroke.rotate(angle, center);
                     self.key_tree.update_with_key(key, stroke.bounds());
+                }
+            }
+        });
+    }
+
+    pub fn restyle_strokes<SF, TSF>(
+        &mut self,
+        keys: &[StrokeKey],
+        modify_style_func: SF,
+        modify_text_style_func: TSF,
+    ) where
+        SF: Fn(&mut Style),
+        TSF: Fn(&mut TextStyle),
+    {
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                {
+                    match stroke {
+                        Stroke::BrushStroke(brush_stroke) => {
+                            modify_style_func(&mut brush_stroke.style);
+                        }
+                        Stroke::ShapeStroke(shape_stroke) => {
+                            modify_style_func(&mut shape_stroke.style);
+                        }
+                        Stroke::TextStroke(text_stroke) => {
+                            modify_text_style_func(&mut text_stroke.text_style);
+                        }
+                        _ => {}
+                    }
                 }
             }
         });

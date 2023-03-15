@@ -2,10 +2,12 @@ use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
     ProgressBar, ScrolledWindow, ToggleButton, Widget,
 };
+use rnote_compose::Style;
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::{Pen, PenStyle};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
+use std::time::Instant;
 
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
@@ -239,7 +241,7 @@ impl RnOverlays {
                     engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
                     engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
                     engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color= Some(stroke_color);
+                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
                     engine.pens_config.typewriter_config.text_style.color = stroke_color;
 
                     match stroke_style {
@@ -260,7 +262,34 @@ impl RnOverlays {
                                 appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools => {}
+                        PenStyle::Selector => {
+                            let mut widget_flags = engine.record(Instant::now());
+                            let selection_keys = engine.store.selection_keys_unordered();
+
+                            engine.store.restyle_strokes(&selection_keys, |style| {
+                                match style {
+                                    Style::Rough(rough_style) => rough_style.stroke_color = Some(stroke_color),
+                                    Style::Smooth(smooth_style) => smooth_style.stroke_color = Some(stroke_color),
+                                    Style::Textured(textured_style) => textured_style.stroke_color = Some(stroke_color),
+                                }
+                            }, |text_style| {
+                                text_style.color = stroke_color;
+                            });
+
+                            engine.store.update_geometry_for_strokes(&selection_keys);
+                            engine.store.regenerate_rendering_in_viewport_threaded(
+                                engine.tasks_tx.clone(),
+                                false,
+                                engine.camera.viewport(),
+                                engine.camera.image_scale(),
+                            );
+
+                            widget_flags.redraw = true;
+                            widget_flags.store_modified = true;
+
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                     }
                 }),
             );
@@ -270,14 +299,44 @@ impl RnOverlays {
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab().canvas();
+                let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
                 let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 // We have a global colorpicker, so we apply it to all styles
                 engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.fill_color= Some(fill_color);
+                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.fill_color= Some(fill_color);
+                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+
+                match stroke_style {
+                    PenStyle::Selector => {
+                        let mut widget_flags = engine.record(Instant::now());
+                        let selection_keys = engine.store.selection_keys_unordered();
+
+                        engine.store.restyle_strokes(&selection_keys, |style| {
+                            match style {
+                                Style::Rough(rough_style) => rough_style.fill_color = Some(fill_color),
+                                Style::Smooth(smooth_style) => smooth_style.fill_color = Some(fill_color),
+                                Style::Textured(_) => {},
+                            }
+                        }, |_| {});
+
+                        engine.store.update_geometry_for_strokes(&selection_keys);
+                        engine.store.regenerate_rendering_in_viewport_threaded(
+                            engine.tasks_tx.clone(),
+                            false,
+                            engine.camera.viewport(),
+                            engine.camera.image_scale(),
+                        );
+
+                        widget_flags.redraw = true;
+                        widget_flags.store_modified = true;
+
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                    }
+                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                }
             }),
         );
     }

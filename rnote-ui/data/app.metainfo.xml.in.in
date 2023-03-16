@@ -72,6 +72,16 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.5.17" date="2023-03-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: some users experienced zip-zapping while using stylus</li>
+          <li>fix: sporadic jumps when view is near document edge</li>
+          <li>fix: regression where redo button stays insensitive</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.16" date="2023-03-04">
       <description>
         <p>this release changes:</p>

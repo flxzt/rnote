@@ -1,7 +1,7 @@
 project(
     'rnote',
     ['rust', 'cpp'],
-    version: '0.5.16',
+    version: '0.5.17',
     meson_version: '>= 0.57',
 )
 # add a patch suffix for alpha or beta version, starting with a dash.
@@ -13,9 +13,9 @@ fs = import('fs')
 
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
-# the name of the produced binary of the cli crate
+# the name of the cli crate
 cli_name = 'rnote-cli'
-# We need to rename the cli, because else the output file name would collide with the rnote-cli folder
+# We need to rename the cli binary, because else the output file name would collide with the rnote-cli folder
 cli_output_name = 'rnote_cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'

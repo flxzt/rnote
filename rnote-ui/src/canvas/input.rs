@@ -67,7 +67,6 @@ pub(crate) fn handle_pointer_controller_event(
             //log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
-                // even though it is a button press, we handle it also as pen event so the engine gets the chance to switch pen mode, pen style, etc.
                 if gdk_button == gdk::BUTTON_PRIMARY
                     || gdk_button == gdk::BUTTON_SECONDARY
                     || gdk_button == gdk::BUTTON_MIDDLE

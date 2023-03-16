@@ -18,6 +18,14 @@
           <item>
             <attribute name="custom">canvas_quickcontrols_attr</attribute>
           </item>
+          <item>
+            <attribute name="label" translatable="yes">Block _Zoom</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.restrict-zoom</attribute>
+          </item>
+          <item>
+            <attribute name="custom">canvas_restrict_zoom_attr</attribute>
+          </item>
         </section>
         <section>
           <submenu>
@@ -129,6 +137,17 @@
                   <property name="action-name">win.zoom-fit-width</property>
                 </object>
               </child>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child type="canvas_restrict_zoom_attr">
+        <object class="AdwActionRow" id="restrict_zoom_row">
+          <property name="title" translatable="yes">Block Zoom</property>
+          <property name="subtitle" translatable="yes">Block zoom gestures</property>
+          <child type="suffix">
+            <object class="GtkSwitch" id="restrict_zoom_switch">
+              <property name="valign">center</property>
             </object>
           </child>
         </object>

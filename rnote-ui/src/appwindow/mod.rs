@@ -609,6 +609,11 @@ impl RnAppWindow {
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
+            "restrict-zoom",
+            &active_tab.restrict_zoom().to_variant(),
+        );
+        adw::prelude::ActionGroupExt::change_action_state(
+            self,
             "pen-style",
             &pen_style.to_variant(),
         );

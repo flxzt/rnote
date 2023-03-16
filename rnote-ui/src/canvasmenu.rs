@@ -7,6 +7,8 @@ use gtk4::{
 use rnote_engine::Camera;
 
 mod imp {
+    use gtk4::Switch;
+
     use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
@@ -17,6 +19,8 @@ mod imp {
         pub(crate) popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
         pub(crate) menu_model: TemplateChild<gio::MenuModel>,
+        #[template_child]
+        pub(crate) restrict_zoom_switch: TemplateChild<Switch>,
         #[template_child]
         pub(crate) zoom_in_button: TemplateChild<Button>,
         #[template_child]
@@ -90,9 +94,16 @@ impl RnCanvasMenu {
         self.imp().zoom_reset_button.get()
     }
 
-    pub(crate) fn init(&self, _appwindow: &RnAppWindow) {
-        self.imp()
-            .zoom_reset_button
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+        // restrict zoom switch
+        imp.restrict_zoom_switch
+            .bind_property("active", appwindow, "restrict-zoom")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        imp.zoom_reset_button
             .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());
     }
 }

@@ -72,6 +72,14 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.5.18" date="2023-03-16">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: panic on app start when color scheme setting is set to "Use Light Colors" / "Use Dark Colors"</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.17" date="2023-03-16">
       <description>
         <p>this release changes:</p>

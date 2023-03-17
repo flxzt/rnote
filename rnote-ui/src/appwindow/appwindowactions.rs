@@ -92,6 +92,8 @@ impl RnAppWindow {
         self.add_action(&action_zoom_to_value);
         let action_add_page_to_doc = gio::SimpleAction::new("add-page-to-doc", None);
         self.add_action(&action_add_page_to_doc);
+        let action_remove_page_from_doc = gio::SimpleAction::new("remove-page-from-doc", None);
+        self.add_action(&action_remove_page_from_doc);
         let action_resize_to_fit_strokes = gio::SimpleAction::new("resize-to-fit-strokes", None);
         self.add_action(&action_resize_to_fit_strokes);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
@@ -528,6 +530,22 @@ impl RnAppWindow {
                 canvas.engine().borrow_mut().document.height = new_doc_height;
 
                 canvas.update_engine_rendering();
+            }),
+        );
+        
+        // Remove page from doc in fixed size mode
+        action_remove_page_from_doc.connect_activate(
+            clone!(@weak self as appwindow => move |_action_remove_page_from_doc, _target| {
+                let canvas = appwindow.active_tab().canvas();
+
+                let format_height = canvas.engine().borrow().document.format.height;
+                let doc_height = canvas.engine().borrow().document.height;
+                let new_doc_height = doc_height - format_height;
+                if doc_height != format_height {
+                    canvas.engine().borrow_mut().document.height = new_doc_height;
+
+                    canvas.update_engine_rendering();
+                }
             }),
         );
 

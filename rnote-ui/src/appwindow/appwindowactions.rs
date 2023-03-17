@@ -541,7 +541,7 @@ impl RnAppWindow {
                 let format_height = canvas.engine().borrow().document.format.height;
                 let doc_height = canvas.engine().borrow().document.height;
                 let new_doc_height = doc_height - format_height;
-                if doc_height != format_height {
+                if doc_height > format_height {
                     canvas.engine().borrow_mut().document.height = new_doc_height;
 
                     canvas.update_engine_rendering();
@@ -1000,3 +1000,4 @@ impl RnAppWindow {
         }
     }
 }
+

@@ -1,7 +1,7 @@
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use super::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour, Arrow};
+use super::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
 // Container type to store shapes

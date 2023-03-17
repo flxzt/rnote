@@ -15,7 +15,7 @@ use self::textured::TexturedOptions;
 use anyhow::Context;
 pub use composer::Composer;
 
-use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, Arrow};
+use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
 use crate::{PenPath, Shape};
 use serde::{Deserialize, Serialize};
 

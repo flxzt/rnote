@@ -7,12 +7,12 @@ pub use smoothoptions::SmoothOptions;
 use super::Composer;
 use crate::helpers::Vector2Helpers;
 use crate::penpath::{self, Segment};
-use crate::shapes::{CubicBezier, Arrow};
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
 use crate::shapes::QuadraticBezier;
 use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
+use crate::shapes::{Arrow, CubicBezier};
 use crate::PenPath;
 
 use p2d::bounding_volume::{Aabb, BoundingVolume};

@@ -7,7 +7,7 @@ pub use texturedoptions::TexturedOptions;
 
 use crate::helpers::Vector2Helpers;
 use crate::penpath::Segment;
-use crate::shapes::{Line, ShapeBehaviour, Arrow};
+use crate::shapes::{Arrow, Line, ShapeBehaviour};
 use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};

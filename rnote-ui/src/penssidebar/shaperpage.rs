@@ -215,7 +215,7 @@ impl RnShaperPage {
                     }
                 }
             }),
-        );
+            );
 
         // Rough style
         // Fill style
@@ -348,6 +348,7 @@ fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
             name: gettext("Miscellaneous"),
             icons: StringList::new(&[
                 "shapebuilder-line-symbolic",
+                "shapebuilder-arrow-symbolic",
                 "shapebuilder-rectangle-symbolic",
                 "shapebuilder-grid-symbolic",
             ]),

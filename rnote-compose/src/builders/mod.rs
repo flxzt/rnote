@@ -86,6 +86,7 @@ impl ShapeBuilderType {
     /// Converts an icon name into the represented shape builder type. Returns None for invalid strings.
     pub fn from_icon_name(icon_name: &str) -> Option<Self> {
         match icon_name {
+            "shapebuilder-arrow-symbolic" => Some(Self::Arrow),
             "shapebuilder-line-symbolic" => Some(Self::Line),
             "shapebuilder-rectangle-symbolic" => Some(Self::Rectangle),
             "shapebuilder-grid-symbolic" => Some(Self::Grid),

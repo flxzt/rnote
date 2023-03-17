@@ -1,8 +1,8 @@
+mod arrow;
 /// cubic bezier curves
 pub mod cubbez;
 mod ellipse;
 mod line;
-mod arrow;
 /// quadratic bezier curves
 pub mod quadbez;
 mod rectangle;

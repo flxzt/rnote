@@ -81,6 +81,7 @@
         <file compressed="true">icons/scalable/actions/cursor-teardrop-ne-large.svg</file>
         <file compressed="true">icons/scalable/actions/workspacebrowser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/add-page-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/remove-page-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/resize-to-fit-strokes-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/return-origin-page-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-fit-width-symbolic.svg</file>

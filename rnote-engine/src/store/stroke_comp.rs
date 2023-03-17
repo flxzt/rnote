@@ -4,15 +4,15 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_compose::{helpers, Style};
+use rnote_compose::{helpers, Color};
 use std::sync::Arc;
+use std::time::Instant;
 
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
-use crate::engine::StrokeContent;
-use crate::strokes::textstroke::TextStyle;
+use crate::engine::{EngineTaskSender, StrokeContent};
 use crate::strokes::Stroke;
-use crate::{render, StrokeStore};
+use crate::{render, Camera, StrokeStore, WidgetFlags};
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -234,15 +234,15 @@ impl StrokeStore {
         });
     }
 
-    pub fn restyle_strokes<SF, TSF>(
+    pub fn change_stroke_colors(
         &mut self,
         keys: &[StrokeKey],
-        modify_style_func: SF,
-        modify_text_style_func: TSF,
-    ) where
-        SF: Fn(&mut Style),
-        TSF: Fn(&mut TextStyle),
-    {
+        color: Color,
+        tasks_tx: EngineTaskSender,
+        camera: &Camera,
+    ) -> WidgetFlags {
+        let mut widget_flags = self.record(Instant::now());
+
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
@@ -251,19 +251,77 @@ impl StrokeStore {
                 {
                     match stroke {
                         Stroke::BrushStroke(brush_stroke) => {
-                            modify_style_func(&mut brush_stroke.style);
+                            brush_stroke.style.set_stroke_color(color);
+                            self.set_rendering_dirty(key);
                         }
                         Stroke::ShapeStroke(shape_stroke) => {
-                            modify_style_func(&mut shape_stroke.style);
+                            shape_stroke.style.set_stroke_color(color);
+                            self.set_rendering_dirty(key);
                         }
                         Stroke::TextStroke(text_stroke) => {
-                            modify_text_style_func(&mut text_stroke.text_style);
+                            text_stroke.text_style.color = color;
+                            self.set_rendering_dirty(key);
                         }
                         _ => {}
                     }
                 }
             }
         });
+
+        self.regenerate_rendering_in_viewport_threaded(
+            tasks_tx,
+            false,
+            camera.viewport(),
+            camera.image_scale(),
+        );
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        return widget_flags;
+    }
+
+    pub fn change_fill_colors(
+        &mut self,
+        keys: &[StrokeKey],
+        color: Color,
+        tasks_tx: EngineTaskSender,
+        camera: &Camera,
+    ) -> WidgetFlags {
+        let mut widget_flags = self.record(Instant::now());
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                {
+                    match stroke {
+                        Stroke::BrushStroke(brush_stroke) => {
+                            brush_stroke.style.set_fill_color(color);
+                            self.set_rendering_dirty(key);
+                        }
+                        Stroke::ShapeStroke(shape_stroke) => {
+                            shape_stroke.style.set_fill_color(color);
+                            self.set_rendering_dirty(key);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        });
+
+        self.regenerate_rendering_in_viewport_threaded(
+            tasks_tx,
+            false,
+            camera.viewport(),
+            camera.image_scale(),
+        );
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        return widget_flags;
     }
 
     /// Rotates the stroke rendering images

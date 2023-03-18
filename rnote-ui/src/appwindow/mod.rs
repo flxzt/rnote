@@ -224,6 +224,9 @@ impl RnAppWindow {
             // this updates the canvas adjustment values with the ones from the camera
             canvas.update_camera_offset(camera_offset);
         }
+        if widget_flags.deselect_color_setters {
+            self.overlays().colorpicker().deselect_setters();
+        }
         if let Some(hide_undo) = widget_flags.hide_undo {
             self.mainheader().undo_button().set_sensitive(!hide_undo);
         }

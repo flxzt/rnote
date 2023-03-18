@@ -326,6 +326,7 @@ impl Selector {
                             if !new_keys.is_empty() {
                                 engine_view.store.set_selected_keys(&new_keys, true);
                                 widget_flags.store_modified = true;
+                                widget_flags.deselect_color_setters = true;
                                 Some(new_keys)
                             } else {
                                 None
@@ -345,6 +346,7 @@ impl Selector {
                             if !new_keys.is_empty() {
                                 engine_view.store.set_selected_keys(&new_keys, true);
                                 widget_flags.store_modified = true;
+                                widget_flags.deselect_color_setters = true;
                                 Some(new_keys)
                             } else {
                                 None
@@ -365,6 +367,7 @@ impl Selector {
                             {
                                 engine_view.store.set_selected(new_key, true);
                                 widget_flags.store_modified = true;
+                                widget_flags.deselect_color_setters = true;
                                 Some(vec![new_key])
                             } else {
                                 None
@@ -387,6 +390,7 @@ impl Selector {
                                     .store
                                     .set_selected_keys(&intersecting_keys, true);
                                 widget_flags.store_modified = true;
+                                widget_flags.deselect_color_setters = true;
                                 Some(intersecting_keys)
                             } else {
                                 None

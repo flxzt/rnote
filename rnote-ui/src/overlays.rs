@@ -263,9 +263,7 @@ impl RnOverlays {
                         PenStyle::Selector => {
                             let selection_keys = engine.store.selection_keys_unordered();
                             let widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
-                            if let Err(e) = engine.update_rendering_current_viewport() {
-                                log::error!("failed to update rendering for current viewport while changing stroke color of selection, Err: {e:?}");
-                            }
+                            engine.update_content_rendering_current_viewport();
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
                         PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
@@ -292,9 +290,7 @@ impl RnOverlays {
                     PenStyle::Selector => {
                         let selection_keys = engine.store.selection_keys_unordered();
                         let widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
-                        if let Err(e) = engine.update_rendering_current_viewport() {
-                            log::error!("failed to update rendering for current viewport while changing fill color of selection, Err: {e:?}");
-                        }
+                        engine.update_content_rendering_current_viewport();
                         appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
                     PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}

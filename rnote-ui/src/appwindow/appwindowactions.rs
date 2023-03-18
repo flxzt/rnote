@@ -11,6 +11,7 @@ use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 use std::path::PathBuf;
 use std::time::Instant;
+use p2d::bounding_volume::Aabb;
 
 use crate::{canvas::RnCanvasLayout, config, dialogs, RnAppWindow, RnCanvas};
 
@@ -539,9 +540,13 @@ impl RnAppWindow {
                 let canvas = appwindow.active_tab().canvas();
 
                 let format_height = canvas.engine().borrow().document.format.height;
+                let format_width = canvas.engine().borrow().document.format.width;
                 let doc_height = canvas.engine().borrow().document.height;
                 let new_doc_height = doc_height - format_height;
                 if doc_height > format_height {
+                    let aabb = Aabb::new(na::point![0.0, new_doc_height], na::point![0.0 + format_width, doc_height]);
+                    let remove_area = canvas.engine().borrow_mut().store.stroke_keys_as_rendered_intersecting_bounds(aabb);
+                    canvas.engine().borrow_mut().store.set_trashed_keys(&remove_area, true);
                     canvas.engine().borrow_mut().document.height = new_doc_height;
 
                     canvas.update_engine_rendering();

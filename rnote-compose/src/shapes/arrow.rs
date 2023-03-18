@@ -11,28 +11,22 @@ use super::{Line, Rectangle};
 
 /// The following documentation assumes, the following graphic A:
 /// ```
-///          c
+///         tip
 ///         /|\
 ///        / | \
 ///       /  |  \
-///      a   |   b
+///    lline |  rline
 ///          |
 ///          |
 ///          |
-///          d
+///         start
 /// ```
-/// Where:
-///     - `a` represents the left helper line
-///     - `b` represents the right helper line
-///     - `c` represents the tip of the arrow
-///     - `d` represents the main line
+/// Where `lline`, `tip`, `start` and `rline` represent a vector of the arrow.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(default, rename = "arrow")]
 pub struct Arrow {
-    #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The line start
     pub start: na::Vector2<f64>,
-    #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The line end
     pub tip: na::Vector2<f64>,
     tip_lines: TipLines,
@@ -117,9 +111,7 @@ impl Arrow {
     /// to kurbo
     pub fn to_kurbo(&self) -> ArrowKurbo {
         let main = kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point());
-
         let rline = kurbo::Line::new(self.get_rline().to_kurbo_point(), self.tip.to_kurbo_point());
-
         let lline = kurbo::Line::new(self.get_lline().to_kurbo_point(), self.tip.to_kurbo_point());
 
         ArrowKurbo { main, rline, lline }
@@ -130,26 +122,23 @@ impl Arrow {
 impl Arrow {
     /// Returns the vector `a`.
     pub fn get_lline(&self) -> na::Vector2<f64> {
-        let normed_dv = self.get_normed_dv();
+        let vec_a = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix();
-        rotation_matrix * normed_dv * self.tip_lines.length
+
+        rotation_matrix * vec_a
     }
 
     /// Returns the vector `b`.
     pub fn get_rline(&self) -> na::Vector2<f64> {
-        let normed_dv = self.get_normed_dv();
+        let vec_b = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
-        rotation_matrix * normed_dv * self.tip_lines.length
+        rotation_matrix * vec_b
     }
 
     fn get_direction_vector(&self) -> na::Vector2<f64> {
-        self.tip - self.start
-    }
-
-    fn get_normed_dv(&self) -> na::Vector2<f64> {
-        let direction_vector = self.get_direction_vector();
-        direction_vector / direction_vector.magnitude()
+        let direction_vector = self.tip - self.start + self.tip;
+        (direction_vector / direction_vector.magnitude()) * self.tip_lines.length
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {

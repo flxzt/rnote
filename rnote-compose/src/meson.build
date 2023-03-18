@@ -2,6 +2,7 @@
 rnote_compose_sources = files(
     'builders/cubbezbuilder.rs',
     'builders/fociellipsebuilder.rs',
+    'builders/arrowbuilder.rs',
     'builders/linebuilder.rs',
     'builders/mod.rs',
     'builders/penpathcurvedbuilder.rs',
@@ -21,6 +22,7 @@ rnote_compose_sources = files(
     'shapes/cubbez.rs',
     'shapes/ellipse.rs',
     'shapes/line.rs',
+    'shapes/arrow.rs',
     'shapes/mod.rs',
     'shapes/quadbez.rs',
     'shapes/rectangle.rs',

@@ -132,11 +132,6 @@ mod imp {
             engine.update_camera_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
             engine.expand_doc_autoexpand();
 
-            // always update the background rendering
-            if let Err(e) = engine.update_background_rendering_current_viewport() {
-                log::error!("failed to update background rendering for current viewport in canvas layout allocate, Err: {e:?}");
-            }
-
             let viewport = engine.camera.viewport();
             let old_viewport = self.old_viewport.get();
 
@@ -164,6 +159,11 @@ mod imp {
                 }
 
                 self.old_viewport.set(viewport);
+            } else {
+                // else only update the background rendering
+                if let Err(e) = engine.update_background_rendering_current_viewport() {
+                    log::error!("failed to update background rendering for current viewport in canvas layout allocate, Err: {e:?}");
+                }
             }
         }
     }

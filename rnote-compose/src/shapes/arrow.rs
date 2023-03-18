@@ -58,7 +58,7 @@ impl ShapeBehaviour for Arrow {
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        let n_splits = super::hitbox_elems_for_shape_len((self.tip - self.start).magnitude());
+        let n_splits = super::hitbox_elems_for_shape_len((self.tip - self.start).norm());
 
         self.split(n_splits)
             .into_iter()
@@ -125,7 +125,7 @@ impl Arrow {
         let vec_a = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix();
 
-        rotation_matrix * vec_a
+        rotation_matrix * vec_a + self.tip
     }
 
     /// Returns the vector `b`.
@@ -133,12 +133,12 @@ impl Arrow {
         let vec_b = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
-        rotation_matrix * vec_b
+        rotation_matrix * vec_b + self.tip
     }
 
     fn get_direction_vector(&self) -> na::Vector2<f64> {
-        let direction_vector = self.tip - self.start + self.tip;
-        (direction_vector / direction_vector.magnitude()) * self.tip_lines.length
+        let direction_vector = self.start - self.tip;
+        (direction_vector / direction_vector.norm()) * self.tip_lines.length
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
@@ -156,7 +156,7 @@ struct TipLines {
 
 impl TipLines {
     const DEFAULT_ANGLE: f64 = 45.0;
-    const DEFAULT_LENGTH: f64 = 5.0;
+    const DEFAULT_LENGTH: f64 = 32.0;
 }
 
 impl Default for TipLines {

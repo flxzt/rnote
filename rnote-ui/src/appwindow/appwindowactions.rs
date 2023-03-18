@@ -533,7 +533,7 @@ impl RnAppWindow {
                 canvas.update_engine_rendering();
             }),
         );
-        
+
         // Remove page from doc in fixed size mode
         action_remove_page_from_doc.connect_activate(
             clone!(@weak self as appwindow => move |_action_remove_page_from_doc, _target| {
@@ -1005,4 +1005,3 @@ impl RnAppWindow {
         }
     }
 }
-

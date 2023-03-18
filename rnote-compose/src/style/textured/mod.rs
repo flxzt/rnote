@@ -102,6 +102,7 @@ impl Composer<TexturedOptions> for Arrow {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
         cx.save().unwrap();
+
         let bez_path = {
             // Return early if line has no length, else Uniform::new() will panic for range with low >= high
             if (self.tip - self.start).magnitude() <= 0.0 {

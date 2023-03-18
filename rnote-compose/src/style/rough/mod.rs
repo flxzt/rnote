@@ -73,14 +73,36 @@ impl Composer<RoughOptions> for Arrow {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
 
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+        let arrow_line = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
             self.start[0],
             self.start[1],
             self.tip[0],
             self.tip[1],
         );
 
-        drawable.draw(cx);
+        let lline = {
+            let lline: na::Vector2<f64> = self.get_lline();
+            rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+                lline[0],
+                lline[1],
+                self.tip[0],
+                self.tip[1],
+            )
+        };
+
+        let rline = {
+            let rline: na::Vector2<f64> = self.get_rline();
+            rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+                rline[0],
+                rline[1],
+                self.tip[0],
+                self.tip[1],
+            )
+        };
+
+        arrow_line.draw(cx);
+        lline.draw(cx);
+        rline.draw(cx);
 
         cx.restore().unwrap();
     }

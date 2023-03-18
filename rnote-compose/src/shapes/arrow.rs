@@ -1,15 +1,33 @@
+use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
 use crate::helpers::{AabbHelpers, Vector2Helpers};
-use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
 
-#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+use super::{Line, Rectangle};
+
+/// The following documentation assumes, the following graphic A:
+/// ```
+///          c
+///         /|\
+///        / | \
+///       /  |  \
+///      a   |   b
+///          |
+///          |
+///          |
+///          d
+/// ```
+/// Where:
+///     - `a` represents the left helper line
+///     - `b` represents the right helper line
+///     - `c` represents the tip of the arrow
+///     - `d` represents the main line
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(default, rename = "arrow")]
-/// An arrow
 pub struct Arrow {
     #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The line start
@@ -17,6 +35,7 @@ pub struct Arrow {
     #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
     /// The line end
     pub tip: na::Vector2<f64>,
+    tip_lines: TipLines,
 }
 
 impl TransformBehaviour for Arrow {
@@ -55,6 +74,15 @@ impl ShapeBehaviour for Arrow {
 }
 
 impl Arrow {
+    /// Creating a new arrow with the given start and tip vectors.
+    pub fn new(start: na::Vector2<f64>, tip: na::Vector2<f64>) -> Self {
+        Self {
+            start,
+            tip,
+            ..Self::default()
+        }
+    }
+
     /// creates a rect in the direction of the line, with a constant given width
     pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
         let vec = self.tip - self.start;
@@ -68,7 +96,7 @@ impl Arrow {
     }
 
     /// Splits itself given the no splits
-    pub fn split(&self, n_splits: i32) -> Vec<Self> {
+    pub fn split(&self, n_splits: i32) -> Vec<Line> {
         (0..n_splits)
             .map(|i| {
                 let sub_start = self
@@ -78,16 +106,83 @@ impl Arrow {
                     .start
                     .lerp(&self.tip, f64::from(i + 1) / f64::from(n_splits));
 
-                Arrow {
+                Line {
                     start: sub_start,
-                    tip: sub_end,
+                    end: sub_end,
                 }
             })
-            .collect::<Vec<Self>>()
+            .collect::<Vec<Line>>()
     }
 
     /// to kurbo
-    pub fn to_kurbo(&self) -> kurbo::Line {
-        kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point())
+    pub fn to_kurbo(&self) -> ArrowKurbo {
+        let main = kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point());
+
+        let rline = kurbo::Line::new(self.get_rline().to_kurbo_point(), self.tip.to_kurbo_point());
+
+        let lline = kurbo::Line::new(self.get_lline().to_kurbo_point(), self.tip.to_kurbo_point());
+
+        ArrowKurbo { main, rline, lline }
     }
+}
+
+/// This implementation holds the functions to get the vectors `a` and `b`.
+impl Arrow {
+    /// Returns the vector `a`.
+    pub fn get_lline(&self) -> na::Vector2<f64> {
+        let normed_dv = self.get_normed_dv();
+        let rotation_matrix = self.get_rotation_matrix();
+        rotation_matrix * normed_dv * self.tip_lines.length
+    }
+
+    /// Returns the vector `b`.
+    pub fn get_rline(&self) -> na::Vector2<f64> {
+        let normed_dv = self.get_normed_dv();
+        let rotation_matrix = self.get_rotation_matrix().transpose();
+
+        rotation_matrix * normed_dv * self.tip_lines.length
+    }
+
+    fn get_direction_vector(&self) -> na::Vector2<f64> {
+        self.tip - self.start
+    }
+
+    fn get_normed_dv(&self) -> na::Vector2<f64> {
+        let direction_vector = self.get_direction_vector();
+        direction_vector / direction_vector.magnitude()
+    }
+
+    fn get_rotation_matrix(&self) -> Rotation2<f64> {
+        Rotation2::new(self.tip_lines.angle)
+    }
+}
+
+/// A helper struct to store the metadata of `a` and `b`.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default, rename = "arrow_tip_lines")]
+struct TipLines {
+    pub angle: f64,
+    pub length: f64,
+}
+
+impl TipLines {
+    const DEFAULT_ANGLE: f64 = 45.0;
+    const DEFAULT_LENGTH: f64 = 5.0;
+}
+
+impl Default for TipLines {
+    fn default() -> Self {
+        Self {
+            angle: Self::DEFAULT_ANGLE,
+            length: Self::DEFAULT_LENGTH,
+        }
+    }
+}
+
+/// A helper struct which contains the three lines for an arrow.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ArrowKurbo {
+    pub main: kurbo::Line,
+    pub rline: kurbo::Line,
+    pub lline: kurbo::Line,
 }

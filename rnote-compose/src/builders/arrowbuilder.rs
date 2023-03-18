@@ -78,9 +78,6 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
 impl ArrowBuilder {
     /// The current state as line
     pub fn state_as_arrow(&self) -> Arrow {
-        Arrow {
-            start: self.start,
-            tip: self.tip,
-        }
+        Arrow::new(self.start, self.tip)
     }
 }

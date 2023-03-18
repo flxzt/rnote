@@ -1246,18 +1246,13 @@ impl RnCanvas {
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
     pub(crate) fn update_engine_rendering(&self) {
-        let viewport = self.engine().borrow().camera.viewport();
-        let image_scale = self.engine().borrow().camera.image_scale();
-        let tasks_tx = self.engine().borrow().tasks_tx();
-
         // background rendering is updated in the layout manager
         self.queue_resize();
 
         // update content rendering
         self.engine()
             .borrow_mut()
-            .store
-            .regenerate_rendering_in_viewport_threaded(tasks_tx, false, viewport, image_scale);
+            .update_content_rendering_current_viewport();
 
         self.queue_draw();
     }

@@ -11,7 +11,7 @@ use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 use std::path::PathBuf;
 use std::time::Instant;
-use p2d::bounding_volume::Aabb;
+use parry2d_f64::bounding_volume::Aabb;
 
 use crate::{canvas::RnCanvasLayout, config, dialogs, RnAppWindow, RnCanvas};
 

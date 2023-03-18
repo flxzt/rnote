@@ -132,11 +132,6 @@ mod imp {
             engine.update_camera_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
             engine.expand_doc_autoexpand();
 
-            // always update the background rendering
-            if let Err(e) = engine.update_background_rendering_current_viewport() {
-                log::error!("failed to update background rendering for current viewport in canvas layout allocate, Err: {e:?}");
-            }
-
             let viewport = engine.camera.viewport();
             let old_viewport = self.old_viewport.get();
 
@@ -155,15 +150,18 @@ mod imp {
                        );
             */
 
+            // always update the background rendering
+            if let Err(e) = engine.update_background_rendering_current_viewport() {
+                log::error!("failed to update background rendering for current viewport in canvas layout allocate, Err: {e:?}");
+            }
+
             // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
             // But after zoom ins we need to update old_viewport with layout_manager.update_state()
             if !old_viewport_extended.contains(&viewport) {
-                // Because we don't set the rendering of strokes that are already in the view dirty, we only render those that may come into the view.
-                if let Err(e) = engine.update_rendering_current_viewport() {
-                    log::error!("failed to update engine rendering for current viewport in canvas layout allocate, Err: {e:?}");
-                }
-
                 self.old_viewport.set(viewport);
+
+                // Because we don't set the rendering of strokes that are already in the view dirty, we only rerender those that may come into the view and are flagged dirty.
+                engine.update_content_rendering_current_viewport();
             }
         }
     }

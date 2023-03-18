@@ -1249,14 +1249,10 @@ impl RnCanvas {
         // background rendering is updated in the layout manager
         self.queue_resize();
 
-        // Update engine rendering for the new viewport
-        if let Err(e) = self
-            .engine()
+        // update content rendering
+        self.engine()
             .borrow_mut()
-            .update_rendering_current_viewport()
-        {
-            log::error!("failed to update engine rendering for current viewport, Err: {e:?}");
-        }
+            .update_content_rendering_current_viewport();
 
         self.queue_draw();
     }

@@ -2,6 +2,7 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
 };
+use parry2d_f64::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penevents::ShortcutKey;
@@ -11,7 +12,6 @@ use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 use std::path::PathBuf;
 use std::time::Instant;
-use parry2d_f64::bounding_volume::Aabb;
 
 use crate::{canvas::RnCanvasLayout, config, dialogs, RnAppWindow, RnCanvas};
 

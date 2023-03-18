@@ -1,6 +1,8 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/icons/scalable/apps/rnote.svg" width="300"></img>
-</div><br><br><br>
+  <img src="https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/icons/scalable/apps/rnote.svg" width="64">
+  <h1 align="center">Rnote</h1>
+  <p align="center">Sketch and take handwritten notes.</p>
+ </div>
 
 <div align="center">
     <a href="https://github.com/flxzt/rnote/actions/workflows/ci.yml">
@@ -9,16 +11,13 @@
     <a href="https://liberapay.com/flxzt/donate">
         <img alt="Donate using Liberapay" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/liberapay-donate-button.svg" width="60" height="20">
     </a>
+    
+ <sup><b>Rust ੶ GTK4</b></sup>
 </div>
 
 
-# Rnote
+**Rnote** is an open-source vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures. Targeted at students, teachers and those who own a drawing tablet, it provides features like PDF and picture import and export, an infinite canvas and an adaptive UI for big and small screens.
 
-> Sketch and take handwritten notes.  
-
-Rnote is an open-source vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures. Targeted at students, teachers and those who own a drawing tablet, it provides features like PDF and picture import and export, an infinite canvas and an adaptive UI for big and small screens.
-
-Written in Rust and GTK4.
 
 **Features**
 

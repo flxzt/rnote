@@ -268,7 +268,7 @@ impl StrokeStore {
         widget_flags.redraw = true;
         widget_flags.store_modified = true;
 
-        return widget_flags;
+        widget_flags
     }
 
     /// Changes the fill color of the given keys.
@@ -301,7 +301,7 @@ impl StrokeStore {
         widget_flags.redraw = true;
         widget_flags.store_modified = true;
 
-        return widget_flags;
+        widget_flags
     }
 
     /// Rotates the stroke rendering images

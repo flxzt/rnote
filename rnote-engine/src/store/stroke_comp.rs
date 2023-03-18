@@ -10,9 +10,9 @@ use std::time::Instant;
 
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
-use crate::engine::{EngineTaskSender, StrokeContent};
+use crate::engine::StrokeContent;
 use crate::strokes::Stroke;
-use crate::{render, Camera, StrokeStore, WidgetFlags};
+use crate::{render, StrokeStore, WidgetFlags};
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -234,13 +234,10 @@ impl StrokeStore {
         });
     }
 
-    pub fn change_stroke_colors(
-        &mut self,
-        keys: &[StrokeKey],
-        color: Color,
-        tasks_tx: EngineTaskSender,
-        camera: &Camera,
-    ) -> WidgetFlags {
+    /// Changes the stroke and text color of the given keys.
+    ///
+    /// Strokes then need to update their rendering
+    pub fn change_stroke_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
         let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {
@@ -268,26 +265,16 @@ impl StrokeStore {
             }
         });
 
-        self.regenerate_rendering_in_viewport_threaded(
-            tasks_tx,
-            false,
-            camera.viewport(),
-            camera.image_scale(),
-        );
-
         widget_flags.redraw = true;
         widget_flags.store_modified = true;
 
         return widget_flags;
     }
 
-    pub fn change_fill_colors(
-        &mut self,
-        keys: &[StrokeKey],
-        color: Color,
-        tasks_tx: EngineTaskSender,
-        camera: &Camera,
-    ) -> WidgetFlags {
+    /// Changes the fill color of the given keys.
+    ///
+    /// Strokes then need to update their rendering
+    pub fn change_fill_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
         let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {
@@ -310,13 +297,6 @@ impl StrokeStore {
                 }
             }
         });
-
-        self.regenerate_rendering_in_viewport_threaded(
-            tasks_tx,
-            false,
-            camera.viewport(),
-            camera.image_scale(),
-        );
 
         widget_flags.redraw = true;
         widget_flags.store_modified = true;

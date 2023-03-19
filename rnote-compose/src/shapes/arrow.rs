@@ -1,4 +1,4 @@
-use na::{Rotation2, Vector2};
+use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -9,7 +9,7 @@ use crate::Transform;
 
 use super::{Line, Rectangle};
 
-/// The following documentation assumes, the following graphic A:
+/// All doc-comments of this file rely on the following graphic:
 /// ```
 ///         tip
 ///         /|\
@@ -25,9 +25,9 @@ use super::{Line, Rectangle};
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(default, rename = "arrow")]
 pub struct Arrow {
-    /// The line start
+    /// The start vector of the arrow
     pub start: na::Vector2<f64>,
-    /// The line end
+    /// The tip of the arow
     pub tip: na::Vector2<f64>,
     /// Metadata for `rline` and `lline`.
     tip_lines: TipLines,
@@ -67,17 +67,13 @@ impl ShapeBehaviour for Arrow {
 
         let bottom_left_corner = {
             let lowest_x = x_values.into_iter().reduce(f64::min).unwrap();
-
             let lowest_y = y_values.into_iter().reduce(f64::min).unwrap();
-
             na::Point2::new(lowest_x, lowest_y)
         };
 
         let top_right_corner = {
             let highest_x = x_values.into_iter().reduce(f64::max).unwrap();
-
             let highest_y = y_values.into_iter().reduce(f64::max).unwrap();
-
             na::Point2::new(highest_x, highest_y)
         };
 
@@ -173,17 +169,23 @@ impl Arrow {
     }
 }
 
-/// A helper struct to store the metadata of `a` and `b`.
+/// A helper struct to store the metadata of `rline` and `lline`.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "arrow_tip_lines")]
 struct TipLines {
+    /// The angle of `rline` and `lline`.
     pub angle: f64,
+
+    /// The length of `rline` and `lline`.
     pub length: f64,
 }
 
 impl TipLines {
-    const DEFAULT_ANGLE: f64 = 45.0;
-    const DEFAULT_LENGTH: f64 = 32.0;
+    /// The default angle for the `rline` and `lline`.
+    pub const DEFAULT_ANGLE: f64 = 45.0;
+
+    /// The default length for `rline` and `lline`.
+    pub const DEFAULT_LENGTH: f64 = 32.0;
 }
 
 impl Default for TipLines {
@@ -195,7 +197,7 @@ impl Default for TipLines {
     }
 }
 
-/// A helper struct which contains the three lines for an arrow.
+/// A helper struct which contains the three lines of the arrow.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ArrowKurbo {
     pub main: kurbo::Line,

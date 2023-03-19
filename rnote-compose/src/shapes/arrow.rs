@@ -141,9 +141,10 @@ impl Arrow {
     }
 }
 
-/// This implementation holds the functions to get the vectors `a` and `b`.
+/// This implementation holds the functions to get the vectors `rline` and
+/// `lline`.
 impl Arrow {
-    /// Returns the vector `a`.
+    /// Returns `rline` as a vector
     pub fn get_lline(&self) -> na::Vector2<f64> {
         let vec_a = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix();
@@ -151,7 +152,7 @@ impl Arrow {
         rotation_matrix * vec_a + self.tip
     }
 
-    /// Returns the vector `b`.
+    /// Returns `rline` as a vector.
     pub fn get_rline(&self) -> na::Vector2<f64> {
         let vec_b = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix().transpose();
@@ -165,7 +166,7 @@ impl Arrow {
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
-        Rotation2::new(self.tip_lines.angle)
+        Rotation2::new(self.tip_lines.radian)
     }
 }
 
@@ -173,8 +174,8 @@ impl Arrow {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "arrow_tip_lines")]
 struct TipLines {
-    /// The angle of `rline` and `lline`.
-    pub angle: f64,
+    /// The angle (in radian) of `rline` and `lline`.
+    pub radian: f64,
 
     /// The length of `rline` and `lline`.
     pub length: f64,
@@ -182,7 +183,7 @@ struct TipLines {
 
 impl TipLines {
     /// The default angle for the `rline` and `lline`.
-    pub const DEFAULT_ANGLE: f64 = 45.0;
+    pub const DEFAULT_ANGLE: f64 = std::f64::consts::PI / 4.0;
 
     /// The default length for `rline` and `lline`.
     pub const DEFAULT_LENGTH: f64 = 32.0;
@@ -191,7 +192,7 @@ impl TipLines {
 impl Default for TipLines {
     fn default() -> Self {
         Self {
-            angle: Self::DEFAULT_ANGLE,
+            radian: Self::DEFAULT_ANGLE,
             length: Self::DEFAULT_LENGTH,
         }
     }

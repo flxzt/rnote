@@ -1,7 +1,6 @@
 mod smoothoptions;
 
 use kurbo::Shape;
-use piet::Color;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
@@ -46,12 +45,10 @@ impl Composer<SmoothOptions> for Arrow {
         let arrow = self.to_kurbo();
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            let red_brush = cx.solid_brush(Color::RED);
-            let blue_brush = cx.solid_brush(Color::BLUE);
 
             cx.stroke(arrow.main, &stroke_brush, options.stroke_width);
-            cx.stroke(arrow.rline, &red_brush, options.stroke_width);
-            cx.stroke(arrow.lline, &blue_brush, options.stroke_width);
+            cx.stroke(arrow.rline, &stroke_brush, options.stroke_width);
+            cx.stroke(arrow.lline, &stroke_brush, options.stroke_width);
         }
 
         cx.restore().unwrap();

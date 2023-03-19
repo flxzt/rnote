@@ -1,4 +1,4 @@
-use na::Rotation2;
+use na::{Rotation2, Vector2};
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -29,6 +29,7 @@ pub struct Arrow {
     pub start: na::Vector2<f64>,
     /// The line end
     pub tip: na::Vector2<f64>,
+    /// Metadata for `rline` and `lline`.
     tip_lines: TipLines,
 }
 
@@ -54,7 +55,33 @@ impl TransformBehaviour for Arrow {
 
 impl ShapeBehaviour for Arrow {
     fn bounds(&self) -> Aabb {
-        AabbHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.tip))
+        let (x_values, y_values) = {
+            let lline = self.get_lline();
+            let rline = self.get_rline();
+
+            let x_values = [lline[0], rline[0], self.start[0], self.tip[0]];
+            let y_values = [lline[1], rline[1], self.start[1], self.tip[1]];
+
+            (x_values, y_values)
+        };
+
+        let bottom_left_corner = {
+            let lowest_x = x_values.into_iter().reduce(f64::min).unwrap();
+
+            let lowest_y = y_values.into_iter().reduce(f64::min).unwrap();
+
+            na::Point2::new(lowest_x, lowest_y)
+        };
+
+        let top_right_corner = {
+            let highest_x = x_values.into_iter().reduce(f64::max).unwrap();
+
+            let highest_y = y_values.into_iter().reduce(f64::max).unwrap();
+
+            na::Point2::new(highest_x, highest_y)
+        };
+
+        AabbHelpers::new_positive(bottom_left_corner, top_right_corner)
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {

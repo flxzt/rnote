@@ -223,11 +223,11 @@ mod imp {
                 self.canvas_zoom_scroll_controller.connect_scroll(
                     clone!(@weak obj as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
-
-                        let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
-                        canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                        canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+                        let canvas = canvaswrapper.canvas();
+                        let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
+                        let center_offset = canvas.current_view_center_coords();
+                        canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                        canvas.center_view_around_coords(center_offset);
 
                         // Stop event propagation
                         Inhibit(true)
@@ -243,7 +243,8 @@ mod imp {
 
                 self.canvas_touch_drag_gesture.connect_drag_begin(
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, _, _| {
-                        // We don't claim the sequence, because we we want to allow touch zooming. When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
+                        // We don't claim the sequence, because we we want to allow touch zooming.
+                        // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
                         touch_drag_start.set(na::vector![
                             canvaswrapper.canvas().hadjustment().unwrap().value(),
@@ -253,9 +254,8 @@ mod imp {
                 );
                 self.canvas_touch_drag_gesture.connect_drag_update(
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
-                        let new_adj_values = touch_drag_start.get() - na::vector![x,y];
-
-                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
+                        let new_offset = touch_drag_start.get() - na::vector![x,y];
+                        canvaswrapper.canvas().update_camera_offset(new_offset);
                     }),
                 );
                 self.canvas_touch_drag_gesture.connect_drag_end(
@@ -271,17 +271,13 @@ mod imp {
 
                 self.canvas_mouse_drag_middle_gesture.connect_drag_begin(
                     clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, _, _| {
-                        mouse_drag_start.set(na::vector![
-                            canvaswrapper.canvas().hadjustment().unwrap().value(),
-                            canvaswrapper.canvas().vadjustment().unwrap().value()
-                        ]);
+                        mouse_drag_start.set(canvaswrapper.canvas().engine().borrow().camera.offset);
                     }),
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_update(
                     clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
-                        let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
-
-                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
+                        let new_offset = mouse_drag_start.get() - na::vector![x,y];
+                        canvaswrapper.canvas().update_camera_offset(new_offset);
                     }),
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_end(
@@ -297,17 +293,13 @@ mod imp {
 
                 self.canvas_drag_empty_area_gesture.connect_drag_begin(
                     clone!(@strong mouse_drag_empty_area_start, @weak obj as canvaswrapper => move |_, _x, _y| {
-                        mouse_drag_empty_area_start.set(na::vector![
-                            canvaswrapper.canvas().hadjustment().unwrap().value(),
-                            canvaswrapper.canvas().vadjustment().unwrap().value()
-                        ]);
+                        mouse_drag_empty_area_start.set(canvaswrapper.canvas().engine().borrow().camera.offset);
                     })
                 );
                 self.canvas_drag_empty_area_gesture.connect_drag_update(
                     clone!(@strong mouse_drag_empty_area_start, @weak obj as canvaswrapper => move |_, x, y| {
-                        let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
-
-                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
+                        let new_offset = mouse_drag_empty_area_start.get() - na::vector![x,y];
+                        canvaswrapper.canvas().update_camera_offset(new_offset);
                     }),
                 );
                 self.canvas_drag_empty_area_gesture.connect_drag_end(
@@ -323,14 +315,14 @@ mod imp {
                 let zoom_begin = Rc::new(Cell::new(1_f64));
                 let new_zoom = Rc::new(Cell::new(1.0));
                 let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
-                let adjs_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let offset_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
                 self.canvas_zoom_gesture.connect_begin(clone!(
                     @strong zoom_begin,
                     @strong new_zoom,
                     @strong prev_scale,
                     @strong bbcenter_begin,
-                    @strong adjs_begin,
+                    @strong offset_begin,
                     @weak obj as canvaswrapper => move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
                         let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
@@ -340,10 +332,7 @@ mod imp {
                         prev_scale.set(1.0);
 
                         bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
-                        adjs_begin.set(na::vector![
-                            canvaswrapper.canvas().hadjustment().unwrap().value(),
-                            canvaswrapper.canvas().vadjustment().unwrap().value()
-                            ]);
+                        offset_begin.set(canvaswrapper.canvas().engine().borrow().camera.offset);
                     })
                 );
 
@@ -352,7 +341,7 @@ mod imp {
                     @strong new_zoom,
                     @strong prev_scale,
                     @strong bbcenter_begin,
-                    @strong adjs_begin,
+                    @strong offset_begin,
                     @weak obj as canvaswrapper => move |gesture, scale| {
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&(zoom_begin.get() * scale)) {
                             new_zoom.set(zoom_begin.get() * scale);
@@ -368,11 +357,9 @@ mod imp {
                                 bbcenter_begin.set(Some(bbcenter_current));
                                 bbcenter_current
                             };
-
                             let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
-                            let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
-
-                            canvaswrapper.canvas().update_camera_offset(new_adj_values);
+                            let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
+                            canvaswrapper.canvas().update_camera_offset(new_offset);
                         }
                     })
                 );
@@ -394,29 +381,25 @@ mod imp {
 
             // Pan with alt + drag
             {
-                let adj_start = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+                let offset_start = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
 
                 self.canvas_alt_drag_gesture.connect_drag_begin(clone!(
-                    @strong adj_start,
+                    @strong offset_start,
                     @weak obj as canvaswrapper => move |gesture, _, _| {
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
                         if modifiers == gdk::ModifierType::ALT_MASK {
                             gesture.set_state(EventSequenceState::Claimed);
-
-                            adj_start.set(na::vector![
-                                canvaswrapper.canvas().hadjustment().unwrap().value(),
-                                canvaswrapper.canvas().vadjustment().unwrap().value()
-                            ]);
+                            offset_start.set(canvaswrapper.canvas().engine().borrow().camera.offset);
                         } else {
                             gesture.set_state(EventSequenceState::Denied);
                         }
                 }));
                 self.canvas_alt_drag_gesture.connect_drag_update(
-                    clone!(@strong adj_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
-                        let new_adj_values = adj_start.get() - na::vector![offset_x, offset_y];
-                        canvaswrapper.canvas().update_camera_offset(new_adj_values);
+                    clone!(@strong offset_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
+                        let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
+                        canvaswrapper.canvas().update_camera_offset(new_offset);
                     })
                 );
                 self.canvas_alt_drag_gesture.connect_drag_end(
@@ -443,7 +426,6 @@ mod imp {
                         if modifiers == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK) {
                             gesture.set_state(EventSequenceState::Claimed);
                             let current_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
-
                             zoom_begin.set(current_zoom);
                             prev_offset.set(na::Vector2::<f64>::zeros());
                         } else {
@@ -461,14 +443,13 @@ mod imp {
 
                         let new_offset = na::vector![offset_x, offset_y];
                         let cur_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom();
-
                         // Drag down zooms out, drag up zooms in
                         let new_zoom = cur_zoom * (1.0 + (prev_offset.get()[1] - new_offset[1]) * OFFSET_MAGN_ZOOM_LVL_FACTOR);
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+                            let current_doc_center = canvaswrapper.canvas().current_view_center_coords();
                             canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                            canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+                            canvaswrapper.canvas().center_view_around_coords(current_doc_center);
                         }
 
                         prev_offset.set(new_offset);
@@ -488,7 +469,6 @@ mod imp {
                         .engine()
                         .borrow_mut()
                         .handle_pressed_shortcut_key(ShortcutKey::TouchTwoFingerLongPress, Instant::now());
-
                     canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                 }));
 

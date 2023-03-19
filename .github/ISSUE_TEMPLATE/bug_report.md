@@ -28,9 +28,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
- - Version [e.g. 22]
- - Installation source [e.g. Flatpak, Archlinux Community Repo, ... ]
- - Desktop Environment [e.g. Gnome 41.2]
+ - Version: [e.g. 22]
+ - Installation source: [e.g. Flatpak, Archlinux Community Repo, ... ]
+ - Desktop Environment: [e.g. Gnome 41.2]
 
 **Additional context**
 Add any other context about the problem here.

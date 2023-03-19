@@ -24,7 +24,8 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Duration;
 
-use crate::{config, RnAppWindow, RnCanvasWrapper};
+use crate::RnCanvasWrapper;
+use crate::{config, RnAppWindow};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -1094,68 +1095,58 @@ impl RnCanvas {
         )
     }
 
-    // updates the camera offset with a new one ( for example from touch drag gestures )
+    /// gets the current scrollbar adjustment values
+    pub(crate) fn adj_values(&self) -> na::Vector2<f64> {
+        na::vector![
+            self.hadjustment().unwrap().value(),
+            self.vadjustment().unwrap().value()
+        ]
+    }
 
-    // the rendering then needs to be updated.
+    /// updates the camera offset and scrollbar adjustment values
     pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
-        // This is a bit of a hack: we first set the new offset unrestricted,
-        // so the camera transform is immediately updated on zooms instead of the asynchronous update when calling queue_draw().
-        // This ensures that when we retrieve the current center on the document, the value is more consistent.
-        // TODO: clean up this mess
-        self.engine().borrow_mut().camera.offset = new_offset;
-        // This expands the doc size for autoexpanding layouts
-        self.engine().borrow_mut().expand_doc_autoexpand();
         // By setting new adjustment values, the callback connected to their `value` property is called,
         // Which is where the engine camera offset, size and the rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
     }
 
-    /// returns the center of the current view on the doc
-    pub(crate) fn current_center_on_doc(&self) -> na::Vector2<f64> {
+    /// returns the current view center coords.
+    /// used together with `center_view_around_coords`.
+    pub(crate) fn current_view_center_coords(&self) -> na::Vector2<f64> {
         let wrapper = self
             .ancestor(RnCanvasWrapper::static_type())
             .unwrap()
             .downcast::<RnCanvasWrapper>()
             .unwrap();
-        let center = wrapper
-            .translate_coordinates(
-                self,
-                wrapper.width() as f64 * 0.5,
-                wrapper.height() as f64 * 0.5,
-            )
-            .unwrap();
+        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
+        let total_zoom = self.engine().borrow().camera.total_zoom();
 
-        (self.engine().borrow().camera.transform().inverse() * na::point![center.0, center.1])
-            .coords
+        // we need to use the adj values here, because the camera transform doesn't get updated immediately.
+        // (happens in the reallocation, which gets queued)
+        (self.adj_values() + wrapper_size * 0.5) / total_zoom
     }
 
-    /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
-    // update_engine_rendering() then needs to be called.
-    pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
+    /// centers the view around the given coords.
+    /// used together with `current_view_center`.
+    ///
+    /// engine rendering then needs to be updated.
+    pub(crate) fn center_view_around_coords(&self, coords: na::Vector2<f64>) {
         let wrapper = self
             .ancestor(RnCanvasWrapper::static_type())
             .unwrap()
             .downcast::<RnCanvasWrapper>()
             .unwrap();
-        let center = wrapper
-            .translate_coordinates(
-                self,
-                wrapper.width() as f64 * 0.5,
-                wrapper.height() as f64 * 0.5,
-            )
-            .unwrap();
+        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
         let total_zoom = self.engine().borrow().camera.total_zoom();
-        let new_offset = na::vector![
-            ((coord[0]) * total_zoom) - center.0,
-            ((coord[1]) * total_zoom) - center.1
-        ];
+        let new_offset = coords * total_zoom - wrapper_size * 0.5;
 
         self.update_camera_offset(new_offset);
     }
 
     /// Centering the view to the origin page
-    // update_engine_rendering() then needs to be called.
+    ///
+    /// engine rendering then needs to be updated.
     pub(crate) fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
         let Some(parent) = self.parent() else {
@@ -1258,14 +1249,10 @@ impl RnCanvas {
         // background rendering is updated in the layout manager
         self.queue_resize();
 
-        // Update engine rendering for the new viewport
-        if let Err(e) = self
-            .engine()
+        // update content rendering
+        self.engine()
             .borrow_mut()
-            .update_rendering_current_viewport()
-        {
-            log::error!("failed to update engine rendering for current viewport, Err: {e:?}");
-        }
+            .update_content_rendering_current_viewport();
 
         self.queue_draw();
     }

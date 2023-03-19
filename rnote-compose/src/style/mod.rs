@@ -16,7 +16,7 @@ use anyhow::Context;
 pub use composer::Composer;
 
 use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
-use crate::{PenPath, Shape};
+use crate::{Color, PenPath, Shape};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -66,6 +66,24 @@ impl Style {
             Style::Rough(options) => options.advance_seed(),
             Style::Textured(options) => options.advance_seed(),
         }
+    }
+
+    /// Sets the stroke color of the style
+    pub fn set_stroke_color(&mut self, color: Color) {
+        match self {
+            Style::Smooth(options) => options.stroke_color = Some(color),
+            Style::Rough(options) => options.stroke_color = Some(color),
+            Style::Textured(options) => options.stroke_color = Some(color),
+        };
+    }
+
+    /// Sets the fill color of the style
+    pub fn set_fill_color(&mut self, color: Color) {
+        match self {
+            Style::Smooth(options) => options.fill_color = Some(color),
+            Style::Rough(options) => options.fill_color = Some(color),
+            Style::Textured(_) => {}
+        };
     }
 }
 

@@ -12,11 +12,10 @@ use super::{visual_debug, EngineView};
 
 impl RnoteEngine {
     /// updates the background rendering for the current viewport.
+    ///
     /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
     pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
         let viewport = self.camera.viewport();
-
-        // Update background and strokes for the new viewport
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
         if let Some(image) = &self.background_tile_image {
@@ -28,8 +27,6 @@ impl RnoteEngine {
             for split_bounds in
                 viewport.split_extended_origin_aligned(self.document.background.tile_size())
             {
-                //log::debug!("split_bounds: {split_bounds:?}");
-
                 rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,
@@ -45,12 +42,10 @@ impl RnoteEngine {
         Ok(())
     }
 
-    /// updates the content rendering for the current viewport. including the background rendering.
-    pub fn update_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
+    /// updates the content rendering for the current viewport.
+    pub fn update_content_rendering_current_viewport(&mut self) {
         let viewport = self.camera.viewport();
         let image_scale = self.camera.image_scale();
-
-        self.update_background_rendering_current_viewport()?;
 
         self.store.regenerate_rendering_in_viewport_threaded(
             self.tasks_tx(),
@@ -58,6 +53,14 @@ impl RnoteEngine {
             viewport,
             image_scale,
         );
+    }
+
+    /// updates the content and background rendering for the current viewport.
+    ///
+    /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
+    pub fn update_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
+        self.update_background_rendering_current_viewport()?;
+        self.update_content_rendering_current_viewport();
 
         Ok(())
     }

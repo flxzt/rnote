@@ -6,9 +6,8 @@ use serde::{Deserialize, Serialize};
 use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
-use crate::Transform;
 
-use super::{Line, Rectangle};
+use super::Line;
 
 /// All doc-comments of this file rely on the following graphic:
 /// ```
@@ -98,18 +97,6 @@ impl Arrow {
             start,
             tip,
             ..Self::default()
-        }
-    }
-
-    /// creates a rect in the direction of the arrow, with a constant given width
-    pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
-        let vec = self.tip - self.start;
-        let magn = vec.magnitude();
-        let angle = na::Rotation2::rotation_between(&na::Vector2::x(), &vec).angle();
-
-        Rectangle {
-            cuboid: p2d::shape::Cuboid::new(na::vector![magn * 0.5, width * 0.5]),
-            transform: Transform::new_w_isometry(na::Isometry2::new(self.start + vec * 0.5, angle)),
         }
     }
 
@@ -213,6 +200,9 @@ impl Default for TipLines {
 /// A helper struct which holds the kurbo-elements of the arrow.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrowKurbo {
+    /// This holds the line from `start` -> `tip`.
     pub main: kurbo::Line,
+
+    /// This holds the line from `lline` -> `tip` -> `rline`.
     pub tip_triangle: kurbo::BezPath,
 }

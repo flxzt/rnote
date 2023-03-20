@@ -40,8 +40,11 @@ impl TransformBehaviour for Arrow {
     }
 
     fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        let mut isometry = na::Isometry2::identity();
-        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
+        let isometry = {
+            let mut isometry = na::Isometry2::identity();
+            isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
+            isometry
+        };
 
         self.start = (isometry * na::Point2::from(self.start)).coords;
         self.tip = (isometry * na::Point2::from(self.tip)).coords;
@@ -141,7 +144,7 @@ impl Arrow {
 /// This implementation holds the functions to get the vectors `rline` and
 /// `lline`.
 impl Arrow {
-    /// Returns `rline` as a vector
+    /// Computes and returns `rline` as a vector
     pub fn get_lline(&self) -> na::Vector2<f64> {
         let vec_a = self.get_direction_vector() * self.tip_lines.length;
         let rotation_matrix = self.get_rotation_matrix();
@@ -149,7 +152,7 @@ impl Arrow {
         rotation_matrix * vec_a + self.tip
     }
 
-    /// Returns `rline` as a vector.
+    /// Computes and returns `rline` as a vector.
     pub fn get_rline(&self) -> na::Vector2<f64> {
         let vec_b = self.get_direction_vector() * self.tip_lines.length;
         let rotation_matrix = self.get_rotation_matrix().transpose();

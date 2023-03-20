@@ -101,7 +101,7 @@ impl Arrow {
         }
     }
 
-    /// creates a rect in the direction of the line, with a constant given width
+    /// creates a rect in the direction of the arrow, with a constant given width
     pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
         let vec = self.tip - self.start;
         let magn = vec.magnitude();
@@ -170,6 +170,8 @@ impl Arrow {
         rotation_matrix * vec_b + self.tip
     }
 
+    /// Returns the direction vector from `start` to `tip` with the length for
+    /// the extra lines at the tip.
     fn get_direction_vector(&self) -> na::Vector2<f64> {
         let direction_vector = self.tip - self.start;
         (direction_vector / direction_vector.norm()) * self.tip_lines.length
@@ -208,7 +210,7 @@ impl Default for TipLines {
     }
 }
 
-/// A helper struct which contains the three lines of the arrow.
+/// A helper struct which holds the kurbo-elements of the arrow.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrowKurbo {
     pub main: kurbo::Line,

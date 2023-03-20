@@ -19,7 +19,7 @@ use crate::Constraints;
 pub struct ArrowBuilder {
     /// the start position
     start: na::Vector2<f64>,
-    /// the current position
+    /// the position of the tip
     tip: na::Vector2<f64>,
 }
 
@@ -76,7 +76,7 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
 }
 
 impl ArrowBuilder {
-    /// The current state as line
+    /// Returns a configured arrow by the current state of the builder.
     pub fn state_as_arrow(&self) -> Arrow {
         Arrow::new(self.start, self.tip)
     }

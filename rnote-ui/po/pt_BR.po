@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-19 17:59+0000\n"
+"PO-Revision-Date: 2023-03-20 10:41+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
@@ -52,7 +52,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -203,11 +203,12 @@ msgid "Open File"
 msgstr "Abrir arquivo"
 
 #: rnote-ui/data/ui/dialogs/import.ui:6
-#, fuzzy
 msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
-msgstr "Abrindo esse arquivo sobrescreve qualquer alterações não salvas."
+msgstr ""
+"Abrir este arquivo substitui todas as alterações não salvas. Deseja salvar o "
+"documento atual?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import PDF"
@@ -220,22 +221,19 @@ msgstr "Importar"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Informação"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "PDF Import Preferences"
-msgstr "Preferências de importação do PDF"
+msgstr "Preferências de Importação de PDF"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start Page"
-msgstr ""
+msgstr "Página Inicial"
 
 #: rnote-ui/data/ui/dialogs/import.ui:110
-#, fuzzy
 msgid "End Page"
-msgstr "Adicionar página"
+msgstr "Página Final"
 
 #: rnote-ui/data/ui/dialogs/import.ui:125
 msgid "Page Width (%)"

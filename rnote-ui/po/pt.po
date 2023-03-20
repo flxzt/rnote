@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-19 17:59+0000\n"
+"PO-Revision-Date: 2023-03-21 22:41+0000\n"
 "Last-Translator: Hugo Galhardo <hugo.galhardo43@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/rnote/repo/pt/"
 ">\n"
@@ -564,192 +564,192 @@ msgstr "Densidade"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "A densidade é a quantidade de pontos numa área de 10x10"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
 msgid "Stroke Dots Position Distribution"
-msgstr ""
+msgstr "Distribuição da posição dos pontos dos traços"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:227
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "Escolha a distribuição de probabilidade de posição dos pontos"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:231
 msgid "Uniform"
-msgstr ""
+msgstr "Uniforme"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:232
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:233
 msgid "Exponential"
-msgstr ""
+msgstr "Exponencial"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "Exponencial Inversa"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr ""
+msgstr "Apagar Traços"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr ""
+msgstr "Traços Descontínuos"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
 #: rnote-ui/data/ui/overlays.ui:45
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:78
 msgid "Brush"
-msgstr ""
+msgstr "Pincel"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: rnote-ui/data/ui/overlays.ui:52
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
 msgid "Shaper"
-msgstr ""
+msgstr "Formas"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
 #: rnote-ui/data/ui/overlays.ui:60
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
 msgid "Typewriter"
-msgstr ""
+msgstr "Máquina de escrever"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
 #: rnote-ui/data/ui/overlays.ui:68
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Eraser"
-msgstr ""
+msgstr "Apagador"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
 #: rnote-ui/data/ui/overlays.ui:76
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Selector"
-msgstr ""
+msgstr "Seletor"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
 #: rnote-ui/data/ui/overlays.ui:84
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Tools"
-msgstr ""
+msgstr "Ferramentas"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr ""
+msgstr "Selecione Com um Polígono"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr ""
+msgstr "Selecione com um rectângulo"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "Selecione Um a Um"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr ""
+msgstr "Selecionar Caminho de Interseção"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
-msgstr ""
+msgstr "Bloquear a Proporção ao Redimensionar a Seleção"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr ""
+msgstr "Seleccione Todos os Traços"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
-msgstr ""
+msgstr "Desmarcar Todos os Traços"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 #: rnote-ui/data/ui/shortcuts.ui:207
 msgid "Duplicate Selection"
-msgstr ""
+msgstr "Seleção Duplicada"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 msgid "Delete Selection"
-msgstr ""
+msgstr "Apagar seleção"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
 msgid "Shaper Style"
-msgstr ""
+msgstr "Estilo de Figuras"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape Configuration"
-msgstr ""
+msgstr "Configuração da Figuras"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape Builders"
-msgstr ""
+msgstr "Construtor de Figura"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
-msgstr ""
+msgstr "Restrições"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper Styles"
-msgstr ""
+msgstr "Estilos de Figuras"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
-msgstr ""
+msgstr "Suave"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
-msgstr ""
+msgstr "Áspero"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
-msgstr ""
+msgstr "Estilo áspero"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 msgid "Fill Style"
-msgstr ""
+msgstr "Estilo de Preenchimento"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
-msgstr ""
+msgstr "Escolha um estilo de preenchimento"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
-msgstr ""
+msgstr "Hachura"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Zig-Zag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Linha Zig-Zag"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
-msgstr ""
+msgstr "Hachurado"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
-msgstr ""
+msgstr "Pontos"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
-msgstr ""
+msgstr "Tracejadas"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure Angle"
-msgstr ""
+msgstr "Ângulo de Hachura"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
-msgstr ""
+msgstr "Definir o ângulo de preenchimento de hachuras"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
-msgstr ""
+msgstr "Activado"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 msgid ""
@@ -757,27 +757,30 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
+"Segure Ctrl para temporariamente\n"
+"activar/desactivar restrições\n"
+"quando este interruptor está desligado/ligado"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
-msgstr ""
+msgstr "1:1"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
-msgstr ""
+msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden Ratio (1:1.618)"
-msgstr ""
+msgstr "Razão áurea (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr ""
+msgstr "Inserir Espaço Vertical"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:91
 msgid "Move View"
-msgstr ""
+msgstr "Mover visualização"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -785,81 +788,84 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
+"Selector de fonte\n"
+"(clique duas vezes, clique em seleccionar\n"
+"ou pressione Enter para selecionar uma nova fonte)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
 msgid "Pick And Insert Emoji"
-msgstr ""
+msgstr "Escolha e insira Emoji"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:73
 msgid "Reset Text Attributes"
-msgstr ""
+msgstr "Redefinir Atributos de Texto"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:82
 msgid "Bold"
-msgstr ""
+msgstr "Negrito"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:91
 msgid "Italic"
-msgstr ""
+msgstr "Itálico"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:100
 msgid "Underline"
-msgstr ""
+msgstr "Sublinhar"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
-msgstr ""
+msgstr "Rasurar"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
-msgstr ""
+msgstr "Alinhar à Esquerda"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
-msgstr ""
+msgstr "Alinhar Centro"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
-msgstr ""
+msgstr "Alinhar à Direita"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
-msgstr ""
+msgstr "Preencher"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:393
 msgid "Select"
-msgstr ""
+msgstr "Seleccionar"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr ""
+msgstr "Esquema de Cor"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr ""
+msgstr "Usar Cores do Sistema"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr ""
+msgstr "Usar Cores Claras"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr ""
+msgstr "Usar Cores Escuras"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper Mode"
-msgstr ""
+msgstr "Modo de Programador"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
-msgstr ""
+msgstr "Menu de Programador"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _Debugging"
-msgstr ""
+msgstr "Depuração Visual"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export Engine _State"

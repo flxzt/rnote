@@ -25,7 +25,7 @@ use super::Line;
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(default, rename = "arrow")]
 pub struct Arrow {
-    /// The start vector of the arrow
+    /// The start of the arrow
     pub start: na::Vector2<f64>,
     /// The tip of the arow
     pub tip: na::Vector2<f64>,

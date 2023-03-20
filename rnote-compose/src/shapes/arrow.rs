@@ -147,10 +147,7 @@ impl Arrow {
             ])
         };
 
-        ArrowKurbo {
-            main,
-            tip_triangle,
-        }
+        ArrowKurbo { main, tip_triangle }
     }
 }
 

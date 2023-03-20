@@ -143,7 +143,7 @@ impl Arrow {
 impl Arrow {
     /// Returns `rline` as a vector
     pub fn get_lline(&self) -> na::Vector2<f64> {
-        let vec_a = self.get_direction_vector();
+        let vec_a = self.get_direction_vector() * self.tip_lines.length;
         let rotation_matrix = self.get_rotation_matrix();
 
         rotation_matrix * vec_a + self.tip
@@ -151,17 +151,16 @@ impl Arrow {
 
     /// Returns `rline` as a vector.
     pub fn get_rline(&self) -> na::Vector2<f64> {
-        let vec_b = self.get_direction_vector();
+        let vec_b = self.get_direction_vector() * self.tip_lines.length;
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
         rotation_matrix * vec_b + self.tip
     }
 
-    /// Returns the direction vector from `start` to `tip` with the length for
-    /// the extra lines at the tip.
+    /// Returns the (normalized) direction vector from `start` to `tip`.
     fn get_direction_vector(&self) -> na::Vector2<f64> {
         let direction_vector = self.tip - self.start;
-        (direction_vector / direction_vector.norm()) * self.tip_lines.length
+        direction_vector / direction_vector.norm()
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {

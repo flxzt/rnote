@@ -9,6 +9,8 @@ use crate::transform::TransformBehaviour;
 
 use super::Line;
 
+type Radian = f64;
+
 /// All doc-comments of this file rely on the following graphic:
 /// ```
 ///         tip
@@ -167,7 +169,7 @@ impl Arrow {
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
-        Rotation2::new(self.tip_lines.radian)
+        Rotation2::new(self.tip_lines.angle)
     }
 }
 
@@ -175,8 +177,8 @@ impl Arrow {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "arrow_tip_lines")]
 struct TipLines {
-    /// The angle (in radian) of `rline` and `lline`.
-    pub radian: f64,
+    /// The angle of `rline` and `lline`.
+    pub angle: Radian,
 
     /// The length of `rline` and `lline`.
     pub length: f64,
@@ -184,7 +186,7 @@ struct TipLines {
 
 impl TipLines {
     /// The default angle for the `rline` and `lline`.
-    pub const DEFAULT_ANGLE: f64 = 3.0 * std::f64::consts::PI / 4.0;
+    pub const DEFAULT_ANGLE: Radian = 3.0 * std::f64::consts::PI / 4.0;
 
     /// The default length for `rline` and `lline`.
     pub const DEFAULT_LENGTH: f64 = 32.0;
@@ -193,7 +195,7 @@ impl TipLines {
 impl Default for TipLines {
     fn default() -> Self {
         Self {
-            radian: Self::DEFAULT_ANGLE,
+            angle: Self::DEFAULT_ANGLE,
             length: Self::DEFAULT_LENGTH,
         }
     }

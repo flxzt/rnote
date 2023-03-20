@@ -83,6 +83,17 @@
                       </object>
                     </child>
                     <child>
+                      <object class="AdwActionRow" id="general_inertial_scrolling_row">
+                        <property name="title" translatable="yes">Inertial Touch Scrolling</property>
+                        <property name="subtitle" translatable="yes">Set whether touch scrolling on the canvas is inertial</property>
+                        <child type="suffix">
+                          <object class="GtkSwitch" id="general_inertial_scrolling_switch">
+                            <property name="valign">center</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwActionRow" id="general_regular_cursor_picker_row">
                         <property name="title" translatable="yes">Regular Cursor</property>
                         <property name="subtitle" translatable="yes">Set the regular cursor</property>

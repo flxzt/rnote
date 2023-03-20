@@ -13,7 +13,6 @@
         <style>
           <class name="canvas_scroller" />
         </style>
-        <property name="kinetic_scrolling">false</property>
         <property name="propagate-natural-width">false</property>
         <property name="propagate-natural-height">false</property>
         <property name="halign">fill</property>

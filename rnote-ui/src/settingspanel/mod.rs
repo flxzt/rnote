@@ -40,6 +40,8 @@ mod imp {
         #[template_child]
         pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
         #[template_child]
+        pub(crate) general_inertial_scrolling_switch: TemplateChild<Switch>,
+        #[template_child]
         pub(crate) general_regular_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
         pub(crate) general_regular_cursor_picker_menubutton: TemplateChild<MenuButton>,
@@ -361,6 +363,10 @@ impl RnSettingsPanel {
 
     pub(crate) fn general_show_scrollbars_switch(&self) -> Switch {
         self.imp().general_show_scrollbars_switch.clone()
+    }
+
+    pub(crate) fn general_inertial_scrolling_switch(&self) -> Switch {
+        self.imp().general_inertial_scrolling_switch.clone()
     }
 
     pub(crate) fn refresh_ui(&self, active_tab: &RnCanvasWrapper) {

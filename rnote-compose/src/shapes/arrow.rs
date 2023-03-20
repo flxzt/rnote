@@ -161,7 +161,7 @@ impl Arrow {
     }
 
     fn get_direction_vector(&self) -> na::Vector2<f64> {
-        let direction_vector = self.start - self.tip;
+        let direction_vector = self.tip - self.start;
         (direction_vector / direction_vector.norm()) * self.tip_lines.length
     }
 
@@ -183,7 +183,7 @@ struct TipLines {
 
 impl TipLines {
     /// The default angle for the `rline` and `lline`.
-    pub const DEFAULT_ANGLE: f64 = std::f64::consts::PI / 4.0;
+    pub const DEFAULT_ANGLE: f64 = 3.0 * std::f64::consts::PI / 4.0;
 
     /// The default length for `rline` and `lline`.
     pub const DEFAULT_LENGTH: f64 = 32.0;

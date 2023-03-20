@@ -47,8 +47,7 @@ impl Composer<SmoothOptions> for Arrow {
             let stroke_brush = cx.solid_brush(stroke_color.into());
 
             cx.stroke(arrow.main, &stroke_brush, options.stroke_width);
-            cx.stroke(arrow.rline, &stroke_brush, options.stroke_width);
-            cx.stroke(arrow.lline, &stroke_brush, options.stroke_width);
+            cx.stroke(arrow.tip_triangle, &stroke_brush, options.stroke_width);
         }
 
         cx.restore().unwrap();

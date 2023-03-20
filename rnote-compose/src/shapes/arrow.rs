@@ -1,3 +1,4 @@
+use kurbo::PathEl;
 use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
@@ -131,13 +132,25 @@ impl Arrow {
             .collect::<Vec<Line>>()
     }
 
-    /// to kurbo
+    /// convert the arrow to kurbo-elements.
     pub fn to_kurbo(&self) -> ArrowKurbo {
         let main = kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point());
-        let rline = kurbo::Line::new(self.get_rline().to_kurbo_point(), self.tip.to_kurbo_point());
-        let lline = kurbo::Line::new(self.get_lline().to_kurbo_point(), self.tip.to_kurbo_point());
+        let tip_triangle = {
+            let tip = self.tip.to_kurbo_point();
+            let lline = self.get_lline().to_kurbo_point();
+            let rline = self.get_rline().to_kurbo_point();
 
-        ArrowKurbo { main, rline, lline }
+            kurbo::BezPath::from_vec(vec![
+                PathEl::MoveTo(lline),
+                PathEl::LineTo(tip),
+                PathEl::LineTo(rline),
+            ])
+        };
+
+        ArrowKurbo {
+            main,
+            tip_triangle,
+        }
     }
 }
 
@@ -199,9 +212,8 @@ impl Default for TipLines {
 }
 
 /// A helper struct which contains the three lines of the arrow.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ArrowKurbo {
     pub main: kurbo::Line,
-    pub rline: kurbo::Line,
-    pub lline: kurbo::Line,
+    pub tip_triangle: kurbo::BezPath,
 }

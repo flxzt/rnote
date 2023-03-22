@@ -238,16 +238,14 @@ impl Background {
 
     /// Generates the background svg, without xml header or svg root
     pub fn gen_svg(&self, bounds: Aabb, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
-        let mut svg_group = element::Group::new();
-
         // background color
         let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());
-
         color_rect.assign("x", format!("{}px", bounds.mins[0]));
         color_rect.assign("y", format!("{}px", bounds.mins[1]));
         color_rect.assign("width", format!("{}px", bounds.extents()[0]));
         color_rect.assign("height", format!("{}px", bounds.extents()[1]));
 
+        let mut svg_group = element::Group::new();
         svg_group = svg_group.add(color_rect);
 
         if with_pattern {

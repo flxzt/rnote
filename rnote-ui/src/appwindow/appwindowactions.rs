@@ -545,6 +545,7 @@ impl RnAppWindow {
                 let new_doc_height = doc_height - format_height;
                 if doc_height > format_height {
                     let aabb = Aabb::new(na::point![0.0, new_doc_height], na::point![0.0 + format_width, doc_height]);
+                    canvas.engine().borrow_mut().store.split_colliding_strokes(aabb, aabb);
                     let remove_area = canvas.engine().borrow_mut().store.stroke_keys_as_rendered_intersecting_bounds(aabb);
                     canvas.engine().borrow_mut().store.set_trashed_keys(&remove_area, true);
                     canvas.engine().borrow_mut().document.height = new_doc_height;

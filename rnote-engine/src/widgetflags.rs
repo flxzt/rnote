@@ -16,7 +16,7 @@ pub struct WidgetFlags {
     pub deselect_color_setters: bool,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed
     pub hide_undo: Option<bool>,
-    /// Is Some when undo button visibility should be changed. Is None if should not be changed
+    /// Is Some when redo button visibility should be changed. Is None if should not be changed
     pub hide_redo: Option<bool>,
     /// Changes whether text preprocessing should be enabled. Meaning, instead of key events text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter
@@ -40,7 +40,7 @@ impl Default for WidgetFlags {
 }
 
 impl WidgetFlags {
-    /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
+    /// Merging with another WidgetFlags struct, prioritizing other for conflicting values.
     pub fn merge(&mut self, other: Self) {
         self.redraw |= other.redraw;
         self.resize |= other.resize;

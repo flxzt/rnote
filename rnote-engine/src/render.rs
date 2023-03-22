@@ -342,6 +342,7 @@ impl Image {
                     &stream, None, None,
                 )
                 .context("read stream to librsvg Loader failed in gen_image_from_svg()")?;
+
             let renderer = rsvg::CairoRenderer::new(&handle);
             renderer
                 .render_document(
@@ -503,11 +504,7 @@ impl Svg {
             width, height, svg_stream
         )
         .map_err(|e| {
-            anyhow::anyhow!(
-                "create SvgSurface with dimensions ({}, {}) failed in Svg gen_with_piet_cairo_backend(), {}",
-                width,height,
-                e
-            )
+            anyhow::anyhow!("create SvgSurface with dimensions ({}, {}) failed in Svg gen_with_piet_cairo_backend(), {}", width, height, e)
         })?;
 
         svg_surface.set_document_unit(cairo::SvgUnit::Px);

@@ -78,14 +78,6 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-        self.bind_property(
-            "touch-drawing",
-            &self.settings_panel().general_inertial_scrolling_switch(),
-            "sensitive",
-        )
-        .invert_boolean()
-        .sync_create()
-        .build();
 
         // regular cursor
         self.app_settings()

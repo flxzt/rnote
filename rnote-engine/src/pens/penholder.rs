@@ -178,7 +178,6 @@ impl PenHolder {
 
         if self.pen_mode_state.pen_mode() != new_pen_mode {
             self.pen_mode_state.set_pen_mode(new_pen_mode);
-
             widget_flags.merge(self.reinstall_pen_current_style(engine_view));
             widget_flags.refresh_ui = true;
         }
@@ -192,8 +191,13 @@ impl PenHolder {
 
     /// Installs the pen for the current style
     pub fn reinstall_pen_current_style(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
-        let new_pen_style = self.current_pen_style_w_override();
-        let (new_pen, mut widget_flags) = new_pen_for_style(new_pen_style, engine_view);
+        // first cancel the current pen
+        let (_, mut widget_flags) =
+            self.current_pen
+                .handle_event(PenEvent::Cancel, Instant::now(), engine_view);
+
+        // then reinstall a new instance
+        let new_pen = new_pen(self.current_pen_style_w_override());
         self.current_pen = new_pen;
         widget_flags.merge(self.current_pen.update_state(engine_view));
         widget_flags.merge(self.handle_changed_pen_style());
@@ -364,17 +368,13 @@ impl DrawOnDocBehaviour for PenHolder {
     }
 }
 
-fn new_pen_for_style(pen_style: PenStyle, engine_view: &mut EngineViewMut) -> (Pen, WidgetFlags) {
-    let mut pen = match pen_style {
+fn new_pen(pen_style: PenStyle) -> Pen {
+    match pen_style {
         PenStyle::Brush => Pen::Brush(Brush::default()),
         PenStyle::Shaper => Pen::Shaper(Shaper::default()),
         PenStyle::Typewriter => Pen::Typewriter(Typewriter::default()),
         PenStyle::Eraser => Pen::Eraser(Eraser::default()),
         PenStyle::Selector => Pen::Selector(Selector::default()),
         PenStyle::Tools => Pen::Tools(Tools::default()),
-    };
-
-    let widget_flags = pen.update_state(engine_view);
-
-    (pen, widget_flags)
+    }
 }

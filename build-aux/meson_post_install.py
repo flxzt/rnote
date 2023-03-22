@@ -13,7 +13,7 @@ app_bin = sys.argv[3]
 if not os.environ.get('DESTDIR', ''):
     if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
         print('Updating icon cache...', file=sys.stderr)
-        call(['gtk-update-icon-cache', '-qtf', os.path.join(datadir, 'icons/hicolor')])
+        call(['gtk4-update-icon-cache', '-qtf', os.path.join(datadir, 'icons/hicolor')])
         print("Compiling new schemas...", file=sys.stderr)
         call(["glib-compile-schemas", os.path.join(datadir, 'glib-2.0/schemas')])
         print("Updating desktop database...", file=sys.stderr)

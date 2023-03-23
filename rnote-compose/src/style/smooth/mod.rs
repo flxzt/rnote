@@ -46,7 +46,7 @@ impl Composer<SmoothOptions> for Arrow {
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
 
-            cx.stroke(arrow.main, &stroke_brush, options.stroke_width);
+            cx.stroke(arrow.stem, &stroke_brush, options.stroke_width);
             cx.stroke(arrow.tip_triangle, &stroke_brush, options.stroke_width);
         }
 

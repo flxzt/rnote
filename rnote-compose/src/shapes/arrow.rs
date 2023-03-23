@@ -139,7 +139,10 @@ impl Arrow {
             ])
         };
 
-        ArrowKurbo { main, tip_triangle }
+        ArrowKurbo {
+            stem: main,
+            tip_triangle,
+        }
     }
 }
 
@@ -186,10 +189,10 @@ struct TipLines {
 
 impl TipLines {
     /// The default angle for the `rline` and `lline`.
-    pub const DEFAULT_ANGLE: Radian = 3.0 * std::f64::consts::PI / 4.0;
+    const DEFAULT_ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
 
     /// The default length for `rline` and `lline`.
-    pub const DEFAULT_LENGTH: f64 = 32.0;
+    const DEFAULT_LENGTH: f64 = 32.0;
 }
 
 impl Default for TipLines {
@@ -205,7 +208,7 @@ impl Default for TipLines {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrowKurbo {
     /// This holds the line from `start` -> `tip`.
-    pub main: kurbo::Line,
+    pub stem: kurbo::Line,
 
     /// This holds the line from `lline` -> `tip` -> `rline`.
     pub tip_triangle: kurbo::BezPath,

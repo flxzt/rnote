@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-19 17:59+0000\n"
+"PO-Revision-Date: 2023-03-25 19:40+0000\n"
 "Last-Translator: Andrii Danylkov <danilkovxp@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -303,8 +303,6 @@ msgid "Import Xournal++ File"
 msgstr "Importuj plik Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
-#, fuzzy
-#| msgid "Xournal++ file import preferences"
 msgid "Xournal++ File Import Preferences"
 msgstr "Preferencje importu z Xournal++"
 
@@ -329,8 +327,6 @@ msgid "Export"
 msgstr "Eksportuj"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
-#, fuzzy
-#| msgid "Export file"
 msgid "Export File"
 msgstr "Eksportuj plik"
 
@@ -353,8 +349,6 @@ msgstr "Preferencje eksportu"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
-#, fuzzy
-#| msgid "Document background"
 msgid "With Background"
 msgstr "Z tłem"
 
@@ -376,8 +370,6 @@ msgstr "Ustaw, czy wzór tła ma zostać wyeksportowany"
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
-#, fuzzy
-#| msgid "Export"
 msgid "Export Format"
 msgstr "Format eksportu"
 
@@ -402,8 +394,6 @@ msgid "Xopp"
 msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
-#, fuzzy
-#| msgid "Export document as PDF"
 msgid "Export Document Pages"
 msgstr "Eksportuj strony dokumentu"
 
@@ -1533,8 +1523,6 @@ msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:409
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1924,8 +1912,6 @@ msgid "Exporting selection failed"
 msgstr "Eksportowanie zaznaczenia nie powiodło się"
 
 #: rnote-ui/src/dialogs/export.rs:718
-#, fuzzy
-#| msgid "Exported selection successfully."
 msgid "Exported selection successfully"
 msgstr "Pomyślnie wyeksportowano zaznaczenie"
 

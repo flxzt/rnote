@@ -1,0 +1,14 @@
+{
+    "tasks": [
+        {
+            "name": "build",
+            "cwd": "${lsp_root}",
+            "cmd": "meson compile -C build"
+        },
+        {
+            "name": "run",
+            "cwd": "${lsp_root}",
+            "cmd": "meson compile -C build && meson install -C build && ./target/bin/rnote"
+        }
+    ]
+}

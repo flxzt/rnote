@@ -42,8 +42,8 @@ impl Composer<SmoothOptions> for Arrow {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
 
-        let arrow = self.to_kurbo();
         if let Some(stroke_color) = options.stroke_color {
+            let arrow = self.to_kurbo();
             let stroke_brush = cx.solid_brush(stroke_color.into());
 
             cx.stroke(arrow.stem, &stroke_brush, options.stroke_width);

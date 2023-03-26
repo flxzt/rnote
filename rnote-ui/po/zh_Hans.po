@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-02-17 08:12+0000\n"
-"Last-Translator: Fogberry <newopen@tuta.io>\n"
+"PO-Revision-Date: 2023-03-27 11:41+0000\n"
+"Last-Translator: lambdark <lambdark@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -381,13 +381,11 @@ msgstr "Xournal++ 笔记本（Xopp）"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 msgid "Export Document Pages"
-msgstr "导出文档页面"
+msgstr "分页导出"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Files Naming:"
-msgstr "页间距"
+msgstr "文件名预览"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export Directory"
@@ -395,7 +393,7 @@ msgstr "导出目录"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"
-msgstr "选择导出时的目录"
+msgstr "选择导出文件所在目录"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 msgid "Export Files Stem Name"
@@ -421,7 +419,7 @@ msgstr "Jpeg图像质量"
 #: rnote-ui/data/ui/dialogs/export.ui:316
 #: rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "设置Jpeg图像的质量(1-100)"
+msgstr "设置Jpeg图像的质量（1-100）"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
 msgid "Export Selection"
@@ -480,10 +478,8 @@ msgid "Draw textured strokes"
 msgstr "绘制纹理笔划"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:142
-#, fuzzy
-#| msgid "Path modelling"
 msgid "Path Modelling"
-msgstr "路径建模"
+msgstr "路径模式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Simple"
@@ -1391,10 +1387,8 @@ msgid "Dpi"
 msgstr "分辨率"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-#, fuzzy
-#| msgid "Set the DPI (dots per inch). Defaults to 96"
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "设置像素密度(DPI)，默认值96"
+msgstr "设置像素密度(DPI)，默认为96"
 
 #: rnote-ui/data/ui/settingspanel.ui:258
 msgid "Revert"

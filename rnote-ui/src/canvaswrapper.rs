@@ -242,14 +242,11 @@ mod imp {
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(@weak inst as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                        if !canvaswrapper.restrict_zoom() {
-                            let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
+                        let new_zoom = canvaswrapper.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
 
-                            let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
-                            canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                            canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
-                        }
-
+                        let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+                        canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                        canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
                         // Stop event propagation
                         Inhibit(true)
                     } else {
@@ -458,9 +455,6 @@ mod imp {
                     @strong zoom_begin,
                     @strong prev_offset,
                     @weak inst as canvaswrapper => move |gesture, _, _| {
-                        if canvaswrapper.restrict_zoom() {
-                            return;
-                        }
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
@@ -480,9 +474,6 @@ mod imp {
                     @strong zoom_begin,
                     @strong prev_offset,
                     @weak inst as canvaswrapper => move |_, offset_x, offset_y| {
-                        if canvaswrapper.restrict_zoom() {
-                            return;
-                        }
                         // 0.5% zoom for every pixel in y dir
                         const OFFSET_MAGN_ZOOM_LVL_FACTOR: f64 = 0.005;
 

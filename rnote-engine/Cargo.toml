@@ -45,9 +45,7 @@ geo = "0.24"
 rodio = {version = "0.17", default-features=false, features = ["symphonia-wav"] }
 semver = { version = "1"}
 unicode-segmentation = "1"
-usvg = "0.29"
-usvg-text-layout = "0.29"
-rosvgtree = "0.1"
+usvg = "0.30"
 xmlwriter = "0.1"
 
 [dev-dependencies]

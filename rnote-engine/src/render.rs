@@ -11,13 +11,13 @@ use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 use std::ops::Deref;
 use svg::Node;
+use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
-use crate::usvg_export::{self, TreeExportExt};
 use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
 
-pub static USVG_FONTDB: Lazy<usvg_text_layout::fontdb::Database> = Lazy::new(|| {
-    let mut db = usvg_text_layout::fontdb::Database::new();
+pub static USVG_FONTDB: Lazy<usvg::fontdb::Database> = Lazy::new(|| {
+    let mut db = usvg::fontdb::Database::new();
     db.load_system_fonts();
     db
 });
@@ -592,9 +592,10 @@ impl Svg {
 
     /// Simplifies the svg by passing it through usvg
     pub fn simplify(&mut self) -> anyhow::Result<()> {
-        let xml_options = usvg_export::ExportOptions {
+        let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            n_decimal_places: 3,
+            transforms_precision: 4,
+            coordinates_precision: 3,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -608,7 +609,7 @@ impl Svg {
             false,
         );
         let mut usvg_tree = usvg::Tree::from_str(&svg_data, &usvg::Options::default())?;
-        usvg_tree.convert_text_to_paths(&USVG_FONTDB);
+        usvg_tree.convert_text(&USVG_FONTDB);
         self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
 
         Ok(())

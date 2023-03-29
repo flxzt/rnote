@@ -7,6 +7,7 @@ pub use roughoptions::RoughOptions;
 use roughr::Point2D;
 
 use super::Composer;
+use crate::helpers::Vector2Helpers;
 use crate::shapes::Arrow;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
@@ -83,14 +84,14 @@ impl Composer<RoughOptions> for Arrow {
 
         let tip_line = {
             let lline = {
-                let lline = self.get_lline(Some(options.stroke_width));
+                let lline = self.get_lline();
                 Point2D::new(lline.x, lline.y)
             };
 
             let tip = Point2D::new(self.tip.x, self.tip.y);
 
             let rline = {
-                let rline = self.get_rline(Some(options.stroke_width));
+                let rline = self.get_rline();
                 Point2D::new(rline.x, rline.y)
             };
 

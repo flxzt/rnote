@@ -29,10 +29,8 @@ type Radian = f64;
 pub struct Arrow {
     /// The start of the arrow
     pub start: na::Vector2<f64>,
-
     /// The tip of the arow
     pub tip: na::Vector2<f64>,
-
     /// Metadata for `rline` and `lline`.
     tip_lines: TipLines,
 }
@@ -63,8 +61,8 @@ impl TransformBehaviour for Arrow {
 impl ShapeBehaviour for Arrow {
     fn bounds(&self) -> Aabb {
         let (x_values, y_values) = {
-            let lline = self.get_lline(None);
-            let rline = self.get_rline(None);
+            let lline = self.get_lline();
+            let rline = self.get_rline();
 
             let x_values = [lline[0], rline[0], self.start[0], self.tip[0]];
             let y_values = [lline[1], rline[1], self.start[1], self.tip[1]];
@@ -151,47 +149,26 @@ impl Arrow {
 /// This implementation holds the functions to get the vectors `rline` and
 /// `lline`.
 impl Arrow {
-    /// Computes and returns `rline`.
-    /// Optional: `stroke_width` will be used to hearistically adjust the length
-    /// of `lline`.
+    /// Computes and returns `rline`
     pub fn get_lline(&self) -> na::Vector2<f64> {
-        let vec_a = self.get_tip_stem();
+        let vec_a = self.get_direction_vector() * self.tip_lines.length;
         let rotation_matrix = self.get_rotation_matrix();
 
         rotation_matrix * vec_a + self.tip
     }
 
     /// Computes and returns `rline`
-    /// Optional: `stroke_width` will be used to hearistically adjust the length
-    /// of `lline`.
     pub fn get_rline(&self) -> na::Vector2<f64> {
-        let vec_b = self.get_tip_stem();
+        let vec_b = self.get_direction_vector() * self.tip_lines.length;
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
         rotation_matrix * vec_b + self.tip
     }
 
-    /// Returns a direction vector from `start` to `tip` but with an
-    /// appropriate length for `rline` and `lline` which then just
-    /// need to be rotated.
-    fn get_tip_stem(&self) -> na::Vector2<f64> {
-        let stem_vector = self.get_norm_stem_vector();
-        let length = TipLines::MIN_LENGTH
-            .max(TipLines::MIN_LENGTH / 4.0 * self.tip_lines.length)
-            .min(TipLines::MAX_LENGTH);
-
-        stem_vector * length
-    }
-
-    /// Returns the (normalized) stem vector from `start` to `tip`.
-    fn get_norm_stem_vector(&self) -> na::Vector2<f64> {
-        let stem_vector = self.get_stem_vector();
-        stem_vector / stem_vector.norm()
-    }
-
-    /// Returns the stem vector from `start` to `tip`.
-    fn get_stem_vector(&self) -> na::Vector2<f64> {
-        self.tip - self.start
+    /// Returns the (normalized) direction vector from `start` to `tip`.
+    fn get_direction_vector(&self) -> na::Vector2<f64> {
+        let direction_vector = self.tip - self.start;
+        direction_vector / direction_vector.norm()
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
@@ -214,18 +191,15 @@ impl TipLines {
     /// The default angle for the `rline` and `lline`.
     const DEFAULT_ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
 
-    /// The min length for `rline` and `lline`.
-    const MIN_LENGTH: f64 = 64.0;
-
-    /// The max length for `rline` and `lline`.
-    const MAX_LENGTH: f64 = 2.0 * Self::MIN_LENGTH;
+    /// The default length for `rline` and `lline`.
+    const DEFAULT_LENGTH: f64 = 32.0;
 }
 
 impl Default for TipLines {
     fn default() -> Self {
         Self {
             angle: Self::DEFAULT_ANGLE,
-            length: Self::MIN_LENGTH,
+            length: Self::DEFAULT_LENGTH,
         }
     }
 }

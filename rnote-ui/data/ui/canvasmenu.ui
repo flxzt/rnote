@@ -19,9 +19,9 @@
             <attribute name="custom">canvas_quickcontrols_attr</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Block _Zoom</attribute>
+            <attribute name="label" translatable="yes">Block Pinch to _Zoom</attribute>
             <attribute name="toggle" />
-            <attribute name="action">win.restrict-zoom</attribute>
+            <attribute name="action">win.block-pinch-zoom</attribute>
           </item>
         </section>
         <section>

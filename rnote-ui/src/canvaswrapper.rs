@@ -22,7 +22,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,
-        pub(crate) restrict_zoom: Cell<bool>,
+        pub(crate) block_pinch_zoom: Cell<bool>,
 
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
@@ -102,7 +102,7 @@ mod imp {
 
             Self {
                 show_scrollbars: Cell::new(false),
-                restrict_zoom: Cell::new(false),
+                block_pinch_zoom: Cell::new(false),
 
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
@@ -190,9 +190,9 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpecBoolean::new(
-                        "restrict-zoom",
-                        "restrict-zoom",
-                        "restrict-zoom",
+                        "block-pinch-zoom",
+                        "block-pinch-zoom",
+                        "block-pinch-zoom",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -204,7 +204,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
-                "restrict-zoom" => self.restrict_zoom.get().to_value(),
+                "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -220,11 +220,11 @@ mod imp {
                     self.scroller.hscrollbar().set_visible(show_scrollbars);
                     self.scroller.vscrollbar().set_visible(show_scrollbars);
                 }
-                "restrict-zoom" => {
-                    let restrict_zoom = value
+                "block-pinch-zoom" => {
+                    let block_pinch_zoom = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
-                    self.restrict_zoom.replace(restrict_zoom);
+                    self.block_pinch_zoom.replace(block_pinch_zoom);
                 }
 
                 _ => unimplemented!(),
@@ -552,14 +552,14 @@ impl RnCanvasWrapper {
         self.set_property("show-scrollbars", show_scrollbars.to_value());
     }
     #[allow(unused)]
-    pub(crate) fn restrict_zoom(&self) -> bool {
-        self.property::<bool>("restrict-zoom")
+    pub(crate) fn block_pinch_zoom(&self) -> bool {
+        self.property::<bool>("block-pinch-zoom")
     }
 
     #[allow(unused)]
-    pub(crate) fn set_restrict_zoom(&self, restrict_zoom: bool) {
-        self.set_property("restrict-zoom", restrict_zoom);
-        self.canvas_zoom_gesture_enable(!restrict_zoom);
+    pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
+        self.set_property("block-pinch-zoom", block_pinch_zoom);
+        self.canvas_zoom_gesture_enable(!block_pinch_zoom);
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {

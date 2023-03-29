@@ -65,9 +65,9 @@ impl RnAppWindow {
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
-        let action_restrict_zoom =
-            gio::SimpleAction::new_stateful("restrict-zoom", None, &false.to_variant());
-        self.add_action(&action_restrict_zoom);
+        let action_block_pinch_zoom =
+            gio::SimpleAction::new_stateful("block-pinch-zoom", None, &false.to_variant());
+        self.add_action(&action_block_pinch_zoom);
         // Couldn't make it work with enums as state together with activating from menu model, so using strings instead
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
@@ -306,14 +306,14 @@ impl RnAppWindow {
         );
 
         // Restrict Zoom
-        action_restrict_zoom.connect_change_state(
-            clone!(@weak self as appwindow => move |action_restrict_zoom, state_request| {
-                let restrict_zoom = state_request.unwrap().get::<bool>().unwrap();
+        action_block_pinch_zoom.connect_change_state(
+            clone!(@weak self as appwindow => move |action_block_pinch_zoom, state_request| {
+                let block_pinch_zoom = state_request.unwrap().get::<bool>().unwrap();
                 let active_tab = appwindow.active_tab();
 
-                active_tab.set_restrict_zoom(restrict_zoom);
+                active_tab.set_block_pinch_zoom(block_pinch_zoom);
 
-                action_restrict_zoom.set_state(&restrict_zoom.to_variant());
+                action_block_pinch_zoom.set_state(&block_pinch_zoom.to_variant());
             }),
         );
 

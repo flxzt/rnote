@@ -7,7 +7,6 @@ pub use roughoptions::RoughOptions;
 use roughr::Point2D;
 
 use super::Composer;
-use crate::helpers::Vector2Helpers;
 use crate::shapes::Arrow;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
@@ -82,25 +81,31 @@ impl Composer<RoughOptions> for Arrow {
             self.tip[1],
         );
 
-        let tip_line = {
-            let lline = {
-                let lline = self.get_lline();
-                Point2D::new(lline.x, lline.y)
-            };
+        let rline = {
+            let rline = self.get_rline();
 
-            let tip = Point2D::new(self.tip.x, self.tip.y);
+            rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+                rline[0],
+                rline[1],
+                self.tip[0],
+                self.tip[1],
+            )
+        };
 
-            let rline = {
-                let rline = self.get_rline();
-                Point2D::new(rline.x, rline.y)
-            };
+        let lline = {
+            let lline = self.get_lline();
 
-            rough_piet::KurboGenerator::new(generate_roughr_options(options))
-                .bezier_quadratic(lline, tip, rline)
+            rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+                lline[0],
+                lline[1],
+                self.tip[0],
+                self.tip[1],
+            )
         };
 
         arrow_line.draw(cx);
-        tip_line.draw(cx);
+        rline.draw(cx);
+        lline.draw(cx);
 
         cx.restore().unwrap();
     }

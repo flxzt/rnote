@@ -28,6 +28,10 @@ pub enum PatternStyle {
     Grid,
     #[serde(rename = "dots")]
     Dots,
+    #[serde(rename = "isometric_grid")]
+    IsometricGrid,
+    #[serde(rename = "isometric_dots")]
+    IsometricDots,
 }
 
 impl Default for PatternStyle {
@@ -138,6 +142,137 @@ pub fn gen_grid_pattern(
     group.into()
 }
 
+fn calc_width_iso_pattern(spacing: f64) -> f64 {
+    spacing * f64::sqrt(3_f64)
+}
+
+pub fn gen_iso_grid_pattern(
+    bounds: Aabb,
+    spacing: f64,
+    color: Color,
+    line_width: f64,
+) -> svg::node::element::Element {
+    // spacing: side length of the equilateral triangle
+    // pattern_width: two times the height of the equilateral triangle
+
+    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_iso_grid_pattern";
+    let pattern_width = calc_width_iso_pattern(spacing);
+
+    let line_offset = line_width * 0.5;
+
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", pattern_width)
+            .set("height", spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color_attr())
+                    .set("x1", line_offset)
+                    .set("y1", 0_f64)
+                    .set("x2", line_offset + pattern_width)
+                    .set("y2", spacing),
+            )
+            .add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color_attr())
+                    .set("x1", line_offset)
+                    .set("y1", spacing)
+                    .set("x2", line_offset + pattern_width)
+                    .set("y2", 0_f64),
+            )
+            .add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color_attr())
+                    .set("x1", line_offset + pattern_width * 0.5)
+                    .set("y1", 0_f64)
+                    .set("x2", line_offset + pattern_width * 0.5)
+                    .set("y2", spacing),
+            )
+            .add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color_attr())
+                    .set("x1", line_offset)
+                    .set("y1", 0_f64)
+                    .set("x2", line_offset)
+                    .set("y2", spacing),
+            ),
+    );
+
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
+
+    rect.assign("x", format!("{}px", bounds.mins[0]));
+    rect.assign("y", format!("{}px", bounds.mins[1]));
+    rect.assign("width", format!("{}px", bounds.extents()[0]));
+    rect.assign("height", format!("{}px", bounds.extents()[1]));
+
+    let group = element::Group::new().add(pattern).add(rect);
+    group.into()
+}
+
+pub fn gen_iso_dots_pattern(
+    bounds: Aabb,
+    spacing: f64,
+    color: Color,
+    dots_width: f64,
+) -> svg::node::element::Element {
+    // spacing: side length of the equilateral triangle
+    // pattern_width: two times the height of the equilateral triangle
+
+    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_iso_dots_pattern";
+    let pattern_width = calc_width_iso_pattern(spacing);
+
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", pattern_width)
+            .set("height", spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
+                element::Rectangle::new()
+                    .set("stroke", "none")
+                    .set("fill", color.to_css_color_attr())
+                    .set("x", 0_f64)
+                    .set("y", 0_f64)
+                    .set("width", dots_width)
+                    .set("height", dots_width)
+                    .set("rx", dots_width / 3.0)
+                    .set("ry", dots_width / 3.0),
+            )
+            .add(
+                element::Rectangle::new()
+                    .set("stroke", "none")
+                    .set("fill", color.to_css_color_attr())
+                    .set("x", pattern_width * 0.5)
+                    .set("y", spacing * 0.5)
+                    .set("width", dots_width)
+                    .set("height", dots_width)
+                    .set("rx", dots_width / 3.0)
+                    .set("ry", dots_width / 3.0),
+            ),
+    );
+
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
+    rect.assign("x", format!("{}px", bounds.mins[0]));
+    rect.assign("y", format!("{}px", bounds.mins[1]));
+    rect.assign("width", format!("{}px", bounds.extents()[0]));
+    rect.assign("height", format!("{}px", bounds.extents()[1]));
+
+    let group = element::Group::new().add(pattern).add(rect);
+    group.into()
+}
+
 pub fn gen_dots_pattern(
     bounds: Aabb,
     row_spacing: f64,
@@ -219,18 +354,34 @@ impl Background {
 
     /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
     pub fn tile_size(&self) -> na::Vector2<f64> {
+        let pattern_size = match self.pattern {
+            PatternStyle::None => {
+                na::vector![Self::TILE_MAX_SIZE, Self::TILE_MAX_SIZE]
+            }
+            PatternStyle::Lines => {
+                na::vector![Self::TILE_MAX_SIZE, self.pattern_size[1]]
+            }
+            PatternStyle::IsometricGrid | PatternStyle::IsometricDots => {
+                na::vector![
+                    calc_width_iso_pattern(self.pattern_size[1]),
+                    self.pattern_size[1]
+                ]
+            }
+            _ => self.pattern_size,
+        };
+
         let tile_factor =
-            na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
+            na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&pattern_size);
 
         let tile_width = if tile_factor[0] > 1.0 {
-            tile_factor[0].floor() * self.pattern_size[0]
+            tile_factor[0].floor() * pattern_size[0]
         } else {
-            self.pattern_size[0]
+            pattern_size[0]
         };
         let tile_height = if tile_factor[1] > 1.0 {
-            tile_factor[1].floor() * self.pattern_size[1]
+            tile_factor[1].floor() * pattern_size[1]
         } else {
-            self.pattern_size[1]
+            pattern_size[1]
         };
 
         na::vector![tile_width, tile_height]
@@ -273,6 +424,22 @@ impl Background {
                         bounds,
                         self.pattern_size[1],
                         self.pattern_size[0],
+                        self.pattern_color,
+                        1.5,
+                    ));
+                }
+                PatternStyle::IsometricGrid => {
+                    svg_group = svg_group.add(gen_iso_grid_pattern(
+                        bounds,
+                        self.pattern_size[1],
+                        self.pattern_color,
+                        0.5,
+                    ));
+                }
+                PatternStyle::IsometricDots => {
+                    svg_group = svg_group.add(gen_iso_dots_pattern(
+                        bounds,
+                        self.pattern_size[1],
                         self.pattern_color,
                         1.5,
                     ));

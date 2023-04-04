@@ -1,17 +1,18 @@
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::helpers;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::{helpers, Color};
 use std::sync::Arc;
+use std::time::Instant;
 
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::engine::StrokeContent;
 use crate::strokes::Stroke;
-use crate::{render, StrokeStore};
+use crate::{render, StrokeStore, WidgetFlags};
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
@@ -231,6 +232,76 @@ impl StrokeStore {
                 }
             }
         });
+    }
+
+    /// Changes the stroke and text color of the given keys.
+    ///
+    /// Strokes then need to update their rendering
+    pub fn change_stroke_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
+        let mut widget_flags = self.record(Instant::now());
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                {
+                    match stroke {
+                        Stroke::BrushStroke(brush_stroke) => {
+                            brush_stroke.style.set_stroke_color(color);
+                            self.set_rendering_dirty(key);
+                        }
+                        Stroke::ShapeStroke(shape_stroke) => {
+                            shape_stroke.style.set_stroke_color(color);
+                            self.set_rendering_dirty(key);
+                        }
+                        Stroke::TextStroke(text_stroke) => {
+                            text_stroke.text_style.color = color;
+                            self.set_rendering_dirty(key);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+
+    /// Changes the fill color of the given keys.
+    ///
+    /// Strokes then need to update their rendering
+    pub fn change_fill_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
+        let mut widget_flags = self.record(Instant::now());
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                {
+                    match stroke {
+                        Stroke::BrushStroke(brush_stroke) => {
+                            brush_stroke.style.set_fill_color(color);
+                            self.set_rendering_dirty(key);
+                        }
+                        Stroke::ShapeStroke(shape_stroke) => {
+                            shape_stroke.style.set_fill_color(color);
+                            self.set_rendering_dirty(key);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
     }
 
     /// Rotates the stroke rendering images

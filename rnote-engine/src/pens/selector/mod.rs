@@ -724,6 +724,7 @@ impl Selector {
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
+                widget_flags.deselect_color_setters = true;
             }
         }
         PenProgress::InProgress

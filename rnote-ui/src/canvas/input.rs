@@ -67,7 +67,6 @@ pub(crate) fn handle_pointer_controller_event(
             //log::debug!("ButtonPress - button: {gdk_button}, is_stylus: {is_stylus}");
 
             if is_stylus {
-                // even though it is a button press, we handle it also as pen event so the engine gets the chance to switch pen mode, pen style, etc.
                 if gdk_button == gdk::BUTTON_PRIMARY
                     || gdk_button == gdk::BUTTON_SECONDARY
                     || gdk_button == gdk::BUTTON_MIDDLE
@@ -254,11 +253,15 @@ pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
 
 #[allow(unused)]
 fn debug_gdk_event(event: &gdk::Event) {
+    let pos = event
+        .position()
+        .map(|(x, y)| format!("x: {x:.1}, y: {y:.1}"));
     log::debug!(
-        "pos: {:?}, modifier: {:?}, event_type: {:?}, input source: {:?}",
-        event.position(),
+        "(pos: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
+        pos,
         event.modifier_state(),
         event.event_type(),
+        event.device_tool().map(|t| t.tool_type()),
         event.device().map(|d| d.source())
     );
 }

@@ -53,7 +53,7 @@ impl Default for RnWorkspaceList {
 
 impl RnWorkspaceList {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn from_vec(vec: Vec<RnWorkspaceListEntry>) -> Self {

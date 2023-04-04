@@ -1,8 +1,8 @@
 use std::cell::Cell;
 
 use gtk4::{
-    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Align, Button,
-    CssProvider, PositionType, ToggleButton, Widget,
+    gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, PositionType,
+    ToggleButton, Widget,
 };
 
 use once_cell::sync::Lazy;
@@ -40,46 +40,31 @@ mod imp {
 
     impl ObjectImpl for RnColorSetter {
         fn constructed(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
             self.parent_constructed();
 
-            inst.set_hexpand(false);
-            inst.set_vexpand(false);
-            inst.set_halign(Align::Fill);
-            inst.set_valign(Align::Fill);
-            inst.set_width_request(34);
-            inst.set_height_request(34);
-            inst.set_css_classes(&["colorsetter"]);
+            obj.set_hexpand(false);
+            obj.set_vexpand(false);
+            obj.set_halign(Align::Fill);
+            obj.set_valign(Align::Fill);
+            obj.set_width_request(34);
+            obj.set_height_request(34);
+            obj.set_css_classes(&["colorsetter"]);
 
             self.update_appearance(super::RnColorSetter::COLOR_DEFAULT);
-            inst.style_context()
+            obj.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecBoxed::new(
-                        "color",
-                        "color",
-                        "color",
-                        gdk::RGBA::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        // Name
+                    glib::ParamSpecBoxed::builder::<gdk::RGBA>("color").build(),
+                    glib::ParamSpecEnum::builder_with_default::<PositionType>(
                         "position",
-                        // Nickname
-                        "position",
-                        // Short description
-                        "position",
-                        // Enum type
-                        PositionType::static_type(),
-                        // Default value
-                        PositionType::Right.into_glib(),
-                        // The property can be read and written to
-                        glib::ParamFlags::READWRITE,
-                    ),
+                        PositionType::Right,
+                    )
+                    .build(),
                 ]
             });
             PROPERTIES.as_ref()
@@ -137,13 +122,13 @@ mod imp {
             let custom_css = format!(
                 "@define-color colorsetter_color {colorsetter_color}; @define-color colorsetter_fg_color {colorsetter_fg_color};",
             );
-            css.load_from_data(custom_css.as_bytes());
+            css.load_from_data(&custom_css);
 
-            self.instance()
+            self.obj()
                 .style_context()
                 .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-            self.instance().queue_draw();
+            self.obj().queue_draw();
         }
     }
 }
@@ -164,7 +149,7 @@ impl RnColorSetter {
     pub(crate) const COLOR_DEFAULT: Color = Color::BLACK;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

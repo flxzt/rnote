@@ -11,25 +11,22 @@ use crate::{Document, DrawOnDocBehaviour, RnoteEngine};
 use super::{visual_debug, EngineView};
 
 impl RnoteEngine {
-    /// updates the background rendering for the current viewport.
+    /// Updates the background rendering for the current viewport.
+    ///
     /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
     pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
         let viewport = self.camera.viewport();
-
-        // Update background and strokes for the new viewport
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
         if let Some(image) = &self.background_tile_image {
             // Only create the texture once, it is expensive
             let new_texture = image
                 .to_memtexture()
-                .context("image to_memtexture() failed in gen_rendernode() of background")?;
+                .context("failed to generate memory-texture of background tile image")?;
 
             for split_bounds in
                 viewport.split_extended_origin_aligned(self.document.background.tile_size())
             {
-                //log::debug!("split_bounds: {split_bounds:?}");
-
                 rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,
@@ -45,12 +42,10 @@ impl RnoteEngine {
         Ok(())
     }
 
-    /// updates the content rendering for the current viewport. including the background rendering.
-    pub fn update_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
+    /// Updates the content rendering for the current viewport.
+    pub fn update_content_rendering_current_viewport(&mut self) {
         let viewport = self.camera.viewport();
         let image_scale = self.camera.image_scale();
-
-        self.update_background_rendering_current_viewport()?;
 
         self.store.regenerate_rendering_in_viewport_threaded(
             self.tasks_tx(),
@@ -58,6 +53,14 @@ impl RnoteEngine {
             viewport,
             image_scale,
         );
+    }
+
+    /// Updates the content and background rendering for the current viewport.
+    ///
+    /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
+    pub fn update_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
+        self.update_background_rendering_current_viewport()?;
+        self.update_content_rendering_current_viewport();
 
         Ok(())
     }
@@ -69,14 +72,14 @@ impl RnoteEngine {
         self.background_rendernodes.clear();
     }
 
-    /// regenerates the background tile image and updates the rendering.
+    /// Regenerates the background tile image and updates the rendering.
     pub fn background_regenerate_pattern(&mut self) -> anyhow::Result<()> {
         let image_scale = self.camera.image_scale();
         self.background_tile_image = self.document.background.gen_tile_image(image_scale)?;
-
         self.update_background_rendering_current_viewport()?;
         Ok(())
     }
+
     /// Draws the entire engine (doc, pens, strokes, selection, ..) to a GTK snapshot.
     pub fn draw_to_gtk_snapshot(
         &self,
@@ -162,6 +165,7 @@ impl RnoteEngine {
         snapshot.append_node(
             &gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.document.background.color),
+                //&gdk::RGBA::RED,
                 &graphene::Rect::from_p2d_aabb(doc_bounds),
             )
             .upcast(),

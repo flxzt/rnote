@@ -7,9 +7,9 @@ pub(crate) const APP_ID: &str = @APP_ID@;
 #[allow(unused)]
 pub(crate) const APP_IDPATH: &str = @APP_IDPATH@;
 #[allow(unused)]
-pub(crate) const APP_VERSION: &str = @VERSION@;
+pub(crate) const APP_VERSION: &str = @APP_VERSION@;
 #[allow(unused)]
-pub(crate) const APP_VERSION_SUFFIX: &str = @VERSION_SUFFIX@;
+pub(crate) const APP_VERSION_SUFFIX: &str = @APP_VERSION_SUFFIX@;
 #[allow(unused)]
 pub(crate) const APP_AUTHOR_NAME: &str = @APP_AUTHOR_NAME@;
 #[allow(unused)]
@@ -23,16 +23,14 @@ pub(crate) const APP_SUPPORT_URL: &str = @APP_SUPPORT_URL@;
 #[allow(unused)]
 pub(crate) const APP_DONATE_URL: &str = @APP_DONATE_URL@;
 #[allow(unused)]
+pub(crate) const PROFILE: &str = @PROFILE@;
+#[allow(unused)]
 pub(crate) const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
+
+// These are only allowed to be used from the `env` module
 #[allow(unused)]
 pub(crate) const LOCALEDIR: &str = @LOCALEDIR@;
 #[allow(unused)]
 pub(crate) const DATADIR: &str = @DATADIR@;
 #[allow(unused)]
-pub(crate) const PKGDATADIR: &str = @PKGDATADIR@;
-#[allow(unused)]
 pub(crate) const LIBDIR: &str = @LIBDIR@;
-#[allow(unused)]
-pub(crate) const RESOURCES_FILE: &str = @RESOURCES_FILE@;
-#[allow(unused)]
-pub(crate) const PROFILE: &str = @PROFILE@;

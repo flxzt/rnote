@@ -9,12 +9,12 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
+use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::usvg_export::{self, TreeExportExt};
 use crate::{render, DrawBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -98,11 +98,8 @@ impl DrawBehaviour for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        let mut image =
-            render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
+        let image = render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
 
-        // draw() needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
-        image.convert_to_rgba8pre()?;
         // image_scale does not have a meaning here, as the pixel image is already provided
         image.draw(cx, image_scale)?;
 
@@ -141,9 +138,10 @@ impl VectorImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let xml_options = usvg_export::ExportOptions {
+        let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            n_decimal_places: 3,
+            coordinates_precision: 3,
+            transforms_precision: 4,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -152,7 +150,7 @@ impl VectorImage {
         };
 
         let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
-        svg_tree.convert_text_to_paths(&render::USVG_FONTDB);
+        svg_tree.convert_text(&render::USVG_FONTDB);
         let svg_data = svg_tree.to_string(&xml_options);
         let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
 

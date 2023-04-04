@@ -10,7 +10,7 @@ impl RnApp {
         let action_color_scheme = gio::SimpleAction::new_stateful(
             "color-scheme",
             Some(&glib::VariantType::new("s").unwrap()),
-            &String::from("system").to_variant(),
+            String::from("system").to_variant(),
         );
         self.add_action(&action_color_scheme);
 
@@ -18,20 +18,16 @@ impl RnApp {
             .bind_property("state", &self.style_manager(), "color-scheme")
             .transform_to(move |_, val: glib::Variant| {
                 match val.get::<String>().unwrap().as_str() {
-                    "default" => Some(adw::ColorScheme::Default.to_value()),
-                    "force-light" => Some(adw::ColorScheme::ForceLight.to_value()),
-                    "force-dark" => Some(adw::ColorScheme::ForceDark.to_value()),
+                    "default" => Some(adw::ColorScheme::Default),
+                    "force-light" => Some(adw::ColorScheme::ForceLight),
+                    "force-dark" => Some(adw::ColorScheme::ForceDark),
                     _ => None,
                 }
             })
             .transform_from(move |_, val: adw::ColorScheme| match val {
-                adw::ColorScheme::Default => Some(String::from("default").to_variant().to_value()),
-                adw::ColorScheme::ForceLight => {
-                    Some(String::from("force-light").to_variant().to_value())
-                }
-                adw::ColorScheme::ForceDark => {
-                    Some(String::from("force-dark").to_variant().to_value())
-                }
+                adw::ColorScheme::Default => Some(String::from("default").to_value()),
+                adw::ColorScheme::ForceLight => Some(String::from("force-light").to_value()),
+                adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_value()),
                 _ => None,
             })
             .sync_create()

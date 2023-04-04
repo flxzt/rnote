@@ -76,7 +76,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -108,7 +108,7 @@ impl Default for RnOverlays {
 
 impl RnOverlays {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn pens_toggles_box(&self) -> gtk4::Box {
@@ -239,7 +239,7 @@ impl RnOverlays {
                     engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
                     engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
                     engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color= Some(stroke_color);
+                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
                     engine.pens_config.typewriter_config.text_style.color = stroke_color;
 
                     match stroke_style {
@@ -260,7 +260,13 @@ impl RnOverlays {
                                 appwindow.handle_widget_flags(widget_flags, &canvas);
                             }
                         }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools => {}
+                        PenStyle::Selector => {
+                            let selection_keys = engine.store.selection_keys_unordered();
+                            let widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
+                            engine.update_content_rendering_current_viewport();
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
+                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                     }
                 }),
             );
@@ -270,14 +276,25 @@ impl RnOverlays {
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab().canvas();
+                let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
                 let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
 
                 // We have a global colorpicker, so we apply it to all styles
                 engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.fill_color= Some(fill_color);
+                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
                 engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.fill_color= Some(fill_color);
+                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
+
+                match stroke_style {
+                    PenStyle::Selector => {
+                        let selection_keys = engine.store.selection_keys_unordered();
+                        let widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
+                        engine.update_content_rendering_current_viewport();
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                    }
+                    PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
+                }
             }),
         );
     }
@@ -424,7 +441,7 @@ impl RnOverlays {
             .build();
 
         text_notify_toast.connect_button_clicked(button_callback);
-        self.toast_overlay().add_toast(&text_notify_toast);
+        self.toast_overlay().add_toast(text_notify_toast.clone());
 
         text_notify_toast
     }
@@ -457,7 +474,7 @@ impl RnOverlays {
             .timeout(5)
             .build();
 
-        self.toast_overlay().add_toast(&text_notify_toast);
+        self.toast_overlay().add_toast(text_notify_toast);
     }
 
     pub(crate) fn dispatch_toast_error(&self, error: &String) {
@@ -469,6 +486,6 @@ impl RnOverlays {
 
         log::error!("{error}");
 
-        self.toast_overlay().add_toast(&text_notify_toast);
+        self.toast_overlay().add_toast(text_notify_toast);
     }
 }

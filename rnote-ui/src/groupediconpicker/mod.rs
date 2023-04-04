@@ -58,21 +58,17 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                // Since this is nullable we can use it to represent Option<String>
-                vec![glib::ParamSpecString::new(
-                    "picked",
-                    "picked",
-                    "picked",
-                    None,
-                    glib::ParamFlags::READWRITE,
-                )]
+                // we can use it to represent Option<String>
+                vec![glib::ParamSpecString::builder("picked")
+                    .default_value(None)
+                    .build()]
             });
             PROPERTIES.as_ref()
         }
@@ -115,7 +111,7 @@ impl Default for RnGroupedIconPicker {
 
 impl RnGroupedIconPicker {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]

@@ -17,3 +17,8 @@ lto = "fat"
 codegen-units = 1
 
 [patch.crates-io]
+# once a new piet (current v0.6.2) is released with the updated cairo, this can be removed
+piet = {git = "https://github.com/linebender/piet", rev = "413397445e6772e0a651d60cf58a823b98f67c23"}
+piet-cairo = {git = "https://github.com/linebender/piet", rev = "413397445e6772e0a651d60cf58a823b98f67c23"}
+# once a new usvg (current v0.30.0) that includes the feature to specify the num precision on export is out, this can be removed
+usvg = {git = "https://github.com/RazrFalcon/resvg", rev = "2c5d90990411535c1afddb62b8be85076db05277"}

@@ -9,3 +9,9 @@ pub(crate) enum StrokeWidthPreviewStyle {
     #[enum_value(name = "RoundedRect")]
     RoundedRect,
 }
+
+impl Default for StrokeWidthPreviewStyle {
+    fn default() -> Self {
+        Self::Circle
+    }
+}

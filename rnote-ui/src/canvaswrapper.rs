@@ -166,9 +166,9 @@ mod imp {
 
             self.canvas.connect_notify_local(
                 Some("touch-drawing"),
-                clone!(@weak inst as canvaswrapper => move |canvas, _pspec| {
+                clone!(@weak inst as canvaswrapper => move |_canvas, _pspec| {
                     // Disable the zoom gesture when touch drawing is enabled
-                    canvaswrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
+                    canvaswrapper.canvas_zoom_gesture_update();
                 }),
             );
         }
@@ -559,7 +559,7 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
         self.set_property("block-pinch-zoom", block_pinch_zoom);
-        self.canvas_zoom_gesture_enable(!block_pinch_zoom);
+        self.canvas_zoom_gesture_update();
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {
@@ -634,8 +634,8 @@ impl RnCanvasWrapper {
         self.canvas().connect_to_tab_page(page);
     }
 
-    pub(crate) fn canvas_zoom_gesture_enable(&self, enable: bool) {
-        if enable {
+    pub(crate) fn canvas_zoom_gesture_update(&self) {
+        if !(self.block_pinch_zoom() || self.canvas().touch_drawing()) {
             self.imp()
                 .canvas_zoom_gesture
                 .set_propagation_phase(PropagationPhase::Capture);

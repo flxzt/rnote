@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-13 09:11+0000\n"
-"Last-Translator: albanobattistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2023-03-19 17:59+0000\n"
+"Last-Translator: Amedeo Braggio <gattolfo2.0@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -266,8 +266,6 @@ msgid "One per Document Page"
 msgstr "Uno per ogni pagina del documento"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
-#, fuzzy
-#| msgid "Pages type"
 msgid "Pages Type"
 msgstr "Tipo di pagine"
 
@@ -473,10 +471,8 @@ msgid "Brush Configuration"
 msgstr "Configurazione Pennello"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:64
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Brush Styles"
-msgstr "Stili di pennello"
+msgstr "Stile del pennello"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
@@ -545,7 +541,7 @@ msgstr "Stile Solido"
 #, fuzzy
 #| msgid "Pressure curve"
 msgid "Pressure Curve"
-msgstr "Pressione del tratto"
+msgstr "Pressione tratto"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"

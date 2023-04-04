@@ -944,6 +944,7 @@ fn gen_doc_svg(
         doc_w_content_bounds,
     )?]);
 
+    // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
     if let Err(e) = doc_svg.simplify() {
         log::warn!("simplifying svg in gen_doc_svg() failed, Err: {e:?}");
     };
@@ -986,6 +987,7 @@ fn gen_doc_pages_svgs(
             page_bounds,
         )?]);
 
+        // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
         if let Err(e) = page_svg.simplify() {
             log::warn!("simplifying svg in gen_doc_pages_svgs() failed, Err: {e:?}");
         };
@@ -1033,6 +1035,7 @@ fn gen_selection_svg(
         selection_bounds,
     )?]);
 
+    // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
     if let Err(e) = selection_svg.simplify() {
         log::warn!("simplifying svg in gen_selection_svg() failed, Err: {e:?}");
     };

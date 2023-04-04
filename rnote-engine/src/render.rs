@@ -602,15 +602,20 @@ impl Svg {
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-        let svg_data = rnote_compose::utils::wrap_svg_root(
+        let simplified_bounds = Aabb::new(
+            na::point![0.0, 0.0],
+            na::Point2::from(self.bounds.extents()),
+        );
+        let wrapped_svg_data = rnote_compose::utils::wrap_svg_root(
             &rnote_compose::utils::remove_xml_header(&self.svg_data),
-            None,
-            None,
+            Some(simplified_bounds),
+            Some(self.bounds),
             false,
         );
-        let mut usvg_tree = usvg::Tree::from_str(&svg_data, &usvg::Options::default())?;
+        let mut usvg_tree = usvg::Tree::from_str(&wrapped_svg_data, &usvg::Options::default())?;
         usvg_tree.convert_text(&USVG_FONTDB);
         self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
+        self.bounds = simplified_bounds;
 
         Ok(())
     }

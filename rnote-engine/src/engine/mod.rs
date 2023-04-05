@@ -760,7 +760,7 @@ impl RnoteEngine {
             ])
             .into_iter()
             .filter(|page_bounds| {
-                // Filter the pages out that doesn't intersect with any stroke
+                // Filter the pages out that don't intersect with any stroke
                 strokes_bounds
                     .iter()
                     .any(|stroke_bounds| stroke_bounds.intersects(page_bounds))

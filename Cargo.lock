@@ -1230,13 +1230,14 @@ dependencies = [
 
 [[package]]
 name = "fontdb"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff20bef7942a72af07104346154a70a70b089c572e454b41bef6eb6cb10e9c06"
+checksum = "bfec8f19f9b89b2901219cc62604810d2bfef15dc1182e95320f57e7cbbe041a"
 dependencies = [
  "fontconfig-parser",
  "log",
  "memmap2",
+ "slotmap",
  "ttf-parser",
 ]
 
@@ -2059,15 +2060,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "445dde2150c55e483f3d8416706b97ec8e8237c307e5b7b4b8dd15e6af2a0730"
 dependencies = [
  "wasm-bindgen",
-]
-
-[[package]]
-name = "kurbo"
-version = "0.8.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a53776d271cfb873b17c618af0298445c88afc52837f3e948fa3fafd131f449"
-dependencies = [
- "arrayvec",
 ]
 
 [[package]]
@@ -2941,11 +2933,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "pico-args"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5be167a7af36ee22fe3115051bc51f6e6c7054c9348e28deb4f49bd6f705a315"
+
+[[package]]
 name = "piet"
 version = "0.6.2"
 source = "git+https://github.com/linebender/piet?rev=413397445e6772e0a651d60cf58a823b98f67c23#413397445e6772e0a651d60cf58a823b98f67c23"
 dependencies = [
- "kurbo 0.9.1",
+ "kurbo",
  "unic-bidi",
 ]
 
@@ -3376,7 +3374,7 @@ dependencies = [
  "gettext-rs",
  "gtk4",
  "image",
- "kurbo 0.9.1",
+ "kurbo",
  "libadwaita",
  "log",
  "nalgebra",
@@ -3426,7 +3424,7 @@ dependencies = [
  "anyhow",
  "base64",
  "ink-stroke-modeler-rs",
- "kurbo 0.9.1",
+ "kurbo",
  "log",
  "nalgebra",
  "num-derive",
@@ -3459,7 +3457,7 @@ dependencies = [
  "gtk4",
  "image",
  "itertools 0.10.5",
- "kurbo 0.9.1",
+ "kurbo",
  "librsvg",
  "log",
  "nalgebra",
@@ -3478,7 +3476,6 @@ dependencies = [
  "rnote-compose",
  "rnote-fileformats",
  "rodio",
- "rosvgtree",
  "rstar",
  "semver",
  "serde",
@@ -3487,7 +3484,6 @@ dependencies = [
  "svg",
  "unicode-segmentation",
  "usvg",
- "usvg-text-layout",
  "xmlwriter",
 ]
 
@@ -3525,15 +3521,14 @@ dependencies = [
 
 [[package]]
 name = "rosvgtree"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdc23d1ace03d6b8153c7d16f0708cd80b61ee8e80304954803354e67e40d150"
+version = "0.2.0"
+source = "git+https://github.com/RazrFalcon/resvg?rev=2c5d90990411535c1afddb62b8be85076db05277#2c5d90990411535c1afddb62b8be85076db05277"
 dependencies = [
  "log",
  "roxmltree",
  "simplecss",
  "siphasher",
- "svgtypes 0.9.0",
+ "svgtypes 0.11.0",
 ]
 
 [[package]]
@@ -4013,11 +4008,11 @@ dependencies = [
 
 [[package]]
 name = "svgtypes"
-version = "0.9.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9ee29c1407a5b18ccfe5f6ac82ac11bab3b14407e09c209a6c1a32098b19734"
+checksum = "ed4b0611e7f3277f68c0fa18e385d9e2d26923691379690039548f867cef02a7"
 dependencies = [
- "kurbo 0.8.3",
+ "kurbo",
  "siphasher",
 ]
 
@@ -4413,35 +4408,58 @@ dependencies = [
 
 [[package]]
 name = "usvg"
-version = "0.29.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "63b6bb4e62619d9f68aa2d8a823fea2bff302340a1f2d45c264d5b0be170832e"
+version = "0.30.0"
+source = "git+https://github.com/RazrFalcon/resvg?rev=2c5d90990411535c1afddb62b8be85076db05277#2c5d90990411535c1afddb62b8be85076db05277"
 dependencies = [
  "base64",
+ "log",
+ "pico-args",
+ "usvg-parser",
+ "usvg-text-layout",
+ "usvg-tree",
+ "xmlwriter",
+]
+
+[[package]]
+name = "usvg-parser"
+version = "0.30.0"
+source = "git+https://github.com/RazrFalcon/resvg?rev=2c5d90990411535c1afddb62b8be85076db05277#2c5d90990411535c1afddb62b8be85076db05277"
+dependencies = [
  "data-url",
  "flate2",
  "imagesize",
- "kurbo 0.9.1",
+ "kurbo",
  "log",
- "rctree",
  "rosvgtree",
  "strict-num",
+ "svgtypes 0.11.0",
+ "usvg-tree",
 ]
 
 [[package]]
 name = "usvg-text-layout"
-version = "0.29.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "195386e01bc35f860db024de275a76e7a31afdf975d18beb6d0e44764118b4db"
+version = "0.30.0"
+source = "git+https://github.com/RazrFalcon/resvg?rev=2c5d90990411535c1afddb62b8be85076db05277#2c5d90990411535c1afddb62b8be85076db05277"
 dependencies = [
  "fontdb",
- "kurbo 0.9.1",
+ "kurbo",
  "log",
  "rustybuzz",
  "unicode-bidi",
  "unicode-script",
  "unicode-vo",
- "usvg",
+ "usvg-tree",
+]
+
+[[package]]
+name = "usvg-tree"
+version = "0.30.0"
+source = "git+https://github.com/RazrFalcon/resvg?rev=2c5d90990411535c1afddb62b8be85076db05277#2c5d90990411535c1afddb62b8be85076db05277"
+dependencies = [
+ "kurbo",
+ "rctree",
+ "strict-num",
+ "svgtypes 0.11.0",
 ]
 
 [[package]]

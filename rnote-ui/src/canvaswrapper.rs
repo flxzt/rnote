@@ -26,8 +26,7 @@ mod imp {
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
 
-        pub(crate) canvas_touch_drag_gesture: GestureDrag,
-        pub(crate) canvas_drag_empty_area_gesture: GestureDrag,
+        pub(crate) canvas_drag_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
@@ -43,14 +42,10 @@ mod imp {
 
     impl Default for RnCanvasWrapper {
         fn default() -> Self {
-            let canvas_touch_drag_gesture = GestureDrag::builder()
-                .name("canvas_touch_drag_gesture")
-                .touch_only(true)
-                .propagation_phase(PropagationPhase::Bubble)
-                .build();
-
-            let canvas_drag_empty_area_gesture = GestureDrag::builder()
-                .name("canvas_mouse_drag_empty_area_gesture")
+            // This allows touch dragging and dragging with pointer in the empty space around the canvas.
+            // All relevant pointer events for drawing are captured and denied for propagation before they arrive at this gesture.
+            let canvas_drag_gesture = GestureDrag::builder()
+                .name("canvas_drag_gesture")
                 .button(gdk::BUTTON_PRIMARY)
                 .exclusive(true)
                 .propagation_phase(PropagationPhase::Bubble)
@@ -105,8 +100,7 @@ mod imp {
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
 
-                canvas_touch_drag_gesture,
-                canvas_drag_empty_area_gesture,
+                canvas_drag_gesture,
                 canvas_zoom_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
@@ -142,9 +136,7 @@ mod imp {
 
             // Add input controllers
             self.scroller
-                .add_controller(self.canvas_touch_drag_gesture.clone());
-            self.scroller
-                .add_controller(self.canvas_drag_empty_area_gesture.clone());
+                .add_controller(self.canvas_drag_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_gesture.clone());
             self.scroller
@@ -237,11 +229,11 @@ mod imp {
                 }));
             }
 
-            // Drag canvas with touch gesture
+            // Drag canvas gesture
             {
                 let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-                self.canvas_touch_drag_gesture.connect_drag_begin(
+                self.canvas_drag_gesture.connect_drag_begin(
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, _, _| {
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
@@ -252,13 +244,13 @@ mod imp {
                         ]);
                     }),
                 );
-                self.canvas_touch_drag_gesture.connect_drag_update(
+                self.canvas_drag_gesture.connect_drag_update(
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let new_offset = touch_drag_start.get() - na::vector![x,y];
                         canvaswrapper.canvas().update_camera_offset(new_offset);
                     }),
                 );
-                self.canvas_touch_drag_gesture.connect_drag_end(
+                self.canvas_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
@@ -281,28 +273,6 @@ mod imp {
                     }),
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_end(
-                    clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_engine_rendering();
-                    }),
-                );
-            }
-
-            // Move Canvas by dragging in the empty area around the canvas
-            {
-                let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-
-                self.canvas_drag_empty_area_gesture.connect_drag_begin(
-                    clone!(@strong mouse_drag_empty_area_start, @weak obj as canvaswrapper => move |_, _x, _y| {
-                        mouse_drag_empty_area_start.set(canvaswrapper.canvas().engine().borrow().camera.offset);
-                    })
-                );
-                self.canvas_drag_empty_area_gesture.connect_drag_update(
-                    clone!(@strong mouse_drag_empty_area_start, @weak obj as canvaswrapper => move |_, x, y| {
-                        let new_offset = mouse_drag_empty_area_start.get() - na::vector![x,y];
-                        canvaswrapper.canvas().update_camera_offset(new_offset);
-                    }),
-                );
-                self.canvas_drag_empty_area_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
@@ -364,16 +334,16 @@ mod imp {
                     })
                 );
 
-                self.canvas_zoom_gesture.connect_cancel(
-                    clone!(@weak obj as canvaswrapper => move |canvas_zoom_gesture, _event_sequence| {
-                        canvas_zoom_gesture.set_state(EventSequenceState::Denied);
+                self.canvas_zoom_gesture.connect_end(
+                    clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
+                        gesture.set_state(EventSequenceState::Denied);
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );
 
-                self.canvas_zoom_gesture.connect_end(
-                    clone!(@weak obj as canvaswrapper => move |canvas_zoom_gesture, _event_sequence| {
-                        canvas_zoom_gesture.set_state(EventSequenceState::Denied);
+                self.canvas_zoom_gesture.connect_cancel(
+                    clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
+                        gesture.set_state(EventSequenceState::Denied);
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );
@@ -396,12 +366,14 @@ mod imp {
                             gesture.set_state(EventSequenceState::Denied);
                         }
                 }));
+
                 self.canvas_alt_drag_gesture.connect_drag_update(
                     clone!(@strong offset_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
                         let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
                         canvaswrapper.canvas().update_camera_offset(new_offset);
                     })
                 );
+
                 self.canvas_alt_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
                         canvaswrapper.canvas().update_engine_rendering();
@@ -455,6 +427,7 @@ mod imp {
                         prev_offset.set(new_offset);
                     })
                 );
+
                 self.canvas_alt_shift_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
                         canvaswrapper.canvas().update_engine_rendering();
@@ -464,7 +437,7 @@ mod imp {
 
             {
                 // Shortcut with touch two-finger long-press.
-                self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak obj as canvaswrapper => move |_, _, _| {
+                self.touch_two_finger_long_press_gesture.connect_pressed(clone!(@weak obj as canvaswrapper => move |_gesture, _, _| {
                     let widget_flags = canvaswrapper.canvas()
                         .engine()
                         .borrow_mut()
@@ -473,14 +446,21 @@ mod imp {
                 }));
 
                 self.touch_two_finger_long_press_gesture.connect_end(
-                    clone!(@weak obj as canvaswrapper => move |gesture, _| {
-                        gesture.set_state(EventSequenceState::Denied);
+                    clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
+                        // Only deny the sequence that is actually handled.
+                        // Because this gesture is grouped with the zoom gesture, denying all
+                        // sequences within the group ( by calling `set_state()` ) might result in a segfault in certain cases
+                        if let Some(event_sequence) = event_sequence {
+                            gesture.set_sequence_state(&event_sequence, EventSequenceState::Denied);
+                        }
                     }),
                 );
 
                 self.touch_two_finger_long_press_gesture.connect_cancel(
-                    clone!(@weak obj as canvaswrapper => move |gesture, _| {
-                        gesture.set_state(EventSequenceState::Denied);
+                    clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
+                        if let Some(event_sequence) = event_sequence {
+                            gesture.set_sequence_state(&event_sequence, EventSequenceState::Denied);
+                        }
                     }),
                 );
             }

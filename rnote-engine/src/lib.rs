@@ -16,7 +16,6 @@ pub mod pens;
 pub mod render;
 pub mod store;
 pub mod strokes;
-pub mod usvg_export;
 pub mod utils;
 pub mod widgetflags;
 

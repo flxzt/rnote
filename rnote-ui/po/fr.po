@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-08 14:39+0000\n"
-"Last-Translator: gsurrel <gregoire+github@surrel.org>\n"
+"PO-Revision-Date: 2023-04-02 07:37+0000\n"
+"Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -51,7 +51,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Un aperçu"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -463,11 +463,11 @@ msgstr "Styles de Pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
-msgstr "Marqueur"
+msgstr "Surligneur"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 msgid "Mark underneath other strokes"
-msgstr "Marquer sous les autres traits"
+msgstr "Tracer sur les autres traits"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
@@ -476,7 +476,7 @@ msgstr "Continu"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
-msgstr "Dessiner les traits de contour continus"
+msgstr "Tracer des traits de couleur unie"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
@@ -673,7 +673,7 @@ msgstr "Supprimer la sélection"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
 msgid "Shaper Style"
-msgstr "Style de forme"
+msgstr "Style de formes"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
@@ -818,19 +818,19 @@ msgstr "Barrer"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
-msgstr "Aligner à gauche"
+msgstr "Alignement à gauche"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
-msgstr "Aligner au centre"
+msgstr "Alignement au centre"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
-msgstr "Aligner à droite"
+msgstr "Alignement à droite"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
-msgstr "Remplir"
+msgstr "Alignement justifié"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
@@ -1356,52 +1356,52 @@ msgstr ""
 "long à deux doigts"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "Action du bouton principal du stylet"
+msgstr "Action du bouton 1 de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Définir l’action du bouton 1\n"
+"de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "Action du bouton principal du stylet"
+msgstr "Action du bouton 2 de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Définir l’action du bouton 2\n"
+"de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:447
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "Action du bouton principal du stylet"
+msgstr "Action du bouton 3 de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Définir l’action du bouton 3\n"
+"de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "Action du bouton principal du stylet"
+msgstr "Action du bouton 4 de la tablette graphique"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Définir l’action du bouton 4\n"
+"de la tablette graphique"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1571,19 +1571,19 @@ msgstr "Échec de l'enregistrement du document"
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "Bouton 1"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "Bouton 2"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "Bouton 3"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "Bouton 4"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"
@@ -1887,7 +1887,7 @@ msgstr "Formes"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Shopping"
-msgstr "Shopping"
+msgstr "Achats"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Speech Bubble"

@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-09 23:03+0000\n"
+"PO-Revision-Date: 2023-03-19 17:59+0000\n"
 "Last-Translator: kek <farline99@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.16.2-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
 msgid "Sketch and take handwritten notes"
-msgstr "Рисуйте наброски и рукописные заметки"
+msgstr "Делайте наброски и создавайте рукописные заметки"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
@@ -51,11 +51,11 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Обзор"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "Конспект лекции 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -63,7 +63,7 @@ msgstr "Аннотация PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "Конспект лекции 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
 msgid "Clear Document"
@@ -129,6 +129,8 @@ msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
+"Эта вкладка содержит несохраненные изменения. Они будут безвозвратно "
+"утеряны, если вы не сохраните документ."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Close Window"
@@ -139,6 +141,8 @@ msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will "
 "be permanently lost."
 msgstr ""
+"Некоторые открытые файлы содержат несохраненные изменения. Они будут "
+"безвозвратно утеряны, если вы не сохраните файлы."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Unsaved Documents"
@@ -163,7 +167,7 @@ msgstr "Имя коллекции"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:115
 msgid "Icon"
-msgstr "Значок"
+msgstr "Иконка"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:116
 msgid "Change the workspace icon"
@@ -219,7 +223,7 @@ msgstr "Импортировать"
 
 #: rnote-ui/data/ui/dialogs/import.ui:73
 msgid "Info"
-msgstr ""
+msgstr "Информация"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
 msgid "PDF Import Preferences"
@@ -279,7 +283,7 @@ msgstr "Растр"
 #: rnote-ui/data/ui/dialogs/export.ui:293
 #: rnote-ui/data/ui/dialogs/export.ui:462
 msgid "Bitmap Scale-Factor"
-msgstr ""
+msgstr "Коэффициент масштабирования растрового изображения"
 
 #: rnote-ui/data/ui/dialogs/import.ui:190
 #: rnote-ui/data/ui/dialogs/export.ui:294
@@ -288,6 +292,8 @@ msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
+"Установить коэффициент растрового масштабирования относительно\n"
+"фактического размера документа"
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
 msgid "Import Xournal++ File"
@@ -303,7 +309,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:264
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "Предпочтительный DPI для файла Xournal++"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export Document"
@@ -472,7 +478,7 @@ msgstr "Рисовать сплошным цветом"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
-msgstr "Текстурированная"
+msgstr "Текстурированный"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
@@ -492,7 +498,7 @@ msgstr "Производит сегменты линии из необработ
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Curved"
-msgstr "Криволинейное"
+msgstr "Криволинейные"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Produces smooth, curved segments.\n"
@@ -520,7 +526,7 @@ msgstr "Кривая давления"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
-msgstr "Выберите кривую давления"
+msgstr "Выбрать кривую давления"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Constant"
@@ -584,7 +590,7 @@ msgstr "Обратное экспоненциальное"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr "Удалить штрихи"
+msgstr "Удалять штрихи"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
@@ -594,7 +600,7 @@ msgstr "Разделять штрихи"
 #: rnote-ui/data/ui/overlays.ui:45
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:78
 msgid "Brush"
-msgstr "Кисточка"
+msgstr "Кисть"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
 #: rnote-ui/data/ui/overlays.ui:52
@@ -636,11 +642,11 @@ msgstr "Прямоугольное выделение"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "Выделение один за другим"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr "Выделить пересекающиеся элементы"
+msgstr "Выделение пересекающихся элементов"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
@@ -704,36 +710,36 @@ msgstr "Стиль пера"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
-msgstr "Выбрать формат"
+msgstr "Выбрать стиль"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
-msgstr ""
+msgstr "Штриховка"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
-msgstr ""
+msgstr "Зиг-Заг"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "Линия Зиг-Загом"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
-msgstr ""
+msgstr "Штриховка"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
-msgstr "В точку"
+msgstr "Точки"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
-msgstr ""
+msgstr "Пунктирная"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure Angle"
-msgstr ""
+msgstr "Угол наклона"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
@@ -749,8 +755,9 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
-"Удерживайте Ctrl чтобы временно активировать/деактивировать\n"
-"ограничения когда кнопка в положении выкл/вкл"
+"Удерживайте Ctrl, чтобы\n"
+"временно активировать/деактивировать\n"
+"ограничения, когда кнопка в положении выкл/вкл"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
@@ -766,12 +773,12 @@ msgstr "Золотое сечение (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr "Добавить вертикальный пробел"
+msgstr "Вертикальный пробел"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:91
 msgid "Move View"
-msgstr ""
+msgstr "Смещение взгляда"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -809,19 +816,19 @@ msgstr "Зачёркнутый"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
-msgstr "Выровнять влево"
+msgstr "Выровнять по левому краю"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
-msgstr "По центру"
+msgstr "Выровнять по центру"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
-msgstr "Выровнять вправо"
+msgstr "Выровнять по правому краю"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
-msgstr "По ширине"
+msgstr "Выровнять по ширине"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
@@ -892,19 +899,19 @@ msgstr "_Импортировать файл"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr "Вставить содержимое буфера обмена"
+msgstr "_Буфер обмена"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "_Скопировать"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "Вырезать"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "_Вставить"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
@@ -936,7 +943,7 @@ msgstr "_Пожертвование 💝"
 
 #: rnote-ui/data/ui/appmenu.ui:138
 msgid "A_bout Rnote"
-msgstr "_Про Rnote"
+msgstr "О программе"
 
 #: rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the Left Side"
@@ -956,7 +963,7 @@ msgstr "Закрыть боковую панель"
 
 #: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
-msgstr "Коллекция"
+msgstr "Коллекции"
 
 #: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
@@ -976,7 +983,7 @@ msgstr "_Вертикальная многостраничная"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr "_Бесконечная"
+msgstr "_Полубесконечная"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
@@ -1022,11 +1029,11 @@ msgstr "Масштабировать до ширины страницы"
 
 #: rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
-msgstr "Радиусы точек мазка"
+msgstr "Цвет обводки"
 
 #: rnote-ui/data/ui/colorpicker.ui:26
 msgid "Fill Color"
-msgstr "Стиль пера"
+msgstr "Цвет заливки"
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
@@ -1051,11 +1058,11 @@ msgstr "Черновик"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
 msgid "Reveal/Hide Flap"
-msgstr ""
+msgstr "Показать/Скрыть боковую панель"
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
-msgstr ""
+msgstr "Новая вкладка"
 
 #: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
@@ -1079,11 +1086,11 @@ msgstr "Сохранить документ"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _Left"
-msgstr ""
+msgstr "Левее"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _Right"
-msgstr ""
+msgstr "Правее"
 
 #: rnote-ui/data/ui/overlays.ui:161
 msgid "_Close"
@@ -1091,15 +1098,15 @@ msgstr "Закрыть активное окно"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Временное"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Постоянное"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Переключатель"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1115,7 +1122,7 @@ msgstr "Включить или выключить автосохранение"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave Interval (secs)"
-msgstr "Интервал автосохранения (сек.)"
+msgstr "Интервал автосохранения (секунды)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
@@ -1135,7 +1142,7 @@ msgstr "Показывать полосы прокрутки"
 
 #: rnote-ui/data/ui/settingspanel.ui:95
 msgid "Set whether the scrollbars on the canvas are shown"
-msgstr "Укажите, должны ли полосы прокрутки на холсте быть скрыты перманентно"
+msgstr "Указать, должны ли отображаться полосы прокрутки на холсте"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "Regular Cursor"
@@ -1187,11 +1194,11 @@ msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:167
 msgid "US letter"
-msgstr "США letter"
+msgstr "Письмо США"
 
 #: rnote-ui/data/ui/settingspanel.ui:168
 msgid "US legal"
-msgstr "США legal"
+msgstr "Судебный США"
 
 #: rnote-ui/data/ui/settingspanel.ui:169
 msgid "Custom"
@@ -1231,7 +1238,7 @@ msgstr "Установить высоту формата"
 
 #: rnote-ui/data/ui/settingspanel.ui:234
 msgid "Dpi"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
 msgid "Set the Dpi (dots per inch). Defaults to 96."
@@ -1247,7 +1254,7 @@ msgstr "Фон документа"
 
 #: rnote-ui/data/ui/settingspanel.ui:284
 msgid "Set the background color"
-msgstr "Выбрать цвет фона"
+msgstr "Выбрать цвет"
 
 #: rnote-ui/data/ui/settingspanel.ui:301
 msgid "Pattern"
@@ -1330,7 +1337,7 @@ msgstr "Выбрать действие правой кнопки мыши"
 
 #: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
-msgstr ""
+msgstr "Долгое прикосновение"
 
 #: rnote-ui/data/ui/settingspanel.ui:409
 msgid ""
@@ -1339,52 +1346,52 @@ msgid ""
 msgstr "Выбрать действие правой кнопки мыши"
 
 #: rnote-ui/data/ui/settingspanel.ui:421
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "Действие основной кнопки стилуса"
+msgstr "Действие кнопки 1 графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Установить действие для кнопки 1\n"
+"графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:434
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "Действие основной кнопки стилуса"
+msgstr "Действие кнопки 2 графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Установить действие для кнопки 2\n"
+"графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:447
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "Действие основной кнопки стилуса"
+msgstr "Действие кнопки 3 графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Установить действие для кнопки 3\n"
+"графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:460
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "Действие основной кнопки стилуса"
+msgstr "Действие кнопки 4 графического планшета"
 
 #: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Установить действие для кнопки 4\n"
+"графического планшета"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1392,7 +1399,7 @@ msgstr "Показать комбинации клавиш"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
 msgid "Close the Active Tab"
-msgstr "Закрыть активное окно"
+msgstr "Закрыть активную вкладку"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgid "Quit the Application"
@@ -1436,7 +1443,7 @@ msgstr "Переключиться на 'Инструменты"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
 msgid "Alt + Drag"
-msgstr ""
+msgstr "Alt + Перетаскивание"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
 msgid "Zoom in/out"
@@ -1444,7 +1451,7 @@ msgstr "Уменьшить"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
 msgid "Alt + Shift + Drag"
-msgstr ""
+msgstr "Alt + Shift + Перетаскивание"
 
 #: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:551
 msgid "Document"
@@ -1496,11 +1503,11 @@ msgstr "Создать новый каталог"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
 msgid "Move Selected Workspace Up"
-msgstr "Удалить коллекцию"
+msgstr "Сместить коллекцию выше"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
 msgid "Move Selected Workspace Down"
-msgstr "Выбрать иконку коллекции"
+msgstr "Сместить коллекцию ниже"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
 msgid "Add Workspace"
@@ -1508,11 +1515,11 @@ msgstr "Добавить коллекцию"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
 msgid "Remove Selected Workspace"
-msgstr "Удалить коллекцию"
+msgstr "Удалить выбранную коллекцию"
 
 #: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
 msgid "Edit Selected Workspace"
-msgstr "Редактировать коллекцию"
+msgstr "Редактировать выбранную коллекцию"
 
 #: rnote-ui/src/appwindow/mod.rs:505
 msgid "Opening .rnote file failed"
@@ -1552,19 +1559,19 @@ msgstr "Не удалось сохранить документ."
 
 #: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
-msgstr ""
+msgstr "Кнопка 1"
 
 #: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
-msgstr ""
+msgstr "Кнопка 2"
 
 #: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
-msgstr ""
+msgstr "Кнопка 3"
 
 #: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
-msgstr ""
+msgstr "Кнопка 4"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"
@@ -1580,15 +1587,15 @@ msgstr "- нет имени файла -"
 
 #: rnote-ui/src/canvas/mod.rs:708
 msgid "- invalid folder path -"
-msgstr ""
+msgstr "- неверный путь к папке -"
 
 #: rnote-ui/src/canvas/mod.rs:732
 msgid "Opened file was modified on disk"
-msgstr ""
+msgstr "Открытый файл был изменен на диске"
 
 #: rnote-ui/src/canvas/mod.rs:733
 msgid "Reload"
-msgstr ""
+msgstr "Перезагрузить"
 
 #: rnote-ui/src/canvas/mod.rs:739
 msgid "Reloading .rnote file from disk failed"
@@ -1596,11 +1603,11 @@ msgstr "Не удалось открыть .rnote файл."
 
 #: rnote-ui/src/canvas/mod.rs:788
 msgid "Opened file was renamed on disk"
-msgstr ""
+msgstr "Открытый файл был переименован на диске"
 
 #: rnote-ui/src/canvas/mod.rs:801
 msgid "Opened file was moved or deleted on disk"
-msgstr ""
+msgstr "Открытый файл был перемещен или удален на диске"
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
 msgid ".rnote"
@@ -1648,7 +1655,7 @@ msgstr "Не удалось экспортировать выделение, н�
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
-msgstr ""
+msgstr "JSON"
 
 #: rnote-ui/src/dialogs/export.rs:814
 msgid "Export Engine State"
@@ -1721,11 +1728,13 @@ msgstr "Страницы:"
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs/mod.rs:44
 msgid "translator-credits"
-msgstr "Валерий Манжос <Manzhos.VA@gmail.com>"
+msgstr ""
+"Валерий Манжос <Manzhos.VA@gmail.com>\n"
+"Павел Чернышов <farline99@yandex.ru>"
 
 #: rnote-ui/src/dialogs/mod.rs:273
 msgid "- unable to find a valid save folder -"
-msgstr ""
+msgstr "- не удалось найти действительную папку сохранения -"
 
 #: rnote-ui/src/dialogs/mod.rs:390
 msgid "Change Workspace Directory"
@@ -1733,132 +1742,132 @@ msgstr "Выбрать каталог коллекции"
 
 #: rnote-ui/src/dialogs/mod.rs:541
 msgid "Band-Aid"
-msgstr ""
+msgstr "Лейкопластырь"
 
 #: rnote-ui/src/dialogs/mod.rs:542
 msgid "Bank"
-msgstr ""
+msgstr "Банк"
 
 #: rnote-ui/src/dialogs/mod.rs:543
 msgid "Bookmark"
-msgstr ""
+msgstr "Закладка"
 
 #: rnote-ui/src/dialogs/mod.rs:544
 msgid "Book"
-msgstr ""
+msgstr "Книга"
 
 #: rnote-ui/src/dialogs/mod.rs:545
 msgid "Bread"
-msgstr ""
+msgstr "Хлеб"
 
 #: rnote-ui/src/dialogs/mod.rs:546
 msgid "Calendar"
-msgstr ""
+msgstr "Календарь"
 
 #: rnote-ui/src/dialogs/mod.rs:547
 msgid "Camera"
-msgstr ""
+msgstr "Камера"
 
 #: rnote-ui/src/dialogs/mod.rs:548
 msgctxt "as in computer chip"
 msgid "Chip"
-msgstr ""
+msgstr "Чип"
 
 #: rnote-ui/src/dialogs/mod.rs:549
 msgid "Code"
-msgstr ""
+msgstr "Код"
 
 #: rnote-ui/src/dialogs/mod.rs:550
 msgid "Compose"
-msgstr ""
+msgstr "Композиция"
 
 #: rnote-ui/src/dialogs/mod.rs:552
 msgid "Drinks"
-msgstr ""
+msgstr "Напитки"
 
 #: rnote-ui/src/dialogs/mod.rs:553
 msgid "Flag"
-msgstr ""
+msgstr "Флаг"
 
 #: rnote-ui/src/dialogs/mod.rs:554
 msgid "Folder"
-msgstr "Имя папки:"
+msgstr "Папка"
 
 #: rnote-ui/src/dialogs/mod.rs:555
 msgid "Footprints"
-msgstr "Ограничения"
+msgstr "Следы"
 
 #: rnote-ui/src/dialogs/mod.rs:556
 msgid "Gamepad"
-msgstr ""
+msgstr "Геймпад"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Gear"
-msgstr ""
+msgstr "Механизм"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Hammer"
-msgstr ""
+msgstr "Молоток"
 
 #: rnote-ui/src/dialogs/mod.rs:559
 msgid "Heart"
-msgstr ""
+msgstr "Сердце"
 
 #: rnote-ui/src/dialogs/mod.rs:560
 msgid "Hourglass"
-msgstr ""
+msgstr "Песочные часы"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Key"
-msgstr ""
+msgstr "Ключ"
 
 #: rnote-ui/src/dialogs/mod.rs:562
 msgid "Language"
-msgstr ""
+msgstr "Язык"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Lightbulb"
-msgstr ""
+msgstr "Лампочка"
 
 #: rnote-ui/src/dialogs/mod.rs:564
 msgid "Mathematics"
-msgstr ""
+msgstr "Математика"
 
 #: rnote-ui/src/dialogs/mod.rs:565
 msgid "Meeting"
-msgstr "Настройки"
+msgstr "Встреча"
 
 #: rnote-ui/src/dialogs/mod.rs:566
 msgid "Money"
-msgstr ""
+msgstr "Монета"
 
 #: rnote-ui/src/dialogs/mod.rs:567
 msgid "Musical Note"
-msgstr ""
+msgstr "Нота"
 
 #: rnote-ui/src/dialogs/mod.rs:568
 msgid "Paintbrush"
-msgstr ""
+msgstr "Кисть"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Pencil and Paper"
-msgstr ""
+msgstr "Карандаш и бумага"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "People"
-msgstr ""
+msgstr "Люди"
 
 #: rnote-ui/src/dialogs/mod.rs:571
 msgid "Person"
-msgstr ""
+msgstr "Человек"
 
 #: rnote-ui/src/dialogs/mod.rs:572
 msgid "Projector"
-msgstr "Каталог"
+msgstr "Проектор"
 
 #: rnote-ui/src/dialogs/mod.rs:573
 msgid "Scratchpad"
-msgstr ""
+msgstr "Блокнот"
 
 #: rnote-ui/src/dialogs/mod.rs:574
 msgid "Shapes"
@@ -1866,44 +1875,44 @@ msgstr "Фигуры"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Shopping"
-msgstr ""
+msgstr "Покупки"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Speech Bubble"
-msgstr ""
+msgstr "Диалоговое окно"
 
 #: rnote-ui/src/dialogs/mod.rs:577
 msgid "Speedometer"
-msgstr ""
+msgstr "Спидометр"
 
 #: rnote-ui/src/dialogs/mod.rs:578
 msgid "Star"
-msgstr ""
+msgstr "Звезда"
 
 #: rnote-ui/src/dialogs/mod.rs:580
 msgctxt "as in terminal software"
 msgid "Terminal"
-msgstr ""
+msgstr "Терминал"
 
 #: rnote-ui/src/dialogs/mod.rs:582
 msgid "Text"
-msgstr "Текстурированная"
+msgstr "Текст"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Travel"
-msgstr ""
+msgstr "Путешествие"
 
 #: rnote-ui/src/dialogs/mod.rs:584
 msgid "Weather"
-msgstr ""
+msgstr "Погода"
 
 #: rnote-ui/src/dialogs/mod.rs:585
 msgid "Weight"
-msgstr "Высота"
+msgstr "Масса"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:348
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Различные"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:356
 msgid "Coordinate Systems"
@@ -1911,7 +1920,7 @@ msgstr "Двумерная система координат"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:364
 msgid "Ellipses"
-msgstr "Эллипс"
+msgstr "Эллипсы"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:371
 msgid "Curves"
@@ -1955,75 +1964,75 @@ msgstr "Кубическая кривая Безье"
 
 #: rnote-ui/src/settingspanel/mod.rs:753
 msgid "Crosshair (Small)"
-msgstr ""
+msgstr "Перекрестие (маленькое)"
 
 #: rnote-ui/src/settingspanel/mod.rs:754
 msgid "Crosshair (Medium)"
-msgstr ""
+msgstr "Перекрестие (среднее)"
 
 #: rnote-ui/src/settingspanel/mod.rs:755
 msgid "Crosshair (Large)"
-msgstr ""
+msgstr "Перекрестие (большое)"
 
 #: rnote-ui/src/settingspanel/mod.rs:756
 msgid "Dot (Small)"
-msgstr ""
+msgstr "Точка (маленькая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:757
 msgid "Dot (Medium)"
-msgstr ""
+msgstr "Точка (средняя)"
 
 #: rnote-ui/src/settingspanel/mod.rs:758
 msgid "Dot (Large)"
-msgstr ""
+msgstr "Точка (большая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:759
 msgid "Teardrop North-West (Small)"
-msgstr ""
+msgstr "Cлеза, северо-запад (маленькая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:760
 msgid "Teardrop North-West (Medium)"
-msgstr ""
+msgstr "Слеза, северо-запад (средняя)"
 
 #: rnote-ui/src/settingspanel/mod.rs:761
 msgid "Teardrop North-West (Large)"
-msgstr ""
+msgstr "Слеза, северо-запад (большая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:762
 msgid "Teardrop North-East (Small)"
-msgstr ""
+msgstr "Слеза, северо-восток (маленькая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:763
 msgid "Teardrop North-East (Medium)"
-msgstr ""
+msgstr "Слеза, северо-восток (средняя)"
 
 #: rnote-ui/src/settingspanel/mod.rs:764
 msgid "Teardrop North-East (Large)"
-msgstr ""
+msgstr "Слеза, северо-восток (большая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:765
 msgid "Teardrop North (Small)"
-msgstr ""
+msgstr "Слеза, север (маленькая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:766
 msgid "Teardrop North (Medium)"
-msgstr ""
+msgstr "Слеза, север (средняя)"
 
 #: rnote-ui/src/settingspanel/mod.rs:767
 msgid "Teardrop North (Large)"
-msgstr ""
+msgstr "Слеза, север (большая)"
 
 #: rnote-ui/src/settingspanel/mod.rs:768
 msgid "Beam (Small)"
-msgstr ""
+msgstr "Луч (маленький)"
 
 #: rnote-ui/src/settingspanel/mod.rs:769
 msgid "Beam (Medium)"
-msgstr ""
+msgstr "Луч (средний)"
 
 #: rnote-ui/src/settingspanel/mod.rs:770
 msgid "Beam (Large)"
-msgstr ""
+msgstr "Луч (большой)"
 
 #: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:57
 msgid "Folder Name"

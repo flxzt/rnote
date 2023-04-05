@@ -9,12 +9,12 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
+use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::usvg_export::{self, TreeExportExt};
 use crate::{render, DrawBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -138,9 +138,10 @@ impl VectorImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let xml_options = usvg_export::ExportOptions {
+        let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            n_decimal_places: 3,
+            coordinates_precision: 3,
+            transforms_precision: 4,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
@@ -149,7 +150,7 @@ impl VectorImage {
         };
 
         let mut svg_tree = usvg::Tree::from_str(svg_data, &usvg::Options::default())?;
-        svg_tree.convert_text_to_paths(&render::USVG_FONTDB);
+        svg_tree.convert_text(&render::USVG_FONTDB);
         let svg_data = svg_tree.to_string(&xml_options);
         let intrinsic_size = na::vector![svg_tree.size.width(), svg_tree.size.height()];
 

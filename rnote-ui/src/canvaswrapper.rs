@@ -591,7 +591,7 @@ impl RnCanvasWrapper {
     }
 
     pub(crate) fn canvas_zoom_gesture_update(&self) {
-        if !(self.block_pinch_zoom() || self.canvas().touch_drawing()) {
+        if !self.block_pinch_zoom() && !self.canvas().touch_drawing() {
             self.imp()
                 .canvas_zoom_gesture
                 .set_propagation_phase(PropagationPhase::Capture);

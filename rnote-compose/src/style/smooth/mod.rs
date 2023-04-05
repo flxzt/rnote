@@ -36,13 +36,18 @@ impl Composer<SmoothOptions> for Line {
 
 impl Composer<SmoothOptions> for Arrow {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        self.bounds().loosened(options.stroke_width * 0.5)
+        let arrow = self.clone().with_stroke_width(options.stroke_width);
+
+        arrow.bounds().loosened(options.stroke_width * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
 
-        let arrow = self.to_kurbo();
+        let arrow = self
+            .clone()
+            .with_stroke_width(options.stroke_width)
+            .to_kurbo();
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
 

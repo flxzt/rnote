@@ -4,7 +4,6 @@ pub mod roughoptions;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 // Re-exports
 pub use roughoptions::RoughOptions;
-use roughr::Point2D;
 
 use super::Composer;
 use crate::shapes::Arrow;
@@ -67,39 +66,43 @@ impl Composer<RoughOptions> for Line {
 
 impl Composer<RoughOptions> for Arrow {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds()
+        self.clone()
+            .with_stroke_width(options.stroke_width)
+            .bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
 
+        let arrow = self.clone().with_stroke_width(options.stroke_width);
+
         let arrow_line = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
-            self.start[0],
-            self.start[1],
-            self.tip[0],
-            self.tip[1],
+            arrow.start[0],
+            arrow.start[1],
+            arrow.tip[0],
+            arrow.tip[1],
         );
 
         let rline = {
-            let rline = self.get_rline();
+            let rline = arrow.get_rline();
 
             rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
                 rline[0],
                 rline[1],
-                self.tip[0],
-                self.tip[1],
+                arrow.tip[0],
+                arrow.tip[1],
             )
         };
 
         let lline = {
-            let lline = self.get_lline();
+            let lline = arrow.get_lline();
 
             rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
                 lline[0],
                 lline[1],
-                self.tip[0],
-                self.tip[1],
+                arrow.tip[0],
+                arrow.tip[1],
             )
         };
 

@@ -13,7 +13,7 @@ pub enum Shape {
     /// A line shape
     Line(Line),
     #[serde(rename = "arrow")]
-    /// nA arrow shape
+    /// An arrow shape
     Arrow(Arrow),
     #[serde(rename = "rect")]
     /// A rectangle shape

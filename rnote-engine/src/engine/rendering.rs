@@ -11,10 +11,10 @@ use crate::{Document, DrawOnDocBehaviour, RnoteEngine};
 use super::{visual_debug, EngineView};
 
 impl RnoteEngine {
-    /// updates the background rendering for the current viewport.
-    ///
-    /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
+    /// Updates the background rendering for the current viewport.
+    /// If the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
     pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
+        // Update background and strokes for the new viewport
         let viewport = self.camera.viewport();
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 

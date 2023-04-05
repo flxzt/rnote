@@ -11,7 +11,8 @@ use super::Line;
 
 type Radian = f64;
 
-/// All doc-comments of this file rely on the following graphic:
+/// All doc-comments of this file and [`ArrowBuilder`] rely on the following
+/// graphic:
 /// ```
 ///         tip
 ///         /|\
@@ -29,8 +30,10 @@ type Radian = f64;
 pub struct Arrow {
     /// The start of the arrow
     pub start: na::Vector2<f64>,
+
     /// The tip of the arow
     pub tip: na::Vector2<f64>,
+
     /// The length of the `rline` and `lline`.
     tip_lines_length: f64,
 }
@@ -98,7 +101,7 @@ impl ShapeBehaviour for Arrow {
 /// Contains helper-functions for the `ShapeBehaviour` implementation of
 /// `Arrow`.
 impl Arrow {
-    /// Splits itself given the no splits
+    /// Splits the stem of the arrow into the given number of rectangles.
     pub fn split(&self, n_splits: i32) -> Vec<Line> {
         (0..n_splits)
             .map(|i| {
@@ -163,10 +166,10 @@ impl Arrow {
 /// This implementation holds the functions to get the vectors `rline` and
 /// `lline`.
 impl Arrow {
-    /// The angle for the `rline` and `lline`.
+    /// The angle for `rline` and `lline` to the stem of the arrow.
     const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
 
-    /// Computes and returns `rline`
+    /// Computes and returns `lline`.
     pub fn get_lline(&self) -> na::Vector2<f64> {
         let vec_a = self.get_direction_vector() * self.tip_lines_length;
         let rotation_matrix = self.get_rotation_matrix();
@@ -174,7 +177,7 @@ impl Arrow {
         rotation_matrix * vec_a + self.tip
     }
 
-    /// Computes and returns `rline`
+    /// Computes and returns `rline`.
     pub fn get_rline(&self) -> na::Vector2<f64> {
         let vec_b = self.get_direction_vector() * self.tip_lines_length;
         let rotation_matrix = self.get_rotation_matrix().transpose();
@@ -182,7 +185,7 @@ impl Arrow {
         rotation_matrix * vec_b + self.tip
     }
 
-    /// Returns the (normalized) direction vector from `start` to `tip`.
+    /// Returns the normalized direction vector from `start` to `tip`.
     fn get_direction_vector(&self) -> na::Vector2<f64> {
         let direction_vector = self.tip - self.start;
         direction_vector / direction_vector.norm()

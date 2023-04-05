@@ -77,7 +77,7 @@ impl Composer<RoughOptions> for Arrow {
 
         let arrow = self.clone().with_stroke_width(options.stroke_width);
 
-        let arrow_line = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+        let arrow_stem = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
             arrow.start[0],
             arrow.start[1],
             arrow.tip[0],
@@ -106,7 +106,7 @@ impl Composer<RoughOptions> for Arrow {
             )
         };
 
-        arrow_line.draw(cx);
+        arrow_stem.draw(cx);
         rline.draw(cx);
         lline.draw(cx);
 

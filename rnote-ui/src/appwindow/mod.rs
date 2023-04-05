@@ -612,11 +612,6 @@ impl RnAppWindow {
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
-            "block-pinch-zoom",
-            &active_tab.block_pinch_zoom().to_variant(),
-        );
-        adw::prelude::ActionGroupExt::change_action_state(
-            self,
             "pen-style",
             &pen_style.to_variant(),
         );

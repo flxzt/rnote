@@ -31,8 +31,6 @@ pub struct Arrow {
     pub start: na::Vector2<f64>,
     /// The tip of the arow
     pub tip: na::Vector2<f64>,
-    /// Metadata for `rline` and `lline`.
-    tip_lines: TipLines,
 }
 
 impl TransformBehaviour for Arrow {
@@ -96,13 +94,15 @@ impl ShapeBehaviour for Arrow {
 }
 
 impl Arrow {
+    /// The angle for the `rline` and `lline`.
+    const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
+
+    /// The min-length for `rline` and `lline`.
+    const TIP_LINES_MIN_LENGTH: f64 = 32.0;
+
     /// Creating a new arrow with the given start and tip vectors.
     pub fn new(start: na::Vector2<f64>, tip: na::Vector2<f64>) -> Self {
-        Self {
-            start,
-            tip,
-            ..Self::default()
-        }
+        Self { start, tip }
     }
 
     /// Splits itself given the no splits
@@ -151,7 +151,7 @@ impl Arrow {
 impl Arrow {
     /// Computes and returns `rline`
     pub fn get_lline(&self) -> na::Vector2<f64> {
-        let vec_a = self.get_direction_vector() * self.tip_lines.length;
+        let vec_a = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix();
 
         rotation_matrix * vec_a + self.tip
@@ -159,7 +159,7 @@ impl Arrow {
 
     /// Computes and returns `rline`
     pub fn get_rline(&self) -> na::Vector2<f64> {
-        let vec_b = self.get_direction_vector() * self.tip_lines.length;
+        let vec_b = self.get_direction_vector();
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
         rotation_matrix * vec_b + self.tip
@@ -172,35 +172,7 @@ impl Arrow {
     }
 
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
-        Rotation2::new(self.tip_lines.angle)
-    }
-}
-
-/// A helper struct to store the metadata of `rline` and `lline`.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default, rename = "arrow_tip_lines")]
-struct TipLines {
-    /// The angle of `rline` and `lline`.
-    pub angle: Radian,
-
-    /// The length of `rline` and `lline`.
-    pub length: f64,
-}
-
-impl TipLines {
-    /// The default angle for the `rline` and `lline`.
-    const DEFAULT_ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
-
-    /// The default length for `rline` and `lline`.
-    const DEFAULT_LENGTH: f64 = 32.0;
-}
-
-impl Default for TipLines {
-    fn default() -> Self {
-        Self {
-            angle: Self::DEFAULT_ANGLE,
-            length: Self::DEFAULT_LENGTH,
-        }
+        Rotation2::new(Self::ANGLE)
     }
 }
 

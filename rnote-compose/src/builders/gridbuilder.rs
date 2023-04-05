@@ -62,9 +62,17 @@ impl ShapeBuilderBehaviour for GridBuilder {
                 *current = constraints.constrain(element.pos - *start) + *start;
             }
             (GridBuilderState::FirstCell { start, .. }, PenEvent::Up { element, .. }) => {
+                let cell_size = constraints.constrain(element.pos - *start);
+
+                if cell_size.x.abs() < Self::FIRST_CELL_DIMENSIONS_MIN
+                    || cell_size.y.abs() < Self::FIRST_CELL_DIMENSIONS_MIN
+                {
+                    return ShapeBuilderProgress::Finished(vec![]);
+                }
+
                 self.state = GridBuilderState::FirstCellFinished {
                     start: *start,
-                    current: constraints.constrain(element.pos - *start) + *start,
+                    current: cell_size + *start,
                 };
             }
             (GridBuilderState::FirstCell { .. }, ..) => {}
@@ -131,8 +139,12 @@ impl ShapeBuilderBehaviour for GridBuilder {
             } => {
                 indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);
 
-                let cols = ((current - start)[0] / cell_size[0]).floor();
-                let rows = ((current - start)[1] / cell_size[1]).floor();
+                let cols = ((current - start)[0] / cell_size[0])
+                    .floor()
+                    .min(Self::CELL_GRID_DIMENSIONS_MAX as f64);
+                let rows = ((current - start)[1] / cell_size[1])
+                    .floor()
+                    .min(Self::CELL_GRID_DIMENSIONS_MAX as f64);
 
                 if cols > 0.0 && rows > 0.0 {
                     indicators::draw_pos_indicator(cx, PenState::Up, *start + cell_size, zoom);
@@ -151,6 +163,9 @@ impl ShapeBuilderBehaviour for GridBuilder {
 }
 
 impl GridBuilder {
+    const FIRST_CELL_DIMENSIONS_MIN: f64 = 2.0;
+    const CELL_GRID_DIMENSIONS_MAX: u32 = 100;
+
     fn state_as_lines(&self) -> Vec<Line> {
         match &self.state {
             GridBuilderState::FirstCell { start, current }
@@ -174,7 +189,10 @@ impl GridBuilder {
                         return vec![];
                     }
 
-                    (cols.floor() as u32, rows.floor() as u32)
+                    (
+                        (cols.floor() as u32).min(Self::CELL_GRID_DIMENSIONS_MAX),
+                        (rows.floor() as u32).min(Self::CELL_GRID_DIMENSIONS_MAX),
+                    )
                 };
 
                 // lines of the upper side

@@ -302,18 +302,6 @@ impl RnAppWindow {
             }),
         );
 
-        // Restrict Zoom
-        action_block_pinch_zoom.connect_change_state(
-            clone!(@weak self as appwindow => move |action_block_pinch_zoom, state_request| {
-                let block_pinch_zoom = state_request.unwrap().get::<bool>().unwrap();
-                let active_tab = appwindow.active_tab();
-
-                active_tab.set_block_pinch_zoom(block_pinch_zoom);
-
-                action_block_pinch_zoom.set_state(block_pinch_zoom.to_variant());
-            }),
-        );
-
         // Pen style
         action_pen_style.connect_activate(
             clone!(@weak self as appwindow => move |action, target| {

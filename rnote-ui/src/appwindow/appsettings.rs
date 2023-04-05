@@ -47,6 +47,12 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
+        // block pinch zoom
+        self.app_settings()
+            .bind("block-pinch-zoom", self, "block-pinch-zoom")
+            .get_no_changes()
+            .build();
+
         // touch drawing
         self.app_settings()
             .bind("touch-drawing", self, "touch-drawing")

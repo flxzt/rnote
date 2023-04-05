@@ -162,7 +162,7 @@ mod imp {
                 Some("touch-drawing"),
                 clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
                     // Disable the zoom gesture when touch drawing is enabled
-                    canvaswrapper.canvas_zoom_gesture_update();
+                    canvaswrapper.imp().canvas_zoom_gesture_update();
                 }),
             );
         }
@@ -211,6 +211,7 @@ mod imp {
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.block_pinch_zoom.replace(block_pinch_zoom);
+                    self.canvas_zoom_gesture_update();
                 }
 
                 _ => unimplemented!(),
@@ -221,6 +222,15 @@ mod imp {
     impl WidgetImpl for RnCanvasWrapper {}
 
     impl RnCanvasWrapper {
+        fn canvas_zoom_gesture_update(&self) {
+            if !self.block_pinch_zoom.get() && !self.canvas.touch_drawing() {
+                self.canvas_zoom_gesture
+                    .set_propagation_phase(PropagationPhase::Capture);
+            } else {
+                self.canvas_zoom_gesture
+                    .set_propagation_phase(PropagationPhase::None);
+            }
+        }
         fn setup_input(&self) {
             let obj = self.obj();
 
@@ -515,7 +525,6 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
         self.set_property("block-pinch-zoom", block_pinch_zoom);
-        self.canvas_zoom_gesture_update();
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {
@@ -588,17 +597,5 @@ impl RnCanvasWrapper {
     /// disconnects existing bindings / handlers to old tab pages.
     pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
         self.canvas().connect_to_tab_page(page);
-    }
-
-    pub(crate) fn canvas_zoom_gesture_update(&self) {
-        if !self.block_pinch_zoom() && !self.canvas().touch_drawing() {
-            self.imp()
-                .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::Capture);
-        } else {
-            self.imp()
-                .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
     }
 }

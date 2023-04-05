@@ -24,6 +24,7 @@ mod imp {
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
 
+        pub(crate) appwindow_block_pinch_zoom_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
 
@@ -99,6 +100,7 @@ mod imp {
                 show_scrollbars: Cell::new(false),
                 block_pinch_zoom: Cell::new(false),
 
+                appwindow_block_pinch_zoom_bind: RefCell::new(None),
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
 
@@ -541,6 +543,11 @@ impl RnCanvasWrapper {
         let imp = self.imp();
         self.imp().canvas.init_reconnect(appwindow);
 
+        let appwindow_block_pinch_zoom_bind = appwindow
+            .bind_property("block-pinch-zoom", self, "block_pinch_zoom")
+            .sync_create()
+            .build();
+
         let appwindow_show_scrollbars_bind = appwindow
             .settings_panel()
             .general_show_scrollbars_switch()
@@ -559,6 +566,14 @@ impl RnCanvasWrapper {
             })
             .sync_create()
             .build();
+
+        if let Some(old) = imp
+            .appwindow_block_pinch_zoom_bind
+            .borrow_mut()
+            .replace(appwindow_block_pinch_zoom_bind)
+        {
+            old.unbind()
+        }
 
         if let Some(old) = imp
             .appwindow_show_scrollbars_bind

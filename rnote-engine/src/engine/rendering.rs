@@ -15,7 +15,6 @@ impl RnoteEngine {
     ///
     /// if the background pattern or zoom has changed, background_regenerate_pattern() needs to be called first.
     pub fn update_background_rendering_current_viewport(&mut self) -> anyhow::Result<()> {
-        // Update background and strokes for the new viewport
         let viewport = self.camera.viewport();
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 

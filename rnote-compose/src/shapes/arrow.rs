@@ -34,7 +34,7 @@ pub struct Arrow {
     /// The tip of the arow
     pub tip: na::Vector2<f64>,
 
-    /// The length of the `rline` and `lline`.
+    /// The length of `rline` and `lline`.
     tip_lines_length: f64,
 }
 

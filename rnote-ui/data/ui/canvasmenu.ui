@@ -56,6 +56,11 @@
             <attribute name="action">win.touch-drawing</attribute>
           </item>
           <item>
+            <attribute name="label" translatable="yes">Block Pinch to _Zoom</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.block-pinch-zoom</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">_Pen Sounds</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.pen-sounds</attribute>

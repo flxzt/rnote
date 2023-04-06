@@ -18,11 +18,6 @@
           <item>
             <attribute name="custom">canvas_quickcontrols_attr</attribute>
           </item>
-          <item>
-            <attribute name="label" translatable="yes">Block Pinch to _Zoom</attribute>
-            <attribute name="toggle" />
-            <attribute name="action">win.block-pinch-zoom</attribute>
-          </item>
         </section>
         <section>
           <submenu>
@@ -59,6 +54,11 @@
             <attribute name="label" translatable="yes">Draw With _Touch Input</attribute>
             <attribute name="toggle" />
             <attribute name="action">win.touch-drawing</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Block Pinch to _Zoom</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.block-pinch-zoom</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">_Pen Sounds</attribute>

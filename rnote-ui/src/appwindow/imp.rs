@@ -29,6 +29,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) autosave: Cell<bool>,
     pub(crate) autosave_interval_secs: Cell<u32>,
     pub(crate) righthanded: Cell<bool>,
+    pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
 
     #[template_child]
@@ -73,6 +74,7 @@ impl Default for RnAppWindow {
             autosave: Cell::new(true),
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
             righthanded: Cell::new(true),
+            block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),
 
             main_grid: TemplateChild::<Grid>::default(),
@@ -148,6 +150,9 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("righthanded")
                     .default_value(false)
                     .build(),
+                glib::ParamSpecBoolean::builder("block-pinch-zoom")
+                    .default_value(false)
+                    .build(),
                 glib::ParamSpecBoolean::builder("touch-drawing")
                     .default_value(false)
                     .build(),
@@ -161,6 +166,7 @@ impl ObjectImpl for RnAppWindow {
             "autosave" => self.autosave.get().to_value(),
             "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
             "righthanded" => self.righthanded.get().to_value(),
+            "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
             _ => unimplemented!(),
         }
@@ -201,6 +207,11 @@ impl ObjectImpl for RnAppWindow {
                 self.righthanded.replace(righthanded);
 
                 self.handle_righthanded_property(righthanded);
+            }
+            "block-pinch-zoom" => {
+                let block_pinch_zoom: bool =
+                    value.get().expect("The value needs to be of type `bool`");
+                self.block_pinch_zoom.replace(block_pinch_zoom);
             }
             "touch-drawing" => {
                 let touch_drawing: bool =

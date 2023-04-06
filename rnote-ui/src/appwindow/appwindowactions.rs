@@ -63,6 +63,9 @@ impl RnAppWindow {
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, true.to_variant());
         self.add_action(&action_format_borders);
+        let action_block_pinch_zoom =
+            gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
+        self.add_action(&action_block_pinch_zoom);
         // Couldn't make it work with enums as state together with activating from menu model, so using strings instead
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",

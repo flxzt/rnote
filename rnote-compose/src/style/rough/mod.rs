@@ -68,8 +68,14 @@ impl Composer<RoughOptions> for Line {
 
 impl Composer<RoughOptions> for Arrow {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.bounds()
-            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+        let rline = self.compute_rline(Some(options.stroke_width));
+        let lline = self.compute_lline(Some(options.stroke_width));
+
+        let mut bounds = self.bounds();
+        bounds.take_point(rline.into());
+        bounds.take_point(lline.into());
+        bounds.loosen(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN);
+        bounds
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-20 10:41+0000\n"
+"PO-Revision-Date: 2023-04-06 12:26+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -257,10 +257,8 @@ msgid "Continuous"
 msgstr "Contínua"
 
 #: rnote-ui/data/ui/dialogs/import.ui:152
-#, fuzzy
-#| msgid "One per document page"
 msgid "One per Document Page"
-msgstr "Um por página do documento"
+msgstr "Um Documento por Página"
 
 #: rnote-ui/data/ui/dialogs/import.ui:160
 msgid "Pages Type"
@@ -330,10 +328,8 @@ msgid "Export File"
 msgstr "Exportar arquivo"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export file"
-msgstr "Definir a largura do modelo"
+msgstr "Selecionar arquivo de exportação"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
@@ -380,10 +376,8 @@ msgstr "Exportar formato"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110
 #: rnote-ui/data/ui/dialogs/export.ui:279
-#, fuzzy
-#| msgid "Export document"
 msgid "The export format"
-msgstr "Exportar documento"
+msgstr "O formato de exportação"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114
 #: rnote-ui/data/ui/dialogs/export.ui:283
@@ -413,9 +407,8 @@ msgid "Page Files Naming:"
 msgstr "Espaçamento da página"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
-#, fuzzy
 msgid "Export Directory"
-msgstr "Diretório"
+msgstr "Diretório de Exportação"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 #, fuzzy
@@ -468,23 +461,17 @@ msgid "Set the margin around the selected area"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
 msgid "Brush Style"
-msgstr "Estilo do pincel"
+msgstr "Estilo do Pincel"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:133
-#, fuzzy
-#| msgid "Brush configuration"
 msgid "Brush Configuration"
-msgstr "Configuração do pincel"
+msgstr "Configuração do Pincel"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:64
-#, fuzzy
-#| msgid "Brush styles"
 msgid "Brush Styles"
-msgstr "Estilos do pincel"
+msgstr "Estilos do Pincel"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"

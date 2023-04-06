@@ -33,9 +33,6 @@ pub struct Arrow {
 
     /// The tip of the arow
     pub tip: na::Vector2<f64>,
-
-    /// The length of `rline` and `lline`.
-    tip_lines_length: f64,
 }
 
 impl TransformBehaviour for Arrow {
@@ -64,8 +61,8 @@ impl TransformBehaviour for Arrow {
 impl ShapeBehaviour for Arrow {
     fn bounds(&self) -> Aabb {
         let (x_values, y_values) = {
-            let lline = self.get_lline();
-            let rline = self.get_rline();
+            let lline = self.compute_lline(None);
+            let rline = self.compute_rline(None);
 
             let x_values = [lline[0], rline[0], self.start[0], self.tip[0]];
             let y_values = [lline[1], rline[1], self.start[1], self.tip[1]];
@@ -128,20 +125,16 @@ impl Arrow {
 
     /// Creating a new arrow with the given start and tip vectors.
     pub fn new(start: na::Vector2<f64>, tip: na::Vector2<f64>) -> Self {
-        Self {
-            start,
-            tip,
-            tip_lines_length: Self::TIP_LINES_MIN_LENGTH,
-        }
+        Self { start, tip }
     }
 
     /// convert the arrow to kurbo-elements.
-    pub fn to_kurbo(&self) -> ArrowKurbo {
+    pub fn to_kurbo(&self, stroke_width: Option<f64>) -> ArrowKurbo {
         let main = kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point());
         let tip_triangle = {
             let tip = self.tip.to_kurbo_point();
-            let lline = self.get_lline().to_kurbo_point();
-            let rline = self.get_rline().to_kurbo_point();
+            let lline = self.compute_lline(stroke_width).to_kurbo_point();
+            let rline = self.compute_rline(stroke_width).to_kurbo_point();
 
             kurbo::BezPath::from_vec(vec![
                 PathEl::MoveTo(lline),
@@ -155,12 +148,6 @@ impl Arrow {
             tip_triangle,
         }
     }
-
-    /// Adjusts the length of the tip lines to the given stroke width.
-    pub fn with_stroke_width(mut self, stroke_width: f64) -> Self {
-        self.tip_lines_length = Self::TIP_LINES_MIN_LENGTH * (1.0 + 0.1 * stroke_width);
-        self
-    }
 }
 
 /// This implementation holds the functions to get the vectors `rline` and
@@ -170,16 +157,16 @@ impl Arrow {
     const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
 
     /// Computes and returns `lline`.
-    pub fn get_lline(&self) -> na::Vector2<f64> {
-        let vec_a = self.get_direction_vector() * self.tip_lines_length;
+    pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
+        let vec_a = self.get_direction_vector() * Self::get_line_length(stroke_width);
         let rotation_matrix = self.get_rotation_matrix();
 
         rotation_matrix * vec_a + self.tip
     }
 
     /// Computes and returns `rline`.
-    pub fn get_rline(&self) -> na::Vector2<f64> {
-        let vec_b = self.get_direction_vector() * self.tip_lines_length;
+    pub fn compute_rline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
+        let vec_b = self.get_direction_vector() * Self::get_line_length(stroke_width);
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
         rotation_matrix * vec_b + self.tip
@@ -195,6 +182,12 @@ impl Arrow {
     /// rotated.
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
         Rotation2::new(Self::ANGLE)
+    }
+
+    /// Returns the length of the tip lines with the given stroke width.
+    fn get_line_length(stroke_width: Option<f64>) -> f64 {
+        let factor = stroke_width.unwrap_or(0.0);
+        Self::TIP_LINES_MIN_LENGTH * (1.0 + 0.1 * factor)
     }
 }
 

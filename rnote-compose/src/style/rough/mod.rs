@@ -4,8 +4,10 @@ pub mod roughoptions;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 // Re-exports
 pub use roughoptions::RoughOptions;
+use roughr::Point2D;
 
 use super::Composer;
+use crate::helpers::Vector2Helpers;
 use crate::shapes::Arrow;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
@@ -66,49 +68,42 @@ impl Composer<RoughOptions> for Line {
 
 impl Composer<RoughOptions> for Arrow {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::Aabb {
-        self.clone()
-            .with_stroke_width(options.stroke_width)
-            .bounds()
+        self.bounds()
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         cx.save().unwrap();
 
-        let arrow = self.clone().with_stroke_width(options.stroke_width);
-
         let arrow_stem = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
-            arrow.start[0],
-            arrow.start[1],
-            arrow.tip[0],
-            arrow.tip[1],
+            self.start[0],
+            self.start[1],
+            self.tip[0],
+            self.tip[1],
         );
 
-        let rline = {
-            let rline = arrow.get_rline();
+        let tip = {
+            let lline = {
+                let lline = self
+                    .compute_lline(Some(options.stroke_width))
+                    .to_kurbo_point();
+                Point2D::new(lline.x, lline.y)
+            };
+            let rline = {
+                let rline = self.compute_rline(Some(options.stroke_width));
+                Point2D::new(rline.x, rline.y)
+            };
+            let tip = {
+                let tip = self.tip.to_kurbo_point();
+                Point2D::new(tip.x, tip.y)
+            };
 
-            rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
-                rline[0],
-                rline[1],
-                arrow.tip[0],
-                arrow.tip[1],
-            )
-        };
-
-        let lline = {
-            let lline = arrow.get_lline();
-
-            rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
-                lline[0],
-                lline[1],
-                arrow.tip[0],
-                arrow.tip[1],
-            )
+            rough_piet::KurboGenerator::new(generate_roughr_options(options))
+                .linear_path(&[lline, tip, rline], false)
         };
 
         arrow_stem.draw(cx);
-        rline.draw(cx);
-        lline.draw(cx);
+        tip.draw(cx);
 
         cx.restore().unwrap();
     }

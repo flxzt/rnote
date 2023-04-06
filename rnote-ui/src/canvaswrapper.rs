@@ -598,6 +598,10 @@ impl RnCanvasWrapper {
 
         self.canvas().disconnect_handlers(appwindow);
 
+        if let Some(old) = imp.appwindow_block_pinch_zoom_bind.borrow_mut().take() {
+            old.unbind();
+        }
+
         if let Some(old) = imp.appwindow_show_scrollbars_bind.borrow_mut().take() {
             old.unbind();
         }

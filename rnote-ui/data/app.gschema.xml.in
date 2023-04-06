@@ -133,6 +133,10 @@
       <default>true</default>
       <summary>Whether the user is righthanded (or lefthanded)</summary>
     </key>
+    <key name="block-pinch-zoom" type="b">
+      <default>false</default>
+      <summary>block pinch to zoom</summary>
+    </key>
     <key name="touch-drawing" type="b">
       <default>false</default>
       <summary>enable drawing with touch input</summary>

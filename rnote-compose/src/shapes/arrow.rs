@@ -157,6 +157,7 @@ impl Arrow {
     const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
 
     /// Computes and returns `lline`.
+    /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
         let vec_a = self.get_direction_vector() * Self::get_line_length(stroke_width);
         let rotation_matrix = self.get_rotation_matrix();
@@ -165,6 +166,7 @@ impl Arrow {
     }
 
     /// Computes and returns `rline`.
+    /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_rline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
         let vec_b = self.get_direction_vector() * Self::get_line_length(stroke_width);
         let rotation_matrix = self.get_rotation_matrix().transpose();

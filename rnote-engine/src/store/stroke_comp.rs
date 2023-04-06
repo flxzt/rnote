@@ -81,6 +81,14 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    /// Returns the stroke keys in the order that they should be rendered, in the given bounds.
+    pub fn stroke_keys_as_rendered_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono_in_bounds(bounds)
+            .into_iter()
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
+            .collect::<Vec<StrokeKey>>()
+    }
+
     /// Clones the strokes for the given keys and returns them.
     pub fn clone_strokes(&self, keys: &[StrokeKey]) -> Vec<Stroke> {
         keys.iter()

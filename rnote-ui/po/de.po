@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-07 22:18+0200\n"
-"PO-Revision-Date: 2023-03-12 09:01+0000\n"
+"PO-Revision-Date: 2023-04-08 10:24+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -1000,7 +1000,7 @@ msgstr "Zeichne mit _Touch-Eingabe"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "Ziehen zum _Zoomen Blockieren"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
@@ -1284,11 +1284,11 @@ msgstr "Raster"
 
 #: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Isometric Grid"
-msgstr ""
+msgstr "Isometrisches Raster"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
-msgstr ""
+msgstr "Isometrische Punkte"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
@@ -1794,7 +1794,7 @@ msgstr "Chip"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Clock"
-msgstr ""
+msgstr "Uhr"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
@@ -1807,11 +1807,11 @@ msgstr "Komposition"
 #: rnote-ui/src/dialogs/mod.rs:560
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "Getreide"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
-msgstr ""
+msgstr "Wörterbuch"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
@@ -1839,7 +1839,7 @@ msgstr "Zahnrad"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Globe"
-msgstr ""
+msgstr "Globus"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
@@ -1863,7 +1863,7 @@ msgstr "Sprache"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
@@ -1887,13 +1887,11 @@ msgstr "Musikalische Note"
 
 #: rnote-ui/src/dialogs/mod.rs:581
 msgid "Nature"
-msgstr ""
+msgstr "Natur"
 
 #: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "Öffnen"
+msgstr "Geöffnetes Buch"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
@@ -1917,7 +1915,7 @@ msgstr "Projektor"
 
 #: rnote-ui/src/dialogs/mod.rs:588
 msgid "Science"
-msgstr ""
+msgstr "Wissenschaft"
 
 #: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"

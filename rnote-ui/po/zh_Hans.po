@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-11 08:14+0100\n"
+"POT-Creation-Date: 2023-04-07 22:18+0200\n"
 "PO-Revision-Date: 2023-03-27 11:41+0000\n"
 "Last-Translator: lambdark <lambdark@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "清空"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:497
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:498
 msgid "New Document"
 msgstr "新建文档"
 
@@ -191,7 +191,7 @@ msgstr "更改工作区目录"
 msgid "- no directory selected -"
 msgstr "—— 没有选择目录 ——"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:173
+#: rnote-ui/data/ui/dialogs/dialogs.ui:174
 msgid "Change the directory"
 msgstr "更改目录"
 
@@ -1105,40 +1105,44 @@ msgid "Draw With _Touch Input"
 msgstr "使用触摸绘制"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
+msgid "Block Pinch to _Zoom"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:64
 #, fuzzy
 #| msgid "_Pen sounds"
 msgid "_Pen Sounds"
 msgstr "手写笔音效(P)"
 
-#: rnote-ui/data/ui/canvasmenu.ui:66
+#: rnote-ui/data/ui/canvasmenu.ui:71
 #, fuzzy
 #| msgid "C_lear document"
 msgid "C_lear Document"
 msgstr "清空文档"
 
-#: rnote-ui/data/ui/canvasmenu.ui:70
+#: rnote-ui/data/ui/canvasmenu.ui:75
 #, fuzzy
 #| msgid "_Return to origin page"
 msgid "_Return to Origin Page"
 msgstr "返回到第一页(R)"
 
-#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:115
 #: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "缩小"
 
-#: rnote-ui/data/ui/canvasmenu.ui:109
+#: rnote-ui/data/ui/canvasmenu.ui:114
 #, fuzzy
 #| msgid "Reset the zoom"
 msgid "Reset Zoom"
 msgstr "重置缩放"
 
-#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "放大"
 
-#: rnote-ui/data/ui/canvasmenu.ui:128
+#: rnote-ui/data/ui/canvasmenu.ui:133
 #, fuzzy
 #| msgid "Zoom to fit page width"
 msgid "Zoom to Page Width"
@@ -1175,7 +1179,7 @@ msgstr "移至回收站"
 msgid "Duplicate"
 msgstr "重复所选内容"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:499
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
 msgid "Draft"
 msgstr "草稿"
 
@@ -1425,41 +1429,49 @@ msgstr "线"
 msgid "Grid"
 msgstr "方格"
 
-#: rnote-ui/data/ui/settingspanel.ui:317
+#: rnote-ui/data/ui/settingspanel.ui:310
+msgid "Isometric Grid"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:311
+msgid "Isometric Dots"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
 msgstr "纹理颜色"
 
-#: rnote-ui/data/ui/settingspanel.ui:318
+#: rnote-ui/data/ui/settingspanel.ui:320
 msgid "Set the background pattern color"
 msgstr "设置背景纹理颜色"
 
-#: rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:337
 msgid "Pattern Width"
 msgstr "纹理宽度"
 
-#: rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:338
 msgid "Set the background pattern width"
 msgstr "设置背景纹理宽度"
 
-#: rnote-ui/data/ui/settingspanel.ui:349
+#: rnote-ui/data/ui/settingspanel.ui:351
 msgid "Pattern Height"
 msgstr "纹理高度"
 
-#: rnote-ui/data/ui/settingspanel.ui:350
+#: rnote-ui/data/ui/settingspanel.ui:352
 msgid "Set the background pattern height"
 msgstr "设置背景纹理高度"
 
-#: rnote-ui/data/ui/settingspanel.ui:366
+#: rnote-ui/data/ui/settingspanel.ui:368
 msgid "Button Shortcuts"
 msgstr "按键快捷键"
 
-#: rnote-ui/data/ui/settingspanel.ui:369
+#: rnote-ui/data/ui/settingspanel.ui:371
 #, fuzzy
 #| msgid "Stylus primary button action"
 msgid "Stylus Primary Button Action"
 msgstr "手写笔主按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:370
+#: rnote-ui/data/ui/settingspanel.ui:372
 #, fuzzy
 #| msgid "Set the action for the primary stylus button"
 msgid ""
@@ -1467,13 +1479,13 @@ msgid ""
 "primary stylus button"
 msgstr "设置手写笔主按键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
+#: rnote-ui/data/ui/settingspanel.ui:384
 #, fuzzy
 #| msgid "Stylus secondary button action"
 msgid "Stylus Secondary Button Action"
 msgstr "手写笔副按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:383
+#: rnote-ui/data/ui/settingspanel.ui:385
 #, fuzzy
 #| msgid "Set the action for the secondary stylus button"
 msgid ""
@@ -1481,13 +1493,13 @@ msgid ""
 "secondary stylus button"
 msgstr "设置手写笔副按键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:395
+#: rnote-ui/data/ui/settingspanel.ui:397
 #, fuzzy
 #| msgid "Mouse secondary button action"
 msgid "Mouse Secondary Button Action"
 msgstr "鼠标次键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:396
+#: rnote-ui/data/ui/settingspanel.ui:398
 #, fuzzy
 #| msgid "Set the action for the secondary mouse button"
 msgid ""
@@ -1495,11 +1507,11 @@ msgid ""
 "secondary mouse button"
 msgstr "设置鼠标次键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:408
+#: rnote-ui/data/ui/settingspanel.ui:410
 msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:409
+#: rnote-ui/data/ui/settingspanel.ui:411
 #, fuzzy
 #| msgid "Set the action for the secondary mouse button"
 msgid ""
@@ -1507,49 +1519,49 @@ msgid ""
 "two-finger long-press gesture"
 msgstr "设置鼠标次键执行的动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:421
+#: rnote-ui/data/ui/settingspanel.ui:423
 #, fuzzy
 #| msgid "Stylus primary button action"
 msgid "Drawing Pad Button 1 Action"
 msgstr "手写笔主按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:422
+#: rnote-ui/data/ui/settingspanel.ui:424
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:434
+#: rnote-ui/data/ui/settingspanel.ui:436
 #, fuzzy
 #| msgid "Stylus primary button action"
 msgid "Drawing Pad Button 2 Action"
 msgstr "手写笔主按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:435
+#: rnote-ui/data/ui/settingspanel.ui:437
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:447
+#: rnote-ui/data/ui/settingspanel.ui:449
 #, fuzzy
 #| msgid "Stylus primary button action"
 msgid "Drawing Pad Button 3 Action"
 msgstr "手写笔主按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:448
+#: rnote-ui/data/ui/settingspanel.ui:450
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:460
+#: rnote-ui/data/ui/settingspanel.ui:462
 #, fuzzy
 #| msgid "Stylus primary button action"
 msgid "Drawing Pad Button 4 Action"
 msgstr "手写笔主按键动作"
 
-#: rnote-ui/data/ui/settingspanel.ui:461
+#: rnote-ui/data/ui/settingspanel.ui:463
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1653,7 +1665,7 @@ msgstr "缩小"
 msgid "Alt + Shift + Drag"
 msgstr ""
 
-#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:551
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:562
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Document"
@@ -1762,50 +1774,50 @@ msgstr "移除选定的工作区"
 msgid "Edit Selected Workspace"
 msgstr "编辑选定的工作区"
 
-#: rnote-ui/src/appwindow/mod.rs:505
+#: rnote-ui/src/appwindow/mod.rs:508
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
 msgstr ".rnote 文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:516
+#: rnote-ui/src/appwindow/mod.rs:519
 #, fuzzy
 #| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
 msgstr "矢量图文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:527
+#: rnote-ui/src/appwindow/mod.rs:530
 #, fuzzy
 #| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
 msgstr "位图文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:541 rnote-ui/src/dialogs/import.rs:394
 #, fuzzy
 #| msgid "Opening Xournal++ file failed."
 msgid "Opening Xournal++ file failed"
 msgstr "Xournal++ 文件打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:552 rnote-ui/src/dialogs/import.rs:335
 #, fuzzy
 #| msgid "Opening PDF file failed."
 msgid "Opening PDF file failed"
 msgstr "PDF打开失败。"
 
-#: rnote-ui/src/appwindow/mod.rs:558
+#: rnote-ui/src/appwindow/mod.rs:561
 #, fuzzy
 #| msgid "Error: Tried opening folder as file"
 msgid "Failed to open file, tried to open folder as file"
 msgstr "错误：将文件夹作为文件打开"
 
-#: rnote-ui/src/appwindow/mod.rs:563
+#: rnote-ui/src/appwindow/mod.rs:566
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file, unsupported file type"
 msgstr "打开文件失败：不支持的文件类型。"
 
-#: rnote-ui/src/appwindow/imp.rs:254
-#: rnote-ui/src/appwindow/appwindowactions.rs:575
+#: rnote-ui/src/appwindow/imp.rs:265
+#: rnote-ui/src/appwindow/appwindowactions.rs:578
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:328
@@ -1814,65 +1826,65 @@ msgstr "打开文件失败：不支持的文件类型。"
 msgid "Saving document failed"
 msgstr "文档保存失败。"
 
-#: rnote-ui/src/appwindow/imp.rs:470
+#: rnote-ui/src/appwindow/imp.rs:481
 msgid "Button 1"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:477
+#: rnote-ui/src/appwindow/imp.rs:488
 msgid "Button 2"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:484
+#: rnote-ui/src/appwindow/imp.rs:495
 msgid "Button 3"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:491
+#: rnote-ui/src/appwindow/imp.rs:502
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:696
+#: rnote-ui/src/appwindow/appwindowactions.rs:699
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:724
+#: rnote-ui/src/appwindow/appwindowactions.rs:727
 #, fuzzy
 #| msgid "Export selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容。"
 
-#: rnote-ui/src/canvas/mod.rs:695
+#: rnote-ui/src/canvas/mod.rs:696
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
 msgstr "—— 没有文件名 ——"
 
-#: rnote-ui/src/canvas/mod.rs:708
+#: rnote-ui/src/canvas/mod.rs:709
 msgid "- invalid folder path -"
 msgstr "-无效的文件夹路径-"
 
-#: rnote-ui/src/canvas/mod.rs:732
+#: rnote-ui/src/canvas/mod.rs:733
 #, fuzzy
 #| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
 msgstr "打开的文件已在磁盘上被修改过。"
 
-#: rnote-ui/src/canvas/mod.rs:733
+#: rnote-ui/src/canvas/mod.rs:734
 msgid "Reload"
 msgstr "重新加载"
 
-#: rnote-ui/src/canvas/mod.rs:739
+#: rnote-ui/src/canvas/mod.rs:740
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr ".rnote 文件打开失败。"
 
-#: rnote-ui/src/canvas/mod.rs:788
+#: rnote-ui/src/canvas/mod.rs:789
 #, fuzzy
 #| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
 msgstr "打开的文件已在磁盘上被重命名。"
 
-#: rnote-ui/src/canvas/mod.rs:801
+#: rnote-ui/src/canvas/mod.rs:802
 #, fuzzy
 #| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
@@ -2045,185 +2057,220 @@ msgstr "-无法找到有效的保存文件夹-"
 msgid "Change Workspace Directory"
 msgstr "更改工作区目录"
 
-#: rnote-ui/src/dialogs/mod.rs:541
+#: rnote-ui/src/dialogs/mod.rs:549
 msgid "Band-Aid"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:542
+#: rnote-ui/src/dialogs/mod.rs:550
 msgid "Bank"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:543
+#: rnote-ui/src/dialogs/mod.rs:551
 msgid "Bookmark"
 msgstr "书签"
 
-#: rnote-ui/src/dialogs/mod.rs:544
+#: rnote-ui/src/dialogs/mod.rs:552
 msgid "Book"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:545
+#: rnote-ui/src/dialogs/mod.rs:553
 msgid "Bread"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:546
+#: rnote-ui/src/dialogs/mod.rs:554
 msgid "Calendar"
 msgstr "日历"
 
-#: rnote-ui/src/dialogs/mod.rs:547
+#: rnote-ui/src/dialogs/mod.rs:555
 msgid "Camera"
 msgstr "相机"
 
-#: rnote-ui/src/dialogs/mod.rs:548
+#: rnote-ui/src/dialogs/mod.rs:556
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:549
+#: rnote-ui/src/dialogs/mod.rs:557
+msgid "Clock"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:550
+#: rnote-ui/src/dialogs/mod.rs:559
 msgid "Compose"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:552
+#: rnote-ui/src/dialogs/mod.rs:560
+msgctxt "as in plant"
+msgid "Crop"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:561
+msgid "Dictionary"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:553
+#: rnote-ui/src/dialogs/mod.rs:564
 msgid "Flag"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:554
+#: rnote-ui/src/dialogs/mod.rs:565
 #, fuzzy
 #| msgid "Folder name"
 msgid "Folder"
 msgstr "文件夹名称"
 
-#: rnote-ui/src/dialogs/mod.rs:555
+#: rnote-ui/src/dialogs/mod.rs:566
 #, fuzzy
 #| msgid "Constraints"
 msgid "Footprints"
 msgstr "约束条件"
 
-#: rnote-ui/src/dialogs/mod.rs:556
+#: rnote-ui/src/dialogs/mod.rs:567
 msgid "Gamepad"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:557
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Gear"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:558
+#: rnote-ui/src/dialogs/mod.rs:569
+msgid "Globe"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:559
+#: rnote-ui/src/dialogs/mod.rs:571
 msgid "Heart"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:560
+#: rnote-ui/src/dialogs/mod.rs:572
 msgid "Hourglass"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:561
+#: rnote-ui/src/dialogs/mod.rs:573
 msgid "Key"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:562
+#: rnote-ui/src/dialogs/mod.rs:574
 msgid "Language"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:563
+#: rnote-ui/src/dialogs/mod.rs:575
+msgid "Library"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:577
 msgid "Mathematics"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:578
 #, fuzzy
 #| msgid "Settings"
 msgid "Meeting"
 msgstr "设置"
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:579
 msgid "Money"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:580
 msgid "Musical Note"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:581
+msgid "Nature"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:582
+#, fuzzy
+#| msgid "Open"
+msgid "Open Book"
+msgstr "打开"
+
+#: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:569
+#: rnote-ui/src/dialogs/mod.rs:584
 msgid "Pencil and Paper"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:570
+#: rnote-ui/src/dialogs/mod.rs:585
 msgid "People"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:571
+#: rnote-ui/src/dialogs/mod.rs:586
 msgid "Person"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:572
+#: rnote-ui/src/dialogs/mod.rs:587
 #, fuzzy
 #| msgid "Directory"
 msgid "Projector"
 msgstr "目录"
 
-#: rnote-ui/src/dialogs/mod.rs:573
+#: rnote-ui/src/dialogs/mod.rs:588
+msgid "Science"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:574
+#: rnote-ui/src/dialogs/mod.rs:590
 #, fuzzy
 #| msgid "Shaper"
 msgid "Shapes"
 msgstr "形状工具"
 
-#: rnote-ui/src/dialogs/mod.rs:575
+#: rnote-ui/src/dialogs/mod.rs:591
 msgid "Shopping"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:576
+#: rnote-ui/src/dialogs/mod.rs:592
 msgid "Speech Bubble"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:577
+#: rnote-ui/src/dialogs/mod.rs:593
 msgid "Speedometer"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:578
+#: rnote-ui/src/dialogs/mod.rs:594
 msgid "Star"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:580
+#: rnote-ui/src/dialogs/mod.rs:596
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:582
+#: rnote-ui/src/dialogs/mod.rs:598
 #, fuzzy
 #| msgid "Textured"
 msgid "Text"
 msgstr "纹理"
 
-#: rnote-ui/src/dialogs/mod.rs:583
+#: rnote-ui/src/dialogs/mod.rs:599
 msgid "Travel"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:584
+#: rnote-ui/src/dialogs/mod.rs:600
 msgid "Weather"
 msgstr ""
 
-#: rnote-ui/src/dialogs/mod.rs:585
+#: rnote-ui/src/dialogs/mod.rs:601
 #, fuzzy
 #| msgid "Height"
 msgid "Weight"
@@ -2287,75 +2334,75 @@ msgstr "二次贝塞尔曲线"
 msgid "Cubic bezier curve"
 msgstr "三次贝塞尔曲线"
 
-#: rnote-ui/src/settingspanel/mod.rs:753
+#: rnote-ui/src/settingspanel/mod.rs:761
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:754
+#: rnote-ui/src/settingspanel/mod.rs:762
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:755
+#: rnote-ui/src/settingspanel/mod.rs:763
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:756
+#: rnote-ui/src/settingspanel/mod.rs:764
 msgid "Dot (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:757
+#: rnote-ui/src/settingspanel/mod.rs:765
 msgid "Dot (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:758
+#: rnote-ui/src/settingspanel/mod.rs:766
 msgid "Dot (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:759
+#: rnote-ui/src/settingspanel/mod.rs:767
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:760
+#: rnote-ui/src/settingspanel/mod.rs:768
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:761
+#: rnote-ui/src/settingspanel/mod.rs:769
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:762
+#: rnote-ui/src/settingspanel/mod.rs:770
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:763
+#: rnote-ui/src/settingspanel/mod.rs:771
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:764
+#: rnote-ui/src/settingspanel/mod.rs:772
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:765
+#: rnote-ui/src/settingspanel/mod.rs:773
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:766
+#: rnote-ui/src/settingspanel/mod.rs:774
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:767
+#: rnote-ui/src/settingspanel/mod.rs:775
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:768
+#: rnote-ui/src/settingspanel/mod.rs:776
 msgid "Beam (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:769
+#: rnote-ui/src/settingspanel/mod.rs:777
 msgid "Beam (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:770
+#: rnote-ui/src/settingspanel/mod.rs:778
 msgid "Beam (Large)"
 msgstr ""
 

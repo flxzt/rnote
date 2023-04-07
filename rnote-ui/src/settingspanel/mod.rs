@@ -607,6 +607,14 @@ impl RnSettingsPanel {
                     settings_panel.imp().background_pattern_width_unitentry.set_sensitive(true);
                     settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
                 },
+                PatternStyle::IsometricGrid => {
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                },
+                PatternStyle::IsometricDots => {
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                },
             }
 
             canvas.regenerate_background_pattern();

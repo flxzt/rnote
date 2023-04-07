@@ -50,6 +50,13 @@ impl TryFrom<u32> for PatternStyle {
     }
 }
 
+/// 3_f64.sqrt()
+const SQRT_THREE: f64 = 1.7320508075688772;
+/// 3_f64.sqrt() / 2_f64
+const HALF_SQRT_THREE: f64 = SQRT_THREE / 2_f64;
+/// 3_f64.sqrt() / 4_f64
+const QUARTER_SQRT_THREE: f64 = SQRT_THREE / 4_f64;
+
 pub fn gen_hline_pattern(
     bounds: Aabb,
     spacing: f64,
@@ -142,8 +149,49 @@ pub fn gen_grid_pattern(
     group.into()
 }
 
+pub fn gen_dots_pattern(
+    bounds: Aabb,
+    row_spacing: f64,
+    column_spacing: f64,
+    color: Color,
+    dots_width: f64,
+) -> svg::node::element::Element {
+    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_dots_pattern";
+
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", column_spacing)
+            .set("height", row_spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
+                element::Rectangle::new()
+                    .set("stroke", "none")
+                    .set("fill", color.to_css_color_attr())
+                    .set("x", 0_f64)
+                    .set("y", 0_f64)
+                    .set("width", dots_width)
+                    .set("height", dots_width)
+                    .set("rx", dots_width / 3.0)
+                    .set("ry", dots_width / 3.0),
+            ),
+    );
+
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
+    rect.assign("x", format!("{}px", bounds.mins[0]));
+    rect.assign("y", format!("{}px", bounds.mins[1]));
+    rect.assign("width", format!("{}px", bounds.extents()[0]));
+    rect.assign("height", format!("{}px", bounds.extents()[1]));
+
+    let group = element::Group::new().add(pattern).add(rect);
+    group.into()
+}
+
 fn calc_width_iso_pattern(spacing: f64) -> f64 {
-    spacing * f64::sqrt(3_f64)
+    spacing * SQRT_THREE
 }
 
 pub fn gen_iso_grid_pattern(
@@ -222,13 +270,33 @@ pub fn gen_iso_dots_pattern(
     bounds: Aabb,
     spacing: f64,
     color: Color,
-    dots_width: f64,
+    hexagon_height: f64,
 ) -> svg::node::element::Element {
     // spacing: side length of the equilateral triangle
     // pattern_width: two times the height of the equilateral triangle
 
     let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_iso_dots_pattern";
     let pattern_width = calc_width_iso_pattern(spacing);
+
+    let hexagon_path = |x_offset: f64, y_offset: f64| {
+        element::path::Data::new()
+            .move_to((
+                x_offset + QUARTER_SQRT_THREE * hexagon_height,
+                y_offset + hexagon_height,
+            ))
+            .line_to((
+                x_offset + HALF_SQRT_THREE * hexagon_height,
+                y_offset + 0.75 * hexagon_height,
+            ))
+            .line_to((
+                x_offset + HALF_SQRT_THREE * hexagon_height,
+                y_offset + 0.25 * hexagon_height,
+            ))
+            .line_to((x_offset + QUARTER_SQRT_THREE * hexagon_height, y_offset))
+            .line_to((x_offset, y_offset + 0.25 * hexagon_height))
+            .line_to((x_offset, y_offset + 0.75 * hexagon_height))
+            .close()
+    };
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -240,67 +308,16 @@ pub fn gen_iso_dots_pattern(
             .set("patternUnits", "userSpaceOnUse")
             .set("patternContentUnits", "userSpaceOnUse")
             .add(
-                element::Rectangle::new()
+                element::Path::new()
                     .set("stroke", "none")
                     .set("fill", color.to_css_color_attr())
-                    .set("x", 0_f64)
-                    .set("y", 0_f64)
-                    .set("width", dots_width)
-                    .set("height", dots_width)
-                    .set("rx", dots_width / 3.0)
-                    .set("ry", dots_width / 3.0),
+                    .set("d", hexagon_path(0.0, 0.0)),
             )
             .add(
-                element::Rectangle::new()
+                element::Path::new()
                     .set("stroke", "none")
                     .set("fill", color.to_css_color_attr())
-                    .set("x", pattern_width * 0.5)
-                    .set("y", spacing * 0.5)
-                    .set("width", dots_width)
-                    .set("height", dots_width)
-                    .set("rx", dots_width / 3.0)
-                    .set("ry", dots_width / 3.0),
-            ),
-    );
-
-    let mut rect = element::Rectangle::new().set("fill", format!("url(#{pattern_id})"));
-    rect.assign("x", format!("{}px", bounds.mins[0]));
-    rect.assign("y", format!("{}px", bounds.mins[1]));
-    rect.assign("width", format!("{}px", bounds.extents()[0]));
-    rect.assign("height", format!("{}px", bounds.extents()[1]));
-
-    let group = element::Group::new().add(pattern).add(rect);
-    group.into()
-}
-
-pub fn gen_dots_pattern(
-    bounds: Aabb,
-    row_spacing: f64,
-    column_spacing: f64,
-    color: Color,
-    dots_width: f64,
-) -> svg::node::element::Element {
-    let pattern_id = rnote_compose::utils::svg_random_id_prefix() + "_bg_dots_pattern";
-
-    let pattern = element::Definitions::new().add(
-        element::Pattern::new()
-            .set("id", pattern_id.as_str())
-            .set("x", 0_f64)
-            .set("y", 0_f64)
-            .set("width", column_spacing)
-            .set("height", row_spacing)
-            .set("patternUnits", "userSpaceOnUse")
-            .set("patternContentUnits", "userSpaceOnUse")
-            .add(
-                element::Rectangle::new()
-                    .set("stroke", "none")
-                    .set("fill", color.to_css_color_attr())
-                    .set("x", 0_f64)
-                    .set("y", 0_f64)
-                    .set("width", dots_width)
-                    .set("height", dots_width)
-                    .set("rx", dots_width / 3.0)
-                    .set("ry", dots_width / 3.0),
+                    .set("d", hexagon_path(pattern_width * 0.5, spacing * 0.5)),
             ),
     );
 
@@ -342,6 +359,10 @@ impl Default for Background {
 }
 
 impl Background {
+    const LINE_WIDTH: f64 = 0.5;
+    const DOTS_WIDTH: f64 = 1.5;
+    const HEXAGON_HEIGHT: f64 = 2.0;
+
     const TILE_MAX_SIZE: f64 = 128.0;
     const COLOR_DEFAULT: Color = Color::WHITE;
     const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
@@ -407,7 +428,7 @@ impl Background {
                         bounds,
                         self.pattern_size[1],
                         self.pattern_color,
-                        0.5,
+                        Self::LINE_WIDTH,
                     ));
                 }
                 PatternStyle::Grid => {
@@ -416,7 +437,7 @@ impl Background {
                         self.pattern_size[1],
                         self.pattern_size[0],
                         self.pattern_color,
-                        0.5,
+                        Self::LINE_WIDTH,
                     ));
                 }
                 PatternStyle::Dots => {
@@ -425,7 +446,7 @@ impl Background {
                         self.pattern_size[1],
                         self.pattern_size[0],
                         self.pattern_color,
-                        1.5,
+                        Self::DOTS_WIDTH,
                     ));
                 }
                 PatternStyle::IsometricGrid => {
@@ -433,7 +454,7 @@ impl Background {
                         bounds,
                         self.pattern_size[1],
                         self.pattern_color,
-                        0.5,
+                        Self::LINE_WIDTH,
                     ));
                 }
                 PatternStyle::IsometricDots => {
@@ -441,7 +462,7 @@ impl Background {
                         bounds,
                         self.pattern_size[1],
                         self.pattern_color,
-                        1.5,
+                        Self::HEXAGON_HEIGHT,
                     ));
                 }
             }

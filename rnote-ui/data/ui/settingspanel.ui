@@ -307,6 +307,8 @@
                               <item translatable="yes">Lines</item>
                               <item translatable="yes">Grid</item>
                               <item translatable="yes">Dots</item>
+                              <item translatable="yes">Isometric Grid</item>
+                              <item translatable="yes">Isometric Dots</item>
                             </items>
                           </object>
                         </property>

@@ -7,12 +7,12 @@ pub use smoothoptions::SmoothOptions;
 use super::Composer;
 use crate::helpers::Vector2Helpers;
 use crate::penpath::{self, Segment};
-use crate::shapes::CubicBezier;
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
 use crate::shapes::QuadraticBezier;
 use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
+use crate::shapes::{Arrow, CubicBezier};
 use crate::PenPath;
 
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -30,6 +30,27 @@ impl Composer<SmoothOptions> for Line {
             let stroke_brush = cx.solid_brush(stroke_color.into());
             cx.stroke(line, &stroke_brush, options.stroke_width);
         }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for Arrow {
+    fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
+        self.internal_compute_bounds(Some(options.stroke_width))
+            .loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            let arrow = self.to_kurbo(Some(options.stroke_width));
+
+            cx.stroke(arrow.stem, &stroke_brush, options.stroke_width);
+            cx.stroke(arrow.tip_triangle, &stroke_brush, options.stroke_width);
+        }
+
         cx.restore().unwrap();
     }
 }
@@ -230,6 +251,7 @@ impl Composer<SmoothOptions> for PenPath {
 impl Composer<SmoothOptions> for crate::Shape {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.composed_bounds(options),
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
@@ -240,6 +262,7 @@ impl Composer<SmoothOptions> for crate::Shape {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         match self {
+            crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
             crate::Shape::Line(line) => line.draw_composed(cx, options),
             crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),

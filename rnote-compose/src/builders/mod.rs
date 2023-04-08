@@ -1,3 +1,4 @@
+mod arrowbuilder;
 mod coordsystem2dbuilder;
 mod coordsystem3dbuilder;
 mod cubbezbuilder;
@@ -15,6 +16,7 @@ mod rectanglebuilder;
 mod shapebuilderbehaviour;
 
 // Re-exports
+pub use arrowbuilder::ArrowBuilder;
 pub use coordsystem2dbuilder::CoordSystem2DBuilder;
 pub use coordsystem3dbuilder::CoordSystem3DBuilder;
 pub use cubbezbuilder::CubBezBuilder;
@@ -48,6 +50,9 @@ pub enum ShapeBuilderType {
     /// A line builder
     #[serde(rename = "line")]
     Line = 0,
+    /// An arrow builder
+    #[serde(rename = "arrow")]
+    Arrow,
     /// A rectangle builder
     #[serde(rename = "rectangle")]
     Rectangle,
@@ -81,6 +86,7 @@ impl ShapeBuilderType {
     /// Converts an icon name into the represented shape builder type. Returns None for invalid strings.
     pub fn from_icon_name(icon_name: &str) -> Option<Self> {
         match icon_name {
+            "shapebuilder-arrow-symbolic" => Some(Self::Arrow),
             "shapebuilder-line-symbolic" => Some(Self::Line),
             "shapebuilder-rectangle-symbolic" => Some(Self::Rectangle),
             "shapebuilder-grid-symbolic" => Some(Self::Grid),
@@ -98,6 +104,7 @@ impl ShapeBuilderType {
     /// Converts a shape builder type into the icon name that represents it.
     pub fn to_icon_name(self) -> String {
         match self {
+            Self::Arrow => String::from("shapebuilder-arrow-symbolic"),
             Self::Line => String::from("shapebuilder-line-symbolic"),
             Self::Rectangle => String::from("shapebuilder-rectangle-symbolic"),
             Self::Grid => String::from("shapebuilder-grid-symbolic"),

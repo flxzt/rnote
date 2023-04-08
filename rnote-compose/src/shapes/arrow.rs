@@ -3,7 +3,7 @@ use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AabbHelpers, Vector2Helpers};
+use crate::helpers::Vector2Helpers;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
@@ -80,7 +80,7 @@ impl ShapeBehaviour for Arrow {
             na::Point2::new(highest_x, highest_y)
         };
 
-        AabbHelpers::new_positive(bottom_left_corner, top_right_corner)
+        Aabb::from_points(&[bottom_left_corner, top_right_corner])
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -93,8 +93,6 @@ impl ShapeBehaviour for Arrow {
     }
 }
 
-/// Contains helper-functions for the `ShapeBehaviour` implementation of
-/// `Arrow`.
 impl Arrow {
     /// Splits the stem of the arrow into the given number of rectangles.
     pub fn split(&self, n_splits: i32) -> Vec<Line> {

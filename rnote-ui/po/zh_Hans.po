@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-07 22:18+0200\n"
+"POT-Creation-Date: 2023-04-09 00:04+0200\n"
 "PO-Revision-Date: 2023-03-27 11:41+0000\n"
 "Last-Translator: lambdark <lambdark@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -1425,7 +1425,7 @@ msgid "Lines"
 msgstr "线"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
-#: rnote-ui/src/penssidebar/shaperpage.rs:386
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
 msgstr "方格"
 
@@ -2280,57 +2280,61 @@ msgstr "高度"
 msgid "Miscellaneous"
 msgstr ""
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:356
+#: rnote-ui/src/penssidebar/shaperpage.rs:357
 #, fuzzy
 #| msgid "2D coordinate system"
 msgid "Coordinate Systems"
 msgstr "2维坐标系"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:364
+#: rnote-ui/src/penssidebar/shaperpage.rs:365
 #, fuzzy
 #| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "椭圆"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:371
+#: rnote-ui/src/penssidebar/shaperpage.rs:372
 #, fuzzy
 #| msgid "Curved"
 msgid "Curves"
 msgstr "曲线"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:384
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
+msgid "Arrow"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"
 msgstr "直线"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:385
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Rectangle"
 msgstr "矩形"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:387
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D coordinate system"
 msgstr "2维坐标系"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:388
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "3D coordinate system"
 msgstr "3维坐标系"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:389
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "2D single quadrant coordinate system"
 msgstr "2维单象限坐标系"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:390
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Ellipse"
 msgstr "椭圆"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:391
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Ellipse with foci"
 msgstr "焦点椭圆"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:392
+#: rnote-ui/src/penssidebar/shaperpage.rs:394
 msgid "Quadratic bezier curve"
 msgstr "二次贝塞尔曲线"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:393
+#: rnote-ui/src/penssidebar/shaperpage.rs:395
 msgid "Cubic bezier curve"
 msgstr "三次贝塞尔曲线"
 

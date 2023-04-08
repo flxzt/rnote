@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-07 22:18+0200\n"
+"POT-Creation-Date: 2023-04-09 00:04+0200\n"
 "PO-Revision-Date: 2023-04-08 10:24+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
@@ -1278,7 +1278,7 @@ msgid "Lines"
 msgstr "Linien"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
-#: rnote-ui/src/penssidebar/shaperpage.rs:386
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
 msgstr "Raster"
 
@@ -1966,51 +1966,55 @@ msgstr "Gewicht"
 msgid "Miscellaneous"
 msgstr "Verschiedenes"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:356
+#: rnote-ui/src/penssidebar/shaperpage.rs:357
 msgid "Coordinate Systems"
 msgstr "Koordinatensysteme"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:364
+#: rnote-ui/src/penssidebar/shaperpage.rs:365
 msgid "Ellipses"
 msgstr "Ellipsen"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:371
+#: rnote-ui/src/penssidebar/shaperpage.rs:372
 msgid "Curves"
 msgstr "Kurven"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:384
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
+msgid "Arrow"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"
 msgstr "Linie"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:385
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Rectangle"
 msgstr "Rechteck"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:387
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D coordinate system"
 msgstr "2D Koordinatensystem"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:388
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "3D coordinate system"
 msgstr "3D Koordinatensystem"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:389
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "2D single quadrant coordinate system"
 msgstr "2D Einzelquadrant Koordinatensystem"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:390
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Ellipse"
 msgstr "Ellipse"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:391
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Ellipse with foci"
 msgstr "Ellipse mit Brennpunkten"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:392
+#: rnote-ui/src/penssidebar/shaperpage.rs:394
 msgid "Quadratic bezier curve"
 msgstr "Quadratische Bezierkurve"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:393
+#: rnote-ui/src/penssidebar/shaperpage.rs:395
 msgid "Cubic bezier curve"
 msgstr "Kubische Bezierkurve"
 

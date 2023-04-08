@@ -215,7 +215,7 @@ impl RnShaperPage {
                     }
                 }
             }),
-            );
+        );
 
         // Rough style
         // Fill style

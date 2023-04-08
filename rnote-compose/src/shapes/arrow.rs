@@ -108,7 +108,7 @@ impl Arrow {
         Self { start, tip }
     }
 
-    /// Splits the stem of the arrow into the given number of rectangles.
+    /// Splits the stem of the arrow into the given number of lines.
     pub fn split(&self, n_splits: i32) -> Vec<Line> {
         (0..n_splits)
             .map(|i| {

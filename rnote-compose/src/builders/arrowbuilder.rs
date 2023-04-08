@@ -39,7 +39,7 @@ impl ShapeBuilderBehaviour for ArrowBuilder {
         _now: Instant,
         mut constraints: Constraints,
     ) -> ShapeBuilderProgress {
-        // we always want to allow horizontal and vertical constraints while building a line
+        // we always want to allow horizontal and vertical constraints while building an arrow
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);
 

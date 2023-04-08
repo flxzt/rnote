@@ -3,13 +3,11 @@ use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AabbHelpers, Vector2Helpers};
+use crate::helpers::Vector2Helpers;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
 use super::Line;
-
-type Radian = f64;
 
 /// All doc-comments of this file and [`ArrowBuilder`] rely on the following
 /// graphic:
@@ -82,7 +80,7 @@ impl ShapeBehaviour for Arrow {
             na::Point2::new(highest_x, highest_y)
         };
 
-        AabbHelpers::new_positive(bottom_left_corner, top_right_corner)
+        Aabb::from_points(&[bottom_left_corner, top_right_corner])
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {

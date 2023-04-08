@@ -22,7 +22,9 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,
+        pub(crate) block_pinch_zoom: Cell<bool>,
 
+        pub(crate) appwindow_block_pinch_zoom_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
 
@@ -96,7 +98,9 @@ mod imp {
 
             Self {
                 show_scrollbars: Cell::new(false),
+                block_pinch_zoom: Cell::new(false),
 
+                appwindow_block_pinch_zoom_bind: RefCell::new(None),
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
 
@@ -158,9 +162,9 @@ mod imp {
 
             self.canvas.connect_notify_local(
                 Some("touch-drawing"),
-                clone!(@weak obj as canvaswrapper => move |canvas, _pspec| {
+                clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
                     // Disable the zoom gesture when touch drawing is enabled
-                    canvaswrapper.canvas_zoom_gesture_enable(!canvas.touch_drawing());
+                    canvaswrapper.imp().canvas_zoom_gesture_update();
                 }),
             );
         }
@@ -173,9 +177,14 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpecBoolean::builder("show-scrollbars")
-                    .default_value(false)
-                    .build()]
+                vec![
+                    glib::ParamSpecBoolean::builder("show-scrollbars")
+                        .default_value(false)
+                        .build(),
+                    glib::ParamSpecBoolean::builder("block-pinch-zoom")
+                        .default_value(false)
+                        .build(),
+                ]
             });
             PROPERTIES.as_ref()
         }
@@ -183,6 +192,7 @@ mod imp {
         fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
+                "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -193,12 +203,19 @@ mod imp {
                     let show_scrollbars = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
-
                     self.show_scrollbars.replace(show_scrollbars);
 
                     self.scroller.hscrollbar().set_visible(show_scrollbars);
                     self.scroller.vscrollbar().set_visible(show_scrollbars);
                 }
+                "block-pinch-zoom" => {
+                    let block_pinch_zoom = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`");
+                    self.block_pinch_zoom.replace(block_pinch_zoom);
+                    self.canvas_zoom_gesture_update();
+                }
+
                 _ => unimplemented!(),
             }
         }
@@ -207,6 +224,15 @@ mod imp {
     impl WidgetImpl for RnCanvasWrapper {}
 
     impl RnCanvasWrapper {
+        fn canvas_zoom_gesture_update(&self) {
+            if !self.block_pinch_zoom.get() && !self.canvas.touch_drawing() {
+                self.canvas_zoom_gesture
+                    .set_propagation_phase(PropagationPhase::Capture);
+            } else {
+                self.canvas_zoom_gesture
+                    .set_propagation_phase(PropagationPhase::None);
+            }
+        }
         fn setup_input(&self) {
             let obj = self.obj();
 
@@ -451,7 +477,7 @@ mod imp {
                         // Because this gesture is grouped with the zoom gesture, denying all
                         // sequences within the group ( by calling `set_state()` ) might result in a segfault in certain cases
                         if let Some(event_sequence) = event_sequence {
-                            gesture.set_sequence_state(&event_sequence, EventSequenceState::Denied);
+                            gesture.set_sequence_state(event_sequence, EventSequenceState::Denied);
                         }
                     }),
                 );
@@ -459,7 +485,7 @@ mod imp {
                 self.touch_two_finger_long_press_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
                         if let Some(event_sequence) = event_sequence {
-                            gesture.set_sequence_state(&event_sequence, EventSequenceState::Denied);
+                            gesture.set_sequence_state(event_sequence, EventSequenceState::Denied);
                         }
                     }),
                 );
@@ -493,6 +519,15 @@ impl RnCanvasWrapper {
     pub(crate) fn set_show_scrollbars(&self, show_scrollbars: bool) {
         self.set_property("show-scrollbars", show_scrollbars.to_value());
     }
+    #[allow(unused)]
+    pub(crate) fn block_pinch_zoom(&self) -> bool {
+        self.property::<bool>("block-pinch-zoom")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
+        self.set_property("block-pinch-zoom", block_pinch_zoom);
+    }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {
         self.imp().scroller.get()
@@ -507,6 +542,11 @@ impl RnCanvasWrapper {
     pub(crate) fn init_reconnect(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
         self.imp().canvas.init_reconnect(appwindow);
+
+        let appwindow_block_pinch_zoom_bind = appwindow
+            .bind_property("block-pinch-zoom", self, "block_pinch_zoom")
+            .sync_create()
+            .build();
 
         let appwindow_show_scrollbars_bind = appwindow
             .settings_panel()
@@ -526,6 +566,14 @@ impl RnCanvasWrapper {
             })
             .sync_create()
             .build();
+
+        if let Some(old) = imp
+            .appwindow_block_pinch_zoom_bind
+            .borrow_mut()
+            .replace(appwindow_block_pinch_zoom_bind)
+        {
+            old.unbind()
+        }
 
         if let Some(old) = imp
             .appwindow_show_scrollbars_bind
@@ -550,6 +598,10 @@ impl RnCanvasWrapper {
 
         self.canvas().disconnect_handlers(appwindow);
 
+        if let Some(old) = imp.appwindow_block_pinch_zoom_bind.borrow_mut().take() {
+            old.unbind();
+        }
+
         if let Some(old) = imp.appwindow_show_scrollbars_bind.borrow_mut().take() {
             old.unbind();
         }
@@ -564,17 +616,5 @@ impl RnCanvasWrapper {
     /// disconnects existing bindings / handlers to old tab pages.
     pub(crate) fn connect_to_tab_page(&self, page: &adw::TabPage) {
         self.canvas().connect_to_tab_page(page);
-    }
-
-    pub(crate) fn canvas_zoom_gesture_enable(&self, enable: bool) {
-        if enable {
-            self.imp()
-                .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::Capture);
-        } else {
-            self.imp()
-                .canvas_zoom_gesture
-                .set_propagation_phase(PropagationPhase::None);
-        }
     }
 }

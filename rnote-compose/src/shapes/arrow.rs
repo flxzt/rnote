@@ -95,9 +95,16 @@ impl ShapeBehaviour for Arrow {
     }
 }
 
-/// Contains helper-functions for the `ShapeBehaviour` implementation of
-/// `Arrow`.
 impl Arrow {
+    /// The min-length for `rline` and `lline`.
+    const TIP_LINES_MIN_LENGTH: f64 = 32.0;
+
+    /// The angle for `rline` and `lline` to the stem of the arrow.
+    const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
+
+    /// The default direction vector (the stem) if you can't compute one.
+    const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);
+
     /// Splits the stem of the arrow into the given number of rectangles.
     pub fn split(&self, n_splits: i32) -> Vec<Line> {
         (0..n_splits)
@@ -116,12 +123,6 @@ impl Arrow {
             })
             .collect::<Vec<Line>>()
     }
-}
-
-/// Functions which you can use to interact with the struct.
-impl Arrow {
-    /// The min-length for `rline` and `lline`.
-    const TIP_LINES_MIN_LENGTH: f64 = 32.0;
 
     /// Creating a new arrow with the given start and tip vectors.
     pub fn new(start: na::Vector2<f64>, tip: na::Vector2<f64>) -> Self {
@@ -148,16 +149,6 @@ impl Arrow {
             tip_triangle,
         }
     }
-}
-
-/// This implementation holds the functions to get the vectors `rline` and
-/// `lline`.
-impl Arrow {
-    /// The angle for `rline` and `lline` to the stem of the arrow.
-    const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
-
-    /// The default direction vector (the stem) if you can't compute one.
-    const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);
 
     /// Computes and returns `lline`.
     /// Optionally add the stroke width to adjust the length of the line.

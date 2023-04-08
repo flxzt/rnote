@@ -318,6 +318,7 @@ impl StrokeStore {
             self.import_history_entry(&prev);
 
             self.history_pos = Some(index - 1);
+            widget_flags.hide_redo = Some(false);
         } else {
             log::debug!("no history, can't undo");
         }
@@ -337,6 +338,7 @@ impl StrokeStore {
             self.import_history_entry(&next);
 
             self.history_pos = Some(index + 1);
+            widget_flags.hide_undo = Some(false);
         } else {
             log::debug!("no future history entries, can't redo");
         }

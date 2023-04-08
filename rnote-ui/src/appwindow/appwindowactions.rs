@@ -1,7 +1,7 @@
-use super::RnAppWindow;
-use crate::canvas::RnCanvasLayout;
-use crate::config;
-use crate::{dialogs, RnCanvas};
+use gettextrs::gettext;
+use gtk4::{
+    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
+};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penevents::ShortcutKey;
@@ -9,13 +9,10 @@ use rnote_engine::document::Layout;
 use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
-
-use gettextrs::gettext;
-use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
-};
 use std::path::PathBuf;
 use std::time::Instant;
+
+use crate::{canvas::RnCanvasLayout, config, dialogs, RnAppWindow, RnCanvas};
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
@@ -39,14 +36,14 @@ impl RnAppWindow {
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
         let action_devel_mode =
-            gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
+            gio::SimpleAction::new_stateful("devel-mode", None, false.to_variant());
         self.add_action(&action_devel_mode);
         let action_devel_menu = gio::SimpleAction::new("devel-menu", None);
         self.add_action(&action_devel_menu);
         let action_new_tab = gio::SimpleAction::new("new-tab", None);
         self.add_action(&action_new_tab);
         let action_visual_debug =
-            gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
+            gio::SimpleAction::new_stateful("visual-debug", None, false.to_variant());
         self.add_action(&action_visual_debug);
         let action_debug_export_engine_state =
             gio::SimpleAction::new("debug-export-engine-state", None);
@@ -60,22 +57,25 @@ impl RnAppWindow {
         self.add_action(&action_touch_drawing);
 
         let action_pen_sounds =
-            gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
+            gio::SimpleAction::new_stateful("pen-sounds", None, false.to_variant());
         self.add_action(&action_pen_sounds);
         let action_format_borders =
-            gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
+            gio::SimpleAction::new_stateful("format-borders", None, true.to_variant());
         self.add_action(&action_format_borders);
+        let action_block_pinch_zoom =
+            gio::PropertyAction::new("block-pinch-zoom", self, "block-pinch-zoom");
+        self.add_action(&action_block_pinch_zoom);
         // Couldn't make it work with enums as state together with activating from menu model, so using strings instead
         let action_doc_layout = gio::SimpleAction::new_stateful(
             "doc-layout",
             Some(&String::static_variant_type()),
-            &String::from("infinite").to_variant(),
+            String::from("infinite").to_variant(),
         );
         self.add_action(&action_doc_layout);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
             Some(&PenStyle::static_variant_type()),
-            &PenStyle::Brush.to_variant(),
+            PenStyle::Brush.to_variant(),
         );
         self.add_action(&action_pen_style);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
@@ -217,7 +217,7 @@ impl RnAppWindow {
 
                 canvas.engine().borrow_mut().visual_debug = requested_state;
                 canvas.queue_draw();
-                action_visual_debug.set_state(&requested_state.to_variant());
+                action_visual_debug.set_state(requested_state.to_variant());
             }),
         );
 
@@ -246,7 +246,7 @@ impl RnAppWindow {
                 let doc_layout = target.unwrap().str().unwrap();
                 let canvas = appwindow.active_tab().canvas();
                 let prev_layout = canvas.engine().borrow().document.layout;
-                action_doc_layout.set_state(&doc_layout.to_variant());
+                action_doc_layout.set_state(doc_layout.to_variant());
 
                 let doc_layout = match doc_layout {
                     "fixed-size" => {
@@ -283,9 +283,9 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
 
-                appwindow.active_tab().canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, Some(PathBuf::from(config::PKGDATADIR)));
+                appwindow.active_tab().canvas().engine().borrow_mut().set_pen_sounds(pen_sounds, crate::env::pkg_data_dir().ok());
 
-                action_pen_sounds.set_state(&pen_sounds.to_variant());
+                action_pen_sounds.set_state(pen_sounds.to_variant());
             }),
         );
 
@@ -298,7 +298,7 @@ impl RnAppWindow {
                 canvas.engine().borrow_mut().document.format.show_borders = format_borders;
                 canvas.queue_draw();
 
-                action_format_borders.set_state(&format_borders.to_variant());
+                action_format_borders.set_state(format_borders.to_variant());
             }),
         );
 
@@ -306,7 +306,7 @@ impl RnAppWindow {
         action_pen_style.connect_activate(
             clone!(@weak self as appwindow => move |action, target| {
                 let new_pen_style = target.unwrap().get::<PenStyle>().unwrap();
-                action.set_state(&new_pen_style.to_variant());
+                action.set_state(new_pen_style.to_variant());
                 let canvas = appwindow.active_tab().canvas();
 
                 // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
@@ -479,9 +479,9 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let new_zoom = Camera::ZOOM_DEFAULT;
-            let current_doc_center = canvas.current_center_on_doc();
+            let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            canvas.center_around_coord_on_doc(current_doc_center);
+            canvas.center_view_around_coords(current_doc_center);
         }));
 
         // Zoom fit to width
@@ -489,9 +489,9 @@ impl RnAppWindow {
             let canvaswrapper = appwindow.active_tab();
 
             let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * RnCanvasLayout::OVERSHOOT_HORIZONTAL);
-            let current_doc_center = canvaswrapper.canvas().current_center_on_doc();
+            let current_doc_center = canvaswrapper.canvas().current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            canvaswrapper.canvas().center_around_coord_on_doc(current_doc_center);
+            canvaswrapper.canvas().center_view_around_coords(current_doc_center);
         }));
 
         // Zoom in
@@ -499,9 +499,9 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_STEP);
-            let current_doc_center = canvas.current_center_on_doc();
+            let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            canvas.center_around_coord_on_doc(current_doc_center);
+            canvas.center_view_around_coords(current_doc_center);
         }));
 
         // Zoom out
@@ -509,9 +509,9 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_STEP);
-            let current_doc_center = canvas.current_center_on_doc();
+            let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            canvas.center_around_coord_on_doc(current_doc_center);
+            canvas.center_view_around_coords(current_doc_center);
         }));
 
         // Zoom to value

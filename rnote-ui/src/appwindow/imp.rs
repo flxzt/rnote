@@ -29,6 +29,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) autosave: Cell<bool>,
     pub(crate) autosave_interval_secs: Cell<u32>,
     pub(crate) righthanded: Cell<bool>,
+    pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
 
     #[template_child]
@@ -73,6 +74,7 @@ impl Default for RnAppWindow {
             autosave: Cell::new(true),
             autosave_interval_secs: Cell::new(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
             righthanded: Cell::new(true),
+            block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),
 
             main_grid: TemplateChild::<Grid>::default(),
@@ -111,11 +113,11 @@ impl ObjectSubclass for RnAppWindow {
 impl ObjectImpl for RnAppWindow {
     fn constructed(&self) {
         self.parent_constructed();
-        let inst = self.instance();
-        let _windowsettings = inst.settings();
+        let obj = self.obj();
+        let _windowsettings = obj.settings();
 
         if config::PROFILE == "devel" {
-            inst.add_css_class("devel");
+            obj.add_css_class("devel");
         }
 
         // Load the application css
@@ -137,40 +139,23 @@ impl ObjectImpl for RnAppWindow {
     fn properties() -> &'static [glib::ParamSpec] {
         static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
             vec![
-                // autosave
-                glib::ParamSpecBoolean::new(
-                    "autosave",
-                    "autosave",
-                    "autosave",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                // autosave interval in secs
-                glib::ParamSpecUInt::new(
-                    "autosave-interval-secs",
-                    "autosave-interval-secs",
-                    "autosave-interval-secs",
-                    5,
-                    u32::MAX,
-                    super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT,
-                    glib::ParamFlags::READWRITE,
-                ),
-                // righthanded
-                glib::ParamSpecBoolean::new(
-                    "righthanded",
-                    "righthanded",
-                    "righthanded",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
-                // Whether to enable touch drawing
-                glib::ParamSpecBoolean::new(
-                    "touch-drawing",
-                    "touch-drawing",
-                    "touch-drawing",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                ),
+                glib::ParamSpecBoolean::builder("autosave")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecUInt::builder("autosave-interval-secs")
+                    .minimum(5)
+                    .maximum(u32::MAX)
+                    .default_value(super::RnAppWindow::AUTOSAVE_INTERVAL_DEFAULT)
+                    .build(),
+                glib::ParamSpecBoolean::builder("righthanded")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("block-pinch-zoom")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("touch-drawing")
+                    .default_value(false)
+                    .build(),
             ]
         });
         PROPERTIES.as_ref()
@@ -181,6 +166,7 @@ impl ObjectImpl for RnAppWindow {
             "autosave" => self.autosave.get().to_value(),
             "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
             "righthanded" => self.righthanded.get().to_value(),
+            "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
             _ => unimplemented!(),
         }
@@ -222,6 +208,11 @@ impl ObjectImpl for RnAppWindow {
 
                 self.handle_righthanded_property(righthanded);
             }
+            "block-pinch-zoom" => {
+                let block_pinch_zoom: bool =
+                    value.get().expect("The value needs to be of type `bool`");
+                self.block_pinch_zoom.replace(block_pinch_zoom);
+            }
             "touch-drawing" => {
                 let touch_drawing: bool =
                     value.get().expect("The value needs to be of type `bool`");
@@ -237,17 +228,15 @@ impl WidgetImpl for RnAppWindow {}
 impl WindowImpl for RnAppWindow {
     // Save window state right before the window will be closed
     fn close_request(&self) -> Inhibit {
-        let inst = self.instance().to_owned();
+        let obj = self.obj().to_owned();
 
         // Save current doc
-        if inst.tabs_any_unsaved_changes() {
-            glib::MainContext::default().spawn_local(
-                clone!(@weak inst as appwindow => async move {
-                    dialogs::dialog_close_window(&inst).await;
-                }),
-            );
+        if obj.tabs_any_unsaved_changes() {
+            glib::MainContext::default().spawn_local(clone!(@weak obj as appwindow => async move {
+                dialogs::dialog_close_window(&obj).await;
+            }));
         } else {
-            inst.close_force();
+            obj.close_force();
         }
 
         // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
@@ -261,10 +250,10 @@ impl AdwApplicationWindowImpl for RnAppWindow {}
 
 impl RnAppWindow {
     fn update_autosave_handler(&self) {
-        let inst = self.instance();
+        let obj = self.obj();
 
         if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(),
-                clone!(@weak inst as appwindow => @default-return glib::source::Continue(false), move || {
+                clone!(@weak obj as appwindow => @default-return glib::source::Continue(false), move || {
                     let canvas = appwindow.active_tab().canvas();
 
                     if let Some(output_file) = canvas.output_file() {
@@ -291,14 +280,14 @@ impl RnAppWindow {
 
     // Setting up the sidebar flap
     fn setup_flap(&self) {
-        let inst = self.instance();
+        let obj = self.obj();
         let flap = self.flap.get();
         let flap_box = self.flap_box.get();
         let flap_resizer = self.flap_resizer.get();
         let flap_resizer_box = self.flap_resizer_box.get();
         let workspace_headerbar = self.flap_header.get();
-        let left_flapreveal_toggle = inst.mainheader().left_flapreveal_toggle();
-        let right_flapreveal_toggle = inst.mainheader().right_flapreveal_toggle();
+        let left_flapreveal_toggle = obj.mainheader().left_flapreveal_toggle();
+        let right_flapreveal_toggle = obj.mainheader().right_flapreveal_toggle();
 
         flap.set_locked(true);
         flap.set_fold_policy(adw::FlapFoldPolicy::Auto);
@@ -335,7 +324,7 @@ impl RnAppWindow {
         );
 
         self.flap
-                .connect_folded_notify(clone!(@weak inst as appwindow, @strong expanded_revealed, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle, @weak workspace_headerbar => move |flap| {
+                .connect_folded_notify(clone!(@weak obj as appwindow, @strong expanded_revealed, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle, @weak workspace_headerbar => move |flap| {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
@@ -370,7 +359,7 @@ impl RnAppWindow {
                 }));
 
         self.flap.connect_reveal_flap_notify(
-            clone!(@weak inst as appwindow, @weak workspace_headerbar => move |flap| {
+            clone!(@weak workspace_headerbar, @weak obj as appwindow => move |flap| {
                 if appwindow.mainheader().appmenu().parent().is_some() {
                     appwindow.mainheader().appmenu().unparent();
                 }
@@ -395,36 +384,41 @@ impl RnAppWindow {
             }),
         );
 
-        self.flap.connect_flap_position_notify(
-                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box, @weak workspace_headerbar, @strong expanded_revealed, @weak inst as appwindow => move |flap| {
-                    if flap.flap_position() == PackType::Start {
-                        workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
-                        workspace_headerbar.set_show_end_title_buttons(false);
+        self.flap.connect_flap_position_notify(clone!(
+            @weak flap_resizer_box,
+            @weak flap_resizer,
+            @weak flap_box,
+            @weak workspace_headerbar,
+            @strong expanded_revealed,
+            @weak obj as appwindow => move |flap| {
+            if flap.flap_position() == PackType::Start {
+                workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
+                workspace_headerbar.set_show_end_title_buttons(false);
 
-                        flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
+                flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
 
-                        appwindow.flap_header().remove(&appwindow.flap_close_button());
-                        appwindow.flap_header().pack_end(&appwindow.flap_close_button());
-                        appwindow.flap_close_button().set_icon_name("left-symbolic");
-                    } else if flap.flap_position() == PackType::End {
-                        workspace_headerbar.set_show_start_title_buttons(false);
-                        workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
+                appwindow.flap_header().remove(&appwindow.flap_close_button());
+                appwindow.flap_header().pack_end(&appwindow.flap_close_button());
+                appwindow.flap_close_button().set_icon_name("left-symbolic");
+            } else if flap.flap_position() == PackType::End {
+                workspace_headerbar.set_show_start_title_buttons(false);
+                workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
 
-                        flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
+                flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
 
-                        appwindow.flap_header().remove(&appwindow.flap_close_button());
-                        appwindow.flap_header().pack_start(&appwindow.flap_close_button());
-                        appwindow.flap_close_button().set_icon_name("right-symbolic");
-                    }
-                }),
-            );
+                appwindow.flap_header().remove(&appwindow.flap_close_button());
+                appwindow.flap_header().pack_start(&appwindow.flap_close_button());
+                appwindow.flap_close_button().set_icon_name("right-symbolic");
+            }
+        }));
 
         // Resizing the flap contents
         let resizer_drag_gesture = GestureDrag::builder()
             .name("resizer_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        self.flap_resizer.add_controller(&resizer_drag_gesture);
+        self.flap_resizer
+            .add_controller(resizer_drag_gesture.clone());
 
         // hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
         let prev_folded = Rc::new(Cell::new(self.flap.get().is_folded()));
@@ -433,7 +427,13 @@ impl RnAppWindow {
                     prev_folded.set(flap.is_folded());
             }));
 
-        resizer_drag_gesture.connect_drag_update(clone!(@weak inst as appwindow, @strong prev_folded, @weak flap, @weak flap_box, @weak left_flapreveal_toggle, @weak right_flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
+        resizer_drag_gesture.connect_drag_update(clone!(
+            @strong prev_folded,
+            @weak flap,
+            @weak flap_box,
+            @weak left_flapreveal_toggle,
+            @weak right_flapreveal_toggle,
+            @weak obj as appwindow => move |_resizer_drag_gesture, x , _y| {
                 if flap.is_folded() == prev_folded.get() {
                     // Set BEFORE new width request
                     prev_folded.set(flap.is_folded());
@@ -462,7 +462,7 @@ impl RnAppWindow {
         );
 
         self.flap_close_button.get().connect_clicked(
-            clone!(@weak inst as appwindow => move |_flap_close_button| {
+            clone!(@weak obj as appwindow => move |_flap_close_button| {
                 if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
                     appwindow.flap().set_reveal_flap(false);
                 }
@@ -471,224 +471,220 @@ impl RnAppWindow {
     }
 
     fn setup_input(&self) {
-        let inst = self.instance();
-        let drawing_pad_controller = PadController::new(&*inst, None);
+        let obj = self.obj();
+        let drawing_pad_controller = PadController::new(&*obj, None);
 
         drawing_pad_controller.set_action(
             PadActionType::Button,
             0,
             -1,
-            &gettext("Button 0"),
+            &gettext("Button 1"),
             "drawing-pad-pressed-button-0",
         );
         drawing_pad_controller.set_action(
             PadActionType::Button,
             1,
             -1,
-            &gettext("Button 1"),
+            &gettext("Button 2"),
             "drawing-pad-pressed-button-1",
         );
         drawing_pad_controller.set_action(
             PadActionType::Button,
             2,
             -1,
-            &gettext("Button 2"),
+            &gettext("Button 3"),
             "drawing-pad-pressed-button-2",
         );
         drawing_pad_controller.set_action(
             PadActionType::Button,
             3,
             -1,
-            &gettext("Button 3"),
+            &gettext("Button 4"),
             "drawing-pad-pressed-button-3",
         );
 
-        inst.add_controller(&drawing_pad_controller);
+        obj.add_controller(drawing_pad_controller.clone());
         self.drawing_pad_controller
             .replace(Some(drawing_pad_controller));
     }
 
     fn handle_righthanded_property(&self, righthanded: bool) {
-        let inst = self.instance();
+        let obj = self.obj();
 
         if righthanded {
-            inst.flap().set_flap_position(PackType::Start);
-            inst.mainheader().left_flapreveal_toggle().set_visible(true);
-            inst.mainheader()
+            obj.flap().set_flap_position(PackType::Start);
+            obj.mainheader().left_flapreveal_toggle().set_visible(true);
+            obj.mainheader()
                 .right_flapreveal_toggle()
                 .set_visible(false);
-            inst.mainheader()
+            obj.mainheader()
                 .appmenu()
                 .righthanded_toggle()
                 .set_active(true);
-            inst.workspacebrowser()
+            obj.workspacebrowser()
                 .grid()
-                .remove(&inst.workspacebrowser().workspacesbar());
-            inst.workspacebrowser()
+                .remove(&obj.workspacebrowser().workspacesbar());
+            obj.workspacebrowser()
                 .grid()
-                .remove(&inst.workspacebrowser().files_scroller());
-            inst.workspacebrowser().grid().attach(
-                &inst.workspacebrowser().workspacesbar(),
+                .remove(&obj.workspacebrowser().files_scroller());
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().workspacesbar(),
                 0,
                 0,
                 1,
                 1,
             );
-            inst.workspacebrowser().grid().attach(
-                &inst.workspacebrowser().files_scroller(),
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().files_scroller(),
                 2,
                 0,
                 1,
                 1,
             );
-            inst.workspacebrowser()
+            obj.workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopRight);
-            inst.workspacebrowser()
+            obj.workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopRight);
 
-            inst.overlays().sidebar_box().set_halign(Align::Start);
-            inst.overlays()
+            obj.overlays().sidebar_box().set_halign(Align::Start);
+            obj.overlays()
                 .sidebar_scroller()
                 .set_window_placement(CornerType::TopRight);
-            inst.settings_panel()
+            obj.settings_panel()
                 .settings_scroller()
                 .set_window_placement(CornerType::TopRight);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .brush_page()
                 .brushconfig_menubutton()
                 .set_direction(ArrowType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .brush_page()
                 .brushstyle_menubutton()
                 .set_direction(ArrowType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .brush_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shaperstyle_menubutton()
                 .set_direction(ArrowType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapeconfig_menubutton()
                 .set_direction(ArrowType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapebuildertype_menubutton()
                 .set_direction(ArrowType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .constraint_menubutton()
                 .set_direction(ArrowType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .eraser_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
         } else {
-            inst.flap().set_flap_position(PackType::End);
-            inst.mainheader()
-                .left_flapreveal_toggle()
-                .set_visible(false);
-            inst.mainheader()
-                .right_flapreveal_toggle()
-                .set_visible(true);
-            inst.mainheader()
+            obj.flap().set_flap_position(PackType::End);
+            obj.mainheader().left_flapreveal_toggle().set_visible(false);
+            obj.mainheader().right_flapreveal_toggle().set_visible(true);
+            obj.mainheader()
                 .appmenu()
                 .lefthanded_toggle()
                 .set_active(true);
-            inst.workspacebrowser()
+            obj.workspacebrowser()
                 .grid()
-                .remove(&inst.workspacebrowser().files_scroller());
-            inst.workspacebrowser()
+                .remove(&obj.workspacebrowser().files_scroller());
+            obj.workspacebrowser()
                 .grid()
-                .remove(&inst.workspacebrowser().workspacesbar());
-            inst.workspacebrowser().grid().attach(
-                &inst.workspacebrowser().files_scroller(),
+                .remove(&obj.workspacebrowser().workspacesbar());
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().files_scroller(),
                 0,
                 0,
                 1,
                 1,
             );
-            inst.workspacebrowser().grid().attach(
-                &inst.workspacebrowser().workspacesbar(),
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().workspacesbar(),
                 2,
                 0,
                 1,
                 1,
             );
-            inst.workspacebrowser()
+            obj.workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopLeft);
-            inst.workspacebrowser()
+            obj.workspacebrowser()
                 .workspacesbar()
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopLeft);
 
-            inst.overlays().sidebar_box().set_halign(Align::End);
-            inst.overlays()
+            obj.overlays().sidebar_box().set_halign(Align::End);
+            obj.overlays()
                 .sidebar_scroller()
                 .set_window_placement(CornerType::TopLeft);
-            inst.settings_panel()
+            obj.settings_panel()
                 .settings_scroller()
                 .set_window_placement(CornerType::TopLeft);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .brush_page()
                 .brushconfig_menubutton()
                 .set_direction(ArrowType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .brush_page()
                 .brushstyle_menubutton()
                 .set_direction(ArrowType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .brush_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shaperstyle_menubutton()
                 .set_direction(ArrowType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapeconfig_menubutton()
                 .set_direction(ArrowType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .shapebuildertype_menubutton()
                 .set_direction(ArrowType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .constraint_menubutton()
                 .set_direction(ArrowType::Left);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .shaper_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Right);
-            inst.overlays()
+            obj.overlays()
                 .penssidebar()
                 .eraser_page()
                 .stroke_width_picker()

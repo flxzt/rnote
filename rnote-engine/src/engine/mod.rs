@@ -427,15 +427,15 @@ impl RnoteEngine {
     }
 
     /// enables / disables the pen sounds.
-    /// If pen sound should be enabled, the rnote data dir must be provided.
-    pub fn set_pen_sounds(&mut self, pen_sounds: bool, data_dir: Option<PathBuf>) {
+    /// If pen sound should be enabled, the pkg data dir must be provided.
+    pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
         self.pen_sounds = pen_sounds;
 
         if pen_sounds {
-            if let Some(data_dir) = data_dir {
+            if let Some(pkg_data_dir) = pkg_data_dir {
                 // Only create and init a new audioplayer if it does not already exists
                 if self.audioplayer.is_none() {
-                    self.audioplayer = match AudioPlayer::new_init(data_dir) {
+                    self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
                         Ok(audioplayer) => Some(audioplayer),
                         Err(e) => {
                             log::error!("creating a new audioplayer failed, Err: {e:?}");
@@ -760,7 +760,7 @@ impl RnoteEngine {
             ])
             .into_iter()
             .filter(|page_bounds| {
-                // Filter the pages out that doesn't intersect with any stroke
+                // Filter the pages out that don't intersect with any stroke
                 strokes_bounds
                     .iter()
                     .any(|stroke_bounds| stroke_bounds.intersects(page_bounds))

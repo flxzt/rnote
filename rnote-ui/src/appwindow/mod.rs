@@ -2,6 +2,7 @@ mod appsettings;
 mod appwindowactions;
 mod imp;
 
+// Imports
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::gdk;
@@ -16,9 +17,8 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
 
-use crate::canvas::RnCanvas;
 use crate::{
-    config, RnApp, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
+    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
     {dialogs, RnMainHeader},
 };
 
@@ -34,7 +34,7 @@ impl RnAppWindow {
     const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub(crate) fn new(app: &Application) -> Self {
-        glib::Object::new(&[("application", app)])
+        glib::Object::builder().property("application", app).build()
     }
 
     #[allow(unused)]
@@ -224,6 +224,9 @@ impl RnAppWindow {
             // this updates the canvas adjustment values with the ones from the camera
             canvas.update_camera_offset(camera_offset);
         }
+        if widget_flags.deselect_color_setters {
+            self.overlays().colorpicker().deselect_setters();
+        }
         if let Some(hide_undo) = widget_flags.hide_undo {
             self.mainheader().undo_button().set_sensitive(!hide_undo);
         }
@@ -286,7 +289,7 @@ impl RnAppWindow {
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .load_engine_config(current_engine_config, Some(config::DATADIR.into()))
+                .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok())
             {
                 Ok(wf) => self.handle_widget_flags(wf, &new_wrapper.canvas()),
                 Err(e) => {
@@ -846,7 +849,7 @@ impl RnAppWindow {
             widget_flags.merge(active_engine.reinstall_pen_current_style());
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;
-            active_engine.set_pen_sounds(prev_engine.pen_sounds(), Some(config::DATADIR.into()));
+            active_engine.set_pen_sounds(prev_engine.pen_sounds(), crate::env::pkg_data_dir().ok());
             active_engine.visual_debug = prev_engine.visual_debug;
         }
 

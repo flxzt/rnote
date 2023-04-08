@@ -1,5 +1,5 @@
 use adw::prelude::*;
-use gtk4::{gdk, glib};
+use gtk4::{gdk, glib, glib::clone};
 
 use crate::appwindow::RnAppWindow;
 
@@ -8,33 +8,21 @@ impl RnAppWindow {
     pub(crate) fn setup_settings_binds(&self) {
         let app = self.app();
 
-        // Color scheme
-        self.app_settings()
-            .bind("color-scheme", &app.style_manager(), "color-scheme")
-            .mapping(|variant, _| {
-                let value = variant.get::<String>().unwrap();
+        app.style_manager().connect_color_scheme_notify(
+            clone!(@weak app, @weak self as appwindow => move |style_manager| {
+                let color_scheme = match style_manager.color_scheme() {
+                    adw::ColorScheme::Default => String::from("default"),
+                    adw::ColorScheme::ForceLight => String::from("force-light"),
+                    adw::ColorScheme::ForceDark => String::from("force-dark"),
+                    _ => String::from("default"),
+                };
 
-                match value.as_str() {
-                    "default" => Some(adw::ColorScheme::Default.to_value()),
-                    "force-light" => Some(adw::ColorScheme::ForceLight.to_value()),
-                    "force-dark" => Some(adw::ColorScheme::ForceDark.to_value()),
-                    _ => {
-                        log::error!(
-                            "mapping color-scheme to setting failed, invalid str {}",
-                            value.as_str()
-                        );
-                        None
+                if let Err(e) = appwindow.app_settings()
+                    .set_string("color-scheme", &color_scheme) {
+                        log::error!("failed to set setting `color-scheme`, Err: {e:?}");
                     }
-                }
-            })
-            .set_mapping(|value, _| match value.get::<adw::ColorScheme>().unwrap() {
-                adw::ColorScheme::Default => Some(String::from("default").to_variant()),
-                adw::ColorScheme::ForceLight => Some(String::from("force-light").to_variant()),
-                adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
-                _ => None,
-            })
-            .get_no_changes()
-            .build();
+            }),
+        );
 
         self.app_settings()
             .bind("flap-reveal", &self.flap(), "reveal-flap")
@@ -56,6 +44,12 @@ impl RnAppWindow {
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")
+            .get_no_changes()
+            .build();
+
+        // block pinch zoom
+        self.app_settings()
+            .bind("block-pinch-zoom", self, "block-pinch-zoom")
             .get_no_changes()
             .build();
 
@@ -363,14 +357,14 @@ impl RnAppWindow {
             // flap width
             self.flap_box()
                 .set_width_request(self.app_settings().int("flap-width"));
-        }
 
-        // color scheme
-        // Set the action menu, as the style manager colorscheme property may not be updated
-        // from the binding at startup when opening a second window (TODO: why?)
-        let color_scheme = self.app_settings().string("color-scheme");
-        self.app()
-            .activate_action("color-scheme", Some(&color_scheme.to_variant()));
+            // color scheme
+
+            // set the color-scheme through the action
+            let color_scheme = self.app_settings().string("color-scheme");
+            self.app()
+                .activate_action("color-scheme", Some(&color_scheme.to_variant()));
+        }
 
         {
             // Workspaces bar
@@ -382,6 +376,8 @@ impl RnAppWindow {
 
     /// Save all settings at shutdown that are not bound in setup_settings
     pub(crate) fn save_to_settings(&self) -> anyhow::Result<()> {
+        let _app = self.app();
+
         {
             // Appwindow
             self.app_settings().set_int("window-width", self.width())?;

@@ -21,13 +21,11 @@ use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, RefCell};
-use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::Duration;
 
-use crate::appwindow::RnAppWindow;
-use crate::canvaswrapper::RnCanvasWrapper;
-use crate::config;
+use crate::RnCanvasWrapper;
+use crate::{config, RnAppWindow};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -185,23 +183,23 @@ mod imp {
     impl ObjectImpl for RnCanvas {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
-            inst.set_hexpand(false);
-            inst.set_vexpand(false);
+            obj.set_hexpand(false);
+            obj.set_vexpand(false);
             // keyboard focus needed for typewriter
-            inst.set_can_focus(true);
-            inst.set_focusable(true);
+            obj.set_can_focus(true);
+            obj.set_focusable(true);
 
-            inst.set_cursor(Some(&*self.regular_cursor.borrow()));
+            obj.set_cursor(Some(&*self.regular_cursor.borrow()));
 
-            inst.add_controller(&self.pointer_controller);
-            inst.add_controller(&self.key_controller);
-            inst.add_controller(&self.drop_target);
+            obj.add_controller(self.pointer_controller.clone());
+            obj.add_controller(self.key_controller.clone());
+            obj.add_controller(self.drop_target.clone());
 
             // receive and handling engine tasks
             glib::MainContext::default().spawn_local(
-                clone!(@weak inst as canvas => async move {
+                clone!(@weak obj as canvas => async move {
                     let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
 
                     loop {
@@ -221,7 +219,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -229,51 +227,23 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpecObject::new(
-                        "output-file",
-                        "output-file",
-                        "output-file",
-                        Option::<gio::File>::static_type(),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // Flag to indicate that there are unsaved changes to the canvas
-                    glib::ParamSpecBoolean::new(
-                        "unsaved-changes",
-                        "unsaved-changes",
-                        "unsaved-changes",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // Whether the canvas is empty
-                    glib::ParamSpecBoolean::new(
-                        "empty",
-                        "empty",
-                        "empty",
-                        true,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // Whether to enable touch drawing
-                    glib::ParamSpecBoolean::new(
-                        "touch-drawing",
-                        "touch-drawing",
-                        "touch-drawing",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecString::new(
-                        "regular-cursor",
-                        "regular-cursor",
-                        "regular-cursor",
-                        Some("cursor-dot-medium"),
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecString::new(
-                        "drawing-cursor",
-                        "drawing-cursor",
-                        "drawing-cursor",
-                        Some("cursor-dot-small"),
-                        glib::ParamFlags::READWRITE,
-                    ),
+                    // this is nullable, so it can be used to represent Option<gio::File>
+                    glib::ParamSpecObject::builder::<gio::File>("output-file").build(),
+                    glib::ParamSpecBoolean::builder("unsaved-changes")
+                        .default_value(false)
+                        .build(),
+                    glib::ParamSpecBoolean::builder("empty")
+                        .default_value(true)
+                        .build(),
+                    glib::ParamSpecBoolean::builder("touch-drawing")
+                        .default_value(false)
+                        .build(),
+                    glib::ParamSpecString::builder("regular-cursor")
+                        .default_value(Some("cursor-dot-medium"))
+                        .build(),
+                    glib::ParamSpecString::builder("drawing-cursor")
+                        .default_value(Some("cursor-dot-small"))
+                        .build(),
                     // Scrollable properties
                     glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),
                     glib::ParamSpecOverride::for_interface::<Scrollable>("vscroll-policy"),
@@ -301,7 +271,7 @@ mod imp {
         }
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             match pspec.name() {
                 "output-file" => {
@@ -319,7 +289,7 @@ mod imp {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`");
                     self.empty.replace(empty);
                     if empty {
-                        inst.set_unsaved_changes(false);
+                        obj.set_unsaved_changes(false);
                     }
                 }
                 "hadjustment" => {
@@ -363,7 +333,7 @@ mod imp {
 
                     self.regular_cursor.replace(cursor);
 
-                    inst.set_cursor(Some(&*self.regular_cursor.borrow()));
+                    obj.set_cursor(Some(&*self.regular_cursor.borrow()));
                 }
                 "drawing-cursor" => {
                     let icon_name = value.get().unwrap();
@@ -406,18 +376,18 @@ mod imp {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
         fn snapshot(&self, snapshot: &gtk4::Snapshot) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             if let Err(e) = || -> anyhow::Result<()> {
-                let clip_bounds = if let Some(parent) = inst.parent() {
+                let clip_bounds = if let Some(parent) = obj.parent() {
                     // unwrapping is fine, because its the parent
-                    let (clip_x, clip_y) = parent.translate_coordinates(&*inst, 0.0, 0.0).unwrap();
+                    let (clip_x, clip_y) = parent.translate_coordinates(&*obj, 0.0, 0.0).unwrap();
                     Aabb::new_positive(
                         na::point![clip_x, clip_y],
                         na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
-                    inst.bounds()
+                    obj.bounds()
                 };
                 // push the clip
                 snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
@@ -425,7 +395,7 @@ mod imp {
                 // Draw the entire engine
                 self.engine
                     .borrow()
-                    .draw_to_gtk_snapshot(snapshot, inst.bounds())?;
+                    .draw_to_gtk_snapshot(snapshot, obj.bounds())?;
 
                 // pop the clip
                 snapshot.pop();
@@ -440,11 +410,11 @@ mod imp {
 
     impl RnCanvas {
         fn setup_input(&self) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
-            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak inst as canvas => @default-return Inhibit(false), move |_controller, event| {
+            self.pointer_controller.connect_event(clone!(@strong pen_state, @weak obj as canvas => @default-return Inhibit(false), move |_, event| {
                 let (inhibit, new_state) = super::input::handle_pointer_controller_event(&canvas, event, pen_state.get());
                 pen_state.set(new_state);
                 inhibit
@@ -452,13 +422,13 @@ mod imp {
 
             // For unicode text the input is committed from the IM context, and won't trigger the key_pressed signal
             self.key_controller_im_context.connect_commit(
-                clone!(@weak inst as canvas => move |_cx, text| {
+                clone!(@weak obj as canvas => move |_cx, text| {
                     super::input::handle_imcontext_text_commit(&canvas, text);
                 }),
             );
 
             // Key controller
-            self.key_controller.connect_key_pressed(clone!(@weak inst as canvas => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+            self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return Inhibit(false), move |_, key, _raw, modifier| {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
             /*
@@ -471,7 +441,7 @@ mod imp {
         }
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             if let Some(signal_id) = self.handlers.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
@@ -480,7 +450,7 @@ mod imp {
 
             if let Some(ref hadj) = hadj {
                 let signal_id =
-                    hadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                    hadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
                         // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
@@ -491,7 +461,7 @@ mod imp {
         }
 
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
-            let inst = self.instance();
+            let obj = self.obj();
 
             if let Some(signal_id) = self.handlers.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
@@ -500,7 +470,7 @@ mod imp {
 
             if let Some(ref vadj) = vadj {
                 let signal_id =
-                    vadj.connect_value_changed(clone!(@weak inst as canvas => move |_| {
+                    vadj.connect_value_changed(clone!(@weak obj as canvas => move |_| {
                         // this triggers a canvaslayout allocate() call, where the strokes rendering is updated based on some conditions
                         canvas.queue_resize();
                     }));
@@ -536,7 +506,7 @@ impl RnCanvas {
     pub(crate) const ZOOM_STEP: f64 = 0.1;
 
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     #[allow(unused)]
@@ -662,7 +632,7 @@ impl RnCanvas {
         let widget_flags = match self
             .engine()
             .borrow_mut()
-            .import_engine_config_from_json(&engine_config, Some(PathBuf::from(config::PKGDATADIR)))
+            .import_engine_config_from_json(&engine_config, crate::env::pkg_data_dir().ok())
         {
             Err(e) => {
                 if engine_config.is_empty() {
@@ -1125,68 +1095,58 @@ impl RnCanvas {
         )
     }
 
-    // updates the camera offset with a new one ( for example from touch drag gestures )
+    /// gets the current scrollbar adjustment values
+    pub(crate) fn adj_values(&self) -> na::Vector2<f64> {
+        na::vector![
+            self.hadjustment().unwrap().value(),
+            self.vadjustment().unwrap().value()
+        ]
+    }
 
-    // the rendering then needs to be updated.
+    /// updates the camera offset and scrollbar adjustment values
     pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
-        // This is a bit of a hack: we first set the new offset unrestricted,
-        // so the camera transform is immediately updated on zooms instead of the asynchronous update when calling queue_draw().
-        // This ensures that when we retrieve the current center on the document, the value is more consistent.
-        // TODO: clean up this mess
-        self.engine().borrow_mut().camera.offset = new_offset;
-        // This expands the doc size for autoexpanding layouts
-        self.engine().borrow_mut().expand_doc_autoexpand();
         // By setting new adjustment values, the callback connected to their `value` property is called,
         // Which is where the engine camera offset, size and the rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
     }
 
-    /// returns the center of the current view on the doc
-    pub(crate) fn current_center_on_doc(&self) -> na::Vector2<f64> {
+    /// returns the current view center coords.
+    /// used together with `center_view_around_coords`.
+    pub(crate) fn current_view_center_coords(&self) -> na::Vector2<f64> {
         let wrapper = self
             .ancestor(RnCanvasWrapper::static_type())
             .unwrap()
             .downcast::<RnCanvasWrapper>()
             .unwrap();
-        let center = wrapper
-            .translate_coordinates(
-                self,
-                wrapper.width() as f64 * 0.5,
-                wrapper.height() as f64 * 0.5,
-            )
-            .unwrap();
+        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
+        let total_zoom = self.engine().borrow().camera.total_zoom();
 
-        (self.engine().borrow().camera.transform().inverse() * na::point![center.0, center.1])
-            .coords
+        // we need to use the adj values here, because the camera transform doesn't get updated immediately.
+        // (happens in the reallocation, which gets queued)
+        (self.adj_values() + wrapper_size * 0.5) / total_zoom
     }
 
-    /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
-    // update_engine_rendering() then needs to be called.
-    pub(crate) fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
+    /// centers the view around the given coords.
+    /// used together with `current_view_center`.
+    ///
+    /// engine rendering then needs to be updated.
+    pub(crate) fn center_view_around_coords(&self, coords: na::Vector2<f64>) {
         let wrapper = self
             .ancestor(RnCanvasWrapper::static_type())
             .unwrap()
             .downcast::<RnCanvasWrapper>()
             .unwrap();
-        let center = wrapper
-            .translate_coordinates(
-                self,
-                wrapper.width() as f64 * 0.5,
-                wrapper.height() as f64 * 0.5,
-            )
-            .unwrap();
+        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
         let total_zoom = self.engine().borrow().camera.total_zoom();
-        let new_offset = na::vector![
-            ((coord[0]) * total_zoom) - center.0,
-            ((coord[1]) * total_zoom) - center.1
-        ];
+        let new_offset = coords * total_zoom - wrapper_size * 0.5;
 
         self.update_camera_offset(new_offset);
     }
 
     /// Centering the view to the origin page
-    // update_engine_rendering() then needs to be called.
+    ///
+    /// engine rendering then needs to be updated.
     pub(crate) fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
         let Some(parent) = self.parent() else {
@@ -1289,14 +1249,10 @@ impl RnCanvas {
         // background rendering is updated in the layout manager
         self.queue_resize();
 
-        // Update engine rendering for the new viewport
-        if let Err(e) = self
-            .engine()
+        // update content rendering
+        self.engine()
             .borrow_mut()
-            .update_rendering_current_viewport()
-        {
-            log::error!("failed to update engine rendering for current viewport, Err: {e:?}");
-        }
+            .update_content_rendering_current_viewport();
 
         self.queue_draw();
     }

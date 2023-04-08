@@ -120,25 +120,25 @@ mod imp {
     impl ObjectImpl for RnSettingsPanel {
         fn constructed(&self) {
             self.parent_constructed();
-            let inst = self.instance();
+            let obj = self.obj();
 
             self.format_predefined_formats_row
                 .connect_selected_item_notify(
-                    clone!(@weak inst as settings_panel => move |_format_predefined_formats_row| {
+                    clone!(@weak obj as settings_panel => move |_format_predefined_formats_row| {
                         settings_panel.imp().update_temporary_format_from_ui();
                         settings_panel.imp().apply_predefined_format();
                     }),
                 );
 
             self.format_orientation_portrait_toggle.connect_toggled(
-                clone!(@weak inst as settings_panel => move |_format_orientation_portrait_toggle| {
+                clone!(@weak obj as settings_panel => move |_format_orientation_portrait_toggle| {
                     settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().apply_predefined_format();
                 }),
             );
 
             self.format_orientation_landscape_toggle.connect_toggled(
-                clone!(@weak inst as settings_panel => move |_format_orientation_landscape_toggle| {
+                clone!(@weak obj as settings_panel => move |_format_orientation_landscape_toggle| {
                     settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().apply_predefined_format();
                 }),
@@ -146,20 +146,20 @@ mod imp {
 
             self.format_width_unitentry.get().connect_notify_local(
                 Some("value"),
-                clone!(@weak inst as settings_panel => move |_, _| {
+                clone!(@weak obj as settings_panel => move |_, _| {
                         settings_panel.imp().update_temporary_format_from_ui();
                 }),
             );
 
             self.format_height_unitentry.get().connect_notify_local(
                 Some("value"),
-                clone!(@weak inst as settings_panel => move |_, _| {
+                clone!(@weak obj as settings_panel => move |_, _| {
                         settings_panel.imp().update_temporary_format_from_ui();
                 }),
             );
 
             self.format_dpi_adj.connect_value_changed(
-                clone!(@weak inst as settings_panel => move |format_dpi_adj| {
+                clone!(@weak obj as settings_panel => move |format_dpi_adj| {
                     settings_panel.imp().update_temporary_format_from_ui();
                     settings_panel.imp().format_width_unitentry.set_dpi_keep_value(format_dpi_adj.value());
                     settings_panel.imp().format_height_unitentry.set_dpi_keep_value(format_dpi_adj.value());
@@ -168,7 +168,7 @@ mod imp {
         }
 
         fn dispose(&self) {
-            while let Some(child) = self.instance().first_child() {
+            while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
         }
@@ -210,7 +210,7 @@ mod imp {
         }
 
         fn apply_predefined_format(&self) {
-            let predefined_format = self.instance().format_predefined_format();
+            let predefined_format = self.obj().format_predefined_format();
 
             let preconfigured_dimensions = predefined_format.size_portrait_mm();
             match predefined_format {
@@ -294,7 +294,7 @@ impl Default for RnSettingsPanel {
 
 impl RnSettingsPanel {
     pub(crate) fn new() -> Self {
-        glib::Object::new(&[])
+        glib::Object::new()
     }
 
     pub(crate) fn format_predefined_format(&self) -> PredefinedFormat {
@@ -605,6 +605,14 @@ impl RnSettingsPanel {
                 },
                 PatternStyle::Dots => {
                     settings_panel.imp().background_pattern_width_unitentry.set_sensitive(true);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                },
+                PatternStyle::IsometricGrid => {
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
+                    settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
+                },
+                PatternStyle::IsometricDots => {
+                    settings_panel.imp().background_pattern_width_unitentry.set_sensitive(false);
                     settings_panel.imp().background_pattern_height_unitentry.set_sensitive(true);
                 },
             }

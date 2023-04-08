@@ -82,11 +82,11 @@ pub(crate) fn filechooser_open_doc(appwindow: &RnAppWindow) {
     filter.set_name(Some(&gettext(".rnote")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Open File"))
+        .title(gettext("Open File"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Open"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Open"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Open)
         .select_multiple(false)
         .build();
@@ -135,11 +135,11 @@ pub(crate) fn filechooser_import_file(appwindow: &RnAppWindow) {
     filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp")));
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Import File"))
+        .title(gettext("Import File"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Import"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Import"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::Open)
         .select_multiple(false)
         .build();

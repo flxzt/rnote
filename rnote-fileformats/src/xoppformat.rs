@@ -1023,7 +1023,7 @@ mod tests {
     fn setup() {
         INIT.call_once(|| {
             pretty_env_logger::init();
-            std::fs::create_dir_all(&std::path::PathBuf::from("./temp")).unwrap();
+            std::fs::create_dir_all(std::path::PathBuf::from("./temp")).unwrap();
         });
     }
 
@@ -1032,13 +1032,13 @@ mod tests {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple.json");
-        let bytes = std::fs::read(&to_load)?;
+        let bytes = std::fs::read(to_load)?;
 
         let xopp_format_loader = super::XoppFile::load_from_bytes(&bytes)?;
 
         // Dumping a json with serde
         let xpp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
-        std::fs::write(&to_save, &xpp_json)?;
+        std::fs::write(to_save, xpp_json)?;
 
         Ok(())
     }
@@ -1048,13 +1048,13 @@ mod tests {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image.json");
-        let bytes = std::fs::read(&to_load)?;
+        let bytes = std::fs::read(to_load)?;
 
         let xopp_format_loader = super::XoppFile::load_from_bytes(&bytes)?;
 
         // Dumping a json with serde
         let xpp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
-        std::fs::write(&to_save, &xpp_json)?;
+        std::fs::write(to_save, xpp_json)?;
 
         Ok(())
     }
@@ -1064,12 +1064,12 @@ mod tests {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple-new.xopp");
-        let bytes = std::fs::read(&to_load)?;
+        let bytes = std::fs::read(to_load)?;
 
         let xopp_file = super::XoppFile::load_from_bytes(&bytes)?;
 
         let xopp_output = xopp_file.save_as_bytes("simple-new.xopp")?;
-        std::fs::write(&to_save, &xopp_output)?;
+        std::fs::write(to_save, xopp_output)?;
 
         Ok(())
     }
@@ -1079,12 +1079,12 @@ mod tests {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image-new.xopp");
-        let bytes = std::fs::read(&to_load)?;
+        let bytes = std::fs::read(to_load)?;
 
         let xopp_file = super::XoppFile::load_from_bytes(&bytes)?;
 
         let xopp_output = xopp_file.save_as_bytes("image-new.xopp")?;
-        std::fs::write(&to_save, &xopp_output)?;
+        std::fs::write(to_save, xopp_output)?;
 
         Ok(())
     }

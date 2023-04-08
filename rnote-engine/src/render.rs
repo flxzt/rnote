@@ -1,25 +1,23 @@
-use std::io;
-use std::ops::Deref;
-
 use anyhow::Context;
 use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
-use image::GenericImageView;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
+use std::io::{self, Cursor};
+use std::ops::Deref;
 use svg::Node;
+use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
-use crate::usvg_export::{self, TreeExportExt};
 use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
-use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 
-pub static USVG_FONTDB: Lazy<usvg_text_layout::fontdb::Database> = Lazy::new(|| {
-    let mut db = usvg_text_layout::fontdb::Database::new();
+pub static USVG_FONTDB: Lazy<usvg::fontdb::Database> = Lazy::new(|| {
+    let mut db = usvg::fontdb::Database::new();
     db.load_system_fonts();
     db
 });
@@ -33,10 +31,10 @@ pub const POINT_TO_PX_CONV_FACTOR: f64 = 72.0 / 96.0;
 // There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view
 pub const VIEWPORT_EXTENTS_MARGIN_FACTOR: f64 = 0.4;
 
+#[non_exhaustive]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ImageMemoryFormat {
     R8g8b8a8Premultiplied,
-    B8g8r8a8Premultiplied,
 }
 
 impl Default for ImageMemoryFormat {
@@ -47,13 +45,12 @@ impl Default for ImageMemoryFormat {
 
 impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
     type Error = anyhow::Error;
-    fn try_from(gdk_memory_format: gdk::MemoryFormat) -> Result<Self, Self::Error> {
-        match gdk_memory_format {
+    fn try_from(value: gdk::MemoryFormat) -> Result<Self, Self::Error> {
+        match value {
             gdk::MemoryFormat::R8g8b8a8Premultiplied => Ok(Self::R8g8b8a8Premultiplied),
-            gdk::MemoryFormat::B8g8r8a8Premultiplied => Ok(Self::B8g8r8a8Premultiplied),
             _ => Err(anyhow::anyhow!(
-                "ImageMemoryFormat try_from() failed, unsupported MemoryFormat `{:?}`",
-                gdk_memory_format
+                "ImageMemoryFormat try_from() gdk::MemoryFormat failed, unsupported MemoryFormat `{:?}`",
+                value
             )),
         }
     }
@@ -61,21 +58,17 @@ impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
 
 /// From impl ImageMemoryFormat into gdk::MemoryFormat
 impl From<ImageMemoryFormat> for gdk::MemoryFormat {
-    fn from(format: ImageMemoryFormat) -> Self {
-        match format {
+    fn from(value: ImageMemoryFormat) -> Self {
+        match value {
             ImageMemoryFormat::R8g8b8a8Premultiplied => gdk::MemoryFormat::R8g8b8a8Premultiplied,
-            ImageMemoryFormat::B8g8r8a8Premultiplied => gdk::MemoryFormat::B8g8r8a8Premultiplied,
         }
     }
 }
 
-impl TryFrom<ImageMemoryFormat> for piet::ImageFormat {
-    type Error = anyhow::Error;
-
-    fn try_from(format: ImageMemoryFormat) -> Result<Self, Self::Error> {
-        match format {
-            ImageMemoryFormat::R8g8b8a8Premultiplied => Ok(piet::ImageFormat::RgbaPremul),
-            _ => Err(anyhow::anyhow!("unsupported memory format {:?}", format)),
+impl From<ImageMemoryFormat> for piet::ImageFormat {
+    fn from(value: ImageMemoryFormat) -> Self {
+        match value {
+            ImageMemoryFormat::R8g8b8a8Premultiplied => piet::ImageFormat::RgbaPremul,
         }
     }
 }
@@ -198,42 +191,6 @@ impl Image {
         Ok(Image::from(reader.decode()?))
     }
 
-    pub fn convert_to_rgba8pre(&mut self) -> anyhow::Result<()> {
-        self.assert_valid()?;
-
-        match self.memory_format {
-            ImageMemoryFormat::R8g8b8a8Premultiplied => {
-                // Already in the correct format
-                return Ok(());
-            }
-            ImageMemoryFormat::B8g8r8a8Premultiplied => {
-                let imgbuf_bgra8 = image::ImageBuffer::<image::Bgra<u8>, Vec<u8>>::from_vec(
-                    self.pixel_width,
-                    self.pixel_height,
-                    self.data.clone(),
-                )
-                .ok_or_else(|| {
-                    anyhow::anyhow!(
-                    "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
-                    self.memory_format
-                )
-                })?;
-
-                let dynamic_image = image::DynamicImage::ImageBgra8(imgbuf_bgra8).into_rgba8();
-
-                *self = Self {
-                    pixel_width: self.pixel_width,
-                    pixel_height: self.pixel_height,
-                    data: dynamic_image.into_vec(),
-                    rect: self.rect,
-                    memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
-                };
-            }
-        }
-
-        Ok(())
-    }
-
     pub fn to_imgbuf(self) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, anyhow::Error> {
         self.assert_valid()?;
 
@@ -247,21 +204,6 @@ impl Image {
                 )
                     })
             }
-            ImageMemoryFormat::B8g8r8a8Premultiplied => {
-                let imgbuf_bgra8 = image::ImageBuffer::<image::Bgra<u8>, Vec<u8>>::from_vec(
-                    self.pixel_width,
-                    self.pixel_height,
-                    self.data,
-                )
-                .ok_or_else(|| {
-                    anyhow::anyhow!(
-                    "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
-                    self.memory_format
-                )
-                })?;
-
-                Ok(image::DynamicImage::ImageBgra8(imgbuf_bgra8).into_rgba8())
-            }
         }
     }
 
@@ -270,7 +212,7 @@ impl Image {
         format: image::ImageOutputFormat,
     ) -> Result<Vec<u8>, anyhow::Error> {
         self.assert_valid()?;
-        let mut bytes_buf: Vec<u8> = vec![];
+        let mut bytes_buf: Cursor<Vec<u8>> = Cursor::new(Vec::new());
 
         let dynamic_image = image::DynamicImage::ImageRgba8(
             self.to_imgbuf()
@@ -280,7 +222,7 @@ impl Image {
             .write_to(&mut bytes_buf, format)
             .context("dynamic_image.write_to() failed in image_to_bytes()")?;
 
-        Ok(bytes_buf)
+        Ok(bytes_buf.into_inner())
     }
 
     pub fn to_memtexture(&self) -> Result<gdk::MemoryTexture, anyhow::Error> {
@@ -354,71 +296,7 @@ impl Image {
         Ok(snapshot.to_node())
     }
 
-    // Join multiple images together. The resulted bounds is the union of all given images bounds
-    pub fn join_images(images: Vec<Self>) -> Result<Option<Image>, anyhow::Error> {
-        if images.is_empty() {
-            return Ok(None);
-        }
-
-        let mut bounds = images
-            .iter()
-            .map(|image| image.rect.bounds())
-            .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x))
-            .ceil();
-        bounds.ensure_positive();
-        bounds = bounds.ceil();
-        bounds.assert_valid()?;
-
-        let width = bounds.extents()[0].round() as u32;
-        let height = bounds.extents()[1].round() as u32;
-
-        let mut image_surface =
-            cairo::ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32)
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                "create ImageSurface with dimensions ({}, {}) failed in Image join_images(), {}",
-                width,
-                height,
-                e
-            )
-                })?;
-
-        {
-            let cairo_cx = cairo::Context::new(&image_surface)?;
-
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-            piet_cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
-
-            for image in images {
-                image.draw(&mut piet_cx, 1.0)?;
-            }
-
-            piet_cx.finish().map_err(|e| {
-                anyhow::anyhow!("piet_cx.finish() failed in image.gen_with_piet() with Err: {e:?}")
-            })?;
-        }
-        // Surface needs to be flushed before accessing its data
-        image_surface.flush();
-
-        let data = image_surface
-                   .data()
-                   .map_err(|e| {
-                       anyhow::Error::msg(format!(
-                   "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err: {e:?}"
-               ))
-                   })?
-                   .to_vec();
-
-        Ok(Some(Self {
-            data,
-            rect: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: width,
-            pixel_height: height,
-            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
-        }))
-    }
-
-    // create an image from an svg (using librsvg )
+    /// create an image from an svg (using librsvg )
     pub fn gen_image_from_svg(
         svg: Svg,
         mut bounds: Aabb,
@@ -445,60 +323,62 @@ impl Image {
             )
             .map_err(|e| {
                 anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg_librsvg(), Err: {e:?}"
+                    "create ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed in gen_image_from_svg(), Err: {e:?}"
                 )
             })?;
 
         // Context in new scope, else accessing the surface data fails with a borrow error
         {
             let cx = cairo::Context::new(&surface)
-                .context("new cairo::Context failed in gen_image_from_svg_librsvg()")?;
+                .context("new cairo::Context failed in gen_image_from_svg()")?;
             cx.scale(image_scale, image_scale);
             cx.translate(-bounds.mins[0], -bounds.mins[1]);
 
             let stream =
                 gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-            let handle = librsvg::Loader::new()
+            let handle = rsvg::Loader::new()
                 .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                     &stream, None, None,
                 )
-                .context("read stream to librsvg Loader failed in gen_image_from_svg_librsvg()")?;
-            let renderer = librsvg::CairoRenderer::new(&handle);
+                .context("read stream to librsvg Loader failed in gen_image_from_svg()")?;
+
+            let renderer = rsvg::CairoRenderer::new(&handle);
             renderer
-                    .render_document(
-                        &cx,
-                        &cairo::Rectangle::new(
-                            bounds.mins[0],
-                            bounds.mins[1],
-                            bounds.extents()[0],
-                            bounds.extents()[1],
-                        ),
-                    )
-                    .map_err(|e| {
-                        anyhow::Error::msg(format!(
-                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err: {e:?}"
-                        ))
-                    })?;
+                .render_document(
+                    &cx,
+                    &cairo::Rectangle::new(
+                        bounds.mins[0],
+                        bounds.mins[1],
+                        bounds.extents()[0],
+                        bounds.extents()[1],
+                    ),
+                )
+                .map_err(|e| {
+                    anyhow::Error::msg(format!(
+                        "librsvg render_document() failed in gen_image_from_svg() with Err: {e:?}"
+                    ))
+                })?;
         }
         // Surface needs to be flushed before accessing its data
         surface.flush();
 
         let data = surface
-                .data()
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err: {e:?}"
-                    ))
-                })?
-                .to_vec();
+            .data()
+            .map_err(|e| {
+                anyhow::Error::msg(format!(
+                    "accessing imagesurface data failed in gen_image_from_svg() with Err: {e:?}"
+                ))
+            })?
+            .to_vec();
 
         Ok(Self {
-            data,
+            data: convert_image_bgra_to_rgba(width_scaled, height_scaled, data),
             rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
-            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
+            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
         })
     }
 
@@ -515,19 +395,19 @@ impl Image {
         bounds = bounds.ceil().loosened(1.0);
         bounds.assert_valid()?;
 
-        let split_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let split_height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
+        let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
+        let height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
 
         let mut image_surface = cairo::ImageSurface::create(
             cairo::Format::ARgb32,
-            split_width_scaled as i32,
-            split_height_scaled as i32,
+            width_scaled as i32,
+            height_scaled as i32,
         )
         .map_err(|e| {
             anyhow::anyhow!(
                 "create ImageSurface with dimensions ({}, {}) failed in Image gen_with_piet(), {}",
-                split_width_scaled,
-                split_height_scaled,
+                width_scaled,
+                height_scaled,
                 e
             )
         })?;
@@ -559,17 +439,18 @@ impl Image {
                 .to_vec();
 
         Ok(Image {
-            data,
+            data: convert_image_bgra_to_rgba(width_scaled, height_scaled, data),
             rect: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: split_width_scaled,
-            pixel_height: split_height_scaled,
-            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
+            pixel_width: width_scaled,
+            pixel_height: height_scaled,
+            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
         })
     }
 }
 
+/// A Svg Image
 #[derive(Debug, Clone)]
-/// A svg image
 pub struct Svg {
     /// the svg data as String
     pub svg_data: String,
@@ -623,11 +504,7 @@ impl Svg {
             width, height, svg_stream
         )
         .map_err(|e| {
-            anyhow::anyhow!(
-                "create SvgSurface with dimensions ({}, {}) failed in Svg gen_with_piet_cairo_backend(), {}",
-                width,height,
-                e
-            )
+            anyhow::anyhow!("create SvgSurface with dimensions ({}, {}) failed in Svg gen_with_piet_cairo_backend(), {}", width, height, e)
         })?;
 
         svg_surface.set_document_unit(cairo::SvgUnit::Px);
@@ -687,13 +564,13 @@ impl Svg {
             let stream =
                 gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-            let handle = librsvg::Loader::new()
+            let handle = rsvg::Loader::new()
                 .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                     &stream, None, None,
                 )
                 .context("read stream to librsvg Loader failed")?;
 
-            let renderer = librsvg::CairoRenderer::new(&handle);
+            let renderer = rsvg::CairoRenderer::new(&handle);
             renderer
                 .render_document(
                     cx,
@@ -715,24 +592,30 @@ impl Svg {
 
     /// Simplifies the svg by passing it through usvg
     pub fn simplify(&mut self) -> anyhow::Result<()> {
-        let xml_options = usvg_export::ExportOptions {
+        let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
-            n_decimal_places: 3,
+            transforms_precision: 4,
+            coordinates_precision: 3,
             writer_opts: xmlwriter::Options {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-        let svg_data = rnote_compose::utils::wrap_svg_root(
+        let simplified_bounds = Aabb::new(
+            na::point![0.0, 0.0],
+            na::Point2::from(self.bounds.extents()),
+        );
+        let wrapped_svg_data = rnote_compose::utils::wrap_svg_root(
             &rnote_compose::utils::remove_xml_header(&self.svg_data),
-            None,
-            None,
+            Some(simplified_bounds),
+            Some(self.bounds),
             false,
         );
-        let mut usvg_tree = usvg::Tree::from_str(&svg_data, &usvg::Options::default())?;
-        usvg_tree.convert_text_to_paths(&USVG_FONTDB);
+        let mut usvg_tree = usvg::Tree::from_str(&wrapped_svg_data, &usvg::Options::default())?;
+        usvg_tree.convert_text(&USVG_FONTDB);
         self.svg_data = rnote_compose::utils::remove_xml_header(&usvg_tree.to_string(&xml_options));
+        self.bounds = simplified_bounds;
 
         Ok(())
     }
@@ -741,7 +624,7 @@ impl Svg {
     fn render_to_caironode(&self) -> Result<gsk::CairoNode, anyhow::Error> {
         if self.bounds.extents()[0] < 0.0 || self.bounds.extents()[1] < 0.0 {
             return Err(anyhow::anyhow!(
-                "gen_rendernode_librsvg() failed, bounds width/ height is < 0.0"
+                "render_to_caironode() failed, bounds width/ height is < 0.0"
             ));
         }
 
@@ -752,4 +635,15 @@ impl Svg {
 
         Ok(new_caironode)
     }
+}
+
+fn convert_image_bgra_to_rgba(_width: u32, _height: u32, mut bytes: Vec<u8>) -> Vec<u8> {
+    for src in bytes.chunks_exact_mut(4) {
+        let (blue, green, red, alpha) = (src[0], src[1], src[2], src[3]);
+        src[0] = red;
+        src[1] = green;
+        src[2] = blue;
+        src[3] = alpha;
+    }
+    bytes
 }

@@ -28,20 +28,20 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         .modal(true)
         .transient_for(appwindow)
         .application_name(config::APP_NAME_CAPITALIZED)
-        .application_icon(&app_icon_name)
-        .comments(&gettext("Sketch and take handwritten notes"))
+        .application_icon(app_icon_name)
+        .comments(gettext("Sketch and take handwritten notes"))
         .website(config::APP_WEBSITE)
         .issue_url(config::APP_ISSUES_URL)
         .support_url(config::APP_SUPPORT_URL)
         .developer_name(config::APP_AUTHOR_NAME)
-        .developers(
+        .developers(glib::StrV::from(
             config::APP_AUTHORS
                 .iter()
                 .map(|&s| String::from(s))
-                .collect(),
-        )
+                .collect::<Vec<String>>(),
+        ))
         // TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-        .translator_credits(&gettext("translator-credits"))
+        .translator_credits(gettext("translator-credits"))
         .license_type(globals::APP_LICENSE)
         .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
@@ -238,7 +238,6 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     let tabs = appwindow.tab_pages_snapshot();
     let mut rows = Vec::new();
-    let mut close = false;
     let mut prev_doc_title = String::new();
 
     for (i, tab) in tabs.iter().enumerate() {
@@ -289,51 +288,67 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         }
     }
 
-    match dialog.run_future().await.as_str() {
-        "discard" => {
-            // do nothing and close
-            close = true;
-        }
-        "save" => {
-            appwindow.overlays().start_pulsing_progressbar();
+    // TODO: as soon as libadwaita v1.3 is out, this can be replaced by choose_future()
+    dialog.connect_response(
+        None,
+        clone!(@strong appwindow => move |_, response| {
+         let response = response.to_string();
+         let rows = rows.clone();
+         let tabs = tabs.clone();
+         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+            let mut close = false;
 
-            for (i, check, save_folder_path, doc_title) in rows {
-                if check.is_active() {
-                    let canvas = tabs[i]
-                        .child()
-                        .downcast::<RnCanvasWrapper>()
-                        .unwrap()
-                        .canvas();
+            match response.as_str() {
+                "discard"
+                    => {
+                    // do nothing and close
+                    close = true;
+                }
+                "save" => {
+                    appwindow.overlays().start_pulsing_progressbar();
 
-                    if let Some(export_folder_path) = save_folder_path {
-                        let save_file =
-                            gio::File::for_path(export_folder_path.join(doc_title + ".rnote"));
+                    for (i, check, save_folder_path, doc_title) in rows {
+                        if check.is_active() {
+                            let canvas = tabs[i]
+                                .child()
+                                .downcast::<RnCanvasWrapper>()
+                                .unwrap()
+                                .canvas();
 
-                        if let Err(e) = canvas.save_document_to_file(&save_file).await {
-                            canvas.set_output_file(None);
+                            if let Some(export_folder_path) = save_folder_path {
+                                let save_file =
+                                    gio::File::for_path(export_folder_path.join(doc_title + ".rnote"));
 
-                            log::error!("saving document failed, Error: `{e:?}`");
-                            appwindow
-                                .overlays()
-                                .dispatch_toast_error(&gettext("Saving document failed"));
+                                if let Err(e) = canvas.save_document_to_file(&save_file).await {
+                                    canvas.set_output_file(None);
+
+                                    log::error!("saving document failed, Error: `{e:?}`");
+                                    appwindow
+                                        .overlays()
+                                        .dispatch_toast_error(&gettext("Saving document failed"));
+                                }
+
+                                // No success toast on saving without dialog, success is already indicated in the header title
+                            }
                         }
-
-                        // No success toast on saving without dialog, success is already indicated in the header title
                     }
+
+                    appwindow.overlays().finish_progressbar();
+                    close = true;
+                }
+                _ => {
+                    // Cancel
                 }
             }
 
-            appwindow.overlays().finish_progressbar();
-            close = true;
-        }
-        _ => {
-            // Cancel
-        }
-    }
+            if close {
+                appwindow.close_force();
+            }
+         }));
+        }),
+    );
 
-    if close {
-        appwindow.close_force();
-    }
+    dialog.show();
 }
 
 pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
@@ -372,11 +387,11 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     );
 
     let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(&gettext("Change Workspace Directory"))
+        .title(gettext("Change Workspace Directory"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label(&gettext("Select"))
-        .cancel_label(&gettext("Cancel"))
+        .accept_label(gettext("Select"))
+        .cancel_label(gettext("Cancel"))
         .action(FileChooserAction::SelectFolder)
         .select_multiple(false)
         .build();
@@ -484,8 +499,11 @@ const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[
     "workspacelistentryicon-calendar-symbolic",
     "workspacelistentryicon-camera-symbolic",
     "workspacelistentryicon-chip-symbolic",
+    "workspacelistentryicon-clock-symbolic",
     "workspacelistentryicon-code-symbolic",
     "workspacelistentryicon-compose-symbolic",
+    "workspacelistentryicon-crop-symbolic",
+    "workspacelistentryicon-dictionary-symbolic",
     "workspacelistentryicon-document-symbolic",
     "workspacelistentryicon-drinks-symbolic",
     "workspacelistentryicon-flag-symbolic",
@@ -493,21 +511,26 @@ const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[
     "workspacelistentryicon-footprints-symbolic",
     "workspacelistentryicon-gamepad-symbolic",
     "workspacelistentryicon-gear-symbolic",
+    "workspacelistentryicon-globe-symbolic",
     "workspacelistentryicon-hammer-symbolic",
     "workspacelistentryicon-heart-symbolic",
     "workspacelistentryicon-hourglass-symbolic",
     "workspacelistentryicon-key-symbolic",
     "workspacelistentryicon-language-symbolic",
+    "workspacelistentryicon-library-symbolic",
     "workspacelistentryicon-lightbulb-symbolic",
     "workspacelistentryicon-math-symbolic",
     "workspacelistentryicon-meeting-symbolic",
     "workspacelistentryicon-money-symbolic",
     "workspacelistentryicon-musicnote-symbolic",
+    "workspacelistentryicon-nature-symbolic",
+    "workspacelistentryicon-open-book-symbolic",
     "workspacelistentryicon-paintbrush-symbolic",
     "workspacelistentryicon-pencilandpaper-symbolic",
     "workspacelistentryicon-people-symbolic",
     "workspacelistentryicon-person-symbolic",
     "workspacelistentryicon-projector-symbolic",
+    "workspacelistentryicon-science-symbolic",
     "workspacelistentryicon-scratchpad-symbolic",
     "workspacelistentryicon-shapes-symbolic",
     "workspacelistentryicon-shopping-symbolic",
@@ -531,8 +554,11 @@ fn workspacelistentry_icons_list_to_display_name(icon_name: &str) -> String {
         "workspacelistentryicon-calendar-symbolic" => gettext("Calendar"),
         "workspacelistentryicon-camera-symbolic" => gettext("Camera"),
         "workspacelistentryicon-chip-symbolic" => pgettext("as in computer chip", "Chip"),
+        "workspacelistentryicon-clock-symbolic" => gettext("Clock"),
         "workspacelistentryicon-code-symbolic" => gettext("Code"),
         "workspacelistentryicon-compose-symbolic" => gettext("Compose"),
+        "workspacelistentryicon-crop-symbolic" => pgettext("as in plant", "Crop"),
+        "workspacelistentryicon-dictionary-symbolic" => gettext("Dictionary"),
         "workspacelistentryicon-document-symbolic" => gettext("Document"),
         "workspacelistentryicon-drinks-symbolic" => gettext("Drinks"),
         "workspacelistentryicon-flag-symbolic" => gettext("Flag"),
@@ -540,21 +566,26 @@ fn workspacelistentry_icons_list_to_display_name(icon_name: &str) -> String {
         "workspacelistentryicon-footprints-symbolic" => gettext("Footprints"),
         "workspacelistentryicon-gamepad-symbolic" => gettext("Gamepad"),
         "workspacelistentryicon-gear-symbolic" => gettext("Gear"),
+        "workspacelistentryicon-globe-symbolic" => gettext("Globe"),
         "workspacelistentryicon-hammer-symbolic" => gettext("Hammer"),
         "workspacelistentryicon-heart-symbolic" => gettext("Heart"),
         "workspacelistentryicon-hourglass-symbolic" => gettext("Hourglass"),
         "workspacelistentryicon-key-symbolic" => gettext("Key"),
         "workspacelistentryicon-language-symbolic" => gettext("Language"),
+        "workspacelistentryicon-library-symbolic" => gettext("Library"),
         "workspacelistentryicon-lightbulb-symbolic" => gettext("Lightbulb"),
         "workspacelistentryicon-math-symbolic" => gettext("Mathematics"),
         "workspacelistentryicon-meeting-symbolic" => gettext("Meeting"),
         "workspacelistentryicon-money-symbolic" => gettext("Money"),
         "workspacelistentryicon-musicnote-symbolic" => gettext("Musical Note"),
+        "workspacelistentryicon-nature-symbolic" => gettext("Nature"),
+        "workspacelistentryicon-open-book-symbolic" => gettext("Open Book"),
         "workspacelistentryicon-paintbrush-symbolic" => gettext("Paintbrush"),
         "workspacelistentryicon-pencilandpaper-symbolic" => gettext("Pencil and Paper"),
         "workspacelistentryicon-people-symbolic" => gettext("People"),
         "workspacelistentryicon-person-symbolic" => gettext("Person"),
         "workspacelistentryicon-projector-symbolic" => gettext("Projector"),
+        "workspacelistentryicon-science-symbolic" => gettext("Science"),
         "workspacelistentryicon-scratchpad-symbolic" => gettext("Scratchpad"),
         "workspacelistentryicon-shapes-symbolic" => gettext("Shapes"),
         "workspacelistentryicon-shopping-symbolic" => gettext("Shopping"),

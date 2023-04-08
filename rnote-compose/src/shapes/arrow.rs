@@ -94,13 +94,15 @@ impl ShapeBehaviour for Arrow {
 }
 
 impl Arrow {
-    /// The min-length for `rline` and `lline`.
-    const TIP_LINES_MIN_LENGTH: f64 = 32.0;
+    /// The tip lines (rline & lline) default length, is the actual length when
+    /// no stroke width is associated with the arrow, if there is, it is used as
+    /// the base length for the actual width calculation.
+    const TIP_LINES_DEFAULT_LENGTH: f64 = 32.0;
 
     /// The angle for `rline` and `lline` to the stem of the arrow.
-    const ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
+    const TIP_LINES_STEM_ACUTE_ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
 
-    /// The default direction vector (the stem) if you can't compute one.
+    /// The default direction vector (the stem) if the stem has length 0.
     const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);
 
     /// Creating a new arrow with the given start and tip vectors.
@@ -151,7 +153,8 @@ impl Arrow {
     /// Computes and returns `lline`.
     /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
-        let vec_a = self.get_direction_vector() * Self::get_line_length(stroke_width);
+        let vec_a =
+            self.compute_stem_direction_vector() * Self::compute_tip_lines_length(stroke_width);
         let rotation_matrix = self.get_rotation_matrix();
 
         rotation_matrix * vec_a + self.tip
@@ -160,14 +163,16 @@ impl Arrow {
     /// Computes and returns `rline`.
     /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_rline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
-        let vec_b = self.get_direction_vector() * Self::get_line_length(stroke_width);
+        let vec_b =
+            self.compute_stem_direction_vector() * Self::compute_tip_lines_length(stroke_width);
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
         rotation_matrix * vec_b + self.tip
     }
 
-    /// Returns the normalized direction vector from `start` to `tip`.
-    fn get_direction_vector(&self) -> na::Vector2<f64> {
+    /// Computes and returns the normalized direction vector from `start` to
+    /// `tip`.
+    fn compute_stem_direction_vector(&self) -> na::Vector2<f64> {
         let direction_vector = self.tip - self.start;
 
         if direction_vector.norm() == 0.0 {
@@ -180,13 +185,14 @@ impl Arrow {
     /// Returns the rotation matrix for the tip lines how they should be
     /// rotated.
     fn get_rotation_matrix(&self) -> Rotation2<f64> {
-        Rotation2::new(Self::ANGLE)
+        Rotation2::new(Self::TIP_LINES_STEM_ACUTE_ANGLE)
     }
 
-    /// Returns the length of the tip lines with the given stroke width.
-    fn get_line_length(stroke_width: Option<f64>) -> f64 {
+    /// Computes and returns the length of the tip lines with the given stroke
+    /// width.
+    fn compute_tip_lines_length(stroke_width: Option<f64>) -> f64 {
         let factor = stroke_width.unwrap_or(0.0);
-        Self::TIP_LINES_MIN_LENGTH * (1.0 + 0.1 * factor)
+        Self::TIP_LINES_DEFAULT_LENGTH * (1.0 + 0.1 * factor)
     }
 }
 

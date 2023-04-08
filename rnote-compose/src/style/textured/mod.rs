@@ -95,16 +95,6 @@ impl Composer<TexturedOptions> for Line {
     }
 }
 
-impl Composer<TexturedOptions> for Arrow {
-    fn composed_bounds(&self, _options: &TexturedOptions) -> Aabb {
-        unimplemented!();
-    }
-
-    fn draw_composed(&self, _cx: &mut impl piet::RenderContext, _options: &TexturedOptions) {
-        unimplemented!();
-    }
-}
-
 impl Composer<TexturedOptions> for PenPath {
     fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width)

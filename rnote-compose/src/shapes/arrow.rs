@@ -78,7 +78,7 @@ impl Arrow {
     const TIP_LINES_DEFAULT_LENGTH: f64 = 10.0;
 
     /// The angle for `rline` and `lline` to the stem of the arrow.
-    const TIP_LINES_STEM_ACUTE_ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
+    const TIP_LINES_STEM_OBTUSE_ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
 
     /// The default direction vector (the stem) if the stem has length 0.
     const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);

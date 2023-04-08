@@ -133,7 +133,7 @@ impl Arrow {
     pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
         let vec_a =
             self.compute_stem_direction_vector() * Self::compute_tip_lines_length(stroke_width);
-        let rotation_matrix = Rotation2::new(Self::TIP_LINES_STEM_ACUTE_ANGLE);
+        let rotation_matrix = Rotation2::new(Self::TIP_LINES_STEM_OBTUSE_ANGLE);
 
         rotation_matrix * vec_a + self.tip
     }
@@ -143,7 +143,7 @@ impl Arrow {
     pub fn compute_rline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
         let vec_b =
             self.compute_stem_direction_vector() * Self::compute_tip_lines_length(stroke_width);
-        let rotation_matrix = Rotation2::new(-Self::TIP_LINES_STEM_ACUTE_ANGLE);
+        let rotation_matrix = Rotation2::new(-Self::TIP_LINES_STEM_OBTUSE_ANGLE);
 
         rotation_matrix * vec_b + self.tip
     }

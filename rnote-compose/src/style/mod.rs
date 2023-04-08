@@ -110,7 +110,7 @@ impl Composer<Style> for Arrow {
         match options {
             Style::Smooth(options) => self.composed_bounds(options),
             Style::Rough(options) => self.composed_bounds(options),
-            Style::Textured(options) => self.composed_bounds(options),
+            Style::Textured(options) => unimplemented!(),
         }
     }
 
@@ -118,7 +118,7 @@ impl Composer<Style> for Arrow {
         match options {
             Style::Smooth(options) => self.draw_composed(cx, options),
             Style::Rough(options) => self.draw_composed(cx, options),
-            Style::Textured(options) => self.draw_composed(cx, options),
+            Style::Textured(options) => unimplemented!(),
         }
     }
 }

@@ -434,7 +434,7 @@ impl Typewriter {
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
-                        textstroke.move_cursor_forward(&mut cursor);
+                        textstroke.move_cursor_forward(&mut cursor, false);
                         let stroke_key = engine_view
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
@@ -518,7 +518,10 @@ impl Typewriter {
                                     }
                                 }
                                 KeyboardKey::BackSpace => {
-                                    textstroke.remove_grapheme_before_cursor(cursor);
+                                    textstroke.remove_grapheme_before_cursor(
+                                        cursor,
+                                        modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                    );
                                     update_stroke(engine_view.store);
                                 }
                                 KeyboardKey::HorizontalTab => {
@@ -530,33 +533,48 @@ impl Typewriter {
                                     update_stroke(engine_view.store);
                                 }
                                 KeyboardKey::Delete => {
-                                    textstroke.remove_grapheme_after_cursor(cursor);
+                                    textstroke.remove_grapheme_after_cursor(
+                                        cursor,
+                                        modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                    );
                                     update_stroke(engine_view.store);
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                         let old_cursor = cursor.clone();
-                                        textstroke.move_cursor_back(cursor);
+                                        textstroke.move_cursor_back(
+                                            cursor,
+                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                        );
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
                                             finished: false,
                                         }
                                     } else {
-                                        textstroke.move_cursor_back(cursor);
+                                        textstroke.move_cursor_back(
+                                            cursor,
+                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                        );
                                     }
                                 }
                                 KeyboardKey::NavRight => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                         let old_cursor = cursor.clone();
-                                        textstroke.move_cursor_forward(cursor);
+                                        textstroke.move_cursor_forward(
+                                            cursor,
+                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                        );
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
                                             finished: false,
                                         };
                                     } else {
-                                        textstroke.move_cursor_forward(cursor);
+                                        textstroke.move_cursor_forward(
+                                            cursor,
+                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                        );
                                     }
                                 }
                                 KeyboardKey::NavUp => {
@@ -583,6 +601,48 @@ impl Typewriter {
                                         };
                                     } else {
                                         textstroke.move_cursor_line_down(cursor);
+                                    }
+                                }
+                                KeyboardKey::Home => {
+                                    if modifier_keys.contains(&ModifierKey::KeyboardShift) {
+                                        let old_cursor = cursor.clone();
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_text_start(cursor);
+                                        } else {
+                                            textstroke.move_cursor_line_start(cursor);
+                                        }
+
+                                        *modify_state = ModifyState::Selecting {
+                                            selection_cursor: old_cursor,
+                                            finished: false,
+                                        };
+                                    } else {
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_text_start(cursor);
+                                        } else {
+                                            textstroke.move_cursor_line_start(cursor);
+                                        }
+                                    }
+                                }
+                                KeyboardKey::End => {
+                                    if modifier_keys.contains(&ModifierKey::KeyboardShift) {
+                                        let old_cursor = cursor.clone();
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_text_end(cursor);
+                                        } else {
+                                            textstroke.move_cursor_line_end(cursor);
+                                        }
+
+                                        *modify_state = ModifyState::Selecting {
+                                            selection_cursor: old_cursor,
+                                            finished: false,
+                                        };
+                                    } else {
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_text_end(cursor);
+                                        } else {
+                                            textstroke.move_cursor_line_end(cursor);
+                                        }
                                     }
                                 }
                                 _ => {}
@@ -641,35 +701,55 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        textstroke.move_cursor_back(cursor);
+                                        textstroke.move_cursor_back(
+                                            cursor,
+                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                        );
                                         false
                                     } else {
+                                        cursor.set_cursor(
+                                            cursor.cur_cursor().min(selection_cursor.cur_cursor()),
+                                        );
                                         true
                                     }
                                 }
                                 KeyboardKey::NavRight => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        textstroke.move_cursor_forward(cursor);
+                                        textstroke.move_cursor_forward(
+                                            cursor,
+                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
+                                        );
                                         false
                                     } else {
+                                        cursor.set_cursor(
+                                            cursor.cur_cursor().max(selection_cursor.cur_cursor()),
+                                        );
                                         true
                                     }
                                 }
                                 KeyboardKey::NavUp => {
-                                    if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        textstroke.move_cursor_line_up(cursor);
-                                        false
-                                    } else {
-                                        true
-                                    }
+                                    textstroke.move_cursor_line_up(cursor);
+                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
                                 }
                                 KeyboardKey::NavDown => {
-                                    if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        textstroke.move_cursor_line_down(cursor);
-                                        false
+                                    textstroke.move_cursor_line_down(cursor);
+                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
+                                }
+                                KeyboardKey::Home => {
+                                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                        textstroke.move_cursor_text_start(cursor);
                                     } else {
-                                        true
+                                        textstroke.move_cursor_line_start(cursor);
                                     }
+                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
+                                }
+                                KeyboardKey::End => {
+                                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                        textstroke.move_cursor_text_end(cursor);
+                                    } else {
+                                        textstroke.move_cursor_line_end(cursor);
+                                    }
+                                    !modifier_keys.contains(&ModifierKey::KeyboardShift)
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                                     textstroke.replace_text_between_selection_cursors(

@@ -651,11 +651,19 @@ impl TextStroke {
         *cursor = GraphemeCursor::new(cursor.cur_cursor() + text.len(), self.text.len(), true);
     }
 
-    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
+    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor, whole_word: bool) {
         if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
-            if let Some(prev_pos) = cursor.prev_boundary(&self.text, 0).unwrap() {
+            let prev_pos = if whole_word {
+                let position = self.get_prev_word_start_index(cur_pos);
+                cursor.set_cursor(position);
+                Some(position)
+            } else {
+                cursor.prev_boundary(&self.text, 0).unwrap()
+            };
+
+            if let Some(prev_pos) = prev_pos {
                 self.text.replace_range(prev_pos..cur_pos, "");
 
                 // translate the text attributes
@@ -670,11 +678,17 @@ impl TextStroke {
         }
     }
 
-    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
+    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor, whole_word: bool) {
         if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
-            if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
+            let next_pos = if whole_word {
+                Some(self.get_next_word_end_index(cur_pos))
+            } else {
+                cursor.clone().next_boundary(&self.text, 0).unwrap()
+            };
+
+            if let Some(next_pos) = next_pos {
                 self.text.replace_range(cur_pos..next_pos, "");
 
                 // translate the text attributes
@@ -822,14 +836,111 @@ impl TextStroke {
         *selection_cursor = GraphemeCursor::new(0, self.text.len(), true);
     }
 
-    pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor) {
-        // Cant fail, we are providing the entire text
-        cursor.prev_boundary(&self.text, 0).unwrap();
+    fn index_is_ascii_word_separator(&self, index: usize) -> bool {
+        self.text.chars().nth(index).map_or(false, |c| {
+            c.is_ascii_whitespace() || c.is_ascii_punctuation()
+        })
     }
 
-    pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor) {
-        // Cant fail, we are providing the entire text
-        cursor.next_boundary(&self.text, 0).unwrap();
+    fn get_prev_word_start_index(&self, index: usize) -> usize {
+        let mut prev_word_start_index = index;
+
+        while prev_word_start_index > 0
+            && self.index_is_ascii_word_separator(prev_word_start_index - 1)
+        {
+            prev_word_start_index -= 1;
+        }
+
+        while prev_word_start_index > 0
+            && !self.index_is_ascii_word_separator(prev_word_start_index - 1)
+        {
+            prev_word_start_index -= 1;
+        }
+
+        return prev_word_start_index;
+    }
+
+    fn get_next_word_end_index(&self, index: usize) -> usize {
+        let text_length = self.text.len();
+        let mut next_word_end_index = index;
+
+        while next_word_end_index < text_length
+            && self.index_is_ascii_word_separator(next_word_end_index)
+        {
+            next_word_end_index += 1;
+        }
+
+        while next_word_end_index < text_length
+            && !self.index_is_ascii_word_separator(next_word_end_index)
+        {
+            next_word_end_index += 1;
+        }
+
+        return next_word_end_index;
+    }
+
+    pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor, whole_word: bool) {
+        if whole_word {
+            cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
+        } else {
+            // Cant fail, we are providing the entire text
+            cursor.prev_boundary(&self.text, 0).unwrap();
+        }
+    }
+
+    pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor, whole_word: bool) {
+        if whole_word {
+            cursor.set_cursor(self.get_next_word_end_index(cursor.cur_cursor()));
+        } else {
+            // Cant fail, we are providing the entire text
+            cursor.next_boundary(&self.text, 0).unwrap();
+        }
+    }
+
+    pub fn move_cursor_text_start(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(0);
+    }
+
+    pub fn move_cursor_text_end(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.text.len());
+    }
+
+    pub fn move_cursor_line_start(&self, cursor: &mut GraphemeCursor) {
+        if let (Ok(lines), Ok(hittest_position)) = (
+            self.text_style
+                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
+            self.text_style.cursor_hittest_position(
+                &mut piet_cairo::CairoText::new(),
+                self.text.clone(),
+                cursor,
+            ),
+        ) {
+            cursor.set_cursor(lines[hittest_position.line].start_offset);
+        }
+    }
+
+    pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
+        if let (Ok(lines), Ok(hittest_position)) = (
+            self.text_style
+                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
+            self.text_style.cursor_hittest_position(
+                &mut piet_cairo::CairoText::new(),
+                self.text.clone(),
+                cursor,
+            ),
+        ) {
+            let mut offset = lines[hittest_position.line].end_offset;
+
+            if offset > 0 && self.text.chars().nth(offset - 1).unwrap() == '\n' {
+                offset -= 1;
+            }
+
+            if offset > 0 && self.text.chars().nth(offset - 1).unwrap() == '\r' {
+                offset -= 1;
+            }
+
+            cursor.set_cursor(offset);
+        }
     }
 
     pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {

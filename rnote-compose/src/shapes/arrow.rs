@@ -156,6 +156,9 @@ impl Arrow {
     /// The angle for `rline` and `lline` to the stem of the arrow.
     const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
 
+    /// The default direction vector (the stem) if you can't compute one.
+    const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);
+
     /// Computes and returns `lline`.
     /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
@@ -177,7 +180,12 @@ impl Arrow {
     /// Returns the normalized direction vector from `start` to `tip`.
     fn get_direction_vector(&self) -> na::Vector2<f64> {
         let direction_vector = self.tip - self.start;
-        direction_vector / direction_vector.norm()
+
+        if direction_vector.norm() == 0.0 {
+            Self::DEFAULT_DIRECTION_VECTOR
+        } else {
+            direction_vector / direction_vector.norm()
+        }
     }
 
     /// Returns the rotation matrix for the tip lines how they should be

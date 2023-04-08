@@ -36,14 +36,8 @@ impl Composer<SmoothOptions> for Line {
 
 impl Composer<SmoothOptions> for Arrow {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
-        let rline = self.compute_rline(Some(options.stroke_width));
-        let lline = self.compute_lline(Some(options.stroke_width));
-
-        let mut bounds = self.bounds();
-        bounds.take_point(rline.into());
-        bounds.take_point(lline.into());
-        bounds.loosen(options.stroke_width);
-        bounds
+        self.internal_compute_bounds(Some(options.stroke_width))
+            .loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {

@@ -58,29 +58,7 @@ impl TransformBehaviour for Arrow {
 
 impl ShapeBehaviour for Arrow {
     fn bounds(&self) -> Aabb {
-        let (x_values, y_values) = {
-            let lline = self.compute_lline(None);
-            let rline = self.compute_rline(None);
-
-            let x_values = [lline[0], rline[0], self.start[0], self.tip[0]];
-            let y_values = [lline[1], rline[1], self.start[1], self.tip[1]];
-
-            (x_values, y_values)
-        };
-
-        let bottom_left_corner = {
-            let lowest_x = x_values.into_iter().reduce(f64::min).unwrap();
-            let lowest_y = y_values.into_iter().reduce(f64::min).unwrap();
-            na::Point2::new(lowest_x, lowest_y)
-        };
-
-        let top_right_corner = {
-            let highest_x = x_values.into_iter().reduce(f64::max).unwrap();
-            let highest_y = y_values.into_iter().reduce(f64::max).unwrap();
-            na::Point2::new(highest_x, highest_y)
-        };
-
-        Aabb::from_points(&[bottom_left_corner, top_right_corner])
+        self.internal_compute_bounds(None)
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -168,6 +146,21 @@ impl Arrow {
         let rotation_matrix = self.get_rotation_matrix().transpose();
 
         rotation_matrix * vec_b + self.tip
+    }
+
+    /// Computes the bounds of the arrow in respect to the given stroke width.
+    pub fn internal_compute_bounds(&self, stroke_width: Option<f64>) -> Aabb {
+        let points: Vec<na::Point2<f64>> = {
+            let lline = self.compute_lline(stroke_width);
+            let rline = self.compute_rline(stroke_width);
+
+            [lline, rline, self.start, self.tip]
+                .into_iter()
+                .map(|vector| na::Point2::new(vector.x, vector.y))
+                .collect()
+        };
+
+        Aabb::from_points(&points)
     }
 
     /// Computes and returns the normalized direction vector from `start` to

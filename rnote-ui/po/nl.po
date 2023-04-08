@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-07 22:18+0200\n"
-"PO-Revision-Date: 2023-04-05 19:48+0000\n"
+"PO-Revision-Date: 2023-04-08 10:24+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1000,7 +1000,7 @@ msgstr "Tekenen met _touchscreen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "Knijpen om te _zoomen uitschakelen"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
@@ -1286,11 +1286,11 @@ msgstr "Rooster"
 
 #: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Isometric Grid"
-msgstr ""
+msgstr "Isometrisch raster"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
-msgstr ""
+msgstr "Isometrische punten"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
@@ -1782,7 +1782,7 @@ msgstr "Chip"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Clock"
-msgstr ""
+msgstr "Klok"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
@@ -1795,11 +1795,11 @@ msgstr "Samenstellen"
 #: rnote-ui/src/dialogs/mod.rs:560
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "Gewas"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
-msgstr ""
+msgstr "Woordenboek"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
@@ -1827,7 +1827,7 @@ msgstr "Tandwiel"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Globe"
-msgstr ""
+msgstr "Wereldbol"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
@@ -1851,7 +1851,7 @@ msgstr "Taal"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Library"
-msgstr ""
+msgstr "Bibliotheek"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
@@ -1875,13 +1875,11 @@ msgstr "Muzieknoot"
 
 #: rnote-ui/src/dialogs/mod.rs:581
 msgid "Nature"
-msgstr ""
+msgstr "Natuur"
 
 #: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "Openen"
+msgstr "Open boek"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
@@ -1905,7 +1903,7 @@ msgstr "Projector"
 
 #: rnote-ui/src/dialogs/mod.rs:588
 msgid "Science"
-msgstr ""
+msgstr "Wetenschap"
 
 #: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"

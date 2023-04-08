@@ -9,8 +9,6 @@ use crate::transform::TransformBehaviour;
 
 use super::Line;
 
-type Radian = f64;
-
 /// All doc-comments of this file and [`ArrowBuilder`] rely on the following
 /// graphic:
 /// ```
@@ -153,8 +151,8 @@ impl Arrow {
 /// This implementation holds the functions to get the vectors `rline` and
 /// `lline`.
 impl Arrow {
-    /// The angle for `rline` and `lline` to the stem of the arrow.
-    const ANGLE: Radian = (13.0 / 16.0) * std::f64::consts::PI;
+    /// The angle (radian) for `rline` and `lline` to the stem of the arrow.
+    const ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
 
     /// The default direction vector (the stem) if you can't compute one.
     const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);

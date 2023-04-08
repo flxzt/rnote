@@ -75,7 +75,7 @@ impl Arrow {
     /// The tip lines (rline & lline) default length, is the actual length when
     /// no stroke width is associated with the arrow, if there is, it is used as
     /// the base length for the actual width calculation.
-    const TIP_LINES_DEFAULT_LENGTH: f64 = 32.0;
+    const TIP_LINES_DEFAULT_LENGTH: f64 = 10.0;
 
     /// The angle for `rline` and `lline` to the stem of the arrow.
     const TIP_LINES_STEM_ACUTE_ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
@@ -179,7 +179,7 @@ impl Arrow {
     /// width.
     fn compute_tip_lines_length(stroke_width: Option<f64>) -> f64 {
         let factor = stroke_width.unwrap_or(0.0);
-        Self::TIP_LINES_DEFAULT_LENGTH * (1.0 + 0.1 * factor)
+        Self::TIP_LINES_DEFAULT_LENGTH * (1.0 + 0.18 * factor)
     }
 }
 

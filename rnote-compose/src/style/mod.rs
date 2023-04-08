@@ -15,7 +15,7 @@ use self::textured::TexturedOptions;
 use anyhow::Context;
 pub use composer::Composer;
 
-use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
+use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
 use crate::{Color, PenPath, Shape};
 use serde::{Deserialize, Serialize};
 
@@ -101,6 +101,24 @@ impl Composer<Style> for Line {
             Style::Smooth(options) => self.draw_composed(cx, options),
             Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(options) => self.draw_composed(cx, options),
+        }
+    }
+}
+
+impl Composer<Style> for Arrow {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
+        match options {
+            Style::Smooth(options) => self.composed_bounds(options),
+            Style::Rough(options) => self.composed_bounds(options),
+            Style::Textured(_options) => unimplemented!(),
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
+        match options {
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Textured(_options) => unimplemented!(),
         }
     }
 }
@@ -198,6 +216,7 @@ impl Composer<Style> for PenPath {
 impl Composer<Style> for Shape {
     fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::Aabb {
         match self {
+            Shape::Arrow(arrow) => arrow.composed_bounds(options),
             Shape::Line(line) => line.composed_bounds(options),
             Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
@@ -208,6 +227,7 @@ impl Composer<Style> for Shape {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
         match self {
+            Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
             Shape::Line(line) => line.draw_composed(cx, options),
             Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),

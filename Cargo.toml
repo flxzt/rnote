@@ -15,6 +15,7 @@ debug = true
 opt-level = 3
 lto = "fat"
 codegen-units = 1
+debug = true # We want to be able to debug in the release build too 
 
 [patch.crates-io]
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed

@@ -348,6 +348,7 @@ fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
             name: gettext("Miscellaneous"),
             icons: StringList::new(&[
                 "shapebuilder-line-symbolic",
+                "shapebuilder-arrow-symbolic",
                 "shapebuilder-rectangle-symbolic",
                 "shapebuilder-grid-symbolic",
             ]),
@@ -381,6 +382,7 @@ fn shape_builder_type_icons_to_display_name(icon_name: &str) -> String {
     match ShapeBuilderType::from_icon_name(icon_name)
         .expect("ShapeBuilderTypePicker failed, display name of unknown icon name requested")
     {
+        ShapeBuilderType::Arrow => gettext("Arrow"),
         ShapeBuilderType::Line => gettext("Line"),
         ShapeBuilderType::Rectangle => gettext("Rectangle"),
         ShapeBuilderType::Grid => gettext("Grid"),

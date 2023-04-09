@@ -174,6 +174,7 @@ impl RnApp {
         glib::Object::builder()
             .property("application-id", &config::APP_ID)
             .property("flags", &gio::ApplicationFlags::HANDLES_OPEN)
+            .property("register-session", true)
             .build()
     }
 }

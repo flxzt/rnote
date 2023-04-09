@@ -88,6 +88,8 @@
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/doc-save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-trash-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-mirror-horizontal.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-mirror-vertical.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-select-all-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-deselect-all-symbolic.svg</file>

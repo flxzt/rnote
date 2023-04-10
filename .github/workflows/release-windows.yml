@@ -13,8 +13,8 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - name: Add cargo to PATH
-        run: echo "PATH=${{ env.PATH }}:/c/Users/${{ env.USER }}/.cargo/bin" >> $GITHUB_ENV
+      #- name: Add cargo to PATH
+      #  run: echo "PATH=${{ env.PATH }}:/c/Users/${{ env.USER }}/.cargo/bin" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2

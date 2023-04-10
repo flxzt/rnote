@@ -13,8 +13,6 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      #- name: Add cargo to PATH
-      #  run: echo "PATH=${{ env.PATH }}:/c/Users/${{ env.USER }}/.cargo/bin" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
@@ -30,8 +28,12 @@ jobs:
         with:
           toolchain: stable-gnu
       - name: Remove duplicate libpthread.dll
-        run: rm /mingw64/lib/libpthread.dll.a
+        run: |
+          rm /mingw64/lib/libpthread.dll.a
         continue-on-error: true
+      - name: Add cargo to PATH
+        run: |
+          echo "PATH=$PATH:/c/Users/$USER/.cargo/bin" > ~/.bashrc
       - name: Configure
         run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
       - name: Compile

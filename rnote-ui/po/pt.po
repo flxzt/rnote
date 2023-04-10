@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-06 12:26+0000\n"
+"PO-Revision-Date: 2023-04-12 10:50+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/rnote/repo/pt/"
 ">\n"
@@ -1027,7 +1027,7 @@ msgstr ""
 #: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
-msgstr ""
+msgstr "Ampliar"
 
 #: rnote-ui/data/ui/canvasmenu.ui:133
 msgid "Zoom to Page Width"
@@ -1043,24 +1043,24 @@ msgstr ""
 
 #: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:88
 msgid "Open"
-msgstr ""
+msgstr "Abrir"
 
 #: rnote-ui/data/ui/filerow.ui:62
 #: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:58
 msgid "Rename"
-msgstr ""
+msgstr "Renomear"
 
 #: rnote-ui/data/ui/filerow.ui:66
 msgid "Move to Trash"
-msgstr ""
+msgstr "Mover para Lixeira"
 
 #: rnote-ui/data/ui/filerow.ui:70
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplicar"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
 msgid "Draft"
-msgstr ""
+msgstr "Esboço"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
 msgid "Reveal/Hide Flap"
@@ -1072,11 +1072,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
-msgstr ""
+msgstr "Desfazer"
 
 #: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:219
 msgid "Redo"
-msgstr ""
+msgstr "Refazer"
 
 #: rnote-ui/data/ui/mainheader.ui:87
 msgid "Add Page"
@@ -1116,7 +1116,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"

@@ -33,7 +33,7 @@ jobs:
         continue-on-error: true
       - name: Add cargo to PATH
         run: |
-          echo "PATH=$PATH:/c/Users/$USER/.cargo/bin" > ~/.bashrc
+          echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin" > ~/.bashrc
       - name: Configure
         run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
       - name: Compile

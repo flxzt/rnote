@@ -15,8 +15,6 @@ jobs:
     env:
       PATH: $PATH:/c/Users/$USER/.cargo/bin
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
           update: true
@@ -25,6 +23,8 @@ jobs:
             mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils 
             mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream-glib mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita 
             mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@stable
         with:

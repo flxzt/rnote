@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-03-28 17:37+0000\n"
+"PO-Revision-Date: 2023-04-12 10:50+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -836,111 +836,111 @@ msgstr "தேர்ந்தெடுக்கவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr "_வண்ண திட்டம்"
+msgstr "வண்ண திட்டம் (_l)"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr "_கணினி வண்ணங்களைப் பயன்படுத்தவும்"
+msgstr "கணினி வண்ணங்களைப் பயன்படுத்தவும் (_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr "_வெளிர் நிறங்களைப் பயன்படுத்தவும்"
+msgstr "வெளிர் (_L) நிறங்களைப் பயன்படுத்தவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr "_இருண்ட வண்ணங்களைப் பயன்படுத்தவும்"
+msgstr "இருண்ட (_D) வண்ணங்களைப் பயன்படுத்தவும்"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper Mode"
-msgstr "_டெவலப்பர் பயன்முறை"
+msgstr "மேம்பாட்டாளர் (_v) பயன்முறை"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
-msgstr "டெவலப்பர் _பட்டியல்"
+msgstr "மேம்பாட்டாளர் பட்டியல் (_M)"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _Debugging"
-msgstr "காட்சி _பிழைத்திருத்தம்"
+msgstr "காட்சி பிழைத்திருத்தம் (_D)"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export Engine _State"
-msgstr "ஏற்றுமதி இயந்திர _நிலை"
+msgstr "ஏற்றுமதி இயந்திர நிலை (_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 msgid "Export Engine _Config"
-msgstr "ஏற்றுமதி இயந்திர _கட்டமைப்பு"
+msgstr "ஏற்றுமதி இயந்திர கட்டமைப்பு (_C)"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr "_புதிய"
+msgstr "புதிய (_N)"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr "_திற"
+msgstr "திற (_O)"
 
 #: rnote-ui/data/ui/appmenu.ui:76
 msgid "_Save"
-msgstr "_சேமி"
+msgstr "சேமி (_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _As"
-msgstr "_இவ்வாறு சேமி"
+msgstr "இவ்வாறு சேமி (_A)"
 
 #: rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
-msgstr "_அச்சிடு"
+msgstr "அச்சிடு (_P)"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 msgid "_Import File"
-msgstr "_இறக்குமதி கோப்பை"
+msgstr "இறக்குமதி (_I) கோப்பை"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr "_கிளிப்போர்டு"
+msgstr "கிளிப்போர்டு (_C)"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr "_நகல்"
+msgstr "நகல் (_C)"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr "_வெட்டு"
+msgstr "வெட்டு (_u)"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr "_ஒட்டு"
+msgstr "ஒட்டு (_P)"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
-msgstr "_ஏற்றுமதி…"
+msgstr "ஏற்றுமதி (_E)…"
 
 #: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr "ஏற்றுமதி _ஆவணம்"
+msgstr "ஏற்றுமதி ஆவணம் (_D)"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
-msgstr "ஏற்றுமதி ஆவணம் _பக்கங்கள்"
+msgstr "ஏற்றுமதி ஆவணம் பக்கங்கள் (_P)"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
-msgstr "ஏற்றுமதி _தேர்வு"
+msgstr "ஏற்றுமதி தேர்வு (_S)"
 
 #: rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
-msgstr "_அமைப்புகள்"
+msgstr "அமைப்புகள் (_t)"
 
 #: rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard Shortcuts"
-msgstr "_விசைப்பலகை குறுக்குவழிகள்"
+msgstr "விசைப்பலகை குறுக்குவழிகள் (_K)"
 
 #: rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
-msgstr "_நன்கொடை 💝"
+msgstr "நன்கொடை 💝 (_D)"
 
 #: rnote-ui/data/ui/appmenu.ui:138
 msgid "A_bout Rnote"
-msgstr "Rnote _பற்றி"
+msgstr "Rnote பற்றி (_b)"
 
 #: rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the Left Side"
@@ -968,47 +968,47 @@ msgstr "அமைப்புகள்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
-msgstr "_ஆவணத்தின் தளவமைப்பு"
+msgstr "ஆவணத்தின் தளவமைப்பு (_D)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed Size"
-msgstr "_நிலையான அளவு"
+msgstr "நிலையான அளவு (_F)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "_Continuous Vertical"
-msgstr "_தொடர்ச்சியான செங்குத்து"
+msgstr "தொடர்ச்சியான செங்குத்து (_C)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
 msgid "_Semi Infinite"
-msgstr "_அரை எல்லையற்றது"
+msgstr "அரை எல்லையற்றது (_S)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
 msgid "_Infinite"
-msgstr "_எல்லையற்ற"
+msgstr "எல்லையற்ற (_I)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show _Format Borders"
-msgstr "காட்டு _வடிவ அளவு பார்டர்களை"
+msgstr "காட்டு வடிவ (_F) பார்டர்களை"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Draw With _Touch Input"
-msgstr "_தொடு உள்ளீடு மூலம் வரையவும்"
+msgstr "தொடு (_T) உள்ளீடு மூலம் வரையவும்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "பெரிதாக்க (_Z) கிள்ளுதலைத் தடுக்கவும்"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
-msgstr "_பேனா ஒலிகள்"
+msgstr "பேனா ஒலிகள் (_P)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:71
 msgid "C_lear Document"
-msgstr "_தெளிவான ஆவணம்"
+msgstr "தெளிவான ஆவணம் (_l)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:75
 msgid "_Return to Origin Page"
-msgstr "_மூலப் பக்கத்திற்குத் திரும்பு"
+msgstr "மூலப் பக்கத்திற்குத் திரும்பு (_R)"
 
 #: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:115
 #: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
@@ -1087,15 +1087,15 @@ msgstr "ஆவணத்தைச் சேமி"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _Left"
-msgstr "நகர்த்து _இடதுபுறம்"
+msgstr "நகர்த்து இடதுபுறம் (_L)"
 
 #: rnote-ui/data/ui/overlays.ui:155
 msgid "Move _Right"
-msgstr "நகர்த்து _வலதுபுறம்"
+msgstr "நகர்த்து வலதுபுறம் (_R)"
 
 #: rnote-ui/data/ui/overlays.ui:161
 msgid "_Close"
-msgstr "_ மூடவும்"
+msgstr "மூடவும் (_C)"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
@@ -1280,11 +1280,11 @@ msgstr "கட்டம்"
 
 #: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Isometric Grid"
-msgstr ""
+msgstr "ஐசோமெட்ரிக் கட்டம்"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
-msgstr ""
+msgstr "ஐசோமெட்ரிக் புள்ளிகள்"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
@@ -1790,7 +1790,7 @@ msgstr "சிம்பு"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Clock"
-msgstr ""
+msgstr "கடிகாரம்"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
@@ -1803,11 +1803,11 @@ msgstr "எழுது"
 #: rnote-ui/src/dialogs/mod.rs:560
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "பயிர்"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
-msgstr ""
+msgstr "அகராதி"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
@@ -1835,7 +1835,7 @@ msgstr "துணைக்கருவி"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Globe"
-msgstr ""
+msgstr "பூகோளம்"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
@@ -1859,7 +1859,7 @@ msgstr "மொழி"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Library"
-msgstr ""
+msgstr "நூலகம்"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
@@ -1883,13 +1883,11 @@ msgstr "இசைக் குறிப்பு"
 
 #: rnote-ui/src/dialogs/mod.rs:581
 msgid "Nature"
-msgstr ""
+msgstr "இயற்கை"
 
 #: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "திற"
+msgstr "புத்தகத்தைத் திற"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
@@ -1913,7 +1911,7 @@ msgstr "புரொஜெக்டர்"
 
 #: rnote-ui/src/dialogs/mod.rs:588
 msgid "Science"
-msgstr ""
+msgstr "அறிவியல்"
 
 #: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"
@@ -1978,7 +1976,7 @@ msgstr "வளைவுகள்"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Arrow"
-msgstr ""
+msgstr "அம்பு"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"

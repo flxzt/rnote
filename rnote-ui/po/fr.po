@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-02 07:37+0000\n"
+"PO-Revision-Date: 2023-04-12 10:49+0000\n"
 "Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
@@ -1000,8 +1000,9 @@ msgid "Draw With _Touch Input"
 msgstr "Dessiner avec la saisie _tactile"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
+#, fuzzy
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "Bloquer le _Zoom à deux doigts"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
@@ -1281,15 +1282,15 @@ msgstr "Lignes"
 #: rnote-ui/data/ui/settingspanel.ui:308
 #: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
-msgstr "Grille"
+msgstr "Quadrillage"
 
 #: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Isometric Grid"
-msgstr ""
+msgstr "Quadrillage isométrique"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
-msgstr ""
+msgstr "Points isométriques"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
@@ -1799,7 +1800,7 @@ msgstr "Puce"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Clock"
-msgstr ""
+msgstr "Horloge"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
@@ -1810,13 +1811,14 @@ msgid "Compose"
 msgstr "Composer"
 
 #: rnote-ui/src/dialogs/mod.rs:560
+#, fuzzy
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "Couper"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
-msgstr ""
+msgstr "Dictionnaire"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
@@ -1844,7 +1846,7 @@ msgstr "Engrenage"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Globe"
-msgstr ""
+msgstr "Globe"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
@@ -1868,7 +1870,7 @@ msgstr "Langue"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Library"
-msgstr ""
+msgstr "Bibliothèque"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
@@ -1892,13 +1894,11 @@ msgstr "Note de musique"
 
 #: rnote-ui/src/dialogs/mod.rs:581
 msgid "Nature"
-msgstr ""
+msgstr "Nature"
 
 #: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "Ouvrir"
+msgstr "Livre ouvert"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
@@ -1922,7 +1922,7 @@ msgstr "Projecteur"
 
 #: rnote-ui/src/dialogs/mod.rs:588
 msgid "Science"
-msgstr ""
+msgstr "Science"
 
 #: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"
@@ -1938,7 +1938,7 @@ msgstr "Achats"
 
 #: rnote-ui/src/dialogs/mod.rs:592
 msgid "Speech Bubble"
-msgstr "Bulle"
+msgstr "Bulle de BD"
 
 #: rnote-ui/src/dialogs/mod.rs:593
 msgid "Speedometer"
@@ -1987,7 +1987,7 @@ msgstr "Courbes"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Arrow"
-msgstr ""
+msgstr "Flèche"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"

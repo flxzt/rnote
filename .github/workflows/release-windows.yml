@@ -1,4 +1,5 @@
 on:
+  push: # TODO: remove this
   release:
     types: [published]
   workflow_dispatch:
@@ -35,6 +36,13 @@ jobs:
       - name: Configure
         run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
       - name: Compile
-        run: meson compile -v -C _mesonbuild
+        run: meson compile -C _mesonbuild
       - name: Install
         run: meson install -C _mesonbuild
+      - name: Build installer
+        run: meson build-inno-installer -C _mesonbuild
+      #- name: Upload Release Asset
+      #  shell: pwsh
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  run: gh release upload ${{ github.ref }} # TODO: add path to installer

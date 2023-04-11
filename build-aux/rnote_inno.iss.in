@@ -1,0 +1,84 @@
+; Rnote Inno-Setup Installer Script
+
+#define MyAppName @APP_NAME_CAPITALIZED@
+#define MyAppVersion @APP_VERSION@
+#define MyAppPublisher @APP_AUTHOR_NAME@
+#define MyAppURL @APP_WEBSITE@
+#define MyAppExeName @APP_BIN_OUTPUT@
+#define MyAppAssocName MyAppName + " File"
+#define MyAppAssocExt ".rnote"
+#define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
+
+#define app_id = @APP_ID@
+#define meson_source_root = @MESON_SOURCE_ROOT@
+#define meson_build_root = @MESON_BUILD_ROOT@
+#define meson_install_prefix @MESON_INSTALL_PREFIX@
+#define mingw_path @MINGW_PATH@
+
+[Setup]
+; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
+; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
+AppId={{14CA6E6F-6384-467B-B139-D6305C0F4431}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+;AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={autopf}\{#MyAppName}
+LicenseFile={#meson_source_root}\LICENSE
+OutputDir={#meson_build_root}\_inno
+OutputBaseFilename=@INSTALLER_NAME@
+SetupIconFile={#meson_source_root}\rnote-ui\data\icons\rnote.ico
+UninstallDisplayIcon = {app}\bin\{#MyAppExeName}
+; Uncomment the following line to run in non administrative install mode (install for current user only.)
+;PrivilegesRequired=lowest
+ChangesAssociations=yes
+DisableProgramGroupPage=yes
+Compression=lzma
+SolidCompression=yes
+WizardStyle=modern
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
+
+[Files]
+; DLLs
+; First, the required dlls must be copied into <meson_build_root>/dlls/. Check the windows build instructions for a command to do that.
+Source: "{#meson_build_root}\dlls\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+
+; gdk-pixbuf loaders
+Source: "{#mingw_path}\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Settings GSchema
+Source: "{#meson_install_prefix}\share\glib-2.0\schemas\*"; DestDir: "{app}\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Icons
+Source: "{#meson_source_root}\rnote-ui\data\icons\rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#meson_source_root}\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#mingw_path}\share\icons\hicolor\scalable\apps\{#app_id}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#mingw_path}\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Locales
+; TODO: Only install actually necessary files
+;Source: "{#meson_install_prefix}\share\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
+; pkg-data-dir
+Source: "{#meson_install_prefix}\share\rnote\*"; DestDir: "{app}\share\rnote"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Binary
+Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
+
+[Registry]
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\rnote-symbolic.ico"""; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#MyAppExeName}"" ""%1"""
+Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+
+[Icons]
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\bin\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+

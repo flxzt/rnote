@@ -85,6 +85,7 @@ desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py')
+inno_build_script = find_program('build-aux/inno_build.sh', required: true)
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -199,7 +200,7 @@ run_target(
 )
 
 # app cargo build
-custom_target(
+app_cargo_build = custom_target(
     'app-cargo-build',
     build_by_default: true,
     input: app_sources,
@@ -314,3 +315,54 @@ meson.add_install_script(
 #    update_desktop_database: true,
 #    update_mime_database: true,
 #)
+
+# windows installer
+
+inno_installer_name = 'rnote_installer'
+inno_installer_output= inno_installer_name + '.exe'
+
+message('Configuring Inno-Setup installer script file')
+
+inno_script_conf = configuration_data()
+inno_script_conf.set_quoted('APP_ID', app_id)
+inno_script_conf.set_quoted('APP_NAME', app_name)
+inno_script_conf.set_quoted('APP_NAME_CAPITALIZED', app_name_capitalized)
+inno_script_conf.set_quoted('APP_VERSION', version)
+inno_script_conf.set_quoted('APP_VERSION_SUFFIX', version_suffix)
+inno_script_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
+inno_script_conf.set_quoted('APP_AUTHORS', app_authors)
+inno_script_conf.set_quoted('APP_WEBSITE', app_website)
+inno_script_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
+inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
+inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
+inno_script_conf.set_quoted('APP_BIN_OUTPUT', app_bin_output)
+inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
+inno_script_conf.set_quoted('MESON_BUILD_ROOT', meson.project_build_root())
+inno_script_conf.set_quoted('MESON_INSTALL_PREFIX', prefix)
+inno_script_conf.set_quoted('INSTALLER_NAME', inno_installer_name)
+# TODO: make this configurable
+inno_script_conf.set_quoted('MINGW_PATH', prefix)
+
+inno_script = configure_file(
+    input: 'build-aux/rnote_inno.iss.in',
+    output: 'rnote_inno.iss',
+    configuration: inno_script_conf,
+)
+
+if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
+    # TODO: make the msys/mingw64 installation an explicit dependency
+
+    custom_target('build-inno-installer',
+        input : [inno_script],
+        output : [inno_installer_output],
+        command : [
+            inno_build_script,
+            meson.project_source_root() / '@INPUT@',
+            meson.project_build_root() / '@OUTPUT@',
+            meson.project_source_root(),
+            meson.project_build_root(),
+        ],
+        build_by_default: false,
+        depends: app_cargo_build,
+    )
+endif

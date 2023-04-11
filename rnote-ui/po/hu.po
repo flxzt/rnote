@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-02-07 11:36+0000\n"
-"Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"PO-Revision-Date: 2023-04-12 10:49+0000\n"
+"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -1112,11 +1112,11 @@ msgstr "_Bezárás"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Átmeneti"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Állandó"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
@@ -1299,7 +1299,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
-msgstr ""
+msgstr "Izometrikus pontok"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
@@ -1524,9 +1524,6 @@ msgid "Zoom in/out"
 msgstr "Nagyítás/kicsinyítés"
 
 #: rnote-ui/data/ui/shortcuts.ui:134
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Alt + Shift + Drag"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + húzás"
 
@@ -1535,9 +1532,6 @@ msgid "Document"
 msgstr "Dokumentum"
 
 #: rnote-ui/data/ui/shortcuts.ui:150
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open Document"
 msgid "Open Document"
 msgstr "Dokumentum megnyitása"
 
@@ -1546,9 +1540,6 @@ msgid "Save Document As"
 msgstr "Dokumentum mentése másként"
 
 #: rnote-ui/data/ui/shortcuts.ui:174
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Print Document"
 msgid "Print Document"
 msgstr "Dokumentum nyomtatása"
 
@@ -1557,30 +1548,18 @@ msgid "Import File"
 msgstr "Fájl importálása"
 
 #: rnote-ui/data/ui/shortcuts.ui:186
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Drawing"
 msgid "Drawing"
 msgstr "Rajzolás"
 
 #: rnote-ui/data/ui/shortcuts.ui:189
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Copy to Clipboard"
 msgid "Copy to Clipboard"
-msgstr "Másolás a vágólapra"
+msgstr "Másolás vágólapra"
 
 #: rnote-ui/data/ui/shortcuts.ui:195
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Cut to Clipboard"
 msgid "Cut to Clipboard"
-msgstr "Kivágás a vágólapra"
+msgstr "Kivágás vágólapra"
 
 #: rnote-ui/data/ui/shortcuts.ui:201
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Paste Clipboard"
 msgid "Paste Clipboard"
 msgstr "Vágólap beillesztése"
 
@@ -1617,16 +1596,12 @@ msgid "Edit Selected Workspace"
 msgstr "Kijelölt munkaterület szerkesztése"
 
 #: rnote-ui/src/appwindow/mod.rs:508
-#, fuzzy
-#| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
-msgstr "A .rnote fájl megnyitása sikertelen."
+msgstr "Az .rnote fájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:519
-#, fuzzy
-#| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
-msgstr "A vektoros képfájl megnyitása sikertelen."
+msgstr "A vektoros képfájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:530
 #, fuzzy
@@ -1635,22 +1610,16 @@ msgid "Opening bitmap image file failed"
 msgstr "A pontképes képfájl megnyitása sikertelen."
 
 #: rnote-ui/src/appwindow/mod.rs:541 rnote-ui/src/dialogs/import.rs:394
-#, fuzzy
-#| msgid "Opening Xournal++ file failed."
 msgid "Opening Xournal++ file failed"
-msgstr "A Xournal++ fájl megnyitása sikertelen."
+msgstr "A Xournal++ fájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:552 rnote-ui/src/dialogs/import.rs:335
-#, fuzzy
-#| msgid "Opening PDF file failed."
 msgid "Opening PDF file failed"
-msgstr "A PDF fájl megnyitása sikertelen."
+msgstr "A PDF fájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:561
-#, fuzzy
-#| msgid "Failed to open file: Tried to open folder as file"
 msgid "Failed to open file, tried to open folder as file"
-msgstr "Hiba: Mappa fájlként való megnyitása"
+msgstr "Sikertelen a fájl megnyitása, egy mappát próbált meg fájlként megnyitni"
 
 #: rnote-ui/src/appwindow/mod.rs:566
 #, fuzzy
@@ -1663,10 +1632,8 @@ msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:328
-#, fuzzy
-#| msgid "Saving document failed."
 msgid "Saving document failed"
-msgstr "A dokumentum mentése sikertelen."
+msgstr "A dokumentum mentése sikertelen"
 
 #: rnote-ui/src/appwindow/imp.rs:481
 msgid "Button 1"
@@ -1926,7 +1893,7 @@ msgstr "Forgács"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Clock"
-msgstr ""
+msgstr "Óra"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
@@ -1995,7 +1962,7 @@ msgstr "Nyelv"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Library"
-msgstr ""
+msgstr "Könyvtár"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
@@ -2003,7 +1970,7 @@ msgstr "Villanykörte"
 
 #: rnote-ui/src/dialogs/mod.rs:577
 msgid "Mathematics"
-msgstr ""
+msgstr "Matematika"
 
 #: rnote-ui/src/dialogs/mod.rs:578
 msgid "Meeting"
@@ -2019,7 +1986,7 @@ msgstr "Hangjegy"
 
 #: rnote-ui/src/dialogs/mod.rs:581
 msgid "Nature"
-msgstr ""
+msgstr "Természet"
 
 #: rnote-ui/src/dialogs/mod.rs:582
 #, fuzzy
@@ -2049,7 +2016,7 @@ msgstr "Kivetítő"
 
 #: rnote-ui/src/dialogs/mod.rs:588
 msgid "Science"
-msgstr ""
+msgstr "Tudomány"
 
 #: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"
@@ -2116,7 +2083,7 @@ msgstr "Ívek"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Arrow"
-msgstr ""
+msgstr "Nyíl"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"

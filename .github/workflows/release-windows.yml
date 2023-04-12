@@ -40,7 +40,7 @@ jobs:
       - name: Install
         run: meson install -C _mesonbuild
       - name: Build installer
-        run: meson build-inno-installer -C _mesonbuild
+        run: meson compile build-inno-installer -C _mesonbuild
       #- name: Upload Release Asset
       #  shell: pwsh
       #  env:

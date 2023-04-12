@@ -195,26 +195,19 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
 
                             if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                 canvas.set_output_file(None);
-
+                                appwindow.overlays().tabview().close_page_finish(&tab_page, false);
                                 log::error!("saving document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
+                            } else {
+                                appwindow.overlays().tabview().close_page_finish(&tab_page, true);
                             }
 
                             appwindow.overlays().finish_progressbar();
                             // No success toast on saving without dialog, success is already indicated in the header title
                         } else {
-                            // Open a dialog to choose a save location
-                            export::filechooser_save_doc_as(&appwindow, &canvas);
+                            // Open a dialog to choose a save location, close tab if save successful
+                            export::filechooser_save_doc_as_and_exit(&appwindow, &canvas, &tab_page, 0, true);
                         }
-
-                        // only close if saving was successful
-                        appwindow
-                            .overlays()
-                            .tabview()
-                            .close_page_finish(
-                                &tab_page,
-                                !canvas.unsaved_changes()
-                            );
                     }));
                 },
                 _ => {
@@ -244,13 +237,13 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         let canvas = tab.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
 
         if canvas.unsaved_changes() {
-            let save_folder_path = if let Some(p) =
-                canvas.output_file().and_then(|f| f.parent()?.path())
-            {
-                Some(p)
-            } else {
-                directories::UserDirs::new().and_then(|u| u.document_dir().map(|p| p.to_path_buf()))
-            };
+            // Use None as indicator current document is not saved to disk
+            let save_folder_path =
+                if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
+                    Some(p)
+                } else {
+                    None
+                };
 
             let mut doc_title = canvas.doc_title_display();
             // Ensuring we don't save with same file names by suffixing with a running index if it already exists
@@ -270,17 +263,11 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     &save_folder_path
                         .as_ref()
                         .map(|p| p.to_string_lossy().to_string())
-                        .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
+                        .unwrap_or_else(|| gettext("Unsaved File")),
                 )
                 .build();
 
             row.add_prefix(&check);
-
-            if save_folder_path.is_none() {
-                // Indicate that the file cannot be saved
-                check.set_active(false);
-                row.set_sensitive(false);
-            }
 
             files_group.add(&row);
 
@@ -296,17 +283,20 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
          let rows = rows.clone();
          let tabs = tabs.clone();
          glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-            let mut close = false;
 
             match response.as_str() {
                 "discard"
                     => {
                     // do nothing and close
-                    close = true;
+                    appwindow.close_force();
                 }
                 "save" => {
                     appwindow.overlays().start_pulsing_progressbar();
-
+                    /* 
+                        offset is the difference between the number of total tabs and the number of tabs marked by the user to be saved - 
+                        it is used to determine when the app window should be closed instead of the tab
+                    */
+                    let offset = appwindow.tab_pages_snapshot().len() - rows.iter().filter(|&x| (*x).1.is_active() == true).count();
                     for (i, check, save_folder_path, doc_title) in rows {
                         if check.is_active() {
                             let canvas = tabs[i]
@@ -326,23 +316,27 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                                     appwindow
                                         .overlays()
                                         .dispatch_toast_error(&gettext("Saving document failed"));
+                                } else {
+                                    if appwindow.tab_pages_snapshot().len() - offset == 1 {
+                                        appwindow.close_force();
+                                    } else {
+                                        let curr_tab = tabs.iter().nth(i).unwrap();
+                                        appwindow.overlays().tabview().close_page(&curr_tab);
+                                    }
                                 }
-
                                 // No success toast on saving without dialog, success is already indicated in the header title
+                            } else {
+                                let curr_tab = tabs.iter().nth(i).unwrap();
+                                export::filechooser_save_doc_as_and_exit(&appwindow, &canvas, curr_tab, offset, false);
                             }
                         }
                     }
 
                     appwindow.overlays().finish_progressbar();
-                    close = true;
                 }
                 _ => {
                     // Cancel
                 }
-            }
-
-            if close {
-                appwindow.close_force();
             }
          }));
         }),

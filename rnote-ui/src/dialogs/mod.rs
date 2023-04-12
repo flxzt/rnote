@@ -238,12 +238,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
         if canvas.unsaved_changes() {
             // Use None as indicator current document is not saved to disk
-            let save_folder_path =
-                if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
-                    Some(p)
-                } else {
-                    None
-                };
+            let save_folder_path = canvas.output_file().and_then(|f| f.parent()?.path());
 
             let mut doc_title = canvas.doc_title_display();
             // Ensuring we don't save with same file names by suffixing with a running index if it already exists
@@ -296,7 +291,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                         offset is the difference between the number of total tabs and the number of tabs marked by the user to be saved - 
                         it is used to determine when the app window should be closed instead of the tab
                     */
-                    let offset = appwindow.tab_pages_snapshot().len() - rows.iter().filter(|&x| (*x).1.is_active() == true).count();
+                    let offset = appwindow.tab_pages_snapshot().len() - rows.iter().filter(|&x| x.1.is_active()).count();
                     for (i, check, save_folder_path, doc_title) in rows {
                         if check.is_active() {
                             let canvas = tabs[i]
@@ -316,17 +311,15 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                                     appwindow
                                         .overlays()
                                         .dispatch_toast_error(&gettext("Saving document failed"));
+                                } else if appwindow.tab_pages_snapshot().len() - offset == 1 {
+                                    appwindow.close_force();
                                 } else {
-                                    if appwindow.tab_pages_snapshot().len() - offset == 1 {
-                                        appwindow.close_force();
-                                    } else {
-                                        let curr_tab = tabs.iter().nth(i).unwrap();
-                                        appwindow.overlays().tabview().close_page(&curr_tab);
-                                    }
+                                    let curr_tab = tabs.get(i).unwrap();
+                                    appwindow.overlays().tabview().close_page(curr_tab);
                                 }
                                 // No success toast on saving without dialog, success is already indicated in the header title
                             } else {
-                                let curr_tab = tabs.iter().nth(i).unwrap();
+                                let curr_tab = tabs.get(i).unwrap();
                                 export::filechooser_save_doc_as_and_exit(&appwindow, &canvas, curr_tab, offset, false);
                             }
                         }

@@ -908,13 +908,27 @@ impl TextStroke {
                 cursor,
             ),
         ) {
-            let mut offset = lines[hittest_position.line].end_offset;
+            let line_metric = &lines[hittest_position.line];
+            let mut offset = line_metric.end_offset;
 
-            if offset > 0 && self.text.chars().nth(offset - 1).unwrap() == '\n' {
+            // Move cursor in front of new line characters if they exist.
+            if offset > line_metric.start_offset
+                && self
+                    .text
+                    .chars()
+                    .nth(offset - 1)
+                    .map_or(false, |c| c == '\n')
+            {
                 offset -= 1;
             }
 
-            if offset > 0 && self.text.chars().nth(offset - 1).unwrap() == '\r' {
+            if offset > line_metric.start_offset
+                && self
+                    .text
+                    .chars()
+                    .nth(offset - 1)
+                    .map_or(false, |c| c == '\r')
+            {
                 offset -= 1;
             }
 

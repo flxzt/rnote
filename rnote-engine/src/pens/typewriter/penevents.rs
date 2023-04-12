@@ -617,6 +617,7 @@ impl Typewriter {
                                             finished: false,
                                         };
                                     } else {
+                                        #[allow(clippy::collapsible_else_if)]
                                         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                                             textstroke.move_cursor_text_start(cursor);
                                         } else {
@@ -638,6 +639,7 @@ impl Typewriter {
                                             finished: false,
                                         };
                                     } else {
+                                        #[allow(clippy::collapsible_else_if)]
                                         if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
                                             textstroke.move_cursor_text_end(cursor);
                                         } else {

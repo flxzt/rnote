@@ -9,7 +9,7 @@ use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
-use unicode_segmentation::GraphemeCursor;
+use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
@@ -836,47 +836,26 @@ impl TextStroke {
         *selection_cursor = GraphemeCursor::new(0, self.text.len(), true);
     }
 
-    fn index_is_ascii_word_separator(&self, index: usize) -> bool {
-        self.text.chars().nth(index).map_or(false, |c| {
-            c.is_ascii_whitespace() || c.is_ascii_punctuation()
-        })
+    fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
+        for (start_index, _) in self.text.unicode_word_indices().rev() {
+            if start_index < current_char_index {
+                return start_index;
+            }
+        }
+
+        current_char_index
     }
 
-    fn get_prev_word_start_index(&self, index: usize) -> usize {
-        let mut prev_word_start_index = index;
+    fn get_next_word_end_index(&self, current_char_index: usize) -> usize {
+        for (start_index, word) in self.text.unicode_word_indices() {
+            let end_index = start_index + word.len();
 
-        while prev_word_start_index > 0
-            && self.index_is_ascii_word_separator(prev_word_start_index - 1)
-        {
-            prev_word_start_index -= 1;
+            if end_index > current_char_index {
+                return end_index;
+            }
         }
 
-        while prev_word_start_index > 0
-            && !self.index_is_ascii_word_separator(prev_word_start_index - 1)
-        {
-            prev_word_start_index -= 1;
-        }
-
-        return prev_word_start_index;
-    }
-
-    fn get_next_word_end_index(&self, index: usize) -> usize {
-        let text_length = self.text.len();
-        let mut next_word_end_index = index;
-
-        while next_word_end_index < text_length
-            && self.index_is_ascii_word_separator(next_word_end_index)
-        {
-            next_word_end_index += 1;
-        }
-
-        while next_word_end_index < text_length
-            && !self.index_is_ascii_word_separator(next_word_end_index)
-        {
-            next_word_end_index += 1;
-        }
-
-        return next_word_end_index;
+        current_char_index
     }
 
     pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor, whole_word: bool) {

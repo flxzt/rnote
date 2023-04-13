@@ -85,7 +85,7 @@ desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py')
-inno_build_script = find_program('build-aux/inno_build.sh', required: true)
+inno_build_script = find_program('build-aux/inno_build.py', required: true)
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -353,8 +353,8 @@ if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
     # TODO: make the msys/mingw64 installation an explicit dependency
 
     custom_target('build-inno-installer',
-        input : [inno_script],
-        output : [inno_installer_output],
+        input : inno_script,
+        output : inno_installer_output,
         command : [
             inno_build_script,
             meson.project_source_root() / '@INPUT@',

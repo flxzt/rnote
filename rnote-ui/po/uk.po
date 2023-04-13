@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-11 08:14+0100\n"
-"PO-Revision-Date: 2023-03-15 11:40+0000\n"
+"POT-Creation-Date: 2023-04-09 00:04+0200\n"
+"PO-Revision-Date: 2023-04-12 10:49+0000\n"
 "Last-Translator: Dan <denqwerta@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
 "\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -92,7 +92,7 @@ msgid "Clear"
 msgstr "Очистити"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:497
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:498
 msgid "New Document"
 msgstr "Новий документ"
 
@@ -192,7 +192,7 @@ msgstr "Змінити каталог робочої області"
 msgid "- no directory selected -"
 msgstr "- каталог не вибрано -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:173
+#: rnote-ui/data/ui/dialogs/dialogs.ui:174
 msgid "Change the directory"
 msgstr "Змінити каталог"
 
@@ -993,32 +993,36 @@ msgid "Draw With _Touch Input"
 msgstr "Малювання за допомогою _сенсорного введення"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
+msgid "Block Pinch to _Zoom"
+msgstr "Заблокуйте зведення пальців для _зуму"
+
+#: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
 msgstr "Звуки _пера"
 
-#: rnote-ui/data/ui/canvasmenu.ui:66
+#: rnote-ui/data/ui/canvasmenu.ui:71
 msgid "C_lear Document"
 msgstr "Очистити документ"
 
-#: rnote-ui/data/ui/canvasmenu.ui:70
+#: rnote-ui/data/ui/canvasmenu.ui:75
 msgid "_Return to Origin Page"
 msgstr "_Повернутись до початкової сторінки"
 
-#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:115
 #: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "Віддалити"
 
-#: rnote-ui/data/ui/canvasmenu.ui:109
+#: rnote-ui/data/ui/canvasmenu.ui:114
 msgid "Reset Zoom"
 msgstr "Скинути масштаб"
 
-#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "Збільшити"
 
-#: rnote-ui/data/ui/canvasmenu.ui:128
+#: rnote-ui/data/ui/canvasmenu.ui:133
 msgid "Zoom to Page Width"
 msgstr "Масштабувати до ширини сторінки"
 
@@ -1047,7 +1051,7 @@ msgstr "Перемістити в Кошик"
 msgid "Duplicate"
 msgstr "Дублювати"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:499
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
 msgid "Draft"
 msgstr "Чернетка"
 
@@ -1268,83 +1272,91 @@ msgid "Lines"
 msgstr "Лінії"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
-#: rnote-ui/src/penssidebar/shaperpage.rs:386
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
 msgstr "Сітка"
 
-#: rnote-ui/data/ui/settingspanel.ui:317
+#: rnote-ui/data/ui/settingspanel.ui:310
+msgid "Isometric Grid"
+msgstr "Ізометрична сітка"
+
+#: rnote-ui/data/ui/settingspanel.ui:311
+msgid "Isometric Dots"
+msgstr "Ізометричні точки"
+
+#: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
 msgstr "Колір візерунка"
 
-#: rnote-ui/data/ui/settingspanel.ui:318
+#: rnote-ui/data/ui/settingspanel.ui:320
 msgid "Set the background pattern color"
 msgstr "Встановити колір фонового візерунка"
 
-#: rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:337
 msgid "Pattern Width"
 msgstr "Ширина візерунка"
 
-#: rnote-ui/data/ui/settingspanel.ui:336
+#: rnote-ui/data/ui/settingspanel.ui:338
 msgid "Set the background pattern width"
 msgstr "Встановити ширину візерунка фону"
 
-#: rnote-ui/data/ui/settingspanel.ui:349
+#: rnote-ui/data/ui/settingspanel.ui:351
 msgid "Pattern Height"
 msgstr "Висота шаблону"
 
-#: rnote-ui/data/ui/settingspanel.ui:350
+#: rnote-ui/data/ui/settingspanel.ui:352
 msgid "Set the background pattern height"
 msgstr "Встановити висоту фонового шаблону"
 
-#: rnote-ui/data/ui/settingspanel.ui:366
+#: rnote-ui/data/ui/settingspanel.ui:368
 msgid "Button Shortcuts"
 msgstr "Гарячі клавіші"
 
-#: rnote-ui/data/ui/settingspanel.ui:369
+#: rnote-ui/data/ui/settingspanel.ui:371
 msgid "Stylus Primary Button Action"
 msgstr "Дія основної кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:370
+#: rnote-ui/data/ui/settingspanel.ui:372
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
 msgstr "Установіть дію для основної кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:382
+#: rnote-ui/data/ui/settingspanel.ui:384
 msgid "Stylus Secondary Button Action"
 msgstr "Дія додаткової кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:383
+#: rnote-ui/data/ui/settingspanel.ui:385
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
 msgstr "Установіть дію для додаткової кнопки стилуса"
 
-#: rnote-ui/data/ui/settingspanel.ui:395
+#: rnote-ui/data/ui/settingspanel.ui:397
 msgid "Mouse Secondary Button Action"
 msgstr "Дія додаткової кнопки миші"
 
-#: rnote-ui/data/ui/settingspanel.ui:396
+#: rnote-ui/data/ui/settingspanel.ui:398
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
 msgstr "Установіть дію для додаткової кнопки миші"
 
-#: rnote-ui/data/ui/settingspanel.ui:408
+#: rnote-ui/data/ui/settingspanel.ui:410
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "Тривале натискання двома пальцями на сенсорний екран"
 
-#: rnote-ui/data/ui/settingspanel.ui:409
+#: rnote-ui/data/ui/settingspanel.ui:411
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr "Налаштувати дію для жесту тривалого натискання двома пальцями на дотик"
 
-#: rnote-ui/data/ui/settingspanel.ui:421
+#: rnote-ui/data/ui/settingspanel.ui:423
 msgid "Drawing Pad Button 1 Action"
 msgstr "Блок малювання - Кнопка дії 1"
 
-#: rnote-ui/data/ui/settingspanel.ui:422
+#: rnote-ui/data/ui/settingspanel.ui:424
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
@@ -1352,11 +1364,11 @@ msgstr ""
 "Встановіть дію для кнопки 1\n"
 "на планшеті для малювання"
 
-#: rnote-ui/data/ui/settingspanel.ui:434
+#: rnote-ui/data/ui/settingspanel.ui:436
 msgid "Drawing Pad Button 2 Action"
 msgstr "Блок малювання - Кнопка дії 2"
 
-#: rnote-ui/data/ui/settingspanel.ui:435
+#: rnote-ui/data/ui/settingspanel.ui:437
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
@@ -1364,11 +1376,11 @@ msgstr ""
 "Встановіть дію для кнопки 2\n"
 "на планшеті для малювання"
 
-#: rnote-ui/data/ui/settingspanel.ui:447
+#: rnote-ui/data/ui/settingspanel.ui:449
 msgid "Drawing Pad Button 3 Action"
 msgstr "Блок малювання - Кнопка дії 3"
 
-#: rnote-ui/data/ui/settingspanel.ui:448
+#: rnote-ui/data/ui/settingspanel.ui:450
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
@@ -1376,11 +1388,11 @@ msgstr ""
 "Встановіть дію для кнопки 3\n"
 "на планшеті для малювання"
 
-#: rnote-ui/data/ui/settingspanel.ui:460
+#: rnote-ui/data/ui/settingspanel.ui:462
 msgid "Drawing Pad Button 4 Action"
 msgstr "Блок малювання - Кнопка дії 4"
 
-#: rnote-ui/data/ui/settingspanel.ui:461
+#: rnote-ui/data/ui/settingspanel.ui:463
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1448,7 +1460,7 @@ msgstr "Збільшити/зменшити"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + перетягування"
 
-#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:551
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:562
 msgid "Document"
 msgstr "Документ"
 
@@ -1516,91 +1528,91 @@ msgstr "Видалити вибрану робочу область"
 msgid "Edit Selected Workspace"
 msgstr "Редагувати вибрану робочу область"
 
-#: rnote-ui/src/appwindow/mod.rs:505
+#: rnote-ui/src/appwindow/mod.rs:508
 msgid "Opening .rnote file failed"
 msgstr "Не вдалося відкрити файл .rnote"
 
-#: rnote-ui/src/appwindow/mod.rs:516
+#: rnote-ui/src/appwindow/mod.rs:519
 msgid "Opening vector image file failed"
 msgstr "Не вдалося відкрити файл векторного зображення"
 
-#: rnote-ui/src/appwindow/mod.rs:527
+#: rnote-ui/src/appwindow/mod.rs:530
 msgid "Opening bitmap image file failed"
 msgstr "Не вдалося відкрити файл растрового зображення"
 
-#: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:541 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed"
 msgstr "Не вдалося відкрити файл Xournal++"
 
-#: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:552 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed"
 msgstr "Не вдалося відкрити файл PDF"
 
-#: rnote-ui/src/appwindow/mod.rs:558
+#: rnote-ui/src/appwindow/mod.rs:561
 msgid "Failed to open file, tried to open folder as file"
 msgstr "Не вдалося відкрити файл, спробуйте відкрити папку як файл"
 
-#: rnote-ui/src/appwindow/mod.rs:563
+#: rnote-ui/src/appwindow/mod.rs:566
 msgid "Failed to open file, unsupported file type"
 msgstr "Не вдалося відкрити файл, непідтримуваний тип файлу"
 
-#: rnote-ui/src/appwindow/imp.rs:254
-#: rnote-ui/src/appwindow/appwindowactions.rs:575
+#: rnote-ui/src/appwindow/imp.rs:265
+#: rnote-ui/src/appwindow/appwindowactions.rs:578
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:328
 msgid "Saving document failed"
 msgstr "Не вдалося зберегти документ"
 
-#: rnote-ui/src/appwindow/imp.rs:470
+#: rnote-ui/src/appwindow/imp.rs:481
 msgid "Button 1"
 msgstr "Кнопка 1"
 
-#: rnote-ui/src/appwindow/imp.rs:477
+#: rnote-ui/src/appwindow/imp.rs:488
 msgid "Button 2"
 msgstr "Кнопка 2"
 
-#: rnote-ui/src/appwindow/imp.rs:484
+#: rnote-ui/src/appwindow/imp.rs:495
 msgid "Button 3"
 msgstr "Кнопка 3"
 
-#: rnote-ui/src/appwindow/imp.rs:491
+#: rnote-ui/src/appwindow/imp.rs:502
 msgid "Button 4"
 msgstr "Кнопка 4"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:696
+#: rnote-ui/src/appwindow/appwindowactions.rs:699
 msgid "Printing document failed"
 msgstr "Не вдалося надрукувати документ"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:724
+#: rnote-ui/src/appwindow/appwindowactions.rs:727
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не вдалося експортувати вибране, нічого не вибрано"
 
-#: rnote-ui/src/canvas/mod.rs:695
+#: rnote-ui/src/canvas/mod.rs:696
 msgid "- invalid file name -"
 msgstr "-недійсна назва файлу-"
 
-#: rnote-ui/src/canvas/mod.rs:708
+#: rnote-ui/src/canvas/mod.rs:709
 msgid "- invalid folder path -"
 msgstr "- недійсний шлях до папки -"
 
-#: rnote-ui/src/canvas/mod.rs:732
+#: rnote-ui/src/canvas/mod.rs:733
 msgid "Opened file was modified on disk"
 msgstr "Відкритий файл змінено на диску"
 
-#: rnote-ui/src/canvas/mod.rs:733
+#: rnote-ui/src/canvas/mod.rs:734
 msgid "Reload"
 msgstr "Перезавантажити"
 
-#: rnote-ui/src/canvas/mod.rs:739
+#: rnote-ui/src/canvas/mod.rs:740
 msgid "Reloading .rnote file from disk failed"
 msgstr "Не вдалося перезавантажити файл .rnote з диска"
 
-#: rnote-ui/src/canvas/mod.rs:788
+#: rnote-ui/src/canvas/mod.rs:789
 msgid "Opened file was renamed on disk"
 msgstr "Відкритий файл було перейменовано на диску"
 
-#: rnote-ui/src/canvas/mod.rs:801
+#: rnote-ui/src/canvas/mod.rs:802
 msgid "Opened file was moved or deleted on disk"
 msgstr "Відкритий файл було переміщено або видалено на диску"
 
@@ -1733,173 +1745,206 @@ msgstr "- неможливо знайти дійсну папку для збе�
 msgid "Change Workspace Directory"
 msgstr "Змінити каталог робочої області"
 
-#: rnote-ui/src/dialogs/mod.rs:541
+#: rnote-ui/src/dialogs/mod.rs:549
 msgid "Band-Aid"
 msgstr "Пластир"
 
-#: rnote-ui/src/dialogs/mod.rs:542
+#: rnote-ui/src/dialogs/mod.rs:550
 msgid "Bank"
 msgstr "Банк"
 
-#: rnote-ui/src/dialogs/mod.rs:543
+#: rnote-ui/src/dialogs/mod.rs:551
 msgid "Bookmark"
 msgstr "Закладка"
 
-#: rnote-ui/src/dialogs/mod.rs:544
+#: rnote-ui/src/dialogs/mod.rs:552
 msgid "Book"
 msgstr "Книга"
 
-#: rnote-ui/src/dialogs/mod.rs:545
+#: rnote-ui/src/dialogs/mod.rs:553
 msgid "Bread"
 msgstr "Хліб"
 
-#: rnote-ui/src/dialogs/mod.rs:546
+#: rnote-ui/src/dialogs/mod.rs:554
 msgid "Calendar"
 msgstr "Календар"
 
-#: rnote-ui/src/dialogs/mod.rs:547
+#: rnote-ui/src/dialogs/mod.rs:555
 msgid "Camera"
 msgstr "Камера"
 
-#: rnote-ui/src/dialogs/mod.rs:548
+#: rnote-ui/src/dialogs/mod.rs:556
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Чіп"
 
-#: rnote-ui/src/dialogs/mod.rs:549
+#: rnote-ui/src/dialogs/mod.rs:557
+msgid "Clock"
+msgstr "Годинник"
+
+#: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
 msgstr "Код"
 
-#: rnote-ui/src/dialogs/mod.rs:550
+#: rnote-ui/src/dialogs/mod.rs:559
 msgid "Compose"
 msgstr "Скласти"
 
-#: rnote-ui/src/dialogs/mod.rs:552
+#: rnote-ui/src/dialogs/mod.rs:560
+msgctxt "as in plant"
+msgid "Crop"
+msgstr "Врожай"
+
+#: rnote-ui/src/dialogs/mod.rs:561
+msgid "Dictionary"
+msgstr "Словник"
+
+#: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
 msgstr "Напої"
 
-#: rnote-ui/src/dialogs/mod.rs:553
+#: rnote-ui/src/dialogs/mod.rs:564
 msgid "Flag"
 msgstr "Прапор"
 
-#: rnote-ui/src/dialogs/mod.rs:554
+#: rnote-ui/src/dialogs/mod.rs:565
 msgid "Folder"
 msgstr "Папка"
 
-#: rnote-ui/src/dialogs/mod.rs:555
+#: rnote-ui/src/dialogs/mod.rs:566
 msgid "Footprints"
 msgstr "Сліди"
 
-#: rnote-ui/src/dialogs/mod.rs:556
+#: rnote-ui/src/dialogs/mod.rs:567
 msgid "Gamepad"
 msgstr "Ґеймпад"
 
-#: rnote-ui/src/dialogs/mod.rs:557
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Gear"
 msgstr "Передача"
 
-#: rnote-ui/src/dialogs/mod.rs:558
+#: rnote-ui/src/dialogs/mod.rs:569
+msgid "Globe"
+msgstr "Глобус"
+
+#: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
 msgstr "Молоток"
 
-#: rnote-ui/src/dialogs/mod.rs:559
+#: rnote-ui/src/dialogs/mod.rs:571
 msgid "Heart"
 msgstr "Серце"
 
-#: rnote-ui/src/dialogs/mod.rs:560
+#: rnote-ui/src/dialogs/mod.rs:572
 msgid "Hourglass"
 msgstr "Пісочний годинник"
 
-#: rnote-ui/src/dialogs/mod.rs:561
+#: rnote-ui/src/dialogs/mod.rs:573
 msgid "Key"
 msgstr "Ключ"
 
-#: rnote-ui/src/dialogs/mod.rs:562
+#: rnote-ui/src/dialogs/mod.rs:574
 msgid "Language"
 msgstr "Мова"
 
-#: rnote-ui/src/dialogs/mod.rs:563
+#: rnote-ui/src/dialogs/mod.rs:575
+msgid "Library"
+msgstr "Бібліотека"
+
+#: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
 msgstr "Лампочка"
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:577
 msgid "Mathematics"
 msgstr "Математика"
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:578
 msgid "Meeting"
 msgstr "Зустріч"
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:579
 msgid "Money"
 msgstr "Гроші"
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:580
 msgid "Musical Note"
 msgstr "Музична нота"
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:581
+msgid "Nature"
+msgstr "Природа"
+
+#: rnote-ui/src/dialogs/mod.rs:582
+msgid "Open Book"
+msgstr "Відкрити книгу"
+
+#: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
 msgstr "Пензлик"
 
-#: rnote-ui/src/dialogs/mod.rs:569
+#: rnote-ui/src/dialogs/mod.rs:584
 msgid "Pencil and Paper"
 msgstr "Олівець і папір"
 
-#: rnote-ui/src/dialogs/mod.rs:570
+#: rnote-ui/src/dialogs/mod.rs:585
 msgid "People"
 msgstr "Люди"
 
-#: rnote-ui/src/dialogs/mod.rs:571
+#: rnote-ui/src/dialogs/mod.rs:586
 msgid "Person"
 msgstr "Особа"
 
-#: rnote-ui/src/dialogs/mod.rs:572
+#: rnote-ui/src/dialogs/mod.rs:587
 msgid "Projector"
 msgstr "Проєктор"
 
-#: rnote-ui/src/dialogs/mod.rs:573
+#: rnote-ui/src/dialogs/mod.rs:588
+msgid "Science"
+msgstr "Наука"
+
+#: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"
 msgstr "Блокнот"
 
-#: rnote-ui/src/dialogs/mod.rs:574
+#: rnote-ui/src/dialogs/mod.rs:590
 msgid "Shapes"
 msgstr "Фігури"
 
-#: rnote-ui/src/dialogs/mod.rs:575
+#: rnote-ui/src/dialogs/mod.rs:591
 msgid "Shopping"
 msgstr "Шопінг"
 
-#: rnote-ui/src/dialogs/mod.rs:576
+#: rnote-ui/src/dialogs/mod.rs:592
 msgid "Speech Bubble"
 msgstr "Мовна бульбашка"
 
-#: rnote-ui/src/dialogs/mod.rs:577
+#: rnote-ui/src/dialogs/mod.rs:593
 msgid "Speedometer"
 msgstr "Спідометр"
 
-#: rnote-ui/src/dialogs/mod.rs:578
+#: rnote-ui/src/dialogs/mod.rs:594
 msgid "Star"
 msgstr "Зірка"
 
-#: rnote-ui/src/dialogs/mod.rs:580
+#: rnote-ui/src/dialogs/mod.rs:596
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Термінал"
 
-#: rnote-ui/src/dialogs/mod.rs:582
+#: rnote-ui/src/dialogs/mod.rs:598
 msgid "Text"
 msgstr "Текст"
 
-#: rnote-ui/src/dialogs/mod.rs:583
+#: rnote-ui/src/dialogs/mod.rs:599
 msgid "Travel"
 msgstr "Подорожі"
 
-#: rnote-ui/src/dialogs/mod.rs:584
+#: rnote-ui/src/dialogs/mod.rs:600
 msgid "Weather"
 msgstr "Погода"
 
-#: rnote-ui/src/dialogs/mod.rs:585
+#: rnote-ui/src/dialogs/mod.rs:601
 msgid "Weight"
 msgstr "Висота"
 
@@ -1907,123 +1952,127 @@ msgstr "Висота"
 msgid "Miscellaneous"
 msgstr "Різне"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:356
+#: rnote-ui/src/penssidebar/shaperpage.rs:357
 msgid "Coordinate Systems"
 msgstr "Системи координат"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:364
+#: rnote-ui/src/penssidebar/shaperpage.rs:365
 msgid "Ellipses"
 msgstr "Еліпси"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:371
+#: rnote-ui/src/penssidebar/shaperpage.rs:372
 msgid "Curves"
 msgstr "Криві"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:384
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
+msgid "Arrow"
+msgstr "Стріла"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"
 msgstr "Лінія"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:385
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "Rectangle"
 msgstr "Прямокутник"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:387
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D coordinate system"
 msgstr "2D система координат"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:388
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "3D coordinate system"
 msgstr "3D система координат"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:389
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "2D single quadrant coordinate system"
 msgstr "Єдина 2D квадрантна система координат"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:390
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Ellipse"
 msgstr "Еліпс"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:391
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Ellipse with foci"
 msgstr "Еліпс з фокусами"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:392
+#: rnote-ui/src/penssidebar/shaperpage.rs:394
 msgid "Quadratic bezier curve"
 msgstr "Квадратична крива Безьє"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:393
+#: rnote-ui/src/penssidebar/shaperpage.rs:395
 msgid "Cubic bezier curve"
 msgstr "Кубічна крива Безьє"
 
-#: rnote-ui/src/settingspanel/mod.rs:753
+#: rnote-ui/src/settingspanel/mod.rs:761
 msgid "Crosshair (Small)"
 msgstr "Перехрестя (маленьке)"
 
-#: rnote-ui/src/settingspanel/mod.rs:754
+#: rnote-ui/src/settingspanel/mod.rs:762
 msgid "Crosshair (Medium)"
 msgstr "Перехрестя (середнє)"
 
-#: rnote-ui/src/settingspanel/mod.rs:755
+#: rnote-ui/src/settingspanel/mod.rs:763
 msgid "Crosshair (Large)"
 msgstr "Перехрестя (велике)"
 
-#: rnote-ui/src/settingspanel/mod.rs:756
+#: rnote-ui/src/settingspanel/mod.rs:764
 msgid "Dot (Small)"
 msgstr "Крапка (маленька)"
 
-#: rnote-ui/src/settingspanel/mod.rs:757
+#: rnote-ui/src/settingspanel/mod.rs:765
 msgid "Dot (Medium)"
 msgstr "Крапка (середня)"
 
-#: rnote-ui/src/settingspanel/mod.rs:758
+#: rnote-ui/src/settingspanel/mod.rs:766
 msgid "Dot (Large)"
 msgstr "Крапка (велика)"
 
-#: rnote-ui/src/settingspanel/mod.rs:759
+#: rnote-ui/src/settingspanel/mod.rs:767
 msgid "Teardrop North-West (Small)"
 msgstr "Каплевидний північно-західний (малий)"
 
-#: rnote-ui/src/settingspanel/mod.rs:760
+#: rnote-ui/src/settingspanel/mod.rs:768
 msgid "Teardrop North-West (Medium)"
 msgstr "Каплевидний північно-західний (середній)"
 
-#: rnote-ui/src/settingspanel/mod.rs:761
+#: rnote-ui/src/settingspanel/mod.rs:769
 msgid "Teardrop North-West (Large)"
 msgstr "Каплевидний північно-західний (великий)"
 
-#: rnote-ui/src/settingspanel/mod.rs:762
+#: rnote-ui/src/settingspanel/mod.rs:770
 msgid "Teardrop North-East (Small)"
 msgstr "Каплевидний північно-східний (малий)"
 
-#: rnote-ui/src/settingspanel/mod.rs:763
+#: rnote-ui/src/settingspanel/mod.rs:771
 msgid "Teardrop North-East (Medium)"
 msgstr "Крапля північно-східна (середня)"
 
-#: rnote-ui/src/settingspanel/mod.rs:764
+#: rnote-ui/src/settingspanel/mod.rs:772
 msgid "Teardrop North-East (Large)"
 msgstr "Каплевидний північно-східний (великий)"
 
-#: rnote-ui/src/settingspanel/mod.rs:765
+#: rnote-ui/src/settingspanel/mod.rs:773
 msgid "Teardrop North (Small)"
 msgstr "Каплевидна північ (мала)"
 
-#: rnote-ui/src/settingspanel/mod.rs:766
+#: rnote-ui/src/settingspanel/mod.rs:774
 msgid "Teardrop North (Medium)"
 msgstr "Каплевидна північ (середня)"
 
-#: rnote-ui/src/settingspanel/mod.rs:767
+#: rnote-ui/src/settingspanel/mod.rs:775
 msgid "Teardrop North (Large)"
 msgstr "Каплевидний північний (великий)"
 
-#: rnote-ui/src/settingspanel/mod.rs:768
+#: rnote-ui/src/settingspanel/mod.rs:776
 msgid "Beam (Small)"
 msgstr "Промінь (малий)"
 
-#: rnote-ui/src/settingspanel/mod.rs:769
+#: rnote-ui/src/settingspanel/mod.rs:777
 msgid "Beam (Medium)"
 msgstr "Промінь (середній)"
 
-#: rnote-ui/src/settingspanel/mod.rs:770
+#: rnote-ui/src/settingspanel/mod.rs:778
 msgid "Beam (Large)"
 msgstr "Промінь (великий)"
 

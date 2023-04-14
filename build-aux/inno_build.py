@@ -2,6 +2,7 @@
 
 import sys
 import os
+from subprocess import call
 
 inno_script = sys.argv[1]
 installer_output = sys.argv[2]
@@ -18,6 +19,14 @@ print(f"""
     msys_path: {msys_path}
 """, file=sys.stderr)
 
-# TODO: collect dlls, prepare files, ..
+# TODO: add mingw path
 
-# TODO: invoke inno-setup
+# collect dlls, prepare files, ..
+if not os.path.exists(f"{build_root}/dlls/"):
+    os.mkdir(f"{build_root}/dlls/")
+
+os.system(f"ldd {build_root}/rnote.exe | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {build_root}/dlls/")
+os.system(f"ldd /mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {build_root}/dlls/")
+
+# invoke inno-setup
+os.system(f"pwsh -c \"iscc /O'{inno_installer_output}' '{inno_script}'\"")

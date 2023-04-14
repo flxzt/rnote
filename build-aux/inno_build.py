@@ -19,14 +19,16 @@ print(f"""
     msys_path: {msys_path}
 """, file=sys.stderr)
 
-# TODO: add mingw path
+dll_directory = os.path.join(build_root, "dlls/")
 
-# collect dlls, prepare files, ..
-if not os.path.exists(f"{build_root}/dlls/"):
-    os.mkdir(f"{build_root}/dlls/")
+if not os.path.exists(dll_directory):
+    print("Creating DLL directory...", file=sys.stderr)
+    os.mkdir(dll_directory)
 
-os.system(f"ldd {build_root}/rnote.exe | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {build_root}/dlls/")
-os.system(f"ldd /mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {build_root}/dlls/")
+print("Collecting DLLs...", file=sys.stderr)
+os.system(f"ldd {os.path.join(build_root, 'rnote.exe')} | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {dll_directory}")
+os.system(f"ldd {os.path.join(msys_path, '/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll')} | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {dll_directory}")
 
-# invoke inno-setup
-os.system(f"iscc /O'{inno_installer_output}' '{inno_script}'")
+print("Running ISCC...", file=sys.stderr)
+# os.system(f"powershell -c \"& 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")
+os.system(f"powershell -c \"ISCC.exe '{inno_script}'\"")

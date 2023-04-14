@@ -353,8 +353,8 @@ if host_machine.system() in ['windows', 'cygwin']
         output : installer_output,
         command : [
             inno_build_script,
-            meson.project_source_root() / '@INPUT@',
-            meson.project_build_root() / '@OUTPUT@',
+            meson.project_build_root() / '@INPUT@',
+            prefix, # TODO: MINGW_PATH; make this configurable
             meson.project_source_root(),
             meson.project_build_root(),
             msys_path,

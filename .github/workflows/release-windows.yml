@@ -18,6 +18,7 @@ jobs:
             - name: Setup MSYS2
               uses: msys2/setup-msys2@v2
               with:
+                  release: false
                   update: true
                   install: |
                       git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain

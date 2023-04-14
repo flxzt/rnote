@@ -52,7 +52,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#meson_build_root}\dlls\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 
 ; gdk-pixbuf loaders
-Source: "{#msys_path}\mingw64\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#msys_path}\mingw64\lib\gdk-pixbuf-2.0"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; poppler-data
 Source: "{#msys_path}\mingw64\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Settings GSchema

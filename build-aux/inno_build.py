@@ -30,5 +30,6 @@ os.system(f"ldd {os.path.join(build_root, 'rnote.exe')} | grep '\/mingw.*\.dll' 
 os.system(f"ldd {os.path.join(msys_path, '/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll')} | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {dll_directory}")
 
 print("Running ISCC...", file=sys.stderr)
-# os.system(f"powershell -c \"& 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")
-os.system(f"powershell -c \"ISCC.exe '{inno_script}'\"")
+# TODO: maybe use chocolatey to install in workflow? it's not added to PATH by default, hardcoding is a bad idea.
+os.system(f"powershell -c \"& 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")
+# os.system(f"powershell -c \"ISCC.exe '{inno_script}'\"")

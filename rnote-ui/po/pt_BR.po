@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-06 12:26+0000\n"
+"PO-Revision-Date: 2023-04-15 09:21+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
@@ -56,7 +56,7 @@ msgstr "Visão geral"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
-msgstr ""
+msgstr "Nota da Aula 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "A PDF annotation"
@@ -64,7 +64,7 @@ msgstr "Uma anotação de PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
-msgstr ""
+msgstr "Notas da Aula 2"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:168
 msgid "Clear Document"
@@ -294,16 +294,12 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
-#, fuzzy
-#| msgid "Import file"
 msgid "Import Xournal++ File"
-msgstr "Importar arquivo"
+msgstr "Importar arquivo de Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
-#, fuzzy
-#| msgid "PDF import preferences"
 msgid "Xournal++ File Import Preferences"
-msgstr "Preferências de importação do PDF"
+msgstr "Preferências de Importação de arquivos de Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:263
 msgid "DPI"
@@ -351,10 +347,8 @@ msgstr "Com plano de fundo"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background should be exported"
-msgstr "Definir cor do plano de fundo"
+msgstr "Definir se fundo deve ser exportado"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
@@ -363,10 +357,8 @@ msgstr "Com Padrão"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
-#, fuzzy
-#| msgid "Set the background color"
 msgid "Set whether the background pattern should be exported"
-msgstr "Definir cor do plano de fundo"
+msgstr "Definir se plano de fundo deve ser exportado"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109
 #: rnote-ui/data/ui/dialogs/export.ui:278
@@ -384,37 +376,31 @@ msgstr "O formato de exportação"
 #: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:256
 #: rnote-ui/src/dialogs/export.rs:535 rnote-ui/src/dialogs/export.rs:781
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:261
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:266
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
-#, fuzzy
-#| msgid "Export document as SVG"
 msgid "Export Document Pages"
-msgstr "Exportar documento como SVG"
+msgstr "Exportar Páginas do Documento"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
-#, fuzzy
-#| msgid "Page spacing"
 msgid "Page Files Naming:"
-msgstr "Espaçamento da página"
+msgstr "Nome das Páginas do Arquivo:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export Directory"
 msgstr "Diretório de Exportação"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
-#, fuzzy
-#| msgid "Set the format width"
 msgid "Select the export directory"
-msgstr "Definir a largura do modelo"
+msgstr "Selecionar o diretório de exportação"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 #, fuzzy
@@ -426,23 +412,23 @@ msgstr "Exportar estado do motor"
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540
 #: rnote-ui/src/dialogs/export.rs:786
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285
 #: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:546
 #: rnote-ui/src/dialogs/export.rs:792
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315
 #: rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "Qualidade Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:316
 #: rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Defina a qualidade da imagem Jpeg (1 - 100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
 msgid "Export Selection"
@@ -450,7 +436,7 @@ msgstr "Exportar seleção"
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
-msgstr ""
+msgstr "Exportar o Formato de Imagem"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
@@ -505,7 +491,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Simple"
-msgstr ""
+msgstr "Simples"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Produces line segments from the raw input.\n"
@@ -513,7 +499,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Curved"
-msgstr ""
+msgstr "Curvado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Produces smooth, curved segments.\n"
@@ -521,7 +507,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:173
 msgid "Modeled"
-msgstr ""
+msgstr "Modelado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid ""
@@ -530,16 +516,12 @@ msgid ""
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
-#, fuzzy
-#| msgid "Solid style"
 msgid "Solid Style"
-msgstr "Estilo do sólido"
+msgstr "Estilo Sólido"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
-#, fuzzy
-#| msgid "Pressure curve"
 msgid "Pressure Curve"
-msgstr "Curva de pressão"
+msgstr "Curva de Pressão"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
@@ -570,10 +552,8 @@ msgid "Cubic Parabola"
 msgstr "Parábola cúbica"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
-#, fuzzy
-#| msgid "Textured style"
 msgid "Textured Style"
-msgstr "Estilo do texturizado"
+msgstr "Estilo texturizado"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"

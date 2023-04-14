@@ -1,48 +1,53 @@
 on:
-  push: # TODO: remove this
-  release:
-    types: [published]
-  workflow_dispatch:
+    push: # TODO: remove this
+    release:
+        types: [published]
+    workflow_dispatch:
 
 name: Release Windows
 
 jobs:
-  build:
-    runs-on: windows-2022
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: | 
-            git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain 
-            mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils 
-            mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream-glib mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita 
-            mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data
-      - name: Remove libpthread.dll.a
-        run: rm /mingw64/lib/libpthread.dll.a
-        continue-on-error: true
-      - name: Install toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable-gnu
-      - name: Add toolchain to PATH
-        run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin" > ~/.bashrc
-      - name: Configure
-        run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
-      - name: Compile
-        run: meson compile -C _mesonbuild
-      - name: Install
-        run: meson install -C _mesonbuild
-      - name: Build installer
-        run: meson compile build-inno-installer -C _mesonbuild
-      #- name: Upload Release Asset
-      #  shell: pwsh
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  run: gh release upload ${{ github.ref }} # TODO: add path to installer
+    build:
+        runs-on: windows-2022
+        defaults:
+            run:
+                shell: msys2 {0}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+            - name: Setup MSYS2
+              uses: msys2/setup-msys2@v2
+              with:
+                  update: true
+                  install: |
+                      git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain
+                      mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils
+                      mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream-glib mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita
+                      mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data
+            - name: Remove libpthread.dll.a
+              run: rm /mingw64/lib/libpthread.dll.a
+              continue-on-error: true
+            - name: Install toolchain
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: stable-gnu
+            - name: Add toolchain to PATH
+              run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin" > ~/.bashrc
+            - name: Configure
+              run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
+            - name: Compile
+              run: meson compile -C _mesonbuild
+            - name: Install
+              run: meson install -C _mesonbuild
+            - name: Build installer
+              run: meson compile build-inno-installer -C _mesonbuild
+            - name: Upload Workflow Artifact
+              uses: actions/upload-artifact@v3
+              with:
+                  name: rnote-installer
+                  path: _mesonbuild/rnote_installer.exe
+            #- name: Upload Release Asset
+            #  shell: pwsh
+            #  env:
+            #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #  run: gh release upload ${{ github.ref }} # TODO: add path to installer

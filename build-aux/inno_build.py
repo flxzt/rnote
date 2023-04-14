@@ -29,4 +29,4 @@ os.system(f"ldd {build_root}/rnote.exe | grep '\/mingw.*\.dll' -o | xargs -i cp 
 os.system(f"ldd /mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\/mingw.*\.dll' -o | xargs -i cp {{}} {build_root}/dlls/")
 
 # invoke inno-setup
-os.system(f"pwsh -c \"iscc /O'{inno_installer_output}' '{inno_script}'\"")
+os.system(f"iscc /O'{inno_installer_output}' '{inno_script}'")

@@ -11,7 +11,7 @@ pub(crate) use workspacesbar::RnWorkspacesBar;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList, FileFilter,
-    FilterChange, FilterListModel, GestureClick, Grid, ListItem, ListView, MultiSorter,
+    FilterChange, FilterListModel, GestureClick, Grid, Label, ListItem, ListView, MultiSorter,
     PropagationPhase, PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection,
     SortListModel, SorterChange, Widget,
 };
@@ -35,6 +35,10 @@ mod imp {
         #[template_child]
         pub(crate) files_listview: TemplateChild<ListView>,
         #[template_child]
+        pub(crate) active_workspace_name_label: TemplateChild<Label>,
+        #[template_child]
+        pub(crate) active_workspace_dir_label: TemplateChild<Label>,
+        #[template_child]
         pub(crate) dir_controls_dir_up_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) dir_controls_actions_box: TemplateChild<gtk4::Box>,
@@ -54,6 +58,8 @@ mod imp {
                 grid: TemplateChild::<Grid>::default(),
                 files_scroller: TemplateChild::<ScrolledWindow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
+                active_workspace_name_label: TemplateChild::<Label>::default(),
+                active_workspace_dir_label: TemplateChild::<Label>::default(),
                 dir_controls_dir_up_button: TemplateChild::<Button>::default(),
                 dir_controls_actions_box: TemplateChild::<gtk4::Box>::default(),
                 workspacesbar: TemplateChild::<RnWorkspacesBar>::default(),
@@ -120,6 +126,14 @@ impl RnWorkspaceBrowser {
 
     pub(crate) fn workspacesbar(&self) -> RnWorkspacesBar {
         self.imp().workspacesbar.clone()
+    }
+
+    pub(crate) fn active_workspace_name_label(&self) -> Label {
+        self.imp().active_workspace_name_label.clone()
+    }
+
+    pub(crate) fn active_workspace_dir_label(&self) -> Label {
+        self.imp().active_workspace_dir_label.clone()
     }
 
     pub(crate) fn dir_controls_actions_box(&self) -> gtk4::Box {

@@ -292,8 +292,12 @@ impl RnWorkspacesBar {
         let workspace_listbox = self.imp().workspaces_listbox.get();
         workspace_listbox.connect_selected_rows_changed(
             clone!(@weak appwindow, @weak self as workspacesbar => move |_| {
-                if let Some(dir) = workspacesbar.selected_workspacelistentry().map(|e| e.dir()) {
-                     appwindow.workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
+                if let Some(entry) = workspacesbar.selected_workspacelistentry() {
+                    let dir = entry.dir();
+                    let name = entry.name();
+                    appwindow.workspacebrowser().active_workspace_name_label().set_label(&name);
+                    appwindow.workspacebrowser().active_workspace_dir_label().set_label(&dir);
+                    appwindow.workspacebrowser().set_dirlist_file(Some(&gio::File::for_path(dir)));
 
                     workspacesbar.save_to_settings(&appwindow.app_settings());
                 }

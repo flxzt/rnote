@@ -53,6 +53,8 @@ Source: "{#meson_build_root}\dlls\*.dll"; DestDir: "{app}\bin"; Flags: ignorever
 
 ; gdk-pixbuf loaders
 Source: "{#mingw_path}\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+; poppler-data
+Source: "{#mingw_path}\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Settings GSchema
 Source: "{#meson_install_prefix}\share\glib-2.0\schemas\*"; DestDir: "{app}\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Icons

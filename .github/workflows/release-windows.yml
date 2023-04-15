@@ -37,23 +37,25 @@ jobs:
               run: |
                   echo "/c/Users/$USER/.cargo/bin" >> $GITHUB_PATH
                   echo "/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" >> $GITHUB_PATH
-            - name: Configure
+            - name: Setup
               run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
+            - name: Configure
+              run: meson configure -Dinstaller-name='rnote-win-installer-x86-64' _mesonbuild
             - name: Compile
               run: meson compile -C _mesonbuild
             - name: Install
               run: meson install -C _mesonbuild
             - name: Build installer
-              run: meson compile build-inno-installer -C _mesonbuild
+              run: meson compile build-installer -C _mesonbuild
             - name: Upload installer (Workflow Artifact)
               uses: actions/upload-artifact@v3
               with:
                   name: rnote-installer-artifact
-                  path: _mesonbuild/rnote_installer.exe
+                  path: _mesonbuild/rnote-win-installer-x86-64.exe
                   if-no-files-found: error
             - name: Upload installer (Release Asset)
               if: ${{ github.event_name == 'release' }}
               shell: powershell
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: gh release upload ${{ github.ref_name }} _mesonbuild/rnote_installer.exe
+              run: gh release upload ${{ github.ref_name }} _mesonbuild/rnote-win-installer-x86-64.exe

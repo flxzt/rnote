@@ -318,8 +318,8 @@ meson.add_install_script(
 
 # windows installer
 
-inno_installer_name = 'rnote_installer-@0@'.format(host_machine.cpu_family())
-inno_installer_output = inno_installer_name + '.exe'
+inno_installer_name = 'rnote_installer'
+inno_installer_output= inno_installer_name + '.exe'
 
 message('Configuring Inno-Setup installer script file')
 

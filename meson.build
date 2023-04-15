@@ -11,12 +11,22 @@ i18n = import('i18n')
 gnome = import('gnome')
 fs = import('fs')
 
+# Options
+
+prefix = get_option('prefix')
+bindir = prefix / get_option('bindir')
+datadir = prefix / get_option('datadir')
+libdir = prefix / get_option('libdir')
+localedir = prefix / get_option('localedir')
+profile = get_option('profile')
+build_cli = get_option('cli')
+msys_path = get_option('msys-path')
+installer_name = get_option('installer-name')
+
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
-# the name of the cli crate
-cli_name = 'rnote-cli'
-# We need to rename the cli binary, because else the output file name would collide with the rnote-cli folder
-cli_output_name = 'rnote_cli'
+cli_crate_output = 'rnote-cli'  # the name of the generated executable of the cli crate
+cli_output_name = 'rnote_cli'   # We need to rename the cli executable, because else the output file name would collide with the rnote-cli folder
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
@@ -35,35 +45,20 @@ version_major = version_array[0].to_int()
 version_minor = version_array[1].to_int()
 version_micro = version_array[2].to_int()
 
-if get_option('profile') == 'devel'
-    profile = 'devel'
-    version_suffix = '-devel'
+pkgdatadir = datadir / app_name
+iconsdir = datadir / 'icons'
+gettext_package = app_name
+app_idpath = '/com/github/flxzt/' + app_name + '/'
+
+if profile == 'devel'
     app_id = base_id + '.' + 'Devel'
+    version_suffix = '-devel'
     rust_target_folder = 'debug'
 else
-    profile = 'default'
     app_id = base_id
     version_suffix = patch
     rust_target_folder = 'release'
 endif
-
-app_idpath = '/com/github/flxzt/' + app_name + '/'
-
-# Options
-
-prefix = get_option('prefix')
-bindir = prefix / get_option('bindir')
-datadir = prefix / get_option('datadir')
-libdir = prefix / get_option('libdir')
-localedir = prefix / get_option('localedir')
-profile = get_option('profile')
-build_cli = get_option('cli')
-msys_path = get_option('msys-path')
-installer_name = get_option('installer-name')
-
-pkgdatadir = datadir / app_name
-iconsdir = datadir / 'icons'
-gettext_package = app_name
 
 # Dependencies
 
@@ -176,9 +171,9 @@ if profile == 'default'
 endif
 
 if host_machine.system() in ['windows', 'cygwin']
-    app_bin_output = app_name + '.exe'
+    app_output = app_name + '.exe'
 else
-    app_bin_output = app_name
+    app_output = app_name
 endif
 
 # app cargo check
@@ -208,7 +203,7 @@ app_cargo_build = custom_target(
     'app-cargo-build',
     build_by_default: true,
     input: app_sources,
-    output: app_bin_output,
+    output: app_output,
     console: true,
     install: true,
     install_dir: bindir,
@@ -239,9 +234,9 @@ if build_cli == true
     endif
 
     if host_machine.system() in ['windows', 'cygwin']
-        cli_bin_output = cli_output_name + '.exe'
+        cli_output = cli_output_name + '.exe'
     else
-        cli_bin_output = cli_output_name
+        cli_output = cli_output_name
     endif
 
     cli_sources = [
@@ -286,7 +281,7 @@ if build_cli == true
         'cli-cargo-build',
         build_by_default: true,
         input: cli_sources,
-        output: cli_bin_output,
+        output: cli_output,
         console: true,
         install: true,
         install_dir: bindir,
@@ -297,7 +292,7 @@ if build_cli == true
             cargo_env,
             cargo,
             ' '.join(cli_cargo_options),
-            cargo_target_dir / rust_target_folder / cli_name,
+            cargo_target_dir / rust_target_folder / cli_crate_output,
             meson.project_build_root() / '@OUTPUT@',
         ],
     )
@@ -320,7 +315,7 @@ meson.add_install_script(
 #    update_mime_database: true,
 #)
 
-# windows installer
+# Windows installer
 
 installer_output= installer_name + '.exe'
 
@@ -338,7 +333,7 @@ inno_script_conf.set_quoted('APP_WEBSITE', app_website)
 inno_script_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
 inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
 inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
-inno_script_conf.set_quoted('APP_BIN_OUTPUT', app_bin_output)
+inno_script_conf.set_quoted('APP_OUTPUT', app_output)
 inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
 inno_script_conf.set_quoted('MESON_BUILD_ROOT', meson.project_build_root())
 inno_script_conf.set_quoted('MESON_INSTALL_PREFIX', prefix)
@@ -352,6 +347,7 @@ inno_script = configure_file(
 )
 
 if host_machine.system() in ['windows', 'cygwin']
+    # build installer
     custom_target('build-installer',
         input : inno_script,
         output : installer_output,

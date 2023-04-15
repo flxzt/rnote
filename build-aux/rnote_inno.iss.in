@@ -4,7 +4,7 @@
 #define MyAppVersion @APP_VERSION@
 #define MyAppPublisher @APP_AUTHOR_NAME@
 #define MyAppURL @APP_WEBSITE@
-#define MyAppExeName @APP_BIN_OUTPUT@
+#define MyAppExeName @APP_OUTPUT@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".rnote"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt

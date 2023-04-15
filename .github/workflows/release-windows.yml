@@ -1,5 +1,4 @@
 on:
-    push: # TODO: remove this
     release:
         types: [published]
     workflow_dispatch:
@@ -9,6 +8,8 @@ name: Release Windows
 jobs:
     build:
         runs-on: windows-2022
+        permissions:
+            contents: write # needed for uploading release artifact
         defaults:
             run:
                 shell: msys2 {0}
@@ -42,13 +43,15 @@ jobs:
               run: meson install -C _mesonbuild
             - name: Build installer
               run: meson compile build-inno-installer -C _mesonbuild
-            - name: Upload Workflow Artifact
+            - name: Upload installer (Workflow Artifact)
+              if: ${{ github.event_name != 'release' }}
               uses: actions/upload-artifact@v3
               with:
-                  name: rnote-installer
+                  name: rnote-installer-artifact
                   path: _mesonbuild/rnote_installer.exe
-            #- name: Upload Release Asset
-            #  shell: pwsh
-            #  env:
-            #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #  run: gh release upload ${{ github.ref }} # TODO: add path to installer
+            - name: Upload installer (Release Asset)
+              if: ${{ github.event_name == 'release' }}
+              shell: powershell
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: gh release upload ${{ github.ref }} _mesonbuild/rnote_installer.exe

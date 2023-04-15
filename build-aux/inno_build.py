@@ -26,9 +26,9 @@ if not os.path.exists(dll_directory):
     os.mkdir(dll_directory)
 
 print("Collecting DLLs...", file=sys.stderr)
-os.system(f"ldd {os.path.join(build_root, 'rnote.exe')} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dll_directory}")
+os.system(f"ldd {build_root}/rnote.exe | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dll_directory}")
 os.system(f"ldd {msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dll_directory}")
 
+# TODO: maybe use chocolatey to install in workflow? it's not added to PATH by default, so we have to hardcode it.
 print("Running ISCC...", file=sys.stderr)
-# TODO: maybe use chocolatey to install in workflow? it's not added to PATH by default, hardcoding is a bad idea.
-os.system(f"{mingw_path}/../usr/bin/bash -c \"'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")
+os.system(f"{msys_path}/../usr/bin/bash -c \"'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")

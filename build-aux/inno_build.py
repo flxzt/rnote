@@ -2,7 +2,6 @@
 
 import sys
 import os
-from subprocess import call
 
 inno_script = sys.argv[1]
 installer_output = sys.argv[2]

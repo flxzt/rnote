@@ -35,8 +35,8 @@ jobs:
                   toolchain: stable-gnu
             - name: Configure PATH
               run: |
-                  echo "/c/Users/$USER/.cargo/bin" >> $GITHUB_PATH
-                  echo "/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" >> $GITHUB_PATH
+                  echo "/c/Users/$USER/.cargo/bin" >> ~/.bashrc
+                  echo "/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" >> ~/.bashrc
             - name: Setup
               run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
             - name: Configure

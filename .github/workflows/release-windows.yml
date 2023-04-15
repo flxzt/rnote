@@ -33,8 +33,10 @@ jobs:
               uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: stable-gnu
-            - name: Add toolchain to PATH
-              run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin" > ~/.bashrc
+            - name: Configure PATH
+              run: |
+                  echo "/c/Users/$USER/.cargo/bin" >> $GITHUB_PATH
+                  echo "/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" >> $GITHUB_PATH
             - name: Configure
               run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
             - name: Compile
@@ -44,7 +46,6 @@ jobs:
             - name: Build installer
               run: meson compile build-inno-installer -C _mesonbuild
             - name: Upload installer (Workflow Artifact)
-              if: ${{ github.event_name != 'release' }}
               uses: actions/upload-artifact@v3
               with:
                   name: rnote-installer-artifact

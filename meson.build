@@ -354,7 +354,7 @@ if host_machine.system() in ['windows', 'cygwin']
         command : [
             inno_build_script,
             meson.project_build_root() / '@INPUT@',
-            prefix, # TODO: MINGW_PATH; make this configurable
+            meson.project_build_root() / '@OUTPUT@',
             meson.project_source_root(),
             meson.project_build_root(),
             msys_path,

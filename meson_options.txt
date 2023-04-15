@@ -26,6 +26,6 @@ option(
 option(
   'msys-path',
   type: 'string',
-  value: 'C:\msys64',
+  value: 'C:\\msys64',
   description: 'Only relevant for builds on Windows: the path of the installed msys / mingw64 distribution.',
 )

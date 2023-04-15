@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-12 10:49+0000\n"
+"PO-Revision-Date: 2023-04-15 09:21+0000\n"
 "Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
 "\n"
@@ -1021,10 +1021,8 @@ msgid "Zoom out"
 msgstr "Kicsinyítés"
 
 #: rnote-ui/data/ui/canvasmenu.ui:114
-#, fuzzy
-#| msgid "Reset the Zoom"
 msgid "Reset Zoom"
-msgstr "Nagyítás alaphelyzetbe állítása"
+msgstr "Nagyítás visszaállítása"
 
 #: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
@@ -1032,8 +1030,6 @@ msgid "Zoom in"
 msgstr "Nagyítás"
 
 #: rnote-ui/data/ui/canvasmenu.ui:133
-#, fuzzy
-#| msgid "Zoom to Fit Page Width"
 msgid "Zoom to Page Width"
 msgstr "Nagyítás oldalszélességre"
 
@@ -1055,8 +1051,6 @@ msgid "Rename"
 msgstr "Átnevezés"
 
 #: rnote-ui/data/ui/filerow.ui:66
-#, fuzzy
-#| msgid "Move Into Trash"
 msgid "Move to Trash"
 msgstr "Áthelyezés a kukába"
 
@@ -1069,8 +1063,6 @@ msgid "Draft"
 msgstr "Piszkozat"
 
 #: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:117
-#, fuzzy
-#| msgid "Reveal / Hide Flap"
 msgid "Reveal/Hide Flap"
 msgstr "Fedél megjelenítése/elrejtése"
 
@@ -1255,10 +1247,8 @@ msgid "Dpi"
 msgstr "Hüvelykenkénti pontok száma (dpi)"
 
 #: rnote-ui/data/ui/settingspanel.ui:235
-#, fuzzy
-#| msgid "Set the Dpi (dots per inch). Defaults to 96"
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "Hüvelykenkénti pontok száma (dpi) beállítása. Alapértelmezett érték 96"
+msgstr "Hüvelykenkénti pontok száma (dpi) beállítása. Alapértelmezett érték 96."
 
 #: rnote-ui/data/ui/settingspanel.ui:258
 msgid "Revert"
@@ -1295,7 +1285,7 @@ msgstr "Rács"
 
 #: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Isometric Grid"
-msgstr ""
+msgstr "Izometrikus rács"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
@@ -1447,23 +1437,14 @@ msgid "Quit the Application"
 msgstr "Kilépés az alkalmazásból"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open the Canvas-Menu"
 msgid "Open the Canvas-Menu"
 msgstr "Vászonmenü megnyitása"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Open the App-Menu"
 msgid "Open the App-Menu"
 msgstr "Alkalmazásmenü megnyitása"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Navigation"
 msgid "Navigation"
 msgstr "Navigáció"
 
@@ -1637,29 +1618,27 @@ msgstr "A dokumentum mentése sikertelen"
 
 #: rnote-ui/src/appwindow/imp.rs:481
 msgid "Button 1"
-msgstr ""
+msgstr "1. gomb"
 
 #: rnote-ui/src/appwindow/imp.rs:488
 msgid "Button 2"
-msgstr ""
+msgstr "2. gomb"
 
 #: rnote-ui/src/appwindow/imp.rs:495
 msgid "Button 3"
-msgstr ""
+msgstr "3. gomb"
 
 #: rnote-ui/src/appwindow/imp.rs:502
 msgid "Button 4"
-msgstr ""
+msgstr "4. gomb"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:699
 msgid "Printing document failed"
 msgstr "A dokumentum nyomtatása nem sikerült"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:727
-#, fuzzy
-#| msgid "Exporting selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
-msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi."
+msgstr "Kijelölés exportálása sikertelen, nincs kijelölve semmi"
 
 #: rnote-ui/src/canvas/mod.rs:696
 msgid "- invalid file name -"
@@ -1670,96 +1649,68 @@ msgid "- invalid folder path -"
 msgstr "- érvénytelen mappa elérési út -"
 
 #: rnote-ui/src/canvas/mod.rs:733
-#, fuzzy
-#| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
-msgstr "A megnyitott fájl módosításra került a lemezen."
+msgstr "A megnyitott fájl módosításra került a lemezen"
 
 #: rnote-ui/src/canvas/mod.rs:734
 msgid "Reload"
 msgstr "Újratöltés"
 
 #: rnote-ui/src/canvas/mod.rs:740
-#, fuzzy
-#| msgid "Reloading .rnote file from disk failed."
 msgid "Reloading .rnote file from disk failed"
-msgstr "Az .rnote fájl újratöltése a lemezről sikertelen."
+msgstr "Az .rnote fájl újratöltése a lemezről sikertelen"
 
 #: rnote-ui/src/canvas/mod.rs:789
-#, fuzzy
-#| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
-msgstr "A megnyitott fájl át lett nevezve a lemezen."
+msgstr "A megnyitott fájl át lett nevezve a lemezen"
 
 #: rnote-ui/src/canvas/mod.rs:802
-#, fuzzy
-#| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
-msgstr "A megnyitott fájl át lett helyezve vagy törölve lett a lemezről."
+msgstr "A megnyitott fájl át lett helyezve vagy törölve lett a lemezről"
 
 #: rnote-ui/src/dialogs/export.rs:20 rnote-ui/src/dialogs/import.rs:82
 msgid ".rnote"
 msgstr ".rnote"
 
 #: rnote-ui/src/dialogs/export.rs:62
-#, fuzzy
-#| msgid "Saved document successfully."
 msgid "Saved document successfully"
-msgstr "A dokumentum sikeresen mentve."
+msgstr "A dokumentum sikeresen mentve"
 
 #: rnote-ui/src/dialogs/export.rs:195
-#, fuzzy
-#| msgid "Exporting document failed."
 msgid "Exporting document failed"
-msgstr "Dokumentum exportálása sikertelen."
+msgstr "Dokumentum exportálása sikertelen"
 
 #: rnote-ui/src/dialogs/export.rs:197
-#, fuzzy
-#| msgid "Exported document successfully."
 msgid "Exported document successfully"
-msgstr "A dokumentum sikeresen exportálva."
+msgstr "A dokumentum sikeresen exportálva"
 
 #: rnote-ui/src/dialogs/export.rs:203
-#, fuzzy
-#| msgid "Exporting document failed, no file selected."
 msgid "Exporting document failed, no file selected"
-msgstr "Dokumentum exportálása sikertelen, nincs kijelölve fájl."
+msgstr "Dokumentum exportálása sikertelen, nincs fájl kiválasztva"
 
 #: rnote-ui/src/dialogs/export.rs:468
-#, fuzzy
-#| msgid "Exporting document pages failed."
 msgid "Exporting document pages failed"
-msgstr "Dokumentumoldalak exportálása sikertelen."
+msgstr "Dokumentumoldalak exportálása sikertelen"
 
 #: rnote-ui/src/dialogs/export.rs:470
-#, fuzzy
-#| msgid "Exported document pages successfully."
 msgid "Exported document pages successfully"
-msgstr "A dokumentumoldalak exportálása sikerült."
+msgstr "A dokumentumoldalak exportálása sikeres"
 
 #: rnote-ui/src/dialogs/export.rs:476
-#, fuzzy
-#| msgid "Exporting document pages failed, no directory selected."
 msgid "Exporting document pages failed, no directory selected"
-msgstr "Dokumentumoldalak exportálása sikertelen, nincs kijelölve könyvtár."
+msgstr "Dokumentumoldalak exportálása sikertelen, nincs kijelölve könyvtár"
 
 #: rnote-ui/src/dialogs/export.rs:716
-#, fuzzy
-#| msgid "Exporting selection failed."
 msgid "Exporting selection failed"
-msgstr "Kijelölés exportálása sikertelen."
+msgstr "Kijelölés exportálása sikertelen"
 
 #: rnote-ui/src/dialogs/export.rs:718
-#, fuzzy
-#| msgid "Exported selection successfully."
 msgid "Exported selection successfully"
-msgstr "A kijelölés sikeresen exportálva."
+msgstr "A kijelölés sikeresen exportálva"
 
 #: rnote-ui/src/dialogs/export.rs:724
-#, fuzzy
-#| msgid "Exporting selection failed, no file selected."
 msgid "Exporting selection failed, no file selected"
-msgstr "Kijelölés exportálása sikertelen, nincs kijelölve fájl."
+msgstr "Kijelölés exportálása sikertelen, nincs kijelölve fájl"
 
 #: rnote-ui/src/dialogs/export.rs:811 rnote-ui/src/dialogs/export.rs:875
 msgid "Json"
@@ -1770,38 +1721,28 @@ msgid "Export Engine State"
 msgstr "Motor állapotának exportálása"
 
 #: rnote-ui/src/dialogs/export.rs:852
-#, fuzzy
-#| msgid "Exporting engine state failed."
 msgid "Exporting engine state failed"
-msgstr "Motor állapotának exportálása sikertelen."
+msgstr "Motor állapotának exportálása sikertelen"
 
 #: rnote-ui/src/dialogs/export.rs:854
-#, fuzzy
-#| msgid "Exported engine state successfully."
 msgid "Exported engine state successfully"
-msgstr "A motor állapota sikeresen exportálva."
+msgstr "A motor állapota sikeresen exportálva"
 
 #: rnote-ui/src/dialogs/export.rs:878
 msgid "Export Engine Config"
 msgstr "Motor beállításainak exportálása"
 
 #: rnote-ui/src/dialogs/export.rs:916
-#, fuzzy
-#| msgid "Exporting engine config failed."
 msgid "Exporting engine config failed"
-msgstr "Motorbeállítások exportálása sikertelen."
+msgstr "Motorkonfiguráció exportálása sikertelen"
 
 #: rnote-ui/src/dialogs/export.rs:918
-#, fuzzy
-#| msgid "Exported engine config successfully."
 msgid "Exported engine config successfully"
-msgstr "A motor konfigurációja sikeresen exportálva."
+msgstr "A motor konfigurációja sikeresen exportálva"
 
 #: rnote-ui/src/dialogs/import.rs:34
-#, fuzzy
-#| msgid "Opening file failed."
 msgid "Opening file failed"
-msgstr "A fájl megnyitása sikertelen."
+msgstr "A fájl megnyitása sikertelen"
 
 #: rnote-ui/src/dialogs/import.rs:135
 msgid "Jpg, Pdf, Png, Svg, Xopp"
@@ -1910,7 +1851,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
-msgstr ""
+msgstr "Szótár"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
@@ -1938,7 +1879,7 @@ msgstr "Fogaskerék"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Globe"
-msgstr ""
+msgstr "Földgömb"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
@@ -1989,10 +1930,8 @@ msgid "Nature"
 msgstr "Természet"
 
 #: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "Megnyitás"
+msgstr "Könyv megnyitása"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
@@ -2047,7 +1986,7 @@ msgstr "Csillag"
 #| msgid "Terminal"
 msgctxt "as in terminal software"
 msgid "Terminal"
-msgstr "Végállomás"
+msgstr "Terminál"
 
 #: rnote-ui/src/dialogs/mod.rs:598
 msgid "Text"

@@ -31,5 +31,4 @@ os.system(f"ldd {msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | gr
 
 print("Running ISCC...", file=sys.stderr)
 # TODO: maybe use chocolatey to install in workflow? it's not added to PATH by default, hardcoding is a bad idea.
-os.system(f"powershell -c \"& 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")
-# os.system(f"powershell -c \"ISCC.exe '{inno_script}'\"")
+os.system(f"{mingw_path}/../usr/bin/bash -c \"'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' '{inno_script}'\"")

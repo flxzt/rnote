@@ -49,25 +49,28 @@ endif
 
 app_idpath = '/com/github/flxzt/' + app_name + '/'
 
+# Options
+
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')
 datadir = prefix / get_option('datadir')
 libdir = prefix / get_option('libdir')
 localedir = prefix / get_option('localedir')
+profile = get_option('profile')
+build_cli = get_option('cli')
+msys_path = get_option('msys-path')
+installer_name = get_option('installer-name')
+
 pkgdatadir = datadir / app_name
 iconsdir = datadir / 'icons'
 gettext_package = app_name
 
-user_home_dir = fs.expanduser('~')
-
 # Dependencies
 
 cpp = meson.get_compiler('cpp')
-#add_project_arguments(['-stdlib=stdlibc++'], language : 'cpp')
-#add_project_link_arguments(['-stdlib=stdlibc++'], language : 'cpp')
 
 # Rust bindings to C++ using autocxx need libclang
-# However when building as flatpak libclang is not found, even though the llvm extension is installed. How to fix this?
+# However when building as flatpak libclang is not found, even though the llvm extension is installed. TODO: How to fix this?
 #cpp.find_library('clang')
 
 dependency('glib-2.0', version: '>= 2.66')
@@ -87,13 +90,15 @@ update_mime_database = find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py')
 inno_build_script = find_program('build-aux/inno_build.py', required: true)
 
+# TODO: make the msys/mingw64 installation an explicit dependency
+
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
     meson.project_build_root() / 'meson-dist' / app_name + '-' + version,
     meson.project_source_root(),
 )
 
-if get_option('profile') == 'devel'
+if profile == 'devel'
     # Setup pre-commit hook for ensuring coding style is always consistent
     message('Setting up git pre-commit hook..')
     run_command(
@@ -166,12 +171,11 @@ app_cargo_options = ['--manifest-path', cargo_manifest_path]
 app_cargo_options += ['--target-dir', cargo_target_dir]
 app_cargo_options += ['-p', 'rnote']
 
-if get_option('profile') == 'default'
+if profile == 'default'
     app_cargo_options += ['--release']
 endif
 
-# see https://mesonbuild.com/Reference-tables.html#operating-system-names
-if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
+if host_machine.system() in ['windows', 'cygwin']
     app_bin_output = app_name + '.exe'
 else
     app_bin_output = app_name
@@ -222,7 +226,7 @@ app_cargo_build = custom_target(
 )
 
 # build / install the cli
-if get_option('cli') == true
+if build_cli == true
     # cli crate
     subdir('rnote-cli')
 
@@ -230,11 +234,11 @@ if get_option('cli') == true
     cli_cargo_options += ['--target-dir', cargo_target_dir]
     cli_cargo_options += ['-p', 'rnote-cli']
 
-    if get_option('profile') == 'default'
+    if profile == 'default'
         cli_cargo_options += ['--release']
     endif
 
-    if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
+    if host_machine.system() in ['windows', 'cygwin']
         cli_bin_output = cli_output_name + '.exe'
     else
         cli_bin_output = cli_output_name
@@ -318,8 +322,7 @@ meson.add_install_script(
 
 # windows installer
 
-inno_installer_name = 'rnote_installer'
-inno_installer_output= inno_installer_name + '.exe'
+installer_output= installer_name + '.exe'
 
 message('Configuring Inno-Setup installer script file')
 
@@ -339,9 +342,8 @@ inno_script_conf.set_quoted('APP_BIN_OUTPUT', app_bin_output)
 inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
 inno_script_conf.set_quoted('MESON_BUILD_ROOT', meson.project_build_root())
 inno_script_conf.set_quoted('MESON_INSTALL_PREFIX', prefix)
-inno_script_conf.set_quoted('INSTALLER_NAME', inno_installer_name)
-# TODO: make this configurable
-inno_script_conf.set_quoted('MINGW_PATH', prefix)
+inno_script_conf.set_quoted('INSTALLER_NAME', installer_name)
+inno_script_conf.set_quoted('MSYS_PATH', msys_path)
 
 inno_script = configure_file(
     input: 'build-aux/rnote_inno.iss.in',
@@ -349,18 +351,17 @@ inno_script = configure_file(
     configuration: inno_script_conf,
 )
 
-if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-    # TODO: make the msys/mingw64 installation an explicit dependency
-
-    custom_target('build-inno-installer',
+if host_machine.system() in ['windows', 'cygwin']
+    custom_target('build-installer',
         input : inno_script,
-        output : inno_installer_output,
+        output : installer_output,
         command : [
             inno_build_script,
             meson.project_source_root() / '@INPUT@',
             meson.project_build_root() / '@OUTPUT@',
             meson.project_source_root(),
             meson.project_build_root(),
+            msys_path,
         ],
         build_by_default: false,
         depends: app_cargo_build,

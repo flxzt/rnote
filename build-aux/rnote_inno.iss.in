@@ -13,7 +13,7 @@
 #define meson_source_root = @MESON_SOURCE_ROOT@
 #define meson_build_root = @MESON_BUILD_ROOT@
 #define meson_install_prefix @MESON_INSTALL_PREFIX@
-#define mingw_path @MINGW_PATH@
+#define msys_path @MSYS_PATH@
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -52,16 +52,18 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#meson_build_root}\dlls\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 
 ; gdk-pixbuf loaders
-Source: "{#mingw_path}\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#msys_path}\mingw64\lib\gdk-pixbuf-2.0\*"; DestDir: "{app}\lib\gdk-pixbuf-2.0"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; poppler-data
-Source: "{#mingw_path}\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#msys_path}\mingw64\share\poppler\*"; DestDir: "{app}\share\poppler"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Settings GSchema
 Source: "{#meson_install_prefix}\share\glib-2.0\schemas\*"; DestDir: "{app}\share\glib-2.0\schemas"; Flags: ignoreversion recursesubdirs createallsubdirs
+; win32 session dbus
+Source: "{#msys_path}\mingw64\bin\gdbus.exe"; DestDir: "{app}\bin\"; Flags: ignoreversion
 ; Icons
 Source: "{#meson_source_root}\rnote-ui\data\icons\rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#meson_source_root}\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#mingw_path}\share\icons\hicolor\scalable\apps\{#app_id}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#mingw_path}\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#msys_path}\mingw64\share\icons\hicolor\scalable\apps\{#app_id}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#msys_path}\mingw64\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Locales
 ; TODO: Only install actually necessary files
 ;Source: "{#meson_install_prefix}\share\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs

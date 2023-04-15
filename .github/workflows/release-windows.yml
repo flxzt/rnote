@@ -34,7 +34,7 @@ jobs:
               with:
                   toolchain: stable-gnu
             - name: Configure PATH
-              run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" >> ~/.bashrc
+              run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" > ~/.bashrc
             - name: Setup
               run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
             - name: Configure

@@ -49,9 +49,10 @@ jobs:
               with:
                   name: rnote-installer-artifact
                   path: _mesonbuild/rnote_installer.exe
+                  if-no-files-found: error
             - name: Upload installer (Release Asset)
               if: ${{ github.event_name == 'release' }}
               shell: powershell
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: gh release upload ${{ github.ref }} _mesonbuild/rnote_installer.exe
+              run: gh release upload ${{ github.ref_name }} _mesonbuild/rnote_installer.exe

@@ -18,17 +18,17 @@
         <property name="valign">fill</property>
         <property name="halign">fill</property>
         <property name="hscrollbar-policy">never</property>
+        <style>
+          <class name="view" />
+          <class name="workspaces-listbox" />
+        </style>
         <child>
           <object class="GtkListBox" id="workspaces_listbox">
             <property name="vexpand">true</property>
             <property name="valign">fill</property>
             <property name="halign">fill</property>
-            <property name="show-separators">true</property>
+            <property name="show-separators">false</property>
             <property name="selection-mode">browse</property>
-            <style>
-              <class name="background" />
-              <class name="workspaces-listbox" />
-            </style>
           </object>
         </child>
       </object>

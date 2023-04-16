@@ -670,6 +670,25 @@ impl TextStroke {
         }
     }
 
+    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
+        if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
+            let cur_pos = cursor.cur_cursor();
+
+            if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
+                self.text.replace_range(cur_pos..next_pos, "");
+
+                // translate the text attributes
+                self.translate_attrs_after_cursor(
+                    cur_pos,
+                    -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
+                );
+            }
+
+            // New text length, new cursor
+            *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
+        }
+    }
+
     pub fn remove_word_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
         let cur_pos = cursor.cur_cursor();
         let prev_pos = self.get_prev_word_start_index(cur_pos);
@@ -690,25 +709,6 @@ impl TextStroke {
 
         // New text length, new cursor
         *cursor = GraphemeCursor::new(cursor.cur_cursor(), self.text.len(), true);
-    }
-
-    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
-        if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
-            let cur_pos = cursor.cur_cursor();
-
-            if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
-                self.text.replace_range(cur_pos..next_pos, "");
-
-                // translate the text attributes
-                self.translate_attrs_after_cursor(
-                    cur_pos,
-                    -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
-                );
-            }
-
-            // New text length, new cursor
-            *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
-        }
     }
 
     pub fn remove_word_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
@@ -891,13 +891,13 @@ impl TextStroke {
         cursor.prev_boundary(&self.text, 0).unwrap();
     }
 
-    pub fn move_cursor_word_back(&self, cursor: &mut GraphemeCursor) {
-        cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
-    }
-
     pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor) {
         // Cant fail, we are providing the entire text
         cursor.next_boundary(&self.text, 0).unwrap();
+    }
+
+    pub fn move_cursor_word_back(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
     }
 
     pub fn move_cursor_word_forward(&self, cursor: &mut GraphemeCursor) {

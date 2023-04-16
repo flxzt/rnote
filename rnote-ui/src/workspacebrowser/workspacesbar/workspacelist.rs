@@ -1,6 +1,7 @@
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use std::cell::RefCell;
 
-use std::cell::{Cell, RefCell};
+use crate::utils::VecRefWrapper;
 
 use super::RnWorkspaceListEntry;
 
@@ -56,6 +57,10 @@ impl RnWorkspaceList {
         glib::Object::new()
     }
 
+    pub(crate) fn to_vec(&self) -> Vec<RnWorkspaceListEntry> {
+        self.imp().list.borrow().clone()
+    }
+
     pub(crate) fn from_vec(vec: Vec<RnWorkspaceListEntry>) -> Self {
         let list = Self::new();
         list.append(vec);
@@ -65,11 +70,11 @@ impl RnWorkspaceList {
 
     pub(crate) fn replace_self(&self, list: Self) {
         self.clear();
-        self.append(list.iter().collect());
+        self.append(list.to_vec());
     }
 
-    pub(crate) fn iter(&self) -> Iter {
-        Iter::new(self.clone())
+    pub(crate) fn iter(&self) -> VecRefWrapper<RnWorkspaceListEntry> {
+        VecRefWrapper::new(self.imp().list.borrow())
     }
 
     pub(crate) fn push(&self, item: RnWorkspaceListEntry) {
@@ -128,33 +133,6 @@ impl RnWorkspaceList {
     }
 }
 
-#[derive(Debug, Clone)]
-pub(crate) struct Iter {
-    model: RnWorkspaceList,
-    i: Cell<u32>,
-}
-
-impl Iter {
-    const fn new(model: RnWorkspaceList) -> Self {
-        Self {
-            model,
-            i: Cell::new(0),
-        }
-    }
-}
-
-impl Iterator for Iter {
-    type Item = RnWorkspaceListEntry;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let index = self.i.get();
-
-        let item = self.model.item(index);
-        self.i.set(index + 1);
-        item.map(|x| x.downcast::<RnWorkspaceListEntry>().unwrap())
-    }
-}
-
 impl glib::StaticVariantType for RnWorkspaceList {
     fn static_variant_type() -> std::borrow::Cow<'static, glib::VariantTy> {
         let ty = RnWorkspaceListEntry::static_variant_type();
@@ -165,9 +143,7 @@ impl glib::StaticVariantType for RnWorkspaceList {
 
 impl glib::ToVariant for RnWorkspaceList {
     fn to_variant(&self) -> glib::Variant {
-        self.iter()
-            .collect::<Vec<RnWorkspaceListEntry>>()
-            .to_variant()
+        self.to_vec().to_variant()
     }
 }
 

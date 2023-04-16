@@ -1,3 +1,6 @@
+use std::cell::Ref;
+use std::slice::Iter;
+
 use gtk4::{gdk, gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::Aabb;
 
@@ -180,5 +183,28 @@ pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
         gdk::AxisUse::Rotation => 10,
         gdk::AxisUse::Slider => 11,
         _ => unreachable!(),
+    }
+}
+
+/// Wrapper type that enables iterating over RefCell<Vec<T>>
+pub(crate) struct VecRefWrapper<'a, T: 'a> {
+    r: Ref<'a, Vec<T>>,
+}
+
+impl<'a, 'b: 'a, T: 'a> IntoIterator for &'b VecRefWrapper<'a, T> {
+    type IntoIter = Iter<'a, T>;
+    type Item = &'a T;
+
+    fn into_iter(self) -> Iter<'a, T> {
+        self.r.iter()
+    }
+}
+
+impl<'a, T> VecRefWrapper<'a, T>
+where
+    T: 'a,
+{
+    pub(crate) fn new(r: Ref<'a, Vec<T>>) -> Self {
+        Self { r }
     }
 }

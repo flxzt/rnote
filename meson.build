@@ -336,7 +336,6 @@ inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
 inno_script_conf.set_quoted('APP_OUTPUT', app_output)
 inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
 inno_script_conf.set_quoted('MESON_BUILD_ROOT', meson.project_build_root())
-inno_script_conf.set_quoted('MESON_INSTALL_PREFIX', prefix)
 inno_script_conf.set_quoted('INSTALLER_NAME', installer_name)
 inno_script_conf.set_quoted('MSYS_PATH', msys_path)
 
@@ -353,11 +352,12 @@ if host_machine.system() in ['windows', 'cygwin']
         output : installer_output,
         command : [
             inno_build_script,
-            meson.project_build_root() / '@INPUT@',
-            app_output,
             meson.project_source_root(),
             meson.project_build_root(),
+            meson.project_build_root() / '@INPUT@',
             msys_path,
+            app_id,
+            app_output,
         ],
         build_by_default: false,
         depends: app_cargo_build,

@@ -63,8 +63,8 @@ if desktop_file_validate.found()
     )
 endif
 
-# Gschema
-message('Configuring and compiling gschema settings file')
+# GSchema
+message('Configuring settings GSchema file')
 
 gschema_conf = configuration_data()
 gschema_conf.set('APP_ID', app_id)
@@ -76,21 +76,6 @@ gschema_file = configure_file(
     configuration: gschema_conf,
     install: true,
     install_dir: datadir / 'glib-2.0' / 'schemas',
-)
-
-# Copy the GSchema XML to the source directory
-run_command(
-    'cp',
-    meson.project_build_root() / 'rnote-ui' / 'data' / app_id + '.gschema.xml',
-    meson.project_source_root() / 'rnote-ui' / 'data' / 'app.gschema.xml',
-    check: true,
-)
-
-# Compile GSchema
-
-gnome.compile_schemas(
-    build_by_default: true,
-    depend_files: gschema_file
 )
 
 # Validate installed GSchema

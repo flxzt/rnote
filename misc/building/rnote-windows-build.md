@@ -48,7 +48,9 @@ git submodule update --init --recursive
 
 ---
 
-For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to link with both, resulting in "multiple definitions of pthread\_..." linker errors. To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
+For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to link with both,
+resulting in "multiple definitions of pthread\_..." linker errors.
+To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
 
 ```bash
 mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
@@ -84,7 +86,7 @@ In order to build the installer, run the command below.
 meson compile build-installer -C _mesonbuild
 ```
 
-If successful, the installer will be located at `_mesonbuild/rnote_installer.exe`.
+If successful, the installer will be located at `_mesonbuild/rnote-win-installer.exe`.
 
 ---
 

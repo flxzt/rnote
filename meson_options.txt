@@ -19,8 +19,8 @@ option(
 option(
   'installer-name',
   type: 'string',
-  value: 'rnote_installer',
-  description: 'Only relevant for builds on Windows: the filename of the generated installer after executing the "build-installer" target.',
+  value: 'rnote-win-installer',
+  description: 'Only relevant for builds on Windows: the name of the generated installer after executing the "build-installer" target.',
 )
 
 option(

@@ -526,7 +526,7 @@ impl RnAppWindow {
                 .remove(&obj.workspacebrowser().workspacesbar());
             obj.workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().files_scroller());
+                .remove(&obj.workspacebrowser().dir_box());
             obj.workspacebrowser().grid().attach(
                 &obj.workspacebrowser().workspacesbar(),
                 0,
@@ -534,13 +534,9 @@ impl RnAppWindow {
                 1,
                 1,
             );
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().files_scroller(),
-                2,
-                0,
-                1,
-                1,
-            );
+            obj.workspacebrowser()
+                .grid()
+                .attach(&obj.workspacebrowser().dir_box(), 2, 0, 1, 1);
             obj.workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopRight);
@@ -611,17 +607,13 @@ impl RnAppWindow {
                 .set_active(true);
             obj.workspacebrowser()
                 .grid()
-                .remove(&obj.workspacebrowser().files_scroller());
+                .remove(&obj.workspacebrowser().dir_box());
             obj.workspacebrowser()
                 .grid()
                 .remove(&obj.workspacebrowser().workspacesbar());
-            obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().files_scroller(),
-                0,
-                0,
-                1,
-                1,
-            );
+            obj.workspacebrowser()
+                .grid()
+                .attach(&obj.workspacebrowser().dir_box(), 0, 0, 1, 1);
             obj.workspacebrowser().grid().attach(
                 &obj.workspacebrowser().workspacesbar(),
                 2,

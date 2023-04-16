@@ -31,6 +31,8 @@ mod imp {
         #[template_child]
         pub(crate) grid: TemplateChild<Grid>,
         #[template_child]
+        pub(crate) dir_box: TemplateChild<gtk4::Box>,
+        #[template_child]
         pub(crate) files_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub(crate) files_listview: TemplateChild<ListView>,
@@ -56,6 +58,7 @@ mod imp {
                 files_dirlist,
 
                 grid: TemplateChild::<Grid>::default(),
+                dir_box: TemplateChild::<gtk4::Box>::default(),
                 files_scroller: TemplateChild::<ScrolledWindow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
                 active_workspace_name_label: TemplateChild::<Label>::default(),
@@ -118,6 +121,10 @@ impl RnWorkspaceBrowser {
 
     pub(crate) fn grid(&self) -> Grid {
         self.imp().grid.clone()
+    }
+
+    pub(crate) fn dir_box(&self) -> gtk4::Box {
+        self.imp().dir_box.clone()
     }
 
     pub(crate) fn files_scroller(&self) -> ScrolledWindow {

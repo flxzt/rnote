@@ -93,31 +93,31 @@
                 <property name="orientation">horizontal</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="files_scroller">
+            <property name="propagate-natural-width">false</property>
+            <property name="propagate-natural-height">false</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
+            <property name="hscrollbar-policy">never</property>
+            <style>
+              <class name="view"></class>
+            </style>
             <child>
-              <object class="GtkScrolledWindow" id="files_scroller">
-                <property name="propagate-natural-width">false</property>
-                <property name="propagate-natural-height">false</property>
-                <property name="hexpand">true</property>
+              <object class="GtkListView" id="files_listview">
+                <property name="hexpand">false</property>
                 <property name="vexpand">true</property>
                 <property name="valign">fill</property>
                 <property name="halign">fill</property>
-                <property name="hscrollbar-policy">never</property>
+                <property name="margin-top">3</property>
+                <property name="margin-bottom">3</property>
                 <style>
-                  <class name="view"></class>
+                  <class name="files-listview"></class>
                 </style>
-                <child>
-                  <object class="GtkListView" id="files_listview">
-                    <property name="hexpand">false</property>
-                    <property name="vexpand">true</property>
-                    <property name="valign">fill</property>
-                    <property name="halign">fill</property>
-                    <property name="margin-top">3</property>
-                    <property name="margin-bottom">3</property>
-                    <style>
-                      <class name="files-listview"></class>
-                    </style>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
@@ -127,16 +127,27 @@
             <layout>
               <property name="column">1</property>
               <property name="row">0</property>
+              <property name="row-span">2</property>
             </layout>
             <property name="orientation">vertical</property>
             <property name="vexpand">false</property>
           </object>
         </child>
         <child>
-          <object class="RnWorkspacesBar" id="workspacesbar">
+          <object class="GtkSeparator" id="corner_filler">
+            <property name="valign">end</property>
+            <property name="orientation">horizontal</property>
             <layout>
               <property name="column">2</property>
               <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="RnWorkspacesBar" id="workspacesbar">
+            <layout>
+              <property name="column">2</property>
+              <property name="row">1</property>
             </layout>
           </object>
         </child>

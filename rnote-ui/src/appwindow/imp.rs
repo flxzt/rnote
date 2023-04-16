@@ -521,22 +521,43 @@ impl RnAppWindow {
                 .appmenu()
                 .righthanded_toggle()
                 .set_active(true);
+
             obj.workspacebrowser()
                 .grid()
                 .remove(&obj.workspacebrowser().workspacesbar());
             obj.workspacebrowser()
                 .grid()
+                .remove(&obj.workspacebrowser().corner_filler());
+            obj.workspacebrowser()
+                .grid()
                 .remove(&obj.workspacebrowser().dir_box());
+            obj.workspacebrowser()
+                .grid()
+                .remove(&obj.workspacebrowser().files_scroller());
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().corner_filler(),
+                0,
+                0,
+                1,
+                1,
+            );
             obj.workspacebrowser().grid().attach(
                 &obj.workspacebrowser().workspacesbar(),
                 0,
-                0,
+                1,
                 1,
                 1,
             );
             obj.workspacebrowser()
                 .grid()
                 .attach(&obj.workspacebrowser().dir_box(), 2, 0, 1, 1);
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().files_scroller(),
+                2,
+                1,
+                1,
+                1,
+            );
             obj.workspacebrowser()
                 .files_scroller()
                 .set_window_placement(CornerType::TopRight);
@@ -545,12 +566,13 @@ impl RnAppWindow {
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopRight);
 
+            obj.settings_panel()
+                .settings_scroller()
+                .set_window_placement(CornerType::TopRight);
+
             obj.overlays().sidebar_box().set_halign(Align::Start);
             obj.overlays()
                 .sidebar_scroller()
-                .set_window_placement(CornerType::TopRight);
-            obj.settings_panel()
-                .settings_scroller()
                 .set_window_placement(CornerType::TopRight);
             obj.overlays()
                 .penssidebar()
@@ -605,9 +627,16 @@ impl RnAppWindow {
                 .appmenu()
                 .lefthanded_toggle()
                 .set_active(true);
+
+            obj.workspacebrowser()
+                .grid()
+                .remove(&obj.workspacebrowser().files_scroller());
             obj.workspacebrowser()
                 .grid()
                 .remove(&obj.workspacebrowser().dir_box());
+            obj.workspacebrowser()
+                .grid()
+                .remove(&obj.workspacebrowser().corner_filler());
             obj.workspacebrowser()
                 .grid()
                 .remove(&obj.workspacebrowser().workspacesbar());
@@ -615,9 +644,23 @@ impl RnAppWindow {
                 .grid()
                 .attach(&obj.workspacebrowser().dir_box(), 0, 0, 1, 1);
             obj.workspacebrowser().grid().attach(
-                &obj.workspacebrowser().workspacesbar(),
+                &obj.workspacebrowser().files_scroller(),
+                0,
+                1,
+                1,
+                1,
+            );
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().corner_filler(),
                 2,
                 0,
+                1,
+                1,
+            );
+            obj.workspacebrowser().grid().attach(
+                &obj.workspacebrowser().workspacesbar(),
+                2,
+                1,
                 1,
                 1,
             );
@@ -629,12 +672,13 @@ impl RnAppWindow {
                 .workspaces_scroller()
                 .set_window_placement(CornerType::TopLeft);
 
+            obj.settings_panel()
+                .settings_scroller()
+                .set_window_placement(CornerType::TopLeft);
+
             obj.overlays().sidebar_box().set_halign(Align::End);
             obj.overlays()
                 .sidebar_scroller()
-                .set_window_placement(CornerType::TopLeft);
-            obj.settings_panel()
-                .settings_scroller()
                 .set_window_placement(CornerType::TopLeft);
             obj.overlays()
                 .penssidebar()

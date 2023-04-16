@@ -12,8 +12,8 @@ use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList, FileFilter,
     FilterChange, FilterListModel, Grid, Label, ListItem, ListView, MultiSorter,
-    PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
-    SorterChange, Widget,
+    PropertyExpression, ScrolledWindow, Separator, SignalListItemFactory, SingleSelection,
+    SortListModel, SorterChange, Widget,
 };
 use std::path::PathBuf;
 
@@ -32,6 +32,8 @@ mod imp {
         pub(crate) grid: TemplateChild<Grid>,
         #[template_child]
         pub(crate) dir_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub(crate) corner_filler: TemplateChild<Separator>,
         #[template_child]
         pub(crate) files_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -59,6 +61,7 @@ mod imp {
 
                 grid: TemplateChild::<Grid>::default(),
                 dir_box: TemplateChild::<gtk4::Box>::default(),
+                corner_filler: TemplateChild::<Separator>::default(),
                 files_scroller: TemplateChild::<ScrolledWindow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
                 active_workspace_name_label: TemplateChild::<Label>::default(),
@@ -125,6 +128,10 @@ impl RnWorkspaceBrowser {
 
     pub(crate) fn dir_box(&self) -> gtk4::Box {
         self.imp().dir_box.clone()
+    }
+
+    pub(crate) fn corner_filler(&self) -> Separator {
+        self.imp().corner_filler.clone()
     }
 
     pub(crate) fn files_scroller(&self) -> ScrolledWindow {

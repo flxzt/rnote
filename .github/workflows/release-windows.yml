@@ -16,6 +16,10 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+            - name: Set installer name
+              id: set_installer_name
+              shell: bash
+              run: echo "name=rnote-win-installer-$(echo ${GITHUB_REF_NAME#v})-x86_64" >> $GITHUB_OUTPUT
             - name: Setup MSYS2
               uses: msys2/setup-msys2@v2
               with:
@@ -38,7 +42,7 @@ jobs:
             - name: Setup
               run: meson setup --prefix=C:/msys64/mingw64 _mesonbuild
             - name: Configure
-              run: meson configure -Dinstaller-name='rnote-win-installer-x86-64' _mesonbuild
+              run: meson configure -Dinstaller-name='${{ steps.set_installer_name.outputs.name }}' _mesonbuild
             - name: Compile
               run: meson compile -C _mesonbuild
             - name: Install
@@ -48,12 +52,12 @@ jobs:
             - name: Upload installer (Workflow Artifact)
               uses: actions/upload-artifact@v3
               with:
-                  name: rnote-installer-artifact
-                  path: _mesonbuild/rnote-win-installer-x86-64.exe
+                  name: rnote-win-installer-artifact
+                  path: _mesonbuild/${{ steps.set_installer_name.outputs.name }}.exe
                   if-no-files-found: error
             - name: Upload installer (Release Asset)
               if: ${{ github.event_name == 'release' }}
               shell: powershell
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: gh release upload ${{ github.ref_name }} _mesonbuild/rnote-win-installer-x86-64.exe
+              run: gh release upload ${{ github.ref_name }} _mesonbuild/${{ steps.set_installer_name.outputs.name }}.exe

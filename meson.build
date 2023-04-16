@@ -354,7 +354,7 @@ if host_machine.system() in ['windows', 'cygwin']
         command : [
             inno_build_script,
             meson.project_build_root() / '@INPUT@',
-            meson.project_build_root() / '@OUTPUT@',
+            app_output,
             meson.project_source_root(),
             meson.project_build_root(),
             msys_path,

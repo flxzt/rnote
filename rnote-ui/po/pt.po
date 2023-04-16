@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-12 10:50+0000\n"
+"PO-Revision-Date: 2023-04-16 08:50+0000\n"
 "Last-Translator: Felipe Nogueira <contato.fnog@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/rnote/repo/pt/"
 ">\n"
@@ -1068,7 +1068,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:46
 msgid "New Tab"
-msgstr ""
+msgstr "Nova aba"
 
 #: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:213
 msgid "Undo"
@@ -1088,7 +1088,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:109 rnote-ui/data/ui/shortcuts.ui:156
 msgid "Save Document"
-msgstr ""
+msgstr "Salvar Documento"
 
 #: rnote-ui/data/ui/overlays.ui:151
 msgid "Move _Left"
@@ -1104,15 +1104,15 @@ msgstr ""
 
 #: rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
-msgstr ""
+msgstr "Temporário"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:12
 msgid "Permanent"
-msgstr ""
+msgstr "Permanente"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Alternar"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1176,7 +1176,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:158
 msgid "Choose a format"
-msgstr ""
+msgstr "Escolher um formato"
 
 #: rnote-ui/data/ui/settingspanel.ui:162
 msgid "A6"
@@ -1208,11 +1208,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:169
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "Orientation"
-msgstr ""
+msgstr "Orientação"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
 msgid "Set the format orientation"
@@ -1224,23 +1224,23 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:196
 msgid "Landscape"
-msgstr ""
+msgstr "Paisagem"
 
 #: rnote-ui/data/ui/settingspanel.ui:206
 msgid "Width"
-msgstr ""
+msgstr "Largura"
 
 #: rnote-ui/data/ui/settingspanel.ui:207
 msgid "Set the format width"
-msgstr ""
+msgstr "Definir a largura do formato"
 
 #: rnote-ui/data/ui/settingspanel.ui:220
 msgid "Height"
-msgstr ""
+msgstr "Altura"
 
 #: rnote-ui/data/ui/settingspanel.ui:221
 msgid "Set the format height"
-msgstr ""
+msgstr "Definir a altura do formato"
 
 #: rnote-ui/data/ui/settingspanel.ui:234
 msgid "Dpi"
@@ -1260,7 +1260,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:284
 msgid "Set the background color"
-msgstr ""
+msgstr "Definir cor do plano de fundo"
 
 #: rnote-ui/data/ui/settingspanel.ui:301
 msgid "Pattern"
@@ -1268,15 +1268,15 @@ msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:302
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "Escolha um padrão do plano de fundo"
 
 #: rnote-ui/data/ui/settingspanel.ui:306
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: rnote-ui/data/ui/settingspanel.ui:307
 msgid "Lines"
-msgstr ""
+msgstr "Linhas"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
 #: rnote-ui/src/penssidebar/shaperpage.rs:388

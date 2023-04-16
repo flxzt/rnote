@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-09 00:04+0200\n"
+"POT-Creation-Date: 2023-03-11 08:14+0100\n"
 "PO-Revision-Date: 2023-02-26 03:39+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "Temizle"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:498
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:497
 msgid "New Document"
 msgstr "Yeni Belge"
 
@@ -195,7 +195,7 @@ msgstr "Çalışma alanı dizinini değiştir"
 msgid "- no directory selected -"
 msgstr "- dizin seçilmedi -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:174
+#: rnote-ui/data/ui/dialogs/dialogs.ui:173
 msgid "Change the directory"
 msgstr "Dizini değiştir"
 
@@ -999,36 +999,32 @@ msgid "Draw With _Touch Input"
 msgstr "_Dokunmatik Girdiyle Çiz"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Block Pinch to _Zoom"
-msgstr ""
-
-#: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
 msgstr "_Kalem Sesleri"
 
-#: rnote-ui/data/ui/canvasmenu.ui:71
+#: rnote-ui/data/ui/canvasmenu.ui:66
 msgid "C_lear Document"
 msgstr "Belgeyi _Temizle"
 
-#: rnote-ui/data/ui/canvasmenu.ui:75
+#: rnote-ui/data/ui/canvasmenu.ui:70
 msgid "_Return to Origin Page"
 msgstr "Özgün Sayfaya _Dön"
 
-#: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
 #: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "Uzaklaştır"
 
-#: rnote-ui/data/ui/canvasmenu.ui:114
+#: rnote-ui/data/ui/canvasmenu.ui:109
 msgid "Reset Zoom"
 msgstr "Yakınlaştırmayı Sıfırla"
 
-#: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "Yakınlaştır"
 
-#: rnote-ui/data/ui/canvasmenu.ui:133
+#: rnote-ui/data/ui/canvasmenu.ui:128
 msgid "Zoom to Page Width"
 msgstr "Sayfa Genişliğine Yakınlaştır"
 
@@ -1057,7 +1053,7 @@ msgstr "Çöpe Taşı"
 msgid "Duplicate"
 msgstr "İkizle"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:499
 msgid "Draft"
 msgstr "Taslak"
 
@@ -1278,51 +1274,43 @@ msgid "Lines"
 msgstr "Satırlar"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
-#: rnote-ui/src/penssidebar/shaperpage.rs:388
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Grid"
 msgstr "Izgara"
 
-#: rnote-ui/data/ui/settingspanel.ui:310
-msgid "Isometric Grid"
-msgstr ""
-
-#: rnote-ui/data/ui/settingspanel.ui:311
-msgid "Isometric Dots"
-msgstr ""
-
-#: rnote-ui/data/ui/settingspanel.ui:319
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
 msgstr "Desen Rengi"
 
-#: rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Set the background pattern color"
 msgstr "Arka plan desen rengini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:337
+#: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Pattern Width"
 msgstr "Desen Genişliği"
 
-#: rnote-ui/data/ui/settingspanel.ui:338
+#: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Set the background pattern width"
 msgstr "Arka plan desen genişliğini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:351
+#: rnote-ui/data/ui/settingspanel.ui:349
 msgid "Pattern Height"
 msgstr "Desen Yüksekliği"
 
-#: rnote-ui/data/ui/settingspanel.ui:352
+#: rnote-ui/data/ui/settingspanel.ui:350
 msgid "Set the background pattern height"
 msgstr "Arka plan desen yüksekliğini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:368
+#: rnote-ui/data/ui/settingspanel.ui:366
 msgid "Button Shortcuts"
 msgstr "Düğme Kısayolları"
 
-#: rnote-ui/data/ui/settingspanel.ui:371
+#: rnote-ui/data/ui/settingspanel.ui:369
 msgid "Stylus Primary Button Action"
 msgstr "Stylus Birincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:372
+#: rnote-ui/data/ui/settingspanel.ui:370
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1330,11 +1318,11 @@ msgstr ""
 "Stylus birincil düğme\n"
 "eylemini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:384
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "Stylus İkincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:385
+#: rnote-ui/data/ui/settingspanel.ui:383
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1342,11 +1330,11 @@ msgstr ""
 "Stylus ikincil düğme\n"
 "eylemini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:397
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "Fare İkincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:398
+#: rnote-ui/data/ui/settingspanel.ui:396
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1354,11 +1342,11 @@ msgstr ""
 "Fare ikincil düğme\n"
 "eylemini ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:410
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "Dokunma, İki Parmakla Uzun Basma Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:411
+#: rnote-ui/data/ui/settingspanel.ui:409
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1366,49 +1354,49 @@ msgstr ""
 "Dokunma, iki parmakla uzun basma\n"
 "hareketi için eylem ayarla"
 
-#: rnote-ui/data/ui/settingspanel.ui:423
+#: rnote-ui/data/ui/settingspanel.ui:421
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
 msgstr "Stylus Birincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:424
+#: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:436
+#: rnote-ui/data/ui/settingspanel.ui:434
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
 msgstr "Stylus Birincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:437
+#: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:449
+#: rnote-ui/data/ui/settingspanel.ui:447
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
 msgstr "Stylus Birincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:450
+#: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:462
+#: rnote-ui/data/ui/settingspanel.ui:460
 #, fuzzy
 #| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
 msgstr "Stylus Birincil Düğme Eylemi"
 
-#: rnote-ui/data/ui/settingspanel.ui:463
+#: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1474,7 +1462,7 @@ msgstr "Yakınlaştır/Uzaklaştır"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + Sürükle"
 
-#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:562
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:551
 msgid "Document"
 msgstr "Belge"
 
@@ -1542,91 +1530,91 @@ msgstr "Çalışma Alanı Kaldır"
 msgid "Edit Selected Workspace"
 msgstr "Çalışma Alanını Düzenle"
 
-#: rnote-ui/src/appwindow/mod.rs:508
+#: rnote-ui/src/appwindow/mod.rs:505
 msgid "Opening .rnote file failed"
 msgstr ".rnote dosyası açılamadı"
 
-#: rnote-ui/src/appwindow/mod.rs:519
+#: rnote-ui/src/appwindow/mod.rs:516
 msgid "Opening vector image file failed"
 msgstr "Vektör görüntü dosyası açılamadı"
 
-#: rnote-ui/src/appwindow/mod.rs:530
+#: rnote-ui/src/appwindow/mod.rs:527
 msgid "Opening bitmap image file failed"
 msgstr "Biteşlem görüntü dosyası açılamadı"
 
-#: rnote-ui/src/appwindow/mod.rs:541 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed"
 msgstr "Xournal++ dosyası açılamadı"
 
-#: rnote-ui/src/appwindow/mod.rs:552 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed"
 msgstr "PDF dosyası açılamadı"
 
-#: rnote-ui/src/appwindow/mod.rs:561
+#: rnote-ui/src/appwindow/mod.rs:558
 msgid "Failed to open file, tried to open folder as file"
 msgstr "Hata: Klasör, dosya olarak açılmaya çalışıldı"
 
-#: rnote-ui/src/appwindow/mod.rs:566
+#: rnote-ui/src/appwindow/mod.rs:563
 msgid "Failed to open file, unsupported file type"
 msgstr "Dosya açılamadı: Desteklenmeyen dosya türü"
 
-#: rnote-ui/src/appwindow/imp.rs:265
-#: rnote-ui/src/appwindow/appwindowactions.rs:578
+#: rnote-ui/src/appwindow/imp.rs:254
+#: rnote-ui/src/appwindow/appwindowactions.rs:575
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:328
 msgid "Saving document failed"
 msgstr "Belge kaydedilemedi"
 
-#: rnote-ui/src/appwindow/imp.rs:481
+#: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:488
+#: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:495
+#: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:502
+#: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:699
+#: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"
 msgstr "Belge yazdırılamadı"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:727
+#: rnote-ui/src/appwindow/appwindowactions.rs:724
 msgid "Exporting selection failed, nothing selected"
 msgstr "Seçim dışa aktarılamadı, hiçbir şey seçilmedi"
 
-#: rnote-ui/src/canvas/mod.rs:696
+#: rnote-ui/src/canvas/mod.rs:695
 msgid "- invalid file name -"
 msgstr "- geçersiz dosya adı -"
 
-#: rnote-ui/src/canvas/mod.rs:709
+#: rnote-ui/src/canvas/mod.rs:708
 msgid "- invalid folder path -"
 msgstr "- geçersiz klasör yolu -"
 
-#: rnote-ui/src/canvas/mod.rs:733
+#: rnote-ui/src/canvas/mod.rs:732
 msgid "Opened file was modified on disk"
 msgstr "Açılan dosya disk üzerinde değiştirildi"
 
-#: rnote-ui/src/canvas/mod.rs:734
+#: rnote-ui/src/canvas/mod.rs:733
 msgid "Reload"
 msgstr "Yeniden yükle"
 
-#: rnote-ui/src/canvas/mod.rs:740
+#: rnote-ui/src/canvas/mod.rs:739
 msgid "Reloading .rnote file from disk failed"
 msgstr ".rnote dosyasının diskten yeniden yüklenmesi başarısız oldu"
 
-#: rnote-ui/src/canvas/mod.rs:789
+#: rnote-ui/src/canvas/mod.rs:788
 msgid "Opened file was renamed on disk"
 msgstr "Açılan dosya disk üzerinde yeniden adlandırıldı"
 
-#: rnote-ui/src/canvas/mod.rs:802
+#: rnote-ui/src/canvas/mod.rs:801
 msgid "Opened file was moved or deleted on disk"
 msgstr "Açılan dosya diskte taşınmış veya silinmiş"
 
@@ -1761,208 +1749,173 @@ msgstr "- geçerli bir kayıt klasörü bulunamadı -"
 msgid "Change Workspace Directory"
 msgstr "Çalışma Alanı Dizinini Değiştir"
 
-#: rnote-ui/src/dialogs/mod.rs:549
+#: rnote-ui/src/dialogs/mod.rs:541
 msgid "Band-Aid"
 msgstr "Yara Bandı"
 
-#: rnote-ui/src/dialogs/mod.rs:550
+#: rnote-ui/src/dialogs/mod.rs:542
 msgid "Bank"
 msgstr "Banka"
 
-#: rnote-ui/src/dialogs/mod.rs:551
+#: rnote-ui/src/dialogs/mod.rs:543
 msgid "Bookmark"
 msgstr "Yer İmi"
 
-#: rnote-ui/src/dialogs/mod.rs:552
+#: rnote-ui/src/dialogs/mod.rs:544
 msgid "Book"
 msgstr "Kitap"
 
-#: rnote-ui/src/dialogs/mod.rs:553
+#: rnote-ui/src/dialogs/mod.rs:545
 msgid "Bread"
 msgstr "Ekmek"
 
-#: rnote-ui/src/dialogs/mod.rs:554
+#: rnote-ui/src/dialogs/mod.rs:546
 msgid "Calendar"
 msgstr "Takvim"
 
-#: rnote-ui/src/dialogs/mod.rs:555
+#: rnote-ui/src/dialogs/mod.rs:547
 msgid "Camera"
 msgstr "Kamera"
 
-#: rnote-ui/src/dialogs/mod.rs:556
+#: rnote-ui/src/dialogs/mod.rs:548
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Çip"
 
-#: rnote-ui/src/dialogs/mod.rs:557
-msgid "Clock"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:558
+#: rnote-ui/src/dialogs/mod.rs:549
 msgid "Code"
 msgstr "Kod"
 
-#: rnote-ui/src/dialogs/mod.rs:559
+#: rnote-ui/src/dialogs/mod.rs:550
 msgid "Compose"
 msgstr "Düzenle"
 
-#: rnote-ui/src/dialogs/mod.rs:560
-msgctxt "as in plant"
-msgid "Crop"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:561
-msgid "Dictionary"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:563
+#: rnote-ui/src/dialogs/mod.rs:552
 msgid "Drinks"
 msgstr "İçecekler"
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:553
 msgid "Flag"
 msgstr "Bayrak"
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:554
 msgid "Folder"
 msgstr "Klasör"
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:555
 msgid "Footprints"
 msgstr "Ayak İzleri"
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:556
 msgid "Gamepad"
 msgstr "Oyun kolu"
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:557
 msgid "Gear"
 msgstr "Dişli"
 
-#: rnote-ui/src/dialogs/mod.rs:569
-msgid "Globe"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:570
+#: rnote-ui/src/dialogs/mod.rs:558
 msgid "Hammer"
 msgstr "Çekiç"
 
-#: rnote-ui/src/dialogs/mod.rs:571
+#: rnote-ui/src/dialogs/mod.rs:559
 msgid "Heart"
 msgstr "Kalp"
 
-#: rnote-ui/src/dialogs/mod.rs:572
+#: rnote-ui/src/dialogs/mod.rs:560
 msgid "Hourglass"
 msgstr "Kum Saati"
 
-#: rnote-ui/src/dialogs/mod.rs:573
+#: rnote-ui/src/dialogs/mod.rs:561
 msgid "Key"
 msgstr "Anahtar"
 
-#: rnote-ui/src/dialogs/mod.rs:574
+#: rnote-ui/src/dialogs/mod.rs:562
 msgid "Language"
 msgstr "Dil"
 
-#: rnote-ui/src/dialogs/mod.rs:575
-msgid "Library"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:576
+#: rnote-ui/src/dialogs/mod.rs:563
 msgid "Lightbulb"
 msgstr "Ampül"
 
-#: rnote-ui/src/dialogs/mod.rs:577
+#: rnote-ui/src/dialogs/mod.rs:564
 msgid "Mathematics"
 msgstr "Matematik"
 
-#: rnote-ui/src/dialogs/mod.rs:578
+#: rnote-ui/src/dialogs/mod.rs:565
 msgid "Meeting"
 msgstr "Toplantı"
 
-#: rnote-ui/src/dialogs/mod.rs:579
+#: rnote-ui/src/dialogs/mod.rs:566
 msgid "Money"
 msgstr "Para"
 
-#: rnote-ui/src/dialogs/mod.rs:580
+#: rnote-ui/src/dialogs/mod.rs:567
 msgid "Musical Note"
 msgstr "Müzik Notaları"
 
-#: rnote-ui/src/dialogs/mod.rs:581
-msgid "Nature"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
-msgid "Open Book"
-msgstr "Aç"
-
-#: rnote-ui/src/dialogs/mod.rs:583
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Paintbrush"
 msgstr "Boya Fırçası"
 
-#: rnote-ui/src/dialogs/mod.rs:584
+#: rnote-ui/src/dialogs/mod.rs:569
 msgid "Pencil and Paper"
 msgstr "Kalem ve Kağıt"
 
-#: rnote-ui/src/dialogs/mod.rs:585
+#: rnote-ui/src/dialogs/mod.rs:570
 msgid "People"
 msgstr "Kişiler"
 
-#: rnote-ui/src/dialogs/mod.rs:586
+#: rnote-ui/src/dialogs/mod.rs:571
 msgid "Person"
 msgstr "Kişi"
 
-#: rnote-ui/src/dialogs/mod.rs:587
+#: rnote-ui/src/dialogs/mod.rs:572
 msgid "Projector"
 msgstr "Projektör"
 
-#: rnote-ui/src/dialogs/mod.rs:588
-msgid "Science"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:589
+#: rnote-ui/src/dialogs/mod.rs:573
 msgid "Scratchpad"
 msgstr "Karalama Defteri"
 
-#: rnote-ui/src/dialogs/mod.rs:590
+#: rnote-ui/src/dialogs/mod.rs:574
 msgid "Shapes"
 msgstr "Şekiller"
 
-#: rnote-ui/src/dialogs/mod.rs:591
+#: rnote-ui/src/dialogs/mod.rs:575
 msgid "Shopping"
 msgstr "Alışveriş"
 
-#: rnote-ui/src/dialogs/mod.rs:592
+#: rnote-ui/src/dialogs/mod.rs:576
 msgid "Speech Bubble"
 msgstr "Konuşma Balonu"
 
-#: rnote-ui/src/dialogs/mod.rs:593
+#: rnote-ui/src/dialogs/mod.rs:577
 msgid "Speedometer"
 msgstr "Hız Ölçer"
 
-#: rnote-ui/src/dialogs/mod.rs:594
+#: rnote-ui/src/dialogs/mod.rs:578
 msgid "Star"
 msgstr "Yıldız"
 
-#: rnote-ui/src/dialogs/mod.rs:596
+#: rnote-ui/src/dialogs/mod.rs:580
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Uçbirim"
 
-#: rnote-ui/src/dialogs/mod.rs:598
+#: rnote-ui/src/dialogs/mod.rs:582
 msgid "Text"
 msgstr "Metin"
 
-#: rnote-ui/src/dialogs/mod.rs:599
+#: rnote-ui/src/dialogs/mod.rs:583
 msgid "Travel"
 msgstr "Seyahat"
 
-#: rnote-ui/src/dialogs/mod.rs:600
+#: rnote-ui/src/dialogs/mod.rs:584
 msgid "Weather"
 msgstr "Hava Durumu"
 
-#: rnote-ui/src/dialogs/mod.rs:601
+#: rnote-ui/src/dialogs/mod.rs:585
 msgid "Weight"
 msgstr "Ağırlık"
 
@@ -1970,127 +1923,123 @@ msgstr "Ağırlık"
 msgid "Miscellaneous"
 msgstr "Çeşitli"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:357
+#: rnote-ui/src/penssidebar/shaperpage.rs:356
 msgid "Coordinate Systems"
 msgstr "Koordinat Sistemleri"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:365
+#: rnote-ui/src/penssidebar/shaperpage.rs:364
 msgid "Ellipses"
 msgstr "Elips"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:372
+#: rnote-ui/src/penssidebar/shaperpage.rs:371
 msgid "Curves"
 msgstr "Eğriler"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:385
-msgid "Arrow"
-msgstr ""
-
-#: rnote-ui/src/penssidebar/shaperpage.rs:386
+#: rnote-ui/src/penssidebar/shaperpage.rs:384
 msgid "Line"
 msgstr "Satır"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:387
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Rectangle"
 msgstr "Dikdörtgen"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:389
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "2D coordinate system"
 msgstr "2B koordinat sistemi"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:390
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "3D coordinate system"
 msgstr "3B koordinat sistemi"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:391
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D single quadrant coordinate system"
 msgstr "2B tek kadranlı koordinat sistemi"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:392
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "Ellipse"
 msgstr "Elips"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:393
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "Ellipse with foci"
 msgstr "Odaklı elips"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:394
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Quadratic bezier curve"
 msgstr "İkinci dereceden bezier eğrisi"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:395
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Cubic bezier curve"
 msgstr "Kübik bezier eğrisi"
 
-#: rnote-ui/src/settingspanel/mod.rs:761
+#: rnote-ui/src/settingspanel/mod.rs:753
 msgid "Crosshair (Small)"
 msgstr "Artı Simgesi (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:762
+#: rnote-ui/src/settingspanel/mod.rs:754
 msgid "Crosshair (Medium)"
 msgstr "Artı Simgesi (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:763
+#: rnote-ui/src/settingspanel/mod.rs:755
 msgid "Crosshair (Large)"
 msgstr "Artı Simgesi (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:764
+#: rnote-ui/src/settingspanel/mod.rs:756
 msgid "Dot (Small)"
 msgstr "Nokta (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:765
+#: rnote-ui/src/settingspanel/mod.rs:757
 msgid "Dot (Medium)"
 msgstr "Nokta (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:766
+#: rnote-ui/src/settingspanel/mod.rs:758
 msgid "Dot (Large)"
 msgstr "Nokta (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:767
+#: rnote-ui/src/settingspanel/mod.rs:759
 msgid "Teardrop North-West (Small)"
 msgstr "Gözyaşı Kuzey Batı (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:768
+#: rnote-ui/src/settingspanel/mod.rs:760
 msgid "Teardrop North-West (Medium)"
 msgstr "Gözyaşı Kuzey Batı (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:769
+#: rnote-ui/src/settingspanel/mod.rs:761
 msgid "Teardrop North-West (Large)"
 msgstr "Gözyaşı Kuzey Batı (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:770
+#: rnote-ui/src/settingspanel/mod.rs:762
 msgid "Teardrop North-East (Small)"
 msgstr "Gözyaşı Kuzey Doğu (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:771
+#: rnote-ui/src/settingspanel/mod.rs:763
 msgid "Teardrop North-East (Medium)"
 msgstr "Gözyaşı Kuzey Doğu (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:772
+#: rnote-ui/src/settingspanel/mod.rs:764
 msgid "Teardrop North-East (Large)"
 msgstr "Gözyaşı Kuzey Doğu (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:773
+#: rnote-ui/src/settingspanel/mod.rs:765
 msgid "Teardrop North (Small)"
 msgstr "Gözyaşı Kuzey (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:774
+#: rnote-ui/src/settingspanel/mod.rs:766
 msgid "Teardrop North (Medium)"
 msgstr "Gözyaşı Kuzey (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:775
+#: rnote-ui/src/settingspanel/mod.rs:767
 msgid "Teardrop North (Large)"
 msgstr "Gözyaşı Kuzey (Büyük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:776
+#: rnote-ui/src/settingspanel/mod.rs:768
 msgid "Beam (Small)"
 msgstr "Hüzme (Küçük)"
 
-#: rnote-ui/src/settingspanel/mod.rs:777
+#: rnote-ui/src/settingspanel/mod.rs:769
 msgid "Beam (Medium)"
 msgstr "Hüzme (Orta)"
 
-#: rnote-ui/src/settingspanel/mod.rs:778
+#: rnote-ui/src/settingspanel/mod.rs:770
 msgid "Beam (Large)"
 msgstr "Hüzme (Büyük)"
 

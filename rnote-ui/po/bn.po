@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-09 00:04+0200\n"
+"POT-Creation-Date: 2023-03-11 08:14+0100\n"
 "PO-Revision-Date: 2023-03-15 17:53+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -95,7 +95,7 @@ msgid "Clear"
 msgstr "পরিষ্কার করুন"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:498
+#: rnote-ui/data/ui/shortcuts.ui:144 rnote-ui/src/canvas/mod.rs:497
 msgid "New Document"
 msgstr "নতুন নথি"
 
@@ -195,7 +195,7 @@ msgstr "কর্মক্ষেত্রের ডিরেক্টরি প�
 msgid "- no directory selected -"
 msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:174
+#: rnote-ui/data/ui/dialogs/dialogs.ui:173
 msgid "Change the directory"
 msgstr "ডিরেক্টরি পরিবর্তন করুন"
 
@@ -993,36 +993,32 @@ msgid "Draw With _Touch Input"
 msgstr "_টাচ ইনপুট দিয়ে আঁকুন"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Block Pinch to _Zoom"
-msgstr ""
-
-#: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
 msgstr "_কলমের ধ্বনি"
 
-#: rnote-ui/data/ui/canvasmenu.ui:71
+#: rnote-ui/data/ui/canvasmenu.ui:66
 msgid "C_lear Document"
 msgstr "নথি প_রিষ্কার করুন"
 
-#: rnote-ui/data/ui/canvasmenu.ui:75
+#: rnote-ui/data/ui/canvasmenu.ui:70
 msgid "_Return to Origin Page"
 msgstr "আসল পৃষ্ঠায় _ফিরে জান"
 
-#: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:115
+#: rnote-ui/data/ui/canvasmenu.ui:100 rnote-ui/data/ui/shortcuts.ui:115
 #: rnote-ui/data/ui/shortcuts.ui:121 rnote-ui/data/ui/shortcuts.ui:127
 msgid "Zoom out"
 msgstr "ছোট করুন"
 
-#: rnote-ui/data/ui/canvasmenu.ui:114
+#: rnote-ui/data/ui/canvasmenu.ui:109
 msgid "Reset Zoom"
 msgstr "জুম রিসেট করুন"
 
-#: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:97
+#: rnote-ui/data/ui/canvasmenu.ui:116 rnote-ui/data/ui/shortcuts.ui:97
 #: rnote-ui/data/ui/shortcuts.ui:103 rnote-ui/data/ui/shortcuts.ui:109
 msgid "Zoom in"
 msgstr "প্রসারিত করো"
 
-#: rnote-ui/data/ui/canvasmenu.ui:133
+#: rnote-ui/data/ui/canvasmenu.ui:128
 msgid "Zoom to Page Width"
 msgstr "পৃষ্ঠার প্রস্থ মাপসই করতে জুম করুন"
 
@@ -1051,7 +1047,7 @@ msgstr "ট্র্যাশে পাঠান"
 msgid "Duplicate"
 msgstr "নকল করুন"
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:499
 msgid "Draft"
 msgstr "খসড়া"
 
@@ -1272,51 +1268,43 @@ msgid "Lines"
 msgstr "পংক্তি"
 
 #: rnote-ui/data/ui/settingspanel.ui:308
-#: rnote-ui/src/penssidebar/shaperpage.rs:388
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Grid"
 msgstr "গ্রিড"
 
-#: rnote-ui/data/ui/settingspanel.ui:310
-msgid "Isometric Grid"
-msgstr ""
-
-#: rnote-ui/data/ui/settingspanel.ui:311
-msgid "Isometric Dots"
-msgstr ""
-
-#: rnote-ui/data/ui/settingspanel.ui:319
+#: rnote-ui/data/ui/settingspanel.ui:317
 msgid "Pattern Color"
 msgstr "প্যাটার্নের রঙ"
 
-#: rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:318
 msgid "Set the background pattern color"
 msgstr "পটভূমির প্যাটার্নের রঙ সেট করুন"
 
-#: rnote-ui/data/ui/settingspanel.ui:337
+#: rnote-ui/data/ui/settingspanel.ui:335
 msgid "Pattern Width"
 msgstr "প্যাটার্নের প্রস্থ"
 
-#: rnote-ui/data/ui/settingspanel.ui:338
+#: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Set the background pattern width"
 msgstr "পটভূমির প্যাটার্নেের প্রস্থ সেট করুন"
 
-#: rnote-ui/data/ui/settingspanel.ui:351
+#: rnote-ui/data/ui/settingspanel.ui:349
 msgid "Pattern Height"
 msgstr "প্যাটার্নের উচ্চতা"
 
-#: rnote-ui/data/ui/settingspanel.ui:352
+#: rnote-ui/data/ui/settingspanel.ui:350
 msgid "Set the background pattern height"
 msgstr "পটভূমির প্যাটার্নের উচ্চতা সেট করুন"
 
-#: rnote-ui/data/ui/settingspanel.ui:368
+#: rnote-ui/data/ui/settingspanel.ui:366
 msgid "Button Shortcuts"
 msgstr "বোতাম শর্টকাট"
 
-#: rnote-ui/data/ui/settingspanel.ui:371
+#: rnote-ui/data/ui/settingspanel.ui:369
 msgid "Stylus Primary Button Action"
 msgstr "স্টাইলাস প্রাথমিক বোতাম কর্ম"
 
-#: rnote-ui/data/ui/settingspanel.ui:372
+#: rnote-ui/data/ui/settingspanel.ui:370
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1324,11 +1312,11 @@ msgstr ""
 "ক্রিয়া সেট করুন\n"
 "প্রাথমিক স্টাইলাস বোতামের জন্য"
 
-#: rnote-ui/data/ui/settingspanel.ui:384
+#: rnote-ui/data/ui/settingspanel.ui:382
 msgid "Stylus Secondary Button Action"
 msgstr "স্টাইলাস গৌণ বোতাম কর্ম"
 
-#: rnote-ui/data/ui/settingspanel.ui:385
+#: rnote-ui/data/ui/settingspanel.ui:383
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1336,11 +1324,11 @@ msgstr ""
 "ক্রিয়া সেট করুন\n"
 "গৌণ স্টাইলাস বোতামের জন্য"
 
-#: rnote-ui/data/ui/settingspanel.ui:397
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Mouse Secondary Button Action"
 msgstr "স্টাইলাস গৌণ বোতাম কর্ম"
 
-#: rnote-ui/data/ui/settingspanel.ui:398
+#: rnote-ui/data/ui/settingspanel.ui:396
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1348,11 +1336,11 @@ msgstr ""
 "ক্রিয়া সেট করুন\n"
 "গৌণ মাউস বোতামের জন্য"
 
-#: rnote-ui/data/ui/settingspanel.ui:410
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Touch Two-Finger Long-Press Action"
 msgstr "টাচের দুই-আঙ্গুলের দীর্ঘ-প্রেস অ্যাকশন"
 
-#: rnote-ui/data/ui/settingspanel.ui:411
+#: rnote-ui/data/ui/settingspanel.ui:409
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
@@ -1360,41 +1348,41 @@ msgstr ""
 "ক্রিয়া সেট করুন\n"
 "দুই আঙ্গুল দীর্ঘ-প্রেস টাচের জন্য"
 
-#: rnote-ui/data/ui/settingspanel.ui:423
+#: rnote-ui/data/ui/settingspanel.ui:421
 msgid "Drawing Pad Button 1 Action"
 msgstr "অঙ্কন প্যাড বোতাম ১ ক্রিয়া"
 
-#: rnote-ui/data/ui/settingspanel.ui:424
+#: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:436
+#: rnote-ui/data/ui/settingspanel.ui:434
 msgid "Drawing Pad Button 2 Action"
 msgstr "অঙ্কন প্যাড বোতাম ২ ক্রিয়া"
 
-#: rnote-ui/data/ui/settingspanel.ui:437
+#: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:449
+#: rnote-ui/data/ui/settingspanel.ui:447
 msgid "Drawing Pad Button 3 Action"
 msgstr "অঙ্কন প্যাড বোতাম ৩ ক্রিয়া"
 
-#: rnote-ui/data/ui/settingspanel.ui:450
+#: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:462
+#: rnote-ui/data/ui/settingspanel.ui:460
 msgid "Drawing Pad Button 4 Action"
 msgstr "অঙ্কন প্যাড বোতাম ৪ ক্রিয়া"
 
-#: rnote-ui/data/ui/settingspanel.ui:463
+#: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1462,7 +1450,7 @@ msgstr "জুম ইন/আউট"
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + টেনে আনুন"
 
-#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:562
+#: rnote-ui/data/ui/shortcuts.ui:141 rnote-ui/src/dialogs/mod.rs:551
 msgid "Document"
 msgstr "নথি"
 
@@ -1530,91 +1518,91 @@ msgstr "নির্বাচিত কর্মক্ষেত্র মুছ�
 msgid "Edit Selected Workspace"
 msgstr "নির্বাচিত কর্মক্ষেত্র সম্পাদনা করুন"
 
-#: rnote-ui/src/appwindow/mod.rs:508
+#: rnote-ui/src/appwindow/mod.rs:505
 msgid "Opening .rnote file failed"
 msgstr ".rnote ফাইল খোলা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:519
+#: rnote-ui/src/appwindow/mod.rs:516
 msgid "Opening vector image file failed"
 msgstr "ভেক্টর ইমেজ ফাইল খোলা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:530
+#: rnote-ui/src/appwindow/mod.rs:527
 msgid "Opening bitmap image file failed"
 msgstr "বিটম্যাপ ইমেজ ফাইল খোলা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:541 rnote-ui/src/dialogs/import.rs:394
+#: rnote-ui/src/appwindow/mod.rs:538 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed"
 msgstr "Xournal++ ফাইল খুলতে ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:552 rnote-ui/src/dialogs/import.rs:335
+#: rnote-ui/src/appwindow/mod.rs:549 rnote-ui/src/dialogs/import.rs:335
 msgid "Opening PDF file failed"
 msgstr "PDF ফাইল খোলা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:561
+#: rnote-ui/src/appwindow/mod.rs:558
 msgid "Failed to open file, tried to open folder as file"
 msgstr "ফাইল খুলতে ব্যর্থ হয়েছে, ফাইল হিসাবে ফোল্ডার খোলার চেষ্টা করা হয়েছে"
 
-#: rnote-ui/src/appwindow/mod.rs:566
+#: rnote-ui/src/appwindow/mod.rs:563
 msgid "Failed to open file, unsupported file type"
 msgstr "ফাইল খুলতে ব্যর্থ, অসমর্থিত ফাইল প্রকার"
 
-#: rnote-ui/src/appwindow/imp.rs:265
-#: rnote-ui/src/appwindow/appwindowactions.rs:578
+#: rnote-ui/src/appwindow/imp.rs:254
+#: rnote-ui/src/appwindow/appwindowactions.rs:575
 #: rnote-ui/src/dialogs/export.rs:71 rnote-ui/src/dialogs/import.rs:51
 #: rnote-ui/src/dialogs/mod.rs:147 rnote-ui/src/dialogs/mod.rs:200
 #: rnote-ui/src/dialogs/mod.rs:328
 msgid "Saving document failed"
 msgstr "নথি সংরক্ষণ ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/imp.rs:481
+#: rnote-ui/src/appwindow/imp.rs:470
 msgid "Button 1"
 msgstr "বোতাম ১"
 
-#: rnote-ui/src/appwindow/imp.rs:488
+#: rnote-ui/src/appwindow/imp.rs:477
 msgid "Button 2"
 msgstr "বোতাম ২"
 
-#: rnote-ui/src/appwindow/imp.rs:495
+#: rnote-ui/src/appwindow/imp.rs:484
 msgid "Button 3"
 msgstr "বোতাম ৩"
 
-#: rnote-ui/src/appwindow/imp.rs:502
+#: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 4"
 msgstr "বোতাম ৪"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:699
+#: rnote-ui/src/appwindow/appwindowactions.rs:696
 msgid "Printing document failed"
 msgstr "নথি প্রিন্ট করা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:727
+#: rnote-ui/src/appwindow/appwindowactions.rs:724
 msgid "Exporting selection failed, nothing selected"
 msgstr "নির্বাচন রপ্তানি করতে ব্যর্থ হয়েছে, কোনকিছু নির্বাচিত হয়নি"
 
-#: rnote-ui/src/canvas/mod.rs:696
+#: rnote-ui/src/canvas/mod.rs:695
 msgid "- invalid file name -"
 msgstr "- অবৈধ ফাইলের নাম -"
 
-#: rnote-ui/src/canvas/mod.rs:709
+#: rnote-ui/src/canvas/mod.rs:708
 msgid "- invalid folder path -"
 msgstr "- অবৈধ ফোল্ডার পাথ -"
 
-#: rnote-ui/src/canvas/mod.rs:733
+#: rnote-ui/src/canvas/mod.rs:732
 msgid "Opened file was modified on disk"
 msgstr "খোলা ফাইল ডিস্কে পরিবর্তন করা হয়েছে"
 
-#: rnote-ui/src/canvas/mod.rs:734
+#: rnote-ui/src/canvas/mod.rs:733
 msgid "Reload"
 msgstr "পুনরায় লোড করুন"
 
-#: rnote-ui/src/canvas/mod.rs:740
+#: rnote-ui/src/canvas/mod.rs:739
 msgid "Reloading .rnote file from disk failed"
 msgstr "ডিস্ক থেকে .rnote ফাইল পুনরায় খোলা করা ব্যর্থ হয়েছে"
 
-#: rnote-ui/src/canvas/mod.rs:789
+#: rnote-ui/src/canvas/mod.rs:788
 msgid "Opened file was renamed on disk"
 msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ করা হয়েছে"
 
-#: rnote-ui/src/canvas/mod.rs:802
+#: rnote-ui/src/canvas/mod.rs:801
 msgid "Opened file was moved or deleted on disk"
 msgstr "খোলা ফাইলটি ডিস্কে সরানো বা মুছে ফেলা হয়েছে"
 
@@ -1747,208 +1735,173 @@ msgstr "- একটি বৈধ সংরক্ষণ ফোল্ডার খ
 msgid "Change Workspace Directory"
 msgstr "কর্মক্ষেত্রের ডিরেক্টরি পরিবর্তন করুন"
 
-#: rnote-ui/src/dialogs/mod.rs:549
+#: rnote-ui/src/dialogs/mod.rs:541
 msgid "Band-Aid"
 msgstr "ব্যান্ড-এইড"
 
-#: rnote-ui/src/dialogs/mod.rs:550
+#: rnote-ui/src/dialogs/mod.rs:542
 msgid "Bank"
 msgstr "ব্যাংক"
 
-#: rnote-ui/src/dialogs/mod.rs:551
+#: rnote-ui/src/dialogs/mod.rs:543
 msgid "Bookmark"
 msgstr "বুকমার্ক"
 
-#: rnote-ui/src/dialogs/mod.rs:552
+#: rnote-ui/src/dialogs/mod.rs:544
 msgid "Book"
 msgstr "বই"
 
-#: rnote-ui/src/dialogs/mod.rs:553
+#: rnote-ui/src/dialogs/mod.rs:545
 msgid "Bread"
 msgstr "রুটি"
 
-#: rnote-ui/src/dialogs/mod.rs:554
+#: rnote-ui/src/dialogs/mod.rs:546
 msgid "Calendar"
 msgstr "বর্ষপঞ্জি"
 
-#: rnote-ui/src/dialogs/mod.rs:555
+#: rnote-ui/src/dialogs/mod.rs:547
 msgid "Camera"
 msgstr "ক্যামেরা"
 
-#: rnote-ui/src/dialogs/mod.rs:556
+#: rnote-ui/src/dialogs/mod.rs:548
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "চিপ"
 
-#: rnote-ui/src/dialogs/mod.rs:557
-msgid "Clock"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:558
+#: rnote-ui/src/dialogs/mod.rs:549
 msgid "Code"
 msgstr "কোড"
 
-#: rnote-ui/src/dialogs/mod.rs:559
+#: rnote-ui/src/dialogs/mod.rs:550
 msgid "Compose"
 msgstr "কম্পোজ করুন"
 
-#: rnote-ui/src/dialogs/mod.rs:560
-msgctxt "as in plant"
-msgid "Crop"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:561
-msgid "Dictionary"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:563
+#: rnote-ui/src/dialogs/mod.rs:552
 msgid "Drinks"
 msgstr "পানীয়"
 
-#: rnote-ui/src/dialogs/mod.rs:564
+#: rnote-ui/src/dialogs/mod.rs:553
 msgid "Flag"
 msgstr "পতাকা"
 
-#: rnote-ui/src/dialogs/mod.rs:565
+#: rnote-ui/src/dialogs/mod.rs:554
 msgid "Folder"
 msgstr "ফোল্ডার"
 
-#: rnote-ui/src/dialogs/mod.rs:566
+#: rnote-ui/src/dialogs/mod.rs:555
 msgid "Footprints"
 msgstr "ফুটপ্রিন্ট"
 
-#: rnote-ui/src/dialogs/mod.rs:567
+#: rnote-ui/src/dialogs/mod.rs:556
 msgid "Gamepad"
 msgstr "গেমপ্যাড"
 
-#: rnote-ui/src/dialogs/mod.rs:568
+#: rnote-ui/src/dialogs/mod.rs:557
 msgid "Gear"
 msgstr "গিয়ার"
 
-#: rnote-ui/src/dialogs/mod.rs:569
-msgid "Globe"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:570
+#: rnote-ui/src/dialogs/mod.rs:558
 msgid "Hammer"
 msgstr "হাতুড়ি"
 
-#: rnote-ui/src/dialogs/mod.rs:571
+#: rnote-ui/src/dialogs/mod.rs:559
 msgid "Heart"
 msgstr "হৃদয়"
 
-#: rnote-ui/src/dialogs/mod.rs:572
+#: rnote-ui/src/dialogs/mod.rs:560
 msgid "Hourglass"
 msgstr "আওয়ারগ্লাস"
 
-#: rnote-ui/src/dialogs/mod.rs:573
+#: rnote-ui/src/dialogs/mod.rs:561
 msgid "Key"
 msgstr "চাবি"
 
-#: rnote-ui/src/dialogs/mod.rs:574
+#: rnote-ui/src/dialogs/mod.rs:562
 msgid "Language"
 msgstr "ভাষা"
 
-#: rnote-ui/src/dialogs/mod.rs:575
-msgid "Library"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:576
+#: rnote-ui/src/dialogs/mod.rs:563
 msgid "Lightbulb"
 msgstr "লাইটবাল্ব"
 
-#: rnote-ui/src/dialogs/mod.rs:577
+#: rnote-ui/src/dialogs/mod.rs:564
 msgid "Mathematics"
 msgstr "গণিত"
 
-#: rnote-ui/src/dialogs/mod.rs:578
+#: rnote-ui/src/dialogs/mod.rs:565
 msgid "Meeting"
 msgstr "মিটিং"
 
-#: rnote-ui/src/dialogs/mod.rs:579
+#: rnote-ui/src/dialogs/mod.rs:566
 msgid "Money"
 msgstr "অর্থ"
 
-#: rnote-ui/src/dialogs/mod.rs:580
+#: rnote-ui/src/dialogs/mod.rs:567
 msgid "Musical Note"
 msgstr "মিউজিক্যাল নোট"
 
-#: rnote-ui/src/dialogs/mod.rs:581
-msgid "Nature"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
-msgid "Open Book"
-msgstr "খুলুন"
-
-#: rnote-ui/src/dialogs/mod.rs:583
+#: rnote-ui/src/dialogs/mod.rs:568
 msgid "Paintbrush"
 msgstr "রংতুলি"
 
-#: rnote-ui/src/dialogs/mod.rs:584
+#: rnote-ui/src/dialogs/mod.rs:569
 msgid "Pencil and Paper"
 msgstr "কাগজ ও কলম"
 
-#: rnote-ui/src/dialogs/mod.rs:585
+#: rnote-ui/src/dialogs/mod.rs:570
 msgid "People"
 msgstr "মানুষ"
 
-#: rnote-ui/src/dialogs/mod.rs:586
+#: rnote-ui/src/dialogs/mod.rs:571
 msgid "Person"
 msgstr "ব্যক্তি"
 
-#: rnote-ui/src/dialogs/mod.rs:587
+#: rnote-ui/src/dialogs/mod.rs:572
 msgid "Projector"
 msgstr "প্রজেক্টর"
 
-#: rnote-ui/src/dialogs/mod.rs:588
-msgid "Science"
-msgstr ""
-
-#: rnote-ui/src/dialogs/mod.rs:589
+#: rnote-ui/src/dialogs/mod.rs:573
 msgid "Scratchpad"
 msgstr "স্ক্র্যাচপ্যাড"
 
-#: rnote-ui/src/dialogs/mod.rs:590
+#: rnote-ui/src/dialogs/mod.rs:574
 msgid "Shapes"
 msgstr "আকার"
 
-#: rnote-ui/src/dialogs/mod.rs:591
+#: rnote-ui/src/dialogs/mod.rs:575
 msgid "Shopping"
 msgstr "কেনাকাটা"
 
-#: rnote-ui/src/dialogs/mod.rs:592
+#: rnote-ui/src/dialogs/mod.rs:576
 msgid "Speech Bubble"
 msgstr "স্পিচ বাবল"
 
-#: rnote-ui/src/dialogs/mod.rs:593
+#: rnote-ui/src/dialogs/mod.rs:577
 msgid "Speedometer"
 msgstr "স্পিডোমিটার"
 
-#: rnote-ui/src/dialogs/mod.rs:594
+#: rnote-ui/src/dialogs/mod.rs:578
 msgid "Star"
 msgstr "তারা"
 
-#: rnote-ui/src/dialogs/mod.rs:596
+#: rnote-ui/src/dialogs/mod.rs:580
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "টার্মিনাল"
 
-#: rnote-ui/src/dialogs/mod.rs:598
+#: rnote-ui/src/dialogs/mod.rs:582
 msgid "Text"
 msgstr "পাঠ্য"
 
-#: rnote-ui/src/dialogs/mod.rs:599
+#: rnote-ui/src/dialogs/mod.rs:583
 msgid "Travel"
 msgstr "ভ্রমণ"
 
-#: rnote-ui/src/dialogs/mod.rs:600
+#: rnote-ui/src/dialogs/mod.rs:584
 msgid "Weather"
 msgstr "আবহাওয়া"
 
-#: rnote-ui/src/dialogs/mod.rs:601
+#: rnote-ui/src/dialogs/mod.rs:585
 msgid "Weight"
 msgstr "ওজন"
 
@@ -1956,127 +1909,123 @@ msgstr "ওজন"
 msgid "Miscellaneous"
 msgstr "বিবিধ"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:357
+#: rnote-ui/src/penssidebar/shaperpage.rs:356
 msgid "Coordinate Systems"
 msgstr "স্থানাঙ্ক"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:365
+#: rnote-ui/src/penssidebar/shaperpage.rs:364
 msgid "Ellipses"
 msgstr "উপবৃত্ত"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:372
+#: rnote-ui/src/penssidebar/shaperpage.rs:371
 msgid "Curves"
 msgstr "বক্ররেখা"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:385
-msgid "Arrow"
-msgstr ""
-
-#: rnote-ui/src/penssidebar/shaperpage.rs:386
+#: rnote-ui/src/penssidebar/shaperpage.rs:384
 msgid "Line"
 msgstr "রেখা"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:387
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Rectangle"
 msgstr "আয়তক্ষেত্র"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:389
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
 msgid "2D coordinate system"
 msgstr "দ্বিমাত্রিক স্থানাঙ্ক"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:390
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "3D coordinate system"
 msgstr "ত্রিমাত্রিক স্থানাঙ্ক"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:391
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
 msgid "2D single quadrant coordinate system"
 msgstr "দ্বিমাত্রিক একক চতুর্থাংশ স্থানাঙ্ক"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:392
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
 msgid "Ellipse"
 msgstr "উপবৃত্ত"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:393
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
 msgid "Ellipse with foci"
 msgstr "নাভী সহিত উপবৃত্ত"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:394
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
 msgid "Quadratic bezier curve"
 msgstr "দ্বিঘাত বেজিয়ে বক্ররেখা"
 
-#: rnote-ui/src/penssidebar/shaperpage.rs:395
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
 msgid "Cubic bezier curve"
 msgstr "ত্রিঘাত বেজিয়ে বক্ররেখা"
 
-#: rnote-ui/src/settingspanel/mod.rs:761
+#: rnote-ui/src/settingspanel/mod.rs:753
 msgid "Crosshair (Small)"
 msgstr "ক্রসহেয়ার (ছোট)"
 
-#: rnote-ui/src/settingspanel/mod.rs:762
+#: rnote-ui/src/settingspanel/mod.rs:754
 msgid "Crosshair (Medium)"
 msgstr "ক্রসহেয়ার (মাঝারি)"
 
-#: rnote-ui/src/settingspanel/mod.rs:763
+#: rnote-ui/src/settingspanel/mod.rs:755
 msgid "Crosshair (Large)"
 msgstr "ক্রসহেয়ার (বড়)"
 
-#: rnote-ui/src/settingspanel/mod.rs:764
+#: rnote-ui/src/settingspanel/mod.rs:756
 msgid "Dot (Small)"
 msgstr "বিন্দু (ছোট)"
 
-#: rnote-ui/src/settingspanel/mod.rs:765
+#: rnote-ui/src/settingspanel/mod.rs:757
 msgid "Dot (Medium)"
 msgstr "বিন্দু (মাঝারি)"
 
-#: rnote-ui/src/settingspanel/mod.rs:766
+#: rnote-ui/src/settingspanel/mod.rs:758
 msgid "Dot (Large)"
 msgstr "বিন্দু (বড়)"
 
-#: rnote-ui/src/settingspanel/mod.rs:767
+#: rnote-ui/src/settingspanel/mod.rs:759
 msgid "Teardrop North-West (Small)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (ছোট)"
 
-#: rnote-ui/src/settingspanel/mod.rs:768
+#: rnote-ui/src/settingspanel/mod.rs:760
 msgid "Teardrop North-West (Medium)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (মাঝারি)"
 
-#: rnote-ui/src/settingspanel/mod.rs:769
+#: rnote-ui/src/settingspanel/mod.rs:761
 msgid "Teardrop North-West (Large)"
 msgstr "টিয়ারড্রপ উত্তর-পশ্চিম (বড়)"
 
-#: rnote-ui/src/settingspanel/mod.rs:770
+#: rnote-ui/src/settingspanel/mod.rs:762
 msgid "Teardrop North-East (Small)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (ছোট)"
 
-#: rnote-ui/src/settingspanel/mod.rs:771
+#: rnote-ui/src/settingspanel/mod.rs:763
 msgid "Teardrop North-East (Medium)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (মাঝারি)"
 
-#: rnote-ui/src/settingspanel/mod.rs:772
+#: rnote-ui/src/settingspanel/mod.rs:764
 msgid "Teardrop North-East (Large)"
 msgstr "টিয়ারড্রপ উত্তর-পূর্ব (বড়)"
 
-#: rnote-ui/src/settingspanel/mod.rs:773
+#: rnote-ui/src/settingspanel/mod.rs:765
 msgid "Teardrop North (Small)"
 msgstr "টিয়ারড্রপ উত্তর (ছোট)"
 
-#: rnote-ui/src/settingspanel/mod.rs:774
+#: rnote-ui/src/settingspanel/mod.rs:766
 msgid "Teardrop North (Medium)"
 msgstr "টিয়ারড্রপ উত্তর (মাঝারি)"
 
-#: rnote-ui/src/settingspanel/mod.rs:775
+#: rnote-ui/src/settingspanel/mod.rs:767
 msgid "Teardrop North (Large)"
 msgstr "টিয়ারড্রপ উত্তর (বড়)"
 
-#: rnote-ui/src/settingspanel/mod.rs:776
+#: rnote-ui/src/settingspanel/mod.rs:768
 msgid "Beam (Small)"
 msgstr "বিম (ছোট)"
 
-#: rnote-ui/src/settingspanel/mod.rs:777
+#: rnote-ui/src/settingspanel/mod.rs:769
 msgid "Beam (Medium)"
 msgstr "বিম (মাঝারি)"
 
-#: rnote-ui/src/settingspanel/mod.rs:778
+#: rnote-ui/src/settingspanel/mod.rs:770
 msgid "Beam (Large)"
 msgstr "বিম (বড়)"
 

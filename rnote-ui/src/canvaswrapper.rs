@@ -242,7 +242,7 @@ mod imp {
                     clone!(@weak obj as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
                         let canvas = canvaswrapper.canvas();
-                        let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_STEP);
+                        let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
                         let center_offset = canvas.current_view_center_coords();
                         canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
                         canvas.center_view_around_coords(center_offset);

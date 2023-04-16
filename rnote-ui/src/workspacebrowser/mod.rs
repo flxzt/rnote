@@ -11,9 +11,9 @@ pub(crate) use workspacesbar::RnWorkspacesBar;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList, FileFilter,
-    FilterChange, FilterListModel, GestureClick, Grid, Label, ListItem, ListView, MultiSorter,
-    PropagationPhase, PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection,
-    SortListModel, SorterChange, Widget,
+    FilterChange, FilterListModel, Grid, Label, ListItem, ListView, MultiSorter,
+    PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
+    SorterChange, Widget,
 };
 use std::path::PathBuf;
 
@@ -179,23 +179,22 @@ impl RnWorkspaceBrowser {
     }
 
     fn setup_dir_controls(&self, appwindow: &RnAppWindow) {
-        let dir_up_click_gesture = GestureClick::builder()
-            .propagation_phase(PropagationPhase::Capture)
-            .button(gdk::BUTTON_PRIMARY)
-            .build();
-        self.imp()
-            .dir_controls_dir_up_button
-            .get()
-            .add_controller(dir_up_click_gesture.clone());
-
-        dir_up_click_gesture.connect_released(clone!(@weak self as workspacebrowser, @weak appwindow => move |_, n_press, _, _| {
-        // Only activate on multi click
-        if n_press > 1 {
-            if let Some(parent_dir) = workspacebrowser.workspacesbar().selected_workspacelistentry().and_then(|e| PathBuf::from(e.dir()).parent().map(|p| p.to_path_buf())) {
-                workspacebrowser.workspacesbar().set_selected_workspace_dir(parent_dir);
+        self.imp().dir_controls_dir_up_button.connect_clicked(clone!(@weak self as workspacebrowser, @weak appwindow => move |_| {
+            if let Some(dir) = workspacebrowser.workspacesbar().selected_workspacelistentry().map(|e| PathBuf::from(e.dir())) {
+                let dir = match dir.canonicalize() {
+                    Ok(dir) => dir,
+                    Err(e) => {
+                        log::warn!("could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
+                        return;
+                    }
+                };
+                if let Some(parent) = dir.parent().map(|p| p.to_path_buf()) {
+                    workspacebrowser.workspacesbar().set_selected_workspace_dir(parent);
+                } else {
+                    log::warn!("cant move directory up from dir {dir:?} from workspacelistentry, has no parent.");
+                }
             }
-        }
-    }));
+        }));
     }
 
     fn setup_file_rows(&self, appwindow: &RnAppWindow) {

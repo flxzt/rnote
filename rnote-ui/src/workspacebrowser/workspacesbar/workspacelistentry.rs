@@ -177,6 +177,12 @@ impl RnWorkspaceListEntry {
     pub(crate) fn set_name(&self, name: String) {
         self.set_property("name", name.to_value());
     }
+
+    pub(crate) fn canonicalize_dir(&self) -> anyhow::Result<()> {
+        let p = PathBuf::from(self.dir()).canonicalize()?;
+        self.set_dir(p.to_string_lossy().to_string());
+        Ok(())
+    }
 }
 
 impl glib::StaticVariantType for RnWorkspaceListEntry {

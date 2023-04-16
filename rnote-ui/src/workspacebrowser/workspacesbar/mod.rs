@@ -213,9 +213,9 @@ impl RnWorkspacesBar {
     #[allow(unused)]
     pub(crate) fn set_selected_workspace_dir(&self, dir: PathBuf) {
         if let Some(i) = self.selected_workspace_index() {
-            let row = self.imp().workspace_list.remove(i as usize);
-            row.set_dir(dir.to_string_lossy().into());
-            self.imp().workspace_list.insert(i as usize, row);
+            let entry = self.imp().workspace_list.remove(i as usize);
+            entry.set_dir(dir.to_string_lossy().into());
+            self.imp().workspace_list.insert(i as usize, entry);
 
             self.select_workspace_by_index(i);
         }
@@ -272,6 +272,16 @@ impl RnWorkspacesBar {
         // Be sure to get the index before loading the workspaces, else the setting gets overridden
         let selected_workspace_index = settings.uint("selected-workspace-index");
 
+        // canonicalize the dirs when loading from settings
+        for entry in &workspace_list.iter() {
+            if let Err(e) = entry.canonicalize_dir() {
+                log::warn!(
+                "failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
+                entry.dir(),
+                entry.name()
+            )
+            }
+        }
         self.imp().workspace_list.replace_self(workspace_list);
 
         self.select_workspace_by_index(selected_workspace_index);
@@ -309,13 +319,13 @@ impl RnWorkspacesBar {
             Some(&self.imp().workspace_list),
             clone!(@strong appwindow => move |obj| {
                 let entry = obj.to_owned().downcast::<RnWorkspaceListEntry>().unwrap();
-                let workspace_row = RnWorkspaceRow::new(&entry);
-                workspace_row.init(&appwindow);
+                let workspacerow = RnWorkspaceRow::new(&entry);
+                workspacerow.init(&appwindow);
 
                 let entry_expr = ConstantExpression::new(&entry);
-                entry_expr.bind(&workspace_row, "entry", None::<&glib::Object>);
+                entry_expr.bind(&workspacerow, "entry", None::<&glib::Object>);
 
-                workspace_row.upcast::<Widget>()
+                workspacerow.upcast::<Widget>()
             }),
         );
 

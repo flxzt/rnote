@@ -434,7 +434,7 @@ impl Typewriter {
                         let textstroke = TextStroke::new(String::from(keychar), *pos, text_style);
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
-                        textstroke.move_cursor_forward(&mut cursor, false);
+                        textstroke.move_cursor_forward(&mut cursor);
                         let stroke_key = engine_view
                             .store
                             .insert_stroke(Stroke::TextStroke(textstroke), None);
@@ -495,11 +495,7 @@ impl Typewriter {
                                     if keychar == 'a'
                                         && modifier_keys.contains(&ModifierKey::KeyboardCtrl)
                                     {
-                                        *cursor = GraphemeCursor::new(
-                                            textstroke.text.len(),
-                                            textstroke.text.len(),
-                                            true,
-                                        );
+                                        cursor.set_cursor(textstroke.text.len());
                                         // Select entire text
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: GraphemeCursor::new(
@@ -518,10 +514,11 @@ impl Typewriter {
                                     }
                                 }
                                 KeyboardKey::BackSpace => {
-                                    textstroke.remove_grapheme_before_cursor(
-                                        cursor,
-                                        modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                    );
+                                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                        textstroke.remove_word_before_cursor(cursor);
+                                    } else {
+                                        textstroke.remove_grapheme_before_cursor(cursor);
+                                    }
                                     update_stroke(engine_view.store);
                                 }
                                 KeyboardKey::HorizontalTab => {
@@ -533,48 +530,55 @@ impl Typewriter {
                                     update_stroke(engine_view.store);
                                 }
                                 KeyboardKey::Delete => {
-                                    textstroke.remove_grapheme_after_cursor(
-                                        cursor,
-                                        modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                    );
+                                    if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                        textstroke.remove_word_after_cursor(cursor);
+                                    } else {
+                                        textstroke.remove_grapheme_after_cursor(cursor);
+                                    }
                                     update_stroke(engine_view.store);
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                         let old_cursor = cursor.clone();
-                                        textstroke.move_cursor_back(
-                                            cursor,
-                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                        );
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_word_back(cursor);
+                                        } else {
+                                            textstroke.move_cursor_back(cursor);
+                                        }
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
                                             finished: false,
                                         }
                                     } else {
-                                        textstroke.move_cursor_back(
-                                            cursor,
-                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                        );
+                                        #[allow(clippy::collapsible_else_if)]
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_word_back(cursor);
+                                        } else {
+                                            textstroke.move_cursor_back(cursor);
+                                        }
                                     }
                                 }
                                 KeyboardKey::NavRight => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
                                         let old_cursor = cursor.clone();
-                                        textstroke.move_cursor_forward(
-                                            cursor,
-                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                        );
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_word_forward(cursor);
+                                        } else {
+                                            textstroke.move_cursor_forward(cursor);
+                                        }
 
                                         *modify_state = ModifyState::Selecting {
                                             selection_cursor: old_cursor,
                                             finished: false,
                                         };
                                     } else {
-                                        textstroke.move_cursor_forward(
-                                            cursor,
-                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                        );
+                                        #[allow(clippy::collapsible_else_if)]
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_word_forward(cursor);
+                                        } else {
+                                            textstroke.move_cursor_forward(cursor);
+                                        }
                                     }
                                 }
                                 KeyboardKey::NavUp => {
@@ -703,10 +707,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        textstroke.move_cursor_back(
-                                            cursor,
-                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                        );
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_word_back(cursor);
+                                        } else {
+                                            textstroke.move_cursor_back(cursor);
+                                        }
                                         false
                                     } else {
                                         cursor.set_cursor(
@@ -717,10 +722,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::NavRight => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
-                                        textstroke.move_cursor_forward(
-                                            cursor,
-                                            modifier_keys.contains(&ModifierKey::KeyboardCtrl),
-                                        );
+                                        if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
+                                            textstroke.move_cursor_word_forward(cursor);
+                                        } else {
+                                            textstroke.move_cursor_forward(cursor);
+                                        }
                                         false
                                     } else {
                                         cursor.set_cursor(

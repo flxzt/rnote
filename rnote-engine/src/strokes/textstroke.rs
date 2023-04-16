@@ -651,19 +651,11 @@ impl TextStroke {
         *cursor = GraphemeCursor::new(cursor.cur_cursor() + text.len(), self.text.len(), true);
     }
 
-    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor, whole_word: bool) {
+    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
         if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
-            let prev_pos = if whole_word {
-                let position = self.get_prev_word_start_index(cur_pos);
-                cursor.set_cursor(position);
-                Some(position)
-            } else {
-                cursor.prev_boundary(&self.text, 0).unwrap()
-            };
-
-            if let Some(prev_pos) = prev_pos {
+            if let Some(prev_pos) = cursor.prev_boundary(&self.text, 0).unwrap() {
                 self.text.replace_range(prev_pos..cur_pos, "");
 
                 // translate the text attributes
@@ -678,17 +670,33 @@ impl TextStroke {
         }
     }
 
-    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor, whole_word: bool) {
+    pub fn remove_word_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
+        let cur_pos = cursor.cur_cursor();
+        let prev_pos = self.get_prev_word_start_index(cur_pos);
+
+        if cur_pos == prev_pos {
+            return;
+        }
+
+        cursor.set_cursor(prev_pos);
+
+        self.text.replace_range(prev_pos..cur_pos, "");
+
+        // translate the text attributes
+        self.translate_attrs_after_cursor(
+            prev_pos,
+            prev_pos as i32 - cur_pos as i32 + "".len() as i32,
+        );
+
+        // New text length, new cursor
+        *cursor = GraphemeCursor::new(cursor.cur_cursor(), self.text.len(), true);
+    }
+
+    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
         if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
-            let next_pos = if whole_word {
-                Some(self.get_next_word_end_index(cur_pos))
-            } else {
-                cursor.clone().next_boundary(&self.text, 0).unwrap()
-            };
-
-            if let Some(next_pos) = next_pos {
+            if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
                 self.text.replace_range(cur_pos..next_pos, "");
 
                 // translate the text attributes
@@ -701,6 +709,26 @@ impl TextStroke {
             // New text length, new cursor
             *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
         }
+    }
+
+    pub fn remove_word_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
+        let cur_pos = cursor.cur_cursor();
+        let next_pos = self.get_next_word_end_index(cur_pos);
+
+        if cur_pos == next_pos {
+            return;
+        }
+
+        self.text.replace_range(cur_pos..next_pos, "");
+
+        // translate the text attributes
+        self.translate_attrs_after_cursor(
+            cur_pos,
+            -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
+        );
+
+        // New text length, new cursor
+        *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
     }
 
     pub fn replace_text_between_selection_cursors(
@@ -832,8 +860,8 @@ impl TextStroke {
         cursor: &mut GraphemeCursor,
         selection_cursor: &mut GraphemeCursor,
     ) {
-        *cursor = GraphemeCursor::new(self.text.len(), self.text.len(), true);
-        *selection_cursor = GraphemeCursor::new(0, self.text.len(), true);
+        cursor.set_cursor(self.text.len());
+        selection_cursor.set_cursor(0);
     }
 
     fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
@@ -858,22 +886,22 @@ impl TextStroke {
         current_char_index
     }
 
-    pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor, whole_word: bool) {
-        if whole_word {
-            cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
-        } else {
-            // Cant fail, we are providing the entire text
-            cursor.prev_boundary(&self.text, 0).unwrap();
-        }
+    pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor) {
+        // Cant fail, we are providing the entire text
+        cursor.prev_boundary(&self.text, 0).unwrap();
     }
 
-    pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor, whole_word: bool) {
-        if whole_word {
-            cursor.set_cursor(self.get_next_word_end_index(cursor.cur_cursor()));
-        } else {
-            // Cant fail, we are providing the entire text
-            cursor.next_boundary(&self.text, 0).unwrap();
-        }
+    pub fn move_cursor_word_back(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
+    }
+
+    pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor) {
+        // Cant fail, we are providing the entire text
+        cursor.next_boundary(&self.text, 0).unwrap();
+    }
+
+    pub fn move_cursor_word_forward(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_next_word_end_index(cursor.cur_cursor()));
     }
 
     pub fn move_cursor_text_start(&self, cursor: &mut GraphemeCursor) {
@@ -958,7 +986,7 @@ impl TextStroke {
                     lines[next_line].y_offset + lines[next_line].height * 0.5,
                 ));
 
-                *cursor = GraphemeCursor::new(hit_test_point.idx, self.text.len(), true);
+                cursor.set_cursor(hit_test_point.idx);
             }
         }
     }
@@ -983,7 +1011,7 @@ impl TextStroke {
                     lines[prev_line].y_offset + lines[prev_line].height * 0.5,
                 ));
 
-                *cursor = GraphemeCursor::new(hit_test_point.idx, self.text.len(), true);
+                cursor.set_cursor(hit_test_point.idx);
             }
         }
     }

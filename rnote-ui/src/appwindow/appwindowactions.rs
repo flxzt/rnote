@@ -13,12 +13,13 @@ use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 use std::path::PathBuf;
 use std::time::Instant;
 
-use crate::{canvas::RnCanvasLayout, config, dialogs, RnAppWindow, RnCanvas};
+use crate::{config, dialogs, RnAppWindow, RnCanvas};
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
 impl RnAppWindow {
-    /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
+    /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal,
+    /// which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
     /// We can then either toggle the state through activating the action, or set the state explicitly through action.change_state(<request>)
     pub(crate) fn setup_actions(&self) {
@@ -312,7 +313,8 @@ impl RnAppWindow {
                 action.set_state(new_pen_style.to_variant());
                 let canvas = appwindow.active_tab().canvas();
 
-                // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
+                // don't change the style if the current style with override is already the same
+                // (e.g. when switched to from the pen button, not by clicking the pen page)
                 if new_pen_style != canvas.engine().borrow().penholder.current_pen_style_w_override() {
                     let mut widget_flags = canvas.engine().borrow_mut().change_pen_style(
                         new_pen_style,
@@ -491,7 +493,8 @@ impl RnAppWindow {
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvaswrapper = appwindow.active_tab();
 
-            let new_zoom = f64::from(canvaswrapper.scroller().width()) / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * RnCanvasLayout::OVERSHOOT_HORIZONTAL);
+            let new_zoom = f64::from(canvaswrapper.scroller().width())
+                / (canvaswrapper.canvas().engine().borrow().document.format.width + 2.0 * RnCanvas::ZOOM_FIT_WIDTH_MARGIN);
             let current_doc_center = canvaswrapper.canvas().current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvaswrapper.canvas().center_view_around_coords(current_doc_center);
@@ -501,7 +504,7 @@ impl RnAppWindow {
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvas = appwindow.active_tab().canvas();
 
-            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_STEP);
+            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
             let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_view_around_coords(current_doc_center);
@@ -511,7 +514,7 @@ impl RnAppWindow {
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let canvas = appwindow.active_tab().canvas();
 
-            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_STEP);
+            let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - RnCanvas::ZOOM_SCROLL_STEP);
             let current_doc_center = canvas.current_view_center_coords();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             canvas.center_view_around_coords(current_doc_center);

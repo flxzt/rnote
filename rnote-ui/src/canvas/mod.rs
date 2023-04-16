@@ -503,7 +503,9 @@ impl RnCanvas {
     // the zoom timeout time
     pub(crate) const ZOOM_TIMEOUT_TIME: Duration = Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
-    pub(crate) const ZOOM_STEP: f64 = 0.1;
+    pub(crate) const ZOOM_SCROLL_STEP: f64 = 0.1;
+    /// A small margin added to the document width, when zooming to fit document width
+    pub(crate) const ZOOM_FIT_WIDTH_MARGIN: f64 = 32.0;
 
     pub(crate) fn new() -> Self {
         glib::Object::new()

@@ -432,6 +432,8 @@ pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
             gdk::Key::Shift_R => KeyboardKey::ShiftRight,
             gdk::Key::Control_L => KeyboardKey::CtrlLeft,
             gdk::Key::Control_R => KeyboardKey::CtrlRight,
+            gdk::Key::Home => KeyboardKey::Home,
+            gdk::Key::End => KeyboardKey::End,
             _ => KeyboardKey::Unsupported,
         }
     }

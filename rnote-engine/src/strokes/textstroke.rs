@@ -9,7 +9,7 @@ use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
-use unicode_segmentation::GraphemeCursor;
+use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
@@ -689,6 +689,42 @@ impl TextStroke {
         }
     }
 
+    pub fn remove_word_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
+        let cur_pos = cursor.cur_cursor();
+        let prev_pos = self.get_prev_word_start_index(cur_pos);
+
+        if cur_pos != prev_pos {
+            self.text.replace_range(prev_pos..cur_pos, "");
+
+            // translate the text attributes
+            self.translate_attrs_after_cursor(
+                prev_pos,
+                prev_pos as i32 - cur_pos as i32 + "".len() as i32,
+            );
+
+            // New text length, new cursor
+            *cursor = GraphemeCursor::new(prev_pos, self.text.len(), true);
+        }
+    }
+
+    pub fn remove_word_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
+        let cur_pos = cursor.cur_cursor();
+        let next_pos = self.get_next_word_end_index(cur_pos);
+
+        if cur_pos != next_pos {
+            self.text.replace_range(cur_pos..next_pos, "");
+
+            // translate the text attributes
+            self.translate_attrs_after_cursor(
+                cur_pos,
+                -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
+            );
+
+            // New text length, new cursor
+            *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
+        }
+    }
+
     pub fn replace_text_between_selection_cursors(
         &mut self,
         cursor: &mut GraphemeCursor,
@@ -818,8 +854,30 @@ impl TextStroke {
         cursor: &mut GraphemeCursor,
         selection_cursor: &mut GraphemeCursor,
     ) {
-        *cursor = GraphemeCursor::new(self.text.len(), self.text.len(), true);
-        *selection_cursor = GraphemeCursor::new(0, self.text.len(), true);
+        cursor.set_cursor(self.text.len());
+        selection_cursor.set_cursor(0);
+    }
+
+    fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {
+        for (start_index, _) in self.text.unicode_word_indices().rev() {
+            if start_index < current_char_index {
+                return start_index;
+            }
+        }
+
+        current_char_index
+    }
+
+    fn get_next_word_end_index(&self, current_char_index: usize) -> usize {
+        for (start_index, word) in self.text.unicode_word_indices() {
+            let end_index = start_index + word.len();
+
+            if end_index > current_char_index {
+                return end_index;
+            }
+        }
+
+        current_char_index
     }
 
     pub fn move_cursor_back(&self, cursor: &mut GraphemeCursor) {
@@ -830,6 +888,74 @@ impl TextStroke {
     pub fn move_cursor_forward(&self, cursor: &mut GraphemeCursor) {
         // Cant fail, we are providing the entire text
         cursor.next_boundary(&self.text, 0).unwrap();
+    }
+
+    pub fn move_cursor_word_back(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_prev_word_start_index(cursor.cur_cursor()));
+    }
+
+    pub fn move_cursor_word_forward(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.get_next_word_end_index(cursor.cur_cursor()));
+    }
+
+    pub fn move_cursor_text_start(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(0);
+    }
+
+    pub fn move_cursor_text_end(&self, cursor: &mut GraphemeCursor) {
+        cursor.set_cursor(self.text.len());
+    }
+
+    pub fn move_cursor_line_start(&self, cursor: &mut GraphemeCursor) {
+        if let (Ok(lines), Ok(hittest_position)) = (
+            self.text_style
+                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
+            self.text_style.cursor_hittest_position(
+                &mut piet_cairo::CairoText::new(),
+                self.text.clone(),
+                cursor,
+            ),
+        ) {
+            cursor.set_cursor(lines[hittest_position.line].start_offset);
+        }
+    }
+
+    pub fn move_cursor_line_end(&self, cursor: &mut GraphemeCursor) {
+        if let (Ok(lines), Ok(hittest_position)) = (
+            self.text_style
+                .lines(&mut piet_cairo::CairoText::new(), self.text.clone()),
+            self.text_style.cursor_hittest_position(
+                &mut piet_cairo::CairoText::new(),
+                self.text.clone(),
+                cursor,
+            ),
+        ) {
+            let line_metric = &lines[hittest_position.line];
+            let mut offset = line_metric.end_offset;
+
+            // Move cursor in front of new line characters if they exist.
+            if offset > line_metric.start_offset
+                && self
+                    .text
+                    .chars()
+                    .nth(offset - 1)
+                    .map_or(false, |c| c == '\n')
+            {
+                offset -= 1;
+            }
+
+            if offset > line_metric.start_offset
+                && self
+                    .text
+                    .chars()
+                    .nth(offset - 1)
+                    .map_or(false, |c| c == '\r')
+            {
+                offset -= 1;
+            }
+
+            cursor.set_cursor(offset);
+        }
     }
 
     pub fn move_cursor_line_down(&self, cursor: &mut GraphemeCursor) {
@@ -854,7 +980,7 @@ impl TextStroke {
                     lines[next_line].y_offset + lines[next_line].height * 0.5,
                 ));
 
-                *cursor = GraphemeCursor::new(hit_test_point.idx, self.text.len(), true);
+                cursor.set_cursor(hit_test_point.idx);
             }
         }
     }
@@ -879,7 +1005,7 @@ impl TextStroke {
                     lines[prev_line].y_offset + lines[prev_line].height * 0.5,
                 ));
 
-                *cursor = GraphemeCursor::new(hit_test_point.idx, self.text.len(), true);
+                cursor.set_cursor(hit_test_point.idx);
             }
         }
     }

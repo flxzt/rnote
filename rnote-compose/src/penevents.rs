@@ -76,6 +76,10 @@ pub enum KeyboardKey {
     CtrlLeft,
     /// Ctrl right
     CtrlRight,
+    /// Home
+    Home,
+    /// End
+    End,
     /// Unsupported
     Unsupported,
 }

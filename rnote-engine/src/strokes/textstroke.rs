@@ -693,42 +693,36 @@ impl TextStroke {
         let cur_pos = cursor.cur_cursor();
         let prev_pos = self.get_prev_word_start_index(cur_pos);
 
-        if cur_pos == prev_pos {
-            return;
+        if cur_pos != prev_pos {
+            self.text.replace_range(prev_pos..cur_pos, "");
+
+            // translate the text attributes
+            self.translate_attrs_after_cursor(
+                prev_pos,
+                prev_pos as i32 - cur_pos as i32 + "".len() as i32,
+            );
+
+            // New text length, new cursor
+            *cursor = GraphemeCursor::new(prev_pos, self.text.len(), true);
         }
-
-        cursor.set_cursor(prev_pos);
-
-        self.text.replace_range(prev_pos..cur_pos, "");
-
-        // translate the text attributes
-        self.translate_attrs_after_cursor(
-            prev_pos,
-            prev_pos as i32 - cur_pos as i32 + "".len() as i32,
-        );
-
-        // New text length, new cursor
-        *cursor = GraphemeCursor::new(cursor.cur_cursor(), self.text.len(), true);
     }
 
     pub fn remove_word_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
         let cur_pos = cursor.cur_cursor();
         let next_pos = self.get_next_word_end_index(cur_pos);
 
-        if cur_pos == next_pos {
-            return;
+        if cur_pos != next_pos {
+            self.text.replace_range(cur_pos..next_pos, "");
+
+            // translate the text attributes
+            self.translate_attrs_after_cursor(
+                cur_pos,
+                -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
+            );
+
+            // New text length, new cursor
+            *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
         }
-
-        self.text.replace_range(cur_pos..next_pos, "");
-
-        // translate the text attributes
-        self.translate_attrs_after_cursor(
-            cur_pos,
-            -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
-        );
-
-        // New text length, new cursor
-        *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
     }
 
     pub fn replace_text_between_selection_cursors(

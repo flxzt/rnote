@@ -64,7 +64,7 @@ Source: "{#meson_source_root}\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: 
 Source: "{#msys_path}\mingw64\share\icons\hicolor\scalable\apps\{#app_id}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#msys_path}\mingw64\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Locale
-;Source: "{#meson_build_root}\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_build_root}\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; data files (that go into pkg-data-dir)
 Source: "{#meson_build_root}\rnote-ui\data\resources.gresource"; DestDir: "{app}\share\rnote"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#meson_source_root}\rnote-engine\data\sounds\*"; DestDir: "{app}\share\rnote\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs

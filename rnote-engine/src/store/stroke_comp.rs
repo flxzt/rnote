@@ -246,6 +246,9 @@ impl StrokeStore {
     ///
     /// Strokes then need to update their rendering
     pub fn change_stroke_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
+        if keys.is_empty() {
+            return WidgetFlags::default();
+        }
         let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {
@@ -283,6 +286,9 @@ impl StrokeStore {
     ///
     /// Strokes then need to update their rendering
     pub fn change_fill_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
+        if keys.is_empty() {
+            return WidgetFlags::default();
+        }
         let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {

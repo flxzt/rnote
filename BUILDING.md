@@ -10,10 +10,10 @@ git submodule update --init --recursive
 ## Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.yaml`.
 
-Make sure you have `flatpak` and `flatkpak-builder` installed on your system. You also need the Gnome 43 Runtime, SDK and some extensions:
+Make sure you have `flatpak` and `flatkpak-builder` installed on your system. You also need the Gnome Runtime, SDK and some extensions:
 
 ```bash
-flatpak install org.gnome.Platform//43 org.gnome.Sdk//43 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm14//22.08
+flatpak install org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.rust-stable//22.08 org.freedesktop.Sdk.Extension.llvm15//22.08
 ```
 
 Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode) to build and run the application for you. **This is the easiest and recommended way.**

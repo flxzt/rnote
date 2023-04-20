@@ -4,7 +4,7 @@ use gtk4::PadActionType;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, ArrowType, Box, Button, CompositeTemplate, CornerType,
     CssProvider, FileChooserNative, GestureDrag, Grid, Inhibit, PackType, PadController,
-    PositionType, PropagationPhase, StyleContext,
+    PositionType, PropagationPhase,
 };
 use once_cell::sync::Lazy;
 use std::{
@@ -125,7 +125,7 @@ impl ObjectImpl for RnAppWindow {
         css.load_from_resource((String::from(config::APP_IDPATH) + "ui/style.css").as_str());
 
         let display = gdk::Display::default().unwrap();
-        StyleContext::add_provider_for_display(
+        gtk4::style_context_add_provider_for_display(
             &display,
             &css,
             gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,

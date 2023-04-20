@@ -183,6 +183,7 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
         <img alt="Pikachu" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/pikachu.png" height="400">
         <img alt="Love" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/love.png" height="400">
         <img alt="Suits" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/suits.png" height="400">
+        <img alt="Meme_cat" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/meme_cat.png" height="400">
 </div><br>
 
 ## Building

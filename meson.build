@@ -62,11 +62,11 @@ endif
 
 # Dependencies
 
-cpp = meson.get_compiler('cpp')
+cpp_compiler = meson.get_compiler('cpp')
 
 # Rust bindings to C++ using autocxx need libclang
 # However when building as flatpak libclang is not found, even though the llvm extension is installed. TODO: How to fix this?
-#cpp.find_library('clang')
+#cpp_compiler.find_library('clang')
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')
@@ -84,8 +84,6 @@ appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py')
 inno_build_script = find_program('build-aux/inno_build.py', required: true)
-
-# TODO: make the msys/mingw64 installation an explicit dependency
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -170,7 +168,7 @@ if profile == 'default'
     app_cargo_options += ['--release']
 endif
 
-if host_machine.system() in ['windows', 'cygwin']
+if host_machine.system() == 'windows'
     app_output = app_name + '.exe'
 else
     app_output = app_name
@@ -233,7 +231,7 @@ if build_cli == true
         cli_cargo_options += ['--release']
     endif
 
-    if host_machine.system() in ['windows', 'cygwin']
+    if host_machine.system() == 'windows'
         cli_output = cli_output_name + '.exe'
     else
         cli_output = cli_output_name
@@ -345,7 +343,7 @@ inno_script = configure_file(
     configuration: inno_script_conf,
 )
 
-if host_machine.system() in ['windows', 'cygwin']
+if host_machine.system() == 'windows'
     # build installer
     custom_target('build-installer',
         input : inno_script,

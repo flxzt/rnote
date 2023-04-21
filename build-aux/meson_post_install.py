@@ -20,7 +20,7 @@ if not os.environ.get('DESTDIR', ''):
         call(["update-desktop-database", os.path.join(datadir, 'applications')])
         print("Updating MIME-type database...", file=sys.stderr)
         call(["update-mime-database", os.path.join(datadir, 'mime')])
-    elif sys.platform == "win32" or sys.platform == "cygwin":
+    elif sys.platform == "win32":
         print('Updating icon cache...', file=sys.stderr)
         call(['gtk-update-icon-cache.exe', '-qtf', os.path.join(datadir, 'icons/hicolor')])
         print("Compiling new schemas...", file=sys.stderr)
@@ -30,4 +30,4 @@ if not os.environ.get('DESTDIR', ''):
         print("Updating MIME-type database...", file=sys.stderr)
         call(["update-mime-database.exe", os.path.join(datadir, 'mime')])
     else:
-        print(f"[WARNING] \"meson_post_install.py\" is not configured to run on {sys.platform}", file=sys.stderr)
+        print(f"[WARNING] \"meson_post_install.py\" is not configured to run on platform: {sys.platform}", file=sys.stderr)

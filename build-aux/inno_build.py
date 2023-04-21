@@ -58,7 +58,7 @@ if os.path.exists(locale_dir):
 os.mkdir(locale_dir)
 
 # App locale
-os.system(f"cp {build_root}/rnote-ui/po/* {locale_dir}")
+os.system(f"cp -r {build_root}/rnote-ui/po/. {locale_dir}")
 
 # System locale
 for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):

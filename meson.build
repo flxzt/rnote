@@ -322,9 +322,9 @@ installer_output= installer_name + '.exe'
 message('Configuring Inno-Setup installer script file')
 
 inno_script_conf = configuration_data()
-inno_script_conf.set_quoted('APP_ID', app_id)
 inno_script_conf.set_quoted('APP_NAME', app_name)
 inno_script_conf.set_quoted('APP_NAME_CAPITALIZED', app_name_capitalized)
+inno_script_conf.set_quoted('APP_ID', app_id)
 inno_script_conf.set_quoted('APP_VERSION', version)
 inno_script_conf.set_quoted('APP_VERSION_SUFFIX', version_suffix)
 inno_script_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)

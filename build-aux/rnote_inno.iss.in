@@ -9,6 +9,8 @@
 #define MyAppAssocExt ".rnote"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
+#define app_name = @APP_NAME@
+#define app_name_capitalized = @APP_NAME_CAPITALIZED@
 #define app_id = @APP_ID@
 #define meson_source_root = @MESON_SOURCE_ROOT@
 #define meson_build_root = @MESON_BUILD_ROOT@
@@ -59,10 +61,11 @@ Source: "{#meson_build_root}\gschemas\gschemas.compiled"; DestDir: "{app}\share\
 ; win32 session dbus
 Source: "{#msys_path}\mingw64\bin\gdbus.exe"; DestDir: "{app}\bin\"; Flags: ignoreversion
 ; Icons
+Source: "{#msys_path}\mingw64\share\icons\hicolor\*"; DestDir: "{app}\share\icons\hicolor"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#msys_path}\mingw64\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#meson_source_root}\rnote-ui\data\icons\rnote.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#meson_source_root}\rnote-ui\data\icons\rnote-symbolic.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#msys_path}\mingw64\share\icons\hicolor\scalable\apps\{#app_id}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#msys_path}\mingw64\share\icons\Adwaita\*"; DestDir: "{app}\share\icons\Adwaita"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#meson_source_root}\rnote-ui\data\icons\scalable\apps\{#app_name}.svg"; DestDir: "{app}\share\icons\hicolor\scalable\apps"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; Locale
 Source: "{#meson_build_root}\locale\*"; DestDir: "{app}\share\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; data files (that go into pkg-data-dir)

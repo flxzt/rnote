@@ -1,7 +1,7 @@
 #![warn(missing_debug_implementations)]
 #![allow(clippy::single_match)]
 // Hides console window on windows
-#![windows_subsystem = "windows"]
+//#![windows_subsystem = "windows"]
 
 mod app;
 mod appmenu;
@@ -52,8 +52,6 @@ fn main() -> glib::ExitCode {
     if let Err(e) = setup_logging() {
         eprintln!("failed to setup logging, Err: {e:?}");
     }
-
-    std::env::set_var("RUST_LOG", "rnote=debug");
 
     if let Err(e) = env::setup_env() {
         eprintln!("failed to setup env, Err: {e:?}");

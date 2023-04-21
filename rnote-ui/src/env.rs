@@ -85,8 +85,8 @@ fn exec_parent_dir() -> anyhow::Result<PathBuf> {
         .parent()
         .ok_or(anyhow::anyhow!(
             "could not get parent dir of executable path"
-        ))?.to_path_buf()
-        )
+        ))?
+        .to_path_buf())
 }
 
 // this returns true when the app is packaged as a relocatable application bundle

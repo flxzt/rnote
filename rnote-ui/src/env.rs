@@ -6,9 +6,11 @@ use crate::config;
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
         let exec_dir = exec_parent_dir()?;
+
         Ok(exec_dir.join("..\\lib"))
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
+
         if macos_is_in_app_bundle(&canonicalized_exec_dir) {
             Ok(canonicalized_exec_dir.join("../Resources/lib"))
         } else {
@@ -22,9 +24,11 @@ pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
 pub(crate) fn data_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
         let exec_dir = exec_parent_dir()?;
+
         Ok(exec_dir.join("..\\share"))
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
+
         if macos_is_in_app_bundle(&canonicalized_exec_dir) {
             Ok(canonicalized_exec_dir.join("../Resources/share"))
         } else {
@@ -42,9 +46,11 @@ pub(crate) fn pkg_data_dir() -> anyhow::Result<PathBuf> {
 pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
         let exec_dir = exec_parent_dir()?;
+
         Ok(exec_dir.join("..\\share\\locale"))
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
+
         if macos_is_in_app_bundle(&canonicalized_exec_dir) {
             Ok(canonicalized_exec_dir.join("../Resources/share/locale"))
         } else {
@@ -60,16 +66,20 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
     if cfg!(target_os = "windows") {
         let data_dir = data_dir()?;
         let lib_dir = lib_dir()?;
+
         std::env::set_var("XDG_DATA_DIRS", data_dir);
         std::env::set_var(
             "GDK_PIXBUF_MODULEDIR",
             lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),
         );
+        //std::env::set_var("RUST_LOG", "rnote=debug");
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
+
         if macos_is_in_app_bundle(canonicalized_exec_dir) {
             let data_dir = data_dir()?;
             let lib_dir = lib_dir()?;
+
             std::env::set_var("XDG_DATA_DIRS", data_dir);
             std::env::set_var(
                 "GDK_PIXBUF_MODULE_FILE",

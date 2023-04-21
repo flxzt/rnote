@@ -1,7 +1,7 @@
 #![warn(missing_debug_implementations)]
 #![allow(clippy::single_match)]
 // Hides console window on windows
-//#![windows_subsystem = "windows"]
+#![windows_subsystem = "windows"]
 
 mod app;
 mod appmenu;
@@ -57,7 +57,6 @@ fn main() -> glib::ExitCode {
         eprintln!("failed to setup env, Err: {e:?}");
     }
 
-    #[cfg(not(target_os = "windows"))]
     if let Err(e) = setup_i18n() {
         eprintln!("failed to setup i18n, Err: {e:?}");
     }
@@ -77,6 +76,7 @@ fn setup_i18n() -> anyhow::Result<()> {
 
     gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
     gettextrs::bindtextdomain(config::GETTEXT_PACKAGE, locale_dir)?;
+    gettextrs::bind_textdomain_codeset(config::GETTEXT_PACKAGE, "UTF-8")?;
     gettextrs::textdomain(config::GETTEXT_PACKAGE)?;
     Ok(())
 }

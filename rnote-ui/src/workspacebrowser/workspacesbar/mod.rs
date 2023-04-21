@@ -272,14 +272,16 @@ impl RnWorkspacesBar {
         // Be sure to get the index before loading the workspaces, else the setting gets overridden
         let selected_workspace_index = settings.uint("selected-workspace-index");
 
-        // canonicalize the dirs when loading from settings
-        for entry in &workspace_list.iter() {
-            if let Err(e) = entry.canonicalize_dir() {
-                log::warn!(
-                "failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
-                entry.dir(),
-                entry.name()
-            )
+        // canonicalize the dirs when loading from settings and not on windows (else we would get extended path syntax)
+        if !cfg!(target_os = "windows") {
+            for entry in &workspace_list.iter() {
+                if let Err(e) = entry.canonicalize_dir() {
+                    log::warn!(
+                    "failed to canonicalize dir {:?} for workspacelistentry with name: {}, Err: {e:?}",
+                    entry.dir(),
+                    entry.name()
+                )
+                }
             }
         }
         self.imp().workspace_list.replace_self(workspace_list);

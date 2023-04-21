@@ -28,13 +28,13 @@ cp_call = f"cp {bin_output} {output_file}"
 print(cargo_call, file=sys.stderr)
 res = os.system(cargo_call)
 if res != 0:
-    print(f"cargo call failed, exit code {res}")
+    print(f"cargo call failed, code {res}")
     sys.exit(1)
 
 print(cp_call, file=sys.stderr)
 res = os.system(cp_call)
 if res != 0:
-    print(f"cp call failed, exit code {res}")
+    print(f"cp call failed, code {res}")
     sys.exit(1)
 
 sys.exit(0)

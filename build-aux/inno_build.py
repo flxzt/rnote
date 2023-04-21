@@ -32,8 +32,15 @@ if os.path.exists(dlls_dir):
 os.mkdir(dlls_dir)
 
 # Don't use os.path.join here, because that uses the wrong separators which breaks wildcard expansion.
-os.system(f"ldd {build_root}/{app_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}")
-os.system(f"ldd {msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}")
+res = os.system(f"ldd {build_root}/{app_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}")
+if res != 0:
+    print("Collecting app DLL's failed, code: {res}")
+    sys.exit(1)
+
+res = os.system(f"ldd {msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}")
+if res != 0:
+    print("Collecting pixbuf-loaders DLL's failed, code: {res}")
+    sys.exit(1)
 
 # Collect necessary GSchema XML's and compile them into a `gschema.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)
@@ -44,9 +51,20 @@ if os.path.exists(gschemas_dir):
 
 os.mkdir(gschemas_dir)
 
-os.system(f"cp {msys_path}/mingw64/share/glib-2.0/schemas/org.gtk.* {gschemas_dir}")
-os.system(f"cp {build_root}/rnote-ui/data/{app_id}.gschema.xml {gschemas_dir}")
-os.system(f"glib-compile-schemas {gschemas_dir}") # this generates `gschemas.compiled` in the same directory
+res = os.system(f"cp {msys_path}/mingw64/share/glib-2.0/schemas/org.gtk.* {gschemas_dir}")
+if res != 0:
+    print("Copying system schemas failed, code: {res}")
+    sys.exit(1)
+
+res = os.system(f"cp {build_root}/rnote-ui/data/{app_id}.gschema.xml {gschemas_dir}")
+if res != 0:
+    print("Copying app schema failed, code: {res}")
+    sys.exit(1)
+
+res = os.system(f"glib-compile-schemas {gschemas_dir}") # this generates `gschemas.compiled` in the same directory
+if res != 0:
+    print("Compiling schemas failed, code: {res}")
+    sys.exit(1)
 
 # Collect locale
 print("Collecting locale...", file=sys.stderr)
@@ -58,7 +76,10 @@ if os.path.exists(locale_dir):
 os.mkdir(locale_dir)
 
 # App locale
-os.system(f"cp -r {build_root}/rnote-ui/po/. {locale_dir}")
+res = os.system(f"cp -r {build_root}/rnote-ui/po/. {locale_dir}")
+if res != 0:
+    print("Copying app locale failed, code: {res}")
+    sys.exit(1)
 
 # System locale
 for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):
@@ -68,18 +89,33 @@ for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):
 
     glib_locale = os.path.join(system_locale_dir, "glib20.mo")
     if os.path.exists(glib_locale):
-        os.system(f"cp {glib_locale} {current_locale_out_dir}")
+        res = os.system(f"cp {glib_locale} {current_locale_out_dir}")
+        if res != 0:
+            print("Copying glib locale: {glib_locale} failed, code: {res}")
+            sys.exit(1)
 
     gtk4_locale = os.path.join(system_locale_dir, "gtk40.mo")
     if os.path.exists(gtk4_locale):
-        os.system(f"cp {gtk4_locale} {current_locale_out_dir}")
+        res = os.system(f"cp {gtk4_locale} {current_locale_out_dir}")
+        if res != 0:
+            print("Copying gtk4 locale: {gtk4_locale} failed, code: {res}")
+            sys.exit(1)
 
     adw_locale = os.path.join(system_locale_dir, "libadwaita.mo")
     if os.path.exists(adw_locale):
-        os.system(f"cp {adw_locale} {current_locale_out_dir}")
+        res = os.system(f"cp {adw_locale} {current_locale_out_dir}")
+        if res != 0:
+            print("Copying libadwaita locale: {adw_locale} failed, code: {res}")
+            sys.exit(1)
 
     # TODO: do we need any other system locales?
 
 # Build installer
 print("Running ISCC...", file=sys.stderr)
-os.system(f"{msys_path}/usr/bin/bash -c \"iscc '{inno_script}'\"")
+
+res = os.system(f"{msys_path}/usr/bin/bash -c \"iscc '{inno_script}'\"")
+if res != 0:
+    print("Running iscc failed, code: {res}")
+    sys.exit(1)
+
+sys.exit(0)

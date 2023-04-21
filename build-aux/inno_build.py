@@ -36,7 +36,7 @@ os.system(f"ldd {build_root}/{app_output} | grep '\\/mingw.*\.dll' -o | xargs -i
 os.system(f"ldd {msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}")
 
 # Collect necessary GSchema XML's and compile them into a `gschema.compiled`
-print("Collect and compile GSchemas", file=sys.stderr)
+print("Collecting and compiling GSchemas...", file=sys.stderr)
 gschemas_dir = os.path.join(build_root, "gschemas/")
 
 if os.path.exists(gschemas_dir):
@@ -49,7 +49,7 @@ os.system(f"cp {build_root}/rnote-ui/data/{app_id}.gschema.xml {gschemas_dir}")
 os.system(f"glib-compile-schemas {gschemas_dir}") # this generates `gschemas.compiled` in the same directory
 
 # Collect locale
-print("Collect locale", file=sys.stderr)
+print("Collecting locale...", file=sys.stderr)
 locale_dir = os.path.join(build_root, "locale/")
 
 if os.path.exists(locale_dir):

@@ -3,13 +3,16 @@
 import sys
 import os
 import shutil
+import glob
 
 source_root = sys.argv[1]
 build_root = sys.argv[2]
-inno_script = sys.argv[3]
-msys_path = sys.argv[4]
-app_id = sys.argv[5]
-app_output = sys.argv[6]
+msys_path = sys.argv[3]
+app_name = sys.argv[4]
+app_name_capitalized = sys.argv[5]
+app_id = sys.argv[6]
+app_output = sys.argv[7]
+inno_script = sys.argv[8]
 
 print(f"""
 ### executing Inno-Setup installer build script with arguments: ###
@@ -31,7 +34,7 @@ def run_command(command, error_message):
 
 # Collect DLLs
 print("Collecting DLLs...", file=sys.stderr)
-dlls_dir = os.path.join(build_root, "dlls/")
+dlls_dir = os.path.join(build_root, "dlls")
 
 if os.path.exists(dlls_dir):
     shutil.rmtree(dlls_dir)
@@ -51,71 +54,55 @@ run_command(
 
 # Collect necessary GSchema XML's and compile them into a `gschema.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)
-gschemas_dir = os.path.join(build_root, "gschemas/")
+gschemas_dir = os.path.join(build_root, "gschemas")
 
 if os.path.exists(gschemas_dir):
     shutil.rmtree(gschemas_dir)
 
 os.mkdir(gschemas_dir)
 
-run_command(
-    f"cp {msys_path}/mingw64/share/glib-2.0/schemas/org.gtk.* {gschemas_dir}",
-    "Copying system schemas failed"
-)
+for src in glob.glob(f"{msys_path}/mingw64/share/glib-2.0/schemas/org.gtk.*"):
+    shutil.copy(src, gschemas_dir)
 
-run_command(
-    f"cp {build_root}/rnote-ui/data/{app_id}.gschema.xml {gschemas_dir}",
-    "Copying app schema failed"
-)
+shutil.copy(f"{build_root}/rnote-ui/data/{app_id}.gschema.xml", gschemas_dir)
 
+# generate `gschemas.compiled` in the same directory
 run_command(
-    f"glib-compile-schemas {gschemas_dir}", # this generates `gschemas.compiled` in the same directory
+    f"glib-compile-schemas {gschemas_dir}",
     "Compiling schemas failed"
 )
 
 # Collect locale
 print("Collecting locale...", file=sys.stderr)
-locale_dir = os.path.join(build_root, "locale/")
+locale_dir = os.path.join(build_root, "locale")
 
 if os.path.exists(locale_dir):
     shutil.rmtree(locale_dir)
 
-os.mkdir(locale_dir)
+# app locale
+app_mo_dir = os.path.join(build_root, 'rnote-ui/po')
+shutil.copytree(app_mo_dir, locale_dir)
 
-for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):
+# system locale
+for file in os.listdir(app_mo_dir):
     current_lang = os.fsdecode(file)
-
-    # App locale
-    app_locale_dir = os.path.join(build_root, 'rnote-ui/po', current_lang)
-    run_command(
-        f"cp -R {app_locale_dir} {locale_dir}",
-        f"Copying app locale: {app_locale_dir} failed"
-    )
-
-    # System locale
     current_locale_out_dir = os.path.join(locale_dir, current_lang, "LC_MESSAGES")
-    system_locale_dir = os.path.join(msys_path, "mingw64/share/locale", current_lang, "LC_MESSAGES")
+    current_system_locale_dir = os.path.join(msys_path, "mingw64/share/locale", current_lang, "LC_MESSAGES")
 
-    glib_locale = os.path.join(system_locale_dir, "glib20.mo")
+    if not os.path.exists(current_locale_out_dir):
+        os.mkdir(current_locale_out_dir)
+
+    glib_locale = os.path.join(current_system_locale_dir, "glib20.mo")
     if os.path.exists(glib_locale):
-        run_command(
-            f"cp {glib_locale} {current_locale_out_dir}",
-            f"Copying glib locale: {glib_locale} failed"
-        )
+        shutil.copy(glib_locale, current_locale_out_dir)
 
-    gtk4_locale = os.path.join(system_locale_dir, "gtk40.mo")
+    gtk4_locale = os.path.join(current_system_locale_dir, "gtk40.mo")
     if os.path.exists(gtk4_locale):
-        run_command(
-            f"cp {gtk4_locale} {current_locale_out_dir}",
-            f"Copying gtk4 locale: {gtk4_locale} failed"
-        )
+        shutil.copy(gtk4_locale, current_locale_out_dir)
 
-    adw_locale = os.path.join(system_locale_dir, "libadwaita.mo")
+    adw_locale = os.path.join(current_system_locale_dir, "libadwaita.mo")
     if os.path.exists(adw_locale):
-        run_command(
-            f"cp {adw_locale} {current_locale_out_dir}",
-            f"Copying libadwaita locale: {adw_locale} failed"
-        )
+        shutil.copy(adw_locale, current_locale_out_dir)
 
     # TODO: do we need any other system locales?
 
@@ -123,8 +110,8 @@ for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"{msys_path}/usr/bin/bash -lc \"iscc '{inno_script}'\"",
-    "Running iscc failed"
+    f"iscc {inno_script}",
+    "Running ISCC failed"
 )
 
 sys.exit(0)

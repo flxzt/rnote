@@ -71,7 +71,7 @@ Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the lates
 Download the Windows installer from the latest release which can be found [here](https://github.com/flxzt/rnote/releases/latest).
 
 <div align="start">
-<a href='https://github.com/flxzt/rnote/releases/latest'><img height="250" alt='Download Windows installer' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/windows-installer-badge.svg'/></a>
+<a href='https://github.com/flxzt/rnote/releases/latest'><img width="250" alt='Download Windows installer' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/windows-installer-badge.svg'/></a>
 </div><br>
 
 ### Downgrading

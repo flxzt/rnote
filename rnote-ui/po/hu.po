@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-15 09:21+0000\n"
-"Last-Translator: Ács Zoltán <acszoltan111@gmail.com>\n"
+"PO-Revision-Date: 2023-04-22 22:19+0000\n"
+"Last-Translator: ovari <ovari123@zoho.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
 "\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -51,7 +51,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Áttekintés"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -777,10 +777,8 @@ msgstr "Függőleges térköz beszúrása"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29
 #: rnote-ui/data/ui/shortcuts.ui:91
-#, fuzzy
-#| msgid "Move _Left"
 msgid "Move View"
-msgstr "Áthelyezés _balra"
+msgstr "Nézet áthelyezése"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -1001,7 +999,7 @@ msgstr "Rajzolás _érintéses bemenettel"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "_Nagyításhoz blokkolja az összecsípést"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
@@ -1112,7 +1110,7 @@ msgstr "Állandó"
 
 #: rnote-ui/data/ui/penshortcutrow.ui:13
 msgid "Toggle"
-msgstr ""
+msgstr "Váltás"
 
 #: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
 msgid "General"
@@ -1324,8 +1322,6 @@ msgid "Stylus Primary Button Action"
 msgstr "Ceruza elsődleges gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:372
-#, fuzzy
-#| msgid "Set the action for the primary stylus button"
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
@@ -1336,8 +1332,6 @@ msgid "Stylus Secondary Button Action"
 msgstr "Ceruza másodlagos gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:385
-#, fuzzy
-#| msgid "Set the action for the secondary stylus button"
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
@@ -1348,8 +1342,6 @@ msgid "Mouse Secondary Button Action"
 msgstr "Egér másodlagos gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:398
-#, fuzzy
-#| msgid "Set the action for the secondary mouse button"
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
@@ -1360,79 +1352,60 @@ msgid "Touch Two-Finger Long-Press Action"
 msgstr "Kétujjas, hosszan megnyomott érintési művelet"
 
 #: rnote-ui/data/ui/settingspanel.ui:411
-#, fuzzy
-#| msgid "Set the action for the touch two-finger long-press gesture"
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr "Állítsa be a kétujjas, hosszan megnyomott érintési mozdulat műveletét"
 
 #: rnote-ui/data/ui/settingspanel.ui:423
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "Ceruza elsődleges gombjának művelete"
+msgstr "Rajzlap 1. gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:424
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
-msgstr ""
+msgstr "Rajzlap 1. gombjának művelete beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:436
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "Ceruza elsődleges gombjának művelete"
+msgstr "Rajzlap 2. gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:437
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
-msgstr ""
+msgstr "Rajzlap 2. gombjának művelete beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:449
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "Ceruza elsődleges gombjának művelete"
+msgstr "Rajzlap 3. gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:450
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
-msgstr ""
+msgstr "Rajzlap 3. gombjának művelete beállítása"
 
 #: rnote-ui/data/ui/settingspanel.ui:462
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "Ceruza elsődleges gombjának művelete"
+msgstr "Rajzlap 4. gombjának művelete"
 
 #: rnote-ui/data/ui/settingspanel.ui:463
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
-msgstr ""
+msgstr "Rajzlap 4. gombjának művelete beállítása"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Show Keyboard Shortcuts"
 msgid "Show Keyboard Shortcuts"
 msgstr "Billentyűparancsok megjelenítése"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Close the Active Tab"
 msgid "Close the Active Tab"
-msgstr "Aktív lap bezárása"
+msgstr "Jelenlegi lap bezárása"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Quit the Application"
 msgid "Quit the Application"
 msgstr "Kilépés az alkalmazásból"
 
@@ -1449,58 +1422,34 @@ msgid "Navigation"
 msgstr "Navigáció"
 
 #: rnote-ui/data/ui/shortcuts.ui:55
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Brush'"
 msgid "Switch to the 'Brush'"
 msgstr "Ecset kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:61
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Shaper'"
 msgid "Switch to the 'Shaper'"
 msgstr "Alakító kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:67
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Typewriter'"
 msgid "Switch to the 'Typewriter'"
 msgstr "Írógép kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:73
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Eraser'"
 msgid "Switch to the 'Eraser'"
 msgstr "Radír kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:79
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Selector'"
 msgid "Switch to the 'Selector'"
 msgstr "Kiválasztó kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:85
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Switch to the 'Tools'"
 msgid "Switch to the 'Tools'"
 msgstr "Eszközök kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:92
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Alt + Drag"
 msgid "Alt + Drag"
 msgstr "Ctrl + húzás"
 
 #: rnote-ui/data/ui/shortcuts.ui:133
-#, fuzzy
-#| msgctxt "shortcut window"
-#| msgid "Zoom in / out"
 msgid "Zoom in/out"
 msgstr "Nagyítás/kicsinyítés"
 
@@ -1585,10 +1534,8 @@ msgid "Opening vector image file failed"
 msgstr "A vektoros képfájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:530
-#, fuzzy
-#| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
-msgstr "A pontképes képfájl megnyitása sikertelen."
+msgstr "A pontképes képfájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:541 rnote-ui/src/dialogs/import.rs:394
 msgid "Opening Xournal++ file failed"
@@ -1603,10 +1550,8 @@ msgid "Failed to open file, tried to open folder as file"
 msgstr "Sikertelen a fájl megnyitása, egy mappát próbált meg fájlként megnyitni"
 
 #: rnote-ui/src/appwindow/mod.rs:566
-#, fuzzy
-#| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file, unsupported file type"
-msgstr "A fájl megnyitása sikertelen: Nem támogatott fájltípus."
+msgstr "A fájl megnyitása sikertelen, nem támogatott fájltípus"
 
 #: rnote-ui/src/appwindow/imp.rs:265
 #: rnote-ui/src/appwindow/appwindowactions.rs:578
@@ -1826,8 +1771,6 @@ msgid "Camera"
 msgstr "Fényképezőgép"
 
 #: rnote-ui/src/dialogs/mod.rs:556
-#, fuzzy
-#| msgid "Chip"
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "Forgács"
@@ -1847,7 +1790,7 @@ msgstr "Összeállítás"
 #: rnote-ui/src/dialogs/mod.rs:560
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "Körülvágás"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
@@ -1982,8 +1925,6 @@ msgid "Star"
 msgstr "Csillag"
 
 #: rnote-ui/src/dialogs/mod.rs:596
-#, fuzzy
-#| msgid "Terminal"
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "Terminál"

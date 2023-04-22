@@ -18,10 +18,12 @@ print(f"""
 ### executing Inno-Setup installer build script with arguments: ###
     source_root: {source_root}
     build_root: {build_root}
-    inno_script: {inno_script}
     msys_path: {msys_path}
+    app_name: {app_name}
+    app_name_capitalized: {app_name_capitalized}
     app_id: {app_id}
     app_output: {app_output}
+    inno_script: {inno_script}
 """, file=sys.stderr)
 
 def run_command(command, error_message):

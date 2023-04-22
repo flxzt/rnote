@@ -22,9 +22,10 @@ print(f"""
 """, file=sys.stderr)
 
 def run_command(command, error_message):
-    res = os.system(f"{msys_path}/usr/bin/bash -c \"{command}\"")
+    res = os.system(f"env MSYSTEM=MINGW64 {msys_path}/usr/bin/bash -lc '{command}'")
     if res != 0:
         print(f"{error_message}, code: {res}")
+        print(f"command: {command}")
         sys.exit(1)
 
 

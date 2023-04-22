@@ -6,12 +6,26 @@ option(
     'devel'
   ],
   value: 'default',
-  description: 'The build profile for rnote. One of "default" or "devel".'
+  description: 'The build profile for rnote. One of "default" or "devel".',
 )
 
 option(
   'cli',
   type: 'boolean',
   value: false,
-  description: 'Build the cli'
+  description: 'Build the cli',
+)
+
+option(
+  'installer-name',
+  type: 'string',
+  value: 'rnote-win-installer',
+  description: 'Only relevant for builds on Windows: the name of the generated installer after executing the "build-installer" target.',
+)
+
+option(
+  'msys-path',
+  type: 'string',
+  value: 'C:\\msys64',
+  description: 'Only relevant for builds on Windows: the path of the installed msys / mingw64 distribution.',
 )

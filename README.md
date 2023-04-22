@@ -66,6 +66,14 @@ Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the lates
 <a href='https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest'><img height="150" alt='Download MacOS app bundle' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/rnote-macos-app-bundle-badge.png'/></a>
 </div><br>
 
+### Windows
+
+Download the Windows installer from the latest release which can be found [here](https://github.com/flxzt/rnote/releases/latest).
+
+<div align="start">
+<a href='https://github.com/flxzt/rnote/releases/latest'><img height="250" alt='Download Windows installer' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/windows-installer-badge.svg'/></a>
+</div><br>
+
 ### Downgrading
 
 Because the file format still is unstable, downgrading to a specific version might be necessary.

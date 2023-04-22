@@ -63,8 +63,8 @@ if desktop_file_validate.found()
     )
 endif
 
-# Gschema
-message('Configuring and compiling gschema settings file')
+# GSchema
+message('Configuring settings GSchema file')
 
 gschema_conf = configuration_data()
 gschema_conf.set('APP_ID', app_id)
@@ -78,7 +78,7 @@ gschema_file = configure_file(
     install_dir: datadir / 'glib-2.0' / 'schemas',
 )
 
-# Validata GSchema
+# Validate installed GSchema
 if glib_compile_schemas.found()
     test(
         'validate-gschema',

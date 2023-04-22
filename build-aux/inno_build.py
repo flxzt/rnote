@@ -22,10 +22,10 @@ print(f"""
 """, file=sys.stderr)
 
 def run_command(command, error_message):
-    res = os.system(f"env MSYSTEM=MINGW64 {msys_path}/usr/bin/bash -lc '{command}'")
+    res = os.system(command)
     if res != 0:
-        print(f"{error_message}, code: {res}")
-        print(f"command: {command}")
+        print(f"{error_message}, code: {res}", file=sys.stderr)
+        print(f"command: {command}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -82,17 +82,19 @@ if os.path.exists(locale_dir):
 
 os.mkdir(locale_dir)
 
-# App locale
-run_command(
-    f"cp -R {build_root}/rnote-ui/po/* {locale_dir}",
-    "Copying app locale failed"
-)
-
-# System locale
 for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):
     current_lang = os.fsdecode(file)
-    current_locale_out_dir = os.path.join(locale_dir, f"{current_lang}/LC_MESSAGES")
-    system_locale_dir = os.path.join(f"{msys_path}/mingw64/share/locale/{current_lang}/LC_MESSAGES")
+
+    # App locale
+    app_locale_dir = os.path.join(build_root, 'rnote-ui/po', current_lang)
+    run_command(
+        f"cp -R {app_locale_dir} {locale_dir}",
+        f"Copying app locale: {app_locale_dir} failed"
+    )
+
+    # System locale
+    current_locale_out_dir = os.path.join(locale_dir, current_lang, "LC_MESSAGES")
+    system_locale_dir = os.path.join(msys_path, "mingw64/share/locale", current_lang, "LC_MESSAGES")
 
     glib_locale = os.path.join(system_locale_dir, "glib20.mo")
     if os.path.exists(glib_locale):
@@ -121,7 +123,7 @@ for file in os.listdir(os.path.join(build_root, "rnote-ui/po")):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"iscc '{inno_script}'",
+    f"{msys_path}/usr/bin/bash -lc \"iscc '{inno_script}'\"",
     "Running iscc failed"
 )
 

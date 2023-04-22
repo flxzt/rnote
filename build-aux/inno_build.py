@@ -49,10 +49,11 @@ run_command(
     "Collecting app DLLs failed"
 )
 
-run_command(
-    f"ldd {msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
-    "Collecting pixbuf-loaders DLLs failed"
-)
+for loader in glob.glob(f"{msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll"):
+    run_command(
+        f"ldd {loader} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"Collecting pixbuf-loader ({loader}) DLLs failed"
+    )
 
 # Collect necessary GSchema XML's and compile them into a `gschema.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)
@@ -112,7 +113,7 @@ for file in os.listdir(app_mo_dir):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"iscc {inno_script}",
+    f"{msys_path}/usr/bin/bash -lc \"iscc {inno_script}\"",
     "Running ISCC failed"
 )
 

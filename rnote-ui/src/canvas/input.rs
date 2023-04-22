@@ -293,7 +293,7 @@ fn retrieve_pointer_elements(
     event: &gdk::Event,
     backlog_policy: BacklogPolicy,
 ) -> Option<Vec<(Element, Instant)>> {
-    // Retreive the transform directly from the event, just like in `gtkgesturestylus.c`'s `get_backlog()`
+    // Retrieve the transform directly from the event, just like in `gtkgesturestylus.c`'s `get_backlog()`
     let event_native = Native::for_surface(&event.surface()?)?;
     let (surface_trans_x, surface_trans_y) = event_native.surface_transform();
     // retrieving the pressure only works when the event has a device tool (== is a stylus),

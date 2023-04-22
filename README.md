@@ -89,7 +89,7 @@ $ flatpak mask com.github.flxzt.rnote
 $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
-To update to the lastest version again, unpin and run `flatpak update`.
+To update to the latest version again, unpin and run `flatpak update`.
 
 ## Screenshots
 

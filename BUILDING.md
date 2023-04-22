@@ -82,7 +82,7 @@ meson setup --prefix=/usr _mesonbuild
 Meson will ask for the user password when needed.
 
 ### Configuration
-To enable the development profile, set `-Dprofile=devel` as a parameter. Else the `default` profile will be set.
+To enable the development profile, set `-Dprofile=devel` as a parameter in the setup. Else the `default` profile will be set.
 
 To enable building the `rnote-cli` binary, set `-Dcli=true`.
 

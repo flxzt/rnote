@@ -25,7 +25,8 @@ config = configure_file(
     output: 'config.rs',
     configuration: global_conf,
 )
-# Copy the config.rs output to the source directory.
+
+# Copy the config.rs output to the source directory
 run_command(
     'cp',
     meson.project_build_root() / 'rnote-ui' / 'src' / 'config.rs',

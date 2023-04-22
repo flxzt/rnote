@@ -11,12 +11,22 @@ i18n = import('i18n')
 gnome = import('gnome')
 fs = import('fs')
 
+# Options
+
+prefix = get_option('prefix')
+bindir = prefix / get_option('bindir')
+datadir = prefix / get_option('datadir')
+libdir = prefix / get_option('libdir')
+localedir = prefix / get_option('localedir')
+profile = get_option('profile')
+build_cli = get_option('cli')
+msys_path = get_option('msys-path')
+installer_name = get_option('installer-name')
+
 app_name = 'rnote'
 app_name_capitalized = 'Rnote'
-# the name of the cli crate
-cli_name = 'rnote-cli'
-# We need to rename the cli binary, because else the output file name would collide with the rnote-cli folder
-cli_output_name = 'rnote_cli'
+cli_crate_output = 'rnote-cli'  # the name of the generated executable of the cli crate
+cli_output_name = 'rnote_cli'   # We need to rename the cli executable, because else the output file name would collide with the rnote-cli folder
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
@@ -35,40 +45,28 @@ version_major = version_array[0].to_int()
 version_minor = version_array[1].to_int()
 version_micro = version_array[2].to_int()
 
-if get_option('profile') == 'devel'
-    profile = 'devel'
-    version_suffix = '-devel'
+pkgdatadir = datadir / app_name
+iconsdir = datadir / 'icons'
+gettext_package = app_name
+app_idpath = '/com/github/flxzt/' + app_name + '/'
+
+if profile == 'devel'
     app_id = base_id + '.' + 'Devel'
+    version_suffix = '-devel'
     rust_target_folder = 'debug'
 else
-    profile = 'default'
     app_id = base_id
     version_suffix = patch
     rust_target_folder = 'release'
 endif
 
-app_idpath = '/com/github/flxzt/' + app_name + '/'
-
-prefix = get_option('prefix')
-bindir = prefix / get_option('bindir')
-datadir = prefix / get_option('datadir')
-libdir = prefix / get_option('libdir')
-localedir = prefix / get_option('localedir')
-pkgdatadir = datadir / app_name
-iconsdir = datadir / 'icons'
-gettext_package = app_name
-
-user_home_dir = fs.expanduser('~')
-
 # Dependencies
 
-cpp = meson.get_compiler('cpp')
-#add_project_arguments(['-stdlib=stdlibc++'], language : 'cpp')
-#add_project_link_arguments(['-stdlib=stdlibc++'], language : 'cpp')
+cpp_compiler = meson.get_compiler('cpp')
 
 # Rust bindings to C++ using autocxx need libclang
-# However when building as flatpak libclang is not found, even though the llvm extension is installed. How to fix this?
-#cpp.find_library('clang')
+# However when building as flatpak libclang is not found, even though the llvm extension is installed. TODO: How to fix this?
+#cpp_compiler.find_library('clang')
 
 dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')
@@ -85,6 +83,7 @@ desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
 cargo_build_script = find_program('build-aux/cargo_build.py')
+inno_build_script = find_program('build-aux/inno_build.py', required: true)
 
 meson.add_dist_script(
     'build-aux/dist-vendor.sh',
@@ -92,7 +91,7 @@ meson.add_dist_script(
     meson.project_source_root(),
 )
 
-if get_option('profile') == 'devel'
+if profile == 'devel'
     # Setup pre-commit hook for ensuring coding style is always consistent
     message('Setting up git pre-commit hook..')
     run_command(
@@ -165,15 +164,14 @@ app_cargo_options = ['--manifest-path', cargo_manifest_path]
 app_cargo_options += ['--target-dir', cargo_target_dir]
 app_cargo_options += ['-p', 'rnote']
 
-if get_option('profile') == 'default'
+if profile == 'default'
     app_cargo_options += ['--release']
 endif
 
-# see https://mesonbuild.com/Reference-tables.html#operating-system-names
-if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-    app_bin_output = app_name + '.exe'
+if host_machine.system() == 'windows'
+    app_output = app_name + '.exe'
 else
-    app_bin_output = app_name
+    app_output = app_name
 endif
 
 # app cargo check
@@ -199,11 +197,11 @@ run_target(
 )
 
 # app cargo build
-custom_target(
+app_cargo_build = custom_target(
     'app-cargo-build',
     build_by_default: true,
     input: app_sources,
-    output: app_bin_output,
+    output: app_output,
     console: true,
     install: true,
     install_dir: bindir,
@@ -221,7 +219,7 @@ custom_target(
 )
 
 # build / install the cli
-if get_option('cli') == true
+if build_cli == true
     # cli crate
     subdir('rnote-cli')
 
@@ -229,14 +227,14 @@ if get_option('cli') == true
     cli_cargo_options += ['--target-dir', cargo_target_dir]
     cli_cargo_options += ['-p', 'rnote-cli']
 
-    if get_option('profile') == 'default'
+    if profile == 'default'
         cli_cargo_options += ['--release']
     endif
 
-    if host_machine.system() == 'windows' or host_machine.system() == 'cygwin'
-        cli_bin_output = cli_output_name + '.exe'
+    if host_machine.system() == 'windows'
+        cli_output = cli_output_name + '.exe'
     else
-        cli_bin_output = cli_output_name
+        cli_output = cli_output_name
     endif
 
     cli_sources = [
@@ -281,7 +279,7 @@ if get_option('cli') == true
         'cli-cargo-build',
         build_by_default: true,
         input: cli_sources,
-        output: cli_bin_output,
+        output: cli_output,
         console: true,
         install: true,
         install_dir: bindir,
@@ -292,7 +290,7 @@ if get_option('cli') == true
             cargo_env,
             cargo,
             ' '.join(cli_cargo_options),
-            cargo_target_dir / rust_target_folder / cli_name,
+            cargo_target_dir / rust_target_folder / cli_crate_output,
             meson.project_build_root() / '@OUTPUT@',
         ],
     )
@@ -314,3 +312,54 @@ meson.add_install_script(
 #    update_desktop_database: true,
 #    update_mime_database: true,
 #)
+
+# Windows installer
+
+installer_output= installer_name + '.exe'
+
+message('Configuring Inno-Setup installer script file')
+
+inno_script_conf = configuration_data()
+inno_script_conf.set_quoted('MESON_SOURCE_ROOT', meson.project_source_root())
+inno_script_conf.set_quoted('MESON_BUILD_ROOT', meson.project_build_root())
+inno_script_conf.set_quoted('MSYS_PATH', msys_path)
+inno_script_conf.set_quoted('APP_NAME', app_name)
+inno_script_conf.set_quoted('APP_NAME_CAPITALIZED', app_name_capitalized)
+inno_script_conf.set_quoted('APP_ID', app_id)
+inno_script_conf.set_quoted('APP_VERSION', version)
+inno_script_conf.set_quoted('APP_VERSION_SUFFIX', version_suffix)
+inno_script_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
+inno_script_conf.set_quoted('APP_AUTHORS', app_authors)
+inno_script_conf.set_quoted('APP_WEBSITE', app_website)
+inno_script_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
+inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
+inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
+inno_script_conf.set_quoted('APP_OUTPUT', app_output)
+inno_script_conf.set_quoted('INSTALLER_NAME', installer_name)
+
+inno_script = configure_file(
+    input: 'build-aux/rnote_inno.iss.in',
+    output: 'rnote_inno.iss',
+    configuration: inno_script_conf,
+)
+
+if host_machine.system() == 'windows'
+    # build installer
+    custom_target('build-installer',
+        input : inno_script,
+        output : installer_output,
+        command : [
+            inno_build_script,
+            meson.project_source_root(),
+            meson.project_build_root(),
+            msys_path,
+            app_name,
+            app_name_capitalized,
+            app_id,
+            app_output,
+            meson.project_build_root() / '@INPUT@',
+        ],
+        build_by_default: false,
+        depends: app_cargo_build,
+    )
+endif

@@ -21,5 +21,3 @@ debug = true # We want to be able to debug in the release build too
 # once a new piet (current v0.6.2) is released with the updated cairo, this can be removed
 piet = {git = "https://github.com/linebender/piet", rev = "1d8a6fd627d8d6492bc42a42c734205a981077f8"}
 piet-cairo = {git = "https://github.com/linebender/piet", rev = "1d8a6fd627d8d6492bc42a42c734205a981077f8"}
-# once a new usvg (current v0.30.0) that includes the feature to specify the num precision on export is out, this can be removed
-usvg = {git = "https://github.com/RazrFalcon/resvg", rev = "03afc4edd3b35ddf5a08cb747c743f269cd69486"}

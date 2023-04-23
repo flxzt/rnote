@@ -72,6 +72,29 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.6.0" date="2023-04-23">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>orga: Rnote now follows a new versioning scheme - feature updates will increment x, while patches will increment y in versions 0.x.y .
+Breakages in the file format will be explicitely announced (but we'll work as hard as possible to avoid it!) and are not reflected in the version anymore.</li>
+          <li>orga: the app is now available for Windows and MacOS! Check the installation section on the website / README, you'll find links to the installer and app bundle there.</li>
+          <li>feature: arrow shapes (thanks to @TornaxO7 )</li>
+          <li>feature: ability to recolor selected strokes (thanks to @Kneemund )</li>
+          <li>feature: isometric background patterns (thanks to @Kneemund )</li>
+          <li>feature: add option to block pinch zoom (thanks to @LeSnake04 )</li>
+          <li>improvement: typewriter keyboard navigation (thanks to @Kneemund )</li>
+          <li>improvement: exiting / closing dialogs and logic (thanks to @adih-20 )</li>
+          <li>improvement: more icons for workspace list entries</li>
+          <li>improvement: associated symbolic icon for .rnote files</li>
+          <li>improvement: added labels for name and directory of the active workspace </li>
+          <li>fix: occasional crashes when doing three-finger swipes</li>
+          <li>fix: size limits for grid builder, preventing slowdowns and crashes (thanks to @Kneemund)</li>
+          <li>fix: strokes not generating hitboxes when pen is being changed mid-stroke</li>
+          <li>fix: limit chars for dirs in edit-workspace dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.18" date="2023-03-16">
       <description>
         <p>this release changes:</p>

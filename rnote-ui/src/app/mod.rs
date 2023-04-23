@@ -151,8 +151,8 @@ impl Default for RnApp {
 impl RnApp {
     pub(crate) fn new() -> Self {
         glib::Object::builder()
-            .property("application-id", &config::APP_ID)
-            .property("flags", &gio::ApplicationFlags::HANDLES_OPEN)
+            .property("application-id", config::APP_ID)
+            .property("flags", gio::ApplicationFlags::HANDLES_OPEN)
             .property("register-session", true)
             .build()
     }

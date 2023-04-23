@@ -80,13 +80,14 @@ The installed binary can now be executed. It is located at `C:\msys64\mingw64\bi
 
 ## Building the Installer
 
-In order to build the installer, run the command below.
+In order to build the installer, run the commands below.
 
 ```bash
+meson compile rnote-gmo -C _mesonbuild
 meson compile build-installer -C _mesonbuild
 ```
 
-If successful, the installer will be located at `_mesonbuild/rnote-win-installer.exe`.
+If successful, the generated installer will be located at `_mesonbuild/rnote-win-installer.exe`.
 
 ---
 

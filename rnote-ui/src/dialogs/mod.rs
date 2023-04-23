@@ -183,19 +183,22 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
         .downcast::<RnCanvasWrapper>()
         .unwrap()
         .canvas();
+
     let mut doc_title = canvas.doc_title_display();
     let save_folder_path = if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
         Some(p)
     } else {
         appwindow.workspacebrowser().dirlist_dir()
     };
+
     let check = CheckButton::builder().active(true).build();
     // Lock checkbox to active state as user can discard document if they choose
-    check.set_can_target(false);
+    check.set_sensitive(false);
 
     // Handle possible file collisions
     if let Some(save_folder_path) = save_folder_path.clone() {
         let mut doc_file = gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"));
+
         if gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
             let mut postfix = 0;
             while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
@@ -218,8 +221,8 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
                 .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
         )
         .build();
-
     row.add_prefix(&check);
+
     if save_folder_path.is_none() {
         // Indicate that the file cannot be saved
         row.set_sensitive(false);
@@ -229,7 +232,7 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
     file_group.add(&row);
     dialog.connect_response(
         None,
-        clone!(@weak tab_page, @weak appwindow => move |_, response| {
+        clone!(@weak tab_page, @weak canvas, @weak appwindow => move |_, response| {
             let output_folder_path = save_folder_path.clone();
             let doc_title = doc_title.clone();
             match response {
@@ -288,64 +291,66 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
     for (i, tab) in tabs.iter().enumerate() {
         let canvas = tab.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
 
-        if canvas.unsaved_changes() {
-            let save_folder_path =
-                if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
-                    Some(p)
-                } else {
-                    appwindow.workspacebrowser().dirlist_dir()
-                };
-
-            let mut doc_title = canvas.doc_title_display();
-
-            // Handle possible file collisions
-            if let Some(save_folder_path) = save_folder_path.clone() {
-                let mut doc_file = if postfix == 0 {
-                    gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"))
-                } else {
-                    gio::File::for_path(
-                        save_folder_path
-                            .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
-                    )
-                };
-                while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
-                    postfix += 1;
-                    doc_file = gio::File::for_path(
-                        save_folder_path
-                            .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
-                    );
-                }
-                if postfix != 0 {
-                    doc_title = doc_title + " - " + &postfix.to_string();
-                }
-                postfix += 1;
-            }
-
-            // Active by default
-            let check = CheckButton::builder().active(true).build();
-
-            let row = adw::ActionRow::builder()
-                .title(&(doc_title.clone() + ".rnote"))
-                .subtitle(
-                    &save_folder_path
-                        .as_ref()
-                        .map(|p| p.to_string_lossy().to_string())
-                        .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
-                )
-                .build();
-
-            row.add_prefix(&check);
-
-            if save_folder_path.is_none() {
-                // Indicate that the file cannot be saved
-                check.set_active(false);
-                row.set_sensitive(false);
-            }
-
-            files_group.add(&row);
-
-            rows.push((i, check, save_folder_path, doc_title));
+        if !canvas.unsaved_changes() {
+            continue;
         }
+
+        let save_folder_path =
+            if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
+                Some(p)
+            } else {
+                appwindow.workspacebrowser().dirlist_dir()
+            };
+
+        let mut doc_title = canvas.doc_title_display();
+
+        // Handle possible file collisions
+        if let Some(save_folder_path) = save_folder_path.clone() {
+            let mut doc_file = if postfix == 0 {
+                gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"))
+            } else {
+                gio::File::for_path(
+                    save_folder_path
+                        .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
+                )
+            };
+            while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
+                postfix += 1;
+                doc_file = gio::File::for_path(
+                    save_folder_path
+                        .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
+                );
+            }
+            if postfix != 0 {
+                doc_title = doc_title + " - " + &postfix.to_string();
+            }
+            postfix += 1;
+        }
+
+        // Active by default
+        let check = CheckButton::builder().active(true).build();
+
+        let row = adw::ActionRow::builder()
+            .title(&(doc_title.clone() + ".rnote"))
+            .subtitle(
+                &save_folder_path
+                    .as_ref()
+                    .map(|p| p.to_string_lossy().to_string())
+                    .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
+            )
+            .build();
+
+        row.add_prefix(&check);
+
+        if save_folder_path.is_none() {
+            // Indicate that the file cannot be saved
+            check.set_active(false);
+            row.set_sensitive(false);
+        }
+
+        files_group.add(&row);
+
+        rows.push((i, check, save_folder_path, doc_title));
     }
 
     // TODO: as soon as libadwaita v1.3 is out, this can be replaced by choose_future()

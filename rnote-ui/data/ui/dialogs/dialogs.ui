@@ -33,7 +33,6 @@ Do you want to save the current document?</property>
     <property name="extra-child">
       <object class="AdwPreferencesGroup" id="close_tab_file_group">
         <property name="margin-top">12</property>
-        <property name="margin-bottom">12</property>
       </object>
     </property>
     <responses>

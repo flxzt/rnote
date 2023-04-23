@@ -30,6 +30,11 @@ Do you want to save the current document?</property>
     <property name="body" translatable="yes">This tab contains unsaved changes. Changes which are not saved will be permanently lost.</property>
     <property name="default-response">save</property>
     <property name="close-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup" id="close_tab_file_group">
+        <property name="margin-top">12</property>
+      </object>
+    </property>
     <responses>
       <response id="cancel" translatable="yes">Cancel</response>
       <response id="discard" appearance="destructive" translatable="yes">Discard</response>

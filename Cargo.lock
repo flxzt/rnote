@@ -3459,7 +3459,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.5.18"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "cairo-rs",
@@ -3500,7 +3500,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-cli"
-version = "0.5.18"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "clap",

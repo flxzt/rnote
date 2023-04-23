@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-04-12 10:49+0000\n"
+"PO-Revision-Date: 2023-04-15 09:21+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1055,7 +1055,7 @@ msgstr "In den Papierkorb Verschieben"
 
 #: rnote-ui/data/ui/filerow.ui:70
 msgid "Duplicate"
-msgstr "Dupliziere"
+msgstr "Duplizieren"
 
 #: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
 msgid "Draft"

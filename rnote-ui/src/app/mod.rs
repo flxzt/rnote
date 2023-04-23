@@ -73,8 +73,6 @@ mod imp {
         fn init(&self) {
             let obj = self.obj();
 
-            self.setup_logging();
-            self.setup_i18n();
             self.setup_gresources();
             obj.setup_actions();
             obj.setup_action_accels();
@@ -90,25 +88,6 @@ mod imp {
             if let Some(input_file) = input_file {
                 appwindow.open_file_w_dialogs(input_file, None, false);
             }
-        }
-
-        fn setup_logging(&self) {
-            if let Err(e) = pretty_env_logger::try_init_timed() {
-                eprintln!("initializing logging failed, Err: {e:?}");
-            } else {
-                log::debug!("... env_logger initialized");
-            }
-        }
-
-        fn setup_i18n(&self) {
-            gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
-            gettextrs::bindtextdomain(
-                config::GETTEXT_PACKAGE,
-                crate::env::locale_dir().expect("Could not get locale dir while setting up i18n"),
-            )
-            .expect("Unable to bind the text domain");
-            gettextrs::textdomain(config::GETTEXT_PACKAGE)
-                .expect("Unable to switch to the text domain");
         }
 
         fn setup_gresources(&self) {

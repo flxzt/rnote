@@ -8,7 +8,6 @@
 /_build
 /_mesonbuild
 /_mesoninstall
-/_inno
 /.flatpak
 /.flatpak-builder
 /.editorconfig

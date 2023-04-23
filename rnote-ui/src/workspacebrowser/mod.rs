@@ -194,14 +194,17 @@ impl RnWorkspaceBrowser {
 
     fn setup_dir_controls(&self, appwindow: &RnAppWindow) {
         self.imp().dir_controls_dir_up_button.connect_clicked(clone!(@weak self as workspacebrowser, @weak appwindow => move |_| {
-            if let Some(dir) = workspacebrowser.workspacesbar().selected_workspacelistentry().map(|e| PathBuf::from(e.dir())) {
-                let dir = match dir.canonicalize() {
-                    Ok(dir) => dir,
-                    Err(e) => {
-                        log::warn!("could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
-                        return;
-                    }
-                };
+            if let Some(mut dir) = workspacebrowser.workspacesbar().selected_workspacelistentry().map(|e| PathBuf::from(e.dir())) {
+                // don't canonicalize on windows, because that would convert the path to one with extended length syntax
+                if !cfg!(target_os = "windows") {
+                    dir = match dir.canonicalize() {
+                        Ok(dir) => dir,
+                        Err(e) => {
+                            log::warn!("could not canonicalize dir {dir:?} from workspacelistentry, Err: {e:?}");
+                            return;
+                        }
+                    };
+                }
                 if let Some(parent) = dir.parent().map(|p| p.to_path_buf()) {
                     workspacebrowser.workspacesbar().set_selected_workspace_dir(parent);
                 } else {

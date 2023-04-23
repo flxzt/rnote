@@ -1,67 +1,99 @@
-# Build instruction for Windows (experimental, WIP)
+# Build Instructions for Windows
 
 ## Prerequisites
-- install MSYS2 ( see: https://www.msys2.org/ )
-- install Rust ( see: https://www.rust-lang.org/ )
 
-mingw64's binary dir must be added to `Path`: Search for "Environment variables" and add C:\msys64\mingw64\bin` to the System "Path".
+-   Install [MSYS2](https://www.msys2.org/).
+-   Install [Rust](https://www.rust-lang.org/).
+-   OPTIONAL: Install [Inno Setup](https://jrsoftware.org/isinfo.php) for building the installer.
 
-Then, in a msys2 terminal install the dependencies:
+> The following instructions assume that the default installation directories were used.
+
+The MSYS2 binary directories, namely `C:\msys64\mingw64\bin` and `C:\msys64\usr\bin`, must be added to the system environment variable `Path`.
+
+### Dependencies
+
+In order to install the necessary dependencies, run the following command in a MSYS2 terminal.
+
 ```bash
 pacman -S git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream-glib mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data
 ```
 
-Add rust binary path to msys2's bash path by adding this line in `~/.bashrc`
+### Configuration
+
+Add the Rust binary directory to the MSYS2 `PATH` by adding the following line to `~/.bashrc`.
+
 ```bash
-export PATH=$PATH:/c/Users/<Username>/.cargo/bin
+export PATH=$PATH:/c/Users/$USER/.cargo/bin
 ```
 
-rusts toolchain needs to be changed:
+If you installed Inno Setup, append `:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6` to the line above.
+
+---
+
+Next, Rust's toolchain needs to be changed.
+
 ```bash
 rustup toolchain install stable-gnu
 rustup default stable-gnu
 ```
 
-then clone the repo somewhere and also init the submodules
+---
+
+Finally, clone the repository somewhere and initialize the submodules.
+
 ```bash
 git clone https://github.com/flxzt/rnote
 git submodule update --init --recursive
 ```
 
-## Building
+---
 
-Rnote is built with meson:
+For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to link with both,
+resulting in "multiple definitions of pthread\_..." linker errors.
+To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
 
-setup meson
+```bash
+mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
+```
+
+## Building the Application
+
+In the directory that you cloned Rnote into, run the following command to setup meson.
+
 ```bash
 meson setup --prefix=C:/msys64/mingw64 _mesonbuild
 ```
 
-For unknown reasons, there are `libpthread.a` and `libpthread.dll.a` in `mingw64\lib\` and rustc apparently wants to link with both, resulting in "multiple definitions of pthread_..." linker errors. To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
-
-Then the project can be compiled:
+Then, the project can be compiled...
 
 ```bash
 meson compile -C _mesonbuild
 ```
 
-then install: 
+...and installed.
+
 ```bash
 meson install -C _mesonbuild
 ```
 
-the installed binary can now be executed. It is located in `C:/msys64/mingw64/bin/rnote.exe`. It depends on the environment provided by mingw64, so it is not portable.
+The installed binary can now be executed. It is located at `C:\msys64\mingw64\bin\rnote.exe` and depends on the environment provided by MSYS2, so it is not portable.
 
-# Required Dynamic Libraries (dll's)
+## Building the Installer
 
-Show which `.dll`'s are needed:  
-(taken from: [https://blog.janw.name/posts/2022-04-21-002-msys2-dlls/](https://blog.janw.name/posts/2022-04-21-002-msys2-dlls/))
+In order to build the installer, run the command below.
+
 ```bash
-ldd "C:\msys64\mingw64\bin\rnote.exe" | grep /mingw64 | awk '{print $3}'
+meson compile build-installer -C _mesonbuild
 ```
 
-To copy them into a folder:
+If successful, the installer will be located at `_mesonbuild/rnote-win-installer.exe`.
+
+---
+
+If you did not install MSYS2 into the default directory (`C:\msys64`), then you will have to adjust the meson option called `msys-path` prior to building.
+
 ```bash
-mkdir -p ./temp/dlls
-ldd "C:\msys64\mingw64\bin\rnote.exe" | grep /mingw64 | awk '{print $3}' | xargs -i cp {} ./temp/dlls/
+meson configure -Dmsys-path='C:\path\to\msys64' _mesonbuild
 ```
+
+Likewise, you can adjust the output name of the installer using the `installer-name` option (which defaults to `rnote_installer`).

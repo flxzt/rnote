@@ -176,38 +176,91 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
     let dialog: adw::MessageDialog = builder.object("dialog_close_tab").unwrap();
-
+    let file_group: adw::PreferencesGroup = builder.object("close_tab_file_group").unwrap();
     dialog.set_transient_for(Some(appwindow));
+    let canvas = tab_page
+        .child()
+        .downcast::<RnCanvasWrapper>()
+        .unwrap()
+        .canvas();
+    let mut doc_title = canvas.doc_title_display();
+    let save_folder_path = if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
+        Some(p)
+    } else {
+        appwindow.workspacebrowser().dirlist_dir()
+    };
+    let check = CheckButton::builder().active(true).build();
+    // Lock checkbox to active state as user can discard document if they choose
+    check.set_can_target(false);
 
+    // Handle possible file collisions
+    if let Some(save_folder_path) = save_folder_path.clone() {
+        let mut doc_file = gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"));
+        if gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
+            let mut postfix = 0;
+            while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
+                postfix += 1;
+                doc_file = gio::File::for_path(
+                    save_folder_path
+                        .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
+                );
+            }
+            doc_title = doc_title + " - " + &postfix.to_string();
+        }
+    }
+
+    let row = adw::ActionRow::builder()
+        .title(doc_title.clone() + ".rnote")
+        .subtitle(
+            save_folder_path
+                .as_ref()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
+        )
+        .build();
+
+    row.add_prefix(&check);
+    if save_folder_path.is_none() {
+        // Indicate that the file cannot be saved
+        row.set_sensitive(false);
+        check.set_active(false);
+    }
+
+    file_group.add(&row);
     dialog.connect_response(
         None,
         clone!(@weak tab_page, @weak appwindow => move |_, response| {
-            let canvas = tab_page.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
-
+            let output_folder_path = save_folder_path.clone();
+            let doc_title = doc_title.clone();
             match response {
                 "discard" => {
                     appwindow.overlays().tabview().close_page_finish(&tab_page, true);
                 },
                 "save" => {
                     glib::MainContext::default().spawn_local(clone!(@weak tab_page, @weak canvas, @weak appwindow => async move {
-                        if let Some(output_file) = canvas.output_file() {
+                        if let Some(output_folder_path) = output_folder_path {
+                            let save_file =
+                                    gio::File::for_path(output_folder_path.join(doc_title + ".rnote"));
                             appwindow.overlays().start_pulsing_progressbar();
 
-                            if let Err(e) = canvas.save_document_to_file(&output_file).await {
+                            if let Err(e) = canvas.save_document_to_file(&save_file).await {
                                 canvas.set_output_file(None);
-                                appwindow.overlays().tabview().close_page_finish(&tab_page, false);
+
                                 log::error!("saving document failed, Error: `{e:?}`");
                                 appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                            } else {
-                                appwindow.overlays().tabview().close_page_finish(&tab_page, true);
                             }
 
                             appwindow.overlays().finish_progressbar();
                             // No success toast on saving without dialog, success is already indicated in the header title
-                        } else {
-                            // Open a dialog to choose a save location, close tab if save successful
-                            export::filechooser_save_doc_as_and_exit(&appwindow, &canvas, &tab_page, 0, true);
                         }
+                        // only close if saving was successful
+                        appwindow
+                            .overlays()
+                            .tabview()
+                            .close_page_finish(
+                                &tab_page,
+                                !canvas.unsaved_changes()
+                            );
                     }));
                 },
                 _ => {
@@ -231,23 +284,42 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     let tabs = appwindow.tab_pages_snapshot();
     let mut rows = Vec::new();
-    let mut prev_doc_title = String::new();
-
+    let mut postfix = 0;
     for (i, tab) in tabs.iter().enumerate() {
         let canvas = tab.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
 
         if canvas.unsaved_changes() {
-            // Use None as indicator current document is not saved to disk
-            let save_folder_path = canvas.output_file().and_then(|f| f.parent()?.path());
+            let save_folder_path =
+                if let Some(p) = canvas.output_file().and_then(|f| f.parent()?.path()) {
+                    Some(p)
+                } else {
+                    appwindow.workspacebrowser().dirlist_dir()
+                };
 
             let mut doc_title = canvas.doc_title_display();
-            // Ensuring we don't save with same file names by suffixing with a running index if it already exists
-            let mut suff_i = 1;
-            while doc_title == prev_doc_title {
-                suff_i += 1;
-                doc_title += &format!(" - {suff_i}");
+
+            // Handle possible file collisions
+            if let Some(save_folder_path) = save_folder_path.clone() {
+                let mut doc_file = if postfix == 0 {
+                    gio::File::for_path(save_folder_path.join(doc_title.clone() + ".rnote"))
+                } else {
+                    gio::File::for_path(
+                        save_folder_path
+                            .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
+                    )
+                };
+                while gio::File::query_exists(&doc_file, None::<&gio::Cancellable>) {
+                    postfix += 1;
+                    doc_file = gio::File::for_path(
+                        save_folder_path
+                            .join(doc_title.clone() + " - " + &postfix.to_string() + ".rnote"),
+                    );
+                }
+                if postfix != 0 {
+                    doc_title = doc_title + " - " + &postfix.to_string();
+                }
+                postfix += 1;
             }
-            prev_doc_title = doc_title.clone();
 
             // Active by default
             let check = CheckButton::builder().active(true).build();
@@ -258,11 +330,17 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                     &save_folder_path
                         .as_ref()
                         .map(|p| p.to_string_lossy().to_string())
-                        .unwrap_or_else(|| gettext("Unsaved File")),
+                        .unwrap_or_else(|| gettext("- unable to find a valid save folder -")),
                 )
                 .build();
 
             row.add_prefix(&check);
+
+            if save_folder_path.is_none() {
+                // Indicate that the file cannot be saved
+                check.set_active(false);
+                row.set_sensitive(false);
+            }
 
             files_group.add(&row);
 
@@ -278,20 +356,17 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
          let rows = rows.clone();
          let tabs = tabs.clone();
          glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+            let mut close = false;
 
             match response.as_str() {
                 "discard"
                     => {
                     // do nothing and close
-                    appwindow.close_force();
+                    close = true;
                 }
                 "save" => {
                     appwindow.overlays().start_pulsing_progressbar();
-                    /* 
-                        offset is the difference between the number of total tabs and the number of tabs marked by the user to be saved - 
-                        it is used to determine when the app window should be closed instead of the tab
-                    */
-                    let offset = appwindow.tab_pages_snapshot().len() - rows.iter().filter(|&x| x.1.is_active()).count();
+
                     for (i, check, save_folder_path, doc_title) in rows {
                         if check.is_active() {
                             let canvas = tabs[i]
@@ -311,25 +386,23 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
                                     appwindow
                                         .overlays()
                                         .dispatch_toast_error(&gettext("Saving document failed"));
-                                } else if appwindow.tab_pages_snapshot().len() - offset == 1 {
-                                    appwindow.close_force();
-                                } else {
-                                    let curr_tab = tabs.get(i).unwrap();
-                                    appwindow.overlays().tabview().close_page(curr_tab);
                                 }
+
                                 // No success toast on saving without dialog, success is already indicated in the header title
-                            } else {
-                                let curr_tab = tabs.get(i).unwrap();
-                                export::filechooser_save_doc_as_and_exit(&appwindow, &canvas, curr_tab, offset, false);
                             }
                         }
                     }
 
                     appwindow.overlays().finish_progressbar();
+                    close = true;
                 }
                 _ => {
                     // Cancel
                 }
+            }
+
+            if close {
+                appwindow.close_force();
             }
          }));
         }),

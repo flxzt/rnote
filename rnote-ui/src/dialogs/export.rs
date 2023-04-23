@@ -1,4 +1,4 @@
-use adw::{prelude::*, TabPage};
+use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
     gio, glib, glib::clone, Builder, Button, Dialog, FileChooserAction, FileChooserNative,
@@ -77,100 +77,6 @@ pub(crate) fn filechooser_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas
                     }
                 }
                 _ => {
-                }
-            }
-        }),
-    );
-
-    filechooser.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive
-    *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
-}
-
-// Saves doc as, exiting tabs, or window as needed
-// offset is used to determine when to close the application window instead of exit - more details in ../mod.rs
-pub(crate) fn filechooser_save_doc_as_and_exit(
-    appwindow: &RnAppWindow,
-    canvas: &RnCanvas,
-    tab: &TabPage,
-    offset: usize,
-    force_close: bool,
-) {
-    let filter = FileFilter::new();
-    filter.add_mime_type("application/rnote");
-    filter.add_suffix("rnote");
-    filter.set_name(Some(&gettext(".rnote")));
-
-    let filechooser: FileChooserNative = FileChooserNative::builder()
-        .title(gettext("Save Document As"))
-        .modal(true)
-        .transient_for(appwindow)
-        .accept_label(gettext("Save"))
-        .cancel_label(gettext("Cancel"))
-        .action(FileChooserAction::Save)
-        .select_multiple(false)
-        .build();
-
-    filechooser.set_filter(&filter);
-
-    // Set the output file as default, else at least the current workspace directory
-    if let Some(output_file) = canvas.output_file() {
-        if let Err(e) = filechooser.set_file(&output_file) {
-            log::error!("set_file() for dialog_save_doc_as failed with Err: {e:?}");
-        }
-    } else {
-        if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
-            if let Err(e) =
-                filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
-            {
-                log::error!("set_current_folder() for dialog_save_doc_as failed with Err: {e:?}");
-            }
-        }
-
-        let file_name = canvas.doc_title_display() + ".rnote";
-        filechooser.set_current_name(&(file_name));
-    }
-
-    filechooser.connect_response(
-        clone!(@weak canvas, @weak appwindow, @weak tab => move |filechooser, responsetype| {
-            match responsetype {
-                ResponseType::Accept => {
-                    if let Some(file) = filechooser.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak canvas, @weak appwindow, @weak tab => async move {
-                            appwindow.overlays().start_pulsing_progressbar();
-
-                            match canvas.save_document_to_file(&file).await {
-                                Ok(true) => {
-                                    appwindow.overlays().dispatch_toast_text(&gettext("Saved document successfully"));
-                                    // keep num_tabs as a rolling estimate of tabs left while considering selected (checkbox) files
-                                    let num_tabs = appwindow.tab_pages_snapshot().len() - offset;
-                                    if num_tabs == 1 {
-                                        appwindow.close_force();
-                                    } else if force_close {
-                                        // need to force close if close_page signal already emitted
-                                        appwindow.overlays().tabview().close_page_finish(&tab, true);
-                                    } else {
-                                        appwindow.overlays().tabview().close_page(&tab);
-                                    }
-                                }
-                                Ok(false) => {
-                                    // Saving was already in progress
-                                }
-                                Err(e) => {
-                                    canvas.set_output_file(None);
-                                    appwindow.overlays().tabview().close_page_finish(&tab, false);
-                                    log::error!("saving document failed, Error: `{e:?}`");
-                                    appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
-                                }
-                            }
-
-                            appwindow.overlays().finish_progressbar();
-                        }));
-                    }
-                }
-                _ => {
-                    // prevent lockup if user changes decision to save
-                    appwindow.overlays().tabview().close_page_finish(&tab, false);
                 }
             }
         }),

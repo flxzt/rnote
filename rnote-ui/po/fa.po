@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-25 18:50+03:30\n"
-"PO-Revision-Date: 2023-04-25 20:30+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2023-04-26 22:52+0000\n"
+"Last-Translator: AmirWasHere <iamamirhe@gmail.com>\n"
+"Language-Team: Persian <https://hosted.weblate.org/projects/rnote/repo/fa/>\n"
 "Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.1.1\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -25,7 +26,7 @@ msgstr "طراحی کنید و یادداشت بردارید"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: rnote-ui/data/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;آفیس;گرافیک;یادداشت;طراحی"
+msgstr "Gnome;GTK;آفیس;گرافیک;یادداشت;طراحی;"
 
 #: rnote-ui/data/app.desktop.in.in:20
 msgid "New Window"
@@ -36,16 +37,16 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"آرنوت برنامه‌ی گرافیکی برداری برای طراحی، یادداشت‌های دست‌نویسو حاشیه‌نویسی اسناد و "
-"تصاویر است."
+"آرنوت یک برنامه‌ی گرافیکی بُرداری برای طراحی، یادداشت‌های دست‌نویس، و حاشیه‌"
+"نویسی اسناد و تصاویر است."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"سلب مسئولیت: قالب فایل هنوز ناپایدار است. امکان تغییر یا از بین رفتن سازگاریبین "
-"نسخه‌ها وجود دارد."
+"سلب مسئولیت: قالب فایل هنوز ناپایدار است. امکان تغییر یا از بین رفتن سازگاری "
+"بین نسخه‌ها وجود دارد."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
@@ -124,8 +125,8 @@ msgid ""
 "This tab contains unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
-"تغییراتی که ذخیره نشوند این برگه شامل تغییرات ذخیره‌نشده است.برای همیشه از دست "
-"خواهند رفت."
+"این برگه شامل تغییرات ذخیره‌نشده است. تغییراتی که ذخیره نشوند برای همیشه از "
+"دست خواهند رفت."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:41
 msgid "Close Window"
@@ -136,8 +137,8 @@ msgid ""
 "Some opened files contain unsaved changes. Changes which are not saved will be "
 "permanently lost."
 msgstr ""
-"تغییراتی که ذخیره نشوند برخی از فایل‌های باز‌شده شامل تغییرات ذخیره‌نشده هستند."
-"برای همیشه از دست خواهند رفت."
+"برخی از فایل‌های باز‌شده شامل تغییرات ذخیره‌نشده هستند. تغییراتی که ذخیره "
+"نشوند برای همیشه از دست خواهند رفت."
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Unsaved Documents"
@@ -178,21 +179,21 @@ msgstr "تغییر رنگ فضای کار"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:149
 msgid "Directory"
-msgstr "فهرست راهنما"
+msgstr "مسیر"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:150
 msgid "Change the workspace directory"
-msgstr "تغییر فهرست راهنمای فضای کار"
+msgstr "تغییر مسیر فضای کار"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:159 rnote-ui/data/ui/dialogs/export.ui:223
 #: rnote-ui/src/dialogs/export.rs:346 rnote-ui/src/dialogs/export.rs:384
 #: rnote-ui/src/dialogs/mod.rs:455
 msgid "- no directory selected -"
-msgstr "- هیچ فهرست راهنمایی انتخاب نشده است -"
+msgstr "- هیچ مسیری انتخاب نشده است -"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:174
 msgid "Change the directory"
-msgstr "تغییر فهرست راهنما"
+msgstr "تغییر مسیر"
 
 #: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:85
 msgid "Open File"
@@ -203,6 +204,8 @@ msgid ""
 "Opening this file overwrites any unsaved changes. Do you want to save the "
 "current document?"
 msgstr ""
+"بازکردن این فایل تغییرات ذخیره‌نشده را بازنویسی می‌کند. آیا می‌خواهید سند "
+"کنونی را ذخیره کنید؟"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
 msgid "Import PDF"
@@ -285,37 +288,37 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs/import.ui:220
 msgid "Import Xournal++ File"
-msgstr ""
+msgstr "وارد کردن فایل Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:259
 msgid "Xournal++ File Import Preferences"
-msgstr ""
+msgstr "اولویت‌های وارد کردن فایل Xournal++"
 
 #: rnote-ui/data/ui/dialogs/import.ui:263
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/dialogs/import.ui:264
 msgid "Set the preferred DPI for the Xournal++ file"
-msgstr ""
+msgstr "DPI ترجیحی برای فایل Xournal++ را تنظیم کنید"
 
 #: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:223
 msgid "Export Document"
-msgstr ""
+msgstr "خروجی‌گیری سند"
 
 #: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
 #: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:817
 #: rnote-ui/src/dialogs/export.rs:881
 msgid "Export"
-msgstr ""
+msgstr "خروجی‌گیری"
 
 #: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
 msgid "Export File"
-msgstr ""
+msgstr "خروجی‌گیری فایل"
 
 #: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
 msgid "Select the export file"
-msgstr ""
+msgstr "فایل خروجی‌گیری شده را انتخاب کنید"
 
 #. force the user to pick another file
 #: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
@@ -323,404 +326,406 @@ msgstr ""
 #: rnote-ui/src/dialogs/export.rs:175 rnote-ui/src/dialogs/export.rs:623
 #: rnote-ui/src/dialogs/export.rs:649 rnote-ui/src/dialogs/export.rs:684
 msgid "- no file selected -"
-msgstr ""
+msgstr "- هیچ فایلی انتخاب نشده است -"
 
 #: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
 #: rnote-ui/data/ui/dialogs/export.ui:421
 msgid "Export Preferences"
-msgstr ""
+msgstr "اولویت‌های خروجی‌گیری"
 
 #: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
 #: rnote-ui/data/ui/dialogs/export.ui:425
 msgid "With Background"
-msgstr ""
+msgstr "با پس‌زمینه"
 
 #: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
 #: rnote-ui/data/ui/dialogs/export.ui:426
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "تنظیم کنید که پس‌زمینه خروجی‌گیری شود یا خیر"
 
 #: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
 #: rnote-ui/data/ui/dialogs/export.ui:436
 msgid "With Pattern"
-msgstr ""
+msgstr "با الگو"
 
 #: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
 #: rnote-ui/data/ui/dialogs/export.ui:437
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "تنظیم کنید که الگوی پس‌زمینه خروجی‌گیری شود یا خیر"
 
 #: rnote-ui/data/ui/dialogs/export.ui:109 rnote-ui/data/ui/dialogs/export.ui:278
 #: rnote-ui/data/ui/dialogs/export.ui:447
 msgid "Export Format"
-msgstr ""
+msgstr "قالب خروجی"
 
 #: rnote-ui/data/ui/dialogs/export.ui:110 rnote-ui/data/ui/dialogs/export.ui:279
 msgid "The export format"
-msgstr ""
+msgstr "قالب خروجی"
 
 #: rnote-ui/data/ui/dialogs/export.ui:114 rnote-ui/data/ui/dialogs/export.ui:283
 #: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:256
 #: rnote-ui/src/dialogs/export.rs:535 rnote-ui/src/dialogs/export.rs:781
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:261
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:266
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:496
 msgid "Export Document Pages"
-msgstr ""
+msgstr "خروجی‌گیری صفحات سند"
 
 #: rnote-ui/data/ui/dialogs/export.ui:192
 msgid "Page Files Naming:"
-msgstr ""
+msgstr "نام‌گذاری صفحات فایل:"
 
 #: rnote-ui/data/ui/dialogs/export.ui:213
 msgid "Export Directory"
-msgstr ""
+msgstr "خروجی‌گیری مسیر"
 
 #: rnote-ui/data/ui/dialogs/export.ui:214
 msgid "Select the export directory"
-msgstr ""
+msgstr "مسیر خروجی‌گیری را انتخاب کنید"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 msgid "Export Files Stem Name"
-msgstr ""
+msgstr "خروجی‌گیری از نام فایل"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284 rnote-ui/data/ui/dialogs/export.ui:453
 #: rnote-ui/src/dialogs/export.rs:540 rnote-ui/src/dialogs/export.rs:786
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: rnote-ui/data/ui/dialogs/export.ui:285 rnote-ui/data/ui/dialogs/export.ui:454
 #: rnote-ui/src/dialogs/export.rs:546 rnote-ui/src/dialogs/export.rs:792
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:315 rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "کیفیت Jpeg"
 
 #: rnote-ui/data/ui/dialogs/export.ui:316 rnote-ui/data/ui/dialogs/export.ui:485
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "کیفیت تصویر Jpeg را تنظیم کنید (1 - 100)"
 
 #: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:744
 msgid "Export Selection"
-msgstr ""
+msgstr "خروجی‌گیری انتخاب‌شده"
 
 #: rnote-ui/data/ui/dialogs/export.ui:448
 msgid "The export image format"
-msgstr ""
+msgstr "قالب تصویر خروجی"
 
 #: rnote-ui/data/ui/dialogs/export.ui:505
 msgid "Margin"
-msgstr ""
+msgstr "حاشیه"
 
 #: rnote-ui/data/ui/dialogs/export.ui:506
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "حاشیه‌ی اطراف فضای انتخاب‌شده را تنظیم کنید"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr ""
+msgstr "سبک قلم‌مو"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:133
 msgid "Brush Configuration"
-msgstr ""
+msgstr "پیکربندی قلم‌مو"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:64
 msgid "Brush Styles"
-msgstr ""
+msgstr "سبک‌های قلم‌مو"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:81
 msgid "Marker"
-msgstr ""
+msgstr "نشان‌گر"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:82
 msgid "Mark underneath other strokes"
-msgstr ""
+msgstr "زیر نقش‌های دیگر علامت بزنید"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 msgid "Solid"
-msgstr ""
+msgstr "خالص"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:94
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "نقش‌های با رنگ خالص بکشید"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:105
 msgid "Textured"
-msgstr ""
+msgstr "بافت‌دار"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:106
 msgid "Draw textured strokes"
-msgstr ""
+msgstr "نقش‌های بافت‌دار بکشید"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:142
 msgid "Path Modelling"
-msgstr ""
+msgstr "مدل‌سازی مسیر"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Simple"
-msgstr ""
+msgstr "ساده"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "قطعات خط را از ورودی خام تولید می‌کند.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Curved"
-msgstr ""
+msgstr "منحنی"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "بخش های نرم و منحنی تولید می‌کند.\n"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:173
 msgid "Modeled"
-msgstr ""
+msgstr "مدل‌سازی شده"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"یک مسیر مدل‌سازی شده با الگوریتم‌های مبتنی بر فیزیک تولید می‌کند.\n"
+"که به زیباترین دست‌خط منجر می‌شود."
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "Solid Style"
-msgstr ""
+msgstr "سبک خالص"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:186
 msgid "Pressure Curve"
-msgstr ""
+msgstr "انحنای فشار"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "یک انحنای فشار انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "Constant"
-msgstr ""
+msgstr "ثابت"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:192
 msgid "Linear"
-msgstr ""
+msgstr "خطی"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Square root"
-msgstr ""
+msgstr "ریشه‌ دوم"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Cubic root"
-msgstr ""
+msgstr "ریشه سوم"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "سهمی درجه دو"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:196
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "نمودار تابع درجه سه"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:207
 msgid "Textured Style"
-msgstr ""
+msgstr "سبک بافت‌دار"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:210
 msgid "Density"
-msgstr ""
+msgstr "تراکم"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "تراکم مقدار نقاط در هر منطقه‌ی 10x10 است"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:226
 msgid "Stroke Dots Position Distribution"
-msgstr ""
+msgstr "توزیع موقعیت نقاط نقش"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:227
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "توزیع احتمال موقعیت نقطه را انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:231
 msgid "Uniform"
-msgstr ""
+msgstr "یکنواخت"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:232
 msgid "Normal"
-msgstr ""
+msgstr "عادی"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:233
 msgid "Exponential"
-msgstr ""
+msgstr "نمایی"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:234
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "نمایی معکوس"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr ""
+msgstr "نقش‌های اضافی"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
-msgstr ""
+msgstr "نقش‌های تقسیم‌شده"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17 rnote-ui/data/ui/overlays.ui:45
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:78
 msgid "Brush"
-msgstr ""
+msgstr "قلم‌مو"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33 rnote-ui/data/ui/overlays.ui:52
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
 msgid "Shaper"
-msgstr ""
+msgstr "شکل‌دهنده"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49 rnote-ui/data/ui/overlays.ui:60
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
 msgid "Typewriter"
-msgstr ""
+msgstr "ماشین تحریر"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65 rnote-ui/data/ui/overlays.ui:68
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Eraser"
-msgstr ""
+msgstr "پاک‌کن"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81 rnote-ui/data/ui/overlays.ui:76
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Selector"
-msgstr ""
+msgstr "انتخاب‌گر"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97 rnote-ui/data/ui/overlays.ui:84
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Tools"
-msgstr ""
+msgstr "ابزارها"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
 msgid "Select With a Polygon"
-msgstr ""
+msgstr "با یک چندضلعی انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
 msgid "Select With a Rectangle"
-msgstr ""
+msgstr "با یک مستطیل انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
 msgid "Select One by One"
-msgstr ""
+msgstr "یکی‌یکی انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
 msgid "Select Intersecting Path"
-msgstr ""
+msgstr "مسیر متقاطع را انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
 msgid "Lock Aspectratio While Resizing the Selection"
-msgstr ""
+msgstr "قفل کردن نسبت ابعاد هنگام تغییر اندازه‌ی قسمت انتخاب‌شده"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select All Strokes"
-msgstr ""
+msgstr "انتخاب تمام نقش‌ها"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
 msgid "Deselect All Strokes"
-msgstr ""
+msgstr "لغو انتخاب تمام نقش‌ها"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
 #: rnote-ui/data/ui/shortcuts.ui:207
 msgid "Duplicate Selection"
-msgstr ""
+msgstr "تکرار انتخاب‌‌شده"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
 msgid "Delete Selection"
-msgstr ""
+msgstr "حذف انتخاب‌شده"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
 msgid "Shaper Style"
-msgstr ""
+msgstr "سبک شکل‌دهنده"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
 msgid "Shape Configuration"
-msgstr ""
+msgstr "پیکربندی شکل"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Shape Builders"
-msgstr ""
+msgstr "شکل‌سازها"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
 msgid "Constraints"
-msgstr ""
+msgstr "محدودیت‌ها"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
 msgid "Shaper Styles"
-msgstr ""
+msgstr "سبک‌های شکل‌دهنده"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
 msgid "Smooth"
-msgstr ""
+msgstr "نرم"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
 msgid "Rough"
-msgstr ""
+msgstr "‎خشن"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
 msgid "Rough style"
-msgstr ""
+msgstr "سبک خشن"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
 msgid "Fill Style"
-msgstr ""
+msgstr "سبک پر کردن"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
 msgid "Choose a fill style"
-msgstr ""
+msgstr "یک سبک پر کردن انتخاب کنید"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 msgid "Hachure"
-msgstr ""
+msgstr "هاشور"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 msgid "Zig-Zag"
-msgstr ""
+msgstr "زیگ‌زاگ"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Zig-Zag Line"
-msgstr ""
+msgstr "خط زیگ‌زاگی"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
 msgid "Crosshatch"
-msgstr ""
+msgstr "متقاطع"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Dots"
-msgstr ""
+msgstr "نقطه‌ای"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Dashed"
-msgstr ""
+msgstr "نقطه‌چین"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Hachure Angle"
-msgstr ""
+msgstr "زاویه‌ی هاشور"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Set the angle of hachure fills"
-msgstr ""
+msgstr "زاویه‌ی پر کردن هاشور را تنظیم کنید"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
 msgid "Enabled"
-msgstr ""
+msgstr "فعال شد"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
 msgid ""
@@ -728,26 +733,29 @@ msgid ""
 "enable/disable constraints\n"
 "when this switch is off/on"
 msgstr ""
+"دکمه‌ی Ctrl را به‌طور موقت\n"
+"برای فعال/غیرفعال کردن محدودیت‌ها\n"
+"زمانی که سوییچ روشن/خاموش است نگه دارید"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
 msgid "1:1"
-msgstr ""
+msgstr "1:1"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "3:2"
-msgstr ""
+msgstr "3:2"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden Ratio (1:1.618)"
-msgstr ""
+msgstr "نسبت طلایی (1:1.618)"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:19
 msgid "Insert Vertical Space"
-msgstr ""
+msgstr "درج فضای عمودی"
 
 #: rnote-ui/data/ui/penssidebar/toolspage.ui:29 rnote-ui/data/ui/shortcuts.ui:91
 msgid "Move View"
-msgstr ""
+msgstr "نمایش حرکت"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:16
 msgid ""
@@ -755,193 +763,196 @@ msgid ""
 "(double-click, click on select\n"
 "or press Enter to select a new font)"
 msgstr ""
+"انتخاب‌کننده‌ی فونت\n"
+"(دابل‌کلیک کنید، روی انتخاب بزنید\n"
+"یا Enter را برای انتخاب فونت جدید فشار دهید)"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:48
 msgid "Pick And Insert Emoji"
-msgstr ""
+msgstr "انتخاب و درج ایموجی"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:73
 msgid "Reset Text Attributes"
-msgstr ""
+msgstr "بازنشانی ویژگی‌های متن"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:82
 msgid "Bold"
-msgstr ""
+msgstr "پررنگ"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:91
 msgid "Italic"
-msgstr ""
+msgstr "مورب"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:100
 msgid "Underline"
-msgstr ""
+msgstr "خط زیر"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
-msgstr ""
+msgstr "خط رو"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
-msgstr ""
+msgstr "چپ‌تراز"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
-msgstr ""
+msgstr "وسط‌تراز"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
-msgstr ""
+msgstr "راست‌تراز"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
-msgstr ""
+msgstr "پر کردن"
 
 #: rnote-ui/data/ui/penssidebar/typewriterpage.ui:184
 #: rnote-ui/data/ui/colorpicker.ui:116 rnote-ui/src/dialogs/export.rs:226
 #: rnote-ui/src/dialogs/export.rs:499 rnote-ui/src/dialogs/export.rs:747
 #: rnote-ui/src/dialogs/mod.rs:393
 msgid "Select"
-msgstr ""
+msgstr "انتخاب"
 
 #: rnote-ui/data/ui/appmenu.ui:24
 msgid "Co_lor Scheme"
-msgstr ""
+msgstr "طرح رنگ"
 
 #: rnote-ui/data/ui/appmenu.ui:26
 msgid "Use _System Colors"
-msgstr ""
+msgstr "از رنگ‌های سیستم استفاده کن"
 
 #: rnote-ui/data/ui/appmenu.ui:31
 msgid "Use _Light Colors"
-msgstr ""
+msgstr "از رنگ‌های روشن استفاده کن"
 
 #: rnote-ui/data/ui/appmenu.ui:36
 msgid "Use _Dark Colors"
-msgstr ""
+msgstr "از رنگ‌های تیره استفاده کن"
 
 #: rnote-ui/data/ui/appmenu.ui:42
 msgid "De_veloper Mode"
-msgstr ""
+msgstr "حالت برنامه‌نویس"
 
 #: rnote-ui/data/ui/appmenu.ui:47
 msgid "Developer _Menu"
-msgstr ""
+msgstr "منوی برنامه‌نویس"
 
 #: rnote-ui/data/ui/appmenu.ui:52
 msgid "Visual _Debugging"
-msgstr ""
+msgstr "عیب‌یابی بصری"
 
 #: rnote-ui/data/ui/appmenu.ui:56
 msgid "Export Engine _State"
-msgstr ""
+msgstr "خروجی‌گیری وضعیت موتور"
 
 #: rnote-ui/data/ui/appmenu.ui:60
 msgid "Export Engine _Config"
-msgstr ""
+msgstr "خروجی‌گیری پیکربندی موتور"
 
 #: rnote-ui/data/ui/appmenu.ui:68
 msgid "_New"
-msgstr ""
+msgstr "جدید"
 
 #: rnote-ui/data/ui/appmenu.ui:72
 msgid "_Open"
-msgstr ""
+msgstr "بازکردن"
 
 #: rnote-ui/data/ui/appmenu.ui:76
 msgid "_Save"
-msgstr ""
+msgstr "ذخیره"
 
 #: rnote-ui/data/ui/appmenu.ui:80
 msgid "Save _As"
-msgstr ""
+msgstr "ذخیره به‌عنوان"
 
 #: rnote-ui/data/ui/appmenu.ui:86
 msgid "_Print"
-msgstr ""
+msgstr "چاپ"
 
 #: rnote-ui/data/ui/appmenu.ui:90
 msgid "_Import File"
-msgstr ""
+msgstr "وارد کردن فایل"
 
 #: rnote-ui/data/ui/appmenu.ui:94
 msgid "_Clipboard"
-msgstr ""
+msgstr "کلیپ‌بورد"
 
 #: rnote-ui/data/ui/appmenu.ui:96
 msgid "_Copy"
-msgstr ""
+msgstr "کپی"
 
 #: rnote-ui/data/ui/appmenu.ui:100
 msgid "C_ut"
-msgstr ""
+msgstr "برش"
 
 #: rnote-ui/data/ui/appmenu.ui:104
 msgid "_Paste"
-msgstr ""
+msgstr "جاگذاری"
 
 #: rnote-ui/data/ui/appmenu.ui:109
 msgid "_Export…"
-msgstr ""
+msgstr "خروجی‌گیری…"
 
 #: rnote-ui/data/ui/appmenu.ui:111
 msgid "Export _Document"
-msgstr ""
+msgstr "خروجی‌گیری سند"
 
 #: rnote-ui/data/ui/appmenu.ui:115
 msgid "Export Document _Pages"
-msgstr ""
+msgstr "خروجی‌گیری صفحات سند"
 
 #: rnote-ui/data/ui/appmenu.ui:119
 msgid "Export _Selection"
-msgstr ""
+msgstr "خروجی‌گیری انتخاب‌شده"
 
 #: rnote-ui/data/ui/appmenu.ui:126
 msgid "Se_ttings"
-msgstr ""
+msgstr "تنظیمات"
 
 #: rnote-ui/data/ui/appmenu.ui:130
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "میان‌برهای صفحه‌کلید"
 
 #: rnote-ui/data/ui/appmenu.ui:134
 msgid "_Donate 💝"
-msgstr ""
+msgstr "دونیت"
 
 #: rnote-ui/data/ui/appmenu.ui:138
 msgid "A_bout Rnote"
-msgstr ""
+msgstr "درباره‌ی آرنوت"
 
 #: rnote-ui/data/ui/appmenu.ui:169
 msgid "Sidebar on the Left Side"
-msgstr ""
+msgstr "نوار کناری در سمت چپ"
 
 #: rnote-ui/data/ui/appmenu.ui:178
 msgid "Sidebar on the Right Side"
-msgstr ""
+msgstr "نوار کناری در سمت راست"
 
 #: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
 msgid "Toggle Fullscreen"
-msgstr ""
+msgstr "تغییر وضعیت به تمام صفحه"
 
 #: rnote-ui/data/ui/appwindow.ui:109
 msgid "Close the Folded Flap"
-msgstr ""
+msgstr "فلپ تاشده را ببندید"
 
 #: rnote-ui/data/ui/appwindow.ui:126
 msgid "Workspace"
-msgstr ""
+msgstr "فضای کار"
 
 #: rnote-ui/data/ui/appwindow.ui:137
 msgid "Settings"
-msgstr ""
+msgstr "تنظیمات"
 
 #: rnote-ui/data/ui/canvasmenu.ui:24
 msgid "_Document Layout"
-msgstr ""
+msgstr "طرح‌بندی سند"
 
 #: rnote-ui/data/ui/canvasmenu.ui:27
 msgid "_Fixed Size"
-msgstr ""
+msgstr "اندازه‌ی ثابت"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "_Continuous Vertical"
@@ -1461,11 +1472,11 @@ msgstr ""
 
 #: rnote-ui/data/ui/workspacebrowser.ui:43
 msgid "Move Directory up"
-msgstr ""
+msgstr "مسیر را به بالا منتقل کنید"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:70
 msgid "Workspace Directory Actions"
-msgstr ""
+msgstr "اقدامات مسیر فضای کار"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:121
 msgid "Create new Folder"
@@ -1609,7 +1620,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/export.rs:476
 msgid "Exporting document pages failed, no directory selected"
-msgstr ""
+msgstr "خروجی‌گیری از صفحات سند ناموفق بود؛ مسیری انتخاب نشده است"
 
 #: rnote-ui/src/dialogs/export.rs:716
 msgid "Exporting selection failed"
@@ -1706,7 +1717,7 @@ msgstr ""
 
 #: rnote-ui/src/dialogs/mod.rs:390
 msgid "Change Workspace Directory"
-msgstr ""
+msgstr "تغییر مسیر فضای کار"
 
 #: rnote-ui/src/dialogs/mod.rs:549
 msgid "Band-Aid"

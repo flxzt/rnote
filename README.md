@@ -74,6 +74,12 @@ Download the Windows installer from the latest release which can be found [here]
 <a href='https://github.com/flxzt/rnote/releases/latest'><img width="250" alt='Download Windows installer' src='https://raw.githubusercontent.com/flxzt/rnote/main/misc/assets/windows-installer-badge.svg'/></a>
 </div><br>
 
+Install using winget:
+
+```
+winget install rnote
+```
+
 ### Downgrading
 
 Because the file format still is unstable, downgrading to a specific version might be necessary.

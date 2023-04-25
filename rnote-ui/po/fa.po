@@ -36,7 +36,7 @@ msgid ""
 "annotate documents and pictures."
 msgstr ""
 "آرنوت برنامه‌ی گرافیکی برداری برای طراحی، یادداشت‌های دست‌نویس"
- "و حاشیه‌نویسی اسناد و تصاویر است."
+"و حاشیه‌نویسی اسناد و تصاویر است."
 
 #: rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""

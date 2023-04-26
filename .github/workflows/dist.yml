@@ -1,0 +1,43 @@
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+name: Generate Dist Archive
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    container: fedora:38
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo dnf upgrade --refresh -y
+          sudo dnf install -y python3 meson
+      - name: Install toolchain
+        id: toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Configure
+        run: |
+          meson setup --prefix=/usr _mesonbuild
+          meson configure _mesonbuild
+      - name: Run meson dist
+        run: meson dist -C _mesonbuild
+      - name: Upload dist archive (Workflow Artifact)
+        uses: actions/upload-artifact@v3
+        with:
+          name: rnote-dist-archive-artifact
+          path: |
+            _mesonbuild/meson-dist/rnote-$(echo ${GITHUB_REF_NAME#v}).tar.xz
+            _mesonbuild/meson-dist/rnote-$(echo ${GITHUB_REF_NAME#v}).tar.xz.sha256sum
+          if-no-files-found: error
+      - name: Upload dist archive (Release Asset)
+        if: ${{ github.event_name == 'release' }}
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/rnote-$(echo ${GITHUB_REF_NAME#v}).tar.xz
+          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/rnote-$(echo ${GITHUB_REF_NAME#v}).tar.xz.sha256sum

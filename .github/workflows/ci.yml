@@ -12,7 +12,7 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
-    container: fedora:37
+    container: fedora:38
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -38,10 +38,9 @@ jobs:
             _mesonbuild/target/
           key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.workflow_sha }}
           restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}
-      - name: Configure
+      - name: Setup
         run: |
-          meson setup --prefix=/usr _mesonbuild
-          meson configure -Dprofile=devel -Dcli=true _mesonbuild
+          meson setup --prefix=/usr -Dprofile=devel -Dcli=true _mesonbuild
       - name: Run cargo fmt
         run: meson compile cargo-fmt-check -C _mesonbuild
       - name: Compile

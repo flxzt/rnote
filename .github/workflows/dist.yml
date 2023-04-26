@@ -19,12 +19,11 @@ jobs:
       - name: Install toolchain
         id: toolchain
         uses: dtolnay/rust-toolchain@stable
-      - name: Configure
+      - name: Setup
         run: |
           meson setup --prefix=/usr _mesonbuild
-          meson configure _mesonbuild
       - name: Run meson dist
-        run: meson dist -C _mesonbuild
+        run: meson dist --no-tests -C _mesonbuild
       - name: Upload dist archive (Workflow Artifact)
         uses: actions/upload-artifact@v3
         with:

@@ -1,7 +1,8 @@
 # Building
 
-First clone the repository and init its submodules
-```
+First install git, clone the repository and init its submodules
+```bash
+sudo dnf install git
 git clone https://github.com/flxzt/rnote
 cd rnote
 git submodule update --init --recursive
@@ -71,7 +72,7 @@ If a native build on the host is wanted, meson can be called directly.
 
 Install all needed dependencies and build tools, e.g. for fedora 37:
 ```bash
-sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
+sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:

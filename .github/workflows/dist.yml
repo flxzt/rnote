@@ -6,9 +6,12 @@ on:
 name: Generate Dist Archive
 
 jobs:
-  check:
+  ci:
+    uses: ./.github/workflows/ci.yml
+  dist:
     runs-on: ubuntu-22.04
     container: fedora:38
+    needs: [ci]
     steps:
       - name: Checkout
         uses: actions/checkout@v3

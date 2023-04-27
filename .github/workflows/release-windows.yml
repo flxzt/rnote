@@ -6,6 +6,8 @@ on:
 name: Release Windows
 
 jobs:
+    ci:
+        uses: ./.github/workflows/ci.yml
     build:
         runs-on: windows-2022
         permissions:
@@ -13,6 +15,7 @@ jobs:
         defaults:
             run:
                 shell: msys2 {0}
+        needs: [ci]
         steps:
             - name: Checkout
               uses: actions/checkout@v3

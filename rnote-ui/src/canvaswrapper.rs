@@ -1,8 +1,8 @@
 use gtk4::CornerType;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate,
-    EventControllerScroll, EventControllerScrollFlags, EventSequenceState, GestureDrag,
-    GestureLongPress, GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
+    EventControllerMotion, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
+    GestureDrag, GestureLongPress, GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevents::ShortcutKey;
@@ -23,11 +23,13 @@ mod imp {
     pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
+        pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
 
         pub(crate) appwindow_block_pinch_zoom_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_show_scrollbars_bind: RefCell<Option<glib::Binding>>,
         pub(crate) appwindow_righthanded_bind: RefCell<Option<glib::Binding>>,
 
+        pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
@@ -44,6 +46,11 @@ mod imp {
 
     impl Default for RnCanvasWrapper {
         fn default() -> Self {
+            let pointer_motion_controller = EventControllerMotion::builder()
+                .name("pointer_motion_controller")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
             // This allows touch dragging and dragging with pointer in the empty space around the canvas.
             // All relevant pointer events for drawing are captured and denied for propagation before they arrive at this gesture.
             let canvas_drag_gesture = GestureDrag::builder()
@@ -99,11 +106,13 @@ mod imp {
             Self {
                 show_scrollbars: Cell::new(false),
                 block_pinch_zoom: Cell::new(false),
+                pointer_pos: Cell::new(None),
 
                 appwindow_block_pinch_zoom_bind: RefCell::new(None),
                 appwindow_show_scrollbars_bind: RefCell::new(None),
                 appwindow_righthanded_bind: RefCell::new(None),
 
+                pointer_motion_controller,
                 canvas_drag_gesture,
                 canvas_zoom_gesture,
                 canvas_zoom_scroll_controller,
@@ -139,6 +148,8 @@ mod imp {
             let obj = self.obj();
 
             // Add input controllers
+            self.scroller
+                .add_controller(self.pointer_motion_controller.clone());
             self.scroller
                 .add_controller(self.canvas_drag_gesture.clone());
             self.scroller
@@ -236,16 +247,44 @@ mod imp {
         fn setup_input(&self) {
             let obj = self.obj();
 
+            {
+                self.pointer_motion_controller.connect_motion(
+                    clone!(@weak obj as canvaswrapper => move |_, x, y| {
+                        canvaswrapper.imp().pointer_pos.set(Some(na::vector![x, y]));
+                    }),
+                );
+
+                self.pointer_motion_controller.connect_leave(
+                    clone!(@weak obj as canvaswrapper => move |_| {
+                        canvaswrapper.imp().pointer_pos.set(None);
+                    }),
+                );
+            }
+
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(
                     clone!(@weak obj as canvaswrapper => @default-return Inhibit(false), move |controller, _, dy| {
                     if controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
                         let canvas = canvaswrapper.canvas();
-                        let new_zoom = canvas.engine().borrow().camera.total_zoom() * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
-                        let center_offset = canvas.current_view_center_coords();
-                        canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                        canvas.center_view_around_coords(center_offset);
+                        let old_zoom = canvas.engine().borrow().camera.total_zoom();
+                        let new_zoom = old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP);
+
+                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                            let wrapper_size = na::vector![canvaswrapper.width() as f64, canvaswrapper.height() as f64];
+                            let adj_values = canvas.adj_values();
+                            let adj_offset = adj_values
+                                + canvaswrapper.imp().pointer_pos.get()
+                                .map(|p| {
+                                    let p = canvaswrapper.translate_coordinates(&canvas, p[0], p[1]).unwrap();
+                                    na::vector![p.0, p.1] - adj_values
+                                })
+                                .unwrap_or_else(|| wrapper_size * 0.5);
+                            let new_offset = (((adj_values + adj_offset) / old_zoom) * new_zoom) - adj_offset;
+
+                            canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                            canvas.update_camera_offset(new_offset);
+                        }
 
                         // Stop event propagation
                         Inhibit(true)

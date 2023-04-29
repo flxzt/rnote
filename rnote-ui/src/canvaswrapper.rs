@@ -273,11 +273,10 @@ mod imp {
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
                             let wrapper_size = na::vector![canvaswrapper.width() as f64, canvaswrapper.height() as f64];
                             let adj_values = canvas.adj_values();
-                            let adj_offset = adj_values
-                                + canvaswrapper.imp().pointer_pos.get()
+                            let adj_offset = canvaswrapper.imp().pointer_pos.get()
                                 .map(|p| {
                                     let p = canvaswrapper.translate_coordinates(&canvas, p[0], p[1]).unwrap();
-                                    na::vector![p.0, p.1] - adj_values
+                                    na::vector![p.0, p.1]
                                 })
                                 .unwrap_or_else(|| wrapper_size * 0.5);
                             let new_offset = (((adj_values + adj_offset) / old_zoom) * new_zoom) - adj_offset;

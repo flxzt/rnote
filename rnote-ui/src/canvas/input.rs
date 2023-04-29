@@ -308,9 +308,7 @@ fn retrieve_pointer_elements(
         event_native
             .translate_coordinates(canvas, pos[0] - surface_trans_x, pos[1] - surface_trans_y)
             .map(|(x, y)| {
-                (canvas.engine().borrow().camera.transform().inverse()
-                    * na::Point2::from(na::vector![x, y]))
-                .coords
+                (canvas.engine().borrow().camera.transform().inverse() * na::point![x, y]).coords
             })
             .unwrap()
     };

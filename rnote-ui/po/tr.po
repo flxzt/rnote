@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
-"PO-Revision-Date: 2023-02-26 03:39+0000\n"
+"PO-Revision-Date: 2023-04-30 19:01+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:32
@@ -50,7 +50,7 @@ msgstr ""
 
 #: rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An Overview"
-msgstr ""
+msgstr "Genel Görünüm"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "Lecture Note 1"
@@ -1000,7 +1000,7 @@ msgstr "_Dokunmatik Girdiyle Çiz"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
 msgid "Block Pinch to _Zoom"
-msgstr ""
+msgstr "_Yakınlaştırma için Çimdiklemeyi Engelle"
 
 #: rnote-ui/data/ui/canvasmenu.ui:64
 msgid "_Pen Sounds"
@@ -1284,11 +1284,11 @@ msgstr "Izgara"
 
 #: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Isometric Grid"
-msgstr ""
+msgstr "İzometrik Izgara"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Isometric Dots"
-msgstr ""
+msgstr "İzometrik Noktalar"
 
 #: rnote-ui/data/ui/settingspanel.ui:319
 msgid "Pattern Color"
@@ -1367,52 +1367,52 @@ msgstr ""
 "hareketi için eylem ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:423
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 1 Action"
-msgstr "Stylus Birincil Düğme Eylemi"
+msgstr "Çizim Pedi Birinci Düğme Eylemi"
 
 #: rnote-ui/data/ui/settingspanel.ui:424
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
+"Çizim pedinde birinci düğme \n"
+"eylemini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:436
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 2 Action"
-msgstr "Stylus Birincil Düğme Eylemi"
+msgstr "Çizim Pedi İkinci Düğme Eylemi"
 
 #: rnote-ui/data/ui/settingspanel.ui:437
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
+"Çizim pedinde ikinci düğme \n"
+"eylemini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:449
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 3 Action"
-msgstr "Stylus Birincil Düğme Eylemi"
+msgstr "Çizim Pedi Üçüncü Düğme Eylemi"
 
 #: rnote-ui/data/ui/settingspanel.ui:450
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
+"Çizim pedinde üçüncü düğme \n"
+"eylemini ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:462
-#, fuzzy
-#| msgid "Stylus Primary Button Action"
 msgid "Drawing Pad Button 4 Action"
-msgstr "Stylus Birincil Düğme Eylemi"
+msgstr "Çizim Pedi Dördüncü Düğme Eylemi"
 
 #: rnote-ui/data/ui/settingspanel.ui:463
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
 msgstr ""
+"Çizim pedinde dördüncü düğme \n"
+"eylemini ayarla"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1580,19 +1580,19 @@ msgstr "Belge kaydedilemedi"
 
 #: rnote-ui/src/appwindow/imp.rs:481
 msgid "Button 1"
-msgstr ""
+msgstr "Düğme 1"
 
 #: rnote-ui/src/appwindow/imp.rs:488
 msgid "Button 2"
-msgstr ""
+msgstr "Düğme 2"
 
 #: rnote-ui/src/appwindow/imp.rs:495
 msgid "Button 3"
-msgstr ""
+msgstr "Düğme 3"
 
 #: rnote-ui/src/appwindow/imp.rs:502
 msgid "Button 4"
-msgstr ""
+msgstr "Düğme 4"
 
 #: rnote-ui/src/appwindow/appwindowactions.rs:699
 msgid "Printing document failed"
@@ -1796,7 +1796,7 @@ msgstr "Çip"
 
 #: rnote-ui/src/dialogs/mod.rs:557
 msgid "Clock"
-msgstr ""
+msgstr "Saat"
 
 #: rnote-ui/src/dialogs/mod.rs:558
 msgid "Code"
@@ -1809,11 +1809,11 @@ msgstr "Düzenle"
 #: rnote-ui/src/dialogs/mod.rs:560
 msgctxt "as in plant"
 msgid "Crop"
-msgstr ""
+msgstr "Kırp"
 
 #: rnote-ui/src/dialogs/mod.rs:561
 msgid "Dictionary"
-msgstr ""
+msgstr "Sözlük"
 
 #: rnote-ui/src/dialogs/mod.rs:563
 msgid "Drinks"
@@ -1841,7 +1841,7 @@ msgstr "Dişli"
 
 #: rnote-ui/src/dialogs/mod.rs:569
 msgid "Globe"
-msgstr ""
+msgstr "Küre"
 
 #: rnote-ui/src/dialogs/mod.rs:570
 msgid "Hammer"
@@ -1865,7 +1865,7 @@ msgstr "Dil"
 
 #: rnote-ui/src/dialogs/mod.rs:575
 msgid "Library"
-msgstr ""
+msgstr "Kütüphane"
 
 #: rnote-ui/src/dialogs/mod.rs:576
 msgid "Lightbulb"
@@ -1889,13 +1889,11 @@ msgstr "Müzik Notaları"
 
 #: rnote-ui/src/dialogs/mod.rs:581
 msgid "Nature"
-msgstr ""
+msgstr "Doğa"
 
 #: rnote-ui/src/dialogs/mod.rs:582
-#, fuzzy
-#| msgid "Open"
 msgid "Open Book"
-msgstr "Aç"
+msgstr "Açık Kitap"
 
 #: rnote-ui/src/dialogs/mod.rs:583
 msgid "Paintbrush"
@@ -1919,7 +1917,7 @@ msgstr "Projektör"
 
 #: rnote-ui/src/dialogs/mod.rs:588
 msgid "Science"
-msgstr ""
+msgstr "Bilim"
 
 #: rnote-ui/src/dialogs/mod.rs:589
 msgid "Scratchpad"
@@ -1984,7 +1982,7 @@ msgstr "Eğriler"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:385
 msgid "Arrow"
-msgstr ""
+msgstr "Ok"
 
 #: rnote-ui/src/penssidebar/shaperpage.rs:386
 msgid "Line"

@@ -15,8 +15,6 @@ jobs:
     runs-on: ubuntu-22.04
     container: fedora:38
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
@@ -26,6 +24,8 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Cache
         uses: actions/cache@v3
         env:

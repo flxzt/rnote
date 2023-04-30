@@ -17,8 +17,6 @@ jobs:
                 shell: msys2 {0}
         needs: [ci]
         steps:
-            - name: Checkout
-              uses: actions/checkout@v3
             - name: Set installer name
               id: set_installer_name
               shell: bash
@@ -42,6 +40,8 @@ jobs:
                   toolchain: stable-gnu
             - name: Configure PATH
               run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" > ~/.bashrc
+            - name: Checkout
+              uses: actions/checkout@v3
             - name: Setup
               run: meson setup --prefix=C:/msys64/mingw64 -Dinstaller-name='${{ steps.set_installer_name.outputs.name }}' _mesonbuild
             - name: Generate locale files

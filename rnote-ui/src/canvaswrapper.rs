@@ -282,7 +282,7 @@ mod imp {
                             let new_offset = (((adj_values + adj_offset) / old_zoom) * new_zoom) - adj_offset;
 
                             canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
-                            canvas.update_camera_offset(new_offset);
+                            canvas.update_camera_offset(new_offset, true);
                         }
 
                         // Stop event propagation
@@ -311,7 +311,7 @@ mod imp {
                 self.canvas_drag_gesture.connect_drag_update(
                     clone!(@strong touch_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let new_offset = touch_drag_start.get() - na::vector![x,y];
-                        canvaswrapper.canvas().update_camera_offset(new_offset);
+                        canvaswrapper.canvas().update_camera_offset(new_offset, true);
                     }),
                 );
                 self.canvas_drag_gesture.connect_drag_end(
@@ -333,7 +333,7 @@ mod imp {
                 self.canvas_mouse_drag_middle_gesture.connect_drag_update(
                     clone!(@strong mouse_drag_start, @weak obj as canvaswrapper => move |_, x, y| {
                         let new_offset = mouse_drag_start.get() - na::vector![x,y];
-                        canvaswrapper.canvas().update_camera_offset(new_offset);
+                        canvaswrapper.canvas().update_camera_offset(new_offset, true);
                     }),
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_end(
@@ -393,7 +393,7 @@ mod imp {
                             };
                             let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                             let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
-                            canvaswrapper.canvas().update_camera_offset(new_offset);
+                            canvaswrapper.canvas().update_camera_offset(new_offset, true);
                         }
                     })
                 );
@@ -434,7 +434,7 @@ mod imp {
                 self.canvas_alt_drag_gesture.connect_drag_update(
                     clone!(@strong offset_start, @weak obj as canvaswrapper => move |_, offset_x, offset_y| {
                         let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
-                        canvaswrapper.canvas().update_camera_offset(new_offset);
+                        canvaswrapper.canvas().update_camera_offset(new_offset, true);
                     })
                 );
 

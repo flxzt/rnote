@@ -13,12 +13,14 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvasLayout {
+        pub(crate) autoexpand: Cell<bool>,
         pub(crate) old_viewport: Cell<Aabb>,
     }
 
     impl Default for RnCanvasLayout {
         fn default() -> Self {
             Self {
+                autoexpand: Cell::new(false),
                 old_viewport: Cell::new(Aabb::new_zero()),
             }
         }
@@ -130,7 +132,11 @@ mod imp {
 
             // Update the camera in the engine
             engine.update_camera_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
-            engine.expand_doc_autoexpand();
+            // only autoexpand when "flagged"
+            if self.autoexpand.get() {
+                self.autoexpand.set(false);
+                engine.expand_doc_autoexpand();
+            }
 
             let viewport = engine.camera.viewport();
             let old_viewport = self.old_viewport.get();
@@ -184,6 +190,10 @@ impl RnCanvasLayout {
 
     pub(crate) fn new() -> Self {
         glib::Object::new()
+    }
+
+    pub(crate) fn flag_allocate_autoexpand(&self, autoexpand: bool) {
+        self.imp().autoexpand.set(autoexpand);
     }
 
     // needs to be called after zooming

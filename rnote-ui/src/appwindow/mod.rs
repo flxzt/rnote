@@ -222,7 +222,7 @@ impl RnAppWindow {
         if widget_flags.update_view {
             let camera_offset = canvas.engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
-            canvas.update_camera_offset(camera_offset);
+            canvas.update_camera_offset(camera_offset, true);
         }
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();

@@ -1106,11 +1106,16 @@ impl RnCanvas {
     }
 
     /// updates the camera offset and scrollbar adjustment values
-    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>, autoexpand: bool) {
         // By setting new adjustment values, the callback connected to their `value` property is called,
         // Which is where the engine camera offset, size and the rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
+        self.layout_manager()
+            .unwrap()
+            .downcast::<RnCanvasLayout>()
+            .unwrap()
+            .flag_allocate_autoexpand(autoexpand);
     }
 
     /// returns the current view center coords.
@@ -1143,7 +1148,7 @@ impl RnCanvas {
         let total_zoom = self.engine().borrow().camera.total_zoom();
         let new_offset = coords * total_zoom - wrapper_size * 0.5;
 
-        self.update_camera_offset(new_offset);
+        self.update_camera_offset(new_offset, true);
     }
 
     /// Centering the view to the origin page
@@ -1171,7 +1176,7 @@ impl RnCanvas {
                 ]
             };
 
-        self.update_camera_offset(new_offset);
+        self.update_camera_offset(new_offset, true);
     }
 
     /// zooms and regenerates the canvas and its contents to a new zoom

@@ -19,6 +19,8 @@ use gtk4::{
     Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
 
+use std::time::Instant;
+
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
     let app_icon_name = if config::PROFILE == "devel" {
@@ -96,6 +98,65 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     );
 
     dialog.present();
+}
+
+pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog_invert_doc_colors: adw::MessageDialog =
+        builder.object("dialog_invert_doc_colors").unwrap();
+
+    dialog_invert_doc_colors.set_transient_for(Some(appwindow));
+
+    dialog_invert_doc_colors.connect_response(
+        None,
+        clone!(@weak appwindow => move |_dialog_invert_doc_colors, response| {
+            let canvas = appwindow.active_tab().canvas();
+
+            match response {
+                "invert-background" => {
+                    let widget_flags = {
+                        let engine = canvas.engine();
+                        let engine = &mut *engine.borrow_mut();
+
+                        let mut widget_flags = engine.record(Instant::now());
+
+                        engine.document.background.color = engine.document.background.color.inverted_lightness();
+                        engine.document.background.pattern_color = engine.document.background.pattern_color.inverted_lightness();
+                        widget_flags.refresh_ui = true;
+
+                        widget_flags
+                    };
+
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                    canvas.regenerate_background_pattern();
+                },
+                "invert-stroke" => {
+                    if canvas.empty() {
+                        return;
+                    }
+
+                    let widget_flags = {
+                        let engine = canvas.engine();
+                        let engine = &mut *engine.borrow_mut();
+
+                        let keys = engine.store.stroke_keys_unordered();
+
+                        engine.store.invert_color_lightness(&keys)
+                    };
+
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                    canvas.update_engine_rendering();
+                },
+                _ => {
+                    // cancel
+                }
+            }
+        }),
+    );
+
+    dialog_invert_doc_colors.show();
 }
 
 pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {

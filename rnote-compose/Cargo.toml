@@ -28,5 +28,6 @@ kurbo = "0.9"
 svg = "0.13.0"
 roughr = "0.6"
 rough_piet = "0.6"
+palette = "0.7.2"
 
 [dev-dependencies]

@@ -278,6 +278,66 @@ impl StrokeStore {
         widget_flags
     }
 
+    /// Invert the stroke, text and fill color of the given keys.
+    ///
+    /// Strokes then need to update their rendering.
+    pub fn invert_color_lightness(&mut self, keys: &[StrokeKey]) -> WidgetFlags {
+        let mut widget_flags = self.record(Instant::now());
+
+        keys.iter().for_each(|&key| {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
+                {
+                    match stroke {
+                        Stroke::BrushStroke(brush_stroke) => {
+                            if let Some(color) = brush_stroke.style.stroke_color() {
+                                brush_stroke
+                                    .style
+                                    .set_stroke_color(color.inverted_lightness());
+                            }
+
+                            if let Some(color) = brush_stroke.style.fill_color() {
+                                brush_stroke
+                                    .style
+                                    .set_fill_color(color.inverted_lightness());
+                            }
+
+                            self.set_rendering_dirty(key);
+                        }
+                        Stroke::ShapeStroke(shape_stroke) => {
+                            if let Some(color) = shape_stroke.style.stroke_color() {
+                                shape_stroke
+                                    .style
+                                    .set_stroke_color(color.inverted_lightness());
+                            }
+
+                            if let Some(color) = shape_stroke.style.fill_color() {
+                                shape_stroke
+                                    .style
+                                    .set_fill_color(color.inverted_lightness());
+                            }
+
+                            self.set_rendering_dirty(key);
+                        }
+                        Stroke::TextStroke(text_stroke) => {
+                            text_stroke.text_style.color =
+                                text_stroke.text_style.color.inverted_lightness();
+                            self.set_rendering_dirty(key);
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+
     /// Change the fill color of the given keys.
     ///
     /// The strokes then need to update their rendering.

@@ -114,6 +114,8 @@ impl RnAppWindow {
         self.add_action(&action_selection_select_all);
         let action_selection_deselect_all = gio::SimpleAction::new("selection-deselect-all", None);
         self.add_action(&action_selection_deselect_all);
+        let action_invert_doc_colors = gio::SimpleAction::new("invert-doc-colors", None);
+        self.add_action(&action_invert_doc_colors);
         let action_clear_doc = gio::SimpleAction::new("clear-doc", None);
         self.add_action(&action_clear_doc);
         let action_new_doc = gio::SimpleAction::new("new-doc", None);
@@ -465,6 +467,12 @@ impl RnAppWindow {
                 canvas.update_engine_rendering();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
+            }),
+        );
+
+        action_invert_doc_colors.connect_activate(
+            clone!(@weak self as appwindow => move |_action_invert_doc_colors, _| {
+                dialogs::dialog_invert_doc_colors(&appwindow);
             }),
         );
 

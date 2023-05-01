@@ -68,6 +68,10 @@
         </section>
         <section>
           <item>
+            <attribute name="label" translatable="yes">_Invert Document Colors</attribute>
+            <attribute name="action">win.invert-doc-colors</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">C_lear Document</attribute>
             <attribute name="action">win.clear-doc</attribute>
           </item>

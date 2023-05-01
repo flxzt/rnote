@@ -1,4 +1,5 @@
 // Imports
+use palette::{IntoColor, Okhsl, Srgb};
 use serde::{Deserialize, Serialize};
 
 /// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0.
@@ -92,6 +93,20 @@ impl Color {
     /// see: <https://en.wikipedia.org/wiki/Luma_(video)>
     pub fn luma(&self) -> f64 {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
+    }
+
+    /// Inverts the lightness of the color while keeping perceived hue and saturation constant
+    pub fn inverted_lightness(&self) -> Self {
+        let mut hsl_color: Okhsl<f64> = Srgb::new(self.r, self.g, self.b).into_color();
+        hsl_color.lightness = 1.0 - hsl_color.lightness;
+        let inverted_srgb_color: Srgb<f64> = hsl_color.into_color();
+
+        Self {
+            r: inverted_srgb_color.red,
+            g: inverted_srgb_color.green,
+            b: inverted_srgb_color.blue,
+            a: self.a,
+        }
     }
 
     /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`.

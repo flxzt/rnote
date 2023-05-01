@@ -18,8 +18,7 @@ use gtk4::{
     gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
     Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
-
-use std::time::Instant;
+use rnote_engine::WidgetFlags;
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
@@ -120,11 +119,11 @@ pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
                         let engine = canvas.engine();
                         let engine = &mut *engine.borrow_mut();
 
-                        let mut widget_flags = engine.record(Instant::now());
+                        let mut widget_flags = WidgetFlags::default();
+                        widget_flags.refresh_ui = true;
 
                         engine.document.background.color = engine.document.background.color.inverted_lightness();
                         engine.document.background.pattern_color = engine.document.background.pattern_color.inverted_lightness();
-                        widget_flags.refresh_ui = true;
 
                         widget_flags
                     };

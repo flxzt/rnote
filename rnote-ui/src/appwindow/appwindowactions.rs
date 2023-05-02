@@ -545,6 +545,9 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_remove_page_from_doc, _target| {
                 let canvas = appwindow.active_tab().canvas();
 
+                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+
                 let format_height = canvas.engine().borrow().document.format.height;
                 let format_width = canvas.engine().borrow().document.format.width;
                 let doc_height = canvas.engine().borrow().document.height;

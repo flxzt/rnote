@@ -1,10 +1,11 @@
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
+  workflow_call:
 
 name: CI
 
@@ -12,19 +13,19 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-22.04
-    container: fedora:37
+    container: fedora:38
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
-          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
       - name: Install toolchain
         id: toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Cache
         uses: actions/cache@v3
         env:
@@ -38,10 +39,9 @@ jobs:
             _mesonbuild/target/
           key: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}-${{ hashFiles('**/Cargo.lock') }}-${{ github.workflow_sha }}
           restore-keys: cargo-${{ runner.os }}-${{ steps.toolchain.outputs.cachekey }}
-      - name: Configure
+      - name: Setup
         run: |
-          meson setup --prefix=/usr _mesonbuild
-          meson configure -Dprofile=devel -Dcli=true _mesonbuild
+          meson setup --prefix=/usr -Dprofile=devel -Dcli=true _mesonbuild
       - name: Run cargo fmt
         run: meson compile cargo-fmt-check -C _mesonbuild
       - name: Compile

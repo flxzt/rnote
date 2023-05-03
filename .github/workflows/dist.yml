@@ -1,0 +1,52 @@
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+name: Generate Dist Archive
+
+jobs:
+  dist:
+    runs-on: ubuntu-22.04
+    container: fedora:38
+    permissions:
+      contents: write # needed for uploading release artifact
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo dnf upgrade --refresh -y
+          sudo dnf install -y gcc gcc-c++ clang python3 make cmake meson git gh kernel-devel gtk4-devel libadwaita-devel poppler-glib-devel poppler-data alsa-lib-devel libappstream-glib desktop-file-utils
+      - name: Install toolchain
+        id: toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Add workspace as git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Setup
+        run: |
+          meson setup --prefix=/usr _mesonbuild
+      - name: Run meson dist
+        run: meson dist --no-tests -C _mesonbuild
+      - name: Register archive file names
+        id: register_archive_file_names
+        run: |
+          echo "archive =$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
+          echo "sha=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
+      - name: Upload dist archive (Workflow Artifact)
+        uses: actions/upload-artifact@v3
+        with:
+          name: rnote-dist-archive-artifact
+          path: |
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}
+          if-no-files-found: error
+      - name: Upload dist archive (Release Asset)
+        if: ${{ github.event_name == 'release' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
+          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}

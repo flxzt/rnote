@@ -11,9 +11,6 @@ jobs:
     permissions:
       contents: write # needed for uploading release artifact
     steps:
-      - name: Register archive name
-        id: register_archive_name
-        run: echo "name=rnote-$(echo ${GITHUB_REF_NAME#v})" >> $GITHUB_OUTPUT
       - name: Install dependencies
         run: |
           sudo dnf upgrade --refresh -y
@@ -32,18 +29,23 @@ jobs:
           meson setup --prefix=/usr _mesonbuild
       - name: Run meson dist
         run: meson dist --no-tests -C _mesonbuild
+      - name: Register archive file names
+        id: register_archive_file_names
+        run: |
+          echo "archive =$(basename _mesonbuild/meson-dist/rnote-*.tar.xz | tail -n1)" >> $GITHUB_OUTPUT
+          echo "sha=rnote-$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
       - name: Upload dist archive (Workflow Artifact)
         uses: actions/upload-artifact@v3
         with:
           name: rnote-dist-archive-artifact
           path: |
-            _mesonbuild/meson-dist/${{ steps.register_archive_name.outputs.name }}.tar.xz
-            _mesonbuild/meson-dist/${{ steps.register_archive_name.outputs.name }}.tar.xz.sha256sum
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
+            _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}
           if-no-files-found: error
       - name: Upload dist archive (Release Asset)
         if: ${{ github.event_name == 'release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_name.outputs.name }}.tar.xz
-          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_name.outputs.name }}.tar.xz.sha256sum
+          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.archive }}
+          gh release upload ${{ github.ref_name }} _mesonbuild/meson-dist/${{ steps.register_archive_file_names.outputs.sha }}

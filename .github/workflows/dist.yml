@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     container: fedora:38
     permissions:
-        contents: write # needed for uploading release artifact
+      contents: write # needed for uploading release artifact
     steps:
       - name: Register archive name
         id: register_archive_name

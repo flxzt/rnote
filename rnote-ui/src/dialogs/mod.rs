@@ -3,10 +3,10 @@ pub(crate) mod import;
 
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
-use gtk4::CheckButton;
 use gtk4::{
-    gio, glib, glib::clone, Builder, Button, ColorButton, Dialog, FileChooserAction,
-    FileChooserNative, Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
+    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog,
+    FileChooserAction, FileChooserNative, Label, MenuButton, ResponseType, ShortcutsWindow,
+    StringList,
 };
 
 use crate::appwindow::RnAppWindow;
@@ -421,7 +421,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     let name_entryrow: adw::EntryRow = builder
         .object("edit_selected_workspace_name_entryrow")
         .unwrap();
-    let color_button: ColorButton = builder
+    let color_button: ColorDialogButton = builder
         .object("edit_selected_workspace_color_button")
         .unwrap();
     let dir_label: Label = builder.object("edit_selected_workspace_dir_label").unwrap();
@@ -488,7 +488,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }),
     );
 
-    color_button.connect_color_set(clone!(@weak preview_row => move |button| {
+    color_button.connect_rgba_notify(clone!(@weak preview_row => move |button| {
         let color = button.rgba();
         preview_row.entry().set_color(color);
     }));

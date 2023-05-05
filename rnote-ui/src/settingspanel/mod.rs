@@ -8,7 +8,7 @@ pub(crate) use penshortcutrow::RnPenShortcutRow;
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
-    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
+    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
     Widget,
 };
@@ -39,7 +39,7 @@ mod imp {
         #[template_child]
         pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub(crate) general_format_border_color_choosebutton: TemplateChild<ColorButton>,
+        pub(crate) general_format_border_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
         pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
         #[template_child]
@@ -75,11 +75,11 @@ mod imp {
         #[template_child]
         pub(crate) format_apply_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) background_color_choosebutton: TemplateChild<ColorButton>,
+        pub(crate) background_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
         pub(crate) background_patterns_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub(crate) background_pattern_color_choosebutton: TemplateChild<ColorButton>,
+        pub(crate) background_pattern_color_button: TemplateChild<ColorDialogButton>,
         #[template_child]
         pub(crate) background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
@@ -180,7 +180,7 @@ mod imp {
         pub(crate) fn update_temporary_format_from_ui(&self) {
             // border color
             self.temporary_format.borrow_mut().border_color = self
-                .general_format_border_color_choosebutton
+                .general_format_border_color_button
                 .rgba()
                 .into_compose_color();
 
@@ -368,7 +368,7 @@ impl RnSettingsPanel {
 
         let format_border_color = canvas.engine().borrow().document.format.border_color;
 
-        imp.general_format_border_color_choosebutton
+        imp.general_format_border_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
@@ -393,10 +393,10 @@ impl RnSettingsPanel {
         let background = canvas.engine().borrow().document.background;
         let format = canvas.engine().borrow().document.format;
 
-        imp.background_color_choosebutton
+        imp.background_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
         self.set_background_pattern(background.pattern);
-        imp.background_pattern_color_choosebutton
+        imp.background_pattern_color_button
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
         imp.background_pattern_width_unitentry.set_dpi(format.dpi);
         imp.background_pattern_width_unitentry
@@ -548,7 +548,7 @@ impl RnSettingsPanel {
 
         // Apply format
         imp.format_apply_button.get().connect_clicked(
-            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_format_apply_button| {
+            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_| {
                 let imp = settingspanel.imp();
                 let temporary_format = *temporary_format.borrow();
                 let canvas = appwindow.active_tab().canvas();
@@ -562,8 +562,8 @@ impl RnSettingsPanel {
             }),
         );
 
-        imp.general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
-            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
+        imp.general_format_border_color_button.connect_rgba_notify(clone!(@weak self as settingspanel, @weak appwindow => move |button| {
+            let format_border_color = button.rgba().into_compose_color();
             let canvas = appwindow.active_tab().canvas();
 
             canvas.engine().borrow_mut().document.format.border_color = format_border_color;
@@ -576,15 +576,15 @@ impl RnSettingsPanel {
     fn setup_background(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        imp.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
+        imp.background_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
             let canvas = appwindow.active_tab().canvas();
 
-            canvas.engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+            canvas.engine().borrow_mut().document.background.color = button.rgba().into_compose_color();
             canvas.regenerate_background_pattern();
             canvas.update_engine_rendering();
         }));
 
-        imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_background_patterns_row| {
+        imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
             let pattern = settings_panel.background_pattern();
             let canvas = appwindow.active_tab().canvas();
 
@@ -621,10 +621,10 @@ impl RnSettingsPanel {
             canvas.update_engine_rendering();
         }));
 
-        imp.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
+        imp.background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
             let canvas = appwindow.active_tab().canvas();
 
-            canvas.engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+            canvas.engine().borrow_mut().document.background.pattern_color = button.rgba().into_compose_color();
             canvas.regenerate_background_pattern();
             canvas.update_engine_rendering();
         }));

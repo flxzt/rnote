@@ -139,6 +139,7 @@ impl RnAppWindow {
         imp.mainheader.get().init(self);
         imp.mainheader.get().canvasmenu().init(self);
         imp.mainheader.get().appmenu().init(self);
+        imp.overlays.get().colorpicker().init(self);
 
         // An initial tab. Must! come before setting up the settings binds and import
         self.add_initial_tab();

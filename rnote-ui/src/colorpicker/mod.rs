@@ -9,13 +9,15 @@ pub(crate) use colorsetter::RnColorSetter;
 use std::cell::{Cell, RefCell};
 
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, Button,
-    ColorChooserWidget, CompositeTemplate, MenuButton, Orientation, Popover, PositionType, Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, Button, ColorDialog,
+    CompositeTemplate, Orientation, PositionType, Widget,
 };
 
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
+
+use crate::RnAppWindow;
 
 mod imp {
     use super::*;
@@ -52,15 +54,7 @@ mod imp {
         #[template_child]
         pub(crate) setter_8: TemplateChild<RnColorSetter>,
         #[template_child]
-        pub(crate) colorpicker_button: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) colorpicker_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) colorchooser: TemplateChild<ColorChooserWidget>,
-        #[template_child]
-        pub(crate) colorchooser_editor_gobackbutton: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) colorchooser_editor_selectbutton: TemplateChild<Button>,
+        pub(crate) colordialog_button: TemplateChild<Button>,
     }
 
     impl Default for RnColorPicker {
@@ -84,11 +78,7 @@ mod imp {
                 setter_6: TemplateChild::default(),
                 setter_7: TemplateChild::default(),
                 setter_8: TemplateChild::default(),
-                colorpicker_button: TemplateChild::default(),
-                colorpicker_popover: TemplateChild::default(),
-                colorchooser: TemplateChild::default(),
-                colorchooser_editor_gobackbutton: TemplateChild::default(),
-                colorchooser_editor_selectbutton: TemplateChild::default(),
+                colordialog_button: TemplateChild::default(),
             }
         }
     }
@@ -113,45 +103,10 @@ mod imp {
             self.parent_constructed();
             let obj = self.obj();
 
-            let colorchooser = self.colorchooser.get();
-            let colorpicker_popover = self.colorpicker_popover.get();
-            let colorchooser_editor_gobackbutton = self.colorchooser_editor_gobackbutton.get();
-
             self.setup_setters();
 
-            // we could theoretically update the colorchooser rgba property when stroke-color and fill-color changes,
-            // but that would result in the active paletter setter being changed. So we don't do that.
-
-            self.colorchooser.connect_show_editor_notify(
-                clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
-                    colorchooser_editor_gobackbutton.set_visible(true);
-                }),
-            );
-
-            self.colorchooser_editor_selectbutton.connect_clicked(
-                clone!(@weak obj as colorpicker, @weak colorchooser, @weak colorpicker_popover => move |_colorchooser_editor_selectbutton| {
-                    let color = colorchooser.rgba();
-                    colorpicker.set_color_active_setter(color);
-
-                    colorpicker_popover.popdown();
-                }),
-            );
-
-            self.colorchooser_editor_gobackbutton.connect_clicked(
-                clone!(@weak colorchooser => move |colorchooser_editor_gobackbutton| {
-                    colorchooser.set_show_editor(false);
-                    colorchooser_editor_gobackbutton.set_visible(false);
-                }),
-            );
-
-            self.colorchooser.connect_rgba_notify(
-                clone!(@weak obj as colorpicker => move |colorchooser| {
-                    let color = colorchooser.rgba();
-
-                    colorpicker.set_color_active_pad(color);
-                    colorpicker.set_color_active_setter(color);
-                }),
-            );
+            // we could theoretically update the colordialog color rgba preset when stroke-color and fill-color changes,
+            // but that would result in the active palette setter being changed. So we don't do that.
 
             self.stroke_color_pad
                 .bind_property("color", &*obj, "stroke-color")
@@ -230,28 +185,24 @@ mod imp {
                             self.active_colors_box
                                 .set_orientation(Orientation::Vertical);
                             self.setter_box.set_orientation(Orientation::Vertical);
-                            self.colorpicker_popover.set_position(PositionType::Right);
                         }
                         PositionType::Right => {
                             layout_manager.set_orientation(Orientation::Vertical);
                             self.active_colors_box
                                 .set_orientation(Orientation::Vertical);
                             self.setter_box.set_orientation(Orientation::Vertical);
-                            self.colorpicker_popover.set_position(PositionType::Left);
                         }
                         PositionType::Top => {
                             layout_manager.set_orientation(Orientation::Horizontal);
                             self.active_colors_box
                                 .set_orientation(Orientation::Horizontal);
                             self.setter_box.set_orientation(Orientation::Horizontal);
-                            self.colorpicker_popover.set_position(PositionType::Bottom);
                         }
                         PositionType::Bottom => {
                             layout_manager.set_orientation(Orientation::Horizontal);
                             self.active_colors_box
                                 .set_orientation(Orientation::Horizontal);
                             self.setter_box.set_orientation(Orientation::Horizontal);
-                            self.colorpicker_popover.set_position(PositionType::Top);
                         }
                         _ => {}
                     }
@@ -513,6 +464,31 @@ impl RnColorPicker {
         self.imp().setter_8.get()
     }
 
+    pub(crate) fn init(&self, appwindow: &RnAppWindow) {
+        self.imp().colordialog_button.connect_clicked(
+            clone!(@weak self as colorpicker, @weak appwindow => move |_| {
+                glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
+                    let dialog = ColorDialog::builder().modal(true).with_alpha(true).build();
+
+                    let active_color = if colorpicker.stroke_color_pad_active() {
+                        colorpicker.stroke_color()
+                    } else {
+                        colorpicker.fill_color()
+                    };
+                    match dialog.choose_rgba_future(Some(&appwindow), Some(&active_color)).await {
+                        Ok(new_color) => {
+                            colorpicker.set_color_active_pad(new_color);
+                            colorpicker.set_color_active_setter(new_color);
+                        },
+                        // this reports as error if the dialog is dismissed by the user.
+                        // The API is a bit odd, expected would be Result<Option<RGBA>>
+                        Err(e) => log::debug!("did not choose new color (Error or Dialog dismissed), {e:?}"),
+                    }
+                }));
+            }),
+        );
+    }
+
     fn set_color_active_setter(&self, color: gdk::RGBA) {
         let imp = self.imp();
 
@@ -533,6 +509,16 @@ impl RnColorPicker {
         } else if imp.setter_8.is_active() {
             imp.setter_8.set_color(color);
         }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn stroke_color_pad_active(&self) -> bool {
+        self.imp().stroke_color_pad.is_active()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn fill_color_pad_active(&self) -> bool {
+        self.imp().fill_color_pad.is_active()
     }
 
     fn set_color_active_pad(&self, color: gdk::RGBA) {

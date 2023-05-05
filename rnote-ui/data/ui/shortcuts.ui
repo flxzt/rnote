@@ -86,6 +86,11 @@
                 <property name="accelerator">&lt;ctrl&gt;6</property>
               </object>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">View</property>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Move View</property>

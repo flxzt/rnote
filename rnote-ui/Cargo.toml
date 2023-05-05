@@ -33,8 +33,8 @@ futures = "0.3"
 rayon = "1"
 nalgebra = { version = "0.32", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.13", features = ["serde-serialize"] }
-gtk4 = {version = "0.6", features = ["v4_8"]}
-adw = {version = "0.3", package="libadwaita", features = ["v1_2"]}
+gtk4 = {version = "0.6", features = ["v4_10"]}
+adw = {version = "0.4", package="libadwaita", features = ["v1_3"]}
 cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
 # newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
 poppler-rs = {version = "0.21", features = ["v20_9"] }

@@ -50,31 +50,25 @@ pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
         aboutdialog.add_css_class("devel");
     }
 
-    aboutdialog.show();
+    aboutdialog.present();
 }
 
 pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
-    let dialog_shortcuts: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
-
-    if config::PROFILE == "devel" {
-        dialog_shortcuts.add_css_class("devel");
-    }
-
-    dialog_shortcuts.set_transient_for(Some(appwindow));
-    dialog_shortcuts.show();
+    let dialog: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
+    dialog.set_transient_for(Some(appwindow));
+    dialog.present();
 }
 
 pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog_clear_doc: adw::MessageDialog = builder.object("dialog_clear_doc").unwrap();
+    let dialog: adw::MessageDialog = builder.object("dialog_clear_doc").unwrap();
+    dialog.set_transient_for(Some(appwindow));
 
-    dialog_clear_doc.set_transient_for(Some(appwindow));
-
-    dialog_clear_doc.connect_response(
+    dialog.connect_response(
         None,
         clone!(@weak canvas, @weak appwindow => move |_dialog_clear_doc, response| {
             match response {
@@ -100,7 +94,7 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
         }),
     );
 
-    dialog_clear_doc.show();
+    dialog.present();
 }
 
 pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
@@ -167,7 +161,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
         }),
     );
 
-    dialog_new_doc.show();
+    dialog_new_doc.present();
 }
 
 /// Only to be called from the tabview close-page handler
@@ -274,7 +268,7 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
         }),
     );
 
-    dialog.show();
+    dialog.present();
 }
 
 pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
@@ -413,7 +407,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         }),
     );
 
-    dialog.show();
+    dialog.present();
 }
 
 pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
@@ -524,7 +518,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }
 
         filechooser.hide();
-        dialog.show();
+        dialog.present();
     }));
 
     dialog.connect_response(
@@ -551,7 +545,7 @@ pub(crate) fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }),
     );
 
-    dialog.show();
+    dialog.present();
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
 

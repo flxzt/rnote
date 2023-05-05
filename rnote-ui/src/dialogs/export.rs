@@ -151,7 +151,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanv
             }
 
             filechooser.hide();
-            dialog.show();
+            dialog.present();
         }),
     );
 
@@ -209,7 +209,7 @@ pub(crate) fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &RnCanv
             dialog.close();
         }));
 
-    dialog.show();
+    dialog.present();
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
@@ -389,7 +389,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, canvas: &
             }
 
             filechooser.hide();
-            dialog.show();
+            dialog.present();
         }),
     );
 
@@ -482,7 +482,7 @@ pub(crate) fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, canvas: &
             dialog.close();
         }));
 
-    dialog.show();
+    dialog.present();
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }
@@ -654,7 +654,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, canvas: &
             }
 
             filechooser.hide();
-            dialog.show();
+            dialog.present();
         }),
     );
 
@@ -730,7 +730,7 @@ pub(crate) fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, canvas: &
             dialog.close();
         }));
 
-    dialog.show();
+    dialog.present();
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
 }

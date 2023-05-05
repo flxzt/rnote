@@ -71,7 +71,7 @@ pub(crate) fn dialog_open_overwrite(
         }),
     );
 
-    dialog.show();
+    dialog.present();
 }
 
 /// Opens a new rnote save file in a new tab
@@ -352,7 +352,7 @@ pub(crate) fn dialog_import_pdf_w_prefs(
         }),
     );
 
-    dialog.show();
+    dialog.present();
 }
 
 pub(crate) fn dialog_import_xopp_w_prefs(
@@ -411,5 +411,5 @@ pub(crate) fn dialog_import_xopp_w_prefs(
         }),
     );
 
-    dialog.show();
+    dialog.present();
 }

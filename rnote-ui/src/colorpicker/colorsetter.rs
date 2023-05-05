@@ -14,7 +14,6 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnColorSetter {
-        pub(crate) css: CssProvider,
         pub(crate) color: Cell<gdk::RGBA>,
         pub(crate) position: Cell<PositionType>,
     }
@@ -29,7 +28,6 @@ mod imp {
     impl Default for RnColorSetter {
         fn default() -> Self {
             Self {
-                css: CssProvider::new(),
                 color: Cell::new(gdk::RGBA::from_compose_color(
                     super::RnColorSetter::COLOR_DEFAULT,
                 )),
@@ -52,8 +50,6 @@ mod imp {
             obj.set_css_classes(&["colorsetter"]);
 
             self.update_appearance(super::RnColorSetter::COLOR_DEFAULT);
-            obj.style_context()
-                .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
         fn properties() -> &'static [glib::ParamSpec] {

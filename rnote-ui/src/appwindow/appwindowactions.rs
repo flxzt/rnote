@@ -1,6 +1,7 @@
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
+    gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit,
+    UriLauncher, Window,
 };
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
@@ -169,7 +170,11 @@ impl RnAppWindow {
 
         // Donate
         action_donate.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            gtk4::show_uri(None::<&Window>, config::APP_DONATE_URL, 0);
+            UriLauncher::new(config::APP_DONATE_URL).launch(None::<&Window>, gio::Cancellable::NONE, |res| {
+                if let Err(e) = res {
+                    log::error!("launching donate URL failed, Err: {e:?}");
+                }
+            })
         }));
 
         // Keyboard shortcuts

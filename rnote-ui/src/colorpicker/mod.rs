@@ -468,7 +468,7 @@ impl RnColorPicker {
         self.imp().colordialog_button.connect_clicked(
             clone!(@weak self as colorpicker, @weak appwindow => move |_| {
                 glib::MainContext::default().spawn_local(clone!(@weak colorpicker, @weak appwindow => async move {
-                    let dialog = ColorDialog::builder().modal(true).with_alpha(true).build();
+                    let dialog = ColorDialog::builder().modal(false).with_alpha(true).build();
 
                     let active_color = if colorpicker.stroke_color_pad_active() {
                         colorpicker.stroke_color()

@@ -35,7 +35,7 @@
             <property name="homogeneous">true</property>
             <style>
               <class name="toolbar" />
-              <class name="overlay-toolbar" />
+              <class name="overlay_toolbar" />
             </style>
             <style>
             </style>
@@ -100,7 +100,7 @@
             <property name="margin-end">18</property>
             <property name="position">top</property>
             <style>
-              <class name="overlay-toolbar" />
+              <class name="overlay_toolbar" />
             </style>
           </object>
         </child>
@@ -115,7 +115,7 @@
             <property name="margin-start">18</property>
             <property name="margin-end">18</property>
             <style>
-              <class name="overlay-toolbar" />
+              <class name="overlay_toolbar" />
             </style>
             <child>
               <object class="GtkScrolledWindow" id="sidebar_scroller">

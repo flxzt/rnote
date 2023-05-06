@@ -107,7 +107,8 @@ mod imp {
             let center = (size.0 * 0.5, size.1 * 0.5);
             let stroke_width = self.stroke_width.get();
 
-            // this will only be removed in Gtk5. Until a new color API is available, it's okay to use it.
+            // accessing colors through the style context is deprecated,
+            // but until a new color API is available I don't see how it can be refactored.
             #[allow(deprecated)]
             let window_fg_color = obj
                 .style_context()

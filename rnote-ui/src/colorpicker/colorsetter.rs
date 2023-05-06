@@ -120,6 +120,10 @@ mod imp {
             );
             css.load_from_data(&custom_css);
 
+            // adding custom css is deprecated.
+            // TODO: We should refactor to drawing through snapshot().
+            // Doing this will also get rid of the css checkerboard glitches that appear on some devices and scaling levels.
+            #[allow(deprecated)]
             self.obj()
                 .style_context()
                 .add_provider(&css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);

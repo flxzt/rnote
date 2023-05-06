@@ -55,7 +55,7 @@ pub(crate) fn dialog_open_overwrite(
                             // No success toast on saving without dialog, success is already indicated in the header title
                         } else {
                             // Open a dialog to choose a save location
-                            super::export::filechooser_save_doc_as(&appwindow, &canvas);
+                            super::export::dialog_save_doc_as(&appwindow, &canvas).await;
                         }
 
                         // only open and overwrite document if saving was successful

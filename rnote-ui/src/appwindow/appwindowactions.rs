@@ -234,15 +234,19 @@ impl RnAppWindow {
 
         // Export engine state
         action_debug_export_engine_state.connect_activate(
-            clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
-                dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab().canvas());
+            clone!(@weak self as appwindow => move |_, _| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    dialogs::export::filechooser_export_engine_state(&appwindow, &appwindow.active_tab().canvas()).await;
+                }));
             }),
         );
 
         // Export engine config
         action_debug_export_engine_config.connect_activate(
-            clone!(@weak self as appwindow => move |_action_debug_export_engine_config, _target| {
-                dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab().canvas());
+            clone!(@weak self as appwindow => move |_, _| {
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    dialogs::export::filechooser_export_engine_config(&appwindow, &appwindow.active_tab().canvas()).await;
+                }));
             }),
         );
 
@@ -590,14 +594,16 @@ impl RnAppWindow {
                     // No success toast on saving without dialog, success is already indicated in the header title
                 } else {
                     // Open a dialog to choose a save location
-                    dialogs::export::filechooser_save_doc_as(&appwindow, &canvas);
+                    dialogs::export::dialog_save_doc_as(&appwindow, &canvas).await;
                 }
             }));
         }));
 
         // Save doc as
         action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::export::filechooser_save_doc_as(&appwindow, &appwindow.active_tab().canvas());
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::export::dialog_save_doc_as(&appwindow, &appwindow.active_tab().canvas()).await;
+            }));
         }));
 
         // Print doc
@@ -717,23 +723,29 @@ impl RnAppWindow {
 
         // Export document
         action_export_doc.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::dialog_export_doc_w_prefs(&appwindow, &appwindow.active_tab().canvas());
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::export::dialog_export_doc_w_prefs(&appwindow, &appwindow.active_tab().canvas()).await;
+            }));
         }));
 
         // Export document pages
         action_export_doc_pages.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow, &appwindow.active_tab().canvas());
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::export::dialog_export_doc_pages_w_prefs(&appwindow, &appwindow.active_tab().canvas()).await;
+            }));
         }));
 
         // Export selection
         action_export_selection.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let canvas = appwindow.active_tab().canvas();
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                let canvas = appwindow.active_tab().canvas();
 
-            if !canvas.engine().borrow().store.selection_keys_unordered().is_empty() {
-                dialogs::export::dialog_export_selection_w_prefs(&appwindow, &appwindow.active_tab().canvas());
-            } else {
-                appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, nothing selected"));
-            }
+                if !canvas.engine().borrow().store.selection_keys_unordered().is_empty() {
+                    dialogs::export::dialog_export_selection_w_prefs(&appwindow, &appwindow.active_tab().canvas()).await;
+                } else {
+                    appwindow.overlays().dispatch_toast_error(&gettext("Exporting selection failed, nothing selected"));
+                }
+            }));
         }));
 
         // Clipboard copy

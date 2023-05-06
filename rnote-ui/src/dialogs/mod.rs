@@ -150,7 +150,7 @@ pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                         }
                     } else {
                         // Open a dialog to choose a save location
-                        export::filechooser_save_doc_as(&appwindow, &canvas);
+                        export::dialog_save_doc_as(&appwindow, &canvas).await;
                     }
                 }));
             },

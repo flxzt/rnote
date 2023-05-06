@@ -105,9 +105,6 @@ mod imp {
 
             self.setup_setters();
 
-            // we could theoretically update the colordialog color rgba preset when stroke-color and fill-color changes,
-            // but that would result in the active palette setter being changed. So we don't do that.
-
             self.stroke_color_pad
                 .bind_property("color", &*obj, "stroke-color")
                 .sync_create()

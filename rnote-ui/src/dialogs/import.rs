@@ -1,3 +1,6 @@
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+#![allow(deprecated)]
+
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{

@@ -1,3 +1,6 @@
+// gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
+#![allow(deprecated)]
+
 use std::cell::RefCell;
 use std::rc::Rc;
 

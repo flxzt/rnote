@@ -457,10 +457,11 @@ fn create_filedialog_export_doc_pages(
 
     let initial_folder = if let Some(output_parent_dir) = output_file.and_then(|f| f.parent()) {
         Some(output_parent_dir)
-    } else if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
-        Some(gio::File::for_path(current_workspace_dir))
     } else {
-        None
+        appwindow
+            .workspacebrowser()
+            .dirlist_dir()
+            .map(gio::File::for_path)
     };
     filedialog.set_initial_folder(initial_folder.as_ref());
 

@@ -827,6 +827,48 @@ impl RnoteEngine {
         }
     }
 
+    /// Adds a page to the document when in fixed size layout.
+    ///
+    /// Returns true when document is in fixed size layout and a pages was added,
+    /// else false.
+    ///
+    /// background and strokes rendering then need to be updated.
+    pub fn add_page_doc_fixed_size(&mut self) -> bool {
+        if self.document.layout != Layout::FixedSize {
+            return false;
+        }
+
+        let format_height = self.document.format.height;
+        let new_doc_height = self.document.height + format_height;
+        self.document.height = new_doc_height;
+
+        true
+    }
+
+    /// Removes a page from the document when in fixed size layout.
+    ///
+    /// Returns true when document is in fixed size layout and a pages was removed,
+    /// else false.
+    ///
+    /// background and strokes rendering then need to be updated.
+    pub fn remove_page_doc_fixed_size(&mut self) -> bool {
+        if self.document.layout != Layout::FixedSize {
+            return false;
+        }
+        let format_height = self.document.format.height;
+        let doc_y = self.document.y;
+        let doc_height = self.document.height;
+        let new_doc_height = doc_height - format_height;
+
+        if doc_height > format_height {
+            let remove_area_keys = self.store.keys_below_y_pos(doc_y + new_doc_height);
+            self.store.set_trashed_keys(&remove_area_keys, true);
+            self.document.height = new_doc_height;
+        }
+
+        true
+    }
+
     /// Updates the camera and updates doc dimensions with the new offset and size.
     ///
     /// background and strokes rendering then need to be updated.

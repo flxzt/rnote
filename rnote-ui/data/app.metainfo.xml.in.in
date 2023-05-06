@@ -77,7 +77,7 @@
         <p>this release changes:</p>
         <ul>
           <li>orga: Rnote now follows a new versioning scheme - feature updates will increment x, while patches will increment y in versions 0.x.y .
-Breakages in the file format will be explicitely announced (but we'll work as hard as possible to avoid it!) and are not reflected in the version anymore.</li>
+Breakages in the file format will be explicitly announced (but we'll work as hard as possible to avoid them!) and are not reflected in the version anymore.</li>
           <li>orga: the app is now available for Windows and MacOS! Check the installation section on the website / README, you'll find links to the installer and app bundle there.</li>
           <li>feature: arrow shapes (thanks to @TornaxO7 )</li>
           <li>feature: ability to recolor selected strokes (thanks to @Kneemund )</li>

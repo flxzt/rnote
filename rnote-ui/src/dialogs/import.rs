@@ -1,8 +1,8 @@
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
-    gio, glib, glib::clone, Builder, Dialog, FileChooserAction, FileChooserNative, FileFilter,
-    Label, ResponseType, SpinButton, ToggleButton,
+    gio, glib, glib::clone, Builder, Dialog, FileDialog, FileFilter, Label, ResponseType,
+    SpinButton, ToggleButton,
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
@@ -75,51 +75,34 @@ pub(crate) fn dialog_open_overwrite(
 }
 
 /// Opens a new rnote save file in a new tab
-pub(crate) fn filechooser_open_doc(appwindow: &RnAppWindow) {
+pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/rnote");
     filter.add_suffix("rnote");
     filter.set_name(Some(&gettext(".rnote")));
 
-    let filechooser: FileChooserNative = FileChooserNative::builder()
+    let filedialog = FileDialog::builder()
         .title(gettext("Open File"))
         .modal(true)
-        .transient_for(appwindow)
         .accept_label(gettext("Open"))
-        .cancel_label(gettext("Cancel"))
-        .action(FileChooserAction::Open)
-        .select_multiple(false)
+        .default_filter(&filter)
         .build();
 
-    filechooser.set_filter(&filter);
-
     if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
-        if let Err(e) =
-            filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
-        {
-            log::error!("set_current_folder() for dialog_open_doc failed with Err: {e:?}");
-        }
+        filedialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
-    filechooser.connect_response(clone!(@weak appwindow => move |filechooser, responsetype| {
-        match responsetype {
-            ResponseType::Accept => {
-                if let Some(input_file) = filechooser.file() {
-                    appwindow.open_file_w_dialogs(input_file, None, true);
-                }
-            },
-            _ => {}
+    match filedialog.open_future(Some(appwindow)).await {
+        Ok(selected_file) => {
+            appwindow.open_file_w_dialogs(selected_file, None, true);
         }
-
-    }));
-
-    filechooser.show();
-
-    // keeping the filechooser around because otherwise GTK won't keep it alive
-    *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
+        Err(e) => {
+            log::debug!("{e:?}");
+        }
+    }
 }
 
-pub(crate) fn filechooser_import_file(appwindow: &RnAppWindow) {
+pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("application/x-xopp");
     filter.add_mime_type("application/pdf");
@@ -134,41 +117,25 @@ pub(crate) fn filechooser_import_file(appwindow: &RnAppWindow) {
     filter.add_suffix("jpeg");
     filter.set_name(Some(&gettext("Jpg, Pdf, Png, Svg, Xopp")));
 
-    let filechooser: FileChooserNative = FileChooserNative::builder()
+    let dialog = FileDialog::builder()
         .title(gettext("Import File"))
         .modal(true)
-        .transient_for(appwindow)
         .accept_label(gettext("Import"))
-        .cancel_label(gettext("Cancel"))
-        .action(FileChooserAction::Open)
-        .select_multiple(false)
+        .default_filter(&filter)
         .build();
 
-    filechooser.set_filter(&filter);
-
     if let Some(current_workspace_dir) = appwindow.workspacebrowser().dirlist_dir() {
-        if let Err(e) =
-            filechooser.set_current_folder(Some(&gio::File::for_path(current_workspace_dir)))
-        {
-            log::error!("set_current_folder() for dialog_import_file failed with Err: {e:?}");
-        }
+        dialog.set_initial_folder(Some(&gio::File::for_path(current_workspace_dir)));
     }
 
-    filechooser.connect_response(clone!(@weak appwindow => move |filechooser, responsetype| {
-        match responsetype {
-            ResponseType::Accept => {
-                if let Some(input_file) = filechooser.file() {
-                    appwindow.open_file_w_dialogs(input_file, None, true);
-                }
-            }
-            _ => {
-            }
+    match dialog.open_future(Some(appwindow)).await {
+        Ok(selected_file) => {
+            appwindow.open_file_w_dialogs(selected_file, None, true);
         }
-    }));
-
-    filechooser.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive
-    *appwindow.filechoosernative().borrow_mut() = Some(filechooser);
+        Err(e) => {
+            log::debug!("{e:?}");
+        }
+    }
 }
 
 pub(crate) fn dialog_import_pdf_w_prefs(

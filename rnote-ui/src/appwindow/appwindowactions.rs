@@ -572,7 +572,9 @@ impl RnAppWindow {
 
         // Open doc
         action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::import::filechooser_open_doc(&appwindow);
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::import::filedialog_open_doc(&appwindow).await;
+            }));
         }));
 
         // Save doc
@@ -718,7 +720,9 @@ impl RnAppWindow {
 
         // Import
         action_import_file.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::import::filechooser_import_file(&appwindow);
+            glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                dialogs::import::filedialog_import_file(&appwindow).await;
+            }));
         }));
 
         // Export document

@@ -49,6 +49,17 @@ impl KeyTree {
             .collect()
     }
 
+    /// Returns the keys that completely are in the given bounds
+    pub fn keys_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
+        self.0
+            .locate_in_envelope(&rstar::AABB::from_corners(
+                [bounds.mins[0], bounds.mins[1]],
+                [bounds.maxs[0], bounds.maxs[1]],
+            ))
+            .map(|object| object.data)
+            .collect()
+    }
+
     /// Reloads the entire tree from the given Vec of (key, bounds).
     pub fn reload_with_vec(&mut self, strokes: Vec<(StrokeKey, Aabb)>) {
         let objects = strokes

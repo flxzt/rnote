@@ -2,6 +2,7 @@ use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit, Window,
 };
+use parry2d_f64::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penevents::ShortcutKey;
@@ -96,6 +97,8 @@ impl RnAppWindow {
         self.add_action(&action_zoom_to_value);
         let action_add_page_to_doc = gio::SimpleAction::new("add-page-to-doc", None);
         self.add_action(&action_add_page_to_doc);
+        let action_remove_page_from_doc = gio::SimpleAction::new("remove-page-from-doc", None);
+        self.add_action(&action_remove_page_from_doc);
         let action_resize_to_fit_strokes = gio::SimpleAction::new("resize-to-fit-strokes", None);
         self.add_action(&action_resize_to_fit_strokes);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
@@ -534,6 +537,29 @@ impl RnAppWindow {
                 canvas.engine().borrow_mut().document.height = new_doc_height;
 
                 canvas.update_engine_rendering();
+            }),
+        );
+
+        // Remove page from doc in fixed size mode
+        action_remove_page_from_doc.connect_activate(
+            clone!(@weak self as appwindow => move |_action_remove_page_from_doc, _target| {
+                let canvas = appwindow.active_tab().canvas();
+
+                let widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+
+                let format_height = canvas.engine().borrow().document.format.height;
+                let format_width = canvas.engine().borrow().document.format.width;
+                let doc_height = canvas.engine().borrow().document.height;
+                let new_doc_height = doc_height - format_height;
+                if doc_height > format_height {
+                    let aabb = Aabb::new(na::point![0.0, new_doc_height], na::point![0.0 + format_width, doc_height]);
+                    let remove_area_keys = canvas.engine().borrow_mut().store.stroke_keys_as_rendered_in_bounds(aabb);
+                    canvas.engine().borrow_mut().store.set_trashed_keys(&remove_area_keys, true);
+                    canvas.engine().borrow_mut().document.height = new_doc_height;
+
+                    canvas.update_engine_rendering();
+                }
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 

@@ -10,13 +10,8 @@
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
     <child>
-      <object class="GtkMenuButton" id="fontchooser_menubutton">
-        <property name="direction">left</property>
-        <property name="popover">fontchooser_popover</property>
-        <property name="tooltip_text" translatable="yes">Font Chooser
-(double-click, click on select
-or press Enter to select a new font)</property>
-            <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
+      <object class="GtkButton" id="fontdialog_button">
+        <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
         <style>
           <class name="flat" />
           <class name="sidebar_action_button" />
@@ -155,56 +150,5 @@ or press Enter to select a new font)</property>
         </child>
       </object>
     </child>
-
-    <!-- fontchooser -->
-    <object class="GtkPopover" id="fontchooser_popover">
-      <property name="position">right</property>
-      <child>
-        <object class="GtkGrid">
-          <property name="row_spacing">12</property>
-          <property name="column_spacing">12</property>
-          <property name="margin_top">6</property>
-          <property name="margin_bottom">6</property>
-          <property name="margin_start">6</property>
-          <property name="margin_end">6</property>
-          <child>
-            <object class="GtkButton" id="fontchooser_cancelbutton">
-              <property name="label" translatable="yes">Cancel</property>
-              <property name="hexpand">false</property>
-              <property name="vexpand">false</property>
-              <property name="halign">start</property>
-              <layout>
-                <property name="column">0</property>
-                <property name="row">0</property>
-              </layout>
-            </object>
-          </child>
-          <child>
-            <object class="GtkButton" id="fontchooser_selectbutton">
-              <property name="label" translatable="yes">Select</property>
-              <property name="hexpand">false</property>
-              <property name="halign">end</property>
-              <property name="vexpand">false</property>
-              <style>
-                <class name="suggested-action" />
-              </style>
-              <layout>
-                <property name="column">1</property>
-                <property name="row">0</property>
-              </layout>
-            </object>
-          </child>
-          <child>
-            <object class="GtkFontChooserWidget" id="fontchooser">
-              <layout>
-                <property name="column">0</property>
-                <property name="row">1</property>
-                <property name="column-span">2</property>
-              </layout>
-            </object>
-          </child>
-        </object>
-      </child>
-    </object>
   </template>
 </interface>

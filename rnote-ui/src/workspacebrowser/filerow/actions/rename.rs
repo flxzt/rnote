@@ -5,7 +5,7 @@ use gtk4::{
     glib::clone,
     pango,
     prelude::FileExt,
-    traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, StyleContextExt, WidgetExt},
+    traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, WidgetExt},
     Align, Button, Entry, Label, Popover,
 };
 
@@ -59,8 +59,7 @@ fn create_label() -> Label {
         .width_chars(24)
         .ellipsize(pango::EllipsizeMode::End)
         .build();
-    label.style_context().add_class("title-4");
-
+    label.add_css_class("title-4");
     label
 }
 

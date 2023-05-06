@@ -83,7 +83,10 @@
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
                             <child>
-                              <object class="GtkColorButton" id="general_format_border_color_choosebutton"></object>
+                              <object class="GtkColorDialog" id="general_format_border_color_dialog"></object>
+                              <object class="GtkColorDialogButton" id="general_format_border_color_button">
+                                <property name="dialog">general_format_border_color_dialog</property>
+                              </object>
                             </child>
                           </object>
                         </child>
@@ -290,7 +293,10 @@
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
                             <child>
-                              <object class="GtkColorButton" id="background_color_choosebutton"></object>
+                              <object class="GtkColorDialog" id="background_color_dialog"></object>
+                              <object class="GtkColorDialogButton" id="background_color_button">
+                                <property name="dialog">background_color_dialog</property>
+                              </object>
                             </child>
                           </object>
                         </child>
@@ -326,7 +332,10 @@
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
                             <child>
-                              <object class="GtkColorButton" id="background_pattern_color_choosebutton"></object>
+                              <object class="GtkColorDialog" id="background_pattern_color_dialog"></object>
+                              <object class="GtkColorDialogButton" id="background_pattern_color_button">
+                                <property name="dialog">background_pattern_color_dialog</property>
+                              </object>
                             </child>
                           </object>
                         </child>

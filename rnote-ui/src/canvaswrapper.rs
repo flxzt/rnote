@@ -516,7 +516,7 @@ mod imp {
                         // sequences within the group ( by calling `set_state()` ) might result in a segfault in certain cases
                         if let Some(es) = event_sequence {
                             // setting event sequences states directly is deprecated,
-                            // by it is not clear how to refactor it while not regressing the fix 4c33594 for #595
+                            // but it is not clear how to refactor it while not regressing the fix 4c33594 for #595
                             #[allow(deprecated)]
                             gesture.set_sequence_state(es, EventSequenceState::Denied);
                         }
@@ -527,7 +527,7 @@ mod imp {
                     clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
                         if let Some(es) = event_sequence {
                             // setting event sequences states directly is deprecated,
-                            // by it is not clear how to refactor it while not regressing the fix 4c33594 for #595
+                            // but it is not clear how to refactor it while not regressing the fix 4c33594 for #595
                             #[allow(deprecated)]
                             gesture.set_sequence_state(es, EventSequenceState::Denied);
                         }

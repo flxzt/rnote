@@ -108,7 +108,7 @@ mod imp {
             let stroke_width = self.stroke_width.get();
 
             // accessing colors through the style context is deprecated,
-            // but until a new color API is available I don't see how it can be refactored.
+            // but this needs new color API to fetch theme colors.
             #[allow(deprecated)]
             let window_fg_color = obj
                 .style_context()

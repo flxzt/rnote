@@ -555,13 +555,13 @@ impl RnAppWindow {
                     let aabb = Aabb::new(na::point![0.0, new_doc_height], na::point![0.0 + format_width, doc_height]);
                     let (_, wf) = canvas.engine().borrow_mut().store.split_colliding_strokes(aabb, aabb);
                     widget_flags.merge(wf);
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
                     let remove_area_keys = canvas.engine().borrow_mut().store.stroke_keys_as_rendered_in_bounds(aabb);
                     canvas.engine().borrow_mut().store.set_trashed_keys(&remove_area_keys, true);
                     canvas.engine().borrow_mut().document.height = new_doc_height;
 
                     canvas.update_engine_rendering();
                 }
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 

@@ -68,10 +68,10 @@ cpp_compiler = meson.get_compiler('cpp')
 # However when building as flatpak libclang is not found, even though the llvm extension is installed. TODO: How to fix this?
 #cpp_compiler.find_library('clang')
 
-dependency('glib-2.0', version: '>= 2.66')
-dependency('gio-2.0', version: '>= 2.66')
-dependency('gtk4', version: '>= 4.7')
-dependency('libadwaita-1', version: '>= 1.2')
+dependency('glib-2.0', version: '>= 2.72')
+dependency('gio-2.0', version: '>= 2.72')
+dependency('gtk4', version: '>= 4.10')
+dependency('libadwaita-1', version: '>= 1.3')
 dependency('poppler-glib', version: '>= 22.07')
 
 cargo = find_program('cargo', required: true)

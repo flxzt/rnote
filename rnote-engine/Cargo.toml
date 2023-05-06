@@ -32,9 +32,9 @@ slotmap = { version = "1", features = ["serde"] }
 rstar = "0.10"
 nalgebra = { version = "0.32", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.13", features = ["serde-serialize"] }
-gtk4 = {version = "0.6", features = ["v4_8"]}
+gtk4 = {version = "0.6", features = ["v4_10"]}
 cairo-rs = {version = "0.17", features = ["png", "svg", "pdf"]}
-# newest poppler feature ("v21_12") is causing linking errors with mingw for some reason
+# newest poppler feature ("v21_12") is causing linking errors in mingw for some reason
 poppler-rs = {version = "0.21", features = ["v20_9"] }
 piet = "0.6"
 piet-cairo = "0.6"

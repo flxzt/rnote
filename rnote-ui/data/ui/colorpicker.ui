@@ -75,68 +75,12 @@
       </object>
     </child>
     <child>
-      <object class="GtkMenuButton" id="colorpicker_button">
-        <property name="direction">left</property>
+      <object class="GtkButton" id="colordialog_button">
         <property name="icon-name">preferences-color-symbolic</property>
-        <property name="hexpand">false</property>
-        <property name="vexpand">false</property>
-        <property name="halign">center</property>
-        <property name="valign">center</property>
-        <property name="popover">colorpicker_popover</property>
         <style>
           <class name="flat" />
         </style>
       </object>
     </child>
-    <object class="GtkPopover" id="colorpicker_popover">
-      <property name="position">right</property>
-      <child>
-        <object class="GtkGrid">
-          <property name="row_spacing">12</property>
-          <property name="column_spacing">12</property>
-          <property name="margin_top">6</property>
-          <property name="margin_bottom">6</property>
-          <property name="margin_start">6</property>
-          <property name="margin_end">6</property>
-          <child>
-            <object class="GtkButton" id="colorchooser_editor_gobackbutton">
-              <property name="icon-name">left-symbolic</property>
-              <property name="hexpand">false</property>
-              <property name="halign">start</property>
-              <property name="vexpand">false</property>
-              <property name="visible">false</property>
-              <layout>
-                <property name="column">0</property>
-                <property name="row">0</property>
-              </layout>
-            </object>
-          </child>
-          <child>
-            <object class="GtkButton" id="colorchooser_editor_selectbutton">
-              <property name="label" translatable="yes">Select</property>
-              <property name="hexpand">false</property>
-              <property name="halign">end</property>
-              <property name="vexpand">false</property>
-              <style>
-                <class name="suggested-action" />
-              </style>
-              <layout>
-                <property name="column">1</property>
-                <property name="row">0</property>
-              </layout>
-            </object>
-          </child>
-          <child>
-            <object class="GtkColorChooserWidget" id="colorchooser">
-              <layout>
-                <property name="column">0</property>
-                <property name="row">1</property>
-                <property name="column-span">2</property>
-              </layout>
-            </object>
-          </child>
-        </object>
-      </child>
-    </object>
   </template>
 </interface>

@@ -2,7 +2,7 @@ use gettextrs::gettext;
 use gtk4::{
     glib,
     glib::clone,
-    traits::{ButtonExt, GridExt, PopoverExt, StyleContextExt, WidgetExt},
+    traits::{ButtonExt, GridExt, PopoverExt, WidgetExt},
     Align, Button, Entry, Grid, Label, Popover, PositionType,
 };
 
@@ -37,7 +37,7 @@ pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton,
         .halign(Align::End)
         .label(gettext("Apply"))
         .build();
-    apply_button.style_context().add_class("suggested-action");
+    apply_button.add_css_class("suggested-action");
 
     grid.attach(label, 0, 0, 2, 1);
     grid.attach(entry, 0, 1, 2, 1);

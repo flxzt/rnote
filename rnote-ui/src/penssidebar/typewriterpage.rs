@@ -1,12 +1,12 @@
-use gtk4::pango;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, EmojiChooser,
-    FontChooserLevel, FontChooserWidget, MenuButton, Popover, SpinButton, ToggleButton,
+    glib, glib::clone, pango, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
+    EmojiChooser, FontDialog, SpinButton, ToggleButton,
 };
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::Pen;
 use rnote_engine::strokes::textstroke::TextStyle;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
+use std::cell::RefCell;
 
 use crate::{RnAppWindow, RnCanvasWrapper};
 
@@ -16,16 +16,10 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/typewriterpage.ui")]
     pub(crate) struct RnTypewriterPage {
+        pub(super) prev_picked_font_family: RefCell<Option<pango::FontFamily>>,
+
         #[template_child]
-        pub(crate) fontchooser_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) fontchooser_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) fontchooser: TemplateChild<FontChooserWidget>,
-        #[template_child]
-        pub(crate) fontchooser_cancelbutton: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) fontchooser_selectbutton: TemplateChild<Button>,
+        pub(crate) fontdialog_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) font_size_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -68,9 +62,6 @@ mod imp {
     impl ObjectImpl for RnTypewriterPage {
         fn constructed(&self) {
             self.parent_constructed();
-
-            // Sets the level of the font chooser (we want FAMILY, as we have separate widgets for weight, style, etc.)
-            self.fontchooser.set_level(FontChooserLevel::FAMILY);
         }
 
         fn dispose(&self) {
@@ -123,68 +114,42 @@ impl RnTypewriterPage {
         }
     }
 
-    #[allow(unused)]
-    pub(crate) fn text_style(&self) -> TextStyle {
-        let mut text_style = TextStyle::default();
-        if let Some(font_desc) = self.imp().fontchooser.font_desc() {
-            text_style.load_pango_font_desc(font_desc);
-        }
-        text_style.font_size = self.imp().font_size_spinbutton.value();
-
-        text_style
-    }
-
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
-        let fontchooser = imp.fontchooser.get();
-        let fontchooser_popover = imp.fontchooser_popover.get();
-
-        // Font chooser
-        imp.fontchooser_cancelbutton.connect_clicked(
-            clone!(@weak fontchooser, @weak fontchooser_popover => move |_fontchooser_cancelbutton| {
-                fontchooser_popover.popdown();
-            }),
-        );
-
-        imp.fontchooser_selectbutton.connect_clicked(
-            clone!(@weak fontchooser, @weak fontchooser_popover => move |_fontchooser_selectbutton| {
-                if let Some(font) = fontchooser.font() {
-                    fontchooser.emit_by_name::<()>("font-activated", &[&font.to_value()]);
-                }
-
-                fontchooser_popover.popdown();
-            }),
-        );
-
-        // Listening to connect_font_notify would always activate at app startup. font_activated only emits when the user interactively selects a font (with double click or Enter)
-        // or we activate the signal manually elsewhere in the code
-        imp.fontchooser.connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
-            if let Some(font_family) = fontchooser.font_family().map(|font_family| font_family.name().to_string()) {
+        imp.fontdialog_button.connect_clicked(clone!(@weak self as typewriterpage, @weak appwindow => move |_| {
+            glib::MainContext::default().spawn_local(clone!(@weak typewriterpage, @weak appwindow => async move {
+                let dialog = FontDialog::builder().modal(false).build();
                 let canvas = appwindow.active_tab().canvas();
-                let engine = canvas.engine();
-                let engine = &mut *engine.borrow_mut();
+                let prev_picked_font_family = typewriterpage.imp().prev_picked_font_family.borrow().clone();
 
-                engine.pens_config.typewriter_config.text_style.font_family = font_family.clone();
+                match dialog.choose_family_future(Some(&appwindow), prev_picked_font_family.as_ref()).await {
+                    Ok(new_font_family) => {
+                        let engine = canvas.engine();
+                        let engine = &mut *engine.borrow_mut();
+                        let new_font_family_name = new_font_family.name();
 
-                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                        |text_style| {
-                            text_style.font_family = font_family;
-                        },
-                        &mut EngineViewMut {
-                            tasks_tx: engine.tasks_tx.clone(),
-                            pens_config: &mut engine.pens_config,
-                            doc: &mut engine.document,
-                            store: &mut engine.store,
-                            camera: &mut engine.camera,
-                            audioplayer: &mut engine.audioplayer
-                    });
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                        typewriterpage.imp().prev_picked_font_family.borrow_mut().replace(new_font_family);
+
+                        if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                            let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                                |text_style| {
+                                    text_style.font_family = new_font_family_name.into();
+                                },
+                                &mut EngineViewMut {
+                                    tasks_tx: engine.tasks_tx.clone(),
+                                    pens_config: &mut engine.pens_config,
+                                    doc: &mut engine.document,
+                                    store: &mut engine.store,
+                                    camera: &mut engine.camera,
+                                    audioplayer: &mut engine.audioplayer
+                            });
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
+                    }
+                    Err(e) => log::debug!("did not choose new font family (Error or dialog dismissed by user), {e:?}"),
                 }
-
-                fontchooser_popover.popdown();
-            }
+            }));
         }));
 
         // Font size
@@ -220,24 +185,6 @@ impl RnTypewriterPage {
                 }
             }),
         );
-
-        // Update the font chooser font size, to display the preview text in the correct size
-        imp.font_size_spinbutton
-            .bind_property("value", &fontchooser, "font-desc")
-            .transform_to(|binding, val: f64| {
-                let fontchooser = binding
-                    .target()
-                    .unwrap()
-                    .downcast::<FontChooserWidget>()
-                    .unwrap();
-                let mut font_desc = fontchooser.font_desc()?;
-
-                font_desc.set_size((val * f64::from(pango::SCALE)).round() as i32);
-
-                Some(font_desc.to_value())
-            })
-            .sync_create()
-            .build();
 
         // Emojis
         imp.emojichooser.connect_emoji_picked(
@@ -499,8 +446,6 @@ impl RnTypewriterPage {
             .typewriter_config
             .clone();
 
-        imp.fontchooser
-            .set_font_desc(&typewriter_config.text_style.extract_pango_font_desc());
         imp.font_size_spinbutton
             .set_value(typewriter_config.text_style.font_size);
 

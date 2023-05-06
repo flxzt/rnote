@@ -233,14 +233,14 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
     background: alpha(currentColor, 0.19);
 }
 
-.overlay-toolbar {
+.overlay_toolbar {
     border-radius: 12px;
     background-color: @window_bg_color;
     border: 1px solid @borders;
     box-shadow: 0px 3px 6px @shade_color;
 }
 
-.overlay-toolbar.colorpicker {
+.overlay_toolbar.colorpicker {
     padding: 6px;
 }
 

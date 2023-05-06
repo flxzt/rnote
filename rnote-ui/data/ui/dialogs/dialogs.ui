@@ -136,15 +136,17 @@ Do you want to save the current document?</property>
                   </object>
                 </child>
                 <child>
+                  <object class="GtkColorDialog" id="edit_selected_workspace_color_dialog"></object>
                   <object class="AdwActionRow">
                     <property name="title" translatable="yes">Color</property>
                     <property name="subtitle" translatable="yes">Change the workspace color</property>
                     <child type="suffix">
-                      <object class="GtkColorButton" id="edit_selected_workspace_color_button">
+                      <object class="GtkColorDialogButton" id="edit_selected_workspace_color_button">
                         <property name="hexpand">false</property>
                         <property name="hexpand">false</property>
                         <property name="valign">center</property>
                         <property name="halign">end</property>
+                        <property name="dialog">edit_selected_workspace_color_dialog</property>
                       </object>
                     </child>
                   </object>

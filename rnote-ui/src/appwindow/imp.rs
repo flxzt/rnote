@@ -3,8 +3,8 @@ use gettextrs::gettext;
 use gtk4::PadActionType;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, ArrowType, Box, Button, CompositeTemplate, CornerType,
-    CssProvider, FileChooserNative, GestureDrag, Grid, Inhibit, PackType, PadController,
-    PositionType, PropagationPhase,
+    CssProvider, GestureDrag, Grid, Inhibit, PackType, PadController, PositionType,
+    PropagationPhase,
 };
 use once_cell::sync::Lazy;
 use std::{
@@ -21,7 +21,6 @@ use crate::{
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
 pub(crate) struct RnAppWindow {
     pub(crate) app_settings: gio::Settings,
-    pub(crate) filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
     pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
@@ -66,7 +65,6 @@ impl Default for RnAppWindow {
     fn default() -> Self {
         Self {
             app_settings: gio::Settings::new(config::APP_ID),
-            filechoosernative: Rc::new(RefCell::new(None)),
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
             periodic_configsave_source_id: RefCell::new(None),

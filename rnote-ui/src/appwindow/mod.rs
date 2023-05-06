@@ -6,16 +6,14 @@ mod imp;
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::gdk;
-use gtk4::{gio, glib, glib::clone, Application, Box, Button, FileChooserNative, IconTheme};
+use gtk4::{gio, glib, glib::clone, Application, Box, Button, IconTheme};
 use rnote_compose::Color;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::utils::GdkRGBAHelpers;
 use rnote_engine::{engine::EngineTask, WidgetFlags};
-use std::cell::RefCell;
 use std::path::Path;
-use std::rc::Rc;
 
 use crate::{
     config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
@@ -85,10 +83,6 @@ impl RnAppWindow {
         self.imp().app_settings.clone()
     }
 
-    pub(crate) fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
-        self.imp().filechoosernative.clone()
-    }
-
     pub(crate) fn overlays(&self) -> RnOverlays {
         self.imp().overlays.get()
     }
@@ -139,6 +133,7 @@ impl RnAppWindow {
         imp.mainheader.get().init(self);
         imp.mainheader.get().canvasmenu().init(self);
         imp.mainheader.get().appmenu().init(self);
+        imp.overlays.get().colorpicker().init(self);
 
         // An initial tab. Must! come before setting up the settings binds and import
         self.add_initial_tab();

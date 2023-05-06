@@ -70,7 +70,9 @@ pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanva
             appwindow.overlays().finish_progressbar();
         }
         Err(e) => {
-            log::debug!("no file selected in save doc as dialog (Error or User dismissed), {e:?}")
+            log::debug!(
+                "no file selected in save doc as dialog (Error or dialog dismissed by user), {e:?}"
+            )
         }
     }
 }
@@ -128,7 +130,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                         }
                     }
                     Err(e) => {
-                        log::debug!("{e:?}");
+                        log::debug!("did not export document (Error or dialog dismissed by user), {e:?}");
                         export_file_label.set_label(&gettext("- no file selected -"));
                         button_confirm.set_sensitive(false);
                         selected_file.replace(None);
@@ -348,7 +350,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                         }
                     }
                     Err(e) => {
-                        log::debug!("{e:?}");
+                        log::debug!("did not export document pages (Error or dialog dismissed by user), {e:?}");
 
                         export_dir_label.set_label(&gettext("- no directory selected -"));
                         button_confirm.set_sensitive(false);
@@ -597,7 +599,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                         }
                     }
                     Err(e) => {
-                        log::debug!("{e:?}");
+                        log::debug!("did not export selection (Error or dialog dismissed by user), {e:?}");
                         export_file_label.set_label(&gettext("- no file selected -"));
                         button_confirm.set_sensitive(false);
                         selected_file.replace(None);
@@ -768,7 +770,7 @@ pub(crate) async fn filechooser_export_engine_state(appwindow: &RnAppWindow, can
             appwindow.overlays().finish_progressbar();
         }
         Err(e) => {
-            log::debug!("{e:?}");
+            log::debug!("did not export engine state (Error or dialog dismissed by user), {e:?}");
         }
     }
 }
@@ -814,7 +816,7 @@ pub(crate) async fn filechooser_export_engine_config(appwindow: &RnAppWindow, ca
             appwindow.overlays().finish_progressbar();
         }
         Err(e) => {
-            log::debug!("{e:?}");
+            log::debug!("did not export engine config (Error or dialog dismissed by user), {e:?}");
         }
     }
 }

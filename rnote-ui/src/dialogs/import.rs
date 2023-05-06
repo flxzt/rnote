@@ -100,7 +100,7 @@ pub(crate) async fn filedialog_open_doc(appwindow: &RnAppWindow) {
             appwindow.open_file_w_dialogs(selected_file, None, true);
         }
         Err(e) => {
-            log::debug!("{e:?}");
+            log::debug!("did not open document (Error or dialog dismissed by user), {e:?}");
         }
     }
 }
@@ -136,7 +136,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
             appwindow.open_file_w_dialogs(selected_file, None, true);
         }
         Err(e) => {
-            log::debug!("{e:?}");
+            log::debug!("did not import file (Error or dialog dismissed by user),{e:?}");
         }
     }
 }

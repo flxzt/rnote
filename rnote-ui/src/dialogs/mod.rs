@@ -512,7 +512,7 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
                         }
                     }
                     Err(e) => {
-                        log::debug!("{e:?}");
+                        log::debug!("did not select new folder for workspacerow (Error or dialog dismissed by user), {e:?}");
                     }
                 }
                 dialog.present();

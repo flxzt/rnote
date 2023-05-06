@@ -147,7 +147,7 @@ impl RnTypewriterPage {
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
                     }
-                    Err(e) => log::debug!("did not choose new font family (Error or Dialog dismissed), {e:?}"),
+                    Err(e) => log::debug!("did not choose new font family (Error or dialog dismissed by user), {e:?}"),
                 }
             }));
         }));

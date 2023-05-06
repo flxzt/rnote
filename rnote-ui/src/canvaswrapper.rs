@@ -514,16 +514,22 @@ mod imp {
                         // Only deny the sequence that is actually handled.
                         // Because this gesture is grouped with the zoom gesture, denying all
                         // sequences within the group ( by calling `set_state()` ) might result in a segfault in certain cases
-                        if event_sequence.is_some() {
-                            gesture.set_state(EventSequenceState::Denied);
+                        if let Some(es) = event_sequence {
+                            // setting event sequences states directly is deprecated,
+                            // by it is not clear how to refactor it while not regressing the fix 4c33594 for #595
+                            #[allow(deprecated)]
+                            gesture.set_sequence_state(es, EventSequenceState::Denied);
                         }
                     }),
                 );
 
                 self.touch_two_finger_long_press_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, event_sequence| {
-                        if event_sequence.is_some() {
-                            gesture.set_state(EventSequenceState::Denied);
+                        if let Some(es) = event_sequence {
+                            // setting event sequences states directly is deprecated,
+                            // by it is not clear how to refactor it while not regressing the fix 4c33594 for #595
+                            #[allow(deprecated)]
+                            gesture.set_sequence_state(es, EventSequenceState::Denied);
                         }
                     }),
                 );

@@ -448,8 +448,7 @@ pub fn scale_w_locked_aspectratio(
     src_size: na::Vector2<f64>,
     max_size: na::Vector2<f64>,
 ) -> na::Vector2<f64> {
-    let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
-
+    let ratio = (max_size[0] / src_size[0] + max_size[1] / src_size[1]) / 2.0;
     src_size * ratio
 }
 

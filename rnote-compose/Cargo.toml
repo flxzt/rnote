@@ -7,7 +7,7 @@ rust-version = "1.65"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "c12302c6f1f87a45cb474b67a02897daa32a46a3" }
+ink-stroke-modeler-rs = { git = "https://github.com/flxzt/ink-stroke-modeler-rs", rev = "3752d28280934c21eec31b14c59cb70f9574d6e7" }
 
 log = "0.4"
 anyhow = "1"

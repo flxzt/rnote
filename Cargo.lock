@@ -1995,7 +1995,7 @@ checksum = "cef509aa9bc73864d6756f0d34d35504af3cf0844373afe9b8669a5b8005a729"
 dependencies = [
  "console",
  "number_prefix",
- "portable-atomic",
+ "portable-atomic 0.3.20",
  "unicode-width",
 ]
 
@@ -2008,7 +2008,7 @@ checksum = "bfa799dd5ed20a7e349f3b4639aa80d74549c81716d9ec4f994c9b5815598306"
 [[package]]
 name = "ink-stroke-modeler-rs"
 version = "0.1.0"
-source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=c12302c6f1f87a45cb474b67a02897daa32a46a3#c12302c6f1f87a45cb474b67a02897daa32a46a3"
+source = "git+https://github.com/flxzt/ink-stroke-modeler-rs?rev=3752d28280934c21eec31b14c59cb70f9574d6e7#3752d28280934c21eec31b14c59cb70f9574d6e7"
 dependencies = [
  "anyhow",
  "autocxx",
@@ -3161,9 +3161,18 @@ dependencies = [
 
 [[package]]
 name = "portable-atomic"
-version = "0.3.19"
+version = "0.3.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26f6a7b87c2e435a3241addceeeff740ff8b7e76b74c13bf9acb17fa454ea00b"
+checksum = "e30165d31df606f5726b090ec7592c308a0eaf61721ff64c9a3018e344a8753e"
+dependencies = [
+ "portable-atomic 1.3.1",
+]
+
+[[package]]
+name = "portable-atomic"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1bbda379e6e462c97ea6afe9f6233619b202bbc4968d7caa6917788d2070a044"
 
 [[package]]
 name = "ppv-lite86"
@@ -4208,9 +4217,9 @@ dependencies = [
 
 [[package]]
 name = "system-deps"
-version = "6.0.5"
+version = "6.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0fe581ad25d11420b873cf9aedaca0419c2b411487b134d4d21065f3d092055"
+checksum = "e5fa6fb9ee296c0dc2df41a656ca7948546d061958115ddb0bcaae43ad0d17d2"
 dependencies = [
  "cfg-expr",
  "heck",

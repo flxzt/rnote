@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-09 00:04+0200\n"
 "PO-Revision-Date: 2023-05-10 05:47+0000\n"
-"Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
+"Last-Translator: lambdark <lambdark@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -397,7 +397,7 @@ msgstr "选择导出文件所在目录"
 
 #: rnote-ui/data/ui/dialogs/export.ui:245
 msgid "Export Files Stem Name"
-msgstr "导出文件主名称"
+msgstr "导出文件标题"
 
 #: rnote-ui/data/ui/dialogs/export.ui:284
 #: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:540

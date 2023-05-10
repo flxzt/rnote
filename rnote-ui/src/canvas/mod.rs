@@ -52,7 +52,7 @@ pub(crate) struct Handlers {
 mod imp {
     use super::*;
 
-    #[allow(missing_debug_implementations)]
+    #[derive(Debug)]
     pub(crate) struct RnCanvas {
         pub(crate) handlers: RefCell<Handlers>,
 

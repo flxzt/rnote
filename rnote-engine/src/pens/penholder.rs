@@ -24,8 +24,7 @@ pub enum BacklogPolicy {
 }
 
 /// This holds the pens and related state and handles pen events.
-#[allow(missing_debug_implementations)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
     #[serde(rename = "shortcuts")]
@@ -62,6 +61,15 @@ impl Default for PenHolder {
 }
 
 impl PenHolder {
+    pub fn clone_config(&self) -> Self {
+        Self {
+            shortcuts: self.shortcuts.clone(),
+            pen_mode_state: self.pen_mode_state.clone_config(),
+            backlog_policy: self.backlog_policy,
+            ..Default::default()
+        }
+    }
+
     pub fn clear_shortcuts(&mut self) {
         self.shortcuts.clear();
     }

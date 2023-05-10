@@ -134,15 +134,15 @@ impl RnoteEngine {
         &mut self,
         engine_config: EngineConfig,
         data_dir: Option<PathBuf>,
-    ) -> anyhow::Result<WidgetFlags> {
+    ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        self.document = serde_json::from_value(engine_config.document)?;
-        self.pens_config = serde_json::from_value(engine_config.pens_config)?;
-        self.penholder = serde_json::from_value(engine_config.penholder)?;
-        self.import_prefs = serde_json::from_value(engine_config.import_prefs)?;
-        self.export_prefs = serde_json::from_value(engine_config.export_prefs)?;
-        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
+        self.document = engine_config.document;
+        self.pens_config = engine_config.pens_config;
+        self.penholder = engine_config.penholder;
+        self.import_prefs = engine_config.import_prefs;
+        self.export_prefs = engine_config.export_prefs;
+        self.pen_sounds = engine_config.pen_sounds;
 
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(self.pen_sounds, data_dir);
@@ -163,7 +163,7 @@ impl RnoteEngine {
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
 
-        Ok(widget_flags)
+        widget_flags
     }
 
     /// Imports and replaces the engine config. If pen sounds should be enabled the rnote data dir must be provided
@@ -175,7 +175,7 @@ impl RnoteEngine {
         data_dir: Option<PathBuf>,
     ) -> anyhow::Result<WidgetFlags> {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
-        self.load_engine_config(engine_config, data_dir)
+        Ok(self.load_engine_config(engine_config, data_dir))
     }
 
     /// generates a vectorimage for the bytes ( from a SVG file )

@@ -10,19 +10,36 @@ use rodio::source::Buffered;
 use rodio::{Decoder, Source};
 
 /// The audio player for pen sounds
-#[allow(missing_debug_implementations, dead_code)]
 pub struct AudioPlayer {
-    // we need to hold the output streams
+    // we need to hold the output streams, even if they are not used
+    #[allow(unused)]
     marker_outputstream: rodio::OutputStream,
     marker_outputstream_handle: rodio::OutputStreamHandle,
+    #[allow(unused)]
     brush_outputstream: rodio::OutputStream,
     brush_outputstream_handle: rodio::OutputStreamHandle,
+    #[allow(unused)]
     typewriter_outputstream: rodio::OutputStream,
     typewriter_outputstream_handle: rodio::OutputStreamHandle,
 
     sounds: HashMap<String, Buffered<Decoder<File>>>,
 
     brush_sink: Option<rodio::Sink>,
+}
+
+impl std::fmt::Debug for AudioPlayer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AudioPlayer")
+            .field("marker_outputstream", &"{.. no debug impl ..}")
+            .field("marker_outputstream_handle", &"{.. no debug impl ..}")
+            .field("brush_outputstream", &"{.. no debug impl ..}")
+            .field("brush_outputstream_handle", &"{.. no debug impl ..}")
+            .field("typewriter_outputstream", &"{.. no debug impl ..}")
+            .field("typewriter_outputstream_handle", &"{.. no debug impl ..}")
+            .field("sounds", &"{.. no debug impl ..}")
+            .field("brush_sink", &"{.. no debug impl ..}")
+            .finish()
+    }
 }
 
 impl AudioPlayer {

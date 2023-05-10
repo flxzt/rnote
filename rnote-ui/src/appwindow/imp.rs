@@ -16,8 +16,7 @@ use crate::{
     config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
 };
 
-#[allow(missing_debug_implementations)]
-#[derive(CompositeTemplate)]
+#[derive(Debug, CompositeTemplate)]
 #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
 pub(crate) struct RnAppWindow {
     pub(crate) app_settings: gio::Settings,

@@ -45,6 +45,15 @@ impl Default for PenModeState {
 }
 
 impl PenModeState {
+    pub fn clone_config(&self) -> Self {
+        Self {
+            pen_mode: self.pen_mode,
+            penmode_pen_style: self.penmode_pen_style,
+            penmode_eraser_style: self.penmode_eraser_style,
+            ..Default::default()
+        }
+    }
+
     pub fn current_style_w_override(&self) -> PenStyle {
         match self.pen_mode {
             PenMode::Pen => self

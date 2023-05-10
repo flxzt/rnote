@@ -163,8 +163,14 @@ pub(crate) fn handle_pointer_controller_event(
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
 
+        let elements_len = elements.len();
         for (element, event_time) in elements {
-            //log::debug!("handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            log::debug!(
+                "({:.1}, {:.1}) handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}, length: {elements_len:?}",
+                element.pos.x,
+                element.pos.y,
+                now.duration_since(event_time)
+            );
 
             match state {
                 PenState::Up => {

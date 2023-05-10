@@ -265,33 +265,27 @@ impl RnAppWindow {
 
     /// Creates a new tab and set it as selected
     pub(crate) fn new_tab(&self) -> adw::TabPage {
-        let current_engine_config = match self
+        let current_engine_config = self
             .active_tab()
             .canvas()
             .engine()
             .borrow()
-            .extract_engine_config()
-        {
-            Ok(c) => Some(c),
-            Err(e) => {
-                log::error!("failed to extract engine config from active tab, Err: {e:?}");
-                None
-            }
-        };
+            .extract_engine_config();
         let new_wrapper = RnCanvasWrapper::new();
-        if let Some(current_engine_config) = current_engine_config {
-            match new_wrapper
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok())
-            {
-                Ok(wf) => self.handle_widget_flags(wf, &new_wrapper.canvas()),
-                Err(e) => {
-                    log::error!("failed to load current engine config into new tab, Err: {e:?}")
-                }
-            }
-        }
+
+        let widget_flags = new_wrapper
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok());
+        self.handle_widget_flags(widget_flags, &new_wrapper.canvas());
+
+        new_wrapper
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .resize_to_fit_strokes();
+        new_wrapper.canvas().update_engine_rendering();
 
         // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview
         let page = self.overlays().tabview().append(&new_wrapper);

@@ -20,8 +20,7 @@ use crate::{
 mod imp {
     use super::*;
 
-    #[allow(missing_debug_implementations)]
-    #[derive(Default)]
+    #[derive(Debug, Default)]
     pub(crate) struct RnApp {}
 
     #[glib::object_subclass]

@@ -14,8 +14,7 @@ use crate::{dialogs, RnAppWindow, RnColorPicker};
 mod imp {
     use super::*;
 
-    #[allow(missing_debug_implementations)]
-    #[derive(Default, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/overlays.ui")]
     pub(crate) struct RnOverlays {
         pub(crate) progresspulse_source_id: RefCell<Option<glib::SourceId>>,

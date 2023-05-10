@@ -35,7 +35,7 @@ use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
 /// A view into the rest of the engine, excluding the penholder
-#[allow(missing_debug_implementations)]
+#[derive(Debug)]
 pub struct EngineView<'a> {
     pub tasks_tx: EngineTaskSender,
     pub pens_config: &'a PensConfig,
@@ -46,7 +46,7 @@ pub struct EngineView<'a> {
 }
 
 /// A mutable view into the rest of the engine, excluding the penholder
-#[allow(missing_debug_implementations)]
+#[derive(Debug)]
 pub struct EngineViewMut<'a> {
     pub tasks_tx: EngineTaskSender,
     pub pens_config: &'a mut PensConfig,
@@ -99,38 +99,21 @@ pub enum EngineTask {
     Quit,
 }
 
-#[allow(missing_debug_implementations)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(default, rename = "engine_config")]
 pub struct EngineConfig {
     #[serde(rename = "document")]
-    document: serde_json::Value,
+    document: Document,
     #[serde(rename = "pens_config")]
-    pens_config: serde_json::Value,
+    pens_config: PensConfig,
     #[serde(rename = "penholder")]
-    penholder: serde_json::Value,
+    penholder: PenHolder,
     #[serde(rename = "import_prefs")]
-    import_prefs: serde_json::Value,
+    import_prefs: ImportPrefs,
     #[serde(rename = "export_prefs")]
-    export_prefs: serde_json::Value,
+    export_prefs: ExportPrefs,
     #[serde(rename = "pen_sounds")]
-    pen_sounds: serde_json::Value,
-}
-
-impl Default for EngineConfig {
-    fn default() -> Self {
-        let engine = RnoteEngine::default();
-
-        Self {
-            document: serde_json::to_value(engine.document).unwrap(),
-            pens_config: serde_json::to_value(&engine.pens_config).unwrap(),
-            penholder: serde_json::to_value(&engine.penholder).unwrap(),
-
-            import_prefs: serde_json::to_value(engine.import_prefs).unwrap(),
-            export_prefs: serde_json::to_value(engine.export_prefs).unwrap(),
-            pen_sounds: serde_json::to_value(engine.pen_sounds).unwrap(),
-        }
-    }
+    pen_sounds: bool,
 }
 
 // the engine snapshot, used when saving and loading to and from a file.
@@ -323,8 +306,7 @@ pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
 pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
 
 /// The engine.
-#[allow(missing_debug_implementations)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "engine")]
 pub struct RnoteEngine {
     #[serde(rename = "document")]

@@ -17,8 +17,7 @@ mod imp {
 
     use super::*;
 
-    #[allow(missing_debug_implementations)]
-    #[derive(CompositeTemplate)]
+    #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvaswrapper.ui")]
     pub(crate) struct RnCanvasWrapper {
         pub(crate) show_scrollbars: Cell<bool>,

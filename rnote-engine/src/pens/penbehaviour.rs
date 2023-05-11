@@ -1,4 +1,5 @@
 use std::time::Instant;
+use gtk4::gdk::Device;
 
 use rnote_compose::penevents::PenEvent;
 
@@ -19,6 +20,7 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        device: Option<Device>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags);

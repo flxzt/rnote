@@ -5,6 +5,7 @@ use super::pensconfig::eraserconfig::EraserStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
+use gtk4::gdk::Device;
 use once_cell::sync::Lazy;
 use piet::RenderContext;
 use rnote_compose::color;
@@ -46,6 +47,7 @@ impl PenBehaviour for Eraser {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _device: Option<Device>,
         _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {

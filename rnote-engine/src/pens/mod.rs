@@ -24,7 +24,7 @@ pub use tools::Tools;
 pub use typewriter::Typewriter;
 
 // Imports
-use gtk4::glib;
+use gtk4::{glib, gdk::Device};
 use piet_cairo::CairoRenderContext;
 use rnote_compose::penevents::PenEvent;
 use serde::{Deserialize, Serialize};
@@ -76,16 +76,17 @@ impl PenBehaviour for Pen {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        device: Option<Device>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         match self {
-            Pen::Brush(brush) => brush.handle_event(event, now, engine_view),
-            Pen::Shaper(shaper) => shaper.handle_event(event, now, engine_view),
-            Pen::Typewriter(typewriter) => typewriter.handle_event(event, now, engine_view),
-            Pen::Eraser(eraser) => eraser.handle_event(event, now, engine_view),
-            Pen::Selector(selector) => selector.handle_event(event, now, engine_view),
-            Pen::Tools(tools) => tools.handle_event(event, now, engine_view),
+            Pen::Brush(brush) => brush.handle_event(event, device, now, engine_view),
+            Pen::Shaper(shaper) => shaper.handle_event(event, device, now, engine_view),
+            Pen::Typewriter(typewriter) => typewriter.handle_event(event, device, now, engine_view),
+            Pen::Eraser(eraser) => eraser.handle_event(event, device, now, engine_view),
+            Pen::Selector(selector) => selector.handle_event(event, device, now, engine_view),
+            Pen::Tools(tools) => tools.handle_event(event, device, now, engine_view),
         }
     }
 

@@ -27,7 +27,7 @@ use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 
 use futures::channel::{mpsc, oneshot};
-use gtk4::gsk;
+use gtk4::{gsk, gdk::Device};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
@@ -629,11 +629,13 @@ impl RnoteEngine {
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
+        device: Option<Device>,
         pen_mode: Option<PenMode>,
         now: Instant,
     ) -> WidgetFlags {
         self.penholder.handle_pen_event(
             event,
+            device,
             pen_mode,
             now,
             &mut EngineViewMut {

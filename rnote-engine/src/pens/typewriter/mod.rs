@@ -1,6 +1,7 @@
 mod penevents;
 
 // Imports
+use gtk4::gdk::Device;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -313,6 +314,7 @@ impl PenBehaviour for Typewriter {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _device: Option<Device>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -328,14 +330,17 @@ impl PenBehaviour for Typewriter {
             PenEvent::Down {
                 element,
                 modifier_keys,
+                ..
             } => self.handle_pen_event_down(element, modifier_keys, now, engine_view),
             PenEvent::Up {
                 element,
                 modifier_keys,
+                ..
             } => self.handle_pen_event_up(element, modifier_keys, now, engine_view),
             PenEvent::Proximity {
                 element,
                 modifier_keys,
+                ..
             } => self.handle_pen_event_proximity(element, modifier_keys, now, engine_view),
             PenEvent::KeyPressed {
                 keyboard_key,

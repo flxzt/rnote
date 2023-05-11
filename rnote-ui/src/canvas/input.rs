@@ -16,6 +16,21 @@ pub(crate) fn handle_pointer_controller_event(
     event: &gdk::Event,
     mut state: PenState,
 ) -> (Inhibit, PenState) {
+    /*if let Some(device) = event.device() {
+        log::debug!("[evnt] {:?} {:?} {:?} {device:?}", device.product_id(), device.vendor_id(), device.name());
+        log::debug!("{:?}", device.as_ptr());
+    }
+    if let Some(seat) = event.seat() {
+        log::debug!("[seat] {seat:?}");
+        log::debug!("[disp] {:?}", seat.display());
+        let devices = seat.devices(gdk::SeatCapabilities::ALL_POINTING);
+        for dev in devices {
+            log::debug!("[dvce] {:?} {:?} {:?} {dev:?}", dev.product_id(), dev.vendor_id(), dev.name());
+        }
+        if let Some(pointer) = seat.pointer() {
+            log::debug!("[pntr] {:?} {:?} {:?} {pointer:?}", pointer.product_id(), pointer.vendor_id(), pointer.name());
+        }
+    }*/
     //std::thread::sleep(std::time::Duration::from_millis(100));
     let touch_drawing = canvas.touch_drawing();
     let event_type = event.event_type();
@@ -165,12 +180,14 @@ pub(crate) fn handle_pointer_controller_event(
 
         let elements_len = elements.len();
         for (element, event_time) in elements {
-            log::debug!(
-                "({:.1}, {:.1}) handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}, length: {elements_len:?}",
-                element.pos.x,
-                element.pos.y,
-                now.duration_since(event_time)
-            );
+            if pen_mode.is_none() {
+                log::debug!(
+                    "({:.1}, {:.1}) handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}, length: {elements_len:?}",
+                    element.pos.x,
+                    element.pos.y,
+                    now.duration_since(event_time)
+                );
+            }
 
             match state {
                 PenState::Up => {
@@ -181,6 +198,7 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
+                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -193,6 +211,7 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
+                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -206,6 +225,7 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
+                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -238,6 +258,7 @@ pub(crate) fn handle_key_controller_key_pressed(
             modifier_keys,
         },
         None,
+        None,
         now,
     );
     canvas.emit_handle_widget_flags(widget_flags);
@@ -251,6 +272,7 @@ pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
         PenEvent::Text {
             text: text.to_string(),
         },
+        None,
         None,
         now,
     );

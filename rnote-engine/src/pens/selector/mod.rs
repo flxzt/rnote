@@ -8,6 +8,7 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, RNOTE_STROKE_CONTENT_MIME_TYPE};
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
+use gtk4::gdk::Device;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::query::PointQuery;
@@ -117,6 +118,7 @@ impl PenBehaviour for Selector {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _device: Option<Device>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
@@ -126,14 +128,17 @@ impl PenBehaviour for Selector {
             PenEvent::Down {
                 element,
                 modifier_keys,
+                ..
             } => self.handle_pen_event_down(element, modifier_keys, now, engine_view),
             PenEvent::Up {
                 element,
                 modifier_keys,
+                ..
             } => self.handle_pen_event_up(element, modifier_keys, now, engine_view),
             PenEvent::Proximity {
                 element,
                 modifier_keys,
+                ..
             } => self.handle_pen_event_proximity(element, modifier_keys, now, engine_view),
             PenEvent::KeyPressed {
                 keyboard_key,

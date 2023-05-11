@@ -1,3 +1,4 @@
+use gtk4::gdk::Device;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
@@ -202,7 +203,7 @@ impl PenHolder {
         // first cancel the current pen
         let (_, mut widget_flags) =
             self.current_pen
-                .handle_event(PenEvent::Cancel, Instant::now(), engine_view);
+                .handle_event(PenEvent::Cancel, None, Instant::now(), engine_view);
 
         // then reinstall a new instance
         let new_pen = new_pen(self.current_pen_style_w_override());
@@ -218,6 +219,7 @@ impl PenHolder {
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
+        device: Option<Device>,
         pen_mode: Option<PenMode>,
         now: Instant,
         engine_view: &mut EngineViewMut,
@@ -236,7 +238,7 @@ impl PenHolder {
 
         // Handle the event with the current pen
         let (pen_progress, other_widget_flags) =
-            self.current_pen.handle_event(event, now, engine_view);
+            self.current_pen.handle_event(event, device, now, engine_view);
         widget_flags.merge(other_widget_flags);
 
         widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));

@@ -7,6 +7,7 @@ use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 
+use gtk4::gdk::Device;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::builders::{ArrowBuilder, GridBuilder};
@@ -52,6 +53,7 @@ impl PenBehaviour for Shaper {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _device: Option<Device>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {

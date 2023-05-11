@@ -1,5 +1,7 @@
 use std::time::Instant;
 
+use gtk4::gdk::Device;
+
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::brushconfig::BrushStyle;
 use super::PenStyle;
@@ -31,13 +33,15 @@ enum BrushState {
 
 #[derive(Debug)]
 pub struct Brush {
-    state: BrushState,
+    devices: Vec<Option<Device>>,
+    states: Vec<BrushState>,
 }
 
 impl Default for Brush {
     fn default() -> Self {
         Self {
-            state: BrushState::Idle,
+            devices: vec![None],
+            states: vec![BrushState::Idle],
         }
     }
 }
@@ -54,12 +58,28 @@ impl PenBehaviour for Brush {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        event_device: Option<Device>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
-        let pen_progress = match (&mut self.state, event) {
+        let mut state_idx = self.devices.iter()
+            .enumerate()
+            .find_map(|(idx, device)| if event_device == *device {
+                Some(idx)
+                } else { None }
+            ).unwrap_or(0);
+        if let Some(device) = event_device {
+            if state_idx == 0 {
+                self.devices.push(Some(device));
+                self.states.push(BrushState::Idle);
+                state_idx = self.devices.len() - 1;
+            }
+        }
+        let state = &mut self.states[state_idx];
+
+        let pen_progress = match (state, event) {
             (BrushState::Idle, PenEvent::Down { element, .. }) => {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
@@ -91,7 +111,7 @@ impl PenBehaviour for Brush {
                         engine_view.camera.image_scale(),
                     );
 
-                    self.state = BrushState::Drawing {
+                    self.states[state_idx] = BrushState::Drawing {
                         path_builder: new_builder(
                             engine_view.pens_config.brush_config.builder_type,
                             element,
@@ -125,7 +145,7 @@ impl PenBehaviour for Brush {
                     engine_view.camera.image_scale(),
                 );
 
-                self.state = BrushState::Idle;
+                self.states[state_idx] = BrushState::Idle;
 
                 engine_view
                     .doc
@@ -211,7 +231,7 @@ impl PenBehaviour for Brush {
 
                         self.stop_audio(engine_view);
 
-                        self.state = BrushState::Idle;
+                        self.states[state_idx] = BrushState::Idle;
 
                         engine_view
                             .doc
@@ -238,12 +258,12 @@ impl DrawOnDocBehaviour for Brush {
             .brush_config
             .style_for_current_options();
 
-        match &self.state {
+        self.states.iter().find_map(|state| match state {
             BrushState::Idle => None,
             BrushState::Drawing { path_builder, .. } => {
                 path_builder.bounds(&style, engine_view.camera.zoom())
             }
-        }
+        })
     }
 
     fn draw_on_doc(
@@ -253,7 +273,7 @@ impl DrawOnDocBehaviour for Brush {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        match &self.state {
+        self.states.iter().for_each(|state| match state {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
                 match engine_view.pens_config.brush_config.style {
@@ -280,7 +300,7 @@ impl DrawOnDocBehaviour for Brush {
                     }
                 }
             }
-        }
+        });
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())

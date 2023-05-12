@@ -161,8 +161,6 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        //log::debug!("current_style_override: {:?}, new_style_override: {:?}", self.style_override, new_style_override);
-
         if self.pen_mode_state.style_override() != new_style_override {
             // Deselecting when changing the style override
             let all_strokes = engine_view.store.selection_keys_as_rendered();
@@ -225,13 +223,7 @@ impl PenHolder {
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        /*
-               log::debug!(
-                   "handle_pen_event(), event: {:?}, pen_mode_state: {:?}",
-                   event,
-                   self.pen_mode_state,
-               );
-        */
+
         if let Some(pen_mode) = pen_mode {
             widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));
         }

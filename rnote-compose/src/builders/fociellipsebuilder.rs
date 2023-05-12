@@ -47,8 +47,6 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         _now: Instant,
         mut constraints: Constraints,
     ) -> ShapeBuilderProgress {
-        //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
-
         match (&mut self.state, event) {
             (FociEllipseBuilderState::Start(first), PenEvent::Down { element, .. }) => {
                 *first = element.pos;

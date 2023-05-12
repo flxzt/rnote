@@ -64,8 +64,6 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         _now: Instant,
         mut constraints: Constraints,
     ) -> ShapeBuilderProgress {
-        //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
-
         // we always want to allow horizontal and vertical constraints while building a cubbez
         constraints.ratios.insert(ConstraintRatio::Horizontal);
         constraints.ratios.insert(ConstraintRatio::Vertical);

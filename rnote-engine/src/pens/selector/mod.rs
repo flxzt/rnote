@@ -120,8 +120,6 @@ impl PenBehaviour for Selector {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        //log::debug!("selector state: {:?}, event: {:?}", &self.state, &event);
-
         match event {
             PenEvent::Down {
                 element,

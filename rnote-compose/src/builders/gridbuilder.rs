@@ -53,8 +53,6 @@ impl ShapeBuilderBehaviour for GridBuilder {
         _now: Instant,
         constraints: Constraints,
     ) -> ShapeBuilderProgress {
-        //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
-
         match (&mut self.state, event) {
             (GridBuilderState::FirstCell { start, current }, PenEvent::Down { element, .. }) => {
                 *current = constraints.constrain(element.pos - *start) + *start;

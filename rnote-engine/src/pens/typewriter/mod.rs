@@ -318,14 +318,6 @@ impl PenBehaviour for Typewriter {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        /*
-               log::debug!(
-                   "typewriter handle_event: state: {:#?}, event: {:#?}",
-                   self.state,
-                   event
-               );
-        */
-
         let (pen_progress, widget_flags) = match event {
             PenEvent::Down {
                 element,

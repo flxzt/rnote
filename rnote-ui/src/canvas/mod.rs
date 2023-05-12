@@ -431,6 +431,7 @@ mod imp {
             self.key_controller.connect_key_pressed(clone!(@weak obj as canvas => @default-return Inhibit(false), move |_, key, _raw, modifier| {
                 super::input::handle_key_controller_key_pressed(&canvas, key, modifier)
             }));
+
             /*
                        self.key_controller.connect_key_released(
                            clone!(@weak inst as canvas => move |_key_controller, _key, _raw, _modifier| {

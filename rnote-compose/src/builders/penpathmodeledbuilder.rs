@@ -64,13 +64,6 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
         now: Instant,
         _constraints: Constraints,
     ) -> PenPathBuilderProgress {
-        /*         log::debug!(
-            "event: {:?}; buffer.len(): {}, state: {:?}",
-            event,
-            self.buffer.len(),
-            self.state
-        ); */
-
         match event {
             PenEvent::Down { element, .. } => {
                 // kDown is already fed into the modeler when the builder was instantiated (with start())
@@ -116,17 +109,6 @@ impl PenPathBuilderBehaviour for PenPathModeledBuilder {
                 .chain(self.prediction_buffer.iter())
                 .copied(),
         );
-
-        /*
-                // Change prediction stroke color for debugging
-                let mut style = style.clone();
-                match style {
-                    Style::Smooth(ref mut smooth_options) => {
-                        smooth_options.stroke_color = Some(crate::Color::RED)
-                    }
-                    _ => {}
-                }
-        */
 
         if let Some(pen_path) = pen_path {
             pen_path.draw_composed(cx, style);

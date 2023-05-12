@@ -44,13 +44,6 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
         _now: Instant,
         _constraints: Constraints,
     ) -> PenPathBuilderProgress {
-        /*         log::debug!(
-            "event: {:?}; buffer.len(): {}, state: {:?}",
-            event,
-            self.buffer.len(),
-            self.state
-        ); */
-
         match (&mut self.state, event) {
             (PenPathCurvedBuilderState::Start, PenEvent::Down { element, .. }) => {
                 self.buffer.push(element);

@@ -148,13 +148,6 @@ mod imp {
             // which can also take up quite some time on the main UI thread.
             let old_viewport_extended = old_viewport
                 .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
-            /*
-                       log::debug!(
-                           "viewport: {:#?}\nold_viewport_extended: {:#?}",
-                           viewport,
-                           old_viewport_extended
-                       );
-            */
 
             // always update the background rendering
             if let Err(e) = engine.update_background_rendering_current_viewport() {

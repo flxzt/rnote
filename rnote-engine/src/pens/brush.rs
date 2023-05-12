@@ -264,17 +264,6 @@ impl DrawOnDocBehaviour for Brush {
                             .pens_config
                             .brush_config
                             .style_for_current_options();
-
-                        /*
-                                               // Change color for debugging
-                                               match &mut style {
-                                                   Style::Smooth(options) => {
-                                                       options.stroke_color = Some(rnote_compose::Color::RED)
-                                                   }
-                                                   Style::Rough(_) | Style::Textured(_) => {}
-                                               }
-                        */
-
                         path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
                     }
                 }

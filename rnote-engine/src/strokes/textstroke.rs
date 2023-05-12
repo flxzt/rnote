@@ -788,8 +788,6 @@ impl TextStroke {
         let truncated_attrs = intersecting_attrs
             .into_iter()
             .flat_map(|mut attr| {
-                //log::debug!("attr.range: {:?}, range: {:?}", attr.range, range);
-
                 if attr.range.start <= range.start && attr.range.end >= range.end {
                     // if the attribute completely contains the given range, split it
                     let mut first_split_attr = attr.clone();

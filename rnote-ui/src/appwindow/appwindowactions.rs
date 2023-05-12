@@ -779,8 +779,6 @@ impl RnAppWindow {
 
             match content {
                 Some((data, mime_type)) => {
-                    //log::debug!("set clipboard with data: {:02x?}, mime-type: {}", data, mime_type);
-
                     let content = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
 
                     if let Err(e) = appwindow.clipboard().set_content(Some(&content)) {

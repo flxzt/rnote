@@ -34,13 +34,6 @@ impl PenPathBuilderBehaviour for PenPathSimpleBuilder {
         _now: Instant,
         _constraints: Constraints,
     ) -> PenPathBuilderProgress {
-        /*         log::debug!(
-            "event: {:?}; buffer.len(): {}, state: {:?}",
-            event,
-            self.buffer.len(),
-            self.state
-        ); */
-
         match event {
             PenEvent::Down { element, .. } => {
                 self.buffer.push_back(element);

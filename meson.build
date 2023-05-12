@@ -196,6 +196,17 @@ run_target(
     env: cargo_env,
 )
 
+# app cargo doc
+run_target(
+    'app-cargo-doc',
+    command: [
+        cargo,
+        'doc',
+        app_cargo_options,
+    ],
+    env: cargo_env,
+)
+
 # app cargo build
 app_cargo_build = custom_target(
     'app-cargo-build',
@@ -269,6 +280,17 @@ if build_cli == true
         command: [
             cargo,
             'clippy',
+            cli_cargo_options,
+        ],
+        env: cargo_env,
+    )
+
+    # cli cargo doc
+    run_target(
+        'cli-cargo-doc',
+        command: [
+            cargo,
+            'doc',
             cli_cargo_options,
         ],
         env: cargo_env,

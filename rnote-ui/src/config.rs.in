@@ -27,7 +27,7 @@ pub(crate) const PROFILE: &str = @PROFILE@;
 #[allow(unused)]
 pub(crate) const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
 
-// These are only allowed to be used from the `env` module
+// These are only allowed to be used in the `env` module
 #[allow(unused)]
 pub(crate) const LOCALEDIR: &str = @LOCALEDIR@;
 #[allow(unused)]

@@ -1,3 +1,4 @@
+// Modules
 pub mod brush;
 pub mod eraser;
 pub mod penbehaviour;
@@ -24,15 +25,14 @@ pub use tools::Tools;
 pub use typewriter::Typewriter;
 
 // Imports
+use self::penbehaviour::PenProgress;
+use crate::engine::{EngineView, EngineViewMut};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 use gtk4::glib;
 use piet_cairo::CairoRenderContext;
 use rnote_compose::penevents::PenEvent;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
-
-use self::penbehaviour::PenProgress;
-use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 #[derive(Debug)]
 pub enum Pen {

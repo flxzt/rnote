@@ -1,27 +1,28 @@
-use std::ffi::{OsStr, OsString};
-use std::path::{Path, PathBuf};
-
+// Imports
+use crate::workspacebrowser::RnFileRow;
+use crate::RnAppWindow;
 use fs_extra::dir::{CopyOptions, TransitProcessResult};
 use fs_extra::{copy_items_with_progress, TransitProcess};
 use gtk4::prelude::FileExt;
 use gtk4::{gio, glib, glib::clone};
 use regex::Regex;
+use std::ffi::{OsStr, OsString};
+use std::path::{Path, PathBuf};
 
-use crate::workspacebrowser::RnFileRow;
-use crate::RnAppWindow;
-
-///                                 - Look for `.dup` pattern
-///                                 |   - Look for `.dup1`/`.dup123`/`.dup1234`/...
-///                                 |   |        - Look for the text after the `.dup<num>` part
-///                                 |   |       |       - At the end of the word (here: file-path)
-///                                 |  \d*      |       $
-///                                 |           |
-///                               \.dup   (?P<rest>(.*))
+/// ```text
+/// - Look for `.dup` pattern
+/// |   - Look for `.dup1`/`.dup123`/`.dup1234`/...
+/// |   |        - Look for the text after the `.dup<num>` part
+/// |   |       |       - At the end of the word (here: file-path)
+/// |  \d*      |       $
+/// |           |
+/// \.dup   (?P<rest>(.*))
+/// ```
 const DUP_REGEX_PATTERN: &str = r"\.dup\d*(?P<rest>(.*))$";
 const DUPLICATE_SUFFIX: &str = ".dup";
 const DOT: &str = ".";
 
-/// Creates a new `duplicate` action
+/// Create a new `duplicate` action.
 pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::SimpleAction {
     let action = gio::SimpleAction::new("duplicate", None);
 
@@ -48,8 +49,8 @@ pub(crate) fn duplicate(filerow: &RnFileRow, appwindow: &RnAppWindow) -> gio::Si
     action
 }
 
-/// returns the progress handler for
-/// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html)
+/// Returns the progress handler for
+/// [copy_items_with_progress](https://docs.rs/fs_extra/1.2.0/fs_extra/fn.copy_items_with_progress.html).
 fn create_process_evaluator(
     appwindow: RnAppWindow,
 ) -> impl Fn(TransitProcess) -> TransitProcessResult {
@@ -100,7 +101,7 @@ where
 }
 
 /// returns a suitable destination path from the given source path
-/// by adding `.dup` as often as needed to the source-path
+/// by adding `.dup` as often as needed to the source-path.
 fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
     let mut duplicate_index = 0;
     let mut destination_path = source_path.clone();
@@ -131,7 +132,7 @@ fn get_destination_path(source_path: &PathBuf) -> Option<PathBuf> {
 
 /// Creates the duplicate-filename by the given information about the source.
 ///
-/// ## Example
+/// For example:
 /// "test.txt" => "test.dup.txt" => "test.dup1.txt"
 fn generate_duplicate_filename(
     source_stem: &OsStr,

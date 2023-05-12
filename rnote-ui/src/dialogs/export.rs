@@ -1,9 +1,9 @@
 // gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
 #![allow(deprecated)]
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
+// Imports
+use crate::canvas::{self, RnCanvas};
+use crate::{config, RnAppWindow};
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
@@ -15,9 +15,8 @@ use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
     SelectionExportFormat, SelectionExportPrefs,
 };
-
-use crate::canvas::{self, RnCanvas};
-use crate::{config, RnAppWindow};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub(crate) async fn dialog_save_doc_as(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let filter = FileFilter::new();

@@ -1,5 +1,4 @@
-use std::time::Instant;
-
+// Imports
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::brushconfig::BrushStyle;
 use super::PenStyle;
@@ -8,17 +7,17 @@ use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::builders::{
     PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress, PenPathModeledBuilder,
 };
 use rnote_compose::builders::{PenPathCurvedBuilder, PenPathSimpleBuilder};
 use rnote_compose::penevents::PenEvent;
-use rnote_compose::Constraints;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::penpath::Element;
+use rnote_compose::Constraints;
+use std::time::Instant;
 
 #[derive(Debug)]
 enum BrushState {
@@ -265,17 +264,6 @@ impl DrawOnDocBehaviour for Brush {
                             .pens_config
                             .brush_config
                             .style_for_current_options();
-
-                        /*
-                                               // Change color for debugging
-                                               match &mut style {
-                                                   Style::Smooth(options) => {
-                                                       options.stroke_color = Some(rnote_compose::Color::RED)
-                                                   }
-                                                   Style::Rough(_) | Style::Textured(_) => {}
-                                               }
-                        */
-
                         path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
                     }
                 }

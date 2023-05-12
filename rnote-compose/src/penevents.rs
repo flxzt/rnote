@@ -1,91 +1,99 @@
+// Imports
 use crate::penpath::Element;
 use serde::{Deserialize, Serialize};
 
-/// Represents a Pen Event. Note that there is no "motion" event, because we want the events to be entirely stateless.
-/// Motion event already encode state as they would only be valid if they are preceded by down events.
-/// As a result, multiple down events are emitted if the pen is pressed down and drawing. This should be handled accordingly by the state machines which receives the events.
+/// A Pen Event.
+///
+/// Note that there is no "motion" event, because we want the events to be entirely stateless.
+/// Motion event already encode state as they would only be valid if they are preceded by a down event.
+/// As a result, multiple down events are emitted while the pen is pressed down and being moved.
+/// This should be handled accordingly by the state machines which receive the events.
 #[derive(Debug, Clone)]
 pub enum PenEvent {
-    /// A pen down event. Is repeatedly emitted while the pen is pressed and moved
+    /// A pen down event. Is repeatedly emitted while the pen is pressed down and moved.
     Down {
-        /// The element for the down event
+        /// The element for the down event.
         element: Element,
-        /// pressed modifier keys pressed during the down event
+        /// Modifier keys pressed during the event.
         modifier_keys: Vec<ModifierKey>,
     },
     /// A pen up event.
     Up {
-        /// The element for the up event
+        /// The element for the up event.
         element: Element,
-        /// pressed modifier keys pressed during the up event
+        /// Modifier keys pressed during the event.
         modifier_keys: Vec<ModifierKey>,
     },
-    /// A pen down event. Is repeatedly emitted while the pen is in proximity and moved
+    /// A pen down event. Is repeatedly emitted while the pen is in proximity and moved.
     Proximity {
-        /// The element for the proximity event
+        /// The element for the proximity event.
         element: Element,
-        /// pressed modifier keys pressed during the proximity event
+        /// Modifier keys pressed during the event.
         modifier_keys: Vec<ModifierKey>,
     },
-    /// A keyboard key pressed event
+    /// A keyboard key pressed event.
     KeyPressed {
         /// the key
         keyboard_key: KeyboardKey,
-        /// pressed modifier keys pressed during the key event
+        /// Modifier keys pressed during the event.
         modifier_keys: Vec<ModifierKey>,
     },
-    /// Text input
+    /// Text input event.
     Text {
-        /// The committed text
+        /// The committed text.
         text: String,
     },
-    /// event when the pen vanishes unexpected. should reset all pending actions and state
+    /// Cancel event when the pen vanishes unexpected.
+    ///
+    /// Should finish all current actions and reset all state.
     Cancel,
 }
 
-/// A key on the keyboard
+/// A key on the keyboard.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum KeyboardKey {
-    /// a unicode character. Expects that control characters are already converted and filtered out with the method `filter_convert_unicode_control_chars`
+    /// A Unicode character.
+    ///
+    /// Expects that control characters are already converted and filtered out with the method [KeyboardKey::filter_convert_unicode_control_chars].
     Unicode(char),
-    /// backspace
+    /// Backspace.
     BackSpace,
-    /// Tab
+    /// Tab.
     HorizontalTab,
-    /// Line feed
+    /// Line feed.
     Linefeed,
-    /// Carriage return
+    /// Carriage return.
     CarriageReturn,
-    /// Escape
+    /// Escape.
     Escape,
-    /// delete
+    /// Delete.
     Delete,
-    /// Arrow up
+    /// Arrow up.
     NavUp,
-    /// Arrow down
+    /// Arrow down.
     NavDown,
-    /// Arrow left
+    /// Arrow left.
     NavLeft,
-    /// Arrow right
+    /// Arrow right.
     NavRight,
-    /// Shift left
+    /// Shift left.
     ShiftLeft,
-    /// Shift right
+    /// Shift right.
     ShiftRight,
-    /// Ctrl left
+    /// Ctrl left.
     CtrlLeft,
-    /// Ctrl right
+    /// Ctrl right.
     CtrlRight,
-    /// Home
+    /// Home.
     Home,
-    /// End
+    /// End.
     End,
-    /// Unsupported
+    /// Unsupported Key.
     Unsupported,
 }
 
 impl KeyboardKey {
-    /// Filters and converts unicode control characters to a fitting variant, or `Unsupported`
+    /// Filter and convert unicode control characters to a fitting variant, or if unsupported [KeyboardKey::Unsupported].
     pub fn filter_convert_unicode_control_chars(self) -> Self {
         match self {
             key @ Self::Unicode(keychar) => {
@@ -111,56 +119,56 @@ impl KeyboardKey {
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename = "shortcut_key")]
-/// A input shortcut key
+/// A Shortcut key.
 pub enum ShortcutKey {
-    /// the primary button of the stylus
+    /// Primary button of the stylus.
     #[serde(rename = "stylus_primary_button")]
     StylusPrimaryButton,
-    /// the secondary button of the stylus
+    /// Secondary button of the stylus.
     #[serde(rename = "stylus_secondary_button")]
     StylusSecondaryButton,
-    /// the secondary mouse button, usually right click
+    /// Secondary mouse button.
     #[serde(rename = "mouse_secondary_button")]
     MouseSecondaryButton,
-    /// Touch two finger long press gesture
+    /// Touch two finger long press gesture.
     #[serde(rename = "touch_two_finger_long_press")]
     TouchTwoFingerLongPress,
-    /// Button 0 on a drawing pad
+    /// Button 0 on a drawing pad.
     #[serde(rename = "drawing_pad_button_0")]
     DrawingPadButton0,
-    /// Button 1 on a drawing pad
+    /// Button 1 on a drawing pad.
     #[serde(rename = "drawing_pad_button_1")]
     DrawingPadButton1,
-    /// Button 2 on a drawing pad
+    /// Button 2 on a drawing pad.
     #[serde(rename = "drawing_pad_button_2")]
     DrawingPadButton2,
-    /// Button 3 on a drawing pad
+    /// Button 3 on a drawing pad.
     #[serde(rename = "drawing_pad_button_3")]
     DrawingPadButton3,
 }
 
-/// A modifier key
+/// A modifier key.
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename = "modifier_key")]
 pub enum ModifierKey {
-    /// Shift
+    /// Shift.
     #[serde(rename = "keyboard_shift")]
     KeyboardShift,
-    /// Ctrl
+    /// Ctrl.
     #[serde(rename = "keyboard_ctrl")]
     KeyboardCtrl,
-    /// Alt
+    /// Alt.
     #[serde(rename = "keyboard_alt")]
     KeyboardAlt,
 }
 
-/// The current pen state. Used wherever the we have internal state
+/// The current pen state. Used wherever there is internal state.
 #[derive(Debug, Clone, Copy)]
 pub enum PenState {
-    /// Up
+    /// Up.
     Up,
-    /// Proximity
+    /// Proximity.
     Proximity,
-    /// Down
+    /// Down.
     Down,
 }

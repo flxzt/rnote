@@ -1,7 +1,7 @@
+// Modules
 mod penevents;
 
-use std::time::Instant;
-
+// Imports
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
@@ -10,6 +10,7 @@ use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
 use once_cell::sync::Lazy;
+use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
@@ -18,8 +19,7 @@ use rnote_compose::penpath::Element;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Color};
-
-use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
+use std::time::Instant;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ResizeCorner {
@@ -120,8 +120,6 @@ impl PenBehaviour for Selector {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        //log::debug!("selector state: {:?}, event: {:?}", &self.state, &event);
-
         match event {
             PenEvent::Down {
                 element,
@@ -397,9 +395,9 @@ static SELECTION_FILL_COLOR: Lazy<piet::Color> =
     Lazy::new(|| color::GNOME_BRIGHTS[2].with_alpha(0.050));
 
 impl Selector {
-    /// The threshold where a translation is applied ( in offset magnitude, surface coords )
+    /// The threshold magnitude where above it the translation is applied. In surface coordinates.
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
-    /// The threshold angle (rad) where a rotation is applied
+    /// The threshold angle (in radians) where above it the rotation is applied.
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
 
     const SELECTION_OUTLINE_WIDTH: f64 = 1.5;
@@ -407,9 +405,9 @@ impl Selector {
 
     const SINGLE_SELECTING_CIRCLE_RADIUS: f64 = 4.0;
 
-    /// resize node size, in surface coords
+    /// Resize node size, in surface coordinates.
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// rotate node size, in surface coords
+    /// Rotate node size, in surface coordinates.
     const ROTATE_NODE_SIZE: f64 = 18.0;
 
     fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {

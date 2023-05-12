@@ -1,14 +1,14 @@
+// Imports
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DropDown, SpinButton,
     Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::document::format;
+use rnote_engine::document::format::MeasureUnit;
 use std::cell::Cell;
 
 mod imp {
-    use rnote_engine::document::format::MeasureUnit;
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

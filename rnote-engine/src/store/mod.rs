@@ -1,3 +1,4 @@
+// Modules
 pub mod chrono_comp;
 pub mod keytree;
 pub mod render_comp;
@@ -12,18 +13,17 @@ pub use render_comp::RenderComponent;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
 
-use std::collections::VecDeque;
-use std::sync::Arc;
-use std::time::Instant;
-
+// Imports
+use self::chrono_comp::StrokeLayer;
 use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use crate::WidgetFlags;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
-
-use self::chrono_comp::StrokeLayer;
+use std::collections::VecDeque;
+use std::sync::Arc;
+use std::time::Instant;
 
 slotmap::new_key_type! {
     pub struct StrokeKey;
@@ -60,16 +60,18 @@ impl Default for HistoryEntry {
 
 /// StrokeStore implements a Entity - Component - System pattern.
 /// The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
-///     * 'stroke_components': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)
-///     * 'trash_components': Hold state whether the strokes are trashed
-///     * 'selection_components': Hold state whether the strokes are selected
-///     * 'chrono_components': Hold state about the chronological ordering
-///     * 'render_components': Hold state about the current rendering of the strokes.
+///     * 'stroke_components': Holds state about geometric properties. These components are special in the way that they are the primary map.
+///         A new stroke must have this component. (another name for them could be 'geometric_components')
+///     * 'trash_components': Holds state whether the strokes are trashed
+///     * 'selection_components': Holds state whether the strokes are selected
+///     * 'chrono_components': Holds state about the chronological ordering
+///     * 'render_components': Holds state about the rendering.
 ///
 /// The systems are implemented as methods on StrokesStore, loosely categorized to the different components (but often modify others as well).
 /// Most systems take a key or a slice of keys, and iterate with them over the different components.
-/// There also is a different category of methods which return filtered keys, (e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
-///     `.stroke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered)
+/// There also is a different category of methods which return filtered keys.
+/// For example: [StrokeStore::keys_sorted_chrono] returns the keys in chronological ordering,
+///     [StrokeStore::selection_keys_as_rendered] filters and returns only the selection keys in the order which should be drawn/rendered).
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_store")]
@@ -86,18 +88,19 @@ pub struct StrokeStore {
     #[serde(skip)]
     render_components: SecondaryMap<StrokeKey, RenderComponent>,
 
-    // The history
     #[serde(skip)]
     history: VecDeque<Arc<HistoryEntry>>,
     #[serde(skip)]
     history_pos: Option<usize>,
 
-    // A rtree backed by the slotmap, for faster spatial queries. Needs to be updated with update_with_key() when strokes changed their geometry or position!
+    /// An rtree backed by the slotmap store, for faster spatial queries.
+    /// Needs to be updated with update_with_key() when strokes changed their geometry or position!
     #[serde(skip)]
     key_tree: KeyTree,
 
-    // Other state
-    /// incrementing counter for chrono_components. value must be equal chrono_component of the newest inserted or modified stroke.
+    /// Incrementing counter for chrono_components.
+    ///
+    /// Value must be equal to the [ChronoComponent] of the newest inserted or modified stroke.
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
 }
@@ -122,11 +125,12 @@ impl Default for StrokeStore {
 }
 
 impl StrokeStore {
-    /// The max length of the history
+    /// Max length of the history.
     pub(crate) const HISTORY_MAX_LEN: usize = 100;
 
-    /// imports from a engine snapshot. A loaded strokes store should always be imported with this method.
-    /// the store then needs to update its rendering
+    /// Import from a engine snapshot. A loaded strokes store should always be imported with this method.
+    ///
+    /// The store then needs to update its rendering.
     pub fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
         self.clear();
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
@@ -139,11 +143,11 @@ impl StrokeStore {
         self.rebuild_selection_components_slotmap();
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
-        self.reload_tree();
+        self.reload_rtree();
     }
 
-    /// Reloads the rtree with the current bounds of the strokes.
-    pub fn reload_tree(&mut self) {
+    /// Reload the rtree with the current bounds of the strokes.
+    pub fn reload_rtree(&mut self) {
         let tree_objects = self
             .stroke_components
             .iter()
@@ -152,7 +156,7 @@ impl StrokeStore {
         self.key_tree.reload_with_vec(tree_objects);
     }
 
-    /// Returns true if the current state is pointer equal to the given history entry
+    /// Checks the pointer equality of current state to the given history entry.
     fn ptr_eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
@@ -163,7 +167,7 @@ impl StrokeStore {
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
     }
 
-    /// Returns a history entry created from the current state
+    /// Create a history entry from the current state.
     pub fn history_entry_from_current_state(&self) -> Arc<HistoryEntry> {
         Arc::new(HistoryEntry {
             stroke_components: Arc::clone(&self.stroke_components),
@@ -174,83 +178,43 @@ impl StrokeStore {
         })
     }
 
-    /// Imports a given history entry and replaces the current state with it.
+    /// Import the given history entry and replaces the current state with it.
     fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
         self.stroke_components = Arc::clone(&history_entry.stroke_components);
         self.trash_components = Arc::clone(&history_entry.trash_components);
         self.selection_components = Arc::clone(&history_entry.selection_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
-
         self.chrono_counter = history_entry.chrono_counter;
 
-        // Since we don't store the tree in the history, we need to reload it.
-        self.reload_tree();
-        // render_components are also not stored in the history, but for the duration of the running app we don't ever remove it,
-        // so we can actually skip rebuilding it when importing a history entry. This avoids flickering where we have already rebuilt the components
-        // and can't display anything until the asynchronous rendering is finished
-        // self.reload_render_components_slotmap();
+        // Since we don't store the rtree in the history, we need to reload it.
+        self.reload_rtree();
+        // render components are also not stored in the history, but for the duration of the running app we don't ever remove them,
+        // so we can actually skip rebuilding them when importing a history entry.
+        // This avoids flickering when we have already rebuilt the components
+        // and wouldn't be able to display anything until the rendering is finished.
+        //self.reload_render_components_slotmap();
 
         let all_strokes = self.stroke_keys_unordered();
         self.set_rendering_dirty_for_strokes(&all_strokes);
     }
 
-    /// records the current state and saves it in the history
+    /// Record the current state and saves it in the history.
     pub fn record(&mut self, _now: Instant) -> WidgetFlags {
-        /*
-               log::debug!(
-                   "before record - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
         self.simple_style_record()
-        /*
-               log::debug!(
-                   "after record - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
     }
 
-    /// Undo the latest changes
-    /// Should only be called inside the engine undo wrapper function
+    /// Undo the latest changes.
+    ///
+    /// Should only be called inside the engine undo wrapper function.
     pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
-        /*
-               log::debug!(
-                   "before undo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
         self.simple_style_undo()
-        /*
-               log::debug!(
-                   "after undo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
     }
 
-    /// Redo the latest changes. The actual behaviour might differ depending on the history mode (simple style, emacs style, ..)
-    /// Should only be called inside the engine redo wrapper function
+    /// Redo the latest changes.
+    ///
+    /// Should only be called inside the engine redo wrapper function.
     pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
-        /*
-               log::debug!(
-                   "before redo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
         self.simple_style_redo()
-        /*
-               log::debug!(
-                   "after redo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
     }
 
     pub(super) fn can_undo(&self) -> bool {
@@ -348,7 +312,8 @@ impl StrokeStore {
         widget_flags
     }
 
-    /// Saves the current state in the history.
+    /// Save the current state in the history.
+    ///
     /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_undo()
     #[allow(unused)]
     fn emacs_style_record(&mut self) {
@@ -371,9 +336,11 @@ impl StrokeStore {
         }
     }
 
-    /// emacs style undo, where the undo operation is pushed to the history as well.
-    /// after that, regenerate rendering for the current viewport.
+    /// Emacs style undo, where the undo operation is pushed to the history as well.
+    ///
     /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_record()
+    ///
+    /// The store then needs to update its rendering.
     #[allow(unused)]
     fn emacs_style_undo(&mut self) {
         let index = self.history_pos.unwrap_or(self.history.len());
@@ -392,6 +359,7 @@ impl StrokeStore {
     }
 
     /// Breaks the undo chain, to enable redo by undoing the undos, emacs-style.
+    ///
     /// Only to be used in combination with emacs_style_undo() and emacs_style_record()
     #[allow(unused)]
     fn emacs_style_break_undo_chain(&mut self) {
@@ -399,13 +367,17 @@ impl StrokeStore {
         self.history_pos = None;
     }
 
+    /// Clear the entire history.
     pub fn clear_history(&mut self) {
         self.history.clear();
         self.history_pos = None;
     }
 
-    /// inserts a new stroke into the store. Optionally a desired layer can be specified, or the default stroke layer is used.
-    /// stroke then needs to update its rendering
+    /// Insert a new stroke into the store.
+    ///
+    /// Optionally a desired layer can be specified, or the default stroke layer is used.
+    ///
+    /// The stroke then needs to update its rendering.
     pub fn insert_stroke(&mut self, stroke: Stroke, layer: Option<StrokeLayer>) -> StrokeKey {
         let bounds = stroke.bounds();
         let layer = layer.unwrap_or_else(|| stroke.extract_default_layer());
@@ -427,7 +399,7 @@ impl StrokeStore {
         key
     }
 
-    /// permanently removes a stroke with the given key from the store
+    /// Permanently removes a stroke with the given key from the store.
     pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
         Arc::make_mut(&mut self.trash_components).remove(key);
         Arc::make_mut(&mut self.selection_components).remove(key);
@@ -440,7 +412,7 @@ impl StrokeStore {
             .map(|stroke| (*stroke).clone())
     }
 
-    /// Clears the entire store
+    /// Clears the entire store.
     pub(super) fn clear(&mut self) {
         Arc::make_mut(&mut self.stroke_components).clear();
         Arc::make_mut(&mut self.trash_components).clear();

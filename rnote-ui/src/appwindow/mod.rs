@@ -1,12 +1,16 @@
+// Modules
 mod appsettings;
 mod appwindowactions;
 mod imp;
 
 // Imports
+use crate::{
+    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
+    {dialogs, RnMainHeader},
+};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
-use gtk4::gdk;
-use gtk4::{gio, glib, glib::clone, Application, Box, Button, IconTheme};
+use gtk4::{gdk, gio, glib, glib::clone, Application, Box, Button, IconTheme};
 use rnote_compose::Color;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
@@ -14,11 +18,6 @@ use rnote_engine::pens::PenStyle;
 use rnote_engine::utils::GdkRGBAHelpers;
 use rnote_engine::{engine::EngineTask, WidgetFlags};
 use std::path::Path;
-
-use crate::{
-    config, RnApp, RnCanvas, RnCanvasWrapper, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser,
-    {dialogs, RnMainHeader},
-};
 
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
@@ -538,7 +537,7 @@ impl RnAppWindow {
                         Ok((bytes, _)) => {
                             if let Err(e) = canvas.load_in_pdf_bytes(bytes.to_vec(), target_pos, None).await {
                                 log::error!("load_in_pdf_bytes() failed with Err: {e:?}");
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed"));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Pdf file failed"));
                             }
                         }
                         Err(e) => log::error!("failed to load bytes, Err: {e:?}"),

@@ -1,3 +1,7 @@
+// Imports
+use super::strokebehaviour::GeneratedStrokeImages;
+use super::StrokeBehaviour;
+use crate::{render, Camera, DrawBehaviour};
 use gtk4::pango;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
@@ -10,10 +14,6 @@ use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
-
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::StrokeBehaviour;
-use crate::{render, Camera, DrawBehaviour};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "font_style")]
@@ -128,13 +128,13 @@ pub enum TextAttribute {
     /// The font size, in points.
     #[serde(rename = "font_size")]
     FontSize(f64),
-    /// The font weight
+    /// The font weight.
     #[serde(rename = "font_weight")]
     FontWeight(u16),
     /// The foreground color of the text.
     #[serde(rename = "text_color")]
     TextColor(Color),
-    /// The font style
+    /// The font style.
     #[serde(rename = "font_style")]
     Style(FontStyle),
     /// Underline.
@@ -234,41 +234,6 @@ impl TextStyle {
     pub const FONT_WEIGHT_DEFAULT: u16 = 500;
     pub const FONT_COLOR_DEFAULT: Color = Color::BLACK;
 
-    pub fn load_pango_font_desc(&mut self, pango_font_desc: pango::FontDescription) {
-        if let Some(font_family) = pango_font_desc.family() {
-            self.font_family = font_family.to_string();
-        }
-
-        let font_size = f64::from(pango_font_desc.size()) / f64::from(pango::SCALE);
-        // Is <= 0.0 when no font size is selected
-        if font_size > 0.0 {
-            self.font_size = font_size;
-        }
-
-        self.font_weight = crate::utils::pango_font_weight_to_raw(pango_font_desc.weight());
-        self.font_style = pango_font_desc.style().into();
-    }
-
-    pub fn extract_pango_font_desc(&self) -> pango::FontDescription {
-        let mut pango_font_desc = pango::FontDescription::new();
-        pango_font_desc.set_family(self.font_family.as_str());
-        pango_font_desc.set_size((self.font_size * f64::from(pango::SCALE)).round() as i32);
-        pango_font_desc.set_weight(crate::utils::raw_font_weight_to_pango(self.font_weight));
-        pango_font_desc.set_style(self.font_style.into());
-
-        /*
-               log::debug!(
-                   "extract_pango_font_descr\nfamily: {:?}; size: {:?}, weight: {:?}, style: {:?}",
-                   pango_font_desc.family(),
-                   pango_font_desc.size(),
-                   pango_font_desc.weight(),
-                   pango_font_desc.style()
-               );
-        */
-
-        pango_font_desc
-    }
-
     pub fn build_text_layout<T>(
         &self,
         piet_text: &mut T,
@@ -295,7 +260,9 @@ impl TextStyle {
             text_layout_builder = text_layout_builder.max_width(max_width);
         }
 
-        // We need to sort the ranges before adding them to the text layout, else attributes might be skipped. (the cairo backend asserts for it in debug builds)
+        // We need to sort the ranges before adding them to the text layout, else attributes might be skipped.
+        // The cairo backend asserts for it in debug builds.
+        //
         // see https://docs.rs/piet/latest/piet/trait.TextLayoutBuilder.html#tymethod.range_attribute
         let mut ranged_text_attributes = self.ranged_text_attributes.clone();
         ranged_text_attributes
@@ -329,8 +296,7 @@ impl TextStyle {
         Some(na::vector![size.width, size.height])
     }
 
-    /// the cursors line metric relative to the textstroke bounds.
-    /// Index must be at a grapheme boundary
+    /// The cursors line metric relative to the textstroke bounds.
     pub fn lines<T>(&self, piet_text: &mut T, text: String) -> anyhow::Result<Vec<piet::LineMetric>>
     where
         T: piet::Text,
@@ -342,8 +308,9 @@ impl TextStyle {
             .collect::<Vec<piet::LineMetric>>())
     }
 
-    /// the cursors line metric relative to the textstroke bounds.
-    /// Index must be at a grapheme boundary
+    /// The cursors line metric relative to the textstroke bounds.
+    ///
+    /// Index must be at a grapheme boundary.
     pub fn cursor_line_metric<T>(
         &self,
         piet_text: &mut T,
@@ -392,7 +359,7 @@ impl TextStyle {
         Ok(text_layout.rects_for_range(range))
     }
 
-    /// The line metric is relative to the transform
+    /// Draw the cursor.
     pub fn draw_cursor(
         &self,
         cx: &mut impl piet::RenderContext,
@@ -462,7 +429,9 @@ impl TextStyle {
 pub struct TextStroke {
     #[serde(rename = "text")]
     pub text: String,
-    /// The translation part is the position of the upper left corner
+    /// The transformation.
+    ///
+    /// The translation part Is the position of the upper left corner
     #[serde(rename = "transform")]
     pub transform: Transform,
     #[serde(rename = "text_style")]
@@ -620,7 +589,9 @@ impl TextStroke {
         &self.text[range]
     }
 
-    // Gets a cursor matching best for the given coord. The coord is in global coordinate space
+    /// Get a cursor matching best for the given coordinate.
+    ///
+    /// `coord` must be in global coordinate space.
     pub fn get_cursor_for_global_coord(
         &self,
         coord: na::Vector2<f64>,
@@ -759,7 +730,9 @@ impl TextStroke {
         );
     }
 
-    // Translates the ranged text attributes after the given cursor. Overlapping ranges are extended / shrunk
+    /// Translate the ranged text attributes after the given cursor.
+    ///
+    /// Overlapping ranges are extended / shrunk
     fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
         for attr in self.text_style.ranged_text_attributes.iter_mut() {
             if attr.range.start > from_pos {
@@ -798,7 +771,7 @@ impl TextStroke {
         }
     }
 
-    /// Removes all attr in the given range
+    /// Remove all attributes in the given range.
     pub fn remove_attrs_for_range(&mut self, range: Range<usize>) {
         // partition into attrs that intersect the range, and those who don't and will be retained
         let (intersecting_attrs, mut retained_attrs): (
@@ -815,8 +788,6 @@ impl TextStroke {
         let truncated_attrs = intersecting_attrs
             .into_iter()
             .flat_map(|mut attr| {
-                //log::debug!("attr.range: {:?}, range: {:?}", attr.range, range);
-
                 if attr.range.start <= range.start && attr.range.end >= range.end {
                     // if the attribute completely contains the given range, split it
                     let mut first_split_attr = attr.clone();

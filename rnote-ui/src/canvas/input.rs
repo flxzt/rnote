@@ -1,3 +1,5 @@
+// Imports
+use super::RnCanvas;
 use gtk4::{gdk, prelude::*, Inhibit, Native};
 use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
@@ -7,8 +9,6 @@ use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::time::{Duration, Instant};
-
-use super::RnCanvas;
 
 // Returns whether the event should be inhibited from propagating, and the new pen state
 pub(crate) fn handle_pointer_controller_event(
@@ -164,7 +164,7 @@ pub(crate) fn handle_pointer_controller_event(
         let pen_mode = retrieve_pen_mode(event);
 
         for (element, event_time) in elements {
-            //log::debug!("handle event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            //log::debug!("handle pen event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
 
             match state {
                 PenState::Up => {
@@ -223,8 +223,6 @@ pub(crate) fn handle_key_controller_key_pressed(
     let now = Instant::now();
     let keyboard_key = retrieve_keyboard_key(key);
     let modifier_keys = retrieve_modifier_keys(modifier);
-
-    //log::debug!("keyboard key: {:?}", keyboard_key);
 
     let widget_flags = canvas.engine().borrow_mut().handle_pen_event(
         PenEvent::KeyPressed {
@@ -410,8 +408,6 @@ fn retrieve_pen_mode(event: &gdk::Event) -> Option<PenMode> {
 }
 
 pub(crate) fn retrieve_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
-    //log::debug!("gdk: pressed key: {:?}", gdk_key);
-
     if let Some(keychar) = gdk_key.to_unicode() {
         KeyboardKey::Unicode(keychar).filter_convert_unicode_control_chars()
     } else {

@@ -42,7 +42,7 @@
     <screenshot>
       <image>
         https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png</image>
-      <caption>A PDF annotation</caption>
+      <caption>A Pdf annotation</caption>
     </screenshot>
     <screenshot>
       <image>
@@ -245,7 +245,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>improvement: Add zoom buttons to the quick-actions overlay</li>
           <li>improvement: By default use the workspace directory for import and export dialogs, and
             document file for save dialogs</li>
-          <li>fix: PDF export and print sometimes produced empty pages</li>
+          <li>fix: Pdf export and print sometimes produced empty pages</li>
           <li>fix: workspace files list not refreshing after modifying the workspace path</li>
           <li>fix: Selector being canceled when attempting to interact with the selection when
             "touch-drawing" was enabled</li>
@@ -269,7 +269,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>fix: background pattern tile rendering size</li>
           <li>fix: scrolling with touchpad was not possible when the "permanent hidden scrollbars"
             option was enabled</li>
-          <li>fix: broken SVG export</li>
+          <li>fix: broken Svg export</li>
           <li>fix: image layers when exporting to .xopp</li>
         </ul>
       </description>
@@ -358,7 +358,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>disclaimer: breaking file format compatibility</li>
           <li>feature: configurable button shortcuts (stylus, mouse)</li>
           <li>change: moved the marker into the brush pen as a style</li>
-          <li>improvement: faster PDF export &amp; fix export with large sheet dimensions</li>
+          <li>improvement: faster Pdf export &amp; fix export with large sheet dimensions</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -391,7 +391,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>new feature: Export as PDF</li>
+          <li>new feature: Export as Pdf</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -443,7 +443,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>PDF import as vector images</li>
+          <li>Pdf import as vector images</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -474,7 +474,7 @@ Breakages in the file format will be explicitly announced (but we'll work as har
           <li>an updated file format. !!! Breaks compatibility to older versions. Please export
             existing files before upgrading / downgrade temporarily (explained how to downgrade at
             github.com/flxzt/rnote)</li>
-          <li>new features: PDF import, clipboard and drag&amp;drop support</li>
+          <li>new features: Pdf import, clipboard and drag&amp;drop support</li>
           <li>performance improvements in stroke rendering, selecting, erasing by parallelizing
             these operations</li>
           <li>UI improvements</li>

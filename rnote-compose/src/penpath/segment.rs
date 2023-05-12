@@ -1,40 +1,40 @@
-use serde::{Deserialize, Serialize};
-
+// Imports
 use super::Element;
 use crate::transform::TransformBehaviour;
+use serde::{Deserialize, Serialize};
 
-/// A single segment (usually of a path)
+/// A single segment, usually of a pen path.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "segment")]
 pub enum Segment {
     #[serde(rename = "lineto", alias = "line")]
-    /// A line to segment
+    /// A line-to segment.
     LineTo {
         #[serde(rename = "end")]
-        /// The line end
+        /// The line end.
         end: Element,
     },
     #[serde(rename = "quadbezto", alias = "quadbez")]
-    /// A quadratic bezier to segment
+    /// A quadratic-bezier-to segment.
     QuadBezTo {
         #[serde(rename = "cp", with = "crate::serialize::na_vector2_f64_dp3")]
-        /// The quadratic curve control point
+        /// The quadratic curve control point.
         cp: na::Vector2<f64>,
         #[serde(rename = "end")]
-        /// The quadratic curve end
+        /// The quadratic curve end.
         end: Element,
     },
     #[serde(rename = "cubbezto", alias = "cubbez")]
-    /// A cubic bezier to segment.
+    /// A cubic-bezier-to segment.
     CubBezTo {
         #[serde(rename = "cp1", with = "crate::serialize::na_vector2_f64_dp3")]
-        /// The cubic curve first control point
+        /// The cubic curve first control point.
         cp1: na::Vector2<f64>,
         #[serde(rename = "cp2", with = "crate::serialize::na_vector2_f64_dp3")]
-        /// The cubic curve second control point
+        /// The cubic curve second control point.
         cp2: na::Vector2<f64>,
         #[serde(rename = "end")]
-        /// The cubic curve end
+        /// The cubic curve end.
         end: Element,
     },
 }
@@ -96,7 +96,9 @@ impl TransformBehaviour for Segment {
 }
 
 impl Segment {
-    /// All segments have an end
+    /// The end element of a segment.
+    ///
+    /// All segment variants have an end.
     pub fn end(&self) -> Element {
         match self {
             Segment::LineTo { end, .. } => *end,

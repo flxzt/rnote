@@ -1,24 +1,22 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
-/// 3D coordinate system builder
+/// 3D coordinate system builder.
 #[derive(Debug, Clone)]
 pub struct CoordSystem3DBuilder {
-    /// the tip of the z axis
+    /// Tip of the z axis.
     tip_z: na::Vector2<f64>,
-    /// the tip of the y axis
+    /// Tip of the y axis.
     tip_y: na::Vector2<f64>,
 }
 
@@ -80,7 +78,7 @@ impl ShapeBuilderBehaviour for CoordSystem3DBuilder {
 }
 
 impl CoordSystem3DBuilder {
-    /// The current state represented by six lines
+    /// The current state as six individual lines.
     pub fn state_as_lines(&self) -> Vec<Line> {
         let center = na::vector!(self.tip_z.x, self.tip_y.y);
         let tip_x_offset =

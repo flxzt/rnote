@@ -1,3 +1,4 @@
+// Modules
 pub mod background;
 pub mod format;
 
@@ -6,13 +7,11 @@ pub use background::Background;
 pub use format::Format;
 
 // Imports
-use rnote_compose::Color;
-
 use crate::{Camera, StrokeStore};
-use rnote_compose::helpers::AabbHelpers;
-
 use gtk4::{glib, prelude::*};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
 
 #[derive(
@@ -121,7 +120,9 @@ impl Document {
         )
     }
 
-    // Generates bounds for each page for the doc bounds, extended to fit the format. May contain many empty pages (in infinite mode)
+    /// Generate bounds for each page for the doc bounds, extended to fit the format.
+    ///
+    /// May contain many empty pages (in infinite mode)
     pub fn pages_bounds(&self) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 

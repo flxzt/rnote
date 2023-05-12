@@ -1,24 +1,22 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style, Transform};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
 use crate::Constraints;
+use crate::{Shape, Style, Transform};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
-/// ellipse builder
+/// Ellipse builder.
 #[derive(Debug, Clone)]
 pub struct EllipseBuilder {
-    /// the start position
+    /// Start position.
     start: na::Vector2<f64>,
-    /// the current position
+    /// Current position.
     current: na::Vector2<f64>,
 }
 
@@ -73,7 +71,7 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
 }
 
 impl EllipseBuilder {
-    /// The current state as ellipse
+    /// The current state as an ellipse.
     pub fn state_as_ellipse(&self) -> Ellipse {
         let transform = Transform::new_w_isometry(na::Isometry2::new(self.start, 0.0));
         let radii = (self.current - self.start).abs();

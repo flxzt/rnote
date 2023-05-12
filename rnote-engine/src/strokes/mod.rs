@@ -1,3 +1,4 @@
+// Modules
 pub mod bitmapimage;
 pub mod brushstroke;
 pub mod shapestroke;

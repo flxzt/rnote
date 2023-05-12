@@ -1,3 +1,5 @@
+// Imports
+use crate::store::chrono_comp::StrokeLayer;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::smooth::SmoothOptions;
@@ -5,8 +7,6 @@ use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::PressureCurve;
 use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
-
-use crate::store::chrono_comp::StrokeLayer;
 
 #[derive(
     Debug,

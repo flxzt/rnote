@@ -1,8 +1,4 @@
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use p2d::shape::Cuboid;
-use piet::RenderContext;
-use std::time::Instant;
-
+// Imports
 use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
 use super::ShapeBuilderBehaviour;
 use crate::penevents::{PenEvent, PenState};
@@ -11,13 +7,17 @@ use crate::shapes::Rectangle;
 use crate::style::{indicators, Composer};
 use crate::Constraints;
 use crate::{Shape, Style, Transform};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::shape::Cuboid;
+use piet::RenderContext;
+use std::time::Instant;
 
-/// rectangle builder
+/// Rectangle builder.
 #[derive(Debug, Clone)]
 pub struct RectangleBuilder {
-    /// the start position
+    /// Start position.
     start: na::Vector2<f64>,
-    /// the current position
+    /// Current position.
     current: na::Vector2<f64>,
 }
 
@@ -72,7 +72,7 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
 }
 
 impl RectangleBuilder {
-    /// The current state as rectangle
+    /// The current state as a rectangle.
     pub fn state_as_rect(&self) -> Rectangle {
         let center = (self.start + self.current) * 0.5;
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));

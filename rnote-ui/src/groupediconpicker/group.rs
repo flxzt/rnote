@@ -1,3 +1,5 @@
+// Imports
+use crate::RnGroupedIconPicker;
 use cairo::glib::clone;
 use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
 use gtk4::{subclass::prelude::ObjectSubclass, ListBoxRow};
@@ -5,8 +7,6 @@ use gtk4::{
     Align, Box, FlowBox, FlowBoxChild, IconSize, Image, Label, StringList, StringObject,
     TemplateChild, Widget,
 };
-
-use crate::RnGroupedIconPicker;
 
 pub(crate) struct GroupedIconPickerGroupData {
     pub(crate) name: String,

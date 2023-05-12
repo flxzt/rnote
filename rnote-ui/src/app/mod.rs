@@ -1,11 +1,7 @@
+// Modules
 mod appactions;
 
 // Imports
-use adw::subclass::prelude::AdwApplicationImpl;
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-use rnote_engine::document::format::MeasureUnit;
-use rnote_engine::pens::PenStyle;
-
 use crate::{
     colorpicker::RnColorPad, colorpicker::RnColorSetter, config, globals, penssidebar::RnBrushPage,
     penssidebar::RnEraserPage, penssidebar::RnSelectorPage, penssidebar::RnShaperPage,
@@ -16,6 +12,10 @@ use crate::{
     RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker, RnMainHeader, RnOverlays,
     RnPensSideBar, RnSettingsPanel, RnStrokeWidthPicker, RnUnitEntry, RnWorkspaceBrowser,
 };
+use adw::subclass::prelude::AdwApplicationImpl;
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use rnote_engine::document::format::MeasureUnit;
+use rnote_engine::pens::PenStyle;
 
 mod imp {
     use super::*;

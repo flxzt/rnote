@@ -1,3 +1,4 @@
+// Modules
 mod group;
 
 // Re-exports
@@ -6,9 +7,9 @@ pub(crate) use group::RnGroupedIconPickerGroup;
 
 // Imports
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ListBox, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Label, ListBox,
+    StringList, StringObject, Widget,
 };
-use gtk4::{Label, StringList, StringObject};
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
 

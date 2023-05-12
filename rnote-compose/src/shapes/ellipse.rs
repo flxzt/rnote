@@ -1,22 +1,21 @@
-use kurbo::Shape;
-use p2d::bounding_volume::Aabb;
-use serde::{Deserialize, Serialize};
-
+// Imports
+use super::Line;
 use crate::helpers::{Affine2Helpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
-
-use super::Line;
+use kurbo::Shape;
+use p2d::bounding_volume::Aabb;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "ellipse")]
-/// A Ellipse
+/// An Ellipse.
 pub struct Ellipse {
-    /// The radii of the ellipse
+    /// The radii of the ellipse.
     #[serde(rename = "radii", with = "crate::serialize::na_vector2_f64_dp3")]
     pub radii: na::Vector2<f64>,
-    /// The transform of the  center of the ellipse
+    /// The transform of the center of the ellipse.
     #[serde(rename = "transform")]
     pub transform: Transform,
 }
@@ -88,7 +87,7 @@ impl Ellipse {
         Self { radii, transform }
     }
 
-    /// Approximate with lines
+    /// Approximate with lines.
     pub fn approx_with_lines(&self) -> Vec<Line> {
         let mut lines = Vec::new();
         let mut prev = kurbo::Point::new(0.0, 0.0);
@@ -108,7 +107,7 @@ impl Ellipse {
         lines
     }
 
-    /// to kurbo
+    /// Convert to kurbo shape.
     pub fn to_kurbo(&self) -> kurbo::Ellipse {
         self.transform.affine.to_kurbo()
             * kurbo::Ellipse::new(kurbo::Point::ZERO, self.radii.to_kurbo_vec(), 0.0)

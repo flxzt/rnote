@@ -1,18 +1,16 @@
-use std::ops::Range;
-use std::path::PathBuf;
-use std::time::Instant;
-
-use futures::channel::oneshot;
-use serde::{Deserialize, Serialize};
-
+// Imports
+use super::{EngineConfig, EngineViewMut, StrokeContent};
 use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::store::StrokeKey;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{RnoteEngine, WidgetFlags};
-
-use super::{EngineConfig, EngineViewMut, StrokeContent};
+use futures::channel::oneshot;
+use serde::{Deserialize, Serialize};
+use std::ops::Range;
+use std::path::PathBuf;
+use std::time::Instant;
 
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
@@ -74,16 +72,17 @@ impl TryFrom<u32> for PdfImportPageSpacing {
     }
 }
 
+/// Pdf import preferences.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "pdf_import_prefs")]
 pub struct PdfImportPrefs {
-    /// The pdf page width in percentage to the format width
+    /// Pdf page width in percentage to the format width.
     #[serde(rename = "page_width_perc")]
     pub page_width_perc: f64,
-    /// The pdf page spacing
+    /// Pdf page spacing.
     #[serde(rename = "page_spacing")]
     pub page_spacing: PdfImportPageSpacing,
-    /// The pdf pages type
+    /// Pdf pages import type.
     #[serde(rename = "pages_type")]
     pub pages_type: PdfImportPagesType,
     /// The scalefactor when importing as bitmap image
@@ -102,10 +101,11 @@ impl Default for PdfImportPrefs {
     }
 }
 
+/// Xournal++ `.xopp` file import preferences.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "xopp_import_prefs")]
 pub struct XoppImportPrefs {
-    /// The import DPI
+    /// Import DPI.
     #[serde(rename = "pages_type")]
     pub dpi: f64,
 }
@@ -116,14 +116,14 @@ impl Default for XoppImportPrefs {
     }
 }
 
-/// Import preferences
+/// Import preferences.
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 #[serde(default, rename = "import_prefs")]
 pub struct ImportPrefs {
     /// Pdf import preferences
     #[serde(rename = "pdf_import_prefs")]
     pub pdf_import_prefs: PdfImportPrefs,
-    /// Xournal++ file import preferences
+    /// Xournal++ `.xopp` file import preferences
     #[serde(rename = "xopp_import_prefs")]
     pub xopp_import_prefs: XoppImportPrefs,
 }
@@ -166,9 +166,9 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// Imports and replaces the engine config. If pen sounds should be enabled the rnote data dir must be provided
+    /// Import and replaces the engine config.
     ///
-    /// NOT for opening files.
+    /// If pen sounds should be enabled the rnote data-dir must be provided.
     pub fn import_engine_config_from_json(
         &mut self,
         serialized_config: &str,
@@ -178,7 +178,9 @@ impl RnoteEngine {
         Ok(self.load_engine_config(engine_config, data_dir))
     }
 
-    /// generates a vectorimage for the bytes ( from a SVG file )
+    /// Generate a vectorimage from the bytes.
+    ///
+    /// The bytes are expected to be from a valid UTF-8 encoded Svg string.
     pub fn generate_vectorimage_from_bytes(
         &self,
         pos: na::Vector2<f64>,
@@ -201,7 +203,9 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// generates a bitmapimage for the bytes ( from a bitmap image file: PNG, JPG )
+    /// Generate a bitmapimage for the bytes.
+    ///
+    /// The bytes are expected to be from a valid bitmap image (Png/Jpeg).
     pub fn generate_bitmapimage_from_bytes(
         &self,
         pos: na::Vector2<f64>,
@@ -222,7 +226,9 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// generates image strokes for each page for the bytes ( from a PDF file )
+    /// Generate image strokes for each page for the bytes.
+    ///
+    /// The bytes are expected to be from a valid Pdf.
     #[allow(clippy::type_complexity)]
     pub fn generate_pdf_pages_from_bytes(
         &self,
@@ -276,14 +282,15 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    /// Imports the generated strokes into the store
+    /// Import the generated strokes into the store.
     pub fn import_generated_strokes(
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
     ) -> WidgetFlags {
         let mut widget_flags = self.store.record(Instant::now());
 
-        // we need to always deselect all strokes, even tough changing the pen style deselects too, however only when the pen is actually changed.
+        // we need to always deselect all strokes -
+        // even tough changing the pen style deselects too, it does only when the pen is actually different.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
 
@@ -294,7 +301,7 @@ impl RnoteEngine {
             .map(|(stroke, layer)| self.store.insert_stroke(stroke, layer))
             .collect::<Vec<StrokeKey>>();
 
-        // after inserting the strokes, but before set the inserted strokes selected
+        // resize after inserting the strokes, but before set the inserted strokes selected
         self.resize_to_fit_strokes();
 
         self.store.set_selected_keys(&inserted, true);
@@ -313,7 +320,7 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// insert text
+    /// Insert text.
     pub fn insert_text(
         &mut self,
         text: String,
@@ -347,7 +354,9 @@ impl RnoteEngine {
         Ok(widget_flags)
     }
 
-    /// Inserts the stroke content. Data usually coming from the clipboard, drop source, etc.
+    /// Insert the stroke content.
+    ///
+    /// The data usually comes from the clipboard, drag-and-drop, ..
     pub fn insert_stroke_content(
         &mut self,
         content: StrokeContent,

@@ -1,6 +1,8 @@
+// Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::shapes::Shape;
@@ -8,8 +10,6 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -20,7 +20,7 @@ pub struct ShapeStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
-    // since the shape can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
+    // since the shape can have many hitboxes, we store them and update them when the stroke geometry changes
     hitboxes: Vec<Aabb>,
 }
 

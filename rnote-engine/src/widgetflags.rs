@@ -1,25 +1,26 @@
-/// Flags returned to the widget holding the engine
+/// Flags returned to the UI widget that holds the engine.
 #[must_use]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct WidgetFlags {
-    /// needs surface redrawing
+    /// Needs surface redrawing.
     pub redraw: bool,
-    /// needs surface resizing
+    /// Needs surface resizing.
     pub resize: bool,
-    /// refresh the UI with the engine state
+    /// Refresh the UI with the engine state.
     pub refresh_ui: bool,
-    /// whether the store was modified, i.e. new strokes inserted, modified, etc.
+    /// Whether the store was modified, i.e. new strokes inserted, modified, etc. .
     pub store_modified: bool,
-    /// update the current view offsets and size
+    /// Update the current view offsets and size.
     pub update_view: bool,
-    /// deselect the elements of the global color picker
+    /// Deselect the elements of the global color picker.
     pub deselect_color_setters: bool,
-    /// Is Some when undo button visibility should be changed. Is None if should not be changed
+    /// Is Some when undo button visibility should be changed. Is None if should not be changed.
     pub hide_undo: Option<bool>,
-    /// Is Some when redo button visibility should be changed. Is None if should not be changed
+    /// Is Some when redo button visibility should be changed. Is None if should not be changed.
     pub hide_redo: Option<bool>,
-    /// Changes whether text preprocessing should be enabled. Meaning, instead of key events text events are then emitted
-    /// for regular unicode text. Used when writing text with the typewriter
+    /// Changes whether text preprocessing in the UI toolkit should be enabled.
+    /// Meaning, when enabled instead of key events, text events are then emitted
+    /// for regular unicode text. Used when writing text with the typewriter.
     pub enable_text_preprocessing: Option<bool>,
 }
 
@@ -40,7 +41,7 @@ impl Default for WidgetFlags {
 }
 
 impl WidgetFlags {
-    /// Merging with another WidgetFlags struct, prioritizing other for conflicting values.
+    /// Merge with another WidgetFlags struct, prioritizing other for conflicting values.
     pub fn merge(&mut self, other: Self) {
         self.redraw |= other.redraw;
         self.resize |= other.resize;

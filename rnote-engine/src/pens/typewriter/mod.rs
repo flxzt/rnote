@@ -1,6 +1,15 @@
+// Modules
 mod penevents;
 
 // Imports
+use super::penbehaviour::PenProgress;
+use super::PenBehaviour;
+use super::PenStyle;
+use crate::engine::{EngineView, EngineViewMut};
+use crate::store::StrokeKey;
+use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
+use crate::strokes::{Stroke, TextStroke};
+use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -13,22 +22,15 @@ use std::ops::Range;
 use std::time::Instant;
 use unicode_segmentation::GraphemeCursor;
 
-use super::penbehaviour::PenProgress;
-use super::PenBehaviour;
-use super::PenStyle;
-use crate::engine::{EngineView, EngineViewMut};
-use crate::store::StrokeKey;
-use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
-use crate::strokes::{Stroke, TextStroke};
-use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
-
 #[derive(Debug, Clone)]
 pub(super) enum ModifyState {
     Up,
     Hover(na::Vector2<f64>),
     Selecting {
         selection_cursor: GraphemeCursor,
-        /// If selecting is finished ( if true, will get reset on the next click )
+        /// Whether selecting is finished.
+        ///
+        /// If true, the state will get reset on the next click.
         finished: bool,
     },
     Translating {
@@ -195,7 +197,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         }
                         _ => PenState::Up,
                     };
-                    indicators::draw_triangular_down_node(
+                    indicators::draw_triangular_node(
                         cx,
                         adjust_text_width_node_state,
                         Self::adjust_text_width_node_center(
@@ -316,14 +318,6 @@ impl PenBehaviour for Typewriter {
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        /*
-               log::debug!(
-                   "typewriter handle_event: state: {:#?}, event: {:#?}",
-                   self.state,
-                   event
-               );
-        */
-
         let (pen_progress, widget_flags) = match event {
             PenEvent::Down {
                 element,
@@ -476,7 +470,7 @@ impl PenBehaviour for Typewriter {
     }
 }
 
-// Updates the cursors to valid positions and new text length.
+// Update the cursors to valid positions and new text length.
 fn update_cursors_for_textstroke(
     textstroke: &TextStroke,
     cursor: &mut GraphemeCursor,
@@ -497,13 +491,13 @@ fn update_cursors_for_textstroke(
 }
 
 impl Typewriter {
-    // The size of the translate node, located in the upper left corner
+    // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// The threshold where a translation is applied ( as offset magnitude, surface coords )
+    /// The threshold magniuted where above it the translation is applied. In surface coordinates.
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
-    /// The threshold in x-axis direction where adjusting the text width is applied ( as offset, surface coords )
+    /// The threshold in x-axis direction where above it adjustments to the text width are applied. In surface coordinates.
     const ADJ_TEXT_WIDTH_THRESHOLD: f64 = 1.0;
-    // The size of the translate node, located in the upper left corner
+    // The size of the translate node, located in the upper right corner.
     const ADJUST_TEXT_WIDTH_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
 
     fn start_audio(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
@@ -512,7 +506,7 @@ impl Typewriter {
         }
     }
 
-    /// the bounds of the text rect enclosing the textstroke
+    /// The bounds of the text rect enclosing the textstroke.
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> Aabb {
         let origin = textstroke.transform.translation_part();
         Aabb::new(
@@ -522,7 +516,7 @@ impl Typewriter {
         .merged(&textstroke.bounds())
     }
 
-    /// the bounds of the translate node
+    /// The bounds of the translate node.
     fn translate_node_bounds(typewriter_bounds: Aabb, camera: &Camera) -> Aabb {
         let total_zoom = camera.total_zoom();
         Aabb::from_half_extents(
@@ -533,7 +527,7 @@ impl Typewriter {
         )
     }
 
-    /// the center of the adjust text width node
+    /// The center of the adjust text width node.
     fn adjust_text_width_node_center(
         text_rect_origin: na::Vector2<f64>,
         text_width: f64,
@@ -546,7 +540,7 @@ impl Typewriter {
         ]
     }
 
-    /// the bounds of the adjust text width node
+    /// The bounds of the adjust text width node.
     fn adjust_text_width_node_bounds(
         text_rect_origin: na::Vector2<f64>,
         text_width: f64,
@@ -560,7 +554,7 @@ impl Typewriter {
         )
     }
 
-    /// Returns the range of the current selection, if available
+    /// The range of the current selection, if available.
     pub fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
         if let TypewriterState::Modifying {
             modify_state:
@@ -581,8 +575,9 @@ impl Typewriter {
         }
     }
 
-    /// Inserts text either at the current cursor position or,
-    /// if the state is idle, a new textstroke (at the preferred position, if supplied. Else at a default offset).
+    /// Insert text either at the current cursor position or, if the state is idle, in a new textstroke.
+    ///
+    /// Inserts at the given position, if supplied. Else at a default offset.
     pub fn insert_text(
         &mut self,
         text: String,
@@ -729,7 +724,7 @@ impl Typewriter {
         widget_flags
     }
 
-    // changes the text style of the text stroke that is currently being modified
+    // Change the text style of the text stroke that is currently being modified.
     pub fn change_text_style_in_modifying_stroke<F>(
         &mut self,
         modify_func: F,

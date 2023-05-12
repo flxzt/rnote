@@ -1,3 +1,5 @@
+// Imports
+use super::RnWorkspaceListEntry;
 use crate::RnAppWindow;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider, Image,
@@ -5,14 +7,11 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
+use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use unicode_segmentation::UnicodeSegmentation;
 
-use super::RnWorkspaceListEntry;
-
 mod imp {
-    use rnote_engine::utils::GdkRGBAHelpers;
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

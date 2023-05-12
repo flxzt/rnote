@@ -1,3 +1,4 @@
+// Imports
 use super::penshortcutmodels::{
     ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
 };
@@ -11,7 +12,6 @@ use rnote_engine::pens::PenStyle;
 use std::cell::RefCell;
 
 mod imp {
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

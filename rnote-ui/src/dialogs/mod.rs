@@ -1,22 +1,23 @@
 // gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
 #![allow(deprecated)]
 
+// Modules
 pub(crate) mod export;
 pub(crate) mod import;
 
-use adw::prelude::*;
-use gettextrs::{gettext, pgettext};
-use gtk4::{
-    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
-    Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
-};
-
+// Imports
 use crate::appwindow::RnAppWindow;
 use crate::canvas::RnCanvas;
 use crate::canvaswrapper::RnCanvasWrapper;
 use crate::config;
 use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
 use crate::{globals, RnIconPicker};
+use adw::prelude::*;
+use gettextrs::{gettext, pgettext};
+use gtk4::{
+    gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
+    Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
+};
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {

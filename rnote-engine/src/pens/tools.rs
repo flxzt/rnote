@@ -1,19 +1,17 @@
-use std::time::Instant;
-
+// Imports
+use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::pensconfig::toolsconfig::ToolStyle;
+use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
+use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::PenEvent;
-
-use p2d::bounding_volume::Aabb;
-
-use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::pensconfig::toolsconfig::ToolStyle;
-use super::PenStyle;
+use std::time::Instant;
 
 #[derive(Clone, Debug)]
 pub struct VerticalSpaceTool {
@@ -209,7 +207,7 @@ impl PenBehaviour for Tools {
 
                         self.verticalspace_tool.strokes_below = engine_view
                             .store
-                            .keys_below_y_pos(self.verticalspace_tool.current_pos_y);
+                            .keys_below_y(self.verticalspace_tool.current_pos_y);
                     }
                     ToolStyle::OffsetCamera => {
                         self.offsetcamera_tool.start = element.pos;

@@ -1,7 +1,8 @@
+// Imports
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-/// constraints
+/// Constraints.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "constraints")]
 pub struct Constraints {
@@ -14,7 +15,7 @@ pub struct Constraints {
 }
 
 impl Constraints {
-    /// constrain the coordinates of a vector by the current stored constraint ratios
+    /// Constrain the coordinates of a vector by the current stored constraint ratios
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
         if !self.enabled {
             return pos;
@@ -34,32 +35,32 @@ impl Constraints {
     }
 }
 
-/// the constraint ratio
+/// A constraint ratio.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "constraint_ratio")]
 pub enum ConstraintRatio {
     #[serde(rename = "horizontal")]
-    /// Horizontal axis
+    /// Horizontal axis.
     Horizontal,
     #[serde(rename = "vertical")]
-    /// Vertical axis
+    /// Vertical axis.
     Vertical,
     #[serde(rename = "one_to_one")]
-    /// 1:1 (enables drawing circles, squares, etc.)
+    /// 1:1 (enables drawing circles, squares, etc.).
     OneToOne,
     #[serde(rename = "three_to_two")]
-    /// 3:2
+    /// 3:2.
     ThreeToTwo,
     #[serde(rename = "golden")]
-    /// Golden ratio
+    /// Golden ratio.
     Golden,
 }
 
 impl ConstraintRatio {
-    /// the golden ratio
+    /// Golden ratio.
     pub const GOLDEN_RATIO: f64 = 1.618;
 
-    /// Constrain the coordinates of a vector by the constraint ratio
+    /// Constrain the coordinates of a vector by the constraint ratio.
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
         let dx = pos[0];
         let dy = pos[1];

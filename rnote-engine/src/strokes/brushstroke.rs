@@ -213,7 +213,7 @@ impl TransformBehaviour for BrushStroke {
 }
 
 impl BrushStroke {
-    /// The treshold where when above it, images are generated for each segment instead of one for the entire stroke.
+    /// The threshold where when above it, images are generated for each segment instead of one for the entire stroke.
     pub const IMAGES_SEGMENTS_THRESHOLD: f64 = 1000.0;
 
     pub fn new(start: Element, style: Style) -> Self {

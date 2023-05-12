@@ -531,7 +531,7 @@ impl AsXmlAttributeValue for XoppColor {
 }
 
 impl XoppColor {
-    /// Parse the color from a attribute vallue that is format `#RRGGBBAA`.
+    /// Parse the color from a attribute value that is format `#RRGGBBAA`.
     fn from_hexcolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
         let s = s.trim().replace('#', "");
 

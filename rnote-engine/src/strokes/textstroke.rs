@@ -591,7 +591,7 @@ impl TextStroke {
 
     /// Get a cursor matching best for the given coordinate.
     ///
-    /// The coordinte must be in global coordinate space.
+    /// `coord` must be in global coordinate space.
     pub fn get_cursor_for_global_coord(
         &self,
         coord: na::Vector2<f64>,

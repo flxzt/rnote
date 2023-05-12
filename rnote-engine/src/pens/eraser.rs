@@ -1,18 +1,17 @@
-use std::time::Instant;
-
+// Imports
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::pensconfig::eraserconfig::EraserStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::PenEvent;
 use rnote_compose::penpath::Element;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
+use std::time::Instant;
 
 #[derive(Debug, Clone, Copy)]
 pub enum EraserState {

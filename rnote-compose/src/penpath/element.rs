@@ -1,17 +1,17 @@
+// Imports
+use crate::transform::TransformBehaviour;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::transform::TransformBehaviour;
-
-/// A pen input element
+/// A pen input element.
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename = "element")]
 pub struct Element {
     #[serde(rename = "pos", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// The position of the element
+    /// The position of the element.
     pub pos: na::Vector2<f64>,
     #[serde(rename = "pressure", with = "crate::serialize::f64_dp3")]
-    /// The pen pressure. The valid range is [0.0, 1.0]
+    /// The pen pressure. The valid range is [0.0, 1.0].
     pub pressure: f64,
 }
 
@@ -39,10 +39,10 @@ impl TransformBehaviour for Element {
 }
 
 impl Element {
-    /// The default fallback pen pressure, when it could not be retrieved from the input
+    /// The default fallback pen pressure, when it could not be retrieved from the input.
     pub const PRESSURE_DEFAULT: f64 = 0.5;
 
-    /// A new element from a position and pressure
+    /// A new element from a position and pressure.
     pub fn new(pos: na::Vector2<f64>, pressure: f64) -> Self {
         Self {
             pos,
@@ -50,17 +50,19 @@ impl Element {
         }
     }
 
-    /// Sets the pressure, clamped to the range [0.0 - 1.0]
+    /// Sets the pressure, clamped to the range [0.0 - 1.0].
     pub fn set_pressure_clamped(&mut self, pressure: f64) {
         self.pressure = pressure.clamp(0.0, 1.0);
     }
 
-    /// indicates if a element is out of valid bounds and should be filtered out. Returns true if element pos is not inside the bounds
+    /// Indicates if a element is out of valid bounds and should be filtered out.
+    ///
+    /// Returns true if element pos is not inside the bounds.
     pub fn filter_by_bounds(&self, filter_bounds: Aabb) -> bool {
         !filter_bounds.contains_local_point(&na::Point2::from(self.pos))
     }
 
-    /// Transforms the element position by the transform
+    /// Transforms the element position by the given transform.
     pub fn transform_by(&mut self, transform: na::Affine2<f64>) {
         self.pos = (transform * na::Point2::from(self.pos)).coords;
     }

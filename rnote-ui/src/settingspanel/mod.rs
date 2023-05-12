@@ -1,3 +1,4 @@
+// Modules
 mod penshortcutmodels;
 mod penshortcutrow;
 
@@ -5,6 +6,7 @@ mod penshortcutrow;
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 
 // Imports
+use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
@@ -19,8 +21,6 @@ use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::rc::Rc;
-
-use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 
 mod imp {
     use super::*;

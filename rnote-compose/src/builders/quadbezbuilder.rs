@@ -1,21 +1,18 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
 use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::QuadraticBezier;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::constraints::ConstraintRatio;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
-/// The quadbez builder state
 enum QuadBezBuilderState {
     Cp {
         start: na::Vector2<f64>,
@@ -32,8 +29,8 @@ enum QuadBezBuilderState {
     },
 }
 
+/// Quadratic bezier builder.
 #[derive(Debug, Clone)]
-/// quadratic bezier builder
 pub struct QuadBezBuilder {
     state: QuadBezBuilderState,
 }

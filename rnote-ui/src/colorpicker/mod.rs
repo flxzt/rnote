@@ -1,3 +1,4 @@
+// Modules
 mod colorpad;
 mod colorsetter;
 
@@ -6,18 +7,15 @@ pub(crate) use colorpad::RnColorPad;
 pub(crate) use colorsetter::RnColorSetter;
 
 // Imports
-use std::cell::{Cell, RefCell};
-
+use crate::RnAppWindow;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, BoxLayout, Button, ColorDialog,
     CompositeTemplate, Orientation, PositionType, Widget,
 };
-
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
-
-use crate::RnAppWindow;
+use std::cell::{Cell, RefCell};
 
 mod imp {
     use super::*;

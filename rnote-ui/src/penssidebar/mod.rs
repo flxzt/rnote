@@ -1,3 +1,4 @@
+// Modules
 mod brushpage;
 mod eraserpage;
 mod selectorpage;
@@ -14,12 +15,12 @@ pub(crate) use shaperpage::RnShaperPage;
 pub(crate) use toolspage::RnToolsPage;
 pub(crate) use typewriterpage::RnTypewriterPage;
 
+// Imports
+use crate::RnAppWindow;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
     Widget,
 };
-
-use crate::RnAppWindow;
 
 mod imp {
     use super::*;

@@ -1,17 +1,17 @@
+// Imports
+use super::Line;
+use crate::helpers::Vector2Helpers;
+use crate::shapes::ShapeBehaviour;
+use crate::transform::TransformBehaviour;
 use kurbo::PathEl;
 use na::Rotation2;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::Vector2Helpers;
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
-
-use super::Line;
-
-/// All doc-comments of this file and [`ArrowBuilder`] rely on the following
+/// All doc-comments of this file and [ArrowBuilder][crate::builders] rely on the following
 /// graphic:
-/// ```
+///
+/// ```text
 ///         tip
 ///         /|\
 ///        / | \
@@ -22,14 +22,16 @@ use super::Line;
 ///          |
 ///         start
 /// ```
+///
 /// Where `lline`, `tip`, `start` and `rline` represent a vector of the arrow.
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(default, rename = "arrow")]
 pub struct Arrow {
-    /// The start of the arrow
+    /// Start of the arrow.
     pub start: na::Vector2<f64>,
 
-    /// The tip of the arow
+    /// Tip of the arow.
     pub tip: na::Vector2<f64>,
 }
 
@@ -88,7 +90,7 @@ impl Arrow {
         Self { start, tip }
     }
 
-    /// Splits the stem of the arrow into the given number of lines.
+    /// Split the stem of the arrow into the given number of lines.
     pub fn split(&self, n_splits: i32) -> Vec<Line> {
         (0..n_splits)
             .map(|i| {
@@ -107,7 +109,7 @@ impl Arrow {
             .collect::<Vec<Line>>()
     }
 
-    /// convert the arrow to kurbo-elements.
+    /// Convert to kurbo shapes.
     pub fn to_kurbo(&self, stroke_width: Option<f64>) -> ArrowKurbo {
         let main = kurbo::Line::new(self.start.to_kurbo_point(), self.tip.to_kurbo_point());
         let tip_triangle = {
@@ -128,7 +130,8 @@ impl Arrow {
         }
     }
 
-    /// Computes and returns `lline`.
+    /// Compute the `lline` of the arrow tip.
+    ///
     /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
         let vec_a =
@@ -138,7 +141,8 @@ impl Arrow {
         rotation_matrix * vec_a + self.tip
     }
 
-    /// Computes and returns `rline`.
+    /// Compute the `rline` of the arrow tip.
+    ///
     /// Optionally add the stroke width to adjust the length of the line.
     pub fn compute_rline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
         let vec_b =
@@ -148,7 +152,7 @@ impl Arrow {
         rotation_matrix * vec_b + self.tip
     }
 
-    /// Computes the bounds of the arrow in respect to the given stroke width.
+    /// Compute the bounds of the arrow in respect to the given stroke width.
     pub fn internal_compute_bounds(&self, stroke_width: Option<f64>) -> Aabb {
         let points: Vec<na::Point2<f64>> = {
             let lline = self.compute_lline(stroke_width);
@@ -163,8 +167,7 @@ impl Arrow {
         Aabb::from_points(&points)
     }
 
-    /// Computes and returns the normalized direction vector from `start` to
-    /// `tip`.
+    /// Compute the normalized direction vector from `start` to `tip`.
     fn compute_stem_direction_vector(&self) -> na::Vector2<f64> {
         let direction_vector = self.tip - self.start;
 
@@ -175,8 +178,9 @@ impl Arrow {
         }
     }
 
-    /// Computes and returns the length of the tip lines with the given stroke
-    /// width.
+    /// Compute the length of the tip lines.
+    ///
+    /// Optionally add the stroke width to adjust the length of the line.
     fn compute_tip_lines_length(stroke_width: Option<f64>) -> f64 {
         let factor = stroke_width.unwrap_or(0.0);
         Self::TIP_LINES_DEFAULT_LENGTH * (1.0 + 0.18 * factor)
@@ -186,9 +190,8 @@ impl Arrow {
 /// A helper struct which holds the kurbo-elements of the arrow.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ArrowKurbo {
-    /// This holds the line from `start` -> `tip`.
+    /// The line from `start` -> `tip`.
     pub stem: kurbo::Line,
-
-    /// This holds the line from `lline` -> `tip` -> `rline`.
+    /// The line from `lline` -> `tip` -> `rline`.
     pub tip_triangle: kurbo::BezPath,
 }

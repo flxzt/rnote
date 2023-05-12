@@ -4,6 +4,7 @@
 
 //! the rnote-compose crate provides rnote with building blocks for creating, styling, composing, drawing, transforming shapes and paths.
 
+// Modules
 /// module for shape builders
 pub mod builders;
 /// colors
@@ -35,5 +36,6 @@ pub use shapes::Shape;
 pub use style::Style;
 pub use transform::Transform;
 
+// Renames
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;

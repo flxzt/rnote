@@ -1,26 +1,25 @@
+// Imports
+use super::line::Line;
+use super::CubicBezier;
+use crate::helpers::{KurboHelpers, Vector2Helpers};
+use crate::shapes::ShapeBehaviour;
+use crate::transform::TransformBehaviour;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{KurboHelpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
-
-use super::line::Line;
-use super::CubicBezier;
-
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "quadratic_bezier")]
-/// A quadratic bezier curve
+/// A quadratic bezier curve.
 pub struct QuadraticBezier {
     #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// The curve start
+    /// Start coordinates.
     pub start: na::Vector2<f64>,
     #[serde(rename = "cp", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// The curve control point
+    /// Control point coordinates.
     pub cp: na::Vector2<f64>,
     #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// The curve end
+    /// End coordinates.
     pub end: na::Vector2<f64>,
 }
 
@@ -63,7 +62,7 @@ impl ShapeBehaviour for QuadraticBezier {
 }
 
 impl QuadraticBezier {
-    /// Split a quadratic bezier curve into two quadratics, at interpolation value z: between 0.0 and 1.0
+    /// Split itself into two quadratic bezier curves, at interpolation value z ranging [0.0 - 1.0].
     pub fn split(&self, z: f64) -> (QuadraticBezier, QuadraticBezier) {
         let p0 = self.start;
         let p1 = self.cp;
@@ -84,7 +83,7 @@ impl QuadraticBezier {
         (first_split, second_split)
     }
 
-    /// convert to a cubic bezier ( raising the order is without losses)
+    /// Convert to a cubic bezier (raising the order of a bezier curve is without losses).
     pub fn to_cubic_bezier(&self) -> CubicBezier {
         CubicBezier {
             start: self.start,
@@ -94,7 +93,7 @@ impl QuadraticBezier {
         }
     }
 
-    /// Approximating a quadratic bezier with lines, given the number of splits distributed evenly based on the t value.
+    /// Approximate with lines, given the number of splits.
     pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
         let mut lines = Vec::new();
 
@@ -111,7 +110,7 @@ impl QuadraticBezier {
         lines
     }
 
-    /// to kurbo
+    /// Convert to kurbo shape.
     pub fn to_kurbo(&self) -> kurbo::QuadBez {
         kurbo::QuadBez::new(
             self.start.to_kurbo_point(),

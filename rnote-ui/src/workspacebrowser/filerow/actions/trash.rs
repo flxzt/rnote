@@ -1,8 +1,8 @@
+// Imports
+use crate::workspacebrowser::RnFileRow;
 use gtk4::{gio, glib, glib::clone, prelude::FileExt};
 
-use crate::workspacebrowser::RnFileRow;
-
-/// Creates a new `trash` action
+/// Create a new `trash` action.
 pub(crate) fn trash(filerow: &RnFileRow) -> gio::SimpleAction {
     let action_trash_file = gio::SimpleAction::new("trash-file", None);
     action_trash_file.connect_activate(clone!(@weak filerow => move |_action_trash_file, _| {

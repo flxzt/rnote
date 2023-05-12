@@ -1,6 +1,9 @@
 // gtk4::Dialog is deprecated, but the replacement adw::ToolbarView is not yet stable
 #![allow(deprecated)]
 
+// Imports
+use crate::canvas::RnCanvas;
+use crate::{config, RnAppWindow};
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
@@ -9,9 +12,6 @@ use gtk4::{
 };
 use num_traits::ToPrimitive;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
-
-use crate::canvas::RnCanvas;
-use crate::{config, RnAppWindow};
 
 /// Asks to open the given file as rnote file and overwrites the current document.
 #[allow(unused)]
@@ -302,7 +302,7 @@ pub(crate) fn dialog_import_pdf_w_prefs(
 
                         if let Ok((file_bytes, _)) = result {
                             if let Err(e) = canvas.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening PDF file failed"));
+                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Pdf file failed"));
                                 log::error!(
                                     "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
                                 );

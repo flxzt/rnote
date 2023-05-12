@@ -1,11 +1,11 @@
-use std::cell::Cell;
-
+// Imports
 use gtk4::{
     gdk, glib, prelude::*, subclass::prelude::*, Align, Button, CssProvider, ToggleButton, Widget,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::{color, Color};
 use rnote_engine::utils::GdkRGBAHelpers;
+use std::cell::Cell;
 
 mod imp {
     use super::*;

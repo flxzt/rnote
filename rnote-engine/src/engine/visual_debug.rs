@@ -1,13 +1,12 @@
+// Imports
+use super::EngineView;
+use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
+use crate::{DrawOnDocBehaviour, RnoteEngine};
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::{RenderContext, Text, TextLayoutBuilder};
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
-
-use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{DrawOnDocBehaviour, RnoteEngine};
 use rnote_compose::Color;
-
-use super::EngineView;
 
 pub const COLOR_POS: Color = Color {
     r: 1.0,
@@ -121,8 +120,9 @@ pub(crate) fn draw_fill_to_gtk_snapshot(snapshot: &Snapshot, rect: Aabb, color: 
     );
 }
 
-// Draw bounds, positions, .. for visual debugging purposes
-// Expects snapshot in surface coords
+/// Draw bounds, positions, .. for visual debugging purposes.
+///
+/// Expects that the snapshot is transformed in surface coords.
 pub(crate) fn draw_statistics_overlay_to_gtk_snapshot(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
@@ -186,7 +186,7 @@ pub(crate) fn draw_statistics_overlay_to_gtk_snapshot(
     Ok(())
 }
 
-// Draw bounds, positions, .. for visual debugging purposes
+/// Draw bounds, positions, .. for visual debugging purposes.
 pub(crate) fn draw_debug_to_gtk_snapshot(
     snapshot: &Snapshot,
     engine: &RnoteEngine,
@@ -207,12 +207,12 @@ pub(crate) fn draw_debug_to_gtk_snapshot(
         border_widths,
     );
 
-    // Draw the strokes and selection
+    // Draw the strokes
     engine
         .store
         .draw_debug_to_gtk_snapshot(snapshot, engine, surface_bounds)?;
 
-    // Draw the pens bounds
+    // Draw the current pen bounds
     if let Some(bounds) = engine.penholder.bounds_on_doc(&EngineView {
         tasks_tx: engine.tasks_tx(),
         pens_config: &engine.pens_config,

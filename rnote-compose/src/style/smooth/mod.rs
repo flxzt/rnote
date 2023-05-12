@@ -1,9 +1,10 @@
+// Modules
 mod smoothoptions;
 
-use kurbo::Shape;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
+// Imports
 use super::Composer;
 use crate::helpers::Vector2Helpers;
 use crate::penpath::{self, Segment};
@@ -14,7 +15,7 @@ use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
 use crate::shapes::{Arrow, CubicBezier};
 use crate::PenPath;
-
+use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 
 impl Composer<SmoothOptions> for Line {
@@ -272,7 +273,7 @@ impl Composer<SmoothOptions> for crate::Shape {
     }
 }
 
-// Composes lines with variable width. Must be drawn with only a fill
+/// Composes lines with variable width. Must be drawn with only a fill.
 fn compose_lines_variable_width(
     lines: &[Line],
     start_width: f64,

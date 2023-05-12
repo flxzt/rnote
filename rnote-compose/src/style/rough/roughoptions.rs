@@ -1,28 +1,28 @@
+// Imports
+use crate::Color;
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
-use crate::Color;
-
-/// The rough options
+/// Options for shapes that can be drawn in a rough style.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "rough_options")]
 pub struct RoughOptions {
-    /// the stroke color. When set to None, no stroke outline is produced
+    /// Stroke color. When set to None, the stroke outline is not drawn.
     #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
-    /// the stroke width
+    /// Stroke width.
     #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
     pub stroke_width: f64,
-    /// an optional fill color. When set to None no fill is produced.
+    /// Fill color. When set to None the fill is not drawn.
     #[serde(rename = "fill_color")]
     pub fill_color: Option<Color>,
-    /// the fill style
+    /// Fill style.
     #[serde(rename = "fill_style")]
     pub fill_style: FillStyle,
-    /// the hachure angle (in rad)
+    /// Hachure angle (in radians).
     #[serde(rename = "hachure_angle", with = "crate::serialize::f64_dp3")]
     pub hachure_angle: f64,
-    /// An optional seed to generate reproducible shapes
+    /// An optional seed to generate reproducible shapes.
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
 }
@@ -42,18 +42,17 @@ impl Default for RoughOptions {
 }
 
 impl RoughOptions {
-    /// The margin for the bounds of composed rough shapes
-    ///
-    /// TODO: make this not a fixed value, but dependent on the shape size, roughness, etc.
+    /// The margin for the bounds of composed rough shapes.
+    // TODO: make this not a fixed value, but dependent on the shape size, roughness, etc.
     pub const ROUGH_BOUNDS_MARGIN: f64 = 20.0;
 
-    /// Advances the seed
+    /// Advance the seed, if it is set to `Some()`.
     pub fn advance_seed(&mut self) {
         self.seed = self.seed.map(crate::utils::seed_advance)
     }
 }
 
-/// available Fill styles
+/// Available fill styles.
 #[derive(
     Debug,
     Clone,
@@ -69,27 +68,27 @@ impl RoughOptions {
 )]
 #[serde(rename = "fill_style")]
 pub enum FillStyle {
-    /// Solid
+    /// Solid.
     // pre v0.5.9 the fill style was always set to `Hachure` (capitalized), even though the app rendered a solid fill.
     // For compatibility reasons we need set this alias.
     #[serde(rename = "solid", alias = "Hachure")]
     Solid,
-    /// Hachure
+    /// Hachure.
     #[serde(rename = "hachure")]
     Hachure,
-    /// Zig zag
+    /// Zig zag.
     #[serde(rename = "zig_zag")]
     ZigZag,
-    /// Zig zag line
+    /// Zig zag line.
     #[serde(rename = "zig_zag_line")]
     ZigZagLine,
-    /// Crosshatch
+    /// Crosshatch.
     #[serde(rename = "crosshatch")]
     Crosshatch,
-    /// Dots
+    /// Dots.
     #[serde(rename = "dots")]
     Dots,
-    /// Dashed
+    /// Dashed.
     #[serde(rename = "dashed")]
     Dashed,
 }

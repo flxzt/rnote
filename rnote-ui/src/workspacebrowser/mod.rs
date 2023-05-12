@@ -1,3 +1,4 @@
+// Modules
 mod filerow;
 mod widgethelper;
 mod workspaceactions;
@@ -8,6 +9,7 @@ pub(crate) use filerow::RnFileRow;
 pub(crate) use workspacesbar::RnWorkspacesBar;
 
 // Imports
+use crate::appwindow::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomFilter, CustomSorter, DirectoryList, FileFilter,
@@ -16,8 +18,6 @@ use gtk4::{
     SortListModel, SorterChange, Widget,
 };
 use std::path::PathBuf;
-
-use crate::appwindow::RnAppWindow;
 
 mod imp {
     use super::*;

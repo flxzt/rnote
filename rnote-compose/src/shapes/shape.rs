@@ -1,31 +1,30 @@
+// Imports
+use super::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
+use crate::transform::TransformBehaviour;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use super::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle, ShapeBehaviour};
-use crate::transform::TransformBehaviour;
-
-// Container type to store shapes
+/// Shape, storing shape variants.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape")]
-/// A Shape type, holding the actual shape inside it
 pub enum Shape {
     #[serde(rename = "line")]
-    /// A line shape
+    /// A line shape.
     Line(Line),
     #[serde(rename = "arrow")]
-    /// An arrow shape
+    /// An arrow shape.
     Arrow(Arrow),
     #[serde(rename = "rect")]
-    /// A rectangle shape
+    /// A rectangle shape.
     Rectangle(Rectangle),
     #[serde(rename = "ellipse")]
-    /// An ellipse shape
+    /// An ellipse shape.
     Ellipse(Ellipse),
     #[serde(rename = "quadbez")]
-    /// A quadratic bezier curve shape
+    /// A quadratic bezier curve shape.
     QuadraticBezier(QuadraticBezier),
     #[serde(rename = "cubbez")]
-    /// A cubic bezier curve shape
+    /// A cubic bezier curve shape.
     CubicBezier(CubicBezier),
 }
 

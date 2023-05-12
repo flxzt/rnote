@@ -1,8 +1,9 @@
+use super::StrokeKey;
+/// Imports
 use p2d::bounding_volume::Aabb;
 use rstar::primitives::GeomWithData;
 
-use super::StrokeKey;
-
+/// The rtree object that holds the bounds and [StrokeKey].
 type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
 
 fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {
@@ -16,29 +17,33 @@ fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {
 }
 
 #[derive(Debug, Default)]
-/// A Rtree with StrokeKeys as associated data. Used for faster spatial queries
+/// A Rtree with [StrokeKey]'s as associated data.
+///
+/// Used for faster spatial queries.
 pub(super) struct KeyTree(rstar::RTree<KeyTreeObject, rstar::DefaultParams>);
 
 impl KeyTree {
-    /// Inserts a new tree object with the given key, bounds
+    /// Insert a new tree object with the given [StrokeKey] and bounds.
     pub fn insert_with_key(&mut self, key: StrokeKey, bounds: Aabb) {
         self.0.insert(new_keytree_object(key, bounds));
     }
 
-    /// has to iterate through the entire tree in no particular order
+    /// Removes the [KeyTreeObject] for the given key.
     pub fn remove_with_key(&mut self, key: StrokeKey) -> Option<KeyTreeObject> {
         let object_to_remove = self.0.iter().find(|&object| object.data == key)?.to_owned();
 
         self.0.remove(&object_to_remove)
     }
 
-    /// has to be called when the geometry of the stroke with the given key has changed.
+    /// Update the Tree with new bounds for the given key.
+    ///
+    /// Has to be called when the geometry of the stroke has changed.
     pub fn update_with_key(&mut self, key: StrokeKey, new_bounds: Aabb) {
         self.remove_with_key(key);
         self.insert_with_key(key, new_bounds);
     }
 
-    /// Returns the keys that intersect with the given bounds
+    /// Return the keys that intersect with the given bounds.
     pub fn keys_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.0
             .locate_in_envelope_intersecting(&rstar::AABB::from_corners(
@@ -49,7 +54,7 @@ impl KeyTree {
             .collect()
     }
 
-    /// Returns the keys that completely are in the given bounds
+    /// Return the keys that are completely contained in the given bounds.
     pub fn keys_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.0
             .locate_in_envelope(&rstar::AABB::from_corners(
@@ -60,7 +65,7 @@ impl KeyTree {
             .collect()
     }
 
-    /// Reloads the entire tree from the given Vec of (key, bounds).
+    /// Reload the entire tree from the given Vec of (key, bounds).
     pub fn reload_with_vec(&mut self, strokes: Vec<(StrokeKey, Aabb)>) {
         let objects = strokes
             .into_iter()
@@ -70,7 +75,7 @@ impl KeyTree {
         self.0 = rstar::RTree::bulk_load(objects);
     }
 
-    ///  Clears the entire tree
+    ///  Clear the entire tree.
     pub fn clear(&mut self) {
         *self = Self::default()
     }

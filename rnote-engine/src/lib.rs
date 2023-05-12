@@ -4,9 +4,11 @@
 #![allow(clippy::derivable_impls)]
 //#![warn(missing_docs)]
 
-//! The rnote-engine crate is the core of rnote. It holds the strokes store, the pens, has methods for importing / exporting, rendering, etc..
-//! The main entry point is the RnoteEngine struct.
+//! The rnote-engine crate is the core of Rnote. It holds the strokes store, the pens, has methods for importing / exporting, rendering, etc.. .
+//!
+//! The main entry point is the [RnoteEngine] struct.
 
+// Modules
 pub mod audioplayer;
 pub mod camera;
 pub mod document;
@@ -30,5 +32,6 @@ pub use pens::PenHolder;
 pub use store::StrokeStore;
 pub use widgetflags::WidgetFlags;
 
+// Renames
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;

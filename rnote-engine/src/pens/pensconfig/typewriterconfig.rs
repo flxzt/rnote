@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-
+// Imports
 use crate::strokes::textstroke::TextStyle;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "typewriter_config")]

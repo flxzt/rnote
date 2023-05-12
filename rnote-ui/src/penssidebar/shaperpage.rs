@@ -1,3 +1,8 @@
+// Imports
+use crate::{
+    groupediconpicker::GroupedIconPickerGroupData, RnAppWindow, RnCanvasWrapper,
+    RnGroupedIconPicker, RnStrokeWidthPicker,
+};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
@@ -11,11 +16,6 @@ use rnote_compose::style::rough::roughoptions::FillStyle;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::pens::pensconfig::ShaperConfig;
-
-use crate::{
-    groupediconpicker::GroupedIconPickerGroupData, RnAppWindow, RnCanvasWrapper,
-    RnGroupedIconPicker, RnStrokeWidthPicker,
-};
 
 mod imp {
     use super::*;

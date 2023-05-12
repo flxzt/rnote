@@ -1,21 +1,21 @@
 //! Helpers for drawing indicators, edit nodes, guides, etc.
 
+// Imports
+use crate::color;
+use crate::helpers::{AabbHelpers, Vector2Helpers};
+use crate::penevents::PenState;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use piet::RenderContext;
 
-use crate::color;
-use crate::helpers::{AabbHelpers, Vector2Helpers};
-use crate::penevents::PenState;
+// Pos indicator
 
-/// ## Pos indicator
-
-/// the radius
+/// Position indicator radius.
 pub const POS_INDICATOR_RADIUS: f64 = 3.0;
-/// the outline width
+/// Position indicator outline width.
 pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 1.5;
 
-/// the pos indicator shape
+/// Position indicator shape.
 pub fn pos_indicator_shape(
     _node_state: PenState,
     pos: na::Vector2<f64>,
@@ -27,7 +27,7 @@ pub fn pos_indicator_shape(
     )
 }
 
-/// Draw a position indicator
+/// Draw a position indicator.
 pub fn draw_pos_indicator(
     cx: &mut impl RenderContext,
     node_state: PenState,
@@ -53,12 +53,12 @@ pub fn draw_pos_indicator(
     );
 }
 
-/// ## Vec indicator
+// Vec indicator
 
-/// the line width
+/// Vector indicator line width.
 pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.5;
 
-/// vec indicator shape
+/// Vector indicator shape.
 pub fn vec_indicator_shape(
     _node_state: PenState,
     start: na::Vector2<f64>,
@@ -68,7 +68,7 @@ pub fn vec_indicator_shape(
     kurbo::Line::new(start.to_kurbo_point(), end.to_kurbo_point())
 }
 
-/// Draw a vec indicator
+/// Draw a vector indicator.
 pub fn draw_vec_indicator(
     cx: &mut impl RenderContext,
     node_state: PenState,
@@ -87,12 +87,12 @@ pub fn draw_vec_indicator(
     cx.stroke(vec_indicator, &line_color, VEC_INDICATOR_LINE_WIDTH / zoom);
 }
 
-/// ## Rectangular node
+// Rectangular node
 
-/// the outline width
+/// Rectangular node outline width.
 pub const RECTANGULAR_NODE_OUTLINE_WIDTH: f64 = 1.5;
 
-/// Return the rectangular node shape
+/// Rectangular node shape.
 pub fn rectangular_node_shape(
     _node_state: PenState,
     bounds: Aabb,
@@ -108,7 +108,7 @@ pub fn rectangular_node_shape(
     )
 }
 
-/// Draw a rectangular node
+/// Draw a rectangular node.
 pub fn draw_rectangular_node(
     cx: &mut impl RenderContext,
     node_state: PenState,
@@ -139,12 +139,12 @@ pub fn draw_rectangular_node(
     );
 }
 
-/// ## Circular Node
+/// Circular Node
 
-/// the outline width
+/// Circular node outline width.
 pub const CIRCULAR_NODE_OUTLINE_WIDTH: f64 = 1.5;
 
-/// circular node shape
+/// circular node shape.
 pub fn circular_node_shape(
     _node_state: PenState,
     mut bounding_sphere: BoundingSphere,
@@ -158,7 +158,7 @@ pub fn circular_node_shape(
     )
 }
 
-/// Draw a circular node
+/// Draw a circular node.
 pub fn draw_circular_node(
     cx: &mut impl RenderContext,
     node_state: PenState,
@@ -189,12 +189,12 @@ pub fn draw_circular_node(
     }
 }
 
-/// ## Triangular down node
+// Triangular down node
 
-/// the outline width
+/// Triangular node outline width.
 pub const TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH: f64 = 1.5;
 
-/// circular node shape
+/// Triangular node shape.
 pub fn triangular_down_node_shape(
     _node_state: PenState,
     center: na::Vector2<f64>,
@@ -222,8 +222,8 @@ pub fn triangular_down_node_shape(
     )
 }
 
-/// Draw a triangular down node
-pub fn draw_triangular_down_node(
+/// Draw a triangular node.
+pub fn draw_triangular_node(
     cx: &mut impl RenderContext,
     node_state: PenState,
     center: na::Vector2<f64>,

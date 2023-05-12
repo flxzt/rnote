@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-
+// Imports
 use super::maj0min5patch9::RnoteFileMaj0Min5Patch9;
+use serde::{Deserialize, Serialize};
 
 impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
     type Error = anyhow::Error;
@@ -102,13 +102,13 @@ impl TryFrom<RnoteFileMaj0Min5Patch8> for RnoteFileMaj0Min5Patch9 {
     }
 }
 
-/// Rnote file in version: maj 0 min 5 patch 8
+/// Rnote file in version: maj 0 min 5 patch 8.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RnoteFileMaj0Min5Patch8 {
-    /// the document
+    /// The document.
     #[serde(rename = "document", alias = "sheet")]
     pub document: serde_json::Value,
-    /// A snapshot of the store
+    /// The snapshot of the store.
     #[serde(rename = "store_snapshot")]
     pub store_snapshot: serde_json::Value,
 }

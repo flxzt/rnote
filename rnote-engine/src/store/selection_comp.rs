@@ -1,8 +1,8 @@
+// Imports
 use super::render_comp::RenderCompState;
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
-
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -26,8 +26,9 @@ impl SelectionComponent {
     }
 }
 
+/// Systems that are related to selecting.
 impl StrokeStore {
-    /// Reloads the slotmap with empty selection components from the keys returned from the primary map, stroke_components.
+    /// Reload the slotmap with empty selection components with the keys returned from the stroke components.
     pub fn rebuild_selection_components_slotmap(&mut self) {
         self.selection_components = Arc::new(slotmap::SecondaryMap::new());
         self.stroke_components.keys().for_each(|key| {
@@ -36,7 +37,7 @@ impl StrokeStore {
         });
     }
 
-    /// Returns false if selecting is unsupported
+    /// Ability if selecting is supported.
     pub fn can_select(&self, key: StrokeKey) -> bool {
         self.selection_components.get(key).is_some()
     }
@@ -47,7 +48,7 @@ impl StrokeStore {
             .map(|selection_comp| selection_comp.selected)
     }
 
-    /// Sets if the stroke is currently selected
+    /// Set if the stroke is currently selected.
     pub fn set_selected(&mut self, key: StrokeKey, selected: bool) {
         if let Some(selection_comp) = Arc::make_mut(&mut self.selection_components)
             .get_mut(key)
@@ -74,8 +75,9 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Returns the selection keys in the order that they should be rendered.
-    /// Does not return the not-selected stroke keys.
+    /// Return the selection keys in the order that they should be rendered.
+    ///
+    /// Does not return the non-selected stroke keys.
     pub fn selection_keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
@@ -87,8 +89,9 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    /// Returns the selection keys in the order that they should be rendered that intersect the given bounds.
-    /// Does not return the not-selected stroke keys.
+    /// Return the selection keys in the order that they should be rendered that intersect the given bounds.
+    ///
+    /// Does not return the non-selected stroke keys.
     pub fn selection_keys_as_rendered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
@@ -98,14 +101,16 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    /// Generates the bounds that include all selected strokes.
+    /// Generate the bounds that include all selected strokes.
+    ///
     /// None if no strokes are selected
     pub fn gen_selection_bounds(&self) -> Option<Aabb> {
         self.bounds_for_strokes(&self.selection_keys_unordered())
     }
 
-    /// Duplicates the selected keys
-    /// the returned, duplicated strokes then need to update their geometry and rendering
+    /// Duplicate the selected keys.
+    ///
+    /// The returned, duplicated strokes then need to update their geometry and rendering.
     pub fn duplicate_selection(&mut self) -> Vec<StrokeKey> {
         let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);

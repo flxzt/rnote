@@ -1,9 +1,9 @@
-/// Specifies that a type can be (geometrically) transformed
+/// Trait for types that can be (geometrically) transformed.
 pub trait TransformBehaviour {
-    /// translates (as in moves) the stroke with offset
+    /// Translate (as in moves) by the given offset.
     fn translate(&mut self, offset: na::Vector2<f64>);
-    /// rotates in angle (rad)
+    /// Rotate by the given angle (in radians).
     fn rotate(&mut self, angle: f64, center: na::Point2<f64>);
-    /// scales by the desired scale
+    /// Scale by the given scale-factor.
     fn scale(&mut self, scale: na::Vector2<f64>);
 }

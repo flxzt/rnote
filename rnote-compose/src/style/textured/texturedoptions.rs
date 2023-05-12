@@ -1,31 +1,29 @@
-use serde::{Deserialize, Serialize};
-
+// Imports
+use super::textureddotsdistribution::TexturedDotsDistribution;
 use crate::style::PressureCurve;
 use crate::Color;
+use serde::{Deserialize, Serialize};
 
-use super::textureddotsdistribution::TexturedDotsDistribution;
-
-/// The options for a textured shape
-
+/// Options for shapes that can be drawn in a textured style.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]
 pub struct TexturedOptions {
-    /// An optional seed to generate reproducible shapes
+    /// An optional seed to generate reproducible shapes.
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
-    /// The width
+    /// Stroke width.
     #[serde(rename = "stroke_width", with = "crate::serialize::f64_dp3")]
     pub stroke_width: f64,
-    /// The color of the stroke
+    /// Stroke color. When set to None, the stroke is not drawn.
     #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
-    /// Amount dots per 10x10 area
+    /// Amount of dots of the texture per 10x10 area.
     #[serde(rename = "density", with = "crate::serialize::f64_dp3")]
     pub density: f64,
-    /// the distribution type
+    /// Texture dots distribution type.
     #[serde(rename = "distribution")]
     pub distribution: TexturedDotsDistribution,
-    /// Pressure curve
+    /// Pressure curve.
     #[serde(rename = "pressure_curve")]
     pub pressure_curve: PressureCurve,
 }
@@ -44,16 +42,16 @@ impl Default for TexturedOptions {
 }
 
 impl TexturedOptions {
-    /// dots dadii default (without width weight)
+    /// Dots dadii default, without width weight.
     pub(super) const DOTS_RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
-    /// The weight factor the stroke width has to the radii of the dots
+    /// Weight factor the stroke width has to the radii of the dots.
     pub(super) const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
-    /// The minimum dots density
+    /// Minimum dots density.
     pub const DENSITY_MIN: f64 = 0.1;
-    /// The maximum dots density
+    /// Maximum dots density.
     pub const DENSITY_MAX: f64 = 100.0;
 
-    /// Advances the seed
+    /// Advances the seed.
     pub fn advance_seed(&mut self) {
         self.seed = self.seed.map(crate::utils::seed_advance)
     }

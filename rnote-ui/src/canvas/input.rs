@@ -1,3 +1,5 @@
+// Imports
+use super::RnCanvas;
 use gtk4::{gdk, prelude::*, Inhibit, Native};
 use rnote_compose::penevents::ShortcutKey;
 use rnote_compose::penevents::{KeyboardKey, PenState};
@@ -7,8 +9,6 @@ use rnote_engine::pens::penholder::BacklogPolicy;
 use rnote_engine::pens::PenMode;
 use rnote_engine::WidgetFlags;
 use std::time::{Duration, Instant};
-
-use super::RnCanvas;
 
 // Returns whether the event should be inhibited from propagating, and the new pen state
 pub(crate) fn handle_pointer_controller_event(

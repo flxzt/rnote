@@ -1,18 +1,16 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-
+// Impoorts
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
 use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::CubicBezier;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::constraints::ConstraintRatio;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 enum CubBezBuilderState {
@@ -43,9 +41,8 @@ enum CubBezBuilderState {
 }
 
 #[derive(Debug, Clone)]
-/// cubic bezier builder
+/// Cubic bezier builder.
 pub struct CubBezBuilder {
-    /// the state
     state: CubBezBuilderState,
 }
 

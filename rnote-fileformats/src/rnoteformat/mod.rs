@@ -1,21 +1,21 @@
-//! The file format is expected only to break on minor versions in prelease (0.x.x) and on major versions after 1.0.0 release. (equivalent to API's conforming to the semver spec)
-//! Older formats can be added, with the naming scheme RnoteFileMaj<X>Min<Y>, where X: semver major, Y: semver minor version.
-//! Then TryFrom is implemented to allow conversions and chaining from older to newer versions.
+//! Loading and saving Rnote's `.rnote` file format
+//!
+//! Older formats can be added, with the naming scheme `RnoteFileMaj<X>Min<Y>`, where X: semver major, Y: semver minor version.
+//! Then [TryFrom] can be implemented to allow conversions and chaining from older to newer versions.
 
+// Modules
 pub(crate) mod maj0min5patch8;
 pub(crate) mod maj0min5patch9;
 
+// Imports
+use crate::{FileFormatLoader, FileFormatSaver};
 use anyhow::Context;
 use maj0min5patch8::RnoteFileMaj0Min5Patch8;
-
+use maj0min5patch9::RnoteFileMaj0Min5Patch9;
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 
-use crate::{FileFormatLoader, FileFormatSaver};
-
-use self::maj0min5patch9::RnoteFileMaj0Min5Patch9;
-
-/// Compress bytes with gzip
+/// Compress bytes with gzip.
 fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
     let compressed_bytes = Vec::<u8>::new();
 
@@ -28,7 +28,7 @@ fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyh
     Ok(encoder.finish()?)
 }
 
-/// Decompress from gzip
+/// Decompress from gzip.
 fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
     let mut bytes: Vec<u8> = Vec::new();
@@ -37,7 +37,9 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     Ok(bytes)
 }
 
-/// The rnote file wrapper. used to extract and match to the version up front, before deserializing the actual data.
+/// The rnote file wrapper.
+///
+/// Used to extract and match to the version up front, before deserializing the actual data.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "rnotefile_wrapper")]
 struct RnotefileWrapper {
@@ -47,12 +49,13 @@ struct RnotefileWrapper {
     data: serde_json::Value,
 }
 
-/// the Rnote file in the newest format version. The actual (de-) serialization into strong types is happening in `rnote-engine`.
+/// The Rnote file in the newest format version. The actual (de-) serialization into strong types is happening in `rnote-engine`.
+///
 /// This struct exists to allow for upgrading older versions before loading the file in.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "rnotefile")]
 pub struct RnoteFile {
-    /// A snapshot of the engine
+    /// A snapshot of the engine.
     #[serde(rename = "engine_snapshot")]
     pub engine_snapshot: serde_json::Value,
 }

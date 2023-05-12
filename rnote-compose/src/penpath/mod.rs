@@ -1,17 +1,18 @@
+// Modules
 mod element;
 mod segment;
 
-// Re exports
+// Re-exports
 pub use element::Element;
-use kurbo::Shape;
 pub use segment::Segment;
 
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use serde::{Deserialize, Serialize};
-
+// Imports
 use crate::helpers::KurboHelpers;
 use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
+use kurbo::Shape;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "pen_path")]

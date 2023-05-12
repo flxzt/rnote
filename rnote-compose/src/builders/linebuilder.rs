@@ -1,25 +1,23 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::constraints::ConstraintRatio;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
-/// line builder
+/// Line builder.
 #[derive(Debug, Clone)]
 pub struct LineBuilder {
-    /// the start position
+    /// Start position.
     start: na::Vector2<f64>,
-    /// the current position
+    /// Current position.
     current: na::Vector2<f64>,
 }
 
@@ -76,7 +74,7 @@ impl ShapeBuilderBehaviour for LineBuilder {
 }
 
 impl LineBuilder {
-    /// The current state as line
+    /// The current state as a line.
     pub fn state_as_line(&self) -> Line {
         Line {
             start: self.start,

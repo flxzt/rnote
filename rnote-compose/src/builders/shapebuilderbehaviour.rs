@@ -1,32 +1,38 @@
-use p2d::bounding_volume::Aabb;
-use std::time::Instant;
-
+// Imports
 use crate::penevents::PenEvent;
 use crate::penpath::Element;
 use crate::Constraints;
 use crate::{Shape, Style};
+use p2d::bounding_volume::Aabb;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
-/// the builder progress
+/// Builder progress.
 pub enum ShapeBuilderProgress {
-    /// in progress
+    /// In progress.
     InProgress,
-    /// emits shapes, but continue
+    /// Emit shapes, but continue.
     EmitContinue(Vec<Shape>),
-    /// done building
+    /// Done building.
     Finished(Vec<Shape>),
 }
 
-/// Creates a shape builder (separate trait because we use the ShapeBuilderBehaviour as trait object, so we can't have a method returning Self there.)
+/// Creator for a shape builder.
+///
+/// This needs to be a separate trait because ShapeBuilderBehaviour is used as trait object,
+/// so we can't have a method on it returning `Self`.
 pub trait ShapeBuilderCreator {
-    /// Start the builder
+    /// Start the builder.
     fn start(element: Element, now: Instant) -> Self;
 }
 
 /// Types that are shape builders.
-/// They receive pen events, and return built shapes. They usually are drawn while building the shape, and are state machines.
+///
+/// They receive pen events, and return built shapes.
+/// They are usually drawn while building the shape, and are finite state machines.
 pub trait ShapeBuilderBehaviour: std::fmt::Debug {
-    /// handles a pen event.
+    /// Handle a pen event.
+    ///
     /// Returns the builder progress.
     fn handle_event(
         &mut self,
@@ -35,9 +41,9 @@ pub trait ShapeBuilderBehaviour: std::fmt::Debug {
         constraints: Constraints,
     ) -> ShapeBuilderProgress;
 
-    /// the bounds
+    /// Bounds.
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb>;
 
-    /// draw with a style
+    /// Draw with a style.
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64);
 }

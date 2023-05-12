@@ -1,7 +1,7 @@
+// Imports
+use crate::config;
 use std::ffi::OsStr;
 use std::path::{Component, Path, PathBuf};
-
-use crate::config;
 
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {

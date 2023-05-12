@@ -1,9 +1,10 @@
-use std::ops::Range;
-
+// Imports
 use anyhow::Context;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
+use std::ops::Range;
 
+/// The distribution for the spread of dots across the fill of a textured shape.
 #[derive(
     Debug,
     Eq,
@@ -15,15 +16,14 @@ use serde::{Deserialize, Serialize};
     num_derive::FromPrimitive,
     num_derive::ToPrimitive,
 )]
-/// The distribution for the spread of dots across the width of a textured shape
 pub enum TexturedDotsDistribution {
-    /// Uniform distribution
+    /// Uniform distribution.
     Uniform = 0,
-    /// Normal distribution
+    /// Normal distribution.
     Normal,
-    /// Exponential distribution distribution, from the outline increasing in probability symmetrical to the center
+    /// Exponential distribution distribution, from the outline increasing in probability symmetrical to the center.
     Exponential,
-    /// Exponential distribution distribution, from the center increasing in probability symmetrical outwards to the outline
+    /// Exponential distribution distribution, from the center increasing in probability symmetrical outwards to the outline.
     ReverseExponential,
 }
 
@@ -44,7 +44,9 @@ impl TryFrom<u32> for TexturedDotsDistribution {
 }
 
 impl TexturedDotsDistribution {
-    /// Samples a value for the given range, symmetrical to the center of the range. For distributions that are open ended, samples are clipped to the range
+    /// Sample a value for the given range, symmetrical to the center of the range.
+    ///
+    /// For distributions that are open ended, samples are clipped to the range.
     pub fn sample_for_range_symmetrical_clipped<G: rand::Rng + ?Sized>(
         &self,
         rng: &mut G,

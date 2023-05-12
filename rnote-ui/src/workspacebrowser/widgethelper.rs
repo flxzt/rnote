@@ -1,3 +1,4 @@
+// Imports
 use gettextrs::gettext;
 use gtk4::{
     glib,
@@ -6,22 +7,22 @@ use gtk4::{
     Align, Button, Entry, Grid, Label, Popover, PositionType,
 };
 
-pub(crate) type ApplyButton = Button;
-
 /// A template-function to create a simple dialog widget for an action:
 ///
+/// ```text
 /// -------------------------
 /// |         <Label>       |
 /// | <        Entry      > |
 /// | <Cancel>      <Apply> |
 /// -------------------------
+/// ```
 ///
 /// Just create the `apply` button and the label.
 /// Everything else is done in this function.
 ///
 /// Only `ApplyButton` and `Popover` are returned because you likely want to
 /// apply a connection to them.
-pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (ApplyButton, Popover) {
+pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (Button, Popover) {
     let grid = Grid::builder()
         .margin_top(6)
         .margin_bottom(6)

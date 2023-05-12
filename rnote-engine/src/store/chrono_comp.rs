@@ -1,11 +1,10 @@
-use std::cmp::Ordering;
-use std::sync::Arc;
-
+// Imports
+use super::{StrokeKey, StrokeStore};
 use p2d::bounding_volume::Aabb;
 use rayon::slice::ParallelSliceMut;
 use serde::{Deserialize, Serialize};
-
-use super::{StrokeKey, StrokeStore};
+use std::cmp::Ordering;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq)]
 #[serde(rename = "stroke_layer")]
@@ -100,7 +99,7 @@ impl StrokeStore {
         }
     }
 
-    /// Returns the keys in chronological order, as in first: gets drawn first, last: gets drawn last
+    /// Returns the keys in chronological order, as in first: gets drawn first, last: gets drawn last.
     pub fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 

@@ -1,14 +1,14 @@
-use rnote_compose::penevents::{KeyboardKey, ModifierKey};
-use rnote_compose::penpath::Element;
-use std::time::Instant;
-use unicode_segmentation::GraphemeCursor;
-
+// Imports
 use super::{ModifyState, Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
 use crate::pens::penbehaviour::PenProgress;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
 use crate::{DrawOnDocBehaviour, StrokeStore, WidgetFlags};
+use rnote_compose::penevents::{KeyboardKey, ModifierKey};
+use rnote_compose::penpath::Element;
+use std::time::Instant;
+use unicode_segmentation::GraphemeCursor;
 
 impl Typewriter {
     pub(super) fn handle_pen_event_down(

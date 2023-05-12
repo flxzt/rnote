@@ -1,12 +1,11 @@
 // Imports
+use super::StrokeWidthPreviewStyle;
 use gtk4::{
     gdk, glib, graphene, prelude::*, subclass::prelude::*, Align, Orientation, Overflow,
     SizeRequestMode, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::Cell;
-
-use super::StrokeWidthPreviewStyle;
 
 mod imp {
     use super::*;

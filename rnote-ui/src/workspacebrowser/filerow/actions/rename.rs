@@ -1,5 +1,6 @@
-use std::path::{Path, PathBuf};
-
+// Imports
+use crate::workspacebrowser::{widgethelper, RnFileRow};
+use gettextrs::gettext;
 use gtk4::{
     gio, glib,
     glib::clone,
@@ -8,12 +9,9 @@ use gtk4::{
     traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, WidgetExt},
     Align, Button, Entry, Label, Popover,
 };
+use std::path::{Path, PathBuf};
 
-use gettextrs::gettext;
-
-use crate::workspacebrowser::{widgethelper, RnFileRow};
-
-/// Creates a new `rename` action
+/// Create a new `rename` action.
 pub(crate) fn rename(filerow: &RnFileRow) -> gio::SimpleAction {
     let rename_action = gio::SimpleAction::new("rename-file", None);
 

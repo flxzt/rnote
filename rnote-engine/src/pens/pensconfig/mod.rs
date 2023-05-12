@@ -1,3 +1,4 @@
+// Modules
 pub mod brushconfig;
 pub mod eraserconfig;
 pub mod selectorconfig;
@@ -5,7 +6,7 @@ pub mod shaperconfig;
 pub mod toolsconfig;
 pub mod typewriterconfig;
 
-// Re-Exports
+// Re-exports
 pub use brushconfig::BrushConfig;
 pub use eraserconfig::EraserConfig;
 pub use selectorconfig::SelectorConfig;
@@ -13,7 +14,7 @@ pub use shaperconfig::ShaperConfig;
 pub use toolsconfig::ToolsConfig;
 pub use typewriterconfig::TypewriterConfig;
 
-// Dependencies
+// Imports
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]

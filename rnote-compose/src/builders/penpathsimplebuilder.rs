@@ -1,22 +1,21 @@
+// Imports
+use super::penpathbuilderbehaviour::{
+    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress,
+};
+use crate::penevents::PenEvent;
+use crate::penpath::{Element, Segment};
+use crate::style::Composer;
+use crate::Constraints;
+use crate::{PenPath, Style};
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::collections::VecDeque;
 use std::time::Instant;
 
-use crate::penevents::PenEvent;
-use crate::penpath::{Element, Segment};
-use crate::style::Composer;
-use crate::{PenPath, Style};
-
-use super::penpathbuilderbehaviour::{
-    PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress,
-};
-use crate::Constraints;
-
 #[derive(Debug, Clone)]
-/// The simple pen path builder
+/// Pen path simple builder
 pub struct PenPathSimpleBuilder {
-    /// Buffered elements, which are filled up by new pen events and used to try to build path segments
+    /// Buffered elements, which are filled up by new pen events and used to try to build path segments.
     buffer: VecDeque<Element>,
 }
 

@@ -1,3 +1,6 @@
+// Imports
+use crate::utils::GrapheneRectHelpers;
+use crate::DrawBehaviour;
 use anyhow::Context;
 use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
@@ -13,22 +16,22 @@ use std::ops::Deref;
 use svg::Node;
 use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
 
-use crate::utils::GrapheneRectHelpers;
-use crate::DrawBehaviour;
-
+/// Usvg font database
 pub static USVG_FONTDB: Lazy<usvg::fontdb::Database> = Lazy::new(|| {
     let mut db = usvg::fontdb::Database::new();
     db.load_system_fonts();
     db
 });
 
-// Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor
+/// Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor.
 pub const PX_TO_POINT_CONV_FACTOR: f64 = 96.0 / 72.0;
-// Point unit ( 72 DPI ) to Px unit (96 DPI ) conversion factor
+/// Point unit ( 72 DPI ) to Px unit (96 DPI ) conversion factor.
 pub const POINT_TO_PX_CONV_FACTOR: f64 = 72.0 / 96.0;
-// the factor the rendering for the current viewport is extended. e.g.: 1.0 means the viewport is extended by its extents on all sides.
-// Used when checking rendering for new zooms or a moved viewport.
-// There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view
+/// The factor for which the rendering for the current viewport is extended by.
+/// For example:: 1.0 means the viewport is extended by its own extents on all sides.
+///
+/// Used when checking rendering for new zooms or a moved viewport.
+/// There is a trade off: a larger value will consume more memory, a smaller value will mean more stuttering on zooms and when moving the view.
 pub const VIEWPORT_EXTENTS_MARGIN_FACTOR: f64 = 0.4;
 
 #[non_exhaustive]
@@ -56,7 +59,6 @@ impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
     }
 }
 
-/// From impl ImageMemoryFormat into gdk::MemoryFormat
 impl From<ImageMemoryFormat> for gdk::MemoryFormat {
     fn from(value: ImageMemoryFormat) -> Self {
         match value {
@@ -73,23 +75,25 @@ impl From<ImageMemoryFormat> for piet::ImageFormat {
     }
 }
 
-/// A pixel image
+/// A bitmap image.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "image")]
 pub struct Image {
-    /// The image data. is (de) serialized in base64 encoding
+    /// The image data.
+    ///
+    /// Is (de)serialized with base64 encoding.
     #[serde(rename = "data", with = "rnote_compose::serialize::vecu8_base64")]
     pub data: Vec<u8>,
-    /// the target rect in the coordinate space of the doc
+    /// The target rect in the coordinate space of the document.
     #[serde(rename = "rectangle")]
     pub rect: Rectangle,
-    /// width of the data
+    /// Width of the image data.
     #[serde(rename = "pixel_width")]
     pub pixel_width: u32,
-    /// height of the data
+    /// Height of the image data.
     #[serde(rename = "pixel_height")]
     pub pixel_height: u32,
-    /// the memory format
+    /// Memory format.
     #[serde(rename = "memory_format")]
     pub memory_format: ImageMemoryFormat,
 }
@@ -129,8 +133,11 @@ impl From<image::DynamicImage> for Image {
 }
 
 impl DrawBehaviour for Image {
+    /// Draw itself on a [piet::RenderContext].
+    ///
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
-    /// image_scale has no meaning here, as the image pixels are already provided
+    ///
+    /// `image_scale` has no meaning here, as the image pixels are already provided
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
@@ -296,7 +303,9 @@ impl Image {
         Ok(snapshot.to_node())
     }
 
-    /// create an image from an svg (using librsvg )
+    /// Generate an image from an Svg.
+    ///
+    /// Using librsvg for rendering.
     pub fn gen_image_from_svg(
         svg: Svg,
         mut bounds: Aabb,
@@ -382,7 +391,7 @@ impl Image {
         })
     }
 
-    /// Renders an image with a function that draws onto a piet CairoRenderContext
+    /// Generates an image with a provided closure that draws onto a piet CairoRenderContext.
     pub fn gen_with_piet<F>(
         draw_func: F,
         mut bounds: Aabb,
@@ -449,12 +458,12 @@ impl Image {
     }
 }
 
-/// A Svg Image
+/// A Svg image.
 #[derive(Debug, Clone)]
 pub struct Svg {
-    /// the svg data as String
+    /// Svg data String.
     pub svg_data: String,
-    /// the bounds of the svg
+    /// Bounds of the Svg.
     pub bounds: Aabb,
 }
 
@@ -486,8 +495,9 @@ impl Svg {
         }
     }
 
-    /// Generates an svg with piet, using the piet_cairo backend and a SvgSurface.
-    /// This might be preferable to the piet_svg backend, because especially text alignment and sizes can be different with it.
+    /// Generate an Svg with piet, using the `piet_cairo` backend and cairo's SvgSurface.
+    ///
+    /// This might be preferable to the `piet_svg` backend, because especially text alignment and sizes can be different with it.
     pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: Aabb) -> anyhow::Result<Self>
     where
         F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
@@ -590,7 +600,7 @@ impl Svg {
         Ok(())
     }
 
-    /// Simplifies the svg by passing it through usvg
+    /// Simplify the Svg by passing it through [usvg].
     pub fn simplify(&mut self) -> anyhow::Result<()> {
         let xml_options = usvg::XmlOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),

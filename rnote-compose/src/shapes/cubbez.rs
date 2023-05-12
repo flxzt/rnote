@@ -1,29 +1,28 @@
+// Imports
+use super::line::Line;
+use super::quadbez::QuadraticBezier;
+use crate::helpers::{KurboHelpers, Vector2Helpers};
+use crate::shapes::ShapeBehaviour;
+use crate::transform::TransformBehaviour;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{KurboHelpers, Vector2Helpers};
-use crate::shapes::ShapeBehaviour;
-use crate::transform::TransformBehaviour;
-
-use super::line::Line;
-use super::quadbez::QuadraticBezier;
-
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "cubic_bezier")]
-/// A cubic bezier curve
+/// A cubic bezier curve.
 pub struct CubicBezier {
     #[serde(rename = "start", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// the cubic curve start
+    /// Start coordinate.
     pub start: na::Vector2<f64>,
     #[serde(rename = "cp1", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// the cubic curve first control point
+    /// First control point coordinate.
     pub cp1: na::Vector2<f64>,
     #[serde(rename = "cp2", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// the cubic curve second control point
+    /// Second control point coordinate.
     pub cp2: na::Vector2<f64>,
     #[serde(rename = "end", with = "crate::serialize::na_vector2_f64_dp3")]
-    /// the cubic curve end
+    /// End coordinate.
     pub end: na::Vector2<f64>,
 }
 
@@ -69,8 +68,10 @@ impl ShapeBehaviour for CubicBezier {
 }
 
 impl CubicBezier {
-    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them.
-    /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
+    /// Attempts to create a new cubic curve with the catmull-rom spline algorithm.
+    /// Subsequent curves ( meaning, advancing the elements by one) have a smooth transition between them.
+    ///
+    /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'.
     pub fn new_w_catmull_rom(
         first: na::Vector2<f64>,
         second: na::Vector2<f64>,
@@ -101,7 +102,7 @@ impl CubicBezier {
         Some(cubbez)
     }
 
-    /// Split a cubic bezier into two at t where t > 0.0, < 1.0
+    /// Split a cubic bezier into two at t where t in [0.0 - 1.0].
     pub fn split(&self, t: f64) -> (CubicBezier, CubicBezier) {
         let a0 = self.start;
         let a1 = self.cp1;
@@ -131,7 +132,7 @@ impl CubicBezier {
         )
     }
 
-    /// Approximating a cubic bezier with a quadratic bezier
+    /// Approximate a cubic with a quadratic bezier curve.
     pub fn approx_with_quadbez(&self) -> QuadraticBezier {
         let start = self.start;
         let cp = self.cp1.lerp(&self.cp2, 0.5);
@@ -140,7 +141,7 @@ impl CubicBezier {
         QuadraticBezier { start, cp, end }
     }
 
-    /// Approximating a cubic bezier with lines, given the number of splits
+    /// Approximate a cubic bezier with lines, given the number of splits.
     pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
         let mut lines = Vec::new();
 
@@ -157,7 +158,7 @@ impl CubicBezier {
         lines
     }
 
-    /// to kurbo
+    /// Convert to kurbo shape.
     pub fn to_kurbo(&self) -> kurbo::CubicBez {
         kurbo::CubicBez::new(
             self.start.to_kurbo_point(),
@@ -168,7 +169,7 @@ impl CubicBezier {
     }
 }
 
-/// Calculates a point on a cubic curve given t ranging [0.0, 1.0]
+/// Calculate a point on a cubic curve given t ranging [0.0, 1.0].
 pub fn cubbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,

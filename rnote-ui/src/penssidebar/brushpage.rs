@@ -1,3 +1,5 @@
+// Imports
+use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
     glib, glib::clone, subclass::prelude::*, CompositeTemplate, ListBox, MenuButton, Popover,
@@ -9,8 +11,6 @@ use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_compose::style::PressureCurve;
 use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
 use rnote_engine::pens::pensconfig::BrushConfig;
-
-use crate::{RnAppWindow, RnCanvasWrapper, RnStrokeWidthPicker};
 
 mod imp {
     use super::*;

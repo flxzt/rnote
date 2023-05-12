@@ -1,17 +1,14 @@
+// Modules
 pub mod export;
 pub mod import;
 pub mod rendering;
 pub mod visual_debug;
 
-// Re-Exports
+// Re-exports
 pub use self::export::ExportPrefs;
 pub use self::import::ImportPrefs;
 
 // Imports
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::time::Instant;
-
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
@@ -23,18 +20,20 @@ use crate::strokes::Stroke;
 use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use anyhow::Context;
-use rnote_compose::helpers::AabbHelpers;
-use rnote_compose::penevents::{PenEvent, ShortcutKey};
-
 use futures::channel::{mpsc, oneshot};
 use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::helpers::AabbHelpers;
+use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Instant;
 
-/// A view into the rest of the engine, excluding the penholder
+/// An immutable view into the the engine, excluding the penholder.
 #[derive(Debug)]
 pub struct EngineView<'a> {
     pub tasks_tx: EngineTaskSender,
@@ -45,7 +44,7 @@ pub struct EngineView<'a> {
     pub audioplayer: &'a Option<AudioPlayer>,
 }
 
-/// A mutable view into the rest of the engine, excluding the penholder
+/// A mutable view into the engine, excluding the penholder.
 #[derive(Debug)]
 pub struct EngineViewMut<'a> {
     pub tasks_tx: EngineTaskSender,
@@ -57,7 +56,7 @@ pub struct EngineViewMut<'a> {
 }
 
 impl<'a> EngineViewMut<'a> {
-    // converts itself to the immutable view
+    // Converts itself to the immutable view.
     pub fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
             tasks_tx: self.tasks_tx.clone(),
@@ -71,34 +70,37 @@ impl<'a> EngineViewMut<'a> {
 }
 
 #[derive(Debug, Clone)]
-/// A engine task, usually coming from a spawned thread and to be processed with `process_received_task()`.
+/// An engine task, usually coming from a spawned thread and to be processed with [RnoteEngine::handle_engine_task].
 pub enum EngineTask {
-    /// Replace the images of the render_comp.
-    /// Note that the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
+    /// Replace the images for rendering of the given stroke.
+    ///
+    /// The state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component's state on resize/zooming, etc. .
     UpdateStrokeWithImages {
-        /// The stroke key
+        /// The stroke key.
         key: StrokeKey,
-        /// The generated images
+        /// The generated images.
         images: GeneratedStrokeImages,
-        /// The image scale-factor the render task was using while generating the images
+        /// The image scale-factor the render task was using while generating the images.
         image_scale: f64,
-        /// The stroke bounds at the time when the render task has launched
+        /// The stroke bounds at the time when the render task has launched.
         stroke_bounds: Aabb,
     },
-    /// Appends the images to the rendering of the stroke
-    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
+    /// Appends the images to the rendering of the given stroke.
+    ///
+    /// The state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component's state on resize/zooming, etc. .
     AppendImagesToStroke {
         /// The stroke key
         key: StrokeKey,
         /// The generated images
         images: GeneratedStrokeImages,
     },
-    /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
+    /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
 
+/// The engine configuration. Used when loading/saving the current configuration from/into persistent application settings.
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(default, rename = "engine_config")]
 pub struct EngineConfig {
@@ -116,7 +118,7 @@ pub struct EngineConfig {
     pen_sounds: bool,
 }
 
-// the engine snapshot, used when saving and loading to and from a file.
+// An engine snapshot, used when loading/saving the current document from/into a file.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "engine_snapshot")]
 pub struct EngineSnapshot {
@@ -142,7 +144,7 @@ impl Default for EngineSnapshot {
 }
 
 impl EngineSnapshot {
-    /// loads a snapshot from the bytes of a .rnote file.
+    /// Loads a snapshot from the bytes of a .rnote file.
     ///
     /// To import this snapshot into the current engine, use `import_snapshot()`.
     pub async fn load_from_rnote_bytes(bytes: Vec<u8>) -> anyhow::Result<Self> {
@@ -295,6 +297,7 @@ impl EngineSnapshot {
 
 pub const RNOTE_STROKE_CONTENT_MIME_TYPE: &str = "application/rnote-stroke-content";
 
+/// Stroke content. Used when copying/cutting/pasting a selection into/from the clipboard
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_content")]
 pub struct StrokeContent {
@@ -331,7 +334,8 @@ pub struct RnoteEngine {
     pub audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub visual_debug: bool,
-    /// the task sender. Must not be modified, only cloned. To install a new engine task handler, regenerate the channel through `regenerate_channel()`
+    // the task sender. Must not be modified, only cloned.
+    // To install a new engine task handler, regenerate the channel through `regenerate_channel()`
     #[serde(skip)]
     pub tasks_tx: EngineTaskSender,
     // Background rendering
@@ -370,7 +374,8 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
-    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver which can be awaited in a engine tasks handler through `handle_engine_tasks()`
+    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver
+    /// which can be awaited in a engine tasks handler through `handle_engine_tasks()`
     pub fn regenerate_channel(&mut self) -> EngineTaskReceiver {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
@@ -408,7 +413,7 @@ impl RnoteEngine {
         self.pen_sounds
     }
 
-    /// enables / disables the pen sounds.
+    /// Enables/disables the pen sounds.
     /// If pen sound should be enabled, the pkg data dir must be provided.
     pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
         self.pen_sounds = pen_sounds;
@@ -431,7 +436,7 @@ impl RnoteEngine {
         }
     }
 
-    /// Takes a snapshot of the current state
+    /// Takes a snapshot of the current state.
     pub fn take_snapshot(&self) -> EngineSnapshot {
         let mut store_history_entry = self.store.history_entry_from_current_state();
 
@@ -455,8 +460,9 @@ impl RnoteEngine {
         }
     }
 
-    /// imports a engine snapshot. A save file should always be loaded with this method.
-    /// the store then needs to update its rendering
+    /// Imports an engine snapshot. A save file should always be loaded with this method.
+    ///
+    /// The store then needs to update its rendering.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
         self.document = snapshot.document;
         self.store.import_from_snapshot(&snapshot);
@@ -464,12 +470,12 @@ impl RnoteEngine {
         self.update_state_current_pen()
     }
 
-    /// records the current store state and saves it as a history entry.
+    /// Records the current store state and saves it as a history entry.
     pub fn record(&mut self, now: Instant) -> WidgetFlags {
         self.store.record(now)
     }
 
-    /// Undo the latest changes
+    /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -499,7 +505,7 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// redo the latest changes
+    /// Redo the latest changes.
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -537,15 +543,16 @@ impl RnoteEngine {
         self.store.can_redo()
     }
 
-    // Clears the store
+    // Clears the entire store.
     pub fn clear(&mut self) -> WidgetFlags {
         self.store.clear();
 
         self.update_state_current_pen()
     }
 
-    /// processes the received task from tasks_rx.
-    /// Returns widget flags to indicate what needs to be updated in the UI.
+    /// Handle a received task from tasks_rx.
+    /// Returns [WidgetFlags] to indicate what needs to be updated in the UI.
+    ///
     /// An example how to use it:
     /// ```rust, ignore
     ///
@@ -564,9 +571,6 @@ impl RnoteEngine {
     ///    }
     /// }));
     /// ```
-    /// Processes a received store task. Usually called from a receiver loop which awaits tasks_rx.
-    ///
-    /// Returns the widget flags, and whether the handler should quit
     pub fn handle_engine_task(&mut self, task: EngineTask) -> (WidgetFlags, bool) {
         let mut widget_flags = WidgetFlags::default();
         let mut quit = false;
@@ -579,18 +583,16 @@ impl RnoteEngine {
                 stroke_bounds,
             } => {
                 if let Some(state) = self.store.render_comp_state(key) {
-                    //log::debug!("key: {key:?} - render state: {state:?}");
-
                     match state {
                         RenderCompState::Complete | RenderCompState::ForViewport(_) => {
                             // The rendering was already regenerated in the meantime,
-                            // so we just discard the the render task results
+                            // so we just discard the the render task result
                         }
                         RenderCompState::BusyRenderingInTask => {
                             if (self.camera.image_scale()
-                                - render_comp::RENDER_IMAGE_SCALE_TOLERANCE
+                                - render_comp::RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE
                                 ..self.camera.image_scale()
-                                    + render_comp::RENDER_IMAGE_SCALE_TOLERANCE)
+                                    + render_comp::RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE)
                                 .contains(&image_scale)
                                 && self
                                     .store
@@ -599,8 +601,8 @@ impl RnoteEngine {
                                     .unwrap_or(true)
                             {
                                 // Only when the image scale and stroke bounds are the same
-                                // as when the render task was started, the new images are considered valid
-                                // and can replace the old
+                                // to when the render task was started,
+                                // the new images are considered valid and can replace the old.
                                 self.store.replace_rendering_with_images(key, images);
                             }
                             widget_flags.redraw = true;
@@ -625,7 +627,7 @@ impl RnoteEngine {
         (widget_flags, quit)
     }
 
-    /// handle a pen event
+    /// Handle a pen event.
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
@@ -647,7 +649,7 @@ impl RnoteEngine {
         )
     }
 
-    /// Handle a pressed shortcut key
+    /// Handle a pressed shortcut key.
     pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
@@ -667,7 +669,7 @@ impl RnoteEngine {
         )
     }
 
-    /// change the pen style
+    /// Change the pen style.
     pub fn change_pen_style(&mut self, new_style: PenStyle) -> WidgetFlags {
         self.penholder.change_style(
             new_style,
@@ -682,7 +684,7 @@ impl RnoteEngine {
         )
     }
 
-    /// change the pen style override
+    /// Change the pen style (temporary) override.
     pub fn change_pen_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
@@ -700,7 +702,7 @@ impl RnoteEngine {
         )
     }
 
-    /// change the pen mode. Relevant for stylus input
+    /// Change the pen mode. Relevant for stylus input.
     pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> WidgetFlags {
         self.penholder.change_pen_mode(
             pen_mode,
@@ -715,7 +717,7 @@ impl RnoteEngine {
         )
     }
 
-    /// Reinstalls the pen in the current style
+    /// Reinstall the pen in the current style.
     pub fn reinstall_pen_current_style(&mut self) -> WidgetFlags {
         self.penholder
             .reinstall_pen_current_style(&mut EngineViewMut {
@@ -728,7 +730,7 @@ impl RnoteEngine {
             })
     }
 
-    /// Generates bounds for each page on the document which contains content
+    /// Generates bounds for each page on the document which contains content.
     pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();
@@ -760,7 +762,7 @@ impl RnoteEngine {
         }
     }
 
-    /// Generates bounds which contain all pages on the doc with content extended to fit the format.
+    /// Generates bounds which contain all pages on the doc with content, extended to fit the current format.
     pub fn bounds_w_content_extended(&self) -> Option<Aabb> {
         let pages_bounds = self.pages_bounds_w_content();
 
@@ -777,7 +779,7 @@ impl RnoteEngine {
 
     /// Resizes the doc to the format and to fit all strokes.
     ///
-    /// Document background rendering then needs to be updated.
+    /// Background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
         self.document
             .resize_to_fit_strokes(&self.store, &self.camera);
@@ -785,12 +787,12 @@ impl RnoteEngine {
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
     ///
-    /// Document background rendering then needs to be updated.
+    /// Background rendering then needs to be updated.
     pub fn resize_autoexpand(&mut self) {
         self.document.resize_autoexpand(&self.store, &self.camera);
     }
 
-    /// Expands the doc when in autoexpanding layouts. e.g. when dragging with touch
+    /// Expand the doc when in autoexpanding layouts. e.g. when dragging with touch.
     pub fn expand_doc_autoexpand(&mut self) {
         match self.document.layout {
             Layout::FixedSize | Layout::ContinuousVertical => {
@@ -809,12 +811,12 @@ impl RnoteEngine {
         }
     }
 
-    /// Adds a page to the document when in fixed size layout.
+    /// Add a page to the document when in fixed size layout.
     ///
     /// Returns true when document is in fixed size layout and a pages was added,
     /// else false.
     ///
-    /// background and strokes rendering then need to be updated.
+    /// Background and strokes rendering then need to be updated.
     pub fn add_page_doc_fixed_size(&mut self) -> bool {
         if self.document.layout != Layout::FixedSize {
             return false;
@@ -827,12 +829,12 @@ impl RnoteEngine {
         true
     }
 
-    /// Removes a page from the document when in fixed size layout.
+    /// Remove a page from the document when in fixed size layout.
     ///
     /// Returns true when document is in fixed size layout and a pages was removed,
     /// else false.
     ///
-    /// background and strokes rendering then need to be updated.
+    /// Background and strokes rendering then need to be updated.
     pub fn remove_page_doc_fixed_size(&mut self) -> bool {
         if self.document.layout != Layout::FixedSize {
             return false;
@@ -843,7 +845,7 @@ impl RnoteEngine {
         let new_doc_height = doc_height - format_height;
 
         if doc_height > format_height {
-            let remove_area_keys = self.store.keys_below_y_pos(doc_y + new_doc_height);
+            let remove_area_keys = self.store.keys_below_y(doc_y + new_doc_height);
             self.store.set_trashed_keys(&remove_area_keys, true);
             self.document.height = new_doc_height;
         }
@@ -851,9 +853,9 @@ impl RnoteEngine {
         true
     }
 
-    /// Updates the camera and updates doc dimensions with the new offset and size.
+    /// Update the camera and updates doc dimensions with the new offset and size.
     ///
-    /// background and strokes rendering then need to be updated.
+    /// Background and strokes rendering then need to be updated.
     pub fn update_camera_offset_size(
         &mut self,
         new_offset: na::Vector2<f64>,
@@ -863,9 +865,9 @@ impl RnoteEngine {
         self.camera.size = new_size;
     }
 
-    /// Updates the current pen with the current engine state.
+    /// Update the current pen with the current engine state.
     ///
-    /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
+    /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn update_state_current_pen(&mut self) -> WidgetFlags {
         self.penholder.update_state_current_pen(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
@@ -877,9 +879,9 @@ impl RnoteEngine {
         })
     }
 
-    /// fetches clipboard content from the current pen.
+    /// Fetch clipboard content from the current pen.
     ///
-    /// Returns (the content, mime_type)
+    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
     pub fn fetch_clipboard_content(
         &self,
@@ -894,9 +896,9 @@ impl RnoteEngine {
         })
     }
 
-    /// Cuts clipboard content from the current pen.
+    /// Cut clipboard content from the current pen.
     ///
-    /// Returns (the content, mime_type)
+    /// Returns (the clipboard content, MIME-type).
     #[allow(clippy::type_complexity)]
     pub fn cut_clipboard_content(
         &mut self,

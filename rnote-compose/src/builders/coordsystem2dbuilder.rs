@@ -1,17 +1,15 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
 /// 2D coordinate system builder
 #[derive(Debug, Clone)]
@@ -80,7 +78,7 @@ impl ShapeBuilderBehaviour for CoordSystem2DBuilder {
 }
 
 impl CoordSystem2DBuilder {
-    /// The current state represented by four lines
+    /// The current state as four individual lines.
     pub fn state_as_lines(&self) -> Vec<Line> {
         let center = na::vector!(self.tip_y.x, self.tip_x.y);
 

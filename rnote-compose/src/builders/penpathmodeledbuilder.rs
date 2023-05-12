@@ -1,3 +1,10 @@
+// Imports
+use super::{PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress};
+use crate::penevents::PenEvent;
+use crate::penpath::{Element, Segment};
+use crate::style::Composer;
+use crate::Constraints;
+use crate::{PenPath, Style};
 use ink_stroke_modeler_rs::{
     ModelerInput, ModelerInputEventType, PredictionParams, StrokeModeler, StrokeModelerParams,
 };
@@ -6,20 +13,12 @@ use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use std::time::{Duration, Instant};
 
-use crate::penevents::PenEvent;
-use crate::penpath::{Element, Segment};
-use crate::style::Composer;
-use crate::{PenPath, Style};
-
-use super::{PenPathBuilderBehaviour, PenPathBuilderCreator, PenPathBuilderProgress};
-use crate::Constraints;
-
-/// The pen path builder
+/// Pen path modeled builder.
 pub struct PenPathModeledBuilder {
-    /// Buffered elements, which are filled up by new pen events and used to build path segments
+    /// Buffered elements, which are filled up by new pen events and used to build path segments.
     buffer: Vec<Element>,
     prediction_start: Element,
-    /// Holding the current prediction. Is recalculated after the modeler is updated with a new element
+    /// Holding the current prediction. Is recalculated after the modeler is updated with a new element.
     prediction_buffer: Vec<Element>,
     start_time: Instant,
     last_element: Element,

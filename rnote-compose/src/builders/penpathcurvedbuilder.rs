@@ -1,17 +1,15 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::penpathbuilderbehaviour::PenPathBuilderCreator;
+use super::{PenPathBuilderBehaviour, PenPathBuilderProgress};
 use crate::penevents::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
 use crate::style::Composer;
-use crate::{PenPath, Style};
-
-use super::penpathbuilderbehaviour::PenPathBuilderCreator;
-use super::{PenPathBuilderBehaviour, PenPathBuilderProgress};
 use crate::Constraints;
+use crate::{PenPath, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
 pub(crate) enum PenPathCurvedBuilderState {
@@ -20,12 +18,12 @@ pub(crate) enum PenPathCurvedBuilderState {
 }
 
 #[derive(Debug, Clone)]
-/// The pen path builder
+/// Pen path curved builder.
 pub struct PenPathCurvedBuilder {
     state: PenPathCurvedBuilderState,
-    /// Buffered elements, which are filled up by new pen events and used to build path segments
+    /// Buffered elements, which are filled up by new pen events and used to build path segments.
     buffer: Vec<Element>,
-    /// the index of the current first unprocessed buffer element
+    /// the index of the current first unprocessed buffer element.
     i: usize,
 }
 
@@ -119,7 +117,8 @@ impl PenPathBuilderBehaviour for PenPathCurvedBuilder {
             PenPathCurvedBuilderState::Start => {
                 PenPath::try_from_elements(self.buffer[self.i..].iter().copied())
             }
-            // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
+            // Skipping the first buffer element as that is the not drained by the segment builder
+            // and is the prev element in the "During" state
             PenPathCurvedBuilderState::During => {
                 PenPath::try_from_elements(self.buffer[self.i..].iter().skip(1).copied())
             }

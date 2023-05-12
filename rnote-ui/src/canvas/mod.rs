@@ -1,3 +1,4 @@
+// Modules
 mod canvaslayout;
 pub(crate) mod imexport;
 mod input;
@@ -6,6 +7,8 @@ mod input;
 pub(crate) use canvaslayout::RnCanvasLayout;
 
 // Imports
+use crate::RnCanvasWrapper;
+use crate::{config, RnAppWindow};
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
@@ -23,9 +26,6 @@ use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Duration;
-
-use crate::RnCanvasWrapper;
-use crate::{config, RnAppWindow};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]

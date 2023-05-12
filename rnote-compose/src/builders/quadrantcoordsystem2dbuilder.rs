@@ -11,12 +11,12 @@ use crate::style::{indicators, Composer};
 use crate::Constraints;
 use crate::{Shape, Style};
 
-/// 2D single quadrant coordinate system builder
+/// 2D single quadrant coordinate system builder.
 #[derive(Debug, Clone)]
 pub struct QuadrantCoordSystem2DBuilder {
-    /// the tip of the y axis
+    /// Tip of the y axis.
     tip_y: na::Vector2<f64>,
-    /// the tip of the x axis
+    /// Tip of the x axis.
     tip_x: na::Vector2<f64>,
 }
 
@@ -78,7 +78,7 @@ impl ShapeBuilderBehaviour for QuadrantCoordSystem2DBuilder {
 }
 
 impl QuadrantCoordSystem2DBuilder {
-    /// The current state represented by two lines
+    /// The current state as two individual lines.
     pub fn state_as_lines(&self) -> Vec<Line> {
         let center = na::vector!(self.tip_y.x, self.tip_x.y);
 

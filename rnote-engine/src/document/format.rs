@@ -1,7 +1,7 @@
+// Imports
 use gtk4::glib;
-use serde::{Deserialize, Serialize};
-
 use rnote_compose::{color, Color};
+use serde::{Deserialize, Serialize};
 
 #[derive(
     Debug,

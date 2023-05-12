@@ -188,10 +188,11 @@ impl StrokeStore {
 
         // Since we don't store the rtree in the history, we need to reload it.
         self.reload_rtree();
-        // render_components are also not stored in the history, but for the duration of the running app we don't ever remove it,
-        // so we can actually skip rebuilding it when importing a history entry. This avoids flickering where we have already rebuilt the components
-        // and can't display anything until the asynchronous rendering is finished
-        // self.reload_render_components_slotmap();
+        // render components are also not stored in the history, but for the duration of the running app we don't ever remove them,
+        // so we can actually skip rebuilding them when importing a history entry.
+        // This avoids flickering when we have already rebuilt the components
+        // and wouldn't be able to display anything until the rendering is finished.
+        //self.reload_render_components_slotmap();
 
         let all_strokes = self.stroke_keys_unordered();
         self.set_rendering_dirty_for_strokes(&all_strokes);
@@ -199,63 +200,21 @@ impl StrokeStore {
 
     /// Record the current state and saves it in the history.
     pub fn record(&mut self, _now: Instant) -> WidgetFlags {
-        /*
-               log::debug!(
-                   "before record - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
         self.simple_style_record()
-        /*
-               log::debug!(
-                   "after record - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
     }
 
     /// Undo the latest changes.
     ///
     /// Should only be called inside the engine undo wrapper function.
     pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
-        /*
-               log::debug!(
-                   "before undo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
         self.simple_style_undo()
-        /*
-               log::debug!(
-                   "after undo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
     }
 
     /// Redo the latest changes.
     ///
     /// Should only be called inside the engine redo wrapper function.
     pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
-        /*
-               log::debug!(
-                   "before redo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
         self.simple_style_redo()
-        /*
-               log::debug!(
-                   "after redo - history len: {}, pos: {:?}",
-                   self.history.len(),
-                   self.history_pos
-               );
-        */
     }
 
     pub(super) fn can_undo(&self) -> bool {

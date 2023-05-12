@@ -33,7 +33,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
 
-/// An immutable view into the the engine, excluding the penholder.
+/// An immutable view into the engine, excluding the penholder.
 #[derive(Debug)]
 pub struct EngineView<'a> {
     pub tasks_tx: EngineTaskSender,

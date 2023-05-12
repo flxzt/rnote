@@ -1,16 +1,14 @@
+// Imports
 use cairo::glib::closure;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, GridView, Label, Widget,
-};
-use gtk4::{
-    Align, ConstantExpression, IconSize, Image, ListItem, PropertyExpression,
-    SignalListItemFactory, SingleSelection, StringList, StringObject,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Align, CompositeTemplate,
+    ConstantExpression, GridView, IconSize, Image, Label, ListItem, PropertyExpression,
+    SignalListItemFactory, SingleSelection, StringList, StringObject, Widget,
 };
 use once_cell::sync::Lazy;
+use std::cell::RefCell;
 
 mod imp {
-    use std::cell::RefCell;
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

@@ -1,3 +1,5 @@
+// Modules
+/// Composer
 mod composer;
 /// Draw helpers
 pub mod indicators;
@@ -8,19 +10,20 @@ pub mod smooth;
 /// The textured module for textured styles
 pub mod textured;
 
-// Re exports
+// Re-exports
 use self::rough::RoughOptions;
 use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
-use anyhow::Context;
-pub use composer::Composer;
 
+// Imports
 use crate::shapes::{Arrow, CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
 use crate::{Color, PenPath, Shape};
+use anyhow::Context;
+pub use composer::Composer;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// A style choice holding the style options inside its variants
+/// A style choice holding the style options inside its variants.
 #[serde(rename = "style")]
 pub enum Style {
     /// A smooth style
@@ -41,7 +44,7 @@ impl Default for Style {
 }
 
 impl Style {
-    /// returns the stroke width. available on all styles
+    /// The stroke width. Available on all styles.
     pub fn stroke_width(&self) -> f64 {
         match self {
             Style::Smooth(options) => options.stroke_width,
@@ -50,7 +53,7 @@ impl Style {
         }
     }
 
-    /// The margins for bounds in which the shape fits
+    /// The margins for bounds which contain the shape.
     pub fn bounds_margin(&self) -> f64 {
         match self {
             Style::Smooth(options) => options.stroke_width,
@@ -59,7 +62,7 @@ impl Style {
         }
     }
 
-    /// Advances the seed for styles that have one
+    /// Advances the seed for styles that have one.
     pub fn advance_seed(&mut self) {
         match self {
             Style::Smooth(_) => {}
@@ -68,7 +71,7 @@ impl Style {
         }
     }
 
-    /// Sets the stroke color of the style
+    /// Set the stroke color of the style.
     pub fn set_stroke_color(&mut self, color: Color) {
         match self {
             Style::Smooth(options) => options.stroke_color = Some(color),
@@ -77,7 +80,7 @@ impl Style {
         };
     }
 
-    /// Sets the fill color of the style
+    /// Set the fill color of the style.
     pub fn set_fill_color(&mut self, color: Color) {
         match self {
             Style::Smooth(options) => options.fill_color = Some(color),
@@ -237,28 +240,28 @@ impl Composer<Style> for Shape {
     }
 }
 
-/// The pressure curve used by some styles
+/// The pressure curve used by some styles.
 #[derive(
     Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
 )]
 #[serde(rename = "pressure_curve")]
 pub enum PressureCurve {
-    /// Constant
+    /// Constant.
     #[serde(rename = "const")]
     Const = 0,
-    /// linear
+    /// Linear.
     #[serde(rename = "linear")]
     Linear,
-    /// square root
+    /// Square root.
     #[serde(rename = "sqrt")]
     Sqrt,
-    /// cubic root
+    /// Cubic root.
     #[serde(rename = "cbrt")]
     Cbrt,
-    /// quadratic polynomial
+    /// Quadratic polynomial.
     #[serde(rename = "pow2")]
     Pow2,
-    /// cubic polynomial
+    /// Cubic polynomial.
     #[serde(rename = "pow3")]
     Pow3,
 }
@@ -270,7 +273,9 @@ impl Default for PressureCurve {
 }
 
 impl PressureCurve {
-    /// Expects pressure to be between range 0.0 to 1.0
+    /// Apply the pressure curve to a width and the given pressure.
+    ///
+    /// Expects pressure to be between range [0.0 - 1.0].
     pub fn apply(&self, width: f64, pressure: f64) -> f64 {
         match self {
             Self::Const => width,

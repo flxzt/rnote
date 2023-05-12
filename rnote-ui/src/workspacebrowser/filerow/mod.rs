@@ -1,5 +1,7 @@
+// Modules
 mod actions;
 
+// Imports
 use crate::RnAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DragSource,
@@ -9,7 +11,6 @@ use once_cell::sync::Lazy;
 use std::cell::RefCell;
 
 mod imp {
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

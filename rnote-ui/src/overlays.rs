@@ -1,3 +1,7 @@
+// Imports
+use crate::canvaswrapper::RnCanvasWrapper;
+use crate::RnPensSideBar;
+use crate::{dialogs, RnAppWindow, RnColorPicker};
 use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
     ProgressBar, ScrolledWindow, ToggleButton, Widget,
@@ -6,10 +10,6 @@ use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::{Pen, PenStyle};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
-
-use crate::canvaswrapper::RnCanvasWrapper;
-use crate::RnPensSideBar;
-use crate::{dialogs, RnAppWindow, RnColorPicker};
 
 mod imp {
     use super::*;

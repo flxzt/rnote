@@ -1,3 +1,9 @@
+// Imports
+use super::strokebehaviour::GeneratedStrokeImages;
+use super::{Stroke, StrokeBehaviour};
+use crate::document::Format;
+use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::{render, DrawBehaviour};
 use gtk4::glib;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -10,12 +16,6 @@ use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use usvg::{TreeParsing, TreeTextToPath, TreeWriting};
-
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::{Stroke, StrokeBehaviour};
-use crate::document::Format;
-use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{render, DrawBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -93,7 +93,8 @@ impl StrokeBehaviour for VectorImage {
 }
 
 // Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().
-// There we use a svg renderer to generate pixel images. In this way we ensure to export an actual svg when calling gen_svgs(), but can also draw it onto piet.
+// here we use a svg renderer to generate the bitmap images.
+// This way we ensure to export an actual svg when calling gen_svgs(),but are also able to draw it onto piet.
 impl DrawBehaviour for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;

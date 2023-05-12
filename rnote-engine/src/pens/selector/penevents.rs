@@ -1,17 +1,15 @@
-use std::time::Instant;
-
+// Imports
+use super::{ModifyState, ResizeCorner, Selector, SelectorState};
+use crate::engine::EngineViewMut;
+use crate::pens::penbehaviour::PenProgress;
+use crate::pens::pensconfig::selectorconfig::SelectorStyle;
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::query::PointQuery;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{KeyboardKey, ModifierKey};
 use rnote_compose::penpath::Element;
-
-use crate::engine::EngineViewMut;
-use crate::pens::penbehaviour::PenProgress;
-use crate::pens::pensconfig::selectorconfig::SelectorStyle;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
-
-use super::{ModifyState, ResizeCorner, Selector, SelectorState};
+use std::time::Instant;
 
 impl Selector {
     pub(super) fn handle_pen_event_down(

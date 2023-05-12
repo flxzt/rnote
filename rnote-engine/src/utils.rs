@@ -1,11 +1,11 @@
-use std::ops::Range;
-
+// Imports
 use geo::line_string;
 use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use rnote_compose::Transform;
 use rnote_fileformats::xoppformat;
+use std::ops::Range;
 
 pub trait GdkRGBAHelpers
 where
@@ -178,7 +178,7 @@ pub fn raw_font_weight_to_pango(raw_font_weight: u16) -> pango::Weight {
     }
 }
 
-/// Converts a Aabb to a geo::Polygon
+/// Convert an [Aabb] to [`geo::Polygon<f64>`]
 pub fn p2d_aabb_to_geo_polygon(aabb: Aabb) -> geo::Polygon<f64> {
     let line_string = line_string![
         (x: aabb.mins[0], y: aabb.mins[1]),

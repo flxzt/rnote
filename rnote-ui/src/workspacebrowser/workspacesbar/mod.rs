@@ -1,3 +1,4 @@
+// Modules
 mod workspacelist;
 mod workspacelistentry;
 mod workspacerow;
@@ -11,7 +12,6 @@ pub(crate) use workspacerow::RnWorkspaceRow;
 // Imports
 use crate::appwindow::RnAppWindow;
 use crate::dialogs;
-
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
     ListBox, ScrolledWindow, Widget,

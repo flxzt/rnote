@@ -1,19 +1,18 @@
+// Imports
+use crate::{
+    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
+};
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
-use gtk4::PadActionType;
 use gtk4::{
     gdk, gio, glib, glib::clone, Align, ArrowType, Box, Button, CompositeTemplate, CornerType,
-    CssProvider, GestureDrag, Grid, Inhibit, PackType, PadController, PositionType,
+    CssProvider, GestureDrag, Grid, Inhibit, PackType, PadActionType, PadController, PositionType,
     PropagationPhase,
 };
 use once_cell::sync::Lazy;
 use std::{
     cell::{Cell, RefCell},
     rc::Rc,
-};
-
-use crate::{
-    config, RnOverlays, RnSettingsPanel, RnWorkspaceBrowser, {dialogs, RnMainHeader},
 };
 
 #[derive(Debug, CompositeTemplate)]

@@ -1,16 +1,18 @@
-use std::io::{Read, Write};
+//! Loading and saving Xournal++'s `.xopp` file format
+//!
+//!
 
+// Imports
+use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
+use crate::FromXmlAttributeValue;
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
+use std::io::{Read, Write};
 
-use crate::FromXmlAttributeValue;
-
-use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
-
-/// The decimal places when serializing values
+/// The decimal places when serializing values.
 pub const VALS_DEC_PLACES: usize = 3;
 
-/// Compress bytes with gzip
+/// Compress bytes with gzip.
 fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
     let compressed_bytes = Vec::<u8>::new();
 
@@ -23,7 +25,7 @@ fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyh
     Ok(encoder.finish()?)
 }
 
-/// Decompress from gzip
+/// Decompress from gzip.
 fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
     let mut bytes: Vec<u8> = Vec::new();
@@ -33,11 +35,13 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
 }
 
 /// Represents a Xournal++ `.xopp` file.
-/// The original Xournal spec can be found here: <http://xournal.sourceforge.net/manual.html#file-format>
+///
 /// The coordinates units saved to a .xopp are in 72dpi, meaning a vector of (1,0) has a length of 1 / 72 inch.
+///
+/// The original Xournal spec can be found here: <http://xournal.sourceforge.net/manual.html#file-format>
 #[derive(Debug)]
 pub struct XoppFile {
-    /// The .xopp XML root element
+    /// The .xopp Xml root element.
     pub xopp_root: XoppRoot,
 }
 
@@ -69,20 +73,20 @@ impl FileFormatSaver for XoppFile {
 }
 
 impl XoppFile {
-    /// The DPI of the Xopp file, is hardcoded to 72 DPI
+    /// The DPI of `.xopp` files, which is hardcoded to 72 DPI.
     pub const DPI: f64 = 72.0;
 }
 
-/// Represents a Xournal++ XML root element
+/// A Xournal++ Xml root element.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppRoot {
-    /// The file version
+    /// The file version.
     pub fileversion: String,
-    /// The file title
+    /// The file title.
     pub title: String,
-    /// A preview image, encoded as base64
+    /// A preview image, encoded as base64.
     pub preview: String,
-    /// The pages elements
+    /// The pages elements.
     pub pages: Vec<XoppPage>,
 }
 
@@ -140,16 +144,16 @@ impl XmlWritable for XoppRoot {
     }
 }
 
-/// Represents a Xopp Page
+/// A Xopp Page.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppPage {
-    /// The width of the page
+    /// The width of the page.
     pub width: f64,
-    /// The height of the page
+    /// The height of the page.
     pub height: f64,
-    /// The Background of the page
+    /// The Background of the page.
     pub background: XoppBackground,
-    /// The layers of the page
+    /// The layers of the page.
     pub layers: Vec<XoppLayer>,
 }
 
@@ -209,24 +213,24 @@ impl XmlWritable for XoppPage {
     }
 }
 
-/// Represents a Xopp Background type
+/// A Xopp Background type.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum XoppBackgroundType {
-    /// A solid background with a color and style
+    /// A solid background with a color and style.
     Solid {
-        /// The color
+        /// The color.
         color: XoppColor,
-        /// The solid background style
+        /// The solid background style.
         style: XoppBackgroundSolidStyle,
     },
-    /// A background with a pixmap
+    /// A background with a pixmap.
     Pixmap {
-        /// The domain for the pixmap
+        /// The domain for the pixmap.
         domain: XoppBackgroundPixmapDomain,
-        /// The filename that is to the image for the pixmap
+        /// The filename that is to the image for the pixmap.
         filename: String,
     },
-    /// A background with a pdf ( NOT IMPLEMENTED )
+    /// A background with a pdf. Currently **UNIMPLEMENTED**.
     Pdf,
 }
 
@@ -264,24 +268,24 @@ impl Default for XoppBackgroundType {
     }
 }
 
-/// The xopp background style
+/// The xopp background style.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum XoppBackgroundSolidStyle {
-    /// The plain background style
+    /// Plain.
     Plain,
-    /// The lined background style
+    /// Lined.
     Lined,
-    /// The ruled background style
+    /// Ruled.
     Ruled,
-    /// The staves background style
+    /// Staves.
     Staves,
-    /// The graph background style
+    /// Graph.
     Graph,
-    /// The graph background style
+    /// Dotted.
     Dotted,
-    /// The isometric dotted background style
+    /// Isometric dotted.
     IsometricDotted,
-    /// The isometric graph background style
+    /// Isometric graph.
     IsometricGraph,
 }
 
@@ -328,14 +332,14 @@ impl FromXmlAttributeValue for XoppBackgroundSolidStyle {
     }
 }
 
-/// The Xopp background pixmap domain
+/// The Xopp background pixmap domain.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum XoppBackgroundPixmapDomain {
-    /// absolute
+    /// Absolute.
     Absolute,
-    /// attach
+    /// Attach.
     Attach,
-    /// clone
+    /// Clone.
     Clone,
 }
 
@@ -350,18 +354,17 @@ impl AsXmlAttributeValue for XoppBackgroundPixmapDomain {
 }
 
 impl Default for XoppBackgroundPixmapDomain {
-    /// The default pipxmap domain
     fn default() -> Self {
         Self::Absolute
     }
 }
 
-/// The Xopp Background
+/// The Xopp Background.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppBackground {
-    /// Optional background name
+    /// Optional background name.
     pub name: Option<String>,
-    /// The background type
+    /// The background type.
     pub bg_type: XoppBackgroundType,
 }
 
@@ -438,16 +441,16 @@ impl XmlWritable for XoppBackground {
     }
 }
 
-/// A Xopp Layer
+/// A Xopp Layer.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppLayer {
-    /// Optional layer name
+    /// Optional layer name.
     pub name: Option<String>,
-    /// Strokes on this layer
+    /// Strokes on this layer.
     pub strokes: Vec<XoppStroke>,
-    /// Texts on this layer
+    /// Texts on this layer.
     pub texts: Vec<XoppText>,
-    /// Images on this layer
+    /// Images on this layer.
     pub images: Vec<XoppImage>,
 }
 
@@ -503,16 +506,18 @@ impl XmlWritable for XoppLayer {
     }
 }
 
-/// A Xopp Color (represented in xml as hex values in format #RRGGBBAA )
+/// A Xopp Color.
+///
+/// Represented in Xml as hexadecimal values in format `#RRGGBBAA`.
 #[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct XoppColor {
-    /// red from 0 to 255
+    /// Red ranging [0 - 255].
     pub red: u8,
-    /// green from 0 to 255
+    /// Green ranging [0 - 255].
     pub green: u8,
-    /// blue from 0 to 255
+    /// Blue ranging [0 - 255].
     pub blue: u8,
-    /// alpha from 0 to 255
+    /// Alpha ranging [0 - 255].
     pub alpha: u8,
 }
 
@@ -526,7 +531,7 @@ impl AsXmlAttributeValue for XoppColor {
 }
 
 impl XoppColor {
-    /// Parsing from a attribute avlue that is the format #RRGGBBAA
+    /// Parse the color from a attribute value that is format `#RRGGBBAA`.
     fn from_hexcolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
         let s = s.trim().replace('#', "");
 
@@ -542,7 +547,7 @@ impl XoppColor {
         Ok(color)
     }
 
-    /// Parsing from a color attribute value in a stroke
+    /// Parse the color from a color attribute value in a stroke.
     pub fn from_strokecolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
         match s {
             "black" => Ok(Self {
@@ -615,7 +620,7 @@ impl XoppColor {
         }
     }
 
-    /// Parsing from a color attribute value in the background
+    /// Parse the color from a color attribute value in the background.
     fn from_backgroundcolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
         match s {
             "white" => Ok(Self {
@@ -659,35 +664,41 @@ impl XoppColor {
     }
 }
 
-/// Helper to bundle stroke types into one type
+/// The stroke type.
+///
+/// Helper to bundle different strokes into one type.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum XoppStrokeType {
-    /// A stroke
+    /// A stroke.
     XoppStroke(XoppStroke),
-    /// A text
+    /// A text.
     XoppText(XoppText),
-    /// An image
+    /// An image.
     XoppImage(XoppImage),
 }
 
-/// A Xopp Stroke
+/// A Xopp Stroke.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppStroke {
-    /// the stroke tool
+    /// The stroke tool.
     pub tool: XoppTool,
-    /// The stroke color
+    /// The stroke color.
     pub color: XoppColor,
-    /// Stroke fill. None if is not filled, 255 if fully opaque filled
+    /// Stroke fill. None if is not filled, 255 if fully opaque.
     pub fill: Option<i32>,
     /// The stroke widths.
-    /// The first element is the width of the entire stroke, and if existent, every following is a absolute width for the corresponding coordinate.
-    /// If they don't exist, the stroke has the first width as constant width
+    ///
+    /// The first element is the width of the entire stroke, and if existent,
+    /// every following is a absolute width for the corresponding coordinate.
+    /// If they don't exist, the stroke has the first width as constant width.
     pub width: Vec<f64>,
-    /// The stroke coordinates ( as points where a vec (1.0, 0.0) has length of 1 / 72inch )
+    /// The stroke coordinates.
+    ///
+    /// As points where the vector (1.0, 0.0) has length 1/72 inch.
     pub coords: Vec<na::Vector2<f64>>,
-    /// Optional timestamp
+    /// Optional timestamp.
     pub timestamp: Option<u64>,
-    /// Optional audio filename
+    /// Optional audio filename.
     pub audio_filename: Option<String>,
 }
 
@@ -806,14 +817,16 @@ impl XmlWritable for XoppStroke {
     }
 }
 
-/// A xopp stroke tool
+/// A Xopp stroke tool.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum XoppTool {
-    /// the Xopp Pen
+    /// The Xopp Pen.
     Pen,
-    /// the xopp highlighter ( alpha = 0.5 )
+    /// The Xopp highlighter.
+    ///
+    /// (alpha = 0.5).
     Highlighter,
-    /// the xopp eraser
+    /// The Xopp eraser.
     Eraser,
 }
 
@@ -833,20 +846,20 @@ impl Default for XoppTool {
     }
 }
 
-/// A xopp text
+/// A Xopp text.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppText {
-    /// The text font
+    /// The text font.
     pub font: String,
-    /// The text size
+    /// The text size.
     pub size: f64,
-    /// The x position of the upper left corner
+    /// The x position of the upper left corner.
     pub x: f64,
-    /// The y position of the upper left corner
+    /// The y position of the upper left corner.
     pub y: f64,
-    /// The text color
+    /// The text color.
     pub color: XoppColor,
-    /// The text string
+    /// The text string.
     pub text: String,
 }
 
@@ -924,18 +937,18 @@ impl XmlWritable for XoppText {
     }
 }
 
-/// a Xopp image
+/// A Xopp image.
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppImage {
-    /// The left x position
+    /// The left x position.
     pub left: f64,
-    /// The top y position
+    /// The top y position.
     pub top: f64,
-    /// The right x position
+    /// The right x position.
     pub right: f64,
-    /// The bottom y position
+    /// The bottom y position.
     pub bottom: f64,
-    /// The image data encoded as PNG base64
+    /// The image data encoded as Png base64.
     pub data: String,
 }
 
@@ -1036,9 +1049,8 @@ mod tests {
 
         let xopp_format_loader = super::XoppFile::load_from_bytes(&bytes)?;
 
-        // Dumping a json with serde
-        let xpp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
-        std::fs::write(to_save, xpp_json)?;
+        let xopp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
+        std::fs::write(to_save, xopp_json)?;
 
         Ok(())
     }
@@ -1052,9 +1064,8 @@ mod tests {
 
         let xopp_format_loader = super::XoppFile::load_from_bytes(&bytes)?;
 
-        // Dumping a json with serde
-        let xpp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
-        std::fs::write(to_save, xpp_json)?;
+        let xopp_json = serde_json::to_string_pretty(&xopp_format_loader.xopp_root)?;
+        std::fs::write(to_save, xopp_json)?;
 
         Ok(())
     }

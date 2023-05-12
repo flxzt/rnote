@@ -1,9 +1,9 @@
+// Imports
+use super::PenStyle;
 use rnote_compose::penevents::ShortcutKey;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
-
-use super::PenStyle;
 
 #[repr(u32)]
 #[derive(
@@ -49,7 +49,7 @@ pub enum ShortcutAction {
     },
 }
 
-/// holds the registered shortcut actions for the given shortcut keys
+/// The registered shortcut actions for the given shortcut keys.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shortcuts")]
 pub struct Shortcuts(HashMap<ShortcutKey, ShortcutAction>);

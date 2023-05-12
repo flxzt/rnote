@@ -1,3 +1,4 @@
+// Imports
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
 use crate::engine::{EngineTask, EngineTaskSender};
@@ -5,14 +6,14 @@ use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::StrokeBehaviour;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, DrawBehaviour, RnoteEngine};
-
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::color;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
 
-pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
+/// The tolerance where check between scale-factors are considered "equal".
+pub(crate) const RENDER_IMAGE_SCALE_EQUALITY_TOLERANCE: f64 = 0.01;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
@@ -30,8 +31,8 @@ impl Default for RenderCompState {
 
 #[derive(Debug, Clone)]
 pub struct RenderComponent {
-    pub images: Vec<render::Image>,
-    pub rendernodes: Vec<gsk::RenderNode>,
+    pub(super) images: Vec<render::Image>,
+    pub(super) rendernodes: Vec<gsk::RenderNode>,
     pub(super) state: RenderCompState,
 }
 
@@ -46,7 +47,7 @@ impl Default for RenderComponent {
 }
 
 impl StrokeStore {
-    /// Reloads the slotmap with empty render components from the keys returned from the primary map, stroke_components.
+    /// Reload the slotmap with empty render components with the keys returned from the stroke components.
     pub fn rebuild_render_components_slotmap(&mut self) {
         self.render_components = slotmap::SecondaryMap::new();
         self.stroke_components.keys().for_each(|key| {
@@ -55,7 +56,7 @@ impl StrokeStore {
         });
     }
 
-    /// Returns false if rendering is not supported
+    /// Ability if rendering is supported.
     pub fn can_render(&self, key: StrokeKey) -> bool {
         self.render_components.get(key).is_some()
     }
@@ -239,7 +240,7 @@ impl StrokeStore {
         }
     }
 
-    /// Regenerates the rendering of all keys for the given viewport that need rerendering
+    /// Regenerate the rendering of all keys for the given viewport that need to be rerendered.
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,
         tasks_tx: EngineTaskSender,
@@ -261,7 +262,7 @@ impl StrokeStore {
                     viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
                 let viewport = viewport.extend_by(viewport_render_margins);
 
-                // skip and empty image buffer if stroke is not in viewport
+                // skip and clear image buffer if stroke is not in viewport
                 if !viewport.intersects(&stroke_bounds) {
                     render_comp.rendernodes = vec![];
                     render_comp.images = vec![];
@@ -276,7 +277,7 @@ impl StrokeStore {
                             continue;
                         }
                         RenderCompState::ForViewport(old_viewport) => {
-                            // We don't skip if we pass the threshold in context to the margin, so the stroke gets rerendered in time. between 0.0 and 1.0
+                            // We don't skip if we pass the threshold in relation to the margin, so the stroke gets rerendered in time. between 0.0 and 1.0
                             const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
                             let diff =
                                 (old_viewport.center().coords - viewport.center().coords).abs();
@@ -293,7 +294,7 @@ impl StrokeStore {
                     }
                 }
 
-                // indicates that a task is now started rendering the stroke
+                // indicates that a task has now started to render the stroke
                 render_comp.state = RenderCompState::BusyRenderingInTask;
                 let stroke = stroke.clone();
 
@@ -317,7 +318,7 @@ impl StrokeStore {
         }
     }
 
-    /// clears the rendering for all strokes
+    /// Clear all rendering for all strokes.
     pub fn clear_rendering(&mut self) {
         for (_key, render_comp) in self.render_components.iter_mut() {
             render_comp.rendernodes = vec![];
@@ -326,7 +327,7 @@ impl StrokeStore {
         }
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes.
+    /// Generate images and appends them to the render component for the last segments of brushstrokes.
     ///
     /// For other strokes the rendering is regenerated completely.
     pub fn append_rendering_last_segments(
@@ -379,7 +380,9 @@ impl StrokeStore {
         }
     }
 
-    /// Replaces the entire current rendering with the given new images. Also updates the renderstate
+    /// Replace the entire current rendering with the given new images.
+    ///
+    /// Also updates the render component state.
     pub fn replace_rendering_with_images(&mut self, key: StrokeKey, images: GeneratedStrokeImages) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
@@ -413,7 +416,9 @@ impl StrokeStore {
         }
     }
 
-    /// Not changing the render component state, that is the responsibility of the caller
+    /// Appends the images to the render component of the stroke.
+    ///
+    /// Not modifying the render component state, that is the responsibility of the caller.
     pub fn append_rendering_images(&mut self, key: StrokeKey, images: GeneratedStrokeImages) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
@@ -437,7 +442,7 @@ impl StrokeStore {
         }
     }
 
-    /// Draws all strokes on the snapshot
+    /// Draw all strokes on the gtk snapshot.
     pub fn draw_strokes_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,
@@ -470,7 +475,9 @@ impl StrokeStore {
         snapshot.pop();
     }
 
-    // Draws the given strokes on a piet render context. Note that every given stroke get drawn, even the trashed ones.
+    /// Draw the given strokes on a [piet::RenderContext].
+    ///
+    /// This always draws all strokes for the given keys, even trashed ones.
     pub fn draw_stroke_keys_to_piet(
         &self,
         keys: &[StrokeKey],
@@ -486,7 +493,9 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Draws all strokes on the piet context. In immediate mode, without the image cache.
+    /// Draw all strokes on the [piet::RenderContext].
+    ///
+    /// Immediate, without any cached image.
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
@@ -516,7 +525,9 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Draws the selection on the piet context. In immediate mode, without the image cache.
+    /// Draw the selection on the [piet::RenderContext].
+    ///
+    /// Immediate, without any cached image.
     pub fn draw_selection_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
@@ -546,7 +557,7 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Draws bounds, positions, etc. for all strokes for visual debugging
+    /// Draw bounds, positions, etc. for all strokes for visual debugging purposes.
     pub fn draw_debug_to_gtk_snapshot(
         &self,
         snapshot: &Snapshot,

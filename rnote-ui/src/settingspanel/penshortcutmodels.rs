@@ -1,3 +1,4 @@
+// Imports
 use gettextrs::gettext;
 use gtk4::Align;
 use gtk4::{

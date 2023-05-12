@@ -1,17 +1,17 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::path::PathBuf;
-use std::time::{self, Duration};
-
+// Imports
 use anyhow::Context;
 use rand::Rng;
 use rnote_compose::penevents::KeyboardKey;
 use rodio::source::Buffered;
 use rodio::{Decoder, Source};
+use std::collections::HashMap;
+use std::fs::File;
+use std::path::PathBuf;
+use std::time::{self, Duration};
 
-/// The audio player for pen sounds
+/// The audio player for pen sounds.
 pub struct AudioPlayer {
-    // we need to hold the output streams, even if they are not used
+    // we need to hold the output streams, even if they are not used.
     #[allow(unused)]
     marker_outputstream: rodio::OutputStream,
     marker_outputstream_handle: rodio::OutputStreamHandle,
@@ -48,8 +48,8 @@ impl AudioPlayer {
     pub const N_SOUND_FILES_TYPEWRITER: usize = 30;
     pub const SOUND_FILE_BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
 
-    /// create and initialize new audioplayer.
-    /// pkg_data_dir is the app data directory which has a "sounds" subfolder containing the sound files
+    /// Create and initialize new audioplayer.
+    /// `pkg_data_dir` is the app data directory which has a "sounds" subfolder containing the sound files
     pub fn new_init(mut pkg_data_dir: PathBuf) -> Result<Self, anyhow::Error> {
         pkg_data_dir.push("sounds/");
 
@@ -171,7 +171,7 @@ impl AudioPlayer {
         }
     }
 
-    /// Play a typewriter sound that fits the given key type, or a generic sound when None
+    /// Play a typewriter sound that fits the given key type, or a generic sound when None.
     pub fn play_typewriter_key_sound(&self, keyboard_key: Option<KeyboardKey>) {
         match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => match keyboard_key {

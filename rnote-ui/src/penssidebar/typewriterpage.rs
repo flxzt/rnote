@@ -1,3 +1,5 @@
+// Imports
+use crate::{RnAppWindow, RnCanvasWrapper};
 use gtk4::{
     glib, glib::clone, pango, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
     EmojiChooser, FontDialog, SpinButton, ToggleButton,
@@ -7,8 +9,6 @@ use rnote_engine::pens::Pen;
 use rnote_engine::strokes::textstroke::TextStyle;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
 use std::cell::RefCell;
-
-use crate::{RnAppWindow, RnCanvasWrapper};
 
 mod imp {
     use super::*;

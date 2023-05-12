@@ -1,5 +1,5 @@
-use std::path::PathBuf;
-
+// Imports
+use crate::{workspacebrowser::widgethelper, RnWorkspaceBrowser};
 use gettextrs::gettext;
 use gtk4::{
     gio, glib,
@@ -9,10 +9,9 @@ use gtk4::{
     traits::{BoxExt, ButtonExt, EditableExt, PopoverExt, WidgetExt},
     Align, Button, Entry, Label, Popover,
 };
+use std::path::PathBuf;
 
-use crate::{workspacebrowser::widgethelper, RnWorkspaceBrowser};
-
-/// Creates a new `create_folder` action
+/// Create a new `create_folder` action.
 pub(crate) fn create_folder(workspacebrowser: &RnWorkspaceBrowser) -> gio::SimpleAction {
     let new_folder_action = gio::SimpleAction::new("create-folder", None);
 

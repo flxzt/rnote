@@ -1,3 +1,9 @@
+// Imports
+use super::render_comp::RenderCompState;
+use super::StrokeKey;
+use crate::engine::StrokeContent;
+use crate::strokes::Stroke;
+use crate::{render, StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -8,35 +14,32 @@ use rnote_compose::{helpers, Color};
 use std::sync::Arc;
 use std::time::Instant;
 
-use super::render_comp::RenderCompState;
-use super::StrokeKey;
-use crate::engine::StrokeContent;
-use crate::strokes::Stroke;
-use crate::{render, StrokeStore, WidgetFlags};
-
 /// Systems that are related to the stroke components.
 impl StrokeStore {
-    /// Gets a reference to a stroke
+    /// Gets a immutable reference to a stroke.
     pub fn get_stroke_ref(&self, key: StrokeKey) -> Option<&Stroke> {
         self.stroke_components.get(key).map(|stroke| &**stroke)
     }
 
-    /// Gets a mutable reference to a stroke
+    /// Gets a mutable reference to a stroke.
     pub fn get_stroke_mut(&mut self, key: StrokeKey) -> Option<&mut Stroke> {
         Arc::make_mut(&mut self.stroke_components)
             .get_mut(key)
             .map(Arc::make_mut)
     }
 
-    /// Gets a reference to the strokes
+    /// Gets immutable references to the strokes.
     pub fn get_strokes_ref(&self, keys: &[StrokeKey]) -> Vec<&Stroke> {
         keys.iter()
             .filter_map(|&key| self.stroke_components.get(key).map(|stroke| &**stroke))
             .collect::<Vec<&Stroke>>()
     }
 
-    /// Adds a segment to the brush stroke. If the stroke is not a brushstroke this does nothing.
-    /// stroke then needs to update its geometry and its rendering
+    /// Add a segment to the brush-stroke.
+    ///
+    /// If the stroke is not a brushstroke this does nothing.
+    ///
+    /// The stroke then needs to update its geometry and rendering.
     pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
         if let Some(Stroke::BrushStroke(brushstroke)) = Arc::make_mut(&mut self.stroke_components)
             .get_mut(key)
@@ -48,7 +51,7 @@ impl StrokeStore {
         }
     }
 
-    /// All stroke keys unordered
+    /// All stroke keys unordered.
     pub fn keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components.keys().collect()
     }
@@ -57,7 +60,7 @@ impl StrokeStore {
         self.key_tree.keys_intersecting_bounds(bounds)
     }
 
-    /// All stroke keys, unordered.
+    /// All stroke keys unordered.
     pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
@@ -65,7 +68,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Returns the stroke keys in the order that they should be rendered.
+    /// Storke keys in the order that they should be rendered.
     pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
@@ -73,7 +76,7 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    /// Returns the stroke keys in the order that they should be rendered, intersecting the given bounds.
+    /// Stroke keys intersecting the given bounds, in the order that they should be rendered.
     pub fn stroke_keys_as_rendered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
@@ -81,7 +84,7 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    /// Returns the stroke keys in the order that they should be rendered, in the given bounds.
+    /// Stroke keys contained in the given bounds, in the order that they should be rendered.
     pub fn stroke_keys_as_rendered_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_in_bounds(bounds)
             .into_iter()
@@ -89,7 +92,7 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    /// Clones the strokes for the given keys and returns them.
+    /// Clone the strokes for the given keys.
     pub fn clone_strokes(&self, keys: &[StrokeKey]) -> Vec<Stroke> {
         keys.iter()
             .filter_map(|&key| Some((**self.stroke_components.get(key)?).clone()))
@@ -97,7 +100,8 @@ impl StrokeStore {
     }
 
     /// Updates the stroke geometry.
-    /// stroke then needs to update its rendering
+    ///
+    /// The stroke then needs to update its rendering.
     pub fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
         if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
             .get_mut(key)
@@ -119,14 +123,15 @@ impl StrokeStore {
     }
 
     /// Updates the strokes geometries.
-    /// strokes then need to update their rendering
+    ///
+    /// The strokes then need to update their rendering.
     pub fn update_geometry_for_strokes(&mut self, keys: &[StrokeKey]) {
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);
         });
     }
 
-    /// Calculates the height needed to fit all strokes
+    /// Calculate the height needed to fit all strokes.
     pub fn calc_height(&self) -> f64 {
         let strokes_iter = self
             .stroke_keys_unordered()
@@ -141,7 +146,7 @@ impl StrokeStore {
         strokes_max_y - strokes_min_y
     }
 
-    /// Calculates the width needed to fit all strokes
+    /// Calculate the width needed to fit all strokes.
     pub fn calc_width(&self) -> f64 {
         let strokes_iter = self
             .stroke_keys_unordered()
@@ -156,7 +161,7 @@ impl StrokeStore {
         strokes_max_x - strokes_min_x
     }
 
-    /// Generates the enclosing bounds for the given stroke keys
+    /// Generate the enclosing bounds for the given keys.
     pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<Aabb> {
         let mut keys_iter = keys.iter();
         let key = keys_iter.next()?;
@@ -172,7 +177,7 @@ impl StrokeStore {
         Some(bounds)
     }
 
-    /// Collects all bounds for the given strokes
+    /// Collect all stroke bounds for the given keys.
     pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<Aabb> {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
@@ -184,9 +189,9 @@ impl StrokeStore {
         stroke.set_pos(pos);
     }
 
-    /// Translate the strokes with the offset.
+    /// Translate the strokes by the offset.
     ///
-    /// Strokes then need to update their geometry and rendering
+    /// The strokes then need to update their geometry and rendering.
     pub fn translate_strokes(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -202,9 +207,9 @@ impl StrokeStore {
         });
     }
 
-    /// Translate the stroke renderin images
+    /// Translate the stroke rendering images.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn translate_strokes_images(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -224,9 +229,9 @@ impl StrokeStore {
         });
     }
 
-    /// Rotates the stroke with angle (rad) around the center.
+    /// Rotate the stroke by the given angle (in radians) around the center.
     ///
-    /// Strokes then need to update their rendering
+    /// Strokes then need to update their rendering.
     pub fn rotate_strokes(&mut self, keys: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -242,9 +247,9 @@ impl StrokeStore {
         });
     }
 
-    /// Changes the stroke and text color of the given keys.
+    /// Change the stroke and text color for the given keys.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn change_stroke_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
         if keys.is_empty() {
             return WidgetFlags::default();
@@ -282,9 +287,9 @@ impl StrokeStore {
         widget_flags
     }
 
-    /// Changes the fill color of the given keys.
+    /// Change the fill color of the given keys.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn change_fill_colors(&mut self, keys: &[StrokeKey], color: Color) -> WidgetFlags {
         if keys.is_empty() {
             return WidgetFlags::default();
@@ -318,9 +323,9 @@ impl StrokeStore {
         widget_flags
     }
 
-    /// Rotates the stroke rendering images
+    /// Rotate the stroke rendering images.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn rotate_strokes_images(
         &mut self,
         keys: &[StrokeKey],
@@ -347,9 +352,9 @@ impl StrokeStore {
         });
     }
 
-    /// Scales the strokes with the factor.
+    /// Scale the strokes with the factor.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn scale_strokes(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
@@ -365,9 +370,9 @@ impl StrokeStore {
         });
     }
 
-    /// Scales the stroke rendering images
+    /// Scale the stroke rendering images.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn scale_strokes_images(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -389,9 +394,9 @@ impl StrokeStore {
         });
     }
 
-    /// Scales the strokes with a pivot as the scaling origin
+    /// Scale the strokes with a pivot as the scaling origin.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn scale_strokes_with_pivot(
         &mut self,
         keys: &[StrokeKey],
@@ -403,9 +408,9 @@ impl StrokeStore {
         self.translate_strokes(keys, pivot);
     }
 
-    /// Scales the stroke rendering images with a pivot
+    /// Scale the stroke rendering images with a pivot.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn scale_strokes_images_with_pivot(
         &mut self,
         strokes: &[StrokeKey],
@@ -417,9 +422,9 @@ impl StrokeStore {
         self.translate_strokes_images(strokes, pivot);
     }
 
-    /// Resizes the strokes to new bounds.
+    /// Resize the strokes to new bounds.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn resize_strokes(&mut self, keys: &[StrokeKey], new_bounds: Aabb) {
         let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
@@ -455,9 +460,9 @@ impl StrokeStore {
         });
     }
 
-    /// Resizes the strokes rendering images to new bounds.
+    /// Resize the strokes rendering images to new bounds.
     ///
-    /// Strokes then need to update their rendering
+    /// The strokes then need to update their rendering.
     pub fn resize_strokes_images(&mut self, keys: &[StrokeKey], new_bounds: Aabb) {
         let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
@@ -499,7 +504,7 @@ impl StrokeStore {
         });
     }
 
-    /// returns the strokes whose hitboxes are contained in the given polygon path.
+    /// Return the keys for stroke whose hitboxes are contained in the given polygon path.
     pub fn strokes_hitboxes_contained_in_path_polygon(
         &mut self,
         path: &[Element],
@@ -550,7 +555,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// returns the strokes whose hitboxes intersect in the given path.
+    /// Return the keys for strokes whose hitboxes intersect in the given path.
     pub fn strokes_hitboxes_intersect_path(
         &mut self,
         path: &[Element],
@@ -595,7 +600,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// returns the keys to the strokes whose hitboxes are contained in the given aabb
+    /// Return the keys for strokes whose hitboxes are contained in the given Aabb.
     pub fn strokes_hitboxes_contained_in_aabb(
         &mut self,
         aabb: Aabb,
@@ -629,7 +634,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// returns the strokes for the given coord is inside at least one of the stroke hitboxes
+    /// Return the keys for strokes where the given coord is inside at least one of their hitboxes.
     pub fn stroke_hitboxes_contain_coord(
         &self,
         viewport: Aabb,
@@ -650,12 +655,12 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Returns all keys below the y_pos
-    pub fn keys_below_y_pos(&self, y_pos: f64) -> Vec<StrokeKey> {
+    /// Return all keys below the given `y`.
+    pub fn keys_below_y(&self, y: f64) -> Vec<StrokeKey> {
         self.stroke_components
             .iter()
             .filter_map(|(key, stroke)| {
-                if stroke.bounds().mins[1] > y_pos {
+                if stroke.bounds().mins[1] > y {
                     Some(key)
                 } else {
                     None
@@ -673,7 +678,7 @@ impl StrokeStore {
         StrokeContent { strokes }
     }
 
-    /// Cuts the strokes for the given keys (meaning: marking them as trashed) and returns them as stroke content
+    /// Cut the strokes for the given keys and return them as stroke content.
     pub fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()
@@ -687,9 +692,10 @@ impl StrokeStore {
         StrokeContent { strokes }
     }
 
-    /// Pastes the clipboard content as a selection
+    /// Paste the clipboard content as a selection.
     ///
-    /// returns the keys for the inserted strokes.
+    /// Returns the keys for the inserted strokes.
+    ///
     /// The inserted strokes then need to update their geometry and rendering.
     pub fn insert_stroke_content(
         &mut self,

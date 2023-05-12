@@ -1,3 +1,5 @@
+// Imports
+use crate::canvas::RnCanvas;
 use gtk4::{
     glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
 };
@@ -5,8 +7,6 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 use rnote_engine::{document::Layout, render};
 use std::cell::Cell;
-
-use crate::canvas::RnCanvas;
 
 mod imp {
     use super::*;
@@ -148,13 +148,6 @@ mod imp {
             // which can also take up quite some time on the main UI thread.
             let old_viewport_extended = old_viewport
                 .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
-            /*
-                       log::debug!(
-                           "viewport: {:#?}\nold_viewport_extended: {:#?}",
-                           viewport,
-                           old_viewport_extended
-                       );
-            */
 
             // always update the background rendering
             if let Err(e) = engine.update_background_rendering_current_viewport() {

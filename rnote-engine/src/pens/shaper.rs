@@ -1,12 +1,10 @@
-use std::time::Instant;
-
+// Imports
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
-
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::builders::{ArrowBuilder, GridBuilder};
@@ -18,6 +16,7 @@ use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{ShapeBuilderCreator, ShapeBuilderProgress};
 use rnote_compose::penevents::{KeyboardKey, ModifierKey, PenEvent};
 use rnote_compose::penpath::Element;
+use std::time::Instant;
 
 #[derive(Debug)]
 enum ShaperState {

@@ -1,3 +1,4 @@
+// Imports
 use gtk4::{graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
@@ -6,20 +7,22 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "camera")]
 pub struct Camera {
-    /// The offset in surface coords.
+    /// The offset in surface coordinates.
     #[serde(rename = "offset")]
     pub offset: na::Vector2<f64>,
-    /// The dimensions in surface coords
+    /// The dimensions in surface coordinates.
     #[serde(rename = "size")]
     pub size: na::Vector2<f64>,
-    /// The camera zoom, origin at (0.0, 0.0)
+    /// The camera zoom, origin at (0.0, 0.0).
     #[serde(rename = "zoom")]
     zoom: f64,
-    /// the temporary zoom. Is used to overlay the "permanent" zoom
+    /// The temporary zoom. Is used to overlay the "permanent" zoom.
     #[serde(rename = "temporary_zoom")]
     temporary_zoom: f64,
 
-    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi screens. (Could become a non-integer value in the future, so it is stored as float.)
+    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi screens.
+    ///
+    /// This value could become a non-integer value in the future, so it is stored as float.
     #[serde(rename = "scale_factor")]
     pub scale_factor: f64,
 }
@@ -55,38 +58,40 @@ impl Camera {
         self
     }
 
-    /// the permanent zoom
+    /// The permanent zoom.
     pub fn zoom(&self) -> f64 {
         self.zoom
     }
 
-    /// sets the zoom
+    /// Set the permanent zoom.
     pub fn set_zoom(&mut self, zoom: f64) {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX)
     }
 
-    /// The temporary zoom, supposed to be overlaid on the surface when zooming with a timeout
+    /// The temporary zoom, to be overlaid on the surface when zooming with a timeout.
     pub fn temporary_zoom(&self) -> f64 {
         self.temporary_zoom
     }
 
-    /// sets the temporary zoom
+    /// Set the temporary zoom.
     pub fn set_temporary_zoom(&mut self, temporary_zoom: f64) {
         self.temporary_zoom =
             temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom)
     }
 
-    /// The total zoom of the camera, including the temporary zoom
+    /// The total zoom of the camera, including the temporary zoom.
     pub fn total_zoom(&self) -> f64 {
         self.zoom * self.temporary_zoom
     }
 
-    /// The scaling factor for generating pixel images with the current zoom. also takes the scale factor in account
+    /// The scaling factor for generating pixel images with the current permanent zoom.
+    ///
+    /// Takes the scale factor in account
     pub fn image_scale(&self) -> f64 {
         self.zoom * self.scale_factor
     }
 
-    /// the viewport in document coordinate space
+    /// The viewport in document coordinate space.
     pub fn viewport(&self) -> Aabb {
         let inv_zoom = 1.0 / self.total_zoom();
 
@@ -96,18 +101,19 @@ impl Camera {
         )
     }
 
-    /// from document coords -> surface coords
+    /// Transform Aabb from document coords to surface coords.
     pub fn transform_bounds(&self, bounds: Aabb) -> Aabb {
         bounds.scale(self.total_zoom()).translate(-self.offset)
     }
 
-    /// from surface coords -> document coords
+    /// Transform Aabb from surface coords to document coords.
     pub fn transform_inv_bounds(&self, bounds: Aabb) -> Aabb {
         bounds.translate(self.offset).scale(1.0 / self.total_zoom())
     }
 
-    /// The transform from document coords -> surface coords
-    /// To have the inverse, call .inverse()
+    /// The transform from document coords to surface coords.
+    ///
+    /// To get the inverse, call `.inverse()`.
     pub fn transform(&self) -> na::Affine2<f64> {
         let total_zoom = self.total_zoom();
 
@@ -119,9 +125,11 @@ impl Camera {
         .unwrap()
     }
 
-    // The gsk transform for the GTK snapshot func
-    // GTKs transformations are applied on its coordinate system, so we need to reverse the order (translate, then scale)
-    // To have the inverse, call .invert()
+    /// The gsk transform for the GTK snapshot function.
+    ///
+    /// GTKs transformations are applied on its coordinate system,
+    /// so we need to reverse the transformation order (translate, then scale).
+    /// To get the inverse, call .invert().
     pub fn transform_for_gtk_snapshot(&self) -> gsk::Transform {
         let total_zoom = self.total_zoom();
 
@@ -148,7 +156,7 @@ mod tests {
         // Point in document coordinates
         let p0 = na::point![10.0, 2.0];
 
-        // First zoom, then scale
+        // first zoom, then scale
         assert_relative_eq!(
             (camera.transform() * p0).coords,
             (p0.coords * zoom) - offset

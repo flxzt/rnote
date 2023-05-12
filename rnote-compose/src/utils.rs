@@ -1,15 +1,17 @@
+// Imports
 use p2d::bounding_volume::Aabb;
 use rand::{Rng, SeedableRng};
 
+/// Matches when a Xml header is present
 const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
 
-/// Check if a xml header is present
+/// Check if a Xml header is present
 pub fn check_xml_header(svg: &str) -> bool {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     re.is_match(svg)
 }
 
-/// Adds a xml header to the &str
+/// Adds a Xml header to the &str
 pub fn add_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     if !re.is_match(svg) {
@@ -19,13 +21,13 @@ pub fn add_xml_header(svg: &str) -> String {
     }
 }
 
-/// Removes the xml header from the &str, if present
+/// Remove the Xml header from the &str, if present.
 pub fn remove_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     String::from(re.replace_all(svg, ""))
 }
 
-/// Wraps a svg str in a svg root element
+/// Wrap a Svg root element around the Svg string.
 pub fn wrap_svg_root(
     svg_data: &str,
     bounds: Option<Aabb>,
@@ -81,7 +83,7 @@ pub fn wrap_svg_root(
     svg_node_to_string(&svg_root).unwrap()
 }
 
-/// Converting a svg::Node to a String
+/// Convert a [svg::Node] to a String
 pub fn svg_node_to_string<N>(node: &N) -> Result<String, anyhow::Error>
 where
     N: svg::Node,
@@ -91,7 +93,9 @@ where
     Ok(String::from_utf8(document_buffer)?)
 }
 
-/// A new random number generator with the pcg64 algorithm. Used for seedable, reproducible random numbers.
+/// A new random number generator with the pcg64 algorithm.
+///
+/// Used for seedable, reproducible random numbers.
 pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     if let Some(seed) = seed {
         rand_pcg::Pcg64::seed_from_u64(seed)
@@ -100,7 +104,7 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     }
 }
 
-/// generates a alphanumeric random prefix for svg ids to avoid id collisions.
+/// Generate a alphanumeric random prefix for Svg Id's to avoid Id collisions.
 pub fn svg_random_id_prefix() -> String {
     rand::thread_rng()
         .sample_iter(&rand::distributions::Alphanumeric)
@@ -109,7 +113,7 @@ pub fn svg_random_id_prefix() -> String {
         .collect::<String>()
 }
 
-/// returns a new seed by generating a random value seeded from the old seed using the Pcg algorithm
+/// Generate a new seed by generating a random value seeded from the old seed using the Pcg algorithm.
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()

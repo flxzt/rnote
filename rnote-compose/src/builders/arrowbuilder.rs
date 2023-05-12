@@ -1,25 +1,23 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Arrow;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::constraints::ConstraintRatio;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
-/// arrow builder
+/// Arrow builder.
 #[derive(Debug, Clone)]
 pub struct ArrowBuilder {
-    /// the start position
+    /// Start position.
     start: na::Vector2<f64>,
-    /// the position of the tip
+    /// Position of the tip.
     tip: na::Vector2<f64>,
 }
 

@@ -1,22 +1,20 @@
-use std::time::Instant;
-
-use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-
+// Imports
+use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
+use super::ShapeBuilderBehaviour;
+use crate::constraints::ConstraintRatio;
 use crate::helpers::AabbHelpers;
 use crate::penevents::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
 use crate::style::{indicators, Composer};
-use crate::{Shape, Style};
-
-use super::shapebuilderbehaviour::{ShapeBuilderCreator, ShapeBuilderProgress};
-use super::ShapeBuilderBehaviour;
-use crate::constraints::ConstraintRatio;
 use crate::Constraints;
+use crate::{Shape, Style};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use piet::RenderContext;
+use std::time::Instant;
 
 #[derive(Debug, Clone)]
-/// The foci ellipse builder state
+/// Foci ellipse builder state.
 pub enum FociEllipseBuilderState {
     Start(na::Vector2<f64>),
     StartFinished(na::Vector2<f64>),
@@ -29,9 +27,8 @@ pub enum FociEllipseBuilderState {
 }
 
 #[derive(Debug, Clone)]
-/// building ellipse with foci and point
+/// Ellipse builder with foci and point.
 pub struct FociEllipseBuilder {
-    /// the state
     state: FociEllipseBuilderState,
 }
 
@@ -50,8 +47,6 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         _now: Instant,
         mut constraints: Constraints,
     ) -> ShapeBuilderProgress {
-        //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
-
         match (&mut self.state, event) {
             (FociEllipseBuilderState::Start(first), PenEvent::Down { element, .. }) => {
                 *first = element.pos;

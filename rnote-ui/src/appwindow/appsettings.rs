@@ -1,10 +1,10 @@
+// Imports
+use crate::appwindow::RnAppWindow;
 use adw::prelude::*;
 use gtk4::{gdk, glib, glib::clone};
 
-use crate::appwindow::RnAppWindow;
-
 impl RnAppWindow {
-    /// Settings binds
+    /// Setup settings binds.
     pub(crate) fn setup_settings_binds(&self) {
         let app = self.app();
 
@@ -340,7 +340,9 @@ impl RnAppWindow {
             .build();
     }
 
-    /// load settings at startup that are not bound as binding. Setting changes through gsettings / dconf might not be applied until app restarts
+    /// Load settings that are not bound as binds.
+    ///
+    /// Settings changes through gsettings / dconf might not be applied until the app restarts.
     pub(crate) fn load_settings(&self) {
         let _app = self.app();
 
@@ -374,7 +376,7 @@ impl RnAppWindow {
         }
     }
 
-    /// Save all settings at shutdown that are not bound in setup_settings
+    /// Save settings that are not bound as binds.
     pub(crate) fn save_to_settings(&self) -> anyhow::Result<()> {
         let _app = self.app();
 

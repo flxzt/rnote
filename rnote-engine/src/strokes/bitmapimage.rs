@@ -1,11 +1,13 @@
-use std::ops::Range;
-
+// Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::DrawBehaviour;
+use anyhow::Context;
+use gtk4::{cairo, glib};
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
@@ -14,16 +16,16 @@ use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
-
-use anyhow::Context;
-use gtk4::{cairo, glib};
-use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
+use std::ops::Range;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
 pub struct BitmapImage {
-    /// The bounds field of the image should not be used to determine the stroke bounds. Use rectangle.bounds() instead.
+    /// The bitmap image.
+    ///
+    /// The bounds field of the image should not be used to determine the stroke bounds.
+    /// Use rectangle.bounds() instead.
     #[serde(rename = "image")]
     pub image: render::Image,
     #[serde(rename = "rectangle")]

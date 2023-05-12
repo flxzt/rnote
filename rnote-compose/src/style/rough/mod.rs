@@ -1,11 +1,11 @@
+// Modules
 /// The module for the rough style.
 pub mod roughoptions;
 
-use p2d::bounding_volume::{Aabb, BoundingVolume};
 // Re-exports
 pub use roughoptions::RoughOptions;
-use roughr::Point2D;
 
+// Imports
 use super::Composer;
 use crate::helpers::Vector2Helpers;
 use crate::shapes::Arrow;
@@ -14,6 +14,8 @@ use crate::shapes::Rectangle;
 use crate::shapes::{CubicBezier, ShapeBehaviour};
 use crate::shapes::{Ellipse, QuadraticBezier};
 use crate::Color;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
+use roughr::Point2D;
 
 fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
     let mut roughr_options = roughr::core::OptionsBuilder::default();

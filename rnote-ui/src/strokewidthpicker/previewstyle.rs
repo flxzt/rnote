@@ -1,3 +1,4 @@
+// Imports
 use gtk4::glib;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, glib::Enum)]

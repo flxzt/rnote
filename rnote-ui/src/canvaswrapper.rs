@@ -1,6 +1,7 @@
-use gtk4::CornerType;
+// Imports
+use crate::{RnAppWindow, RnCanvas};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CornerType,
     EventControllerMotion, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
     GestureDrag, GestureLongPress, GestureZoom, Inhibit, PropagationPhase, ScrolledWindow, Widget,
 };
@@ -11,10 +12,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;
 
-use crate::{RnAppWindow, RnCanvas};
-
 mod imp {
-
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]

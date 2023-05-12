@@ -1,9 +1,8 @@
+// Imports
+use super::RnWorkspaceListEntry;
+use crate::utils::VecRefWrapper;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use std::cell::RefCell;
-
-use crate::utils::VecRefWrapper;
-
-use super::RnWorkspaceListEntry;
 
 mod imp {
     use super::*;

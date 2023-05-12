@@ -1,14 +1,13 @@
-use std::ops::Range;
-use std::path::Path;
-
+// Imports
+use super::RnCanvas;
 use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
-
-use super::RnCanvas;
+use std::ops::Range;
+use std::path::Path;
 
 impl RnCanvas {
     pub(crate) async fn load_in_rnote_bytes<P>(

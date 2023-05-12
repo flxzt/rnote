@@ -1,11 +1,11 @@
+// Imports
+use crate::render;
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
+use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 use svg::Node;
-
-use crate::render;
-use rnote_compose::Color;
 
 #[derive(
     Debug,
@@ -408,7 +408,7 @@ impl Background {
         na::vector![tile_width, tile_height]
     }
 
-    /// Generates the background svg, without xml header or svg root
+    /// Generate the background svg, without Xml header or Svg root.
     pub fn gen_svg(&self, bounds: Aabb, with_pattern: bool) -> Result<render::Svg, anyhow::Error> {
         // background color
         let mut color_rect = element::Rectangle::new().set("fill", self.color.to_css_color_attr());

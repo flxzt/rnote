@@ -1,22 +1,23 @@
+// Imports
 use serde::{Deserialize, Serialize};
 
-/// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
+/// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0.
 pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 
 /// A rgba color
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(default, rename = "color")]
 pub struct Color {
-    /// red, ranging [0.0, 1.0]
+    /// Red, ranging [0.0, 1.0].
     #[serde(rename = "r", with = "crate::serialize::f64_dp3")]
     pub r: f64,
-    /// green, ranging [0.0, 1.0]
+    /// Green, ranging [0.0, 1.0].
     #[serde(rename = "g", with = "crate::serialize::f64_dp3")]
     pub g: f64,
-    /// blue, ranging [0.0, 1.0]
+    /// Blue, ranging [0.0, 1.0].
     #[serde(rename = "b", with = "crate::serialize::f64_dp3")]
     pub b: f64,
-    /// alpha, ranging [0.0, 1.0]
+    /// Alpha, ranging [0.0, 1.0].
     #[serde(rename = "a", with = "crate::serialize::f64_dp3")]
     pub a: f64,
 }
@@ -28,7 +29,7 @@ impl Default for Color {
 }
 
 impl Color {
-    /// Transparent color with rgb set to 0.0
+    /// Transparent color with r,g,b set to 0.0.
     pub const TRANSPARENT: Self = Self {
         r: 0.0,
         g: 0.0,
@@ -36,7 +37,7 @@ impl Color {
         a: 0.0,
     };
 
-    /// Black color
+    /// Black color.
     pub const BLACK: Self = Self {
         r: 0.0,
         g: 0.0,
@@ -44,7 +45,7 @@ impl Color {
         a: 1.0,
     };
 
-    /// White color
+    /// White color.
     pub const WHITE: Self = Self {
         r: 1.0,
         g: 1.0,
@@ -52,7 +53,7 @@ impl Color {
         a: 1.0,
     };
 
-    /// Red color
+    /// Red color.
     pub const RED: Self = Self {
         r: 1.0,
         g: 0.0,
@@ -60,7 +61,7 @@ impl Color {
         a: 1.0,
     };
 
-    /// Green color
+    /// Green color.
     pub const GREEN: Self = Self {
         r: 0.0,
         g: 1.0,
@@ -68,7 +69,7 @@ impl Color {
         a: 1.0,
     };
 
-    /// Blue color
+    /// Blue color.
     pub const BLUE: Self = Self {
         r: 0.0,
         g: 0.0,
@@ -76,7 +77,7 @@ impl Color {
         a: 1.0,
     };
 
-    /// A new color from rgba values
+    /// A new color from rgba values.
     pub fn new(r: f64, g: f64, b: f64, a: f64) -> Self {
         Self {
             r: r.clamp(0.0, 1.0),
@@ -86,13 +87,15 @@ impl Color {
         }
     }
 
-    /// The luma value, in range [0.0 - 1.0]
+    /// The luma value, ranging [0.0 - 1.0].
+    ///
     /// see: <https://en.wikipedia.org/wiki/Luma_(video)>
     pub fn luma(&self) -> f64 {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
     }
 
-    /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`. The values are 8 bit integers, ranging [0, 255]
+    /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`.
+    /// The values are 8 bit integers, ranging [0, 255].
     pub fn to_css_color_attr(self) -> String {
         format!(
             "rgba({:03},{:03},{:03},{:.3})",
@@ -176,7 +179,7 @@ impl From<Color> for roughr::Srgba {
     }
 }
 
-/// Gnome palette blues
+/// Gnome palette blues.
 pub const GNOME_BLUES: [piet::Color; 5] = [
     piet::Color::rgb8(0x99, 0xc1, 0xf1),
     piet::Color::rgb8(0x62, 0xa0, 0xea),
@@ -185,7 +188,7 @@ pub const GNOME_BLUES: [piet::Color; 5] = [
     piet::Color::rgb8(0x1a, 0x5f, 0xb4),
 ];
 
-/// Gnome palette greens
+/// Gnome palette greens.
 pub const GNOME_GREENS: [piet::Color; 5] = [
     piet::Color::rgb8(0x8f, 0xf0, 0xa4),
     piet::Color::rgb8(0x57, 0xe3, 0x89),
@@ -194,7 +197,7 @@ pub const GNOME_GREENS: [piet::Color; 5] = [
     piet::Color::rgb8(0x26, 0xa2, 0x69),
 ];
 
-/// Gnome palette yellows
+/// Gnome palette yellows.
 pub const GNOME_YELLOWS: [piet::Color; 5] = [
     piet::Color::rgb8(0xf9, 0xf0, 0x6b),
     piet::Color::rgb8(0xf8, 0xe4, 0x5c),
@@ -203,7 +206,7 @@ pub const GNOME_YELLOWS: [piet::Color; 5] = [
     piet::Color::rgb8(0xe5, 0xa5, 0x0a),
 ];
 
-/// Gnome palette oranges
+/// Gnome palette oranges.
 pub const GNOME_ORANGES: [piet::Color; 5] = [
     piet::Color::rgb8(0xff, 0xbe, 0x6f),
     piet::Color::rgb8(0xff, 0xa3, 0x48),
@@ -212,7 +215,7 @@ pub const GNOME_ORANGES: [piet::Color; 5] = [
     piet::Color::rgb8(0xc6, 0x46, 0x00),
 ];
 
-/// Gnome palette reds
+/// Gnome palette reds.
 pub const GNOME_REDS: [piet::Color; 5] = [
     piet::Color::rgb8(0xf6, 0x61, 0x51),
     piet::Color::rgb8(0xed, 0x33, 0x3b),
@@ -221,7 +224,7 @@ pub const GNOME_REDS: [piet::Color; 5] = [
     piet::Color::rgb8(0xa5, 0x1d, 0x2d),
 ];
 
-/// Gnome palette purples
+/// Gnome palette purples.
 pub const GNOME_PURPLES: [piet::Color; 5] = [
     piet::Color::rgb8(0xdc, 0x8a, 0xdd),
     piet::Color::rgb8(0xc0, 0x61, 0xcb),
@@ -230,7 +233,7 @@ pub const GNOME_PURPLES: [piet::Color; 5] = [
     piet::Color::rgb8(0x61, 0x35, 0x83),
 ];
 
-/// Gnome palette browns
+/// Gnome palette browns.
 pub const GNOME_BROWNS: [piet::Color; 5] = [
     piet::Color::rgb8(0xcd, 0xab, 0x8f),
     piet::Color::rgb8(0xb5, 0x83, 0x5a),
@@ -239,7 +242,7 @@ pub const GNOME_BROWNS: [piet::Color; 5] = [
     piet::Color::rgb8(0x63, 0x45, 0x2c),
 ];
 
-/// Gnome palette brights
+/// Gnome palette brights.
 pub const GNOME_BRIGHTS: [piet::Color; 5] = [
     piet::Color::rgb8(0xff, 0xff, 0xff),
     piet::Color::rgb8(0xf6, 0xf5, 0xf4),
@@ -248,7 +251,7 @@ pub const GNOME_BRIGHTS: [piet::Color; 5] = [
     piet::Color::rgb8(0x9a, 0x99, 0x96),
 ];
 
-/// Gnome palette darks
+/// Gnome palette darks.
 pub const GNOME_DARKS: [piet::Color; 5] = [
     piet::Color::rgb8(0x77, 0x76, 0x7b),
     piet::Color::rgb8(0x5e, 0x5c, 0x64),

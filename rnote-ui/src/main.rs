@@ -3,6 +3,7 @@
 // Hides console window on windows
 #![windows_subsystem = "windows"]
 
+// Modules
 mod app;
 mod appmenu;
 mod appwindow;
@@ -43,9 +44,11 @@ pub(crate) use strokewidthpicker::RnStrokeWidthPicker;
 pub(crate) use unitentry::RnUnitEntry;
 pub(crate) use workspacebrowser::RnWorkspaceBrowser;
 
+// Renames
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
+// Imports
 use gtk4::{glib, prelude::*};
 
 fn main() -> glib::ExitCode {

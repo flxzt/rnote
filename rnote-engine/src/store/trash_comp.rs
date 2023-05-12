@@ -1,8 +1,8 @@
+// Imports
 use super::chrono_comp::StrokeLayer;
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
 use crate::WidgetFlags;
-
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::PenPath;
@@ -22,9 +22,9 @@ impl Default for TrashComponent {
     }
 }
 
-/// Systems that are related trashing
+/// Systems that are related to trashing.
 impl StrokeStore {
-    /// Rebuilds the slotmap with default trash components from the keys returned from the primary map, stroke_components.
+    /// Reload the slotmap with empty trash components with the keys returned from the stroke components.
     pub fn rebuild_trash_components_slotmap(&mut self) {
         self.trash_components = Arc::new(slotmap::SecondaryMap::new());
         self.stroke_components.keys().for_each(|key| {
@@ -33,6 +33,7 @@ impl StrokeStore {
         });
     }
 
+    /// Ability if trashing is supported.
     pub fn can_trash(&self, key: StrokeKey) -> bool {
         self.trash_components.get(key).is_some()
     }
@@ -86,7 +87,7 @@ impl StrokeStore {
         }
     }
 
-    /// trash strokes that collide with the given bounds
+    /// Trash strokes that collide with the given bounds.
     pub fn trash_colliding_strokes(&mut self, eraser_bounds: Aabb, viewport: Aabb) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
@@ -125,9 +126,12 @@ impl StrokeStore {
         widget_flags
     }
 
-    /// remove colliding stroke segments with the given bounds. The stroke is then split. For strokes that don't have segments, trash the entire stroke.
+    /// Remove colliding stroke segments with the given bounds.
+    /// The stroke is then split. Strokes that don't have segments are trashed completely.
+    ///
     /// Returns the keys of all created or modified strokes.
-    /// returned strokes need to update their rendering.
+    ///
+    /// The returned strokes need to update their rendering.
     pub fn split_colliding_strokes(
         &mut self,
         eraser_bounds: Aabb,

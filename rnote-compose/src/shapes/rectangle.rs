@@ -1,22 +1,21 @@
-use p2d::bounding_volume::Aabb;
-use serde::{Deserialize, Serialize};
-
+// Imports
+use super::Line;
 use crate::helpers::{AabbHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
-
-use super::Line;
+use p2d::bounding_volume::Aabb;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "rectangle")]
-/// A rectangle
+/// A rectangle.
 pub struct Rectangle {
     #[serde(rename = "cuboid", with = "crate::serialize::p2d_cuboid_dp3")]
     /// The cuboid, specifies the extents.
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]
-    /// The transform of the center of the cuboid
+    /// The transform of the center of the cuboid.
     pub transform: Transform,
 }
 
@@ -66,7 +65,7 @@ impl TransformBehaviour for Rectangle {
 }
 
 impl Rectangle {
-    /// From center and half extents
+    /// Construct from center and half extents
     pub fn from_half_extents(center: na::Vector2<f64>, half_extents: na::Vector2<f64>) -> Self {
         let cuboid = p2d::shape::Cuboid::new(half_extents);
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
@@ -74,7 +73,7 @@ impl Rectangle {
         Self { cuboid, transform }
     }
 
-    /// From corners (across from each other)
+    /// Construct from corners across from each other.
     pub fn from_corners(first: na::Vector2<f64>, second: na::Vector2<f64>) -> Self {
         let half_extents = (second - first).abs() * 0.5;
         let center = first + (second - first) * 0.5;
@@ -85,7 +84,7 @@ impl Rectangle {
         Self { cuboid, transform }
     }
 
-    /// New from bounds
+    /// Construct from bounds.
     pub fn from_p2d_aabb(mut bounds: Aabb) -> Self {
         bounds.ensure_positive();
         let cuboid = p2d::shape::Cuboid::new(bounds.half_extents());
@@ -94,7 +93,7 @@ impl Rectangle {
         Self { cuboid, transform }
     }
 
-    /// The outline lines of the rect
+    /// The outlines of the rect.
     pub fn outline_lines(&self) -> [Line; 4] {
         let upper_left = self.transform.transform_point(na::point![
             -self.cuboid.half_extents[0],
@@ -133,7 +132,7 @@ impl Rectangle {
         ]
     }
 
-    /// to kurbo
+    /// Convert to kurbo shape.
     pub fn to_kurbo(&self) -> kurbo::BezPath {
         let tl = self.transform.affine
             * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];

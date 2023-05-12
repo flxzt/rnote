@@ -1,3 +1,13 @@
+// Imports
+use super::bitmapimage::BitmapImage;
+use super::brushstroke::BrushStroke;
+use super::shapestroke::ShapeStroke;
+use super::strokebehaviour::GeneratedStrokeImages;
+use super::vectorimage::VectorImage;
+use super::{StrokeBehaviour, TextStroke};
+use crate::store::chrono_comp::StrokeLayer;
+use crate::{render, RnoteEngine};
+use crate::{utils, DrawBehaviour};
 use base64::Engine;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
@@ -9,16 +19,6 @@ use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{Color, PenPath, Style};
 use rnote_fileformats::xoppformat::{self, XoppColor};
 use serde::{Deserialize, Serialize};
-
-use super::bitmapimage::BitmapImage;
-use super::brushstroke::BrushStroke;
-use super::shapestroke::ShapeStroke;
-use super::strokebehaviour::GeneratedStrokeImages;
-use super::vectorimage::VectorImage;
-use super::{StrokeBehaviour, TextStroke};
-use crate::store::chrono_comp::StrokeLayer;
-use crate::{render, RnoteEngine};
-use crate::{utils, DrawBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "stroke")]
@@ -158,7 +158,7 @@ impl TransformBehaviour for Stroke {
 }
 
 impl Stroke {
-    /// The default offset in surface coords when importing a stroke
+    /// The default offset in surface coords when importing a stroke.
     pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
 
     pub fn extract_default_layer(&self) -> StrokeLayer {
@@ -399,32 +399,8 @@ impl Stroke {
                 ))
             }
             Stroke::TextStroke(textstroke) => {
-                // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here. The best solution for now is to export as an image
-                /*
-                                let origin = textstroke.transform.translation_part();
-                                let untransformed_text_size = textstroke.text_style.untransformed_size(
-                                    &mut piet_cairo::CairoText::new(),
-                                    textstroke.text.clone(),
-                                )?;
-                                let font_scale = textstroke
-                                    .bounds()
-                                    .extents()
-                                    .component_div(&untransformed_text_size);
-                                let scaled_font_size = (textstroke.text_style.font_size * font_scale).mean();
-
-                                Some(xoppformat::XoppStrokeType::XoppText(xoppformat::XoppText {
-                                    x: utils::convert_value_dpi(origin[0], current_dpi, xoppformat::XoppFile::DPI),
-                                    y: utils::convert_value_dpi(origin[1], current_dpi, xoppformat::XoppFile::DPI),
-                                    size: utils::convert_value_dpi(
-                                        scaled_font_size,
-                                        current_dpi,
-                                        xoppformat::XoppFile::DPI,
-                                    ),
-                                    font: textstroke.text_style.font_family,
-                                    color: XoppColor::from(textstroke.text_style.color),
-                                    text: textstroke.text.clone(),
-                                }))
-                */
+                // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
+                // The best solution for now seems to be to export them as a bitmap image.
                 let png_data = match textstroke.export_as_bitmapimage_bytes(
                     image::ImageOutputFormat::Png,
                     RnoteEngine::STROKE_EXPORT_IMAGE_SCALE,

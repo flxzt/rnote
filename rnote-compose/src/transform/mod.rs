@@ -1,14 +1,15 @@
+// Modules
 mod transformbehaviour;
 
-use p2d::bounding_volume::Aabb;
 // Re-exports
 pub use transformbehaviour::TransformBehaviour;
 
+// Imports
+use crate::helpers::{AabbHelpers, Affine2Helpers};
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::{AabbHelpers, Affine2Helpers};
-
-/// A (affine) transform
+/// An affine transformation.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
 pub struct Transform {
@@ -55,34 +56,36 @@ impl TransformBehaviour for Transform {
 }
 
 impl Transform {
-    /// A new transform given the affine
+    /// Construct a new transform given the [`na::Affine2<f64>`].
     pub fn new(transform: na::Affine2<f64>) -> Self {
         Self { affine: transform }
     }
 
-    /// A new transform given the isometry
+    /// Construct a new transform given the [`na::Isometry2<f64>`].
     pub fn new_w_isometry(isometry: na::Isometry2<f64>) -> Self {
         Self {
             affine: na::convert(isometry),
         }
     }
 
-    /// Returns the translation part of the transform
+    /// The translation part of the transform.
     pub fn translation_part(&self) -> na::Vector2<f64> {
         (self.affine * na::point![0.0, 0.0]).coords
     }
 
-    /// transforms a point by the transform
+    /// Transform a point by the transform.
     pub fn transform_point(&self, point: na::Point2<f64>) -> na::Point2<f64> {
         self.affine * point
     }
 
-    /// transform a vec ( translation will be ignored! )
+    /// Transform a [`na::Vector2<f64>`].
+    ///
+    /// The translational part will be ignored!
     pub fn transform_vec(&self, vec: na::Vector2<f64>) -> na::Vector2<f64> {
         self.affine * vec
     }
 
-    /// Transforms the aabbs vertices and calculates a new that contains them
+    /// Transforms the Aabb vertices and calculates a new that contains them.
     pub fn transform_aabb(&self, aabb: Aabb) -> Aabb {
         let p0 = self.affine * na::point![aabb.mins[0], aabb.mins[1]];
         let p1 = self.affine * na::point![aabb.mins[0], aabb.maxs[1]];
@@ -97,19 +100,19 @@ impl Transform {
         Aabb::new_positive(na::point![min_x, min_y], na::point![max_x, max_y])
     }
 
-    /// appends a translation to the transform
+    /// Append a translation to the transform.
     pub fn append_translation_mut(&mut self, offset: na::Vector2<f64>) {
         self.affine = na::Translation2::from(offset) * self.affine;
     }
 
-    /// appends a rotation around a point to the transform
+    /// Append a rotation around a point to the transform.
     pub fn append_rotation_wrt_point_mut(&mut self, angle: f64, center: na::Point2<f64>) {
         self.affine = na::Translation2::from(-center.coords) * self.affine;
         self.affine = na::Rotation2::new(angle) * self.affine;
         self.affine = na::Translation2::from(center.coords) * self.affine;
     }
 
-    /// appends a scale to the transform
+    /// Append a scale to the transform.
     pub fn append_scale_mut(&mut self, scale: na::Vector2<f64>) {
         self.affine = na::try_convert(
             na::Scale2::<f64>::from(scale).to_homogeneous() * self.affine.to_homogeneous(),
@@ -117,7 +120,7 @@ impl Transform {
         .unwrap();
     }
 
-    /// converts the transform to a svg attribute string, insertable into svg elements
+    /// Convert the transform to a Svg attribute string, insertable into svg elements.
     pub fn to_svg_transform_attr_str(&self) -> String {
         let matrix = self.affine;
 
@@ -132,7 +135,7 @@ impl Transform {
         )
     }
 
-    /// to kurbo
+    /// Convert to [kurbo::Affine]
     pub fn to_kurbo(&self) -> kurbo::Affine {
         self.affine.to_kurbo()
     }

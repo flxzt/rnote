@@ -1,3 +1,5 @@
+// Imports
+use self::imp::RnWorkspaceListEntryInner;
 use gtk4::prelude::*;
 use gtk4::subclass::prelude::*;
 use gtk4::{gdk, glib};
@@ -6,8 +8,6 @@ use rnote_compose::color;
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::path::PathBuf;
-
-use self::imp::RnWorkspaceListEntryInner;
 
 mod imp {
     use super::*;

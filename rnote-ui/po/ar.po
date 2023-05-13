@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-12 18:52+0200\n"
-"PO-Revision-Date: 2023-04-12 10:50+0000\n"
+"PO-Revision-Date: 2023-05-13 10:17+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -58,8 +58,6 @@ msgid "Lecture Note 1"
 msgstr "ملاحظات المحاضرة 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
 msgstr "تعليق توضيحيّ على ملفِّ PDF"
 
@@ -210,8 +208,6 @@ msgstr ""
 "المستند الحاليِّ؟"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "استورد PDF"
 
@@ -225,8 +221,6 @@ msgid "Info"
 msgstr "معلومات"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "تفضيلات استيراد ملفَّات PDF"
 
@@ -243,8 +237,6 @@ msgid "Page Width (%)"
 msgstr "عرض الصفحة (٪)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "عيِّن نسبة عرض ملفَّات PDF المستوردة إلى عرض التنسيق"
 
@@ -253,8 +245,6 @@ msgid "Page Spacing"
 msgstr "تباعد الصفحات"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "كمُّ تباعد صفحات PDF"
 
@@ -271,8 +261,6 @@ msgid "Pages Type"
 msgstr "نوع الصفحات"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "عيِّن ما إذا كان يجب استيراد ملفَّات PDF صورَ متَّجهات أو نقاط"
 
@@ -1071,7 +1059,7 @@ msgstr "أضف صفحةً"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Remove Page"
-msgstr ""
+msgstr "أزل الصفحة"
 
 #: rnote-ui/data/ui/mainheader.ui:101
 msgid "Resize Document to Fit Strokes"
@@ -1455,10 +1443,8 @@ msgid "Switch to the 'Tools'"
 msgstr "بدِّل ل‍ ‹الأدوات›"
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "حرِّك المنظور"
+msgstr "المنظور"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1557,8 +1543,6 @@ msgid "Opening Xournal++ file failed"
 msgstr "فشل فتح ملفِّ Xournal++"
 
 #: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
 msgstr "فشل فتح ملفِّ PDF"
 

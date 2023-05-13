@@ -324,6 +324,7 @@ impl StrokeStore {
                         Stroke::TextStroke(text_stroke) => {
                             text_stroke.text_style.color =
                                 text_stroke.text_style.color.inverted_lightness();
+
                             self.set_rendering_dirty(key);
                         }
                         _ => {}

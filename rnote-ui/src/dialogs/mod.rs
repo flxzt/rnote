@@ -103,12 +103,10 @@ pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
     let builder = Builder::from_resource(
         (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
     );
-    let dialog_invert_doc_colors: adw::MessageDialog =
-        builder.object("dialog_invert_doc_colors").unwrap();
+    let dialog: adw::MessageDialog = builder.object("dialog_invert_doc_colors").unwrap();
+    dialog.set_transient_for(Some(appwindow));
 
-    dialog_invert_doc_colors.set_transient_for(Some(appwindow));
-
-    dialog_invert_doc_colors.connect_response(
+    dialog.connect_response(
         None,
         clone!(@weak appwindow => move |_dialog_invert_doc_colors, response| {
             let canvas = appwindow.active_tab().canvas();
@@ -149,13 +147,13 @@ pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
                     canvas.update_engine_rendering();
                 },
                 _ => {
-                    // cancel
+                // Cancel
                 }
             }
         }),
     );
 
-    dialog_invert_doc_colors.show();
+    dialog.present();
 }
 
 pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {

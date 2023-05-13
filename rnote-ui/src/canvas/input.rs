@@ -166,7 +166,12 @@ pub(crate) fn handle_pointer_controller_event(
         let pen_mode = retrieve_pen_mode(event);
 
         for (element, event_time) in elements {
-            //log::debug!("handle pen event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}", now.duration_since(event_time));
+            /*log::debug!(
+                "({:.1} {:.1}) handle pen event, state: {state:?}, event_time_d: {:?}, modifier_keys: {modifier_keys:?}, pen_mode: {pen_mode:?}",
+                element.pos.x,
+                element.pos.y,
+                now.duration_since(event_time)
+            );*/
 
             match state {
                 PenState::Up => {
@@ -177,6 +182,7 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
+                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -189,6 +195,7 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
+                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -202,6 +209,7 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
+                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -232,6 +240,7 @@ pub(crate) fn handle_key_controller_key_pressed(
             modifier_keys,
         },
         None,
+        None,
         now,
     );
     canvas.emit_handle_widget_flags(widget_flags);
@@ -245,6 +254,7 @@ pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
         PenEvent::Text {
             text: text.to_string(),
         },
+        None,
         None,
         now,
     );

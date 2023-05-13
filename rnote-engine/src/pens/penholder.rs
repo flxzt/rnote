@@ -15,6 +15,7 @@ use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
+use gtk4::gdk::Device;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum BacklogPolicy {
@@ -40,6 +41,8 @@ pub struct PenHolder {
     #[serde(skip)]
     pen_progress: PenProgress,
     #[serde(skip)]
+    pen_device: Option<Device>,
+    #[serde(skip)]
     toggle_pen_style: Option<PenStyle>,
     #[serde(skip)]
     prev_shortcut_key: Option<ShortcutKey>,
@@ -54,6 +57,7 @@ impl Default for PenHolder {
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
+            pen_device: None,
             toggle_pen_style: None,
             prev_shortcut_key: None,
         }
@@ -218,11 +222,23 @@ impl PenHolder {
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
+        device: Option<Device>,
         pen_mode: Option<PenMode>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
+
+        match self.pen_progress{
+            PenProgress::Idle => {
+                self.pen_device = device;
+            },
+            _ => {
+                if self.pen_device != device {
+                    return widget_flags;
+                }
+            },
+        }
 
         if let Some(pen_mode) = pen_mode {
             widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));

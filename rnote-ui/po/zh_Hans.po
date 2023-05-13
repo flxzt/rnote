@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-12 18:52+0200\n"
-"PO-Revision-Date: 2023-05-10 05:47+0000\n"
-"Last-Translator: lambdark <lambdark@outlook.com>\n"
+"PO-Revision-Date: 2023-05-13 10:17+0000\n"
+"Last-Translator: Mr-Spade <Mr_Spade@foxmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -57,8 +57,6 @@ msgid "Lecture Note 1"
 msgstr "讲义1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
 msgstr "PDF 注释"
 
@@ -203,8 +201,6 @@ msgid ""
 msgstr "打开该文件将覆盖所有未保存的更改。你希望保存当前的文档吗？"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "导入 PDF"
 
@@ -218,8 +214,6 @@ msgid "Info"
 msgstr "信息"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "PDF 导入偏好"
 
@@ -236,8 +230,6 @@ msgid "Page Width (%)"
 msgstr "页面宽度(%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "设置导入 PDF 相对页面的宽度百分比"
 
@@ -246,8 +238,6 @@ msgid "Page Spacing"
 msgstr "页间距"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "PDF 页间距大小"
 
@@ -264,8 +254,6 @@ msgid "Pages Type"
 msgstr "页面类型"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "设置导入 PDF 为矢量图或位图"
 
@@ -1064,7 +1052,7 @@ msgstr "新建页面"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Remove Page"
-msgstr ""
+msgstr "删除页面"
 
 #: rnote-ui/data/ui/mainheader.ui:101
 msgid "Resize Document to Fit Strokes"
@@ -1448,10 +1436,8 @@ msgid "Switch to the 'Tools'"
 msgstr "切换到“工具”"
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "移动视图"
+msgstr "视图"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1550,8 +1536,6 @@ msgid "Opening Xournal++ file failed"
 msgstr "Xournal++ 文件打开失败"
 
 #: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
 msgstr "PDF打开失败"
 

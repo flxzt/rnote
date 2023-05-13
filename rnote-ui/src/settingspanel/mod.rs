@@ -526,7 +526,7 @@ impl RnSettingsPanel {
             .sync_create()
             .build();
 
-        // Show drawing cursor switch
+        // insensitive picker when drawing cursor is hidden
         imp.general_show_drawing_cursor_switch
             .bind_property(
                 "active",

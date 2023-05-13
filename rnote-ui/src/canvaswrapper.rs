@@ -176,9 +176,9 @@ mod imp {
 
             let canvas_touch_drawing_handler = self.canvas.connect_notify_local(
                 Some("touch-drawing"),
-                clone!(@weak obj as canvaswrapper => move |canvas, _pspec| {
+                clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
                     // Disable the zoom gesture and kinetic scrolling when touch drawing is enabled.
-                    canvaswrapper.scroller().set_kinetic_scrolling(!canvas.touch_drawing() && canvaswrapper.inertial_scrolling());
+                    canvaswrapper.imp().canvas_kinetic_scrolling_update();
                     canvaswrapper.imp().canvas_zoom_gesture_update();
                 }),
             );
@@ -253,9 +253,7 @@ mod imp {
                         .expect("The value needs to be of type `bool`");
 
                     self.inertial_scrolling.replace(inertial_scrolling);
-
-                    self.scroller
-                        .set_kinetic_scrolling(!self.canvas.touch_drawing() && inertial_scrolling);
+                    self.canvas_kinetic_scrolling_update();
                 }
                 _ => unimplemented!(),
             }
@@ -274,6 +272,16 @@ mod imp {
                     .set_propagation_phase(PropagationPhase::None);
             }
         }
+
+        fn canvas_kinetic_scrolling_update(&self) {
+            self.scroller.set_kinetic_scrolling(
+                !self.canvas.touch_drawing() && self.inertial_scrolling.get(),
+            );
+
+            // Workaround for https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5863.
+            self.scroller.queue_allocate();
+        }
+
         fn setup_input(&self) {
             let obj = self.obj();
 
@@ -632,7 +640,7 @@ impl RnCanvasWrapper {
 
     #[allow(unused)]
     pub(crate) fn set_inertial_scrolling(&self, inertial_scrolling: bool) {
-        self.set_property("inertial-scrolling", inertial_scrolling.to_value());
+        self.set_property("inertial-scrolling", inertial_scrolling);
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {

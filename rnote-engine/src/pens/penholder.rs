@@ -10,12 +10,12 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
 use crate::DrawOnDocBehaviour;
+use gtk4::gdk::Device;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
-use gtk4::gdk::Device;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum BacklogPolicy {
@@ -229,15 +229,15 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        match self.pen_progress{
+        match self.pen_progress {
             PenProgress::Idle => {
                 self.pen_device = device;
-            },
+            }
             _ => {
                 if self.pen_device != device {
                     return widget_flags;
                 }
-            },
+            }
         }
 
         if let Some(pen_mode) = pen_mode {

@@ -16,44 +16,45 @@ pub(crate) fn handle_pointer_controller_event(
     event: &gdk::Event,
     mut state: PenState,
 ) -> (Inhibit, PenState) {
-    //std::thread::sleep(std::time::Duration::from_millis(100));
+    let now = Instant::now();
+    let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
-    let event_type = event.event_type();
+    let gdk_event_type = event.event_type();
+    let gdk_modifiers = event.modifier_state();
+    let _gdk_device = event.device().unwrap();
+    let backlog_policy = canvas.engine().borrow().penholder.backlog_policy;
+    let is_stylus = event_is_stylus(event);
 
+    //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
         return (Inhibit(false), state);
     }
 
-    let now = Instant::now();
-    let mut widget_flags = WidgetFlags::default();
-    let modifiers = event.modifier_state();
-    let _input_source = event.device().unwrap().source();
-    let is_stylus = event_is_stylus(event);
-    let backlog_policy = canvas.engine().borrow().penholder.backlog_policy;
     let mut handle_pen_event = false;
     let mut inhibit = false;
 
-    match event_type {
+    match gdk_event_type {
         gdk::EventType::MotionNotify => {
-            //log::debug!("MotionNotify - modifiers: {modifiers:?}, is_stylus: {is_stylus}");
+            //log::debug!("MotionNotify - modifiers: {gdk_modifiers:?}, is_stylus: {is_stylus}");
 
             if is_stylus {
                 handle_pen_event = true;
                 inhibit = true;
 
-                // like in gtk4 'gesturestylus.c:120' stylus proximity is detected this way, in case ProximityIn & ProximityOut is not reported
-                if modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
+                // like in gtk4 'gesturestylus.c:120' stylus proximity is detected this way,
+                // in case ProximityIn & ProximityOut is not reported.
+                if gdk_modifiers.contains(gdk::ModifierType::BUTTON1_MASK) {
                     state = PenState::Down;
                 } else {
                     state = PenState::Proximity;
                 }
             } else {
-                // only handle no pressed button, primary and secondary mouse buttons
-                if modifiers.is_empty()
-                    || modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
-                    || modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
+                // only handle no pressed button, primary and secondary mouse buttons.
+                if gdk_modifiers.is_empty()
+                    || gdk_modifiers.contains(gdk::ModifierType::BUTTON1_MASK)
+                    || gdk_modifiers.contains(gdk::ModifierType::BUTTON3_MASK)
                 {
                     handle_pen_event = true;
                     inhibit = true;
@@ -107,7 +108,7 @@ pub(crate) fn handle_pointer_controller_event(
                     inhibit = true;
                 }
 
-                // again, this is the method to detect proximity on stylus
+                // again, this is the method to detect proximity on stylus.
                 if gdk_button == gdk::BUTTON_PRIMARY {
                     state = PenState::Up;
                 } else {
@@ -132,7 +133,8 @@ pub(crate) fn handle_pointer_controller_event(
             handle_pen_event = true;
             inhibit = true;
         }
-        // We early-returned when detecting touch input and touch-drawing is not enabled, so it is fine to always handle it here
+        // We early-returned when detecting touch input and touch-drawing is not enabled,
+        // so it is fine to always handle it here.
         gdk::EventType::TouchBegin => {
             state = PenState::Down;
             handle_pen_event = true;
@@ -255,8 +257,9 @@ fn debug_gdk_event(event: &gdk::Event) {
         .position()
         .map(|(x, y)| format!("x: {x:.1}, y: {y:.1}"));
     log::debug!(
-        "(pos: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
+        "(pos: {:?}, device: {:?}, modifier: {:?}, event_type: {:?}, tool type: {:?}, input source: {:?}",
         pos,
+        event.device(),
         event.modifier_state(),
         event.event_type(),
         event.device_tool().map(|t| t.tool_type()),
@@ -266,7 +269,11 @@ fn debug_gdk_event(event: &gdk::Event) {
 
 /// Returns true if input should be rejected
 fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
-    if !touch_drawing {
+    if touch_drawing {
+        if event.device().unwrap().num_touches() >= 1 {
+            return true;
+        }
+    } else {
         let event_type = event.event_type();
         if event.is_pointer_emulated()
             || event_type == gdk::EventType::TouchBegin

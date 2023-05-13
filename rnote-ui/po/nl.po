@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-12 18:52+0200\n"
-"PO-Revision-Date: 2023-04-09 10:21+0000\n"
+"PO-Revision-Date: 2023-05-13 10:17+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -57,10 +57,8 @@ msgid "Lecture Note 1"
 msgstr "College-aantekeningen 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
-msgstr "Een pdf-aantekening"
+msgstr "Een PDF-aantekening"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
@@ -209,10 +207,8 @@ msgstr ""
 "werkblad opslaan?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
-msgstr "Pdf-bestand importeren"
+msgstr "PDF-bestand importeren"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
 #: rnote-ui/src/dialogs/import.rs:126
@@ -224,8 +220,6 @@ msgid "Info"
 msgstr "Info"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "PDF-importvoorkeuren"
 
@@ -242,11 +236,9 @@ msgid "Page Width (%)"
 msgstr "Paginabreedte (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
-"Stelt de breedte in van geïmporteerde pdf-bestanden in procenten van de "
+"Stelt de breedte in van geïmporteerde PDF-bestanden als percentage van de "
 "formaatbreedte"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
@@ -254,8 +246,6 @@ msgid "Page Spacing"
 msgstr "Pagina-opvulling"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "Hoe PDF-pagina's van elkaar dienen te worden gescheiden"
 
@@ -272,8 +262,6 @@ msgid "Pages Type"
 msgstr "Paginatype"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
 "Geef aan of PDF-bestanden dienen te worden geïmporteerd als vector- of "
@@ -1074,7 +1062,7 @@ msgstr "Pagina toevoegen"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Remove Page"
-msgstr ""
+msgstr "Pagina verwijderen"
 
 #: rnote-ui/data/ui/mainheader.ui:101
 msgid "Resize Document to Fit Strokes"
@@ -1444,10 +1432,8 @@ msgid "Switch to the 'Tools'"
 msgstr "Overschakelen naar gereedschappen"
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "Weergave verplaatsen"
+msgstr "Weergave"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1546,8 +1532,6 @@ msgid "Opening Xournal++ file failed"
 msgstr "Xournal++-bestand openen mislukt"
 
 #: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
 msgstr "PDF-bestand openen mislukt"
 

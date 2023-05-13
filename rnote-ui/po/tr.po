@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-12 18:52+0200\n"
-"PO-Revision-Date: 2023-04-30 19:01+0000\n"
+"PO-Revision-Date: 2023-05-14 13:27+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -57,8 +57,6 @@ msgid "Lecture Note 1"
 msgstr "Ders Notu 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
 msgstr "PDF açıklaması"
 
@@ -209,8 +207,6 @@ msgstr ""
 "Geçerli belgeyi kaydetmek istiyor musunuz?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "PDF İçe Aktar"
 
@@ -224,8 +220,6 @@ msgid "Info"
 msgstr "Bilgi"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "PDF İçe Aktarma Tercihleri"
 
@@ -242,19 +236,15 @@ msgid "Page Width (%)"
 msgstr "Sayfa Genişliği (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
-"İçe aktarılan PDF'lerin genişliğini biçim genişliğine yüzde olarak ayarla"
+"İçe aktarılan PDFʼlerin genişliğini biçim genişliğine yüzde olarak ayarla"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
 msgstr "Sayfa Boşluğu"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "PDF sayfaları nasıl boşluklu"
 
@@ -271,11 +261,9 @@ msgid "Pages Type"
 msgstr "Sayfa Türü"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
-"PDF'lerin vektör olarak mı yoksa biteşlem görüntüleri olarak mı içe "
+"PDFʼlerin vektör olarak mı yoksa biteşlem görüntüleri olarak mı içe "
 "aktarılacağını ayarla"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
@@ -1074,7 +1062,7 @@ msgstr "Sayfa Ekle"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Remove Page"
-msgstr ""
+msgstr "Sayfayı Kaldır"
 
 #: rnote-ui/data/ui/mainheader.ui:101
 msgid "Resize Document to Fit Strokes"
@@ -1458,10 +1446,8 @@ msgid "Switch to the 'Tools'"
 msgstr "'Araçlar'a geç"
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "Görünümü Taşı"
+msgstr "Görünüm"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1560,8 +1546,6 @@ msgid "Opening Xournal++ file failed"
 msgstr "Xournal++ dosyası açılamadı"
 
 #: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
 msgstr "PDF dosyası açılamadı"
 

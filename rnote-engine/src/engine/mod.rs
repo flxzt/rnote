@@ -12,7 +12,7 @@ pub use self::import::ImportPrefs;
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
-use crate::pens::{PenMode, PensConfig};
+use crate::pens::{penbehaviour::PenProgress, PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
@@ -343,6 +343,8 @@ pub struct RnoteEngine {
     pub background_tile_image: Option<render::Image>,
     #[serde(skip)]
     background_rendernodes: Vec<gsk::RenderNode>,
+    #[serde(skip)]
+    pub zooming: bool,
 }
 
 impl Default for RnoteEngine {
@@ -365,6 +367,7 @@ impl Default for RnoteEngine {
             tasks_tx,
             background_tile_image: None,
             background_rendernodes: Vec::default(),
+            zooming: false,
         }
     }
 }
@@ -627,6 +630,16 @@ impl RnoteEngine {
         (widget_flags, quit)
     }
 
+    /// Handle zooming gesture
+    pub fn handle_zooming(&mut self, zooming: bool, now: Instant) -> Option<WidgetFlags> {
+        self.zooming = zooming;
+        if zooming && self.penholder.current_pen_progress() != PenProgress::Idle {
+            Some(self.undo(now))
+        } else {
+            None
+        }
+    }
+
     /// Handle a pen event.
     pub fn handle_pen_event(
         &mut self,
@@ -635,6 +648,10 @@ impl RnoteEngine {
         pen_mode: Option<PenMode>,
         now: Instant,
     ) -> WidgetFlags {
+        // Prevents end of zooming gesture from drawing a line
+        if self.zooming {
+            return WidgetFlags::default();
+        }
         self.penholder.handle_pen_event(
             event,
             device,

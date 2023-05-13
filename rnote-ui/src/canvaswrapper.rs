@@ -142,7 +142,7 @@ mod imp {
     impl ObjectImpl for RnCanvasWrapper {
         fn constructed(&self) {
             self.parent_constructed();
-            let obj = self.obj();
+            //let obj = self.obj();
 
             // Add input controllers
             self.scroller
@@ -168,13 +168,13 @@ mod imp {
 
             self.setup_input();
 
-            self.canvas.connect_notify_local(
+            /*self.canvas.connect_notify_local(
                 Some("touch-drawing"),
                 clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
                     // Disable the zoom gesture when touch drawing is enabled
                     canvaswrapper.imp().canvas_zoom_gesture_update();
                 }),
-            );
+            );*/
         }
 
         fn dispose(&self) {
@@ -362,6 +362,10 @@ mod imp {
                         new_zoom.set(current_zoom);
                         prev_scale.set(1.0);
 
+                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(true, Instant::now()) {
+                            canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
+                        }
+
                         bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
                         offset_begin.set(canvaswrapper.canvas().engine().borrow().camera.offset);
                     })
@@ -398,6 +402,9 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
+                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(false, Instant::now()) {
+                            canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
+                        }
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );
@@ -405,6 +412,9 @@ mod imp {
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
+                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(false, Instant::now()) {
+                            canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
+                        }
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );

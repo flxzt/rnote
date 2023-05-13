@@ -127,6 +127,21 @@
                       </object>
                     </child>
                     <child>
+                      <object class="AdwActionRow" id="general_show_drawing_cursor_row">
+                        <property name="title" translatable="yes">Show Drawing Cursor</property>
+                        <property name="subtitle" translatable="yes">Set whether the drawing cursor is visible</property>
+                        <child type="suffix">
+                          <object class="GtkSwitch" id="general_show_drawing_cursor_switch">
+                            <property name="active">true</property>
+                            <property name="hexpand">false</property>
+                            <property name="hexpand">false</property>
+                            <property name="valign">center</property>
+                            <property name="halign">end</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwActionRow" id="general_drawing_cursor_picker_row">
                         <property name="title" translatable="yes">Drawing Cursor</property>
                         <property name="subtitle" translatable="yes">Set the drawing cursor</property>

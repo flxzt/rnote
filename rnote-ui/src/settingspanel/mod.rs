@@ -47,6 +47,10 @@ mod imp {
         #[template_child]
         pub(crate) general_regular_cursor_picker_menubutton: TemplateChild<MenuButton>,
         #[template_child]
+        pub(crate) general_show_drawing_cursor_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub(crate) general_drawing_cursor_picker_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
         pub(crate) general_drawing_cursor_picker: TemplateChild<RnIconPicker>,
         #[template_child]
         pub(crate) general_drawing_cursor_picker_menubutton: TemplateChild<MenuButton>,
@@ -347,6 +351,10 @@ impl RnSettingsPanel {
         self.imp().general_regular_cursor_picker.clone()
     }
 
+    pub(crate) fn general_show_drawing_cursor_switch(&self) -> Switch {
+        self.imp().general_show_drawing_cursor_switch.clone()
+    }
+
     pub(crate) fn general_drawing_cursor_picker(&self) -> RnIconPicker {
         self.imp().general_drawing_cursor_picker.clone()
     }
@@ -514,6 +522,16 @@ impl RnSettingsPanel {
                 "picked",
                 &*imp.general_regular_cursor_picker_menubutton,
                 "icon-name",
+            )
+            .sync_create()
+            .build();
+
+        // Show drawing cursor switch
+        imp.general_show_drawing_cursor_switch
+            .bind_property(
+                "active",
+                &*imp.general_drawing_cursor_picker_row,
+                "sensitive",
             )
             .sync_create()
             .build();

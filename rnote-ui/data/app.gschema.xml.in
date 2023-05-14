@@ -145,6 +145,10 @@
       <default>"cursor-dot-medium"</default>
       <summary>The regular cursor</summary>
     </key>
+    <key name="show-drawing-cursor" type="b">
+      <default>true</default>
+      <summary>Whether the drawing cursor is visible</summary>
+    </key>
     <key name="drawing-cursor" type="s">
       <default>"cursor-dot-small"</default>
       <summary>The drawing cursor</summary>

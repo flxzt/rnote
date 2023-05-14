@@ -344,7 +344,7 @@ pub struct RnoteEngine {
     #[serde(skip)]
     background_rendernodes: Vec<gsk::RenderNode>,
     #[serde(skip)]
-    pub zooming: bool,
+    zooming: bool,
 }
 
 impl Default for RnoteEngine {

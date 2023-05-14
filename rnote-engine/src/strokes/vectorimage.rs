@@ -104,6 +104,8 @@ impl StrokeBehaviour for VectorImage {
         );
         Ok(())
     }
+
+    fn update_geometry(&mut self) {}
 }
 
 // Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().

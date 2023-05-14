@@ -82,6 +82,10 @@ impl StrokeBehaviour for ShapeStroke {
         );
         Ok(())
     }
+
+    fn update_geometry(&mut self) {
+        self.hitboxes = self.gen_hitboxes_int();
+    }
 }
 
 impl DrawBehaviour for ShapeStroke {
@@ -133,11 +137,7 @@ impl ShapeStroke {
         shapestroke
     }
 
-    pub fn update_geometry(&mut self) {
-        self.hitboxes = self.gen_hitboxes();
-    }
-
-    fn gen_hitboxes(&self) -> Vec<Aabb> {
+    fn gen_hitboxes_int(&self) -> Vec<Aabb> {
         let width = self.style.stroke_width();
 
         self.shape

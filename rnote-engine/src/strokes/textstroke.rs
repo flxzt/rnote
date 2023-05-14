@@ -571,6 +571,8 @@ impl StrokeBehaviour for TextStroke {
         );
         Ok(())
     }
+
+    fn update_geometry(&mut self) {}
 }
 
 impl DrawBehaviour for TextStroke {

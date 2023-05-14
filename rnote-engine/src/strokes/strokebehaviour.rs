@@ -52,6 +52,11 @@ where
         total_zoom: f64,
     ) -> anyhow::Result<()>;
 
+    /// Update the geometry, possibly regenerating internally stored state.
+    ///
+    /// Must be called after the stroke has been (geometrically) modified or transformed.
+    fn update_geometry(&mut self);
+
     /// Export as encoded bitmap image (Png/Jpg/..).
     fn export_as_bitmapimage_bytes(
         &self,

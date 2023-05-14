@@ -8,7 +8,7 @@ use crate::{
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -26,9 +26,6 @@ pub struct BrushStroke {
     // since the path can have many hitboxes, we store them here and update them when the stroke geometry changes
     #[serde(skip)]
     hitboxes: Vec<Aabb>,
-    // store the highlight path as well
-    #[serde(skip)]
-    highlight_path: kurbo::BezPath,
 }
 
 impl StrokeBehaviour for BrushStroke {
@@ -179,20 +176,31 @@ impl StrokeBehaviour for BrushStroke {
         total_zoom: f64,
     ) -> anyhow::Result<()> {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 5.0;
-        cx.stroke_styled(
-            &self.highlight_path,
-            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
-            (HIGHLIGHT_STROKE_WIDTH / total_zoom).max(self.style.stroke_width() + 2.0 / total_zoom),
-            &piet::StrokeStyle::new()
-                .line_join(piet::LineJoin::Round)
-                .line_cap(piet::LineCap::Round),
-        );
+        const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
+
+        let bounds = self.bounds();
+
+        if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
+            cx.fill(
+                bounds.to_kurbo_rect(),
+                &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            );
+        } else {
+            cx.stroke_styled(
+                self.path.to_kurbo(),
+                &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+                (HIGHLIGHT_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 2.0 / total_zoom),
+                &piet::StrokeStyle::new()
+                    .line_join(piet::LineJoin::Round)
+                    .line_cap(piet::LineCap::Round),
+            );
+        }
         Ok(())
     }
 
     fn update_geometry(&mut self) {
         self.hitboxes = self.gen_hitboxes_int();
-        self.highlight_path = self.gen_highlight_path_int();
     }
 }
 
@@ -231,21 +239,12 @@ impl ShapeBehaviour for BrushStroke {
 impl TransformBehaviour for BrushStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.path.translate(offset);
-        self.highlight_path
-            .apply_affine(kurbo::Affine::translate(offset.to_kurbo_vec()));
     }
     fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         self.path.rotate(angle, center);
-        self.highlight_path
-            .apply_affine(kurbo::Affine::rotate_about(
-                angle,
-                center.coords.to_kurbo_point(),
-            ))
     }
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.path.scale(scale);
-        self.highlight_path
-            .apply_affine(kurbo::Affine::scale_non_uniform(scale[0], scale[1]));
     }
 }
 
@@ -265,7 +264,6 @@ impl BrushStroke {
             path,
             style,
             hitboxes: vec![],
-            highlight_path: kurbo::BezPath::new(),
         };
         new_brushstroke.update_geometry();
 
@@ -295,11 +293,6 @@ impl BrushStroke {
             .into_iter()
             .map(|hb| hb.loosened(stroke_width * 0.5))
             .collect()
-    }
-
-    fn gen_highlight_path_int(&self) -> kurbo::BezPath {
-        // The drawn highlight does not need to be very precise
-        self.path.to_kurbo_flattened(1.0)
     }
 
     pub fn gen_image_for_last_segments(

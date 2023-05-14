@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-13 20:11+0200\n"
-"PO-Revision-Date: 2023-05-13 10:17+0000\n"
+"PO-Revision-Date: 2023-05-14 22:10+0000\n"
 "Last-Translator: Philip Goto <philip.goto@gmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
 "Language: nl\n"
@@ -1136,31 +1136,27 @@ msgstr "Geef aan of de schuifbalken op het canvas dienen te worden getoond"
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "Regular Cursor"
-msgstr "Normale cursor"
+msgstr "Normale aanwijzer"
 
 #: rnote-ui/data/ui/settingspanel.ui:109
 msgid "Set the regular cursor"
-msgstr "Stel de normale cursor in"
+msgstr "Stel de normale aanwijzer in"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "Tekencursor"
+msgstr "Tekenaanwijzer tonen"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "Stel de tekencursor in"
+msgstr "Of de normale aanwijzer zichtbaar is"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"
-msgstr "Tekencursor"
+msgstr "Tekenaanwijzer"
 
 #: rnote-ui/data/ui/settingspanel.ui:147
 msgid "Set the drawing cursor"
-msgstr "Stel de tekencursor in"
+msgstr "Stel de tekenaanwijzer in"
 
 #: rnote-ui/data/ui/settingspanel.ui:172
 msgid "Page Format"

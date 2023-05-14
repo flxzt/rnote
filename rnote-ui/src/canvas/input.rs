@@ -28,6 +28,24 @@ pub(crate) fn handle_pointer_controller_event(
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
+    let zooming_ended_elapsed = canvas
+        .engine()
+        .borrow()
+        .zooming_ended
+        .and_then(|zooming_ended| Some(now - zooming_ended));
+    if let Some(elapsed) = zooming_ended_elapsed {
+        if elapsed.as_millis() < 100
+            || gdk_event_type == gdk::EventType::TouchUpdate
+            || gdk_event_type == gdk::EventType::TouchEnd
+            || gdk_event_type == gdk::EventType::TouchCancel
+        {
+            return (Inhibit(false), state);
+        } else if gdk_event_type == gdk::EventType::TouchBegin {
+            // Allow new strokes after 100ms
+            canvas.engine().borrow_mut().zooming_ended = None;
+        }
+    }
+
     if reject_pointer_input(event, touch_drawing) {
         return (Inhibit(false), state);
     }

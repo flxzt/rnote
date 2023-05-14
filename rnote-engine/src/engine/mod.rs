@@ -21,7 +21,7 @@ use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
-use gtk4::{gdk::Device, gsk};
+use gtk4::{gdk, gsk};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
@@ -345,6 +345,8 @@ pub struct RnoteEngine {
     background_rendernodes: Vec<gsk::RenderNode>,
     #[serde(skip)]
     zooming: bool,
+    #[serde(skip)]
+    pub zooming_ended: Option<Instant>,
 }
 
 impl Default for RnoteEngine {
@@ -368,6 +370,7 @@ impl Default for RnoteEngine {
             background_tile_image: None,
             background_rendernodes: Vec::default(),
             zooming: false,
+            zooming_ended: None,
         }
     }
 }
@@ -633,6 +636,9 @@ impl RnoteEngine {
     /// Handle zooming gesture
     pub fn handle_zooming(&mut self, zooming: bool, now: Instant) -> Option<WidgetFlags> {
         self.zooming = zooming;
+        if !zooming {
+            self.zooming_ended = Some(now);
+        }
         if zooming && self.penholder.current_pen_progress() != PenProgress::Idle {
             Some(self.undo(now))
         } else {
@@ -644,7 +650,7 @@ impl RnoteEngine {
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
-        device: Option<Device>,
+        device: Option<gdk::Device>,
         pen_mode: Option<PenMode>,
         now: Instant,
     ) -> WidgetFlags {

@@ -6,9 +6,19 @@ use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Affine2Helpers};
 
+/// Trait for types that can draw themselves on a [piet::RenderContext].
+pub trait DrawBehaviour {
+    /// Draw itself.
+    /// The implementors are expected to save/restore the drawing context.
+    ///
+    /// `image_scale` is the scale-factor of generated images within the type.
+    /// The content should not be zoomed by it!
+    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()>;
+}
+
 /// Trait for types that can draw themselves on the document.
 ///
-/// In the coordinate space of the document
+/// In the coordinate space of the document.
 pub trait DrawOnDocBehaviour {
     /// Bounds on the document.
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb>;
@@ -58,14 +68,4 @@ pub trait DrawOnDocBehaviour {
         snapshot.restore();
         Ok(())
     }
-}
-
-/// Trait for types that can draw themselves on a [piet::RenderContext].
-pub trait DrawBehaviour {
-    /// Draw itself.
-    /// The implementors are expected to save/restore the drawing context.
-    ///
-    /// `image_scale` is the scale-factor of generated images within the type.
-    /// The content should not be zoomed by it!
-    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()>;
 }

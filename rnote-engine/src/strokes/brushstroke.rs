@@ -1,8 +1,11 @@
 // Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
-use crate::render::{self};
 use crate::DrawBehaviour;
+use crate::{
+    render::{self},
+    strokes::strokebehaviour,
+};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
@@ -165,6 +168,24 @@ impl StrokeBehaviour for BrushStroke {
         } else {
             Ok(GeneratedStrokeImages::Full(images))
         }
+    }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 5.0;
+        cx.stroke_styled(
+            // The drawn highlights not need to be very precise
+            self.path.to_kurbo_flattened(1.0),
+            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            (HIGHLIGHT_STROKE_WIDTH / total_zoom).max(self.style.stroke_width() + 2.0 / total_zoom),
+            &piet::StrokeStyle::new()
+                .line_join(piet::LineJoin::Round)
+                .line_cap(piet::LineCap::Round),
+        );
+        Ok(())
     }
 }
 

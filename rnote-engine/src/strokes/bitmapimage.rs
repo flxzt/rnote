@@ -1,5 +1,5 @@
 // Imports
-use super::strokebehaviour::GeneratedStrokeImages;
+use super::strokebehaviour::{self, GeneratedStrokeImages};
 use super::{Stroke, StrokeBehaviour};
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
@@ -84,6 +84,20 @@ impl StrokeBehaviour for BitmapImage {
                 viewport,
             })
         }
+    }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
+        cx.stroke(
+            self.bounds().to_kurbo_rect(),
+            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            HIGHLIGHT_STROKE_WIDTH / total_zoom,
+        );
+        Ok(())
     }
 }
 

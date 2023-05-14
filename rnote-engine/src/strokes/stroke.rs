@@ -59,6 +59,20 @@ impl StrokeBehaviour for Stroke {
             Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_images(viewport, image_scale),
         }
     }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        match self {
+            Stroke::BrushStroke(brushstroke) => brushstroke.draw_highlight(cx, total_zoom),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.draw_highlight(cx, total_zoom),
+            Stroke::TextStroke(textstroke) => textstroke.draw_highlight(cx, total_zoom),
+            Stroke::VectorImage(vectorimage) => vectorimage.draw_highlight(cx, total_zoom),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.draw_highlight(cx, total_zoom),
+        }
+    }
 }
 
 impl DrawBehaviour for Stroke {

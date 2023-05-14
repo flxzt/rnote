@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-12 18:52+0200\n"
-"PO-Revision-Date: 2023-04-22 22:19+0000\n"
+"PO-Revision-Date: 2023-05-14 13:27+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -58,8 +58,6 @@ msgid "Lecture Note 1"
 msgstr "1. előadási jegyzet"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
 msgstr "PDF-jegyzet"
 
@@ -210,8 +208,6 @@ msgstr ""
 "jelenlegi dokumentumot?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "PDF importálása"
 
@@ -225,8 +221,6 @@ msgid "Info"
 msgstr "Adat"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "PDF importálási beállítások"
 
@@ -243,8 +237,6 @@ msgid "Page Width (%)"
 msgstr "Oldalszélesség (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
 "Az importált PDF-ek szélességének beállítása százalékban a formátum "
@@ -255,8 +247,6 @@ msgid "Page Spacing"
 msgstr "Oldaltávolság"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "A PDF oldalak közötti távolságok"
 
@@ -273,8 +263,6 @@ msgid "Pages Type"
 msgstr "Oldalak típusa"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "A PDF-ek vektoros vagy pontképes importálása"
 
@@ -1073,7 +1061,7 @@ msgstr "Oldal hozzáadása"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Remove Page"
-msgstr ""
+msgstr "Oldal eltávolítása"
 
 #: rnote-ui/data/ui/mainheader.ui:101
 msgid "Resize Document to Fit Strokes"
@@ -1442,10 +1430,8 @@ msgid "Switch to the 'Tools'"
 msgstr "Eszközök kijelölése"
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "Nézet áthelyezése"
+msgstr "Nézet"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1544,8 +1530,6 @@ msgid "Opening Xournal++ file failed"
 msgstr "A Xournal++ fájl megnyitása sikertelen"
 
 #: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
 msgstr "A PDF fájl megnyitása sikertelen"
 
@@ -1742,7 +1726,7 @@ msgstr "Oldalak:"
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: rnote-ui/src/dialogs/mod.rs:47
 msgid "translator-credits"
-msgstr "Szobonya <szobonya.david@gmail.com>"
+msgstr "Óvári"
 
 #: rnote-ui/src/dialogs/mod.rs:218 rnote-ui/src/dialogs/mod.rs:336
 msgid "- unable to find a valid save folder -"

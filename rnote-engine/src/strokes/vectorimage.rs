@@ -1,8 +1,8 @@
 // Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::{Stroke, StrokeBehaviour};
-use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
+use crate::{document::Format, strokes::strokebehaviour};
 use crate::{render, DrawBehaviour};
 use gtk4::glib;
 use p2d::bounding_volume::Aabb;
@@ -90,6 +90,22 @@ impl StrokeBehaviour for VectorImage {
             )?,
         ]))
     }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
+        cx.stroke(
+            self.bounds().to_kurbo_rect(),
+            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            HIGHLIGHT_STROKE_WIDTH / total_zoom,
+        );
+        Ok(())
+    }
+
+    fn update_geometry(&mut self) {}
 }
 
 // Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().

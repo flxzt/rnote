@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-12 18:52+0200\n"
-"PO-Revision-Date: 2023-04-09 10:21+0000\n"
+"PO-Revision-Date: 2023-05-14 13:27+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
 #: rnote-ui/src/dialogs/mod.rs:35
@@ -57,10 +57,8 @@ msgid "Lecture Note 1"
 msgstr "Nota de clase 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
-msgstr "Una anotación en PDF"
+msgstr "Anotación en el archivo PDF"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
@@ -208,10 +206,8 @@ msgstr ""
 "guardar el documento actual?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
-msgstr "Importar PDF"
+msgstr "Importar pdf"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
 #: rnote-ui/src/dialogs/import.rs:126
@@ -223,10 +219,8 @@ msgid "Info"
 msgstr "Información"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
-msgstr "Preferencias de importación de PDF"
+msgstr "Configuración de la importación del Pdf"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start Page"
@@ -241,22 +235,18 @@ msgid "Page Width (%)"
 msgstr "Ancho de página (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
-"Establecer la anchura de los PDF importados en porcentaje al ancho del "
-"formato"
+"Establezca la relación del aspecto de los archivos Pdf importados al ancho "
+"del formato"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
 msgstr "Espacio entre páginas"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
-msgstr "Cómo se espacian las páginas del PDF"
+msgstr "Distancias entre las páginas del Pdf"
 
 #: rnote-ui/data/ui/dialogs/import.ui:151
 msgid "Continuous"
@@ -271,12 +261,10 @@ msgid "Pages Type"
 msgstr "Tipo de páginas"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
-"Establece si los PDF deben importarse como imágenes vectoriales o de mapa de "
-"bits"
+"Establezcer si los Pdf deben importarse como imágenes vectoriales o de mapa "
+"de bits"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
 msgid "Vector"
@@ -1073,7 +1061,7 @@ msgstr "Añadir página"
 
 #: rnote-ui/data/ui/mainheader.ui:94
 msgid "Remove Page"
-msgstr ""
+msgstr "Quitar página"
 
 #: rnote-ui/data/ui/mainheader.ui:101
 msgid "Resize Document to Fit Strokes"
@@ -1458,10 +1446,8 @@ msgid "Switch to the 'Tools'"
 msgstr "Cambiar a las \"Herramientas\""
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "Mover a la izquierda"
+msgstr "Vista"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1560,10 +1546,8 @@ msgid "Opening Xournal++ file failed"
 msgstr "Error al abrir el archivo Xournal++"
 
 #: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
-msgstr "Error al abrir el archivo PDF"
+msgstr "Error al abrir el archivo Pdf"
 
 #: rnote-ui/src/appwindow/mod.rs:549
 msgid "Failed to open file, tried to open folder as file"

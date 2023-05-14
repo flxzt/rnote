@@ -142,7 +142,6 @@ mod imp {
     impl ObjectImpl for RnCanvasWrapper {
         fn constructed(&self) {
             self.parent_constructed();
-            //let obj = self.obj();
 
             // Add input controllers
             self.scroller
@@ -167,14 +166,6 @@ mod imp {
                 .group_with(&self.canvas_zoom_gesture);
 
             self.setup_input();
-
-            /*self.canvas.connect_notify_local(
-                Some("touch-drawing"),
-                clone!(@weak obj as canvaswrapper => move |_canvas, _pspec| {
-                    // Disable the zoom gesture when touch drawing is enabled
-                    canvaswrapper.imp().canvas_zoom_gesture_update();
-                }),
-            );*/
         }
 
         fn dispose(&self) {

@@ -224,26 +224,24 @@ impl PenPath {
 
     /// Convert to [kurbo::BezPath].
     pub fn to_kurbo(&self) -> kurbo::BezPath {
-        let elements = std::iter::once(kurbo::PathEl::MoveTo(self.start.pos.to_kurbo_point()))
-            .chain(self.segments.iter().map(|s| match s {
-                Segment::LineTo { end } => kurbo::PathEl::LineTo(end.pos.to_kurbo_point()),
-                Segment::QuadBezTo { cp, end } => {
-                    kurbo::PathEl::QuadTo(cp.to_kurbo_point(), end.pos.to_kurbo_point())
-                }
-                Segment::CubBezTo { cp1, cp2, end } => kurbo::PathEl::CurveTo(
-                    cp1.to_kurbo_point(),
-                    cp2.to_kurbo_point(),
-                    end.pos.to_kurbo_point(),
-                ),
-            }));
+        let elements = self.to_kurbo_el_iter();
 
         kurbo::BezPath::from_iter(elements)
     }
 
     /// Convert to [kurbo::BezPath], flattened to the given precision.
     pub fn to_kurbo_flattened(&self, tolerance: f64) -> kurbo::BezPath {
-        let elements = std::iter::once(kurbo::PathEl::MoveTo(self.start.pos.to_kurbo_point()))
-            .chain(self.segments.iter().map(|s| match s {
+        let elements = self.to_kurbo_el_iter();
+
+        let mut bezpath = kurbo::BezPath::new();
+        kurbo::flatten(elements, tolerance, |el| bezpath.push(el));
+
+        bezpath
+    }
+
+    fn to_kurbo_el_iter(&self) -> impl Iterator<Item = kurbo::PathEl> + '_ {
+        std::iter::once(kurbo::PathEl::MoveTo(self.start.pos.to_kurbo_point())).chain(
+            self.segments.iter().map(|s| match s {
                 Segment::LineTo { end } => kurbo::PathEl::LineTo(end.pos.to_kurbo_point()),
                 Segment::QuadBezTo { cp, end } => {
                     kurbo::PathEl::QuadTo(cp.to_kurbo_point(), end.pos.to_kurbo_point())
@@ -253,12 +251,8 @@ impl PenPath {
                     cp2.to_kurbo_point(),
                     end.pos.to_kurbo_point(),
                 ),
-            }));
-
-        let mut bezpath = kurbo::BezPath::new();
-        kurbo::flatten(elements, tolerance, |el| bezpath.push(el));
-
-        bezpath
+            }),
+        )
     }
 }
 

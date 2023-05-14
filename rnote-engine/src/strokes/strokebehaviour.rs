@@ -1,8 +1,9 @@
 // Imports
 use crate::render;
 use crate::DrawBehaviour;
+use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::{color, shapes::ShapeBehaviour};
 
 #[derive(Debug, Clone)]
 /// Generated stroke images.
@@ -17,6 +18,9 @@ pub enum GeneratedStrokeImages {
     /// All stroke images were rendered.
     Full(Vec<render::Image>),
 }
+
+pub(crate) static STROKE_HIGHLIGHT_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.376));
 
 /// Types that are strokes.
 pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
@@ -37,6 +41,21 @@ where
         viewport: Aabb,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error>;
+
+    /// Draw it's highlight.
+    /// The implementors are expected to save/restore the drawing context.
+    ///
+    /// `total_zoom` is the zoom-factor of the surface that draws the highlight.
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()>;
+
+    /// Update the geometry, possibly regenerating internally stored state.
+    ///
+    /// Must be called after the stroke has been (geometrically) modified or transformed.
+    fn update_geometry(&mut self);
 
     /// Export as encoded bitmap image (Png/Jpg/..).
     fn export_as_bitmapimage_bytes(

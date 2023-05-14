@@ -7,6 +7,7 @@ use super::pensconfig::selectorconfig::SelectorStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut, RNOTE_STROKE_CONTENT_MIME_TYPE};
 use crate::store::StrokeKey;
+use crate::strokes::StrokeBehaviour;
 use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
 use once_cell::sync::Lazy;
@@ -16,7 +17,6 @@ use piet::RenderContext;
 use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penevents::{ModifierKey, PenEvent, PenState};
 use rnote_compose::penpath::Element;
-use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Color};
 use std::time::Instant;
@@ -347,16 +347,11 @@ impl DrawOnDocBehaviour for Selector {
                 selection,
                 selection_bounds,
             } => {
-                // Draw the bounds outlines for the selected strokes
-                static SELECTED_BOUNDS_COLOR: Lazy<piet::Color> =
-                    Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.376));
-
+                // Draw the highlight for the selected strokes
                 for stroke in engine_view.store.get_strokes_ref(selection) {
-                    cx.stroke(
-                        stroke.bounds().to_kurbo_rect(),
-                        &*SELECTED_BOUNDS_COLOR,
-                        Self::SELECTION_OUTLINE_WIDTH / total_zoom,
-                    );
+                    if let Err(e) = stroke.draw_highlight(cx, engine_view.camera.total_zoom()) {
+                        log::error!("failed to draw stroke highlight, Err: {e:?}");
+                    }
                 }
 
                 Self::draw_selection_overlay(

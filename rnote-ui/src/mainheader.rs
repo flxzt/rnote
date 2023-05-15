@@ -17,8 +17,6 @@ mod imp {
         #[template_child]
         pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
-        pub(crate) fixedsize_quickactions_box: TemplateChild<gtk4::Box>,
-        #[template_child]
         pub(crate) undo_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) redo_button: TemplateChild<Button>,
@@ -85,10 +83,6 @@ impl RnMainHeader {
 
     pub(crate) fn main_title_unsaved_indicator(&self) -> Label {
         self.imp().main_title_unsaved_indicator.get()
-    }
-
-    pub(crate) fn fixedsize_quickactions_box(&self) -> gtk4::Box {
-        self.imp().fixedsize_quickactions_box.get()
     }
 
     pub(crate) fn left_flapreveal_toggle(&self) -> ToggleButton {

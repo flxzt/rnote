@@ -281,7 +281,11 @@ impl RnAppWindow {
                     }
                 };
 
-                appwindow.mainheader().fixedsize_quickactions_box().set_visible(doc_layout == Layout::FixedSize);
+                appwindow
+                    .mainheader()
+                    .canvasmenu()
+                    .fixedsize_quickactions_box()
+                    .set_visible(doc_layout == Layout::FixedSize);
 
                 if prev_layout != doc_layout {
                     canvas.engine().borrow_mut().document.layout = doc_layout;

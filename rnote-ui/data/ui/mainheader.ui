@@ -79,31 +79,6 @@
                     </child>
                   </object>
                 </child>
-                <child>
-                  <object class="GtkBox" id="fixedsize_quickactions_box">
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Add Page</property>
-                        <property name="action-name">win.add-page-to-doc</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">remove-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Remove Page</property>
-                        <property name="action-name">win.remove-page-from-doc</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton">
-                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize Document to Fit Strokes</property>
-                        <property name="action-name">win.resize-to-fit-strokes</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
           </object>

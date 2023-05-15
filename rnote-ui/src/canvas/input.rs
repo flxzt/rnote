@@ -33,21 +33,12 @@ pub(crate) fn handle_pointer_controller_event(
         .borrow()
         .zooming_ended
         .and_then(|zooming_ended| Some(now - zooming_ended));
-    if let Some(elapsed) = zooming_ended_elapsed {
-        if elapsed.as_millis() < 100
-            || gdk_event_type == gdk::EventType::TouchUpdate
-            || gdk_event_type == gdk::EventType::TouchEnd
-            || gdk_event_type == gdk::EventType::TouchCancel
-        {
-            return (Inhibit(false), state);
-        } else if gdk_event_type == gdk::EventType::TouchBegin {
-            // Allow new strokes after 100ms
-            canvas.engine().borrow_mut().zooming_ended = None;
-        }
+    if reject_pointer_input(event, touch_drawing, zooming_ended_elapsed) {
+        return (Inhibit(false), state);
     }
 
-    if reject_pointer_input(event, touch_drawing) {
-        return (Inhibit(false), state);
+    if zooming_ended_elapsed.is_some() && gdk_event_type == gdk::EventType::TouchBegin {
+        canvas.engine().borrow_mut().zooming_ended = None;
     }
 
     let mut handle_pen_event = false;
@@ -296,10 +287,23 @@ fn debug_gdk_event(event: &gdk::Event) {
 }
 
 /// Returns true if input should be rejected
-fn reject_pointer_input(event: &gdk::Event, touch_drawing: bool) -> bool {
+fn reject_pointer_input(
+    event: &gdk::Event,
+    touch_drawing: bool,
+    zooming_ended_elapsed: Option<Duration>,
+) -> bool {
     if touch_drawing {
         if event.device().unwrap().num_touches() > 1 {
             return true;
+        } else if let Some(elapsed) = zooming_ended_elapsed {
+            let event_type = event.event_type();
+            if elapsed.as_millis() < 100
+                || event_type == gdk::EventType::TouchUpdate
+                || event_type == gdk::EventType::TouchEnd
+                || event_type == gdk::EventType::TouchCancel
+            {
+                return true;
+            }
         }
     } else {
         let event_type = event.event_type();

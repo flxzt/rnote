@@ -266,6 +266,7 @@ impl PenHolder {
                 if self.pen_mode_state.take_style_override().is_some() {
                     widget_flags.refresh_ui = true;
                 }
+
                 widget_flags.merge(self.reinstall_pen_current_style(engine_view));
             }
         }

@@ -28,6 +28,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) righthanded: Cell<bool>,
     pub(crate) block_pinch_zoom: Cell<bool>,
     pub(crate) touch_drawing: Cell<bool>,
+    pub(crate) focus_mode: Cell<bool>,
 
     #[template_child]
     pub(crate) main_grid: TemplateChild<Grid>,
@@ -72,6 +73,7 @@ impl Default for RnAppWindow {
             righthanded: Cell::new(true),
             block_pinch_zoom: Cell::new(false),
             touch_drawing: Cell::new(false),
+            focus_mode: Cell::new(false),
 
             main_grid: TemplateChild::<Grid>::default(),
             overlays: TemplateChild::<RnOverlays>::default(),
@@ -152,6 +154,9 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("touch-drawing")
                     .default_value(false)
                     .build(),
+                glib::ParamSpecBoolean::builder("focus-mode")
+                    .default_value(false)
+                    .build(),
             ]
         });
         PROPERTIES.as_ref()
@@ -164,6 +169,7 @@ impl ObjectImpl for RnAppWindow {
             "righthanded" => self.righthanded.get().to_value(),
             "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
             "touch-drawing" => self.touch_drawing.get().to_value(),
+            "focus-mode" => self.focus_mode.get().to_value(),
             _ => unimplemented!(),
         }
     }
@@ -213,6 +219,14 @@ impl ObjectImpl for RnAppWindow {
                 let touch_drawing: bool =
                     value.get().expect("The value needs to be of type `bool`");
                 self.touch_drawing.replace(touch_drawing);
+            }
+            "focus-mode" => {
+                let focus_mode: bool = value.get().expect("The value needs to be of type `bool`");
+                self.focus_mode.replace(focus_mode);
+
+                self.overlays.pens_toggles_box().set_visible(!focus_mode);
+                self.overlays.colorpicker().set_visible(!focus_mode);
+                self.overlays.sidebar_box().set_visible(!focus_mode);
             }
             _ => unimplemented!(),
         }

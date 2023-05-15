@@ -74,6 +74,16 @@ impl RnAppWindow {
         self.set_property("touch-drawing", touch_drawing.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn focus_mode(&self) -> bool {
+        self.property::<bool>("focus-mode")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_focus_mode(&self, focus_mode: bool) {
+        self.set_property("focus-mode", focus_mode.to_value());
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }

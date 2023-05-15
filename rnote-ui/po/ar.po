@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-13 20:11+0200\n"
-"PO-Revision-Date: 2023-05-13 10:17+0000\n"
+"PO-Revision-Date: 2023-05-16 15:07+0000\n"
 "Last-Translator: Ali Aljishi <ahj696@hotmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/rnote/repo/ar/>\n"
 "Language: ar\n"
@@ -1138,16 +1138,12 @@ msgid "Set the regular cursor"
 msgstr "عيِّن المؤشِّر العاديّ"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "مؤشِّر الرسم"
+msgstr "أظهر مؤشِّر الرسم"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "عيِّن مؤشِّر الرسم"
+msgstr "عيِّن كون مؤشِّر الرسم يظهر أم لا يظهر"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"

@@ -46,6 +46,13 @@
                     <property name="tooltip-text" translatable="yes">New Tab</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkToggleButton">
+                    <property name="icon-name">focus-mode-symbolic</property>
+                    <property name="action-name">win.focus-mode</property>
+                    <property name="tooltip-text" translatable="yes">Focus Mode</property>
+                  </object>
+                </child>
               </object>
             </child>
             <child>

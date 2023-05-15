@@ -634,13 +634,22 @@ impl RnoteEngine {
     }
 
     /// Handle zooming gesture
-    pub fn handle_zooming(&mut self, zooming: bool, now: Instant) -> Option<WidgetFlags> {
+    pub fn handle_zooming(
+        &mut self,
+        zooming: bool,
+        device: Option<gdk::Device>,
+        now: Instant,
+    ) -> Option<WidgetFlags> {
         self.zooming = zooming;
         if !zooming {
             self.zooming_ended = Some(now);
-        }
-        if zooming && self.penholder.current_pen_progress() != PenProgress::Idle {
-            Some(self.undo(now))
+            None
+        } else if zooming && self.penholder.current_pen_progress() != PenProgress::Idle {
+            if self.penholder.pen_device == device {
+                Some(self.undo(now))
+            } else {
+                Some(self.reinstall_pen_current_style())
+            }
         } else {
             None
         }

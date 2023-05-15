@@ -353,7 +353,7 @@ mod imp {
                         new_zoom.set(current_zoom);
                         prev_scale.set(1.0);
 
-                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(true, Instant::now()) {
+                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(true, gesture.device(), Instant::now()) {
                             canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                         }
 
@@ -393,7 +393,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(false, Instant::now()) {
+                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(false, gesture.device(), Instant::now()) {
                             canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                         }
                         canvaswrapper.canvas().update_engine_rendering();
@@ -403,7 +403,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(false, Instant::now()) {
+                        if let Some(widget_flags) = canvaswrapper.canvas().engine().borrow_mut().handle_zooming(false, gesture.device(), Instant::now()) {
                             canvaswrapper.canvas().emit_handle_widget_flags(widget_flags);
                         }
                         canvaswrapper.canvas().update_engine_rendering();

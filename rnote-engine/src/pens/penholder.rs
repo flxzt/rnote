@@ -41,7 +41,7 @@ pub struct PenHolder {
     #[serde(skip)]
     pen_progress: PenProgress,
     #[serde(skip)]
-    pen_device: Option<gdk::Device>,
+    pub pen_device: Option<gdk::Device>,
     #[serde(skip)]
     toggle_pen_style: Option<PenStyle>,
     #[serde(skip)]
@@ -229,7 +229,7 @@ impl PenHolder {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        if self.pen_progress == PenProgress::Idle {
+        if self.pen_progress != PenProgress::InProgress {
             self.pen_device = device;
         } else if self.pen_device != device {
             return widget_flags;
@@ -266,7 +266,6 @@ impl PenHolder {
                 if self.pen_mode_state.take_style_override().is_some() {
                     widget_flags.refresh_ui = true;
                 }
-
                 widget_flags.merge(self.reinstall_pen_current_style(engine_view));
             }
         }

@@ -224,7 +224,7 @@ mod imp {
 
     impl RnCanvasWrapper {
         fn canvas_zoom_gesture_update(&self) {
-            if !self.block_pinch_zoom.get() && !self.canvas.touch_drawing() {
+            if !self.block_pinch_zoom.get() {
                 self.canvas_zoom_gesture
                     .set_propagation_phase(PropagationPhase::Capture);
             } else {

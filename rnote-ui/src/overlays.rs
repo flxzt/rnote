@@ -3,7 +3,7 @@ use crate::canvaswrapper::RnCanvasWrapper;
 use crate::RnPensSideBar;
 use crate::{dialogs, RnAppWindow, RnColorPicker};
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Overlay,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Overlay,
     ProgressBar, ScrolledWindow, ToggleButton, Widget,
 };
 use rnote_engine::engine::EngineViewMut;
@@ -40,6 +40,10 @@ mod imp {
         pub(crate) selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) tools_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) undo_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) redo_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) colorpicker: TemplateChild<RnColorPicker>,
         #[template_child]
@@ -136,6 +140,14 @@ impl RnOverlays {
 
     pub(crate) fn tools_toggle(&self) -> ToggleButton {
         self.imp().tools_toggle.get()
+    }
+
+    pub(crate) fn undo_button(&self) -> Button {
+        self.imp().undo_button.get()
+    }
+
+    pub(crate) fn redo_button(&self) -> Button {
+        self.imp().redo_button.get()
     }
 
     pub(crate) fn colorpicker(&self) -> RnColorPicker {

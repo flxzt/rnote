@@ -297,10 +297,8 @@ fn reject_pointer_input(
             return true;
         } else if let Some(elapsed) = zooming_ended_elapsed {
             let event_type = event.event_type();
-            if elapsed.as_millis() < 100
+            if (elapsed.as_millis() < 100 && event_type == gdk::EventType::TouchBegin)
                 || event_type == gdk::EventType::TouchUpdate
-                || event_type == gdk::EventType::TouchEnd
-                || event_type == gdk::EventType::TouchCancel
             {
                 return true;
             }

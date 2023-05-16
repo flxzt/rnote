@@ -323,7 +323,7 @@ impl Stroke {
     pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {
         match self {
             Stroke::BrushStroke(brushstroke) => {
-                let (width, color): (f64, XoppColor) = match brushstroke.style {
+                let (stroke_width, color): (f64, XoppColor) = match &brushstroke.style {
                     // Return early if color is None
                     Style::Smooth(options) => (
                         options.stroke_width,
@@ -341,21 +341,26 @@ impl Stroke {
 
                 let tool = xoppformat::XoppTool::Pen;
                 let elements_vec = brushstroke.path.into_elements();
-
-                // The first width element is the absolute width of the stroke
+                let stroke_style = &brushstroke.style;
                 let stroke_width =
-                    utils::convert_value_dpi(width, current_dpi, xoppformat::XoppFile::DPI);
+                    utils::convert_value_dpi(stroke_width, current_dpi, xoppformat::XoppFile::DPI);
 
+                // in Xopp's format the first width element is the absolute width of the stroke
                 let mut width_vec = vec![stroke_width];
 
                 // the rest are pressures between 0.0 and 1.0
-                let mut pressures = elements_vec
+                let mut pressures: Vec<f64> = elements_vec
                     .iter()
-                    .map(|element| stroke_width * element.pressure)
-                    .collect::<Vec<f64>>();
+                    .map(|element| match &stroke_style {
+                        Style::Smooth(options) => {
+                            options.pressure_curve.apply(stroke_width, element.pressure)
+                        }
+                        Style::Rough(_) | Style::Textured(_) => stroke_width * element.pressure,
+                    })
+                    .collect();
                 width_vec.append(&mut pressures);
 
-                // Xopp expects at least 4 coordinates, so stroke with elements < 2 is not exported
+                // Xopp expects at least 4 coordinates, so strokes with elements < 2 aren't exported
                 if elements_vec.len() < 2 {
                     return None;
                 }

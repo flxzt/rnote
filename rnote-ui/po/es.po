@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-13 20:11+0200\n"
-"PO-Revision-Date: 2023-05-14 13:27+0000\n"
+"PO-Revision-Date: 2023-05-16 15:07+0000\n"
 "Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -1140,16 +1140,12 @@ msgid "Set the regular cursor"
 msgstr "Fijar el cursor normal"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "Cursor de dibujo"
+msgstr "Mostrar el cursor de dibujo"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "Fijar el cursor de dibujo"
+msgstr "Establece si el cursor de dibujo es visible"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"

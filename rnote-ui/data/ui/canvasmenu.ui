@@ -144,17 +144,17 @@
               <property name="homogeneous">true</property>
               <child>
                 <object class="GtkButton">
-                  <property name="icon_name">add-page-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Add Page</property>
-                  <property name="action-name">win.add-page-to-doc</property>
+                  <property name="icon_name">remove-page-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Remove Page</property>
+                  <property name="action-name">win.remove-page-from-doc</property>
                   <property name="hexpand">true</property>
                 </object>
               </child>
               <child>
                 <object class="GtkButton">
-                  <property name="icon_name">remove-page-symbolic</property>
-                  <property name="tooltip_text" translatable="yes">Remove Page</property>
-                  <property name="action-name">win.remove-page-from-doc</property>
+                  <property name="icon_name">add-page-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Add Page</property>
+                  <property name="action-name">win.add-page-to-doc</property>
                   <property name="hexpand">true</property>
                 </object>
               </child>

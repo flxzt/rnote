@@ -17,10 +17,10 @@
             <property name="title" translatable="yes">Brush</property>
             <property name="child">
               <object class="RnBrushPage" id="brush_page">
-                <property name="margin_top">9</property>
-                <property name="margin_bottom">9</property>
-                <property name="margin_start">9</property>
-                <property name="margin_end">9</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">3</property>
+                <property name="margin_start">3</property>
+                <property name="margin_end">3</property>
               </object>
             </property>
           </object>
@@ -33,10 +33,10 @@
             <property name="title" translatable="yes">Shaper</property>
             <property name="child">
               <object class="RnShaperPage" id="shaper_page">
-                <property name="margin_top">9</property>
-                <property name="margin_bottom">9</property>
-                <property name="margin_start">9</property>
-                <property name="margin_end">9</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">3</property>
+                <property name="margin_start">3</property>
+                <property name="margin_end">3</property>
               </object>
             </property>
           </object>
@@ -49,10 +49,10 @@
             <property name="title" translatable="yes">Typewriter</property>
             <property name="child">
               <object class="RnTypewriterPage" id="typewriter_page">
-                <property name="margin_top">9</property>
-                <property name="margin_bottom">9</property>
-                <property name="margin_start">9</property>
-                <property name="margin_end">9</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">3</property>
+                <property name="margin_start">3</property>
+                <property name="margin_end">3</property>
               </object>
             </property>
           </object>
@@ -65,10 +65,10 @@
             <property name="title" translatable="yes">Eraser</property>
             <property name="child">
               <object class="RnEraserPage" id="eraser_page">
-                <property name="margin_top">9</property>
-                <property name="margin_bottom">9</property>
-                <property name="margin_start">9</property>
-                <property name="margin_end">9</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">3</property>
+                <property name="margin_start">3</property>
+                <property name="margin_end">3</property>
               </object>
             </property>
           </object>
@@ -81,10 +81,10 @@
             <property name="title" translatable="yes">Selector</property>
             <property name="child">
               <object class="RnSelectorPage" id="selector_page">
-                <property name="margin_top">9</property>
-                <property name="margin_bottom">9</property>
-                <property name="margin_start">9</property>
-                <property name="margin_end">9</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">3</property>
+                <property name="margin_start">3</property>
+                <property name="margin_end">3</property>
               </object>
             </property>
           </object>
@@ -97,10 +97,10 @@
             <property name="title" translatable="yes">Tools</property>
             <property name="child">
               <object class="RnToolsPage" id="tools_page">
-                <property name="margin_top">9</property>
-                <property name="margin_bottom">9</property>
-                <property name="margin_start">9</property>
-                <property name="margin_end">9</property>
+                <property name="margin_top">3</property>
+                <property name="margin_bottom">3</property>
+                <property name="margin_start">3</property>
+                <property name="margin_end">3</property>
               </object>
             </property>
           </object>

@@ -74,6 +74,16 @@ impl RnAppWindow {
         self.set_property("touch-drawing", touch_drawing.to_value());
     }
 
+    #[allow(unused)]
+    pub(crate) fn focus_mode(&self) -> bool {
+        self.property::<bool>("focus-mode")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_focus_mode(&self, focus_mode: bool) {
+        self.set_property("focus-mode", focus_mode.to_value());
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
@@ -163,8 +173,8 @@ impl RnAppWindow {
         // Anything that needs to be done right before showing the appwindow
 
         // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
-        self.mainheader().undo_button().set_sensitive(false);
-        self.mainheader().redo_button().set_sensitive(false);
+        self.overlays().undo_button().set_sensitive(false);
+        self.overlays().redo_button().set_sensitive(false);
         self.refresh_ui_from_engine(&self.active_tab());
     }
 
@@ -222,10 +232,10 @@ impl RnAppWindow {
             self.overlays().colorpicker().deselect_setters();
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
-            self.mainheader().undo_button().set_sensitive(!hide_undo);
+            self.overlays().undo_button().set_sensitive(!hide_undo);
         }
         if let Some(hide_redo) = widget_flags.hide_redo {
-            self.mainheader().redo_button().set_sensitive(!hide_redo);
+            self.overlays().redo_button().set_sensitive(!hide_redo);
         }
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             canvas.set_text_preprocessing(enable_text_preprocessing);
@@ -579,8 +589,8 @@ impl RnAppWindow {
         let can_undo = canvas.engine().borrow().can_undo();
         let can_redo = canvas.engine().borrow().can_redo();
 
-        self.mainheader().undo_button().set_sensitive(can_undo);
-        self.mainheader().redo_button().set_sensitive(can_redo);
+        self.overlays().undo_button().set_sensitive(can_undo);
+        self.overlays().redo_button().set_sensitive(can_redo);
 
         // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
         adw::prelude::ActionGroupExt::activate_action(

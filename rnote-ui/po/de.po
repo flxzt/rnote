@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 10:57+0200\n"
-"PO-Revision-Date: 2023-05-12 18:00+0000\n"
+"PO-Revision-Date: 2023-05-18 09:17+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1062,7 +1062,7 @@ msgstr "Neuer Tab"
 
 #: rnote-ui/data/ui/mainheader.ui:53
 msgid "Focus Mode"
-msgstr ""
+msgstr "Fokus-Modus"
 
 #: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
@@ -1145,16 +1145,12 @@ msgid "Set the regular cursor"
 msgstr "Ändere den regulären Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "Zeichnen Cursor"
+msgstr "Zeige Zeichnen Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "Ändere den Cursor beim Zeichnen"
+msgstr "Ändere ob der Zeichnen Cursor sichtbar ist"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"

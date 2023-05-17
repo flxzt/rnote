@@ -1,10 +1,10 @@
 // Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
-use crate::{render, DrawBehaviour};
+use crate::{render, strokes::strokebehaviour, DrawBehaviour};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -68,6 +68,24 @@ impl StrokeBehaviour for ShapeStroke {
             })
         }
     }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
+        cx.stroke(
+            self.bounds().to_kurbo_rect(),
+            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            HIGHLIGHT_STROKE_WIDTH / total_zoom,
+        );
+        Ok(())
+    }
+
+    fn update_geometry(&mut self) {
+        self.hitboxes = self.gen_hitboxes_int();
+    }
 }
 
 impl DrawBehaviour for ShapeStroke {
@@ -119,11 +137,7 @@ impl ShapeStroke {
         shapestroke
     }
 
-    pub fn update_geometry(&mut self) {
-        self.hitboxes = self.gen_hitboxes();
-    }
-
-    fn gen_hitboxes(&self) -> Vec<Aabb> {
+    fn gen_hitboxes_int(&self) -> Vec<Aabb> {
         let width = self.style.stroke_width();
 
         self.shape

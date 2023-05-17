@@ -40,6 +40,7 @@
         <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/flap-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/focus-mode-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/tab-new-filled-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-in-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-out-symbolic.svg</file>
@@ -70,6 +71,7 @@
         <file compressed="true">icons/scalable/actions/cursor-dot-small.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-medium.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-dot-large.svg</file>
+        <file compressed="true">icons/scalable/actions/cursor-invisible.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-teardrop-n-small.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-teardrop-n-medium.svg</file>
         <file compressed="true">icons/scalable/actions/cursor-teardrop-n-large.svg</file>

@@ -42,6 +42,7 @@ pub(crate) struct Handlers {
     pub(crate) appwindow_scalefactor: Option<glib::SignalHandlerId>,
     pub(crate) appwindow_unsaved_changes: Option<glib::SignalHandlerId>,
     pub(crate) appwindow_touch_drawing: Option<glib::Binding>,
+    pub(crate) appwindow_show_drawing_cursor: Option<glib::Binding>,
     pub(crate) appwindow_regular_cursor: Option<glib::Binding>,
     pub(crate) appwindow_drawing_cursor: Option<glib::Binding>,
     pub(crate) appwindow_drop_target: Option<glib::SignalHandlerId>,
@@ -60,10 +61,11 @@ mod imp {
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
         pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
         pub(crate) vscroll_policy: Cell<ScrollablePolicy>,
-        pub(crate) regular_cursor: RefCell<gdk::Cursor>,
         pub(crate) regular_cursor_icon_name: RefCell<String>,
-        pub(crate) drawing_cursor: RefCell<gdk::Cursor>,
+        pub(crate) regular_cursor: RefCell<gdk::Cursor>,
         pub(crate) drawing_cursor_icon_name: RefCell<String>,
+        pub(crate) drawing_cursor: RefCell<gdk::Cursor>,
+        pub(crate) invisible_cursor: RefCell<gdk::Cursor>,
         pub(crate) pointer_controller: EventControllerLegacy,
         pub(crate) key_controller: EventControllerKey,
         pub(crate) key_controller_im_context: IMMulticontext,
@@ -84,6 +86,7 @@ mod imp {
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
+        pub(crate) show_drawing_cursor: Cell<bool>,
     }
 
     impl Default for RnCanvas {
@@ -132,6 +135,17 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
+            let invisible_cursor = gdk::Cursor::from_texture(
+                &gdk::Texture::from_resource(
+                    (String::from(config::APP_IDPATH)
+                        + "icons/scalable/actions/cursor-invisible.svg")
+                        .as_str(),
+                ),
+                32,
+                32,
+                gdk::Cursor::from_name("default", None).as_ref(),
+            );
+
             let engine = RnoteEngine::default();
 
             Self {
@@ -145,6 +159,7 @@ mod imp {
                 regular_cursor_icon_name: RefCell::new(regular_cursor_icon_name),
                 drawing_cursor: RefCell::new(drawing_cursor),
                 drawing_cursor_icon_name: RefCell::new(drawing_cursor_icon_name),
+                invisible_cursor: RefCell::new(invisible_cursor),
                 pointer_controller,
                 key_controller,
                 key_controller_im_context,
@@ -165,6 +180,7 @@ mod imp {
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
+                show_drawing_cursor: Cell::new(false),
             }
         }
     }
@@ -244,6 +260,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("touch-drawing")
                         .default_value(false)
                         .build(),
+                    glib::ParamSpecBoolean::builder("show-drawing-cursor")
+                        .default_value(true)
+                        .build(),
                     glib::ParamSpecString::builder("regular-cursor")
                         .default_value(Some("cursor-dot-medium"))
                         .build(),
@@ -270,6 +289,7 @@ mod imp {
                 "hscroll-policy" => self.hscroll_policy.get().to_value(),
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
+                "show-drawing-cursor" => self.show_drawing_cursor.get().to_value(),
                 "regular-cursor" => self.regular_cursor_icon_name.borrow().to_value(),
                 "drawing-cursor" => self.drawing_cursor_icon_name.borrow().to_value(),
                 _ => unimplemented!(),
@@ -318,6 +338,21 @@ mod imp {
                     let touch_drawing: bool =
                         value.get().expect("The value needs to be of type `bool`");
                     self.touch_drawing.replace(touch_drawing);
+                }
+                "show-drawing-cursor" => {
+                    let show_drawing_cursor: bool =
+                        value.get().expect("The value needs to be of type `bool`");
+                    self.show_drawing_cursor.replace(show_drawing_cursor);
+
+                    if self.drawing_cursor_enabled.get() {
+                        if show_drawing_cursor {
+                            obj.set_cursor(Some(&*self.drawing_cursor.borrow()));
+                        } else {
+                            obj.set_cursor(Some(&*self.invisible_cursor.borrow()));
+                        }
+                    } else {
+                        obj.set_cursor(Some(&*self.regular_cursor.borrow()));
+                    }
                 }
                 "regular-cursor" => {
                     let icon_name = value.get().unwrap();
@@ -647,6 +682,18 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    pub(crate) fn show_drawing_cursor(&self) -> bool {
+        self.property::<bool>("show-drawing-cursor")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_show_drawing_cursor(&self, show_drawing_cursor: bool) {
+        if self.imp().show_drawing_cursor.get() != show_drawing_cursor {
+            self.set_property("show-drawing-cursor", show_drawing_cursor.to_value());
+        }
+    }
+
+    #[allow(unused)]
     fn emit_zoom_changed(&self) {
         self.emit_by_name::<()>("zoom-changed", &[]);
     }
@@ -730,7 +777,11 @@ impl RnCanvas {
         self.imp().drawing_cursor_enabled.set(drawing_cursor);
 
         if drawing_cursor {
-            self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
+            if self.imp().show_drawing_cursor.get() {
+                self.set_cursor(Some(&*self.imp().drawing_cursor.borrow()));
+            } else {
+                self.set_cursor(Some(&*self.imp().invisible_cursor.borrow()));
+            }
         } else {
             self.set_cursor(Some(&*self.imp().regular_cursor.borrow()));
         }
@@ -938,7 +989,7 @@ impl RnCanvas {
 
         // one per-appwindow property for touch-drawing
         let appwindow_touch_drawing = appwindow
-            .bind_property("touch-drawing", self, "touch_drawing")
+            .bind_property("touch-drawing", self, "touch-drawing")
             .sync_create()
             .build();
 
@@ -956,6 +1007,14 @@ impl RnCanvas {
             .general_drawing_cursor_picker()
             .bind_property("picked", self, "drawing-cursor")
             .transform_to(|_, v: Option<String>| v)
+            .sync_create()
+            .build();
+
+        // bind show-drawing-cursor
+        let appwindow_show_drawing_cursor = appwindow
+            .settings_panel()
+            .general_show_drawing_cursor_switch()
+            .bind_property("active", self, "show-drawing-cursor")
             .sync_create()
             .build();
 
@@ -1026,6 +1085,12 @@ impl RnCanvas {
             old.unbind();
         }
         if let Some(old) = handlers
+            .appwindow_show_drawing_cursor
+            .replace(appwindow_show_drawing_cursor)
+        {
+            old.unbind();
+        }
+        if let Some(old) = handlers
             .appwindow_regular_cursor
             .replace(appwindow_regular_cursor)
         {
@@ -1072,6 +1137,9 @@ impl RnCanvas {
             self.disconnect(old);
         }
         if let Some(old) = handlers.appwindow_touch_drawing.take() {
+            old.unbind();
+        }
+        if let Some(old) = handlers.appwindow_show_drawing_cursor.take() {
             old.unbind();
         }
         if let Some(old) = handlers.appwindow_regular_cursor.take() {

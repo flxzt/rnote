@@ -1,7 +1,7 @@
 // Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
-use crate::{render, Camera, DrawBehaviour};
+use crate::{render, strokes::strokebehaviour, Camera, DrawBehaviour};
 use gtk4::pango;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
@@ -557,6 +557,22 @@ impl StrokeBehaviour for TextStroke {
             })
         }
     }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
+        cx.stroke(
+            self.bounds().to_kurbo_rect(),
+            &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            HIGHLIGHT_STROKE_WIDTH / total_zoom,
+        );
+        Ok(())
+    }
+
+    fn update_geometry(&mut self) {}
 }
 
 impl DrawBehaviour for TextStroke {

@@ -234,14 +234,11 @@ from https://gitlab.com/posidon_software/paper/-/blob/main/src/css/style.css
 }
 
 .overlay_toolbar {
+    padding: 6px;
     border-radius: 12px;
     background-color: @window_bg_color;
     border: 1px solid @borders;
     box-shadow: 0px 3px 6px @shade_color;
-}
-
-.overlay_toolbar.colorpicker {
-    padding: 6px;
 }
 
 toast {

@@ -2,7 +2,7 @@
 use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::engine::StrokeContent;
-use crate::strokes::Stroke;
+use crate::strokes::{Stroke, StrokeBehaviour};
 use crate::{render, StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
@@ -107,16 +107,7 @@ impl StrokeStore {
             .get_mut(key)
             .map(Arc::make_mut)
         {
-            match stroke {
-                Stroke::BrushStroke(ref mut brushstroke) => {
-                    brushstroke.update_geometry();
-                }
-                Stroke::ShapeStroke(shapestroke) => {
-                    shapestroke.update_geometry();
-                }
-                Stroke::TextStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {}
-            }
-
+            stroke.update_geometry();
             self.key_tree.update_with_key(key, stroke.bounds());
             self.set_rendering_dirty(key);
         }

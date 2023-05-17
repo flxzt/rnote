@@ -89,6 +89,16 @@ impl RnAppWindow {
             .get_no_changes()
             .build();
 
+        // show drawing cursor
+        self.app_settings()
+            .bind(
+                "show-drawing-cursor",
+                &self.settings_panel().general_show_drawing_cursor_switch(),
+                "active",
+            )
+            .get_no_changes()
+            .build();
+
         // colorpicker palette
         let gdk_color_mapping = |var: &glib::Variant, _: glib::Type| {
             let color = var.get::<(f64, f64, f64, f64)>()?;

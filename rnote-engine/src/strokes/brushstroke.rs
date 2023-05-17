@@ -1,11 +1,14 @@
 // Imports
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
-use crate::render::{self};
 use crate::DrawBehaviour;
+use crate::{
+    render::{self},
+    strokes::strokebehaviour,
+};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
-use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::helpers::{AabbHelpers, Vector2Helpers};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -20,8 +23,8 @@ pub struct BrushStroke {
     pub path: PenPath,
     #[serde(default, rename = "style")]
     pub style: Style,
-    #[serde(skip)]
     // since the path can have many hitboxes, we store them here and update them when the stroke geometry changes
+    #[serde(skip)]
     hitboxes: Vec<Aabb>,
 }
 
@@ -166,6 +169,39 @@ impl StrokeBehaviour for BrushStroke {
             Ok(GeneratedStrokeImages::Full(images))
         }
     }
+
+    fn draw_highlight(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        total_zoom: f64,
+    ) -> anyhow::Result<()> {
+        const HIGHLIGHT_STROKE_WIDTH: f64 = 5.0;
+        const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
+
+        let bounds = self.bounds();
+
+        if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
+            cx.fill(
+                bounds.to_kurbo_rect(),
+                &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+            );
+        } else {
+            cx.stroke_styled(
+                self.path.to_kurbo(),
+                &*strokebehaviour::STROKE_HIGHLIGHT_COLOR,
+                (HIGHLIGHT_STROKE_WIDTH / total_zoom)
+                    .max(self.style.stroke_width() + 2.0 / total_zoom),
+                &piet::StrokeStyle::new()
+                    .line_join(piet::LineJoin::Round)
+                    .line_cap(piet::LineCap::Round),
+            );
+        }
+        Ok(())
+    }
+
+    fn update_geometry(&mut self) {
+        self.hitboxes = self.gen_hitboxes_int();
+    }
 }
 
 impl DrawBehaviour for BrushStroke {
@@ -240,10 +276,6 @@ impl BrushStroke {
 
     pub fn extend_w_segments(&mut self, segments: impl IntoIterator<Item = Segment>) {
         self.path.extend(segments);
-    }
-
-    pub fn update_geometry(&mut self) {
-        self.hitboxes = self.gen_hitboxes_int();
     }
 
     /// Replace the current path with the given new one. the new path must not be empty.

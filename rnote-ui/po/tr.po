@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 10:57+0200\n"
-"PO-Revision-Date: 2023-05-14 13:27+0000\n"
+"PO-Revision-Date: 2023-05-18 09:17+0000\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/rnote/repo/tr/>\n"
 "Language: tr\n"
@@ -1062,7 +1062,7 @@ msgstr "Yeni Sekme"
 
 #: rnote-ui/data/ui/mainheader.ui:53
 msgid "Focus Mode"
-msgstr ""
+msgstr "Odak Kipi"
 
 #: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
@@ -1145,16 +1145,12 @@ msgid "Set the regular cursor"
 msgstr "Normal imleci ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "Çizim İmleci"
+msgstr "Çizim İmlecini Göster"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "Çizim imlecini ayarla"
+msgstr "Çizim imlecinin görünür olma durumunu ayarla"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"

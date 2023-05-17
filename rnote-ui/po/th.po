@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-13 20:11+0200\n"
+"POT-Creation-Date: 2023-05-16 10:57+0200\n"
 "PO-Revision-Date: 2022-11-02 18:07+0000\n"
 "Last-Translator: Archer Allstars <95kreaninw95@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
@@ -672,37 +672,37 @@ msgid "Split Strokes"
 msgstr "ลบเป็นส่วน ๆ"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:45
+#: rnote-ui/data/ui/overlays.ui:46
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
 msgid "Brush"
 msgstr "พู่กัน"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:52
+#: rnote-ui/data/ui/overlays.ui:56
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
 msgid "Shaper"
 msgstr "รูปทรง"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:60
+#: rnote-ui/data/ui/overlays.ui:67
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Typewriter"
 msgstr "พิมพ์ตัวอักษร"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:68
+#: rnote-ui/data/ui/overlays.ui:78
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Eraser"
 msgstr "ยางลบ"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:76
+#: rnote-ui/data/ui/overlays.ui:89
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Selector"
 msgstr "รูปแบบการเลือก"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:84
+#: rnote-ui/data/ui/overlays.ui:100
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:84
 msgid "Tools"
 msgstr "เครื่องมือต่าง ๆ"
@@ -1206,6 +1206,22 @@ msgstr "ซูมเข้า"
 msgid "Zoom to Page Width"
 msgstr "ซูมให้พอดีกับความกว้างของหน้ากระดาษ"
 
+#: rnote-ui/data/ui/canvasmenu.ui:148
+msgid "Remove Page"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:156
+#, fuzzy
+#| msgid "Add page"
+msgid "Add Page"
+msgstr "เพิ่มหน้าใหม่"
+
+#: rnote-ui/data/ui/canvasmenu.ui:164
+#, fuzzy
+#| msgid "Resize document to fit the strokes"
+msgid "Resize Document to Fit Strokes"
+msgstr "ปรับขนาดของเอกสารให้พอดีกับลายเส้น"
+
 #: rnote-ui/data/ui/colorpicker.ui:19
 #, fuzzy
 #| msgid "Stroke dots radii"
@@ -1242,7 +1258,7 @@ msgstr "สำเนาสิ่งที่เลือก"
 msgid "Draft"
 msgstr "ฉบับร่าง"
 
-#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:124
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:73
 msgid "Reveal/Hide Flap"
 msgstr ""
 
@@ -1250,45 +1266,33 @@ msgstr ""
 msgid "New Tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:218
-msgid "Undo"
-msgstr "เลิกทำ"
-
-#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:224
-msgid "Redo"
-msgstr "ทำซ้ำ"
-
-#: rnote-ui/data/ui/mainheader.ui:87
-#, fuzzy
-#| msgid "Add page"
-msgid "Add Page"
-msgstr "เพิ่มหน้าใหม่"
-
-#: rnote-ui/data/ui/mainheader.ui:94
-msgid "Remove Page"
+#: rnote-ui/data/ui/mainheader.ui:53
+msgid "Focus Mode"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:101
-#, fuzzy
-#| msgid "Resize document to fit the strokes"
-msgid "Resize Document to Fit Strokes"
-msgstr "ปรับขนาดของเอกสารให้พอดีกับลายเส้น"
-
-#: rnote-ui/data/ui/mainheader.ui:116 rnote-ui/data/ui/shortcuts.ui:161
+#: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 #, fuzzy
 #| msgid "Save document"
 msgid "Save Document"
 msgstr "บันทึกเอกสาร"
 
-#: rnote-ui/data/ui/overlays.ui:151
+#: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
+msgid "Undo"
+msgstr "เลิกทำ"
+
+#: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
+msgid "Redo"
+msgstr "ทำซ้ำ"
+
+#: rnote-ui/data/ui/overlays.ui:205
 msgid "Move _Left"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:155
+#: rnote-ui/data/ui/overlays.ui:209
 msgid "Move _Right"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:161
+#: rnote-ui/data/ui/overlays.ui:215
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Close the active window"
@@ -1830,50 +1834,50 @@ msgstr "ลบพื้นที่ทำงาน"
 msgid "Edit Selected Workspace"
 msgstr "แก้ไขพื้นที่ทำงาน"
 
-#: rnote-ui/src/appwindow/mod.rs:496
+#: rnote-ui/src/appwindow/mod.rs:506
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
 msgstr "การเปิดไฟล์ .rnote ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:507
+#: rnote-ui/src/appwindow/mod.rs:517
 #, fuzzy
 #| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
 msgstr "การเปิดไฟล์ภาพเวกเตอร์ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:518
+#: rnote-ui/src/appwindow/mod.rs:528
 #, fuzzy
 #| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
 msgstr "การเปิดไฟล์ภาพบิตแมพล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:529 rnote-ui/src/dialogs/import.rs:364
+#: rnote-ui/src/appwindow/mod.rs:539 rnote-ui/src/dialogs/import.rs:364
 #, fuzzy
 #| msgid "Opening .xopp file failed."
 msgid "Opening Xournal++ file failed"
 msgstr "การเปิดไฟล์ .xopp ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
+#: rnote-ui/src/appwindow/mod.rs:550 rnote-ui/src/dialogs/import.rs:305
 #, fuzzy
 #| msgid "Opening PDF file failed."
 msgid "Opening Pdf file failed"
 msgstr "การเปิดไฟล์ PDF ล้มเหลว"
 
-#: rnote-ui/src/appwindow/mod.rs:549
+#: rnote-ui/src/appwindow/mod.rs:559
 #, fuzzy
 #| msgid "Error: Tried opening folder as file"
 msgid "Failed to open file, tried to open folder as file"
 msgstr "ข้อผิดพลาด: คุณพยายามเปิดโฟลเดอร์เป็นไฟล์"
 
-#: rnote-ui/src/appwindow/mod.rs:554
+#: rnote-ui/src/appwindow/mod.rs:564
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file, unsupported file type"
 msgstr "การเปิดไฟล์ล้มเหลว, ไม่รองรับประเภทไฟล์ที่เปิด"
 
-#: rnote-ui/src/appwindow/imp.rs:261
-#: rnote-ui/src/appwindow/appwindowactions.rs:605
+#: rnote-ui/src/appwindow/imp.rs:275
+#: rnote-ui/src/appwindow/appwindowactions.rs:611
 #: rnote-ui/src/dialogs/export.rs:65 rnote-ui/src/dialogs/import.rs:54
 #: rnote-ui/src/dialogs/mod.rs:144 rnote-ui/src/dialogs/mod.rs:250
 #: rnote-ui/src/dialogs/mod.rs:390
@@ -1882,27 +1886,27 @@ msgstr "การเปิดไฟล์ล้มเหลว, ไม่รอ�
 msgid "Saving document failed"
 msgstr "การบันทึกเอกสารล้มเหลว"
 
-#: rnote-ui/src/appwindow/imp.rs:477
+#: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 1"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:484
+#: rnote-ui/src/appwindow/imp.rs:498
 msgid "Button 2"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:491
+#: rnote-ui/src/appwindow/imp.rs:505
 msgid "Button 3"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:498
+#: rnote-ui/src/appwindow/imp.rs:512
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:728
+#: rnote-ui/src/appwindow/appwindowactions.rs:734
 msgid "Printing document failed"
 msgstr "การพิมพ์เอกสารล้มเหลว"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:763
+#: rnote-ui/src/appwindow/appwindowactions.rs:769
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, nothing selected"

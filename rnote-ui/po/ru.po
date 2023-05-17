@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-13 20:11+0200\n"
+"POT-Creation-Date: 2023-05-16 10:57+0200\n"
 "PO-Revision-Date: 2023-03-19 17:59+0000\n"
 "Last-Translator: kek <farline99@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
@@ -605,37 +605,37 @@ msgid "Split Strokes"
 msgstr "Разделять штрихи"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:45
+#: rnote-ui/data/ui/overlays.ui:46
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
 msgid "Brush"
 msgstr "Кисть"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:52
+#: rnote-ui/data/ui/overlays.ui:56
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
 msgid "Shaper"
 msgstr "Фигуры"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:60
+#: rnote-ui/data/ui/overlays.ui:67
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Typewriter"
 msgstr "Текст"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:68
+#: rnote-ui/data/ui/overlays.ui:78
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Eraser"
 msgstr "Ластик"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:76
+#: rnote-ui/data/ui/overlays.ui:89
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Selector"
 msgstr "Выделение"
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:84
+#: rnote-ui/data/ui/overlays.ui:100
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:84
 msgid "Tools"
 msgstr "Инструменты"
@@ -1022,6 +1022,18 @@ msgstr "Приблизить"
 msgid "Zoom to Page Width"
 msgstr "Масштабировать до ширины страницы"
 
+#: rnote-ui/data/ui/canvasmenu.ui:148
+msgid "Remove Page"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:156
+msgid "Add Page"
+msgstr "Добавить страницу"
+
+#: rnote-ui/data/ui/canvasmenu.ui:164
+msgid "Resize Document to Fit Strokes"
+msgstr "Изменить размер документа в соответствии с содержимым"
+
 #: rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
 msgstr "Цвет обводки"
@@ -1051,7 +1063,7 @@ msgstr "Дублировать"
 msgid "Draft"
 msgstr "Черновик"
 
-#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:124
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:73
 msgid "Reveal/Hide Flap"
 msgstr "Показать/Скрыть боковую панель"
 
@@ -1059,39 +1071,31 @@ msgstr "Показать/Скрыть боковую панель"
 msgid "New Tab"
 msgstr "Новая вкладка"
 
-#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:218
-msgid "Undo"
-msgstr "Отменить"
-
-#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:224
-msgid "Redo"
-msgstr "Повторить"
-
-#: rnote-ui/data/ui/mainheader.ui:87
-msgid "Add Page"
-msgstr "Добавить страницу"
-
-#: rnote-ui/data/ui/mainheader.ui:94
-msgid "Remove Page"
+#: rnote-ui/data/ui/mainheader.ui:53
+msgid "Focus Mode"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:101
-msgid "Resize Document to Fit Strokes"
-msgstr "Изменить размер документа в соответствии с содержимым"
-
-#: rnote-ui/data/ui/mainheader.ui:116 rnote-ui/data/ui/shortcuts.ui:161
+#: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
 msgstr "Сохранить документ"
 
-#: rnote-ui/data/ui/overlays.ui:151
+#: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
+msgid "Undo"
+msgstr "Отменить"
+
+#: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
+msgid "Redo"
+msgstr "Повторить"
+
+#: rnote-ui/data/ui/overlays.ui:205
 msgid "Move _Left"
 msgstr "Левее"
 
-#: rnote-ui/data/ui/overlays.ui:155
+#: rnote-ui/data/ui/overlays.ui:209
 msgid "Move _Right"
 msgstr "Правее"
 
-#: rnote-ui/data/ui/overlays.ui:161
+#: rnote-ui/data/ui/overlays.ui:215
 msgid "_Close"
 msgstr "Закрыть активное окно"
 
@@ -1546,65 +1550,65 @@ msgstr "Удалить выбранную коллекцию"
 msgid "Edit Selected Workspace"
 msgstr "Редактировать выбранную коллекцию"
 
-#: rnote-ui/src/appwindow/mod.rs:496
+#: rnote-ui/src/appwindow/mod.rs:506
 msgid "Opening .rnote file failed"
 msgstr "Не удалось открыть .rnote файл."
 
-#: rnote-ui/src/appwindow/mod.rs:507
+#: rnote-ui/src/appwindow/mod.rs:517
 msgid "Opening vector image file failed"
 msgstr "Не удалось открыть векторное изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:518
+#: rnote-ui/src/appwindow/mod.rs:528
 msgid "Opening bitmap image file failed"
 msgstr "Не удалось открыть растровое изображение."
 
-#: rnote-ui/src/appwindow/mod.rs:529 rnote-ui/src/dialogs/import.rs:364
+#: rnote-ui/src/appwindow/mod.rs:539 rnote-ui/src/dialogs/import.rs:364
 msgid "Opening Xournal++ file failed"
 msgstr "Не удалось открыть Xournal++ файл."
 
-#: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
+#: rnote-ui/src/appwindow/mod.rs:550 rnote-ui/src/dialogs/import.rs:305
 #, fuzzy
 #| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
 msgstr "Не удалось открыть PDF файл."
 
-#: rnote-ui/src/appwindow/mod.rs:549
+#: rnote-ui/src/appwindow/mod.rs:559
 msgid "Failed to open file, tried to open folder as file"
 msgstr "Ошибка: Невозможно открыть папку как файл"
 
-#: rnote-ui/src/appwindow/mod.rs:554
+#: rnote-ui/src/appwindow/mod.rs:564
 msgid "Failed to open file, unsupported file type"
 msgstr "Не удалось открыть файл: формат файла не поддерживается."
 
-#: rnote-ui/src/appwindow/imp.rs:261
-#: rnote-ui/src/appwindow/appwindowactions.rs:605
+#: rnote-ui/src/appwindow/imp.rs:275
+#: rnote-ui/src/appwindow/appwindowactions.rs:611
 #: rnote-ui/src/dialogs/export.rs:65 rnote-ui/src/dialogs/import.rs:54
 #: rnote-ui/src/dialogs/mod.rs:144 rnote-ui/src/dialogs/mod.rs:250
 #: rnote-ui/src/dialogs/mod.rs:390
 msgid "Saving document failed"
 msgstr "Не удалось сохранить документ."
 
-#: rnote-ui/src/appwindow/imp.rs:477
+#: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 1"
 msgstr "Кнопка 1"
 
-#: rnote-ui/src/appwindow/imp.rs:484
+#: rnote-ui/src/appwindow/imp.rs:498
 msgid "Button 2"
 msgstr "Кнопка 2"
 
-#: rnote-ui/src/appwindow/imp.rs:491
+#: rnote-ui/src/appwindow/imp.rs:505
 msgid "Button 3"
 msgstr "Кнопка 3"
 
-#: rnote-ui/src/appwindow/imp.rs:498
+#: rnote-ui/src/appwindow/imp.rs:512
 msgid "Button 4"
 msgstr "Кнопка 4"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:728
+#: rnote-ui/src/appwindow/appwindowactions.rs:734
 msgid "Printing document failed"
 msgstr "Не удалось распечатать документ"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:763
+#: rnote-ui/src/appwindow/appwindowactions.rs:769
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не удалось экспортировать выделение, ничего не выделено."
 

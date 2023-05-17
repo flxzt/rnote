@@ -10,7 +10,6 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
 use crate::DrawOnDocBehaviour;
-use gtk4::gdk;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
@@ -41,8 +40,6 @@ pub struct PenHolder {
     #[serde(skip)]
     pen_progress: PenProgress,
     #[serde(skip)]
-    pub pen_device: Option<gdk::Device>,
-    #[serde(skip)]
     toggle_pen_style: Option<PenStyle>,
     #[serde(skip)]
     prev_shortcut_key: Option<ShortcutKey>,
@@ -57,7 +54,6 @@ impl Default for PenHolder {
 
             current_pen: Pen::default(),
             pen_progress: PenProgress::Idle,
-            pen_device: None,
             toggle_pen_style: None,
             prev_shortcut_key: None,
         }
@@ -222,18 +218,11 @@ impl PenHolder {
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
-        device: Option<gdk::Device>,
         pen_mode: Option<PenMode>,
         now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-
-        if self.pen_progress != PenProgress::InProgress {
-            self.pen_device = device;
-        } else if self.pen_device != device {
-            return widget_flags;
-        }
 
         if let Some(pen_mode) = pen_mode {
             widget_flags.merge(self.change_pen_mode(pen_mode, engine_view));

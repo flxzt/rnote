@@ -25,7 +25,7 @@ use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -69,6 +69,9 @@ mod imp {
         pub(crate) key_controller_im_context: IMMulticontext,
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
+        pub(crate) pen_device: RefCell<Option<gdk::Device>>,
+        pub(crate) zooming: Cell<bool>,
+        pub(crate) zooming_ended: Cell<Option<Instant>>,
 
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
@@ -147,6 +150,9 @@ mod imp {
                 key_controller_im_context,
                 drop_target,
                 drawing_cursor_enabled: Cell::new(false),
+                pen_device: RefCell::new(None),
+                zooming: Cell::new(false),
+                zooming_ended: Cell::new(None),
 
                 engine: Rc::new(RefCell::new(engine)),
 
@@ -596,6 +602,48 @@ impl RnCanvas {
         if self.imp().touch_drawing.get() != touch_drawing {
             self.set_property("touch-drawing", touch_drawing.to_value());
         }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn pen_device_eq(&self, other: Option<gdk::Device>) -> bool {
+        self.imp()
+            .pen_device
+            .borrow()
+            .as_ref()
+            .and_then(|d| Some(d.name()))
+            == other.and_then(|d| Some(d.name()))
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_pen_device(&self, pen_device: Option<gdk::Device>) {
+        self.imp().pen_device.replace(pen_device);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn zooming(&self) -> bool {
+        self.imp().zooming.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_zooming(&self, zooming: bool, device: Option<gdk::Device>, now: Instant) {
+        self.imp().zooming.set(zooming);
+        if !zooming {
+            self.set_zooming_ended(Some(now));
+        } else if zooming && !self.engine().borrow().pen_idle() {
+            if self.pen_device_eq(device) {
+                self.emit_handle_widget_flags(self.engine().borrow_mut().undo(now));
+            }
+        }
+    }
+
+    #[allow(unused)]
+    pub(crate) fn zooming_ended(&self) -> Option<Instant> {
+        self.imp().zooming_ended.get()
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_zooming_ended(&self, zooming_ended: Option<Instant>) {
+        self.imp().zooming_ended.set(zooming_ended);
     }
 
     #[allow(unused)]

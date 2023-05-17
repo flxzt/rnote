@@ -29,16 +29,22 @@ pub(crate) fn handle_pointer_controller_event(
     //super::input::debug_gdk_event(event);
 
     let zooming_ended_elapsed = canvas
-        .engine()
-        .borrow()
-        .zooming_ended
+        .zooming_ended()
         .and_then(|zooming_ended| Some(now - zooming_ended));
-    if reject_pointer_input(event, touch_drawing, zooming_ended_elapsed) {
+    if canvas.zooming()
+        || reject_pointer_input(
+            event,
+            state,
+            canvas.pen_device_eq(event.device()),
+            touch_drawing,
+            zooming_ended_elapsed,
+        )
+    {
         return (Inhibit(false), state);
     }
 
     if zooming_ended_elapsed.is_some() && gdk_event_type == gdk::EventType::TouchBegin {
-        canvas.engine().borrow_mut().zooming_ended = None;
+        canvas.set_zooming_ended(None)
     }
 
     let mut handle_pen_event = false;
@@ -191,7 +197,6 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
-                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -204,7 +209,6 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
-                        event.device(),
                         pen_mode,
                         event_time,
                     ));
@@ -218,13 +222,18 @@ pub(crate) fn handle_pointer_controller_event(
                             element,
                             modifier_keys: modifier_keys.clone(),
                         },
-                        event.device(),
                         pen_mode,
                         event_time,
                     ));
                 }
             }
         }
+    }
+
+    if matches!(state, PenState::Down) {
+        canvas.set_pen_device(event.device());
+    } else {
+        canvas.set_pen_device(None);
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
@@ -249,7 +258,6 @@ pub(crate) fn handle_key_controller_key_pressed(
             modifier_keys,
         },
         None,
-        None,
         now,
     );
     canvas.emit_handle_widget_flags(widget_flags);
@@ -263,7 +271,6 @@ pub(crate) fn handle_imcontext_text_commit(canvas: &RnCanvas, text: &str) {
         PenEvent::Text {
             text: text.to_string(),
         },
-        None,
         None,
         now,
     );
@@ -289,9 +296,14 @@ fn debug_gdk_event(event: &gdk::Event) {
 /// Returns true if input should be rejected
 fn reject_pointer_input(
     event: &gdk::Event,
+    state: PenState,
+    device_matches: bool,
     touch_drawing: bool,
     zooming_ended_elapsed: Option<Duration>,
 ) -> bool {
+    if matches!(state, PenState::Down) && !device_matches {
+        return true;
+    }
     if touch_drawing {
         if event.device().unwrap().num_touches() > 1 {
             return true;

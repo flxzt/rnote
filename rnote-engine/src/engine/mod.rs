@@ -21,7 +21,7 @@ use crate::{render, AudioPlayer, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
-use gtk4::{gdk, gsk};
+use gtk4::gsk;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
@@ -343,10 +343,6 @@ pub struct RnoteEngine {
     pub background_tile_image: Option<render::Image>,
     #[serde(skip)]
     background_rendernodes: Vec<gsk::RenderNode>,
-    #[serde(skip)]
-    zooming: bool,
-    #[serde(skip)]
-    pub zooming_ended: Option<Instant>,
 }
 
 impl Default for RnoteEngine {
@@ -369,8 +365,6 @@ impl Default for RnoteEngine {
             tasks_tx,
             background_tile_image: None,
             background_rendernodes: Vec::default(),
-            zooming: false,
-            zooming_ended: None,
         }
     }
 }
@@ -417,6 +411,11 @@ impl RnoteEngine {
     /// whether pen sounds are enabled
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
+    }
+
+    /// whether pen is idle
+    pub fn pen_idle(&self) -> bool {
+        self.penholder.current_pen_progress() == PenProgress::Idle
     }
 
     /// Enables/disables the pen sounds.
@@ -633,43 +632,15 @@ impl RnoteEngine {
         (widget_flags, quit)
     }
 
-    /// Handle zooming gesture
-    pub fn handle_zooming(
-        &mut self,
-        zooming: bool,
-        device: Option<gdk::Device>,
-        now: Instant,
-    ) -> Option<WidgetFlags> {
-        self.zooming = zooming;
-        if !zooming {
-            self.zooming_ended = Some(now);
-            None
-        } else if zooming && self.penholder.current_pen_progress() != PenProgress::Idle {
-            if self.penholder.pen_device == device {
-                Some(self.undo(now))
-            } else {
-                Some(self.reinstall_pen_current_style())
-            }
-        } else {
-            None
-        }
-    }
-
     /// Handle a pen event.
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
-        device: Option<gdk::Device>,
         pen_mode: Option<PenMode>,
         now: Instant,
     ) -> WidgetFlags {
-        // Prevents end of zooming gesture from drawing a line
-        if self.zooming {
-            return WidgetFlags::default();
-        }
         self.penholder.handle_pen_event(
             event,
-            device,
             pen_mode,
             now,
             &mut EngineViewMut {

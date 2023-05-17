@@ -25,6 +25,8 @@ mod imp {
         pub(crate) zoom_reset_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) zoom_fit_width_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) fixedsize_quickactions_box: TemplateChild<gtk4::Box>,
     }
 
     #[glib::object_subclass]
@@ -88,6 +90,10 @@ impl RnCanvasMenu {
 
     pub(crate) fn zoom_reset_button(&self) -> Button {
         self.imp().zoom_reset_button.get()
+    }
+
+    pub(crate) fn fixedsize_quickactions_box(&self) -> gtk4::Box {
+        self.imp().fixedsize_quickactions_box.get()
     }
 
     pub(crate) fn init(&self, _appwindow: &RnAppWindow) {

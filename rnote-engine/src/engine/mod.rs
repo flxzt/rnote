@@ -12,7 +12,7 @@ pub use self::import::ImportPrefs;
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
 use crate::pens::PenStyle;
-use crate::pens::{penbehaviour::PenProgress, PenMode, PensConfig};
+use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
@@ -411,11 +411,6 @@ impl RnoteEngine {
     /// whether pen sounds are enabled
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
-    }
-
-    /// whether pen is idle
-    pub fn pen_idle(&self) -> bool {
-        self.penholder.current_pen_progress() == PenProgress::Idle
     }
 
     /// Enables/disables the pen sounds.

@@ -20,6 +20,7 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::PenState;
+use rnote_engine::pens::penbehaviour::PenProgress;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
@@ -664,7 +665,9 @@ impl RnCanvas {
         self.imp().zooming.set(zooming);
         if !zooming {
             self.set_zooming_ended(Some(now));
-        } else if zooming && !self.engine().borrow().pen_idle() {
+        } else if zooming
+            && self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle
+        {
             if self.pen_device_eq(device) {
                 self.emit_handle_widget_flags(self.engine().borrow_mut().undo(now));
             }

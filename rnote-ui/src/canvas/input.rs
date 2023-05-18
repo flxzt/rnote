@@ -28,6 +28,8 @@ pub(crate) fn handle_pointer_controller_event(
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
+    log::debug!("{:?}", event.device_tool());
+
     let zooming_ended_elapsed = canvas
         .zooming_ended()
         .and_then(|zooming_ended| Some(now - zooming_ended));

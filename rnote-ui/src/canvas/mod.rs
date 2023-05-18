@@ -72,7 +72,7 @@ mod imp {
         pub(crate) key_controller_im_context: IMMulticontext,
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
-        pub(crate) pen_device: RefCell<Option<gdk::Device>>,
+        pub(crate) pen_input_source: Cell<Option<gdk::InputSource>>,
         pub(crate) zooming: Cell<bool>,
         pub(crate) zooming_ended: Cell<Option<Instant>>,
 
@@ -166,7 +166,7 @@ mod imp {
                 key_controller_im_context,
                 drop_target,
                 drawing_cursor_enabled: Cell::new(false),
-                pen_device: RefCell::new(None),
+                pen_input_source: Cell::new(None),
                 zooming: Cell::new(false),
                 zooming_ended: Cell::new(None),
 
@@ -641,18 +641,13 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn pen_device_eq(&self, other: Option<gdk::Device>) -> bool {
-        self.imp()
-            .pen_device
-            .borrow()
-            .as_ref()
-            .and_then(|d| Some(d.name()))
-            == other.and_then(|d| Some(d.name()))
+    pub(crate) fn pen_input_source(&self) -> Option<gdk::InputSource> {
+        self.imp().pen_input_source.get()
     }
 
     #[allow(unused)]
-    pub(crate) fn set_pen_device(&self, pen_device: Option<gdk::Device>) {
-        self.imp().pen_device.replace(pen_device);
+    pub(crate) fn set_pen_input_source(&self, pen_input_source: Option<gdk::InputSource>) {
+        self.imp().pen_input_source.set(pen_input_source);
     }
 
     #[allow(unused)]
@@ -661,14 +656,17 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn set_zooming(&self, zooming: bool, device: Option<gdk::Device>, now: Instant) {
+    pub(crate) fn set_zooming(
+        &self,
+        zooming: bool,
+        input_source: Option<gdk::InputSource>,
+        now: Instant,
+    ) {
         self.imp().zooming.set(zooming);
         if !zooming {
-            self.set_zooming_ended(Some(now));
-        } else if zooming
-            && self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle
-        {
-            if self.pen_device_eq(device) {
+            self.imp().zooming_ended.set(Some(now));
+        } else if self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle {
+            if self.pen_input_source() == input_source {
                 self.emit_handle_widget_flags(self.engine().borrow_mut().undo(now));
             }
         }

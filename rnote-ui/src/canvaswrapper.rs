@@ -353,7 +353,7 @@ mod imp {
                         new_zoom.set(current_zoom);
                         prev_scale.set(1.0);
 
-                        canvaswrapper.canvas().set_zooming(true, gesture.device(), Instant::now());
+                        canvaswrapper.canvas().set_zooming(true, gesture.device().and_then(|d| Some(d.source())), Instant::now());
 
                         bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
                         offset_begin.set(canvaswrapper.canvas().engine().borrow().camera.offset);
@@ -391,7 +391,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().set_zooming(false, gesture.device(), Instant::now());
+                        canvaswrapper.canvas().set_zooming(false, gesture.device().and_then(|d| Some(d.source())), Instant::now());
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );
@@ -399,7 +399,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().set_zooming(false, gesture.device(), Instant::now());
+                        canvaswrapper.canvas().set_zooming(false, gesture.device().and_then(|d| Some(d.source())), Instant::now());
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );

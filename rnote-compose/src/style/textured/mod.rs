@@ -106,6 +106,11 @@ impl Composer<TexturedOptions> for PenPath {
 
         let mut prev = self.start;
         for seg in self.segments.iter() {
+            if seg.end().pos == self.start.pos {
+                options.advance_seed();
+                continue;
+            }
+
             match seg {
                 Segment::LineTo { end } => {
                     let line = Line {

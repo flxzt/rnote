@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 10:57+0200\n"
-"PO-Revision-Date: 2023-05-18 09:17+0000\n"
+"PO-Revision-Date: 2023-05-20 12:33+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1158,7 +1158,7 @@ msgstr "Zeichnen Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:147
 msgid "Set the drawing cursor"
-msgstr "Ändere den Cursor beim Zeichnen"
+msgstr "Ändere den Zeichnen Cursor"
 
 #: rnote-ui/data/ui/settingspanel.ui:172
 msgid "Page Format"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 10:57+0200\n"
-"PO-Revision-Date: 2023-04-29 01:51+0000\n"
+"PO-Revision-Date: 2023-05-20 12:33+0000\n"
 "Last-Translator: \"K.B.Dharun Krishna\" <kbdharunkrishna@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
@@ -57,10 +57,8 @@ msgid "Lecture Note 1"
 msgstr "விரிவுரை குறிப்பு 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
-msgstr "ஒரு PDF சிறுகுறிப்பு"
+msgstr "ஒரு Pdf சிறுகுறிப்பு"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Lecture Note 2"
@@ -208,10 +206,8 @@ msgstr ""
 "விரும்புகிறீர்களா?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
-msgstr "PDF ஐ இறக்குமதி செய்"
+msgstr "Pdf ஐ இறக்குமதி செய்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
 #: rnote-ui/src/dialogs/import.rs:126
@@ -223,10 +219,8 @@ msgid "Info"
 msgstr "தகவல்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
-msgstr "PDF இறக்குமதி விருப்பத்தேர்வுகள்"
+msgstr "Pdf இறக்குமதி விருப்பத்தேர்வுகள்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:95
 msgid "Start Page"
@@ -241,20 +235,17 @@ msgid "Page Width (%)"
 msgstr "பக்கத்தின் அகலம் (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "இறக்குமதி செய்யப்பட்ட PDF இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
+msgstr ""
+"இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
 msgstr "பக்க இடைவெளி"
 
 #: rnote-ui/data/ui/dialogs/import.ui:147
-#, fuzzy
-#| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
-msgstr "PDF பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
+msgstr "Pdf பக்கங்கள் எவ்வாறு இடைவெளியில் உள்ளன"
 
 #: rnote-ui/data/ui/dialogs/import.ui:151
 msgid "Continuous"
@@ -269,11 +260,10 @@ msgid "Pages Type"
 msgstr "பக்கங்களின் வகை"
 
 #: rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr ""
-"PDFகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை அமைக்கவும்"
+"Pdfகளை வெக்டரா அல்லது பிட்மேப் படங்களாக இறக்குமதி செய்ய வேண்டுமா என்பதை "
+"அமைக்கவும்"
 
 #: rnote-ui/data/ui/dialogs/import.ui:173
 msgid "Vector"
@@ -1021,7 +1011,7 @@ msgstr "பக்க அகலத்திற்கு ஏற்றவாறு 
 
 #: rnote-ui/data/ui/canvasmenu.ui:148
 msgid "Remove Page"
-msgstr ""
+msgstr "பக்கத்தை அகற்று"
 
 #: rnote-ui/data/ui/canvasmenu.ui:156
 msgid "Add Page"
@@ -1070,7 +1060,7 @@ msgstr "புதிய தாவல்"
 
 #: rnote-ui/data/ui/mainheader.ui:53
 msgid "Focus Mode"
-msgstr ""
+msgstr "கவனம் பயன்முறை"
 
 #: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 msgid "Save Document"
@@ -1153,16 +1143,12 @@ msgid "Set the regular cursor"
 msgstr "வழக்கமான சுட்டியை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-#, fuzzy
-#| msgid "Drawing Cursor"
 msgid "Show Drawing Cursor"
-msgstr "வரைதல் சுட்டி"
+msgstr "வரைதல் சுட்டியைக் காட்டு"
 
 #: rnote-ui/data/ui/settingspanel.ui:132
-#, fuzzy
-#| msgid "Set the drawing cursor"
 msgid "Set whether the drawing cursor is visible"
-msgstr "வரைதல் சுட்டியை அமைக்கவும்"
+msgstr "வரைதல் சுட்டி தெரியும் என்பதை அமைக்கவும்"
 
 #: rnote-ui/data/ui/settingspanel.ui:146
 msgid "Drawing Cursor"
@@ -1470,10 +1456,8 @@ msgid "Switch to the 'Tools'"
 msgstr "'கருவிகள்' க்கு மாறவும்"
 
 #: rnote-ui/data/ui/shortcuts.ui:93
-#, fuzzy
-#| msgid "Move View"
 msgid "View"
-msgstr "நகர்த்து இடதுபுறம்"
+msgstr "காட்சி"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"
@@ -1572,10 +1556,8 @@ msgid "Opening Xournal++ file failed"
 msgstr "Xournal++ கோப்பை திறப்பதில் தோல்வி"
 
 #: rnote-ui/src/appwindow/mod.rs:550 rnote-ui/src/dialogs/import.rs:305
-#, fuzzy
-#| msgid "Opening PDF file failed"
 msgid "Opening Pdf file failed"
-msgstr "PDF கோப்பை திறக்க முடியவில்லை"
+msgstr "Pdf கோப்பை திறக்க முடியவில்லை"
 
 #: rnote-ui/src/appwindow/mod.rs:559
 msgid "Failed to open file, tried to open folder as file"

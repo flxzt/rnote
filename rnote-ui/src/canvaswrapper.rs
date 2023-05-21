@@ -1,4 +1,5 @@
 // Imports
+use crate::canvas::input_source_from_event;
 use crate::{RnAppWindow, RnCanvas};
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CornerType,
@@ -353,7 +354,7 @@ mod imp {
                         new_zoom.set(current_zoom);
                         prev_scale.set(1.0);
 
-                        canvaswrapper.canvas().set_zooming(true, gesture.device().and_then(|d| Some(d.source())), Instant::now());
+                        canvaswrapper.canvas().start_zooming(gesture.current_event().and_then(|e| input_source_from_event(&e)), Instant::now());
 
                         bbcenter_begin.set(gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
                         offset_begin.set(canvaswrapper.canvas().engine().borrow().camera.offset);
@@ -391,7 +392,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().set_zooming(false, gesture.device().and_then(|d| Some(d.source())), Instant::now());
+                        canvaswrapper.canvas().stop_zooming(Instant::now());
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );
@@ -399,7 +400,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().set_zooming(false, gesture.device().and_then(|d| Some(d.source())), Instant::now());
+                        canvaswrapper.canvas().stop_zooming(Instant::now());
                         canvaswrapper.canvas().update_engine_rendering();
                     }),
                 );

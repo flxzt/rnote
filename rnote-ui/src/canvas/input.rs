@@ -339,8 +339,10 @@ fn event_is_touchscreen(event: &gdk::Event) -> bool {
     )
 }
 
-// See https://gitlab.gnome.org/GNOME/gtk/issues/4374
-fn input_source_from_event(event: &gdk::Event) -> Option<gdk::InputSource> {
+// gdk::Device.source() returns InputSource::Mouse for pens and touchscreens,
+// so use manual detection with gdk::Debice.source() as a fallback.
+// see https://gitlab.gnome.org/GNOME/gtk/issues/4374
+pub fn input_source_from_event(event: &gdk::Event) -> Option<gdk::InputSource> {
     if event_is_stylus(event) {
         Some(gdk::InputSource::Pen)
     } else if event_is_touchscreen(event) {

@@ -5,6 +5,7 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+pub(crate) use input::input_source_from_event;
 
 // Imports
 use crate::RnCanvasWrapper;
@@ -656,20 +657,8 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn set_zooming(
-        &self,
-        zooming: bool,
-        input_source: Option<gdk::InputSource>,
-        now: Instant,
-    ) {
+    pub(crate) fn set_zooming(&self, zooming: bool) {
         self.imp().zooming.set(zooming);
-        if !zooming {
-            self.imp().zooming_ended.set(Some(now));
-        } else if self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle {
-            if self.pen_input_source() == input_source {
-                self.emit_handle_widget_flags(self.engine().borrow_mut().undo(now));
-            }
-        }
     }
 
     #[allow(unused)]
@@ -706,6 +695,20 @@ impl RnCanvas {
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
         self.imp().engine.clone()
+    }
+
+    pub(crate) fn start_zooming(&self, input_source: Option<gdk::InputSource>, now: Instant) {
+        self.set_zooming(true);
+        if self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle
+            && self.pen_input_source() == input_source
+        {
+            self.emit_handle_widget_flags(self.engine().borrow_mut().undo(now));
+        }
+    }
+
+    pub(crate) fn stop_zooming(&self, now: Instant) {
+        self.set_zooming(false);
+        self.set_zooming_ended(Some(now));
     }
 
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {

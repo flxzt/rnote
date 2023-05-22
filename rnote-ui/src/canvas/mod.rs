@@ -702,7 +702,9 @@ impl RnCanvas {
         if self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle
             && self.pen_input_source() == input_source
         {
-            self.emit_handle_widget_flags(self.engine().borrow_mut().undo(now));
+            let mut widget_flags = self.engine().borrow_mut().undo(now);
+            widget_flags.merge(self.engine().borrow_mut().store.remove_future());
+            self.emit_handle_widget_flags(widget_flags);
         }
     }
 

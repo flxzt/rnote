@@ -399,6 +399,20 @@ impl StrokeStore {
         key
     }
 
+    /// Permanently remove future history.
+    pub fn remove_future(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        self.history
+            .truncate(self.history_pos.unwrap_or(self.history.len()));
+        self.history_pos = None;
+
+        widget_flags.hide_redo = Some(true);
+        widget_flags.hide_undo = Some(!self.can_undo());
+
+        widget_flags
+    }
+
     /// Permanently removes a stroke with the given key from the store.
     pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
         Arc::make_mut(&mut self.trash_components).remove(key);

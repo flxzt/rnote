@@ -51,7 +51,7 @@ impl StrokeStore {
         }
     }
 
-    /// All stroke keys unordered.
+    /// All keys from the stroke components slotmap, unordered.
     pub fn keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components.keys().collect()
     }
@@ -60,7 +60,7 @@ impl StrokeStore {
         self.key_tree.keys_intersecting_bounds(bounds)
     }
 
-    /// All stroke keys unordered.
+    /// All stroke keys that are not trashed, unordered.
     pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()

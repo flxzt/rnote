@@ -41,11 +41,11 @@ piet-cairo = "0.6"
 kurbo = "0.9"
 image = "0.24"
 svg = "0.13"
-geo = "0.24"
+geo = "0.25"
 rodio = {version = "0.17", default-features=false, features = ["symphonia-wav"] }
 semver = { version = "1"}
 unicode-segmentation = "1"
-usvg = "0.32"
+usvg = "0.33"
 xmlwriter = "0.1"
 
 [dev-dependencies]

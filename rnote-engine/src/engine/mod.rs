@@ -438,7 +438,7 @@ impl RnoteEngine {
 
     /// Takes a snapshot of the current state.
     pub fn take_snapshot(&self) -> EngineSnapshot {
-        let mut store_history_entry = self.store.history_entry_from_current_state();
+        let mut store_history_entry = self.store.create_history_entry();
 
         // Remove all trashed strokes
         let trashed_keys = store_history_entry

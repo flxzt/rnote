@@ -28,7 +28,7 @@ impl SelectionComponent {
 
 /// Systems that are related to selecting.
 impl StrokeStore {
-    /// Reload the slotmap with empty selection components with the keys returned from the stroke components.
+    /// Rebuild the slotmap with empty selection components with the keys returned from the stroke components.
     pub fn rebuild_selection_components_slotmap(&mut self) {
         self.selection_components = Arc::new(slotmap::SecondaryMap::new());
         self.stroke_components.keys().for_each(|key| {

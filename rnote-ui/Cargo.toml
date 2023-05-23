@@ -19,7 +19,7 @@ rnote-engine = {path = "../rnote-engine", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
 log = "0.4"
-pretty_env_logger = "0.4"
+pretty_env_logger = "0.5"
 num-derive = "0.3"
 num-traits = "0.2"
 once_cell = "1"

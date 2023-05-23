@@ -6,16 +6,6 @@ use rstar::primitives::GeomWithData;
 /// The rtree object that holds the bounds and [StrokeKey].
 type KeyTreeObject = GeomWithData<rstar::primitives::Rectangle<[f64; 2]>, StrokeKey>;
 
-fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {
-    KeyTreeObject::new(
-        rstar::primitives::Rectangle::from_corners(
-            [bounds.mins[0], bounds.mins[1]],
-            [bounds.maxs[0], bounds.maxs[1]],
-        ),
-        key,
-    )
-}
-
 #[derive(Debug, Default)]
 /// A Rtree with [StrokeKey]'s as associated data.
 ///
@@ -65,8 +55,8 @@ impl KeyTree {
             .collect()
     }
 
-    /// Reload the entire tree from the given Vec of (key, bounds).
-    pub fn reload_with_vec(&mut self, strokes: Vec<(StrokeKey, Aabb)>) {
+    /// Rebuild the entire rtree from the given Vec of (key, bounds).
+    pub fn rebuild_from_vec(&mut self, strokes: Vec<(StrokeKey, Aabb)>) {
         let objects = strokes
             .into_iter()
             .map(|(key, bounds)| new_keytree_object(key, bounds))
@@ -79,4 +69,14 @@ impl KeyTree {
     pub fn clear(&mut self) {
         *self = Self::default()
     }
+}
+
+fn new_keytree_object(key: StrokeKey, bounds: Aabb) -> KeyTreeObject {
+    KeyTreeObject::new(
+        rstar::primitives::Rectangle::from_corners(
+            [bounds.mins[0], bounds.mins[1]],
+            [bounds.maxs[0], bounds.maxs[1]],
+        ),
+        key,
+    )
 }

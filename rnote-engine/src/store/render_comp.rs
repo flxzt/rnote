@@ -47,12 +47,23 @@ impl Default for RenderComponent {
 }
 
 impl StrokeStore {
-    /// Reload the slotmap with empty render components with the keys returned from the stroke components.
+    /// Rebuild the slotmap with empty render components with the keys returned from the stroke components.
     pub fn rebuild_render_components_slotmap(&mut self) {
         self.render_components = slotmap::SecondaryMap::new();
         self.stroke_components.keys().for_each(|key| {
             self.render_components
                 .insert(key, RenderComponent::default());
+        });
+    }
+
+    /// Rebuild the render components slotmap while retaining the components for all currently stored strokes
+    pub fn rebuild_retain_valid_keys_render_components(&mut self) {
+        self.render_components
+            .retain(|k, _| self.stroke_components.contains_key(k));
+        self.stroke_components.keys().for_each(|k| {
+            if !self.render_components.contains_key(k) {
+                self.render_components.insert(k, RenderComponent::default());
+            }
         });
     }
 

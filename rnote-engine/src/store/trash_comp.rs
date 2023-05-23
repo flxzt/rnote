@@ -24,7 +24,7 @@ impl Default for TrashComponent {
 
 /// Systems that are related to trashing.
 impl StrokeStore {
-    /// Reload the slotmap with empty trash components with the keys returned from the stroke components.
+    /// Rebuild the slotmap with empty trash components with the keys returned from the stroke components.
     pub fn rebuild_trash_components_slotmap(&mut self) {
         self.trash_components = Arc::new(slotmap::SecondaryMap::new());
         self.stroke_components.keys().for_each(|key| {
@@ -81,10 +81,12 @@ impl StrokeStore {
             .collect()
     }
 
-    pub fn remove_trashed_strokes(&mut self) {
-        for key in self.trashed_keys_unordered() {
-            self.remove_stroke(key);
-        }
+    /// Removes all trashed strokes permanently from the store.
+    pub fn remove_trashed_strokes(&mut self) -> Vec<Stroke> {
+        self.trashed_keys_unordered()
+            .into_iter()
+            .filter_map(|k| self.remove_stroke(k))
+            .collect()
     }
 
     /// Trash strokes that collide with the given bounds.

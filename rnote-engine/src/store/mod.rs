@@ -143,17 +143,17 @@ impl StrokeStore {
         self.rebuild_selection_components_slotmap();
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
-        self.reload_rtree();
+        self.rebuild_rtree();
     }
 
-    /// Reload the rtree with the current bounds of the strokes.
-    pub fn reload_rtree(&mut self) {
+    /// Rebuild the rtree with the current stored strokes keys and bounds.
+    pub fn rebuild_rtree(&mut self) {
         let tree_objects = self
             .stroke_components
             .iter()
             .map(|(key, stroke)| (key, stroke.bounds()))
             .collect();
-        self.key_tree.reload_with_vec(tree_objects);
+        self.key_tree.rebuild_from_vec(tree_objects);
     }
 
     /// Checks the pointer equality of current state to the given history entry.
@@ -168,7 +168,7 @@ impl StrokeStore {
     }
 
     /// Create a history entry from the current state.
-    pub fn history_entry_from_current_state(&self) -> Arc<HistoryEntry> {
+    pub fn create_history_entry(&self) -> Arc<HistoryEntry> {
         Arc::new(HistoryEntry {
             stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
@@ -186,13 +186,11 @@ impl StrokeStore {
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
         self.chrono_counter = history_entry.chrono_counter;
 
-        // Since we don't store the rtree in the history, we need to reload it.
-        self.reload_rtree();
-        // render components are also not stored in the history, but for the duration of the running app we don't ever remove them,
-        // so we can actually skip rebuilding them when importing a history entry.
-        // This avoids flickering when we have already rebuilt the components
-        // and wouldn't be able to display anything until the rendering is finished.
-        //self.reload_render_components_slotmap();
+        // Since we don't store the rtree in the history, we need to rebuild it.
+        self.rebuild_rtree();
+        // Rebuild but retain the render components for the strokes that are found in the history entry.
+        // This ensures that we are able to continue displaying the strokes after undo/redo while they are rerendered.
+        self.rebuild_retain_valid_keys_render_components();
 
         let all_strokes = self.stroke_keys_unordered();
         self.set_rendering_dirty_for_strokes(&all_strokes);
@@ -247,8 +245,7 @@ impl StrokeStore {
             .map(|last| !self.ptr_eq_w_history_entry(last))
             .unwrap_or(true)
         {
-            self.history
-                .push_back(self.history_entry_from_current_state());
+            self.history.push_back(self.create_history_entry());
 
             if self.history.len() > Self::HISTORY_MAX_LEN {
                 self.history.pop_front();
@@ -270,7 +267,7 @@ impl StrokeStore {
             Some(index) => index,
             None => {
                 // If we are in the present, we push the current state to the history
-                let current = self.history_entry_from_current_state();
+                let current = self.create_history_entry();
                 self.history.push_back(current);
 
                 self.history.len() - 1
@@ -325,8 +322,7 @@ impl StrokeStore {
             .map(|last| !self.ptr_eq_w_history_entry(last))
             .unwrap_or(true)
         {
-            self.history
-                .push_back(self.history_entry_from_current_state());
+            self.history.push_back(self.create_history_entry());
 
             if self.history.len() > Self::HISTORY_MAX_LEN {
                 self.history.pop_front();
@@ -346,7 +342,7 @@ impl StrokeStore {
         let index = self.history_pos.unwrap_or(self.history.len());
 
         if index > 0 {
-            let current = self.history_entry_from_current_state();
+            let current = self.create_history_entry();
             let prev = Arc::clone(&self.history[index - 1]);
 
             self.history.push_back(current);
@@ -399,7 +395,7 @@ impl StrokeStore {
         key
     }
 
-    /// Permanently removes a stroke with the given key from the store.
+    /// Permanently remove a stroke with the given key from the store.
     pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
         Arc::make_mut(&mut self.trash_components).remove(key);
         Arc::make_mut(&mut self.selection_components).remove(key);

@@ -1,12 +1,30 @@
 // Imports
-use palette::{IntoColor, Okhsl, Srgb};
+use palette::{
+    convert::{FromColorUnclamped, IntoColorUnclamped},
+    IntoColor,
+};
 use serde::{Deserialize, Serialize};
 
 /// The threshold of the luminance of a color, deciding if a light or dark fg color is used. Between 0.0 and 1.0.
 pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
 
 /// A rgba color
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    PartialOrd,
+    Serialize,
+    Deserialize,
+    palette::convert::FromColorUnclamped,
+    palette::WithAlpha,
+)]
+#[palette(
+    skip_derives(Rgb),
+    component = "f64",
+    rgb_standard = "palette::encoding::Srgb"
+)]
 #[serde(default, rename = "color")]
 pub struct Color {
     /// Red, ranging [0.0, 1.0].
@@ -19,6 +37,7 @@ pub struct Color {
     #[serde(rename = "b", with = "crate::serialize::f64_dp3")]
     pub b: f64,
     /// Alpha, ranging [0.0, 1.0].
+    #[palette(alpha)]
     #[serde(rename = "a", with = "crate::serialize::f64_dp3")]
     pub a: f64,
 }
@@ -95,21 +114,26 @@ impl Color {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
     }
 
-    /// Inverts the lightness of the color while keeping perceived hue and saturation constant
-    pub fn inverted_lightness(&self) -> Self {
-        let mut hsl_color: Okhsl<f64> = Srgb::new(self.r, self.g, self.b).into_color();
-        hsl_color.lightness = 1.0 - hsl_color.lightness;
-        let inverted_srgb_color: Srgb<f64> = hsl_color.into_color();
+    /// Inverts the perceived brightness of the color.
+    pub fn to_inverted_brightness_color(self) -> Self {
+        let mut hwba_color: palette::Okhwba<f64> = self.into_color();
 
-        Self {
-            r: inverted_srgb_color.red,
-            g: inverted_srgb_color.green,
-            b: inverted_srgb_color.blue,
-            a: self.a,
-        }
+        std::mem::swap(
+            &mut hwba_color.color.whiteness,
+            &mut hwba_color.color.blackness,
+        );
+
+        hwba_color.into_color()
     }
 
-    /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`.
+    /// Inverts the lightness of the color while keeping perceived hue and saturation constant.
+    pub fn to_inverted_lightness_color(self) -> Self {
+        let mut hsla_color: palette::Okhsla<f64> = self.into_color();
+        hsla_color.lightness = 1.0 - hsla_color.lightness;
+        hsla_color.into_color()
+    }
+
+    /// Converts to a css color attribute in the style: `rgba(xxx,xxx,xxx,xxx)`.
     /// The values are 8 bit integers, ranging [0, 255].
     pub fn to_css_color_attr(self) -> String {
         format!(
@@ -191,6 +215,42 @@ impl From<roughr::Srgba> for Color {
 impl From<Color> for roughr::Srgba {
     fn from(c: Color) -> Self {
         roughr::Srgba::new(c.r as f32, c.g as f32, c.b as f32, c.a as f32)
+    }
+}
+
+// Conversion function for (opaque) RGB to Color. `impl_default_conversions` take care of preserving the transparency.
+impl<S> palette::convert::FromColorUnclamped<palette::rgb::Rgb<S, f64>> for Color
+where
+    palette::Srgb<f64>: FromColorUnclamped<palette::rgb::Rgb<S, f64>>,
+{
+    fn from_color_unclamped(color: palette::rgb::Rgb<S, f64>) -> Color {
+        let srgb = palette::Srgb::from_color_unclamped(color).into_format();
+
+        Color {
+            r: srgb.red,
+            g: srgb.green,
+            b: srgb.blue,
+            a: 1.0,
+        }
+    }
+}
+
+// Conversion function for Color to (opaque) RGB. `impl_default_conversions` take care of preserving the transparency.
+impl<S> palette::convert::FromColorUnclamped<Color> for palette::rgb::Rgb<S, f64>
+where
+    palette::Srgb<f64>: IntoColorUnclamped<palette::rgb::Rgb<S, f64>>,
+{
+    fn from_color_unclamped(color: Color) -> palette::rgb::Rgb<S, f64> {
+        palette::Srgb::new(color.r, color.g, color.b)
+            .into_format()
+            .into_color_unclamped()
+    }
+}
+
+impl palette::Clamp for Color {
+    fn clamp(self) -> Self {
+        // The constructor clamps components to [0.0, 1.0].
+        Color::new(self.r, self.g, self.b, self.a)
     }
 }
 

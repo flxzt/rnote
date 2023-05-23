@@ -281,7 +281,7 @@ impl StrokeStore {
     /// Invert the stroke, text and fill color of the given keys.
     ///
     /// Strokes then need to update their rendering.
-    pub fn invert_color_lightness(&mut self, keys: &[StrokeKey]) -> WidgetFlags {
+    pub fn invert_color_brightness(&mut self, keys: &[StrokeKey]) -> WidgetFlags {
         let mut widget_flags = self.record(Instant::now());
 
         keys.iter().for_each(|&key| {
@@ -295,13 +295,13 @@ impl StrokeStore {
                             if let Some(color) = brush_stroke.style.stroke_color() {
                                 brush_stroke
                                     .style
-                                    .set_stroke_color(color.inverted_lightness());
+                                    .set_stroke_color(color.to_inverted_brightness_color());
                             }
 
                             if let Some(color) = brush_stroke.style.fill_color() {
                                 brush_stroke
                                     .style
-                                    .set_fill_color(color.inverted_lightness());
+                                    .set_fill_color(color.to_inverted_brightness_color());
                             }
 
                             self.set_rendering_dirty(key);
@@ -310,20 +310,20 @@ impl StrokeStore {
                             if let Some(color) = shape_stroke.style.stroke_color() {
                                 shape_stroke
                                     .style
-                                    .set_stroke_color(color.inverted_lightness());
+                                    .set_stroke_color(color.to_inverted_brightness_color());
                             }
 
                             if let Some(color) = shape_stroke.style.fill_color() {
                                 shape_stroke
                                     .style
-                                    .set_fill_color(color.inverted_lightness());
+                                    .set_fill_color(color.to_inverted_brightness_color());
                             }
 
                             self.set_rendering_dirty(key);
                         }
                         Stroke::TextStroke(text_stroke) => {
                             text_stroke.text_style.color =
-                                text_stroke.text_style.color.inverted_lightness();
+                                text_stroke.text_style.color.to_inverted_brightness_color();
 
                             self.set_rendering_dirty(key);
                         }

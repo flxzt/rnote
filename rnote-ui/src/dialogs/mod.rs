@@ -117,13 +117,14 @@ pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
                         let engine = canvas.engine();
                         let engine = &mut *engine.borrow_mut();
 
-                        let mut widget_flags = WidgetFlags::default();
-                        widget_flags.refresh_ui = true;
+                        engine.document.background.color = engine.document.background.color.to_inverted_lightness_color();
+                        engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_lightness_color();
+                        engine.document.format.border_color = engine.document.format.border_color.to_inverted_lightness_color();
 
-                        engine.document.background.color = engine.document.background.color.inverted_lightness();
-                        engine.document.background.pattern_color = engine.document.background.pattern_color.inverted_lightness();
-
-                        widget_flags
+                        WidgetFlags {
+                            refresh_ui: true,
+                            ..Default::default()
+                        }
                     };
 
                     appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -140,7 +141,7 @@ pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
 
                         let keys = engine.store.stroke_keys_unordered();
 
-                        engine.store.invert_color_lightness(&keys)
+                        engine.store.invert_color_brightness(&keys)
                     };
 
                     appwindow.handle_widget_flags(widget_flags, &canvas);

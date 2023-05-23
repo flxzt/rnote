@@ -287,7 +287,7 @@ impl RnoteEngine {
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
     ) -> WidgetFlags {
-        let mut widget_flags = self.store.record(Instant::now());
+        let mut widget_flags = WidgetFlags::default();
 
         // we need to always deselect all strokes -
         // even tough changing the pen style deselects too, it does only when the pen is actually different.
@@ -312,6 +312,7 @@ impl RnoteEngine {
             log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
         }
 
+        widget_flags.merge(self.store.record(Instant::now()));
         widget_flags.redraw = true;
         widget_flags.resize = true;
         widget_flags.store_modified = true;
@@ -326,7 +327,7 @@ impl RnoteEngine {
         text: String,
         pos: na::Vector2<f64>,
     ) -> anyhow::Result<WidgetFlags> {
-        let mut widget_flags = self.store.record(Instant::now());
+        let mut widget_flags = WidgetFlags::default();
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
         let all_strokes = self.store.stroke_keys_as_rendered();
@@ -349,6 +350,7 @@ impl RnoteEngine {
             ));
         }
 
+        widget_flags.merge(self.store.record(Instant::now()));
         widget_flags.redraw = true;
 
         Ok(widget_flags)
@@ -362,8 +364,10 @@ impl RnoteEngine {
         content: StrokeContent,
         pos: na::Vector2<f64>,
     ) -> WidgetFlags {
-        let mut widget_flags = self.store.record(Instant::now());
-        // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
+        let mut widget_flags = WidgetFlags::default();
+
+        // we need to always deselect all strokes
+        // even though changing the pen style deselects too, but only when the pen is actually different.
         let all_strokes = self.store.stroke_keys_as_rendered();
         self.store.set_selected_keys(&all_strokes, false);
         widget_flags.merge(self.change_pen_style(PenStyle::Selector));
@@ -384,7 +388,10 @@ impl RnoteEngine {
             camera: &mut self.camera,
             audioplayer: &mut self.audioplayer,
         }));
+
+        widget_flags.merge(self.store.record(Instant::now()));
         widget_flags.redraw = true;
+
         widget_flags
     }
 }

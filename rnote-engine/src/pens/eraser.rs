@@ -52,8 +52,6 @@ impl PenBehaviour for Eraser {
 
         let pen_progress = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                 match &engine_view.pens_config.eraser_config.style {
                     EraserStyle::TrashCollidingStrokes => {
                         widget_flags.merge(engine_view.store.trash_colliding_strokes(
@@ -150,6 +148,7 @@ impl PenBehaviour for Eraser {
 
                 self.state = EraserState::Up;
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.redraw = true;
 
                 PenProgress::Finished
@@ -170,6 +169,7 @@ impl PenBehaviour for Eraser {
             (EraserState::Proximity { .. } | EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.redraw = true;
 
                 PenProgress::Finished

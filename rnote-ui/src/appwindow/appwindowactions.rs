@@ -11,7 +11,7 @@ use rnote_compose::penevents::ShortcutKey;
 use rnote_engine::document::Layout;
 use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
-use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
+use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -407,11 +407,12 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
                 let canvas = appwindow.active_tab().canvas();
 
-                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let mut widget_flags = WidgetFlags::default();
                 let selection_keys = canvas.engine().borrow().store.selection_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
                 widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
                 canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -423,11 +424,12 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
                 let canvas = appwindow.active_tab().canvas();
 
-                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let mut widget_flags = WidgetFlags::default();
                 let new_selected = canvas.engine().borrow_mut().store.duplicate_selection();
                 canvas.engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
                 widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
                 canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -439,12 +441,13 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
                 let canvas = appwindow.active_tab().canvas();
 
-                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let mut widget_flags = WidgetFlags::default();
                 let all_strokes = canvas.engine().borrow().store.stroke_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
                 widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
                 widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
                 canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -456,12 +459,13 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
                 let canvas = appwindow.active_tab().canvas();
 
-                let mut widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let mut widget_flags = WidgetFlags::default();
                 let all_strokes = canvas.engine().borrow().store.selection_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
                 widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
                 canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
@@ -557,8 +561,9 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_remove_page_from_doc, _target| {
                 let canvas = appwindow.active_tab().canvas();
 
-                let widget_flags = canvas.engine().borrow_mut().record(Instant::now());
+                let mut widget_flags = WidgetFlags::default();
                 if canvas.engine().borrow_mut().remove_page_doc_fixed_size() {
+                    widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                     canvas.update_engine_rendering();
                 }
                 appwindow.handle_widget_flags(widget_flags, &canvas);

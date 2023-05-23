@@ -10,6 +10,7 @@ use rnote_engine::engine::EngineViewMut;
 use rnote_engine::pens::{Pen, PenStyle};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
+use std::time::Instant;
 
 mod imp {
     use super::*;
@@ -273,9 +274,12 @@ impl RnOverlays {
                         }
                         PenStyle::Selector => {
                             let selection_keys = engine.store.selection_keys_unordered();
-                            let widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
-                            engine.update_content_rendering_current_viewport();
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                            if !selection_keys.is_empty() {
+                                let mut widget_flags = engine.store.change_stroke_colors(&selection_keys, stroke_color);
+                                widget_flags.merge(engine.record(Instant::now()));
+                                engine.update_content_rendering_current_viewport();
+                                appwindow.handle_widget_flags(widget_flags, &canvas);
+                            }
                         }
                         PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                     }
@@ -300,9 +304,12 @@ impl RnOverlays {
                 match stroke_style {
                     PenStyle::Selector => {
                         let selection_keys = engine.store.selection_keys_unordered();
-                        let widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
-                        engine.update_content_rendering_current_viewport();
-                        appwindow.handle_widget_flags(widget_flags, &canvas);
+                        if !selection_keys.is_empty() {
+                            let mut widget_flags = engine.store.change_fill_colors(&selection_keys, fill_color);
+                            widget_flags.merge(engine.record(Instant::now()));
+                            engine.update_content_rendering_current_viewport();
+                            appwindow.handle_widget_flags(widget_flags, &canvas);
+                        }
                     }
                     PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                 }

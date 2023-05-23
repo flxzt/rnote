@@ -23,8 +23,6 @@ impl Selector {
 
         let progress = match &mut self.state {
             SelectorState::Idle => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                 // Deselect on start
                 let selection_keys = engine_view.store.selection_keys_as_rendered();
                 if !selection_keys.is_empty() {
@@ -60,31 +58,32 @@ impl Selector {
 
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
-
-                        // If we click on another, not-already selected stroke while in separate style or while pressing Shift, we add it to the selection
-                        let keys = engine_view.store.stroke_hitboxes_contain_coord(
-                            engine_view.camera.viewport(),
-                            element.pos,
-                        );
-                        let key_to_add = keys.last();
+                        // If we click on another, not-already selected stroke while in separate style or
+                        // while pressing Shift, we add it to the selection
+                        let key_to_add = engine_view
+                            .store
+                            .stroke_hitboxes_contain_coord(
+                                engine_view.camera.viewport(),
+                                element.pos,
+                            )
+                            .pop();
 
                         if (engine_view.pens_config.selector_config.style == SelectorStyle::Single
                             || modifier_keys.contains(&ModifierKey::KeyboardShift))
                             && key_to_add
-                                .and_then(|&key| engine_view.store.selected(key).map(|s| !s))
+                                .and_then(|key| engine_view.store.selected(key).map(|s| !s))
                                 .unwrap_or(false)
                         {
-                            let key_to_add = *key_to_add.unwrap();
+                            let key_to_add = key_to_add.unwrap();
                             engine_view.store.set_selected(key_to_add, true);
-
                             selection.push(key_to_add);
-
                             if let Some(new_bounds) =
                                 engine_view.store.bounds_for_strokes(selection)
                             {
                                 *selection_bounds = new_bounds;
                             }
+
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
                         {
@@ -157,7 +156,7 @@ impl Selector {
                                 current_pos: element.pos,
                             };
                         } else {
-                            // If clicking outside the selection bounds, reset
+                            // when clicking outside the selection bounds, reset
                             engine_view.store.set_selected_keys(selection, false);
                             self.state = SelectorState::Idle;
 
@@ -307,28 +306,19 @@ impl Selector {
         let progress = match &mut self.state {
             SelectorState::Idle => PenProgress::Idle,
             SelectorState::Selecting { path } => {
-                let mut state = SelectorState::Idle;
-                let mut pen_progress = PenProgress::Finished;
+                let mut progress = PenProgress::Finished;
 
-                if let Some(selection) = match engine_view.pens_config.selector_config.style {
+                let new_selection = match engine_view.pens_config.selector_config.style {
                     SelectorStyle::Polygon => {
-                        if path.len() < 3 {
-                            None
-                        } else {
-                            let new_keys = engine_view
+                        if path.len() >= 3 {
+                            engine_view
                                 .store
                                 .strokes_hitboxes_contained_in_path_polygon(
                                     path,
                                     engine_view.camera.viewport(),
-                                );
-                            if !new_keys.is_empty() {
-                                engine_view.store.set_selected_keys(&new_keys, true);
-                                widget_flags.store_modified = true;
-                                widget_flags.deselect_color_setters = true;
-                                Some(new_keys)
-                            } else {
-                                None
-                            }
+                                )
+                        } else {
+                            vec![]
                         }
                     }
                     SelectorStyle::Rectangle => {
@@ -337,81 +327,59 @@ impl Selector {
                                 na::Point2::from(first.pos),
                                 na::Point2::from(last.pos),
                             );
-                            let new_keys = engine_view.store.strokes_hitboxes_contained_in_aabb(
+                            engine_view.store.strokes_hitboxes_contained_in_aabb(
                                 aabb,
                                 engine_view.camera.viewport(),
-                            );
-                            if !new_keys.is_empty() {
-                                engine_view.store.set_selected_keys(&new_keys, true);
-                                widget_flags.store_modified = true;
-                                widget_flags.deselect_color_setters = true;
-                                Some(new_keys)
-                            } else {
-                                None
-                            }
+                            )
                         } else {
-                            None
+                            vec![]
                         }
                     }
                     SelectorStyle::Single => {
-                        if let Some(last) = path.last() {
-                            if let Some(&new_key) = engine_view
+                        if let Some(key) = path.last().and_then(|last| {
+                            engine_view
                                 .store
                                 .stroke_hitboxes_contain_coord(
                                     engine_view.camera.viewport(),
                                     last.pos,
                                 )
-                                .last()
-                            {
-                                engine_view.store.set_selected(new_key, true);
-                                widget_flags.store_modified = true;
-                                widget_flags.deselect_color_setters = true;
-                                Some(vec![new_key])
-                            } else {
-                                None
-                            }
+                                .pop()
+                        }) {
+                            vec![key]
                         } else {
-                            None
+                            vec![]
                         }
                     }
                     SelectorStyle::IntersectingPath => {
-                        if path.len() < 3 {
-                            None
+                        if path.len() >= 3 {
+                            engine_view.store.strokes_hitboxes_intersect_path(
+                                path,
+                                engine_view.camera.viewport(),
+                            )
                         } else {
-                            let intersecting_keys =
-                                engine_view.store.strokes_hitboxes_intersect_path(
-                                    path,
-                                    engine_view.camera.viewport(),
-                                );
-                            if !intersecting_keys.is_empty() {
-                                engine_view
-                                    .store
-                                    .set_selected_keys(&intersecting_keys, true);
-                                widget_flags.store_modified = true;
-                                widget_flags.deselect_color_setters = true;
-                                Some(intersecting_keys)
-                            } else {
-                                None
-                            }
+                            vec![]
                         }
                     }
-                } {
-                    if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&selection) {
+                };
+                if !new_selection.is_empty() {
+                    engine_view.store.set_selected_keys(&new_selection, true);
+                    widget_flags.store_modified = true;
+                    widget_flags.deselect_color_setters = true;
+
+                    if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&new_selection) {
                         // Change to the modify state
-                        state = SelectorState::ModifySelection {
+                        self.state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
-                            selection,
+                            selection: new_selection,
                             selection_bounds: new_bounds,
                         };
-                        pen_progress = PenProgress::InProgress;
+                        progress = PenProgress::InProgress;
                     }
                 }
 
-                self.state = state;
-
                 widget_flags.redraw = true;
 
-                pen_progress
+                progress
             }
             SelectorState::ModifySelection {
                 modify_state,
@@ -422,8 +390,10 @@ impl Selector {
                     ModifyState::Translate { .. }
                     | ModifyState::Rotate { .. }
                     | ModifyState::Resize { .. } => {
-                        // When transitioning from translating, rotating and resizing, we need to update the selection
                         engine_view.store.update_geometry_for_strokes(selection);
+                        engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -434,6 +404,10 @@ impl Selector {
                         if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
                             *selection_bounds = new_bounds;
                         }
+
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        widget_flags.store_modified = true;
+                        widget_flags.resize = true;
                     }
                     _ => {}
                 }
@@ -447,13 +421,7 @@ impl Selector {
                     ModifyState::Up
                 };
 
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
-
                 widget_flags.redraw = true;
-                widget_flags.resize = true;
-                widget_flags.store_modified = true;
 
                 PenProgress::InProgress
             }
@@ -529,6 +497,11 @@ impl Selector {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
+
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags.redraw = true;
+                            widget_flags.resize = true;
+                            widget_flags.store_modified = true;
                         }
                         PenProgress::Finished
                     }
@@ -540,6 +513,7 @@ impl Selector {
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.redraw = true;
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;

@@ -108,21 +108,14 @@ impl PenBehaviour for Shaper {
                             .pens_config
                             .shaper_config
                             .gen_style_for_current_options();
-
-                        if !shapes.is_empty() {
-                            // Only record if new shapes actually were emitted
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
-                            widget_flags.store_modified = true;
-                        }
+                        let shapes_emitted = !shapes.is_empty();
 
                         for shape in shapes {
                             let key = engine_view.store.insert_stroke(
                                 Stroke::ShapeStroke(ShapeStroke::new(shape, style.clone())),
                                 None,
                             );
-
                             style.advance_seed();
-
                             engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
@@ -130,6 +123,10 @@ impl PenBehaviour for Shaper {
                             );
                         }
 
+                        if shapes_emitted {
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags.store_modified = true;
+                        }
                         widget_flags.redraw = true;
 
                         PenProgress::InProgress
@@ -140,24 +137,13 @@ impl PenBehaviour for Shaper {
                             .shaper_config
                             .gen_style_for_current_options();
 
-                        if !shapes.is_empty() {
-                            // Only record if new shapes actually were emitted
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
-                            widget_flags.resize = true;
-                            widget_flags.store_modified = true;
-                        }
-
+                        let shapes_emitted = !shapes.is_empty();
                         for shape in shapes {
                             let key = engine_view.store.insert_stroke(
                                 Stroke::ShapeStroke(ShapeStroke::new(shape, style.clone())),
                                 None,
                             );
-
                             style.advance_seed();
-
                             engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),
@@ -167,6 +153,14 @@ impl PenBehaviour for Shaper {
 
                         self.state = ShaperState::Idle;
 
+                        if shapes_emitted {
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags.resize = true;
+                            widget_flags.store_modified = true;
+                        }
                         widget_flags.redraw = true;
 
                         PenProgress::Finished

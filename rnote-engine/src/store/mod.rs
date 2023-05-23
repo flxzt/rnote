@@ -90,11 +90,13 @@ pub struct StrokeStore {
 
     #[serde(skip)]
     history: VecDeque<Arc<HistoryEntry>>,
+    /// The index of the current edited document in the history stack.
     #[serde(skip)]
-    history_pos: Option<usize>,
+    live_index: usize,
 
     /// An rtree backed by the slotmap store, for faster spatial queries.
-    /// Needs to be updated with update_with_key() when strokes changed their geometry or position!
+    ///
+    /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
     #[serde(skip)]
     key_tree: KeyTree,
 
@@ -114,8 +116,9 @@ impl Default for StrokeStore {
             chrono_components: Arc::new(SecondaryMap::new()),
             render_components: SecondaryMap::new(),
 
-            history: VecDeque::new(),
-            history_pos: None,
+            // Start off with state in the history
+            history: VecDeque::from(vec![Arc::new(HistoryEntry::default())]),
+            live_index: 0,
 
             key_tree: KeyTree::default(),
 
@@ -156,7 +159,7 @@ impl StrokeStore {
         self.key_tree.rebuild_from_vec(tree_objects);
     }
 
-    /// Checks the pointer equality of current state to the given history entry.
+    /// Checks the pointer equality of current state to all fields of the given history entry.
     fn ptr_eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
@@ -196,48 +199,11 @@ impl StrokeStore {
         self.set_rendering_dirty_for_strokes(&all_strokes);
     }
 
-    /// Record the current state and saves it in the history.
+    /// Record the current state and save it in the history.
     pub fn record(&mut self, _now: Instant) -> WidgetFlags {
-        self.simple_style_record()
-    }
-
-    /// Undo the latest changes.
-    ///
-    /// Should only be called inside the engine undo wrapper function.
-    pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
-        self.simple_style_undo()
-    }
-
-    /// Redo the latest changes.
-    ///
-    /// Should only be called inside the engine redo wrapper function.
-    pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
-        self.simple_style_redo()
-    }
-
-    pub(super) fn can_undo(&self) -> bool {
-        let index = self.history_pos.unwrap_or(self.history.len());
-
-        index > 0
-    }
-
-    pub(super) fn can_redo(&self) -> bool {
-        let history_len = self.history.len();
-        let index = self.history_pos.unwrap_or(history_len);
-
-        index + 1 < history_len
-    }
-
-    fn simple_style_record(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        // as soon as the current state is recorded, remove the future
-        self.history.truncate(
-            self.history_pos
-                .map(|pos| pos + 1)
-                .unwrap_or(self.history.len()),
-        );
-        self.history_pos = None;
+        log::debug!("recording state to history");
 
         if self
             .history
@@ -245,76 +211,33 @@ impl StrokeStore {
             .map(|last| !self.ptr_eq_w_history_entry(last))
             .unwrap_or(true)
         {
-            self.history.push_back(self.create_history_entry());
+            // as soon as the current state is recorded, remove the future
+            self.history.truncate(self.live_index + 1);
 
-            if self.history.len() > Self::HISTORY_MAX_LEN {
+            let current = self.create_history_entry();
+            self.history.push_back(current);
+            self.live_index += 1;
+
+            // truncate history if necessary
+            while self.history.len() > Self::HISTORY_MAX_LEN {
                 self.history.pop_front();
+                self.live_index -= 1;
             }
         } else {
-            log::trace!("state has not changed, no need to record");
-        }
-
-        widget_flags.hide_redo = Some(true);
-        widget_flags.hide_undo = Some(false);
-
-        widget_flags
-    }
-
-    fn simple_style_undo(&mut self) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        let index = match self.history_pos {
-            Some(index) => index,
-            None => {
-                // If we are in the present, we push the current state to the history
-                let current = self.create_history_entry();
-                self.history.push_back(current);
-
-                self.history.len() - 1
-            }
-        };
-
-        if index > 0 {
-            let prev = Arc::clone(&self.history[index - 1]);
-            self.import_history_entry(&prev);
-
-            self.history_pos = Some(index - 1);
-            widget_flags.hide_redo = Some(false);
-        } else {
-            log::debug!("no history, can't undo");
+            log::debug!("state has not changed, no need to record");
         }
 
         widget_flags.hide_undo = Some(!self.can_undo());
-
-        widget_flags
-    }
-
-    fn simple_style_redo(&mut self) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        let index = self.history_pos.unwrap_or(self.history.len() - 1);
-
-        if index < self.history.len() - 1 {
-            let next = Arc::clone(&self.history[index + 1]);
-            self.import_history_entry(&next);
-
-            self.history_pos = Some(index + 1);
-            widget_flags.hide_undo = Some(false);
-        } else {
-            log::debug!("no future history entries, can't redo");
-        }
-
         widget_flags.hide_redo = Some(!self.can_redo());
 
         widget_flags
     }
 
-    /// Save the current state in the history.
-    ///
-    /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_undo()
-    #[allow(unused)]
-    fn emacs_style_record(&mut self) {
-        self.history_pos = None;
+    /// Update the state of the latest history entry with the current document state.
+    pub fn update_latest_history_entry(&mut self, _now: Instant) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        log::debug!("update latest history entry with current state");
 
         if self
             .history
@@ -322,51 +245,77 @@ impl StrokeStore {
             .map(|last| !self.ptr_eq_w_history_entry(last))
             .unwrap_or(true)
         {
-            self.history.push_back(self.create_history_entry());
+            // as soon as the current state is recorded, remove the future
+            self.history.truncate(self.live_index + 1);
 
-            if self.history.len() > Self::HISTORY_MAX_LEN {
-                self.history.pop_front();
-            }
-        } else {
-            log::debug!("state has not changed, skipped record");
-        }
-    }
-
-    /// Emacs style undo, where the undo operation is pushed to the history as well.
-    ///
-    /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_record()
-    ///
-    /// The store then needs to update its rendering.
-    #[allow(unused)]
-    fn emacs_style_undo(&mut self) {
-        let index = self.history_pos.unwrap_or(self.history.len());
-
-        if index > 0 {
             let current = self.create_history_entry();
-            let prev = Arc::clone(&self.history[index - 1]);
-
-            self.history.push_back(current);
-
-            self.import_history_entry(&prev);
-            self.history_pos = Some(index - 1);
+            self.history[self.live_index] = current;
         } else {
-            log::debug!("no history, can't undo");
+            log::debug!("state has not changed, no need to update current state to history");
         }
+
+        widget_flags.hide_undo = Some(!self.can_undo());
+        widget_flags.hide_redo = Some(!self.can_redo());
+
+        widget_flags
     }
 
-    /// Breaks the undo chain, to enable redo by undoing the undos, emacs-style.
+    /// Undo the latest changes.
     ///
-    /// Only to be used in combination with emacs_style_undo() and emacs_style_record()
-    #[allow(unused)]
-    fn emacs_style_break_undo_chain(&mut self) {
-        // move the position to the end, so we can do "undo the undos", emacs-style
-        self.history_pos = None;
+    /// Should only be called from inside the engine undo wrapper function.
+    pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        log::debug!("undo");
+
+        if !self.can_undo() {
+            return widget_flags;
+        }
+
+        let prev = Arc::clone(&self.history[self.live_index - 1]);
+        self.import_history_entry(&prev);
+        self.live_index -= 1;
+
+        widget_flags.hide_undo = Some(!self.can_undo());
+        widget_flags.hide_redo = Some(!self.can_redo());
+
+        widget_flags
     }
 
-    /// Clear the entire history.
+    /// Redo the latest changes.
+    ///
+    /// Should only be called from inside the engine redo wrapper function.
+    pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        log::debug!("redo");
+
+        if !self.can_redo() {
+            return widget_flags;
+        }
+
+        let next = Arc::clone(&self.history[self.live_index + 1]);
+        self.import_history_entry(&next);
+        self.live_index += 1;
+
+        widget_flags.hide_undo = Some(!self.can_undo());
+        widget_flags.hide_redo = Some(!self.can_redo());
+
+        widget_flags
+    }
+
+    pub(super) fn can_undo(&self) -> bool {
+        self.live_index > 0
+    }
+
+    pub(super) fn can_redo(&self) -> bool {
+        self.live_index < self.history.len() - 1
+    }
+
+    /// Clear the history.
     pub fn clear_history(&mut self) {
-        self.history.clear();
-        self.history_pos = None;
+        self.history = VecDeque::from(vec![Arc::new(HistoryEntry::default())]);
+        self.live_index = 0;
     }
 
     /// Insert a new stroke into the store.

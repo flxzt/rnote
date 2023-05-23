@@ -475,31 +475,21 @@ impl RnoteEngine {
         self.store.record(now)
     }
 
+    /// Update the state of the latest history entry with the current document state.
+    pub fn update_latest_history_entry(&mut self, now: Instant) -> WidgetFlags {
+        self.store.update_latest_history_entry(now)
+    }
+
     /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
         widget_flags.merge(self.store.undo(now));
-
-        widget_flags.merge(self.update_state_current_pen());
-
         self.resize_autoexpand();
+        widget_flags.merge(self.reinstall_pen_current_style());
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
         }
-
         widget_flags.redraw = true;
 
         widget_flags
@@ -509,27 +499,12 @@ impl RnoteEngine {
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
         widget_flags.merge(self.store.redo(now));
-
-        widget_flags.merge(self.update_state_current_pen());
-
         self.resize_autoexpand();
+        widget_flags.merge(self.reinstall_pen_current_style());
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
         }
-
         widget_flags.redraw = true;
 
         widget_flags
@@ -831,7 +806,7 @@ impl RnoteEngine {
 
     /// Remove a page from the document when in fixed size layout.
     ///
-    /// Returns true when document is in fixed size layout and a pages was removed,
+    /// Returns true when document is in fixed size layout and a page was removed,
     /// else false.
     ///
     /// Background and strokes rendering then need to be updated.

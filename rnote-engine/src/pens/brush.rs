@@ -63,7 +63,6 @@ impl PenBehaviour for Brush {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
-                    widget_flags.merge(engine_view.store.record(Instant::now()));
                     self.start_audio(engine_view);
                     engine_view.pens_config.brush_config.new_style_seeds();
 
@@ -130,6 +129,7 @@ impl PenBehaviour for Brush {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
@@ -215,6 +215,8 @@ impl PenBehaviour for Brush {
                         engine_view
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
 
                         widget_flags.redraw = true;
                         widget_flags.resize = true;

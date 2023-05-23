@@ -110,12 +110,12 @@ impl RnAppWindow {
         self.add_action(&action_selection_trash);
         let action_selection_duplicate = gio::SimpleAction::new("selection-duplicate", None);
         self.add_action(&action_selection_duplicate);
+        let action_selection_invert_color = gio::SimpleAction::new("selection-invert-color", None);
+        self.add_action(&action_selection_invert_color);
         let action_selection_select_all = gio::SimpleAction::new("selection-select-all", None);
         self.add_action(&action_selection_select_all);
         let action_selection_deselect_all = gio::SimpleAction::new("selection-deselect-all", None);
         self.add_action(&action_selection_deselect_all);
-        let action_invert_doc_colors = gio::SimpleAction::new("invert-doc-colors", None);
-        self.add_action(&action_invert_doc_colors);
         let action_clear_doc = gio::SimpleAction::new("clear-doc", None);
         self.add_action(&action_clear_doc);
         let action_new_doc = gio::SimpleAction::new("new-doc", None);
@@ -434,6 +434,29 @@ impl RnAppWindow {
             }),
         );
 
+        // invert color brightness of selection
+        action_selection_invert_color.connect_activate(
+            clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
+                let canvas = appwindow.active_tab().canvas();
+
+                let widget_flags = {
+                    let engine = canvas.engine();
+                    let engine = &mut *engine.borrow_mut();
+
+                    let keys = engine.store.selection_keys_unordered();
+
+                    if keys.is_empty() {
+                        return;
+                    }
+
+                    engine.store.invert_color_brightness(&keys)
+                };
+
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+                canvas.update_engine_rendering();
+            }),
+        );
+
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
@@ -467,12 +490,6 @@ impl RnAppWindow {
                 canvas.update_engine_rendering();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
-            }),
-        );
-
-        action_invert_doc_colors.connect_activate(
-            clone!(@weak self as appwindow => move |_action_invert_doc_colors, _| {
-                dialogs::dialog_invert_doc_colors(&appwindow);
             }),
         );
 

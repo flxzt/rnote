@@ -384,6 +384,18 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="background_pattern_invert_color_row">
+                        <property name="title" translatable="yes">Invert Colors</property>
+                        <property name="subtitle" translatable="yes">Invert the lightness of the background pattern colors</property>
+                        <child type="suffix">
+                          <object class="GtkButton" id="background_pattern_invert_color_button">
+                            <property name="valign">center</property>
+                            <property name="label" translatable="yes">Invert</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Button Shortcuts Group -->

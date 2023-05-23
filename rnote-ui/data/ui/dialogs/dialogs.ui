@@ -12,18 +12,6 @@
     </responses>
   </object>
 
-  <object class="AdwMessageDialog" id="dialog_invert_doc_colors">
-    <property name="heading" translatable="yes">Invert Document Colors</property>
-    <property name="body" translatable="yes">This inverts the lightness of colors in the document.
-Do you want to invert the background colors or the stroke colors?</property>
-    <property name="close-response">cancel</property>
-    <responses>
-      <response id="cancel" translatable="yes">Cancel</response>
-      <response id="invert-background" translatable="yes">Invert Background Colors</response>
-      <response id="invert-stroke" translatable="yes">Invert Stroke Colors</response>
-    </responses>
-  </object>
-
   <object class="AdwMessageDialog" id="dialog_new_doc">
     <property name="heading" translatable="yes">New Document</property>
     <property name="body" translatable="yes">Creating a new document will discard any unsaved changes.

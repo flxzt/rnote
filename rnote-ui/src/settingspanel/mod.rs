@@ -4,6 +4,7 @@ mod penshortcutrow;
 
 // Re-exports
 pub(crate) use penshortcutrow::RnPenShortcutRow;
+use rnote_engine::WidgetFlags;
 
 // Imports
 use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
@@ -88,6 +89,8 @@ mod imp {
         pub(crate) background_pattern_width_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
+        #[template_child]
+        pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
         #[template_child]
@@ -670,6 +673,29 @@ impl RnSettingsPanel {
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
                     canvas.regenerate_background_pattern();
                     canvas.update_engine_rendering();
+            }),
+        );
+
+        imp.background_pattern_invert_color_button.get().connect_clicked(
+            clone!(@weak self as settings_panel, @weak appwindow => move |_| {
+                let canvas = appwindow.active_tab().canvas();
+
+                let widget_flags = {
+                    let engine = canvas.engine();
+                    let engine = &mut *engine.borrow_mut();
+
+                    engine.document.background.color = engine.document.background.color.to_inverted_lightness_color();
+                    engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_lightness_color();
+                    engine.document.format.border_color = engine.document.format.border_color.to_inverted_lightness_color();
+
+                    WidgetFlags {
+                        refresh_ui: true,
+                        ..Default::default()
+                    }
+                };
+
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+                canvas.regenerate_background_pattern();
             }),
         );
     }

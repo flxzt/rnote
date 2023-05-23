@@ -18,7 +18,6 @@ use gtk4::{
     gio, glib, glib::clone, Builder, Button, CheckButton, ColorDialogButton, Dialog, FileDialog,
     Label, MenuButton, ResponseType, ShortcutsWindow, StringList,
 };
-use rnote_engine::WidgetFlags;
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
@@ -88,64 +87,6 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                     canvas.set_empty(true);
                     canvas.update_engine_rendering();
                     appwindow.handle_widget_flags(widget_flags, &canvas);
-                },
-                _ => {
-                // Cancel
-                }
-            }
-        }),
-    );
-
-    dialog.present();
-}
-
-pub(crate) fn dialog_invert_doc_colors(appwindow: &RnAppWindow) {
-    let builder = Builder::from_resource(
-        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
-    );
-    let dialog: adw::MessageDialog = builder.object("dialog_invert_doc_colors").unwrap();
-    dialog.set_transient_for(Some(appwindow));
-
-    dialog.connect_response(
-        None,
-        clone!(@weak appwindow => move |_dialog_invert_doc_colors, response| {
-            let canvas = appwindow.active_tab().canvas();
-
-            match response {
-                "invert-background" => {
-                    let widget_flags = {
-                        let engine = canvas.engine();
-                        let engine = &mut *engine.borrow_mut();
-
-                        engine.document.background.color = engine.document.background.color.to_inverted_lightness_color();
-                        engine.document.background.pattern_color = engine.document.background.pattern_color.to_inverted_lightness_color();
-                        engine.document.format.border_color = engine.document.format.border_color.to_inverted_lightness_color();
-
-                        WidgetFlags {
-                            refresh_ui: true,
-                            ..Default::default()
-                        }
-                    };
-
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
-                    canvas.regenerate_background_pattern();
-                },
-                "invert-stroke" => {
-                    if canvas.empty() {
-                        return;
-                    }
-
-                    let widget_flags = {
-                        let engine = canvas.engine();
-                        let engine = &mut *engine.borrow_mut();
-
-                        let keys = engine.store.stroke_keys_unordered();
-
-                        engine.store.invert_color_brightness(&keys)
-                    };
-
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
-                    canvas.update_engine_rendering();
                 },
                 _ => {
                 // Cancel

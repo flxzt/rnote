@@ -105,6 +105,17 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwActionRow" id="export_doc_optimize_printing_row">
+                    <property name="title" translatable="yes">Optimize for Printing</property>
+                    <property name="subtitle" translatable="yes">Set whether the content should be optimized for printing</property>
+                    <child type="suffix">
+                      <object class="GtkSwitch" id="export_doc_optimize_printing_switch">
+                        <property name="valign">center</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwComboRow" id="export_doc_export_format_row">
                     <property name="title" translatable="yes">Export Format</property>
                     <property name="subtitle" translatable="yes">The export format</property>

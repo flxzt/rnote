@@ -133,6 +133,17 @@ impl Color {
         hsla_color.into_color()
     }
 
+    /// Returns itself or the inverted color, depending on which one is darker.
+    pub fn to_darkest_color(self) -> Self {
+        let inverted_color = self.to_inverted_brightness_color();
+
+        if inverted_color.luma() > self.luma() {
+            self
+        } else {
+            inverted_color
+        }
+    }
+
     /// Converts to a css color attribute in the style: `rgba(xxx,xxx,xxx,xxx)`.
     /// The values are 8 bit integers, ranging [0, 255].
     pub fn to_css_color_attr(self) -> String {

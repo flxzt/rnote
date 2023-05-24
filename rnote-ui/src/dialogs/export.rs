@@ -86,6 +86,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         builder.object("export_doc_with_background_switch").unwrap();
     let with_pattern_row: adw::ActionRow = builder.object("export_doc_with_pattern_row").unwrap();
     let with_pattern_switch: Switch = builder.object("export_doc_with_pattern_switch").unwrap();
+    let optimize_printing_switch: Switch = builder
+        .object("export_doc_optimize_printing_switch")
+        .unwrap();
     let export_format_row: adw::ComboRow = builder.object("export_doc_export_format_row").unwrap();
     let export_file_label: Label = builder.object("export_doc_export_file_label").unwrap();
     let export_file_button: Button = builder.object("export_doc_export_file_button").unwrap();
@@ -98,6 +101,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
     let selected_file: Rc<RefCell<Option<gio::File>>> = Rc::new(RefCell::new(None));
     with_background_switch.set_active(initial_doc_export_prefs.with_background);
     with_pattern_switch.set_active(initial_doc_export_prefs.with_pattern);
+    optimize_printing_switch.set_active(initial_doc_export_prefs.optimize_printing);
     export_format_row.set_selected(initial_doc_export_prefs.export_format.to_u32().unwrap());
     export_file_label.set_label(&gettext("- no file selected -"));
     button_confirm.set_sensitive(false);
@@ -147,6 +151,10 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
 
     with_pattern_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |with_pattern_switch| {
         canvas.engine().borrow_mut().export_prefs.doc_export_prefs.with_pattern = with_pattern_switch.is_active();
+    }));
+
+    optimize_printing_switch.connect_active_notify(clone!(@weak canvas, @weak appwindow => move |optimize_printing_switch| {
+        canvas.engine().borrow_mut().export_prefs.doc_export_prefs.optimize_printing = optimize_printing_switch.is_active();
     }));
 
     export_format_row.connect_selected_notify(clone!(@strong selected_file, @weak export_file_label, @weak button_confirm, @weak canvas, @weak appwindow => move |row| {

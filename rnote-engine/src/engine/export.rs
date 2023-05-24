@@ -8,10 +8,13 @@ use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::Color;
 use rnote_fileformats::rnoteformat::RnoteFile;
 use rnote_fileformats::{xoppformat, FileFormatSaver};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 /// Document export format.
 #[derive(
@@ -77,6 +80,9 @@ pub struct DocExportPrefs {
     /// Whether the background pattern should be exported.
     #[serde(rename = "with_pattern")]
     pub with_pattern: bool,
+    /// Whether the background pattern should be exported.
+    #[serde(rename = "optimize_printing")]
+    pub optimize_printing: bool,
     /// The export format.
     #[serde(rename = "export_format")]
     pub export_format: DocExportFormat,
@@ -87,6 +93,7 @@ impl Default for DocExportPrefs {
         Self {
             with_background: true,
             with_pattern: true,
+            optimize_printing: false,
             export_format: DocExportFormat::default(),
         }
     }
@@ -403,7 +410,7 @@ impl RnoteEngine {
 
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.export_prefs.doc_export_prefs);
-        let snapshot = self.take_snapshot();
+        let mut snapshot = self.take_snapshot();
 
         let pages_strokes = self
             .pages_bounds_w_content()
@@ -416,6 +423,81 @@ impl RnoteEngine {
                 (page_bounds, strokes_in_viewport)
             })
             .collect::<Vec<(Aabb, Vec<StrokeKey>)>>();
+
+        let image_bounds = self
+            .store
+            .stroke_keys_unordered()
+            .into_iter()
+            .filter_map(|key| {
+                if let Some(stroke) = snapshot.stroke_components.get(key) {
+                    return match stroke.as_ref() {
+                        Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                        Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                        _ => None,
+                    };
+                }
+
+                None
+            })
+            .collect::<Vec<Aabb>>();
+
+        if doc_export_prefs.optimize_printing {
+            snapshot.document.background.color = Color::WHITE;
+
+            snapshot.document.background.pattern_color = snapshot
+                .document
+                .background
+                .pattern_color
+                .to_darkest_color();
+
+            for key in self.store.stroke_keys_unordered() {
+                if let Some(stroke) = Arc::make_mut(&mut snapshot.stroke_components)
+                    .get_mut(key)
+                    .map(Arc::make_mut)
+                {
+                    let stroke_bounds = stroke.bounds();
+
+                    // Using the stroke's bounds instead of hitboxes works for inclusion.
+                    // If this is changed to intersection, all hitboxes must be checked individually.
+                    if image_bounds
+                        .iter()
+                        .any(|bounds| bounds.contains(&stroke_bounds))
+                    {
+                        continue;
+                    }
+
+                    match stroke {
+                        Stroke::BrushStroke(brush_stroke) => {
+                            if let Some(color) = brush_stroke.style.stroke_color() {
+                                brush_stroke
+                                    .style
+                                    .set_stroke_color(color.to_darkest_color());
+                            }
+
+                            if let Some(color) = brush_stroke.style.fill_color() {
+                                brush_stroke.style.set_fill_color(color.to_darkest_color());
+                            }
+                        }
+                        Stroke::ShapeStroke(shape_stroke) => {
+                            if let Some(color) = shape_stroke.style.stroke_color() {
+                                shape_stroke
+                                    .style
+                                    .set_stroke_color(color.to_darkest_color());
+                            }
+
+                            if let Some(color) = shape_stroke.style.fill_color() {
+                                shape_stroke.style.set_fill_color(color.to_darkest_color());
+                            }
+                        }
+                        Stroke::TextStroke(text_stroke) => {
+                            text_stroke.text_style.color =
+                                text_stroke.text_style.color.to_darkest_color();
+                        }
+                        _ => {}
+                    };
+                }
+            }
+        }
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {

@@ -114,7 +114,7 @@ impl Color {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
     }
 
-    /// Inverts the perceived brightness of the color.
+    /// Invert the perceived brightness of the color.
     pub fn to_inverted_brightness_color(self) -> Self {
         let mut hwba_color: palette::Okhwba<f64> = self.into_color();
 
@@ -126,14 +126,14 @@ impl Color {
         hwba_color.into_color()
     }
 
-    /// Inverts the lightness of the color while keeping perceived hue and saturation constant.
+    /// Invert the lightness of the color while keeping perceived hue and saturation constant.
     pub fn to_inverted_lightness_color(self) -> Self {
         let mut hsla_color: palette::Okhsla<f64> = self.into_color();
         hsla_color.lightness = 1.0 - hsla_color.lightness;
         hsla_color.into_color()
     }
 
-    /// Returns itself or the inverted color, depending on which one is darker.
+    /// Get the original or the inverted color, depending on which one is darker.
     pub fn to_darkest_color(self) -> Self {
         let inverted_color = self.to_inverted_brightness_color();
 
@@ -144,7 +144,7 @@ impl Color {
         }
     }
 
-    /// Converts to a css color attribute in the style: `rgba(xxx,xxx,xxx,xxx)`.
+    /// Convert to a css color attribute in the style: `rgba(xxx,xxx,xxx,xxx)`.
     /// The values are 8 bit integers, ranging [0, 255].
     pub fn to_css_color_attr(self) -> String {
         format!(

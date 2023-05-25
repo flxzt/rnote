@@ -26,6 +26,7 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::{PenEvent, ShortcutKey};
 use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::Color;
 use rnote_fileformats::{rnoteformat, xoppformat, FileFormatLoader};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -294,6 +295,76 @@ impl EngineSnapshot {
         });
 
         snapshot_receiver.await?
+    }
+
+    pub fn optimize_for_printing(&mut self, keys: &[StrokeKey]) {
+        self.document.background.color = Color::WHITE;
+
+        self.document.background.pattern_color =
+            self.document.background.pattern_color.to_darkest_color();
+
+        let image_bounds = keys
+            .iter()
+            .filter_map(|key| {
+                if let Some(stroke) = self.stroke_components.get(*key) {
+                    return match stroke.as_ref() {
+                        Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                        Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                        _ => None,
+                    };
+                }
+
+                None
+            })
+            .collect::<Vec<Aabb>>();
+
+        for key in keys {
+            if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
+                .get_mut(*key)
+                .map(Arc::make_mut)
+            {
+                let stroke_bounds = stroke.bounds();
+
+                // Using the stroke's bounds instead of hitboxes works for inclusion.
+                // If this is changed to intersection, all hitboxes must be checked individually.
+                if image_bounds
+                    .iter()
+                    .any(|bounds| bounds.contains(&stroke_bounds))
+                {
+                    continue;
+                }
+
+                match stroke {
+                    Stroke::BrushStroke(brush_stroke) => {
+                        if let Some(color) = brush_stroke.style.stroke_color() {
+                            brush_stroke
+                                .style
+                                .set_stroke_color(color.to_darkest_color());
+                        }
+
+                        if let Some(color) = brush_stroke.style.fill_color() {
+                            brush_stroke.style.set_fill_color(color.to_darkest_color());
+                        }
+                    }
+                    Stroke::ShapeStroke(shape_stroke) => {
+                        if let Some(color) = shape_stroke.style.stroke_color() {
+                            shape_stroke
+                                .style
+                                .set_stroke_color(color.to_darkest_color());
+                        }
+
+                        if let Some(color) = shape_stroke.style.fill_color() {
+                            shape_stroke.style.set_fill_color(color.to_darkest_color());
+                        }
+                    }
+                    Stroke::TextStroke(text_stroke) => {
+                        text_stroke.text_style.color =
+                            text_stroke.text_style.color.to_darkest_color();
+                    }
+                    _ => {}
+                };
+            }
+        }
     }
 }
 

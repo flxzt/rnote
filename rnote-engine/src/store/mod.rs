@@ -134,7 +134,7 @@ impl StrokeStore {
     /// Import from a engine snapshot. A loaded strokes store should always be imported with this method.
     ///
     /// The store then needs to update its rendering.
-    pub fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
+    pub(crate) fn import_from_snapshot(&mut self, snapshot: &EngineSnapshot) {
         self.clear();
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
@@ -150,7 +150,7 @@ impl StrokeStore {
     }
 
     /// Rebuild the rtree with the current stored strokes keys and bounds.
-    pub fn rebuild_rtree(&mut self) {
+    fn rebuild_rtree(&mut self) {
         let tree_objects = self
             .stroke_components
             .iter()
@@ -171,7 +171,7 @@ impl StrokeStore {
     }
 
     /// Create a history entry from the current state.
-    pub fn create_history_entry(&self) -> Arc<HistoryEntry> {
+    pub(crate) fn create_history_entry(&self) -> Arc<HistoryEntry> {
         Arc::new(HistoryEntry {
             stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
@@ -200,7 +200,7 @@ impl StrokeStore {
     }
 
     /// Record the current state and save it in the history.
-    pub fn record(&mut self, _now: Instant) -> WidgetFlags {
+    pub(crate) fn record(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         log::debug!("recording state to history");
@@ -234,7 +234,7 @@ impl StrokeStore {
     }
 
     /// Update the state of the latest history entry with the current document state.
-    pub fn update_latest_history_entry(&mut self, _now: Instant) -> WidgetFlags {
+    pub(crate) fn update_latest_history_entry(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         log::debug!("update latest history entry with current state");
@@ -263,7 +263,7 @@ impl StrokeStore {
     /// Undo the latest changes.
     ///
     /// Should only be called from inside the engine undo wrapper function.
-    pub(super) fn undo(&mut self, _now: Instant) -> WidgetFlags {
+    pub(crate) fn undo(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         log::debug!("undo");
@@ -285,7 +285,7 @@ impl StrokeStore {
     /// Redo the latest changes.
     ///
     /// Should only be called from inside the engine redo wrapper function.
-    pub(super) fn redo(&mut self, _now: Instant) -> WidgetFlags {
+    pub(crate) fn redo(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         log::debug!("redo");
@@ -304,16 +304,16 @@ impl StrokeStore {
         widget_flags
     }
 
-    pub(super) fn can_undo(&self) -> bool {
+    pub(crate) fn can_undo(&self) -> bool {
         self.live_index > 0
     }
 
-    pub(super) fn can_redo(&self) -> bool {
+    pub(crate) fn can_redo(&self) -> bool {
         self.live_index < self.history.len() - 1
     }
 
     /// Clear the history.
-    pub fn clear_history(&mut self) {
+    pub(crate) fn clear_history(&mut self) {
         self.history = VecDeque::from(vec![Arc::new(HistoryEntry::default())]);
         self.live_index = 0;
     }

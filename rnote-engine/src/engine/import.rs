@@ -239,7 +239,6 @@ impl RnoteEngine {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>>();
         let pdf_import_prefs = self.import_prefs.pdf_import_prefs;
-
         let format = self.document.format;
 
         rayon::spawn(move || {

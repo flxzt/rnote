@@ -98,8 +98,6 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                     };
 
-                    widget_flags.redraw = true;
-
                     PenProgress::InProgress
                 } else {
                     PenProgress::Idle
@@ -130,7 +128,6 @@ impl PenBehaviour for Brush {
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 widget_flags.merge(engine_view.store.record(Instant::now()));
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 
@@ -146,11 +143,7 @@ impl PenBehaviour for Brush {
                 pen_event,
             ) => {
                 match path_builder.handle_event(pen_event, now, Constraints::default()) {
-                    PenPathBuilderProgress::InProgress => {
-                        widget_flags.redraw = true;
-
-                        PenProgress::InProgress
-                    }
+                    PenPathBuilderProgress::InProgress => PenProgress::InProgress,
                     PenPathBuilderProgress::EmitContinue(segments) => {
                         let n_segments = segments.len();
 
@@ -170,8 +163,6 @@ impl PenBehaviour for Brush {
                                 engine_view.camera.image_scale(),
                             );
                         }
-
-                        widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
@@ -207,18 +198,14 @@ impl PenBehaviour for Brush {
                             engine_view.camera.viewport(),
                             engine_view.camera.image_scale(),
                         );
-
-                        self.stop_audio(engine_view);
-
-                        self.state = BrushState::Idle;
-
                         engine_view
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
+                        self.stop_audio(engine_view);
+                        self.state = BrushState::Idle;
 
-                        widget_flags.redraw = true;
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
 

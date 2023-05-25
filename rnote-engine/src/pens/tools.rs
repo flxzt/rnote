@@ -212,20 +212,19 @@ impl PenBehaviour for Tools {
                     }
                 }
 
-                self.state = ToolsState::Active;
-
                 engine_view
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                widget_flags.redraw = true;
+                self.state = ToolsState::Active;
+
                 widget_flags.resize = true;
 
                 PenProgress::InProgress
             }
             (ToolsState::Idle, _) => PenProgress::Idle,
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
-                let pen_progress = match engine_view.pens_config.tools_config.style {
+                match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
                         let y_offset = element.pos[1] - self.verticalspace_tool.current_pos_y;
 
@@ -243,8 +242,6 @@ impl PenBehaviour for Tools {
 
                             widget_flags.store_modified = true;
                         }
-
-                        PenProgress::InProgress
                     }
                     ToolStyle::OffsetCamera => {
                         let offset = engine_view
@@ -268,14 +265,10 @@ impl PenBehaviour for Tools {
                             widget_flags.resize = true;
                             widget_flags.update_view = true;
                         }
-
-                        PenProgress::InProgress
                     }
-                };
+                }
 
-                widget_flags.redraw = true;
-
-                pen_progress
+                PenProgress::InProgress
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 match engine_view.pens_config.tools_config.style {
@@ -299,9 +292,9 @@ impl PenBehaviour for Tools {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );
+
                 self.reset(engine_view);
 
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
 
                 PenProgress::Finished
@@ -318,9 +311,9 @@ impl PenBehaviour for Tools {
                     engine_view.camera.viewport(),
                     engine_view.camera.image_scale(),
                 );
+
                 self.reset(engine_view);
 
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
 
                 PenProgress::Finished

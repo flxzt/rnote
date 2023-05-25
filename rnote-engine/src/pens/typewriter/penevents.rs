@@ -63,8 +63,6 @@ impl Typewriter {
                 if refresh_state {
                     // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
                     widget_flags.merge(self.update_state(engine_view));
-
-                    widget_flags.redraw = true;
                     widget_flags.refresh_ui = true;
                 }
 
@@ -78,7 +76,7 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        let mut pen_progress = PenProgress::InProgress;
+                        let mut progress = PenProgress::InProgress;
 
                         if let (Some(typewriter_bounds), Some(Stroke::TextStroke(textstroke))) = (
                             typewriter_bounds,
@@ -148,18 +146,15 @@ impl Typewriter {
                                 self.state = TypewriterState::Idle;
 
                                 widget_flags.merge(engine_view.store.record(now));
-                                widget_flags.redraw = true;
 
-                                pen_progress = PenProgress::Finished;
+                                progress = PenProgress::Finished;
                             }
                         }
 
-                        widget_flags.redraw = true;
-
-                        pen_progress
+                        progress
                     }
                     ModifyState::Selecting { finished, .. } => {
-                        let mut pen_progress = PenProgress::InProgress;
+                        let mut progress = PenProgress::InProgress;
 
                         if let Some(typewriter_bounds) = typewriter_bounds {
                             // Clicking on the translate node
@@ -206,15 +201,12 @@ impl Typewriter {
                                 self.state = TypewriterState::Idle;
 
                                 widget_flags.merge(engine_view.store.record(now));
-                                widget_flags.redraw = true;
 
-                                pen_progress = PenProgress::Finished;
+                                progress = PenProgress::Finished;
                             }
                         }
 
-                        widget_flags.redraw = true;
-
-                        pen_progress
+                        progress
                     }
                     ModifyState::Translating { current_pos, .. } => {
                         let offset = element.pos - *current_pos;
@@ -226,9 +218,9 @@ impl Typewriter {
                             engine_view
                                 .store
                                 .translate_strokes_images(&[*stroke_key], offset);
+
                             *current_pos = element.pos;
 
-                            widget_flags.redraw = true;
                             widget_flags.store_modified = true;
                         }
 
@@ -258,9 +250,9 @@ impl Typewriter {
                                     engine_view.camera.viewport(),
                                     engine_view.camera.image_scale(),
                                 );
+
                                 *current_pos = element.pos;
 
-                                widget_flags.redraw = true;
                                 widget_flags.store_modified = true;
                             }
                         }
@@ -311,8 +303,6 @@ impl Typewriter {
                     ModifyState::Selecting { finished, .. } => {
                         // finished when drag ended
                         *finished = true;
-
-                        widget_flags.redraw = true;
                     }
                     ModifyState::Translating { .. } => {
                         engine_view
@@ -335,7 +325,6 @@ impl Typewriter {
                         };
 
                         widget_flags.merge(engine_view.store.record(Instant::now()));
-                        widget_flags.redraw = true;
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
                     }
@@ -360,7 +349,6 @@ impl Typewriter {
                         };
 
                         widget_flags.merge(engine_view.store.record(Instant::now()));
-                        widget_flags.redraw = true;
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
                     }
@@ -459,8 +447,6 @@ impl Typewriter {
                     _ => {}
                 }
 
-                widget_flags.redraw = true;
-
                 PenProgress::InProgress
             }
             TypewriterState::Modifying {
@@ -494,7 +480,6 @@ impl Typewriter {
                                         );
                                     }
 
-                                    widget_flags.redraw = true;
                                     widget_flags.resize = true;
                                     widget_flags.store_modified = true;
                                 };
@@ -665,8 +650,6 @@ impl Typewriter {
                             };
 
                             *pen_down = false;
-
-                            widget_flags.redraw = true;
                         }
 
                         PenProgress::InProgress
@@ -690,7 +673,6 @@ impl Typewriter {
                                 engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
                                 widget_flags.merge(store.record(Instant::now()));
-                                widget_flags.redraw = true;
                                 widget_flags.resize = true;
                                 widget_flags.store_modified = true;
                             };
@@ -814,8 +796,6 @@ impl Typewriter {
                             }
                         }
 
-                        widget_flags.redraw = true;
-
                         PenProgress::InProgress
                     }
                     _ => PenProgress::InProgress,
@@ -868,7 +848,6 @@ impl Typewriter {
                 };
 
                 widget_flags.merge(engine_view.store.record(Instant::now()));
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 
@@ -911,7 +890,6 @@ impl Typewriter {
                                         .update_latest_history_entry(Instant::now()),
                                 );
                             }
-                            widget_flags.redraw = true;
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
@@ -955,7 +933,6 @@ impl Typewriter {
                                         .update_latest_history_entry(Instant::now()),
                                 );
                             }
-                            widget_flags.redraw = true;
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
@@ -975,13 +952,13 @@ impl Typewriter {
         _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        let mut widget_flags = WidgetFlags::default();
+        let widget_flags = WidgetFlags::default();
 
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             _ => {
                 self.state = TypewriterState::Idle;
-                widget_flags.redraw = true;
+
                 PenProgress::Finished
             }
         };

@@ -279,7 +279,6 @@ impl PenBehaviour for Typewriter {
 
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
-                        widget_flags.redraw = true;
                         widget_flags.refresh_ui = true;
                     }
                 }
@@ -308,6 +307,8 @@ impl PenBehaviour for Typewriter {
                 }
             },
         }
+
+        widget_flags.redraw = true;
 
         widget_flags
     }
@@ -395,9 +396,10 @@ impl PenBehaviour for Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
         let mut widget_flags = WidgetFlags::default();
+        let mut content = None;
 
         match &mut self.state {
-            TypewriterState::Idle | TypewriterState::Start(_) => Ok((None, widget_flags)),
+            TypewriterState::Idle | TypewriterState::Start(_) => {}
             TypewriterState::Modifying {
                 modify_state,
                 stroke_key,
@@ -438,11 +440,6 @@ impl PenBehaviour for Typewriter {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
-                            widget_flags.redraw = true;
-                            widget_flags.resize = true;
-                            widget_flags.store_modified = true;
-
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
                                 modify_state: ModifyState::Up,
@@ -451,21 +448,23 @@ impl PenBehaviour for Typewriter {
                                 pen_down: false,
                             };
 
-                            Ok((
-                                Some((
-                                    selection_text.into_bytes(),
-                                    String::from("text/plain;charset=utf-8"),
-                                )),
-                                widget_flags,
-                            ))
-                        } else {
-                            Ok((None, widget_flags))
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags.redraw = true;
+                            widget_flags.resize = true;
+                            widget_flags.store_modified = true;
+
+                            content = Some((
+                                selection_text.into_bytes(),
+                                String::from("text/plain;charset=utf-8"),
+                            ));
                         }
                     }
-                    _ => Ok((None, widget_flags)),
+                    _ => {}
                 }
             }
         }
+
+        Ok((content, widget_flags))
     }
 }
 
@@ -620,7 +619,6 @@ impl Typewriter {
                 widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
-                widget_flags.redraw = true;
             }
             TypewriterState::Start(pos) => {
                 widget_flags.merge(engine_view.store.record(Instant::now()));
@@ -651,7 +649,6 @@ impl Typewriter {
 
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
-                widget_flags.redraw = true;
             }
             TypewriterState::Modifying {
                 modify_state,
@@ -690,7 +687,6 @@ impl Typewriter {
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
                         widget_flags.resize = true;
-                        widget_flags.redraw = true;
                     }
                 }
                 _ => {
@@ -711,11 +707,12 @@ impl Typewriter {
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
                         widget_flags.resize = true;
-                        widget_flags.redraw = true;
                     }
                 }
             },
         }
+
+        widget_flags.redraw = true;
 
         widget_flags
     }

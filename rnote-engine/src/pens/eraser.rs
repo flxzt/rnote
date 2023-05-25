@@ -76,15 +76,12 @@ impl PenBehaviour for Eraser {
                 }
 
                 self.state = EraserState::Down(element);
-
-                widget_flags.redraw = true;
-                // the store_modified flag is set in the `.trash_..()` methods
+                // the WidgetFlags store_modified flag is set in the `.trash_..()` methods
 
                 PenProgress::InProgress
             }
             (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
                 self.state = EraserState::Proximity(element);
-                widget_flags.redraw = true;
 
                 PenProgress::Idle
             }
@@ -118,8 +115,6 @@ impl PenBehaviour for Eraser {
 
                 *current_element = element;
 
-                widget_flags.redraw = true;
-
                 PenProgress::InProgress
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
@@ -149,20 +144,17 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Up;
 
                 widget_flags.merge(engine_view.store.record(Instant::now()));
-                widget_flags.redraw = true;
 
                 PenProgress::Finished
             }
             (EraserState::Down(_), PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
             (EraserState::Proximity(_), PenEvent::Up { .. }) => {
                 self.state = EraserState::Up;
-                widget_flags.redraw = true;
 
                 PenProgress::Idle
             }
             (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
                 *current_element = element;
-                widget_flags.redraw = true;
 
                 PenProgress::Idle
             }
@@ -170,7 +162,6 @@ impl PenBehaviour for Eraser {
                 self.state = EraserState::Up;
 
                 widget_flags.merge(engine_view.store.record(Instant::now()));
-                widget_flags.redraw = true;
 
                 PenProgress::Finished
             }

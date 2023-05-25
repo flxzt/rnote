@@ -68,14 +68,12 @@ impl PenBehaviour for Shaper {
                     ),
                 };
 
-                widget_flags.redraw = true;
-
                 PenProgress::InProgress
             }
             (ShaperState::Idle, _) => PenProgress::Idle,
             (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
-                widget_flags.redraw = true;
+
                 PenProgress::Finished
             }
             (ShaperState::BuildShape { builder }, event) => {
@@ -98,11 +96,7 @@ impl PenBehaviour for Shaper {
                 };
 
                 let mut pen_progress = match builder.handle_event(event.clone(), now, constraints) {
-                    ShapeBuilderProgress::InProgress => {
-                        widget_flags.redraw = true;
-
-                        PenProgress::InProgress
-                    }
+                    ShapeBuilderProgress::InProgress => PenProgress::InProgress,
                     ShapeBuilderProgress::EmitContinue(shapes) => {
                         let mut style = engine_view
                             .pens_config
@@ -127,8 +121,6 @@ impl PenBehaviour for Shaper {
                             widget_flags.merge(engine_view.store.record(Instant::now()));
                             widget_flags.store_modified = true;
                         }
-                        widget_flags.redraw = true;
-
                         PenProgress::InProgress
                     }
                     ShapeBuilderProgress::Finished(shapes) => {
@@ -161,8 +153,6 @@ impl PenBehaviour for Shaper {
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
-                        widget_flags.redraw = true;
-
                         PenProgress::Finished
                     }
                 };
@@ -175,7 +165,7 @@ impl PenBehaviour for Shaper {
                 {
                     if keyboard_key == KeyboardKey::Escape && modifier_keys.is_empty() {
                         self.state = ShaperState::Idle;
-                        widget_flags.redraw = true;
+
                         pen_progress = PenProgress::Finished;
                     }
                 }

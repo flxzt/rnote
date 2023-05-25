@@ -235,6 +235,7 @@ impl PenHolder {
 
         widget_flags.merge(self.handle_pen_progress(pen_progress, engine_view));
 
+        // Always redraw after handling a pen event
         widget_flags.redraw = true;
 
         widget_flags

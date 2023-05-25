@@ -34,8 +34,6 @@ impl Selector {
                     path: vec![element],
                 };
 
-                widget_flags.redraw = true;
-
                 PenProgress::InProgress
             }
             SelectorState::Selecting { path } => {
@@ -44,8 +42,6 @@ impl Selector {
                     path,
                     element,
                 );
-
-                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -283,7 +279,6 @@ impl Selector {
                     }
                 }
 
-                widget_flags.redraw = true;
                 widget_flags.store_modified = true;
 
                 pen_progress
@@ -377,8 +372,6 @@ impl Selector {
                     }
                 }
 
-                widget_flags.redraw = true;
-
                 progress
             }
             SelectorState::ModifySelection {
@@ -420,8 +413,6 @@ impl Selector {
                 } else {
                     ModifyState::Up
                 };
-
-                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -499,7 +490,6 @@ impl Selector {
                             );
 
                             widget_flags.merge(engine_view.store.record(Instant::now()));
-                            widget_flags.redraw = true;
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
@@ -514,7 +504,6 @@ impl Selector {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         widget_flags.merge(engine_view.store.record(Instant::now()));
-                        widget_flags.redraw = true;
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
 
@@ -528,7 +517,6 @@ impl Selector {
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                        widget_flags.redraw = true;
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
 
@@ -575,7 +563,6 @@ impl Selector {
                 let selection_keys = engine_view.store.selection_keys_as_rendered();
                 engine_view.store.set_selected_keys(&selection_keys, false);
 
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 
@@ -589,7 +576,6 @@ impl Selector {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 

@@ -2,7 +2,6 @@
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, strokes::strokebehaviour, Camera, DrawBehaviour};
-use gtk4::pango;
 use kurbo::Shape;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -48,26 +47,6 @@ impl From<FontStyle> for piet::FontStyle {
     }
 }
 
-impl From<pango::Style> for FontStyle {
-    fn from(pango_style: pango::Style) -> Self {
-        match pango_style {
-            pango::Style::Normal => Self::Regular,
-            pango::Style::Oblique => Self::Italic,
-            pango::Style::Italic => Self::Italic,
-            _ => Self::Regular,
-        }
-    }
-}
-
-impl From<FontStyle> for pango::Style {
-    fn from(font_style: FontStyle) -> Self {
-        match font_style {
-            FontStyle::Regular => pango::Style::Normal,
-            FontStyle::Italic => pango::Style::Italic,
-        }
-    }
-}
-
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "text_style")]
 pub enum TextAlignment {
@@ -99,22 +78,6 @@ impl From<TextAlignment> for piet::TextAlignment {
             TextAlignment::Center => piet::TextAlignment::Center,
             TextAlignment::End => piet::TextAlignment::End,
             TextAlignment::Fill => piet::TextAlignment::Justified,
-        }
-    }
-}
-
-impl TextAlignment {
-    #[allow(unused)]
-    pub fn from_pango_layout(pango_layout: pango::Layout) -> Self {
-        if pango_layout.is_justify() {
-            Self::Fill
-        } else {
-            match pango_layout.alignment() {
-                pango::Alignment::Left => Self::Start,
-                pango::Alignment::Center => Self::Center,
-                pango::Alignment::Right => Self::End,
-                _ => Self::Start,
-            }
         }
     }
 }

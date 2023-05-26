@@ -596,7 +596,7 @@ impl RnAppWindow {
         adw::prelude::ActionGroupExt::activate_action(
             self,
             "doc-layout",
-            Some(&doc_layout.nick().to_variant()),
+            Some(&doc_layout.to_string().to_variant()),
         );
         adw::prelude::ActionGroupExt::change_action_state(
             self,
@@ -611,7 +611,7 @@ impl RnAppWindow {
         adw::prelude::ActionGroupExt::change_action_state(
             self,
             "pen-style",
-            &pen_style.to_variant(),
+            &pen_style.to_string().to_variant(),
         );
 
         // Current pen

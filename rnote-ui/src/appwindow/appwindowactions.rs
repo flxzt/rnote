@@ -13,6 +13,7 @@ use rnote_engine::engine::RNOTE_STROKE_CONTENT_MIME_TYPE;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine, WidgetFlags};
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::time::Instant;
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
@@ -78,8 +79,8 @@ impl RnAppWindow {
         self.add_action(&action_doc_layout);
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",
-            Some(&PenStyle::static_variant_type()),
-            PenStyle::Brush.to_variant(),
+            Some(&String::static_variant_type()),
+            String::from("brush").to_variant(),
         );
         self.add_action(&action_pen_style);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
@@ -257,29 +258,17 @@ impl RnAppWindow {
         // Doc layout
         action_doc_layout.connect_activate(
             clone!(@weak self as appwindow => move |action_doc_layout, target| {
-                let doc_layout = target.unwrap().str().unwrap();
+                let doc_layout_str = target.unwrap().str().unwrap();
                 let canvas = appwindow.active_tab().canvas();
                 let prev_layout = canvas.engine().borrow().document.layout;
-                action_doc_layout.set_state(doc_layout.to_variant());
-
-                let doc_layout = match doc_layout {
-                    "fixed-size" => {
-                        Layout::FixedSize
-                    },
-                    "continuous-vertical" => {
-                        Layout::ContinuousVertical
-                    },
-                    "semi-infinite" => {
-                        Layout::SemiInfinite
-                    },
-                    "infinite" => {
-                        Layout::Infinite
-                    },
-                    other => {
-                        log::error!("doc-layout action activated with invalid target string: {other}");
-                        unimplemented!()
+                let doc_layout = match Layout::from_str(doc_layout_str) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        log::error!("doc-layout action activated with invalid target, Err: {e:}");
+                        return;
                     }
                 };
+                action_doc_layout.set_state(doc_layout_str.to_variant());
 
                 appwindow
                     .mainheader()
@@ -294,7 +283,8 @@ impl RnAppWindow {
                     canvas.engine().borrow_mut().resize_autoexpand();
                 }
                 canvas.update_engine_rendering();
-            }));
+            }),
+        );
 
         // Pen sounds
         action_pen_sounds.connect_change_state(
@@ -323,20 +313,23 @@ impl RnAppWindow {
         // Pen style
         action_pen_style.connect_activate(
             clone!(@weak self as appwindow => move |action, target| {
-                let new_pen_style = target.unwrap().get::<PenStyle>().unwrap();
-                action.set_state(new_pen_style.to_variant());
+                let pen_style_str = target.unwrap().str().unwrap();
+                let pen_style = match PenStyle::from_str(pen_style_str) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        log::error!("pen-style action activated with invalid target, Err: {e:}");
+                        return;
+                    }
+                };
+                action.set_state(pen_style_str.to_variant());
+
                 let canvas = appwindow.active_tab().canvas();
 
                 // don't change the style if the current style with override is already the same
                 // (e.g. when switched to from the pen button, not by clicking the pen page)
-                if new_pen_style != canvas.engine().borrow().penholder.current_pen_style_w_override() {
-                    let mut widget_flags = canvas.engine().borrow_mut().change_pen_style(
-                        new_pen_style,
-                    );
-                    widget_flags.merge(canvas.engine().borrow_mut().change_pen_style_override(
-                        None,
-                    ));
-
+                if pen_style != canvas.engine().borrow().penholder.current_pen_style_w_override() {
+                    let mut widget_flags = canvas.engine().borrow_mut().change_pen_style(pen_style);
+                    widget_flags.merge(canvas.engine().borrow_mut().change_pen_style_override(None));
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             }),

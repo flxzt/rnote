@@ -6,7 +6,6 @@ use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::DrawBehaviour;
 use anyhow::Context;
-use gtk4::{cairo, glib};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};

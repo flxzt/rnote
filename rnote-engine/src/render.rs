@@ -2,7 +2,7 @@
 use crate::utils::GrapheneRectHelpers;
 use crate::DrawBehaviour;
 use anyhow::Context;
-use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{gdk, gio, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};

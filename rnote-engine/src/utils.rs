@@ -1,6 +1,6 @@
 // Imports
 use geo::line_string;
-use gtk4::{gdk, gio, glib, graphene, gsk, pango, prelude::*};
+use gtk4::{gdk, graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
 use rnote_compose::Transform;
@@ -87,33 +87,7 @@ impl GrapheneRectHelpers for graphene::Rect {
 }
 
 pub fn now_formatted_string() -> String {
-    match glib::DateTime::now_local() {
-        Ok(datetime) => match datetime.format("%F_%H-%M-%S") {
-            Ok(s) => s.to_string(),
-            Err(_) => String::from("1970-01-01_12-00-00"),
-        },
-        Err(_) => String::from("1970-01-01_12-00-00"),
-    }
-}
-
-pub fn default_file_title_for_export(
-    output_file: Option<gio::File>,
-    fallback: Option<&str>,
-    suffix: Option<&str>,
-) -> String {
-    let mut title = output_file
-        .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
-        .unwrap_or_else(|| {
-            fallback
-                .map(|f| f.to_owned())
-                .unwrap_or_else(now_formatted_string)
-        });
-
-    if let Some(suffix) = suffix {
-        title += suffix;
-    }
-
-    title
+    chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string()
 }
 
 pub fn doc_pages_files_names(file_stem_name: String, i: usize) -> String {
@@ -141,41 +115,6 @@ pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
         transform.affine[(0, 2)],
         transform.affine[(1, 2)],
     ))
-}
-
-pub fn pango_font_weight_to_raw(pango_font_weight: pango::Weight) -> u16 {
-    match pango_font_weight {
-        pango::Weight::Thin => 100,
-        pango::Weight::Ultralight => 200,
-        pango::Weight::Light => 300,
-        pango::Weight::Semilight => 350,
-        pango::Weight::Book => 380,
-        pango::Weight::Normal => 400,
-        pango::Weight::Medium => 500,
-        pango::Weight::Semibold => 600,
-        pango::Weight::Bold => 700,
-        pango::Weight::Ultrabold => 800,
-        pango::Weight::Heavy => 900,
-        pango::Weight::Ultraheavy => 100,
-        _ => 500,
-    }
-}
-
-pub fn raw_font_weight_to_pango(raw_font_weight: u16) -> pango::Weight {
-    match raw_font_weight {
-        0..=149 => pango::Weight::Thin,
-        150..=249 => pango::Weight::Ultralight,
-        250..=324 => pango::Weight::Light,
-        325..=364 => pango::Weight::Semilight,
-        365..=389 => pango::Weight::Book,
-        390..=449 => pango::Weight::Normal,
-        450..=549 => pango::Weight::Medium,
-        550..=649 => pango::Weight::Semibold,
-        650..=749 => pango::Weight::Bold,
-        750..=849 => pango::Weight::Ultrabold,
-        850..=949 => pango::Weight::Heavy,
-        950.. => pango::Weight::Ultraheavy,
-    }
 }
 
 /// Convert an [Aabb] to [`geo::Polygon<f64>`]

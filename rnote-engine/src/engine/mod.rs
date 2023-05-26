@@ -467,7 +467,7 @@ impl RnoteEngine {
         self.document = snapshot.document;
         self.store.import_from_snapshot(&snapshot);
 
-        self.update_state_current_pen()
+        self.current_pen_update_state()
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -486,7 +486,7 @@ impl RnoteEngine {
 
         widget_flags.merge(self.store.undo(now));
         self.resize_autoexpand();
-        widget_flags.merge(self.reinstall_pen_current_style());
+        widget_flags.merge(self.current_pen_update_state());
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
         }
@@ -501,7 +501,7 @@ impl RnoteEngine {
 
         widget_flags.merge(self.store.redo(now));
         self.resize_autoexpand();
-        widget_flags.merge(self.reinstall_pen_current_style());
+        widget_flags.merge(self.current_pen_update_state());
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
         }
@@ -522,7 +522,7 @@ impl RnoteEngine {
     pub fn clear(&mut self) -> WidgetFlags {
         self.store.clear();
 
-        self.update_state_current_pen()
+        self.current_pen_update_state()
     }
 
     /// Handle a received task from tasks_rx.
@@ -843,8 +843,8 @@ impl RnoteEngine {
     /// Update the current pen with the current engine state.
     ///
     /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
-    pub fn update_state_current_pen(&mut self) -> WidgetFlags {
-        self.penholder.update_state_current_pen(&mut EngineViewMut {
+    pub fn current_pen_update_state(&mut self) -> WidgetFlags {
+        self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,

@@ -193,7 +193,7 @@ impl PenHolder {
         widget_flags
     }
 
-    pub fn update_state_current_pen(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
+    pub fn current_pen_update_state(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags {
         self.current_pen.update_state(engine_view)
     }
 

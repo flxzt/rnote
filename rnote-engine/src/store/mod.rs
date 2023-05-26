@@ -150,11 +150,13 @@ impl StrokeStore {
         self.key_tree.rebuild_from_vec(tree_objects);
     }
 
-    /// Checks the pointer equality of current state to all fields of the given history entry.
-    fn ptr_eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
+    /// Checks the equality of current state to all fields of the given history entry,
+    /// doing pointer compares when they are wrapper inside Arcs.
+    fn eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
+            && self.chrono_counter == history_entry.chrono_counter
     }
 
     /// Create a history entry from the current state.
@@ -194,7 +196,7 @@ impl StrokeStore {
         if self
             .history
             .back()
-            .map(|last| !self.ptr_eq_w_history_entry(last))
+            .map(|last| !self.eq_w_history_entry(last))
             .unwrap_or(true)
         {
             // as soon as the current state is recorded, remove the future
@@ -228,7 +230,7 @@ impl StrokeStore {
         if self
             .history
             .back()
-            .map(|last| !self.ptr_eq_w_history_entry(last))
+            .map(|last| !self.eq_w_history_entry(last))
             .unwrap_or(true)
         {
             // as soon as the current state is recorded, remove the future

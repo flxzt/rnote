@@ -305,7 +305,7 @@ impl RnoteEngine {
 
         self.store.set_selected_keys(&inserted, true);
 
-        widget_flags.merge(self.update_state_current_pen());
+        widget_flags.merge(self.current_pen_update_state());
 
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
@@ -379,7 +379,7 @@ impl RnoteEngine {
             self.camera.viewport(),
             self.camera.image_scale(),
         );
-        widget_flags.merge(self.penholder.update_state_current_pen(&mut EngineViewMut {
+        widget_flags.merge(self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,

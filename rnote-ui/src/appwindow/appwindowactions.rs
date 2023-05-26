@@ -410,7 +410,7 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 let selection_keys = canvas.engine().borrow().store.selection_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
-                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 canvas.engine().borrow_mut().resize_autoexpand();
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
@@ -427,7 +427,7 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 let new_selected = canvas.engine().borrow_mut().store.duplicate_selection();
                 canvas.engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
-                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 canvas.engine().borrow_mut().resize_autoexpand();
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
@@ -445,7 +445,7 @@ impl RnAppWindow {
                 let all_strokes = canvas.engine().borrow().store.stroke_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
                 widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
-                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 canvas.engine().borrow_mut().resize_autoexpand();
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
@@ -463,7 +463,7 @@ impl RnAppWindow {
                 let all_strokes = canvas.engine().borrow().store.selection_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
-                widget_flags.merge(canvas.engine().borrow_mut().update_state_current_pen());
+                widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 canvas.engine().borrow_mut().resize_autoexpand();
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();

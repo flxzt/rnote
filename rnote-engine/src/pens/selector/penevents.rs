@@ -78,8 +78,6 @@ impl Selector {
                             {
                                 *selection_bounds = new_bounds;
                             }
-
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
                         {

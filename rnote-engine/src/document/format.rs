@@ -1,5 +1,4 @@
 // Imports
-use gtk4::glib;
 use rnote_compose::{color, Color};
 use serde::{Deserialize, Serialize};
 
@@ -68,18 +67,23 @@ impl PredefinedFormat {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
-#[repr(u32)]
-#[enum_type(name = "MeasureUnit")]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "measure_unit")]
 pub enum MeasureUnit {
-    #[enum_value(name = "Pixel", nick = "px")]
     #[serde(rename = "px")]
     Px = 0,
-    #[enum_value(name = "Millimeter", nick = "mm")]
     #[serde(rename = "mm")]
     Mm,
-    #[enum_value(name = "Centimeter", nick = "cm")]
     #[serde(rename = "cm")]
     Cm,
 }
@@ -87,6 +91,16 @@ pub enum MeasureUnit {
 impl Default for MeasureUnit {
     fn default() -> Self {
         Self::Px
+    }
+}
+
+impl TryFrom<u32> for MeasureUnit {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("MeasureUnit try_from::<u32>() for value {} failed", value)
+        })
     }
 }
 
@@ -114,15 +128,11 @@ impl MeasureUnit {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
-#[repr(u32)]
-#[enum_type(name = "FormatOrientation")]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "orientation")]
 pub enum Orientation {
-    #[enum_value(name = "Portrait", nick = "portrait")]
     #[serde(rename = "portrait")]
     Portrait = 0,
-    #[enum_value(name = "Landscape", nick = "landscape")]
     #[serde(rename = "landscape")]
     Landscape,
 }

@@ -14,8 +14,6 @@ use crate::{
 };
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-use rnote_engine::document::format::MeasureUnit;
-use rnote_engine::pens::PenStyle;
 
 mod imp {
     use super::*;
@@ -109,12 +107,10 @@ mod imp {
             RnSelectorPage::static_type();
             RnTypewriterPage::static_type();
             RnToolsPage::static_type();
-            PenStyle::static_type();
             RnWorkspaceBrowser::static_type();
             RnWorkspacesBar::static_type();
             RnFileRow::static_type();
             RnWorkspaceRow::static_type();
-            MeasureUnit::static_type();
             RnUnitEntry::static_type();
             RnIconPicker::static_type();
             RnPenShortcutRow::static_type();

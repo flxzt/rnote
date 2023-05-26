@@ -4,7 +4,6 @@ use super::{Stroke, StrokeBehaviour};
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::{document::Format, strokes::strokebehaviour};
 use crate::{render, DrawBehaviour};
-use gtk4::glib;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;

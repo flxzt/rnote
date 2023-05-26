@@ -187,6 +187,26 @@ pub(crate) fn axis_use_idx(a: gdk::AxisUse) -> usize {
     }
 }
 
+pub fn default_file_title_for_export(
+    output_file: Option<gio::File>,
+    fallback: Option<&str>,
+    suffix: Option<&str>,
+) -> String {
+    let mut title = output_file
+        .and_then(|f| Some(f.basename()?.file_stem()?.to_string_lossy().to_string()))
+        .unwrap_or_else(|| {
+            fallback
+                .map(|f| f.to_owned())
+                .unwrap_or_else(rnote_engine::utils::now_formatted_string)
+        });
+
+    if let Some(suffix) = suffix {
+        title += suffix;
+    }
+
+    title
+}
+
 /// Wrapper type that enables iterating over [`std::cell::RefCell<Vec<T>>`]
 pub(crate) struct VecRefWrapper<'a, T: 'a> {
     r: Ref<'a, Vec<T>>,

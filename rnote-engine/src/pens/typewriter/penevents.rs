@@ -15,7 +15,7 @@ impl Typewriter {
         &mut self,
         element: Element,
         _modifier_keys: Vec<ModifierKey>,
-        now: Instant,
+        _now: Instant,
         engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
@@ -144,9 +144,6 @@ impl Typewriter {
                             } else {
                                 // If we click outside, reset to idle
                                 self.state = TypewriterState::Idle;
-
-                                widget_flags.merge(engine_view.store.record(now));
-
                                 progress = PenProgress::Finished;
                             }
                         }
@@ -199,9 +196,6 @@ impl Typewriter {
                             } else {
                                 // If we click outside, reset to idle
                                 self.state = TypewriterState::Idle;
-
-                                widget_flags.merge(engine_view.store.record(now));
-
                                 progress = PenProgress::Finished;
                             }
                         }

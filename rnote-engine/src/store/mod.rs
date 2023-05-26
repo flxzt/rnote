@@ -89,7 +89,7 @@ pub struct StrokeStore {
     #[serde(skip)]
     render_components: SecondaryMap<StrokeKey, RenderComponent>,
     #[serde(skip)]
-    history: VecDeque<Arc<HistoryEntry>>,
+    history: VecDeque<HistoryEntry>,
     /// The index of the current live document in the history stack.
     #[serde(skip)]
     live_index: usize,
@@ -110,7 +110,7 @@ impl Default for StrokeStore {
             render_components: SecondaryMap::new(),
 
             // Start off with state in the history
-            history: VecDeque::from(vec![Arc::new(HistoryEntry::default())]),
+            history: VecDeque::from(vec![HistoryEntry::default()]),
             live_index: 0,
 
             key_tree: KeyTree::default(),
@@ -151,8 +151,8 @@ impl StrokeStore {
     }
 
     /// Checks the equality of current state to all fields of the given history entry,
-    /// doing pointer compares when they are wrapper inside Arcs.
-    fn eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
+    /// doing pointer compares when they are wrapped inside Arc's.
+    fn eq_w_history_entry(&self, history_entry: &HistoryEntry) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
@@ -160,17 +160,17 @@ impl StrokeStore {
     }
 
     /// Create a history entry from the current state.
-    pub(crate) fn create_history_entry(&self) -> Arc<HistoryEntry> {
-        Arc::new(HistoryEntry {
+    pub(crate) fn create_history_entry(&self) -> HistoryEntry {
+        HistoryEntry {
             stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
             chrono_components: Arc::clone(&self.chrono_components),
             chrono_counter: self.chrono_counter,
-        })
+        }
     }
 
     /// Import the given history entry and replaces the current state with it.
-    fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
+    fn import_history_entry(&mut self, history_entry: HistoryEntry) {
         self.stroke_components = Arc::clone(&history_entry.stroke_components);
         self.trash_components = Arc::clone(&history_entry.trash_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
@@ -260,8 +260,8 @@ impl StrokeStore {
             return widget_flags;
         }
 
-        let prev = Arc::clone(&self.history[self.live_index - 1]);
-        self.import_history_entry(&prev);
+        let prev = self.history[self.live_index - 1].clone();
+        self.import_history_entry(prev);
         self.live_index -= 1;
 
         widget_flags.hide_undo = Some(!self.can_undo());
@@ -282,8 +282,8 @@ impl StrokeStore {
             return widget_flags;
         }
 
-        let next = Arc::clone(&self.history[self.live_index + 1]);
-        self.import_history_entry(&next);
+        let next = self.history[self.live_index + 1].clone();
+        self.import_history_entry(next);
         self.live_index += 1;
 
         widget_flags.hide_undo = Some(!self.can_undo());
@@ -302,7 +302,7 @@ impl StrokeStore {
 
     /// Clear the history.
     pub(crate) fn clear_history(&mut self) {
-        self.history = VecDeque::from(vec![Arc::new(HistoryEntry::default())]);
+        self.history = VecDeque::from(vec![HistoryEntry::default()]);
         self.live_index = 0;
     }
 

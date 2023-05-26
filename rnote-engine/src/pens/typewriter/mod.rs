@@ -621,8 +621,6 @@ impl Typewriter {
                 widget_flags.resize = true;
             }
             TypewriterState::Start(pos) => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 if max_width_enabled {
@@ -647,6 +645,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
             }

@@ -246,30 +246,24 @@ impl RnOverlays {
                     let engine = canvas.engine();
                     let engine = &mut *engine.borrow_mut();
 
-                    // We have a global colorpicker, so we apply it to all styles
-                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
-                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
-
                     match stroke_style {
                         PenStyle::Typewriter => {
-                            if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
-                                let widget_flags = typewriter.change_text_style_in_modifying_stroke(
-                                    |text_style| {
-                                        text_style.color = stroke_color;
-                                    },
-                                    &mut EngineViewMut {
-                                        tasks_tx: engine.tasks_tx.clone(),
-                                        pens_config: &mut engine.pens_config,
-                                        doc: &mut engine.document,
-                                        store: &mut engine.store,
-                                        camera: &mut engine.camera,
-                                        audioplayer: &mut engine.audioplayer
-                                });
-                                appwindow.handle_widget_flags(widget_flags, &canvas);
+                            if engine.pens_config.typewriter_config.text_style.color != stroke_color {
+                                if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
+                                    let widget_flags = typewriter.change_text_style_in_modifying_stroke(
+                                        |text_style| {
+                                            text_style.color = stroke_color;
+                                        },
+                                        &mut EngineViewMut {
+                                            tasks_tx: engine.tasks_tx.clone(),
+                                            pens_config: &mut engine.pens_config,
+                                            doc: &mut engine.document,
+                                            store: &mut engine.store,
+                                            camera: &mut engine.camera,
+                                            audioplayer: &mut engine.audioplayer
+                                    });
+                                    appwindow.handle_widget_flags(widget_flags, &canvas);
+                                }
                             }
                         }
                         PenStyle::Selector => {
@@ -283,6 +277,14 @@ impl RnOverlays {
                         }
                         PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                     }
+
+                    // We have a global colorpicker, so we apply it to all styles
+                    engine.pens_config.brush_config.marker_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.solid_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.brush_config.textured_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.smooth_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.shaper_config.rough_options.stroke_color = Some(stroke_color);
+                    engine.pens_config.typewriter_config.text_style.color = stroke_color;
                 }),
             );
 
@@ -294,12 +296,6 @@ impl RnOverlays {
                 let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
                 let engine = canvas.engine();
                 let engine = &mut *engine.borrow_mut();
-
-                // We have a global colorpicker, so we apply it to all styles
-                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
-                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
-                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
 
                 match stroke_style {
                     PenStyle::Selector => {
@@ -313,6 +309,12 @@ impl RnOverlays {
                     }
                     PenStyle::Typewriter | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {}
                 }
+
+                // We have a global colorpicker, so we apply it to all styles
+                engine.pens_config.brush_config.marker_options.fill_color = Some(fill_color);
+                engine.pens_config.brush_config.solid_options.fill_color = Some(fill_color);
+                engine.pens_config.shaper_config.smooth_options.fill_color = Some(fill_color);
+                engine.pens_config.shaper_config.rough_options.fill_color = Some(fill_color);
             }),
         );
     }

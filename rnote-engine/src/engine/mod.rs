@@ -448,8 +448,7 @@ impl RnoteEngine {
             .collect::<Vec<StrokeKey>>();
 
         for key in trashed_keys {
-            Arc::make_mut(&mut Arc::make_mut(&mut store_history_entry).stroke_components)
-                .remove(key);
+            Arc::make_mut(&mut store_history_entry.stroke_components).remove(key);
         }
 
         EngineSnapshot {

@@ -272,11 +272,9 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-
                         if let Some(max_width) = textstroke.text_style.max_width {
                             engine_view.pens_config.typewriter_config.text_width = max_width;
                         }
-
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
                         widget_flags.refresh_ui = true;
@@ -297,12 +295,12 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-
                         if let Some(max_width) = textstroke.text_style.max_width {
                             engine_view.pens_config.typewriter_config.text_width = max_width;
                         }
-
                         update_cursors_for_textstroke(textstroke, cursor, None);
+
+                        widget_flags.refresh_ui = true;
                     }
                 }
             },

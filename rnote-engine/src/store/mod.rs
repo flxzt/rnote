@@ -36,11 +36,8 @@ pub struct HistoryEntry {
     pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
     pub trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
-    #[serde(rename = "selection_components")]
-    pub selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
-
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
 }
@@ -50,7 +47,6 @@ impl Default for HistoryEntry {
         Self {
             stroke_components: Arc::new(HopSlotMap::with_key()),
             trash_components: Arc::new(SecondaryMap::new()),
-            selection_components: Arc::new(SecondaryMap::new()),
             chrono_components: Arc::new(SecondaryMap::new()),
 
             chrono_counter: 0,
@@ -85,26 +81,23 @@ pub struct StrokeStore {
     selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
     chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    /// Incrementing counter for chrono_components.
+    ///
+    /// Value must be kept equal to the [ChronoComponent] of the newest inserted or modified stroke.
+    #[serde(rename = "chrono_counter")]
+    chrono_counter: u32,
     #[serde(skip)]
     render_components: SecondaryMap<StrokeKey, RenderComponent>,
-
     #[serde(skip)]
     history: VecDeque<Arc<HistoryEntry>>,
-    /// The index of the current edited document in the history stack.
+    /// The index of the current live document in the history stack.
     #[serde(skip)]
     live_index: usize,
-
     /// An rtree backed by the slotmap store, for faster spatial queries.
     ///
     /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
     #[serde(skip)]
     key_tree: KeyTree,
-
-    /// Incrementing counter for chrono_components.
-    ///
-    /// Value must be equal to the [ChronoComponent] of the newest inserted or modified stroke.
-    #[serde(rename = "chrono_counter")]
-    chrono_counter: u32,
 }
 
 impl Default for StrokeStore {
@@ -138,11 +131,9 @@ impl StrokeStore {
         self.clear();
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
-
         self.chrono_counter = snapshot.chrono_counter;
 
         self.update_geometry_for_strokes(&self.keys_unordered());
-
         self.rebuild_selection_components_slotmap();
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
@@ -163,10 +154,6 @@ impl StrokeStore {
     fn ptr_eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
-            && Arc::ptr_eq(
-                &self.selection_components,
-                &history_entry.selection_components,
-            )
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
     }
 
@@ -175,7 +162,6 @@ impl StrokeStore {
         Arc::new(HistoryEntry {
             stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
-            selection_components: Arc::clone(&self.selection_components),
             chrono_components: Arc::clone(&self.chrono_components),
             chrono_counter: self.chrono_counter,
         })
@@ -185,12 +171,12 @@ impl StrokeStore {
     fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
         self.stroke_components = Arc::clone(&history_entry.stroke_components);
         self.trash_components = Arc::clone(&history_entry.trash_components);
-        self.selection_components = Arc::clone(&history_entry.selection_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
         self.chrono_counter = history_entry.chrono_counter;
 
         // Since we don't store the rtree in the history, we need to rebuild it.
         self.rebuild_rtree();
+        self.rebuild_selection_components_slotmap();
         // Rebuild but retain the render components for the strokes that are found in the history entry.
         // This ensures that we are able to continue displaying the strokes after undo/redo while they are rerendered.
         self.rebuild_retain_valid_keys_render_components();

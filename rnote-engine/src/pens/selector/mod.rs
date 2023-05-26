@@ -723,3 +723,20 @@ impl Selector {
         PenProgress::InProgress
     }
 }
+
+fn cancel_selection(selection: &[StrokeKey], engine_view: &mut EngineViewMut) -> WidgetFlags {
+    let mut widget_flags = WidgetFlags::default();
+    engine_view.store.set_selected_keys(selection, false);
+    engine_view.store.update_geometry_for_strokes(selection);
+    engine_view.store.regenerate_rendering_in_viewport_threaded(
+        engine_view.tasks_tx.clone(),
+        false,
+        engine_view.camera.viewport(),
+        engine_view.camera.image_scale(),
+    );
+
+    widget_flags.merge(engine_view.store.record(Instant::now()));
+    widget_flags.store_modified = true;
+    widget_flags.resize = true;
+    widget_flags
+}

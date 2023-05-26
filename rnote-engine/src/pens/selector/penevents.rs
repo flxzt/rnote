@@ -497,29 +497,13 @@ impl Selector {
                     }
                     KeyboardKey::Delete | KeyboardKey::BackSpace => {
                         engine_view.store.set_trashed_keys(selection, true);
+                        widget_flags.merge(super::cancel_selection(selection, engine_view));
                         self.state = SelectorState::Idle;
-
-                        engine_view
-                            .doc
-                            .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
-                        widget_flags.resize = true;
-                        widget_flags.store_modified = true;
-
                         PenProgress::Finished
                     }
                     KeyboardKey::Escape => {
-                        engine_view.store.set_selected_keys(selection, false);
+                        widget_flags.merge(super::cancel_selection(selection, engine_view));
                         self.state = SelectorState::Idle;
-
-                        engine_view
-                            .doc
-                            .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                        widget_flags.resize = true;
-                        widget_flags.store_modified = true;
-
                         PenProgress::Finished
                     }
                     _ => PenProgress::InProgress,
@@ -558,27 +542,11 @@ impl Selector {
             SelectorState::Idle => PenProgress::Idle,
             SelectorState::Selecting { .. } => {
                 self.state = SelectorState::Idle;
-
-                // Deselect on cancel
-                let selection_keys = engine_view.store.selection_keys_as_rendered();
-                engine_view.store.set_selected_keys(&selection_keys, false);
-
-                widget_flags.resize = true;
-                widget_flags.store_modified = true;
-
                 PenProgress::Finished
             }
             SelectorState::ModifySelection { selection, .. } => {
-                engine_view.store.set_selected_keys(selection, false);
+                widget_flags.merge(super::cancel_selection(selection, engine_view));
                 self.state = SelectorState::Idle;
-
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                widget_flags.resize = true;
-                widget_flags.store_modified = true;
-
                 PenProgress::Finished
             }
         };

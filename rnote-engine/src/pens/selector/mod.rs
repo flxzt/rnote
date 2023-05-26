@@ -97,19 +97,18 @@ impl PenBehaviour for Selector {
 
         let selection = engine_view.store.selection_keys_as_rendered();
 
-        if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection) {
-            self.state = SelectorState::ModifySelection {
-                modify_state: ModifyState::default(),
-                selection,
-                selection_bounds,
+        self.state =
+            if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection) {
+                SelectorState::ModifySelection {
+                    modify_state: ModifyState::default(),
+                    selection,
+                    selection_bounds,
+                }
+            } else {
+                SelectorState::Idle
             };
 
-            widget_flags.redraw = true;
-        } else {
-            self.state = SelectorState::Idle;
-
-            widget_flags.redraw = true;
-        }
+        widget_flags.redraw = true;
 
         widget_flags
     }
@@ -173,7 +172,7 @@ impl PenBehaviour for Selector {
         &mut self,
         engine_view: &mut EngineViewMut,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
-        let mut widget_flags = engine_view.store.record(Instant::now());
+        let mut widget_flags = WidgetFlags::default();
 
         let selected_keys = if let SelectorState::ModifySelection { selection, .. } = &self.state {
             Some(selection.clone())
@@ -183,10 +182,12 @@ impl PenBehaviour for Selector {
 
         if let Some(selected_keys) = selected_keys {
             let clipboard_content = engine_view.store.cut_stroke_content(&selected_keys);
-            widget_flags.store_modified = true;
-            widget_flags.redraw = true;
 
             self.state = SelectorState::Idle;
+
+            widget_flags.merge(engine_view.store.record(Instant::now()));
+            widget_flags.store_modified = true;
+            widget_flags.redraw = true;
 
             return Ok((
                 Some((
@@ -714,7 +715,6 @@ impl Selector {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                widget_flags.redraw = true;
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
                 widget_flags.deselect_color_setters = true;
@@ -722,4 +722,21 @@ impl Selector {
         }
         PenProgress::InProgress
     }
+}
+
+fn cancel_selection(selection: &[StrokeKey], engine_view: &mut EngineViewMut) -> WidgetFlags {
+    let mut widget_flags = WidgetFlags::default();
+    engine_view.store.set_selected_keys(selection, false);
+    engine_view.store.update_geometry_for_strokes(selection);
+    engine_view.store.regenerate_rendering_in_viewport_threaded(
+        engine_view.tasks_tx.clone(),
+        false,
+        engine_view.camera.viewport(),
+        engine_view.camera.image_scale(),
+    );
+
+    widget_flags.merge(engine_view.store.record(Instant::now()));
+    widget_flags.store_modified = true;
+    widget_flags.resize = true;
+    widget_flags
 }

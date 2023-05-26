@@ -1,5 +1,5 @@
+// Imports
 use super::StrokeKey;
-/// Imports
 use p2d::bounding_volume::Aabb;
 use rstar::primitives::GeomWithData;
 

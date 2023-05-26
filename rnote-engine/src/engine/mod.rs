@@ -448,8 +448,7 @@ impl RnoteEngine {
             .collect::<Vec<StrokeKey>>();
 
         for key in trashed_keys {
-            Arc::make_mut(&mut Arc::make_mut(&mut store_history_entry).stroke_components)
-                .remove(key);
+            Arc::make_mut(&mut store_history_entry.stroke_components).remove(key);
         }
 
         EngineSnapshot {
@@ -467,7 +466,7 @@ impl RnoteEngine {
         self.document = snapshot.document;
         self.store.import_from_snapshot(&snapshot);
 
-        self.update_state_current_pen()
+        self.current_pen_update_state()
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -475,31 +474,21 @@ impl RnoteEngine {
         self.store.record(now)
     }
 
+    /// Update the state of the latest history entry with the current document state.
+    pub fn update_latest_history_entry(&mut self, now: Instant) -> WidgetFlags {
+        self.store.update_latest_history_entry(now)
+    }
+
     /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
         widget_flags.merge(self.store.undo(now));
-
-        widget_flags.merge(self.update_state_current_pen());
-
         self.resize_autoexpand();
+        widget_flags.merge(self.current_pen_update_state());
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
         }
-
         widget_flags.redraw = true;
 
         widget_flags
@@ -509,27 +498,12 @@ impl RnoteEngine {
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        widget_flags.merge(
-            self.penholder
-                .reinstall_pen_current_style(&mut EngineViewMut {
-                    tasks_tx: self.tasks_tx(),
-                    pens_config: &mut self.pens_config,
-                    doc: &mut self.document,
-                    store: &mut self.store,
-                    camera: &mut self.camera,
-                    audioplayer: &mut self.audioplayer,
-                }),
-        );
-
         widget_flags.merge(self.store.redo(now));
-
-        widget_flags.merge(self.update_state_current_pen());
-
         self.resize_autoexpand();
+        widget_flags.merge(self.current_pen_update_state());
         if let Err(e) = self.update_rendering_current_viewport() {
             log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
         }
-
         widget_flags.redraw = true;
 
         widget_flags
@@ -547,7 +521,7 @@ impl RnoteEngine {
     pub fn clear(&mut self) -> WidgetFlags {
         self.store.clear();
 
-        self.update_state_current_pen()
+        self.current_pen_update_state()
     }
 
     /// Handle a received task from tasks_rx.
@@ -831,7 +805,7 @@ impl RnoteEngine {
 
     /// Remove a page from the document when in fixed size layout.
     ///
-    /// Returns true when document is in fixed size layout and a pages was removed,
+    /// Returns true when document is in fixed size layout and a page was removed,
     /// else false.
     ///
     /// Background and strokes rendering then need to be updated.
@@ -868,8 +842,8 @@ impl RnoteEngine {
     /// Update the current pen with the current engine state.
     ///
     /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
-    pub fn update_state_current_pen(&mut self) -> WidgetFlags {
-        self.penholder.update_state_current_pen(&mut EngineViewMut {
+    pub fn current_pen_update_state(&mut self) -> WidgetFlags {
+        self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
             pens_config: &mut self.pens_config,
             doc: &mut self.document,

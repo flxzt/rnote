@@ -213,7 +213,7 @@ mod imp {
             obj.add_controller(self.key_controller.clone());
             obj.add_controller(self.drop_target.clone());
 
-            // receive and handling engine tasks
+            // receive and handle engine tasks
             glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
                     let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();

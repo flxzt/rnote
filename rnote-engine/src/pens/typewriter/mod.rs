@@ -272,14 +272,11 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-
                         if let Some(max_width) = textstroke.text_style.max_width {
                             engine_view.pens_config.typewriter_config.text_width = max_width;
                         }
-
                         update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
 
-                        widget_flags.redraw = true;
                         widget_flags.refresh_ui = true;
                     }
                 }
@@ -298,16 +295,18 @@ impl PenBehaviour for Typewriter {
                             .text_style
                             .ranged_text_attributes
                             .clear();
-
                         if let Some(max_width) = textstroke.text_style.max_width {
                             engine_view.pens_config.typewriter_config.text_width = max_width;
                         }
-
                         update_cursors_for_textstroke(textstroke, cursor, None);
+
+                        widget_flags.refresh_ui = true;
                     }
                 }
             },
         }
+
+        widget_flags.redraw = true;
 
         widget_flags
     }
@@ -395,9 +394,10 @@ impl PenBehaviour for Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> anyhow::Result<(Option<(Vec<u8>, String)>, WidgetFlags)> {
         let mut widget_flags = WidgetFlags::default();
+        let mut content = None;
 
         match &mut self.state {
-            TypewriterState::Idle | TypewriterState::Start(_) => Ok((None, widget_flags)),
+            TypewriterState::Idle | TypewriterState::Start(_) => {}
             TypewriterState::Modifying {
                 modify_state,
                 stroke_key,
@@ -408,8 +408,6 @@ impl PenBehaviour for Typewriter {
                     ModifyState::Selecting {
                         selection_cursor, ..
                     } => {
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
-
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
@@ -440,10 +438,6 @@ impl PenBehaviour for Typewriter {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            widget_flags.redraw = true;
-                            widget_flags.resize = true;
-                            widget_flags.store_modified = true;
-
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
                                 modify_state: ModifyState::Up,
@@ -452,21 +446,23 @@ impl PenBehaviour for Typewriter {
                                 pen_down: false,
                             };
 
-                            Ok((
-                                Some((
-                                    selection_text.into_bytes(),
-                                    String::from("text/plain;charset=utf-8"),
-                                )),
-                                widget_flags,
-                            ))
-                        } else {
-                            Ok((None, widget_flags))
+                            widget_flags.merge(engine_view.store.record(Instant::now()));
+                            widget_flags.redraw = true;
+                            widget_flags.resize = true;
+                            widget_flags.store_modified = true;
+
+                            content = Some((
+                                selection_text.into_bytes(),
+                                String::from("text/plain;charset=utf-8"),
+                            ));
                         }
                     }
-                    _ => Ok((None, widget_flags)),
+                    _ => {}
                 }
             }
         }
+
+        Ok((content, widget_flags))
     }
 }
 
@@ -594,8 +590,6 @@ impl Typewriter {
 
         match &mut self.state {
             TypewriterState::Idle => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 if max_width_enabled {
@@ -620,13 +614,11 @@ impl Typewriter {
                     pen_down: false,
                 };
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
-                widget_flags.redraw = true;
             }
             TypewriterState::Start(pos) => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 if max_width_enabled {
@@ -651,9 +643,9 @@ impl Typewriter {
                     pen_down: false,
                 };
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.store_modified = true;
                 widget_flags.resize = true;
-                widget_flags.redraw = true;
             }
             TypewriterState::Modifying {
                 modify_state,
@@ -664,8 +656,6 @@ impl Typewriter {
                 ModifyState::Selecting {
                     selection_cursor, ..
                 } => {
-                    widget_flags.merge(engine_view.store.record(Instant::now()));
-
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_mut(*stroke_key)
                     {
@@ -691,14 +681,12 @@ impl Typewriter {
                             pen_down: false,
                         };
 
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
                         widget_flags.resize = true;
-                        widget_flags.redraw = true;
                     }
                 }
                 _ => {
-                    widget_flags.merge(engine_view.store.record(Instant::now()));
-
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_mut(*stroke_key)
                     {
@@ -713,13 +701,15 @@ impl Typewriter {
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
                         widget_flags.resize = true;
-                        widget_flags.redraw = true;
                     }
                 }
             },
         }
+
+        widget_flags.redraw = true;
 
         widget_flags
     }
@@ -736,8 +726,6 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
 
         if let TypewriterState::Modifying { stroke_key, .. } = &mut self.state {
-            widget_flags.merge(engine_view.store.record(Instant::now()));
-
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(*stroke_key)
             {
@@ -749,6 +737,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }
@@ -764,8 +753,6 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
-            widget_flags.merge(engine_view.store.record(Instant::now()));
-
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
             {
@@ -777,6 +764,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }
@@ -793,8 +781,6 @@ impl Typewriter {
         let mut widget_flags = WidgetFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
-            widget_flags.merge(engine_view.store.record(Instant::now()));
-
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
             {
@@ -812,6 +798,7 @@ impl Typewriter {
                     engine_view.camera.image_scale(),
                 );
 
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.redraw = true;
                 widget_flags.store_modified = true;
             }

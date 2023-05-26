@@ -10,7 +10,7 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     // The pen style.
     fn style(&self) -> PenStyle;
 
-    /// Update the state from the engine.
+    /// Update the pen and pen config state with the state from the engine.
     fn update_state(&mut self, engine_view: &mut EngineViewMut) -> WidgetFlags;
 
     /// Handle a pen event.

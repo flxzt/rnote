@@ -127,14 +127,15 @@ impl RnTypewriterPage {
                     Ok(new_font_family) => {
                         let engine = canvas.engine();
                         let engine = &mut *engine.borrow_mut();
-                        let new_font_family_name = new_font_family.name();
+                        let font_family_name = new_font_family.name().to_string();
 
                         typewriterpage.imp().prev_picked_font_family.borrow_mut().replace(new_font_family);
+                        engine.pens_config.typewriter_config.text_style.font_family = font_family_name.clone();
 
                         if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
                             let widget_flags = typewriter.change_text_style_in_modifying_stroke(
                                 |text_style| {
-                                    text_style.font_family = new_font_family_name.into();
+                                    text_style.font_family = font_family_name;
                                 },
                                 &mut EngineViewMut {
                                     tasks_tx: engine.tasks_tx.clone(),

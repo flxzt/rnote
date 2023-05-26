@@ -63,8 +63,6 @@ impl Typewriter {
                 if refresh_state {
                     // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
                     widget_flags.merge(self.update_state(engine_view));
-
-                    widget_flags.redraw = true;
                     widget_flags.refresh_ui = true;
                 }
 
@@ -78,7 +76,7 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        let mut pen_progress = PenProgress::InProgress;
+                        let mut progress = PenProgress::InProgress;
 
                         if let (Some(typewriter_bounds), Some(Stroke::TextStroke(textstroke))) = (
                             typewriter_bounds,
@@ -87,8 +85,6 @@ impl Typewriter {
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                                 .contains_local_point(&na::Point2::from(element.pos))
                             {
-                                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                                 // switch to translating state
                                 self.state = TypewriterState::Modifying {
                                     modify_state: ModifyState::Translating {
@@ -105,8 +101,6 @@ impl Typewriter {
                             )
                             .contains_local_point(&na::Point2::from(element.pos))
                             {
-                                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                                 // switch to adjust text width
                                 self.state = TypewriterState::Modifying {
                                     modify_state: ModifyState::AdjustTextWidth {
@@ -150,25 +144,20 @@ impl Typewriter {
                             } else {
                                 // If we click outside, reset to idle
                                 self.state = TypewriterState::Idle;
-
-                                pen_progress = PenProgress::Finished;
+                                progress = PenProgress::Finished;
                             }
                         }
 
-                        widget_flags.redraw = true;
-
-                        pen_progress
+                        progress
                     }
                     ModifyState::Selecting { finished, .. } => {
-                        let mut pen_progress = PenProgress::InProgress;
+                        let mut progress = PenProgress::InProgress;
 
                         if let Some(typewriter_bounds) = typewriter_bounds {
                             // Clicking on the translate node
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                                 .contains_local_point(&na::Point2::from(element.pos))
                             {
-                                widget_flags.merge(engine_view.store.record(Instant::now()));
-
                                 self.state = TypewriterState::Modifying {
                                     modify_state: ModifyState::Translating {
                                         current_pos: element.pos,
@@ -207,14 +196,11 @@ impl Typewriter {
                             } else {
                                 // If we click outside, reset to idle
                                 self.state = TypewriterState::Idle;
-
-                                pen_progress = PenProgress::Finished;
+                                progress = PenProgress::Finished;
                             }
                         }
 
-                        widget_flags.redraw = true;
-
-                        pen_progress
+                        progress
                     }
                     ModifyState::Translating { current_pos, .. } => {
                         let offset = element.pos - *current_pos;
@@ -226,9 +212,9 @@ impl Typewriter {
                             engine_view
                                 .store
                                 .translate_strokes_images(&[*stroke_key], offset);
+
                             *current_pos = element.pos;
 
-                            widget_flags.redraw = true;
                             widget_flags.store_modified = true;
                         }
 
@@ -258,9 +244,9 @@ impl Typewriter {
                                     engine_view.camera.viewport(),
                                     engine_view.camera.image_scale(),
                                 );
+
                                 *current_pos = element.pos;
 
-                                widget_flags.redraw = true;
                                 widget_flags.store_modified = true;
                             }
                         }
@@ -311,8 +297,6 @@ impl Typewriter {
                     ModifyState::Selecting { finished, .. } => {
                         // finished when drag ended
                         *finished = true;
-
-                        widget_flags.redraw = true;
                     }
                     ModifyState::Translating { .. } => {
                         engine_view
@@ -334,7 +318,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.redraw = true;
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
                     }
@@ -358,7 +342,7 @@ impl Typewriter {
                             pen_down: false,
                         };
 
-                        widget_flags.redraw = true;
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
                     }
@@ -422,7 +406,6 @@ impl Typewriter {
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
                 Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                 match keyboard_key {
@@ -451,13 +434,12 @@ impl Typewriter {
                             pen_down: false,
                         };
 
+                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.resize = true;
                         widget_flags.store_modified = true;
                     }
                     _ => {}
                 }
-
-                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -469,25 +451,32 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(ref mut textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
-                            let mut update_stroke = |store: &mut StrokeStore| {
-                                store.update_geometry_for_stroke(*stroke_key);
-                                store.regenerate_rendering_for_stroke(
-                                    *stroke_key,
-                                    engine_view.camera.viewport(),
-                                    engine_view.camera.image_scale(),
-                                );
-                                engine_view.doc.resize_autoexpand(store, engine_view.camera);
+                            let mut update_stroke =
+                                |store: &mut StrokeStore, keychar_is_whitespace: bool| {
+                                    store.update_geometry_for_stroke(*stroke_key);
+                                    store.regenerate_rendering_for_stroke(
+                                        *stroke_key,
+                                        engine_view.camera.viewport(),
+                                        engine_view.camera.image_scale(),
+                                    );
+                                    engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
-                                widget_flags.redraw = true;
-                                widget_flags.resize = true;
-                                widget_flags.store_modified = true;
-                            };
+                                    if keychar_is_whitespace {
+                                        widget_flags.merge(store.record(Instant::now()));
+                                    } else {
+                                        widget_flags.merge(
+                                            store.update_latest_history_entry(Instant::now()),
+                                        );
+                                    }
+
+                                    widget_flags.resize = true;
+                                    widget_flags.store_modified = true;
+                                };
 
                             // Handling keyboard input
                             match keyboard_key {
@@ -510,7 +499,7 @@ impl Typewriter {
                                             keychar.to_string().as_str(),
                                             cursor,
                                         );
-                                        update_stroke(engine_view.store);
+                                        update_stroke(engine_view.store, keychar.is_whitespace());
                                     }
                                 }
                                 KeyboardKey::BackSpace => {
@@ -519,15 +508,15 @@ impl Typewriter {
                                     } else {
                                         textstroke.remove_grapheme_before_cursor(cursor);
                                     }
-                                    update_stroke(engine_view.store);
+                                    update_stroke(engine_view.store, false);
                                 }
                                 KeyboardKey::HorizontalTab => {
                                     textstroke.insert_text_after_cursor("\t", cursor);
-                                    update_stroke(engine_view.store);
+                                    update_stroke(engine_view.store, false);
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                                     textstroke.insert_text_after_cursor("\n", cursor);
-                                    update_stroke(engine_view.store);
+                                    update_stroke(engine_view.store, true);
                                 }
                                 KeyboardKey::Delete => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
@@ -535,7 +524,7 @@ impl Typewriter {
                                     } else {
                                         textstroke.remove_grapheme_after_cursor(cursor);
                                     }
-                                    update_stroke(engine_view.store);
+                                    update_stroke(engine_view.store, false);
                                 }
                                 KeyboardKey::NavLeft => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardShift) {
@@ -655,8 +644,6 @@ impl Typewriter {
                             };
 
                             *pen_down = false;
-
-                            widget_flags.redraw = true;
                         }
 
                         PenProgress::InProgress
@@ -665,7 +652,6 @@ impl Typewriter {
                         selection_cursor,
                         finished,
                     } => {
-                        widget_flags.merge(engine_view.store.record(Instant::now()));
                         Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
@@ -680,7 +666,7 @@ impl Typewriter {
                                 );
                                 engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
-                                widget_flags.redraw = true;
+                                widget_flags.merge(store.record(Instant::now()));
                                 widget_flags.resize = true;
                                 widget_flags.store_modified = true;
                             };
@@ -804,8 +790,6 @@ impl Typewriter {
                             }
                         }
 
-                        widget_flags.redraw = true;
-
                         PenProgress::InProgress
                     }
                     _ => PenProgress::InProgress,
@@ -831,7 +815,6 @@ impl Typewriter {
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
-                widget_flags.merge(engine_view.store.record(Instant::now()));
                 Self::start_audio(None, engine_view.audioplayer);
 
                 text_style.ranged_text_attributes.clear();
@@ -858,7 +841,7 @@ impl Typewriter {
                     pen_down: false,
                 };
 
-                widget_flags.redraw = true;
+                widget_flags.merge(engine_view.store.record(Instant::now()));
                 widget_flags.resize = true;
                 widget_flags.store_modified = true;
 
@@ -872,10 +855,6 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        // Only record between words
-                        if text.contains(' ') {
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
-                        }
                         Self::start_audio(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(ref mut textstroke)) =
@@ -894,7 +873,17 @@ impl Typewriter {
 
                             *pen_down = false;
 
-                            widget_flags.redraw = true;
+                            // only record new history entry if the text contains ascii-whitespace,
+                            // else only update history
+                            if text.contains(char::is_whitespace) {
+                                widget_flags.merge(engine_view.store.record(Instant::now()));
+                            } else {
+                                widget_flags.merge(
+                                    engine_view
+                                        .store
+                                        .update_latest_history_entry(Instant::now()),
+                                );
+                            }
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
@@ -905,9 +894,6 @@ impl Typewriter {
                         selection_cursor,
                         finished,
                     } => {
-                        if text.contains(' ') {
-                            widget_flags.merge(engine_view.store.record(Instant::now()));
-                        }
                         Self::start_audio(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
@@ -930,7 +916,17 @@ impl Typewriter {
 
                             *finished = true;
 
-                            widget_flags.redraw = true;
+                            // only record new history entry if the text contains ascii-whitespace,
+                            // else only update history
+                            if text.contains(char::is_whitespace) {
+                                widget_flags.merge(engine_view.store.record(Instant::now()));
+                            } else {
+                                widget_flags.merge(
+                                    engine_view
+                                        .store
+                                        .update_latest_history_entry(Instant::now()),
+                                );
+                            }
                             widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
@@ -950,13 +946,13 @@ impl Typewriter {
         _now: Instant,
         _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, WidgetFlags) {
-        let mut widget_flags = WidgetFlags::default();
+        let widget_flags = WidgetFlags::default();
 
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             _ => {
                 self.state = TypewriterState::Idle;
-                widget_flags.redraw = true;
+
                 PenProgress::Finished
             }
         };

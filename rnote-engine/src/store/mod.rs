@@ -191,8 +191,6 @@ impl StrokeStore {
     pub(crate) fn record(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        log::debug!("recording state to history");
-
         if self
             .history
             .back()
@@ -225,8 +223,6 @@ impl StrokeStore {
     pub(crate) fn update_latest_history_entry(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        log::debug!("update latest history entry with current state");
-
         if self
             .history
             .back()
@@ -254,8 +250,6 @@ impl StrokeStore {
     pub(crate) fn undo(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        log::debug!("undo");
-
         if !self.can_undo() {
             return widget_flags;
         }
@@ -275,8 +269,6 @@ impl StrokeStore {
     /// Should only be called from inside the engine redo wrapper function.
     pub(crate) fn redo(&mut self, _now: Instant) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-
-        log::debug!("redo");
 
         if !self.can_redo() {
             return widget_flags;

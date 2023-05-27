@@ -88,6 +88,14 @@ impl Default for Selector {
 }
 
 impl PenBehaviour for Selector {
+    fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
+    fn deinit(&mut self) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
     fn style(&self) -> PenStyle {
         PenStyle::Selector
     }

@@ -50,6 +50,28 @@ impl Default for Pen {
 }
 
 impl PenBehaviour for Pen {
+    fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
+        match self {
+            Pen::Brush(brush) => brush.init(engine_view),
+            Pen::Shaper(shaper) => shaper.init(engine_view),
+            Pen::Typewriter(typewriter) => typewriter.init(engine_view),
+            Pen::Eraser(eraser) => eraser.init(engine_view),
+            Pen::Selector(selector) => selector.init(engine_view),
+            Pen::Tools(tools) => tools.init(engine_view),
+        }
+    }
+
+    fn deinit(&mut self) -> WidgetFlags {
+        match self {
+            Pen::Brush(brush) => brush.deinit(),
+            Pen::Shaper(shaper) => shaper.deinit(),
+            Pen::Typewriter(typewriter) => typewriter.deinit(),
+            Pen::Eraser(eraser) => eraser.deinit(),
+            Pen::Selector(selector) => selector.deinit(),
+            Pen::Tools(tools) => tools.deinit(),
+        }
+    }
+
     fn style(&self) -> PenStyle {
         match self {
             Pen::Brush(brush) => brush.style(),

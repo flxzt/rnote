@@ -204,14 +204,19 @@ impl PenHolder {
             self.current_pen
                 .handle_event(PenEvent::Cancel, Instant::now(), engine_view);
 
-        // then reinstall a new instance
-        let new_pen = new_pen(self.current_pen_style_w_override());
+        // then reinstall a new pen instance
+        let mut new_pen = new_pen(self.current_pen_style_w_override());
+        widget_flags.merge(new_pen.init(&engine_view.as_im()));
+        widget_flags.merge(new_pen.update_state(engine_view));
         self.current_pen = new_pen;
-        widget_flags.merge(self.current_pen.update_state(engine_view));
         widget_flags.merge(self.handle_changed_pen_style());
         self.pen_progress = PenProgress::Idle;
 
         widget_flags
+    }
+
+    pub fn deinit_current_pen(&mut self) -> WidgetFlags {
+        self.current_pen_mut().deinit()
     }
 
     /// Handle a pen event.

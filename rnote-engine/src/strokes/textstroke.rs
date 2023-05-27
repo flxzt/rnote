@@ -333,7 +333,7 @@ impl TextStyle {
     ) -> anyhow::Result<()> {
         const CURSOR_COLOR: piet::Color = color::GNOME_DARKS[2];
         const CURSOR_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[0];
-        let text_cursor_width = 3.0 / camera.total_zoom();
+        let text_cursor_width = 2.0 / camera.total_zoom();
 
         if let Ok(cursor_line_metric) =
             self.cursor_line_metric(cx.text(), text.clone(), cursor.cur_cursor())
@@ -352,8 +352,18 @@ impl TextStyle {
                     ),
                 );
 
-            cx.stroke(text_cursor, &CURSOR_OUTLINE_COLOR, text_cursor_width);
-            cx.stroke(text_cursor, &CURSOR_COLOR, text_cursor_width * 0.7);
+            cx.stroke_styled(
+                text_cursor,
+                &CURSOR_OUTLINE_COLOR,
+                text_cursor_width,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
+            );
+            cx.stroke_styled(
+                text_cursor,
+                &CURSOR_COLOR,
+                text_cursor_width * 0.8,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
+            );
         }
 
         Ok(())

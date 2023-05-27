@@ -7,6 +7,14 @@ use std::time::Instant;
 
 /// Types that are pens.
 pub trait PenBehaviour: DrawOnDocBehaviour {
+    /// Init the pen.
+    ///
+    /// Should be called right after creating a new pen instance.
+    fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags;
+
+    /// Deinit the pen.
+    fn deinit(&mut self) -> WidgetFlags;
+
     // The pen style.
     fn style(&self) -> PenStyle;
 

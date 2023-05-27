@@ -5,11 +5,12 @@ mod penevents;
 use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
 use super::PenStyle;
-use crate::engine::{EngineView, EngineViewMut};
+use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
+use futures::channel::mpsc::UnboundedSender;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -19,7 +20,7 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use unicode_segmentation::GraphemeCursor;
 
 #[derive(Debug, Clone)]
@@ -55,15 +56,68 @@ pub(super) enum TypewriterState {
     },
 }
 
+enum BlinkTaskHandleTask {
+    Skip,
+    Quit,
+}
+
+#[derive(Debug, Clone)]
+struct BlinkTaskHandle {
+    tx: std::sync::mpsc::Sender<BlinkTaskHandleTask>,
+}
+
+impl Drop for BlinkTaskHandle {
+    fn drop(&mut self) {
+        if let Err(e) = self.tx.send(BlinkTaskHandleTask::Quit) {
+            log::error!("Could not quit blink task while handle is being dropped, {e:?}");
+        }
+    }
+}
+
+impl BlinkTaskHandle {
+    const BLINK_TIME: Duration = Duration::from_millis(800);
+
+    fn new(tasks_tx: UnboundedSender<EngineTask>) -> Self {
+        let (tx, rx) = std::sync::mpsc::channel::<BlinkTaskHandleTask>();
+        std::thread::spawn(move || loop {
+            std::thread::sleep(Self::BLINK_TIME);
+            match rx.try_recv() {
+                Ok(BlinkTaskHandleTask::Skip) => {
+                    continue;
+                }
+                Ok(BlinkTaskHandleTask::Quit) => {
+                    break;
+                }
+                Err(_) => {}
+            }
+            if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
+                log::error!("failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
+            }
+        });
+
+        Self { tx }
+    }
+
+    fn skip(&mut self) {
+        if let Err(e) = self.tx.send(BlinkTaskHandleTask::Skip) {
+            log::error!("could not send BlinkTaskHandleTask::Skip to BlinkTask, {e:?}");
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Typewriter {
     state: TypewriterState,
+    blink_handle: Option<BlinkTaskHandle>,
+    cursor_visible: bool,
 }
 
 impl Default for Typewriter {
     fn default() -> Self {
         Self {
             state: TypewriterState::Idle,
+            blink_handle: None,
+            cursor_visible: true,
         }
     }
 }
@@ -126,15 +180,17 @@ impl DrawOnDocBehaviour for Typewriter {
                     cx.stroke(rect, &*OUTLINE_COLOR, outline_width);
 
                     // Draw the cursor
-                    let cursor_text = String::from("|");
-                    let cursor_text_len = cursor_text.len();
-                    text_style.draw_cursor(
-                        cx,
-                        cursor_text,
-                        &GraphemeCursor::new(0, cursor_text_len, true),
-                        &Transform::new_w_isometry(na::Isometry2::new(*pos, 0.0)),
-                        engine_view.camera,
-                    )?;
+                    if self.cursor_visible {
+                        let cursor_text = String::from('|');
+                        let cursor_text_len = cursor_text.len();
+                        text_style.draw_cursor(
+                            cx,
+                            cursor_text,
+                            &GraphemeCursor::new(0, cursor_text_len, true),
+                            &Transform::new_w_isometry(na::Isometry2::new(*pos, 0.0)),
+                            engine_view.camera,
+                        )?;
+                    }
                 }
             }
             TypewriterState::Modifying {
@@ -170,13 +226,15 @@ impl DrawOnDocBehaviour for Typewriter {
                     }
 
                     // Draw the cursor
-                    textstroke.text_style.draw_cursor(
-                        cx,
-                        textstroke.text.clone(),
-                        cursor,
-                        &textstroke.transform,
-                        engine_view.camera,
-                    )?;
+                    if self.cursor_visible {
+                        textstroke.text_style.draw_cursor(
+                            cx,
+                            textstroke.text.clone(),
+                            cursor,
+                            &textstroke.transform,
+                            engine_view.camera,
+                        )?;
+                    }
 
                     // Draw the text width adjust node
                     let adjust_text_width_node_bounds = Self::adjust_text_width_node_bounds(
@@ -243,6 +301,16 @@ impl DrawOnDocBehaviour for Typewriter {
 }
 
 impl PenBehaviour for Typewriter {
+    fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
+        self.blink_handle = Some(BlinkTaskHandle::new(engine_view.tasks_tx.clone()));
+        WidgetFlags::default()
+    }
+
+    fn deinit(&mut self) -> WidgetFlags {
+        self.blink_handle = None;
+        WidgetFlags::default()
+    }
+
     fn style(&self) -> PenStyle {
         PenStyle::Typewriter
     }
@@ -463,6 +531,8 @@ impl PenBehaviour for Typewriter {
             }
         }
 
+        self.reset_blink();
+
         Ok((content, widget_flags))
     }
 }
@@ -501,6 +571,10 @@ impl Typewriter {
         if let Some(audioplayer) = audioplayer {
             audioplayer.play_typewriter_key_sound(keyboard_key);
         }
+    }
+
+    pub(crate) fn toggle_cursor_visibility(&mut self) {
+        self.cursor_visible = !self.cursor_visible;
     }
 
     /// The bounds of the text rect enclosing the textstroke.
@@ -712,6 +786,7 @@ impl Typewriter {
             },
         }
 
+        self.reset_blink();
         widget_flags.redraw = true;
 
         widget_flags
@@ -808,5 +883,15 @@ impl Typewriter {
         }
 
         widget_flags
+    }
+
+    /// Resets the blink
+    fn reset_blink(&mut self) {
+        if let Some(handle) = &mut self.blink_handle {
+            if !self.cursor_visible {
+                handle.skip();
+            }
+        }
+        self.cursor_visible = true;
     }
 }

@@ -341,7 +341,7 @@ impl RnOverlays {
             .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_tabview| {
                 let active_tab_page = appwindow.active_tab_page();
                 let active_canvaswrapper = active_tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
-                appwindow.clear_rendering_inactive_tabs();
+                appwindow.clear_state_inactive_tabs();
 
                 if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.borrow_mut().replace(active_tab_page.clone()){
                     if prev_active_tab_page != active_tab_page {

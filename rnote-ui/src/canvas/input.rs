@@ -29,23 +29,13 @@ pub(crate) fn handle_pointer_controller_event(
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
-    let zooming_ended_elapsed = canvas
-        .zooming_ended()
-        .and_then(|zooming_ended| Some(now - zooming_ended));
-    if canvas.zooming()
-        || reject_pointer_input(
-            event,
-            state,
-            input_source == canvas.pen_input_source(),
-            touch_drawing,
-            zooming_ended_elapsed,
-        )
-    {
+    if reject_pointer_input(
+        event,
+        state,
+        input_source == canvas.pen_input_source(),
+        touch_drawing,
+    ) {
         return (Inhibit(false), state);
-    }
-
-    if zooming_ended_elapsed.is_some() && gdk_event_type == gdk::EventType::TouchBegin {
-        canvas.set_zooming_ended(None);
     }
 
     let mut handle_pen_event = false;
@@ -300,7 +290,6 @@ fn reject_pointer_input(
     state: PenState,
     input_source_matches: bool,
     touch_drawing: bool,
-    zooming_ended_elapsed: Option<Duration>,
 ) -> bool {
     if matches!(state, PenState::Down) && !input_source_matches {
         return true;
@@ -308,13 +297,6 @@ fn reject_pointer_input(
     if touch_drawing {
         if event.device().unwrap().num_touches() > 1 {
             return true;
-        } else if let Some(elapsed) = zooming_ended_elapsed {
-            let event_type = event.event_type();
-            if (elapsed.as_millis() < 100 && event_type == gdk::EventType::TouchBegin)
-                || event_type == gdk::EventType::TouchUpdate
-            {
-                return true;
-            }
         }
     } else {
         if event.is_pointer_emulated() || event_is_touchscreen(event) {

@@ -5,7 +5,6 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
-pub(crate) use input::input_source_from_event;
 
 // Imports
 use crate::RnCanvasWrapper;
@@ -21,13 +20,12 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
 use rnote_compose::penevents::PenState;
-use rnote_engine::pens::penbehaviour::PenProgress;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -74,8 +72,6 @@ mod imp {
         pub(crate) drop_target: DropTarget,
         pub(crate) drawing_cursor_enabled: Cell<bool>,
         pub(crate) pen_input_source: Cell<Option<gdk::InputSource>>,
-        pub(crate) zooming: Cell<bool>,
-        pub(crate) zooming_ended: Cell<Option<Instant>>,
 
         pub(crate) engine: Rc<RefCell<RnoteEngine>>,
 
@@ -168,8 +164,6 @@ mod imp {
                 drop_target,
                 drawing_cursor_enabled: Cell::new(false),
                 pen_input_source: Cell::new(None),
-                zooming: Cell::new(false),
-                zooming_ended: Cell::new(None),
 
                 engine: Rc::new(RefCell::new(engine)),
 
@@ -652,26 +646,6 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn zooming(&self) -> bool {
-        self.imp().zooming.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_zooming(&self, zooming: bool) {
-        self.imp().zooming.set(zooming);
-    }
-
-    #[allow(unused)]
-    pub(crate) fn zooming_ended(&self) -> Option<Instant> {
-        self.imp().zooming_ended.get()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_zooming_ended(&self, zooming_ended: Option<Instant>) {
-        self.imp().zooming_ended.set(zooming_ended);
-    }
-
-    #[allow(unused)]
     pub(crate) fn show_drawing_cursor(&self) -> bool {
         self.property::<bool>("show-drawing-cursor")
     }
@@ -695,22 +669,6 @@ impl RnCanvas {
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
         self.imp().engine.clone()
-    }
-
-    pub(crate) fn start_zooming(&self, input_source: Option<gdk::InputSource>, now: Instant) {
-        self.set_zooming(true);
-        if self.engine().borrow().penholder.current_pen_progress() != PenProgress::Idle
-            && self.pen_input_source() == input_source
-        {
-            let mut widget_flags = self.engine().borrow_mut().undo(now);
-            widget_flags.merge(self.engine().borrow_mut().store.remove_future());
-            self.emit_handle_widget_flags(widget_flags);
-        }
-    }
-
-    pub(crate) fn stop_zooming(&self, now: Instant) {
-        self.set_zooming(false);
-        self.set_zooming_ended(Some(now));
     }
 
     pub(crate) fn set_text_preprocessing(&self, enable: bool) {

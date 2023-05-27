@@ -484,11 +484,9 @@ impl RnoteEngine {
         let mut widget_flags = WidgetFlags::default();
 
         widget_flags.merge(self.store.undo(now));
-        self.resize_autoexpand();
+        widget_flags.merge(self.doc_resize_autoexpand());
         widget_flags.merge(self.current_pen_update_state());
-        if let Err(e) = self.update_rendering_current_viewport() {
-            log::error!("failed to update rendering for current viewport while undo, Err: {e:?}");
-        }
+        self.update_rendering_current_viewport();
         widget_flags.redraw = true;
 
         widget_flags
@@ -499,11 +497,9 @@ impl RnoteEngine {
         let mut widget_flags = WidgetFlags::default();
 
         widget_flags.merge(self.store.redo(now));
-        self.resize_autoexpand();
+        widget_flags.merge(self.doc_resize_autoexpand());
         widget_flags.merge(self.current_pen_update_state());
-        if let Err(e) = self.update_rendering_current_viewport() {
-            log::error!("failed to update rendering for current viewport while redo, Err: {e:?}");
-        }
+        self.update_rendering_current_viewport();
         widget_flags.redraw = true;
 
         widget_flags
@@ -754,35 +750,23 @@ impl RnoteEngine {
     /// Resizes the doc to the format and to fit all strokes.
     ///
     /// Background rendering then needs to be updated.
-    pub fn resize_to_fit_strokes(&mut self) {
+    pub fn doc_resize_to_fit_strokes(&mut self) -> WidgetFlags {
         self.document
-            .resize_to_fit_strokes(&self.store, &self.camera);
+            .resize_to_fit_strokes(&self.store, &self.camera)
     }
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
     ///
     /// Background rendering then needs to be updated.
-    pub fn resize_autoexpand(&mut self) {
-        self.document.resize_autoexpand(&self.store, &self.camera);
+    pub fn doc_resize_autoexpand(&mut self) -> WidgetFlags {
+        self.document.resize_autoexpand(&self.store, &self.camera)
     }
 
-    /// Expand the doc when in autoexpanding layouts. e.g. when dragging with touch.
-    pub fn expand_doc_autoexpand(&mut self) {
-        match self.document.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => {
-                // not resizing in these modes, the size is not dependent on the camera
-            }
-            Layout::SemiInfinite => {
-                // only expand, don't resize to fit strokes
-                self.document
-                    .expand_doc_semi_infinite_layout(self.camera.viewport());
-            }
-            Layout::Infinite => {
-                // only expand, don't resize to fit strokes
-                self.document
-                    .expand_doc_infinite_layout(self.camera.viewport());
-            }
-        }
+    /// Expand the doc to the camera when in autoexpanding layouts. called e.g. when dragging with touch.
+    ///
+    /// Background rendering then needs to be updated.
+    pub fn doc_expand_autoexpand(&mut self) -> WidgetFlags {
+        self.document.expand_autoexpand(&self.camera)
     }
 
     /// Add a page to the document when in fixed size layout.
@@ -791,7 +775,7 @@ impl RnoteEngine {
     /// else false.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn add_page_doc_fixed_size(&mut self) -> bool {
+    pub fn doc_add_page_fixed_size(&mut self) -> bool {
         if self.document.layout != Layout::FixedSize {
             return false;
         }
@@ -809,7 +793,7 @@ impl RnoteEngine {
     /// else false.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn remove_page_doc_fixed_size(&mut self) -> bool {
+    pub fn doc_remove_page_fixed_size(&mut self) -> bool {
         if self.document.layout != Layout::FixedSize {
             return false;
         }
@@ -830,7 +814,7 @@ impl RnoteEngine {
     /// Update the camera and updates doc dimensions with the new offset and size.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn update_camera_offset_size(
+    pub fn camera_update_offset_size(
         &mut self,
         new_offset: na::Vector2<f64>,
         new_size: na::Vector2<f64>,

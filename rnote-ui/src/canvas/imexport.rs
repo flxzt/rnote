@@ -31,9 +31,8 @@ impl RnCanvas {
         self.set_unsaved_changes(false);
         self.set_empty(false);
         self.return_to_origin_page();
-
         self.regenerate_background_pattern();
-        self.engine().borrow_mut().resize_autoexpand();
+        widget_flags.merge(self.engine().borrow_mut().doc_resize_autoexpand());
         self.update_engine_rendering();
 
         widget_flags.refresh_ui = true;
@@ -131,7 +130,7 @@ impl RnCanvas {
         self.set_empty(false);
         self.return_to_origin_page();
         self.regenerate_background_pattern();
-        self.engine().borrow_mut().resize_autoexpand();
+        widget_flags.merge(self.engine().borrow_mut().doc_resize_autoexpand());
         self.update_engine_rendering();
 
         widget_flags.refresh_ui = true;

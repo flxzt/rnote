@@ -572,8 +572,9 @@ impl RnSettingsPanel {
                 let canvas = appwindow.active_tab().canvas();
 
                 canvas.engine().borrow_mut().document.format = temporary_format;
-                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
                 canvas.update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
 
                 imp.background_pattern_width_unitentry.set_dpi_keep_value(temporary_format.dpi);
                 imp.background_pattern_height_unitentry.set_dpi_keep_value(temporary_format.dpi);

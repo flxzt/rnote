@@ -276,13 +276,16 @@ impl RnAppWindow {
                     .fixedsize_quickactions_box()
                     .set_visible(doc_layout == Layout::FixedSize);
 
+                let mut widget_flags = WidgetFlags::default();
+
                 if prev_layout != doc_layout {
                     canvas.engine().borrow_mut().document.layout = doc_layout;
-                    canvas.engine().borrow_mut().resize_to_fit_strokes();
+                    widget_flags.merge(canvas.engine().borrow_mut().doc_resize_to_fit_strokes());
                 } else {
-                    canvas.engine().borrow_mut().resize_autoexpand();
+                    widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 }
                 canvas.update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
@@ -404,7 +407,7 @@ impl RnAppWindow {
                 let selection_keys = canvas.engine().borrow().store.selection_keys_as_rendered();
                 canvas.engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
-                canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
@@ -421,7 +424,7 @@ impl RnAppWindow {
                 let new_selected = canvas.engine().borrow_mut().store.duplicate_selection();
                 canvas.engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
-                canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
@@ -439,7 +442,7 @@ impl RnAppWindow {
                 canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
                 widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
-                canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
@@ -457,7 +460,7 @@ impl RnAppWindow {
                 canvas.engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 widget_flags.merge(canvas.engine().borrow_mut().change_pen_style(PenStyle::Selector));
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
-                canvas.engine().borrow_mut().resize_autoexpand();
+                widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                 canvas.update_engine_rendering();
 
@@ -543,7 +546,7 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_add_page_to_doc, _target| {
                 let canvas = appwindow.active_tab().canvas();
 
-                if canvas.engine().borrow_mut().add_page_doc_fixed_size() {
+                if canvas.engine().borrow_mut().doc_add_page_fixed_size() {
                     canvas.update_engine_rendering();
                 }
             }),
@@ -555,7 +558,7 @@ impl RnAppWindow {
                 let canvas = appwindow.active_tab().canvas();
 
                 let mut widget_flags = WidgetFlags::default();
-                if canvas.engine().borrow_mut().remove_page_doc_fixed_size() {
+                if canvas.engine().borrow_mut().doc_remove_page_fixed_size() {
                     widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
                     canvas.update_engine_rendering();
                 }
@@ -568,8 +571,9 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_resize_to_fit_strokes, _target| {
                 let canvas = appwindow.active_tab().canvas();
 
-                canvas.engine().borrow_mut().resize_to_fit_strokes();
+                let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
                 canvas.update_engine_rendering();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
 
@@ -578,8 +582,9 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             canvas.return_to_origin_page();
-            canvas.engine().borrow_mut().resize_autoexpand();
+            let widget_flags = canvas.engine().borrow_mut().doc_resize_autoexpand();
             canvas.update_engine_rendering();
+            appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 
         // New doc

@@ -282,19 +282,20 @@ impl RnAppWindow {
             .extract_engine_config();
         let new_wrapper = RnCanvasWrapper::new();
 
-        let widget_flags = new_wrapper
+        let mut widget_flags = new_wrapper
             .canvas()
             .engine()
             .borrow_mut()
             .load_engine_config(current_engine_config, crate::env::pkg_data_dir().ok());
-        self.handle_widget_flags(widget_flags, &new_wrapper.canvas());
-
-        new_wrapper
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .resize_to_fit_strokes();
+        widget_flags.merge(
+            new_wrapper
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .doc_resize_to_fit_strokes(),
+        );
         new_wrapper.canvas().update_engine_rendering();
+        self.handle_widget_flags(widget_flags, &new_wrapper.canvas());
 
         // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview
         let page = self.overlays().tabview().append(&new_wrapper);

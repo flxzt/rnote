@@ -125,20 +125,30 @@ impl Default for Typewriter {
 impl DrawOnDocBehaviour for Typewriter {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
-        let text_style = engine_view.pens_config.typewriter_config.text_style.clone();
 
         match &self.state {
             TypewriterState::Idle => None,
             TypewriterState::Start(pos) => Some(Aabb::new(
                 na::Point2::from(*pos),
-                na::Point2::from(pos + na::vector![text_width, text_style.font_size]),
+                na::Point2::from(
+                    pos + na::vector![
+                        Self::STATE_START_TEXT_WIDTH,
+                        engine_view
+                            .pens_config
+                            .typewriter_config
+                            .text_style
+                            .font_size
+                    ],
+                ),
             )),
             TypewriterState::Modifying { stroke_key, .. } => {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let text_rect = Self::text_rect_bounds(text_width, textstroke);
+                    let text_rect = Self::text_rect_bounds(
+                        engine_view.pens_config.typewriter_config.text_width,
+                        textstroke,
+                    );
                     let typewriter_bounds = text_rect.extend_by(
                         Self::TRANSLATE_NODE_SIZE.maxs(&Self::ADJUST_TEXT_WIDTH_NODE_SIZE)
                             / total_zoom,
@@ -158,38 +168,40 @@ impl DrawOnDocBehaviour for Typewriter {
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        static OUTLINE_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
         let total_zoom = engine_view.camera.total_zoom();
-        let outline_width = 1.5 / total_zoom;
-        let outline_corner_radius = 1.0 / total_zoom;
-        let text_width = engine_view.pens_config.typewriter_config.text_width;
-        let text_style = engine_view.pens_config.typewriter_config.text_style.clone();
-        let typewriter_bounds = self.bounds_on_doc(engine_view);
+
+        let draw_text_outline = |cx: &mut piet_cairo::CairoRenderContext, bounds: Aabb| {
+            let stroke_width = Self::TEXT_OUTLINE_STROKE_WIDTH / total_zoom;
+
+            cx.stroke(
+                bounds.tightened(stroke_width * 0.5).to_kurbo_rect(),
+                &*TEXT_OUTLINE_COLOR,
+                stroke_width,
+            );
+        };
 
         match &self.state {
             TypewriterState::Idle => {}
             TypewriterState::Start(pos) => {
                 if let Some(bounds) = self.bounds_on_doc(engine_view) {
-                    let rect = bounds
-                        .tightened(outline_width * 0.5)
-                        .to_kurbo_rect()
-                        .to_rounded_rect(outline_corner_radius);
-
-                    cx.stroke(rect, &*OUTLINE_COLOR, outline_width);
+                    // Draw the initial outline
+                    draw_text_outline(cx, bounds);
 
                     // Draw the cursor
                     if self.cursor_visible {
                         let cursor_text = String::from('|');
                         let cursor_text_len = cursor_text.len();
-                        text_style.draw_cursor(
-                            cx,
-                            cursor_text,
-                            &GraphemeCursor::new(0, cursor_text_len, true),
-                            &Transform::new_w_isometry(na::Isometry2::new(*pos, 0.0)),
-                            engine_view.camera,
-                        )?;
+                        engine_view
+                            .pens_config
+                            .typewriter_config
+                            .text_style
+                            .draw_cursor(
+                                cx,
+                                cursor_text,
+                                &GraphemeCursor::new(0, cursor_text_len, true),
+                                &Transform::new_w_isometry(na::Isometry2::new(*pos, 0.0)),
+                                engine_view.camera,
+                            )?;
                     }
                 }
             }
@@ -202,13 +214,11 @@ impl DrawOnDocBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
-                    let text_rect = Self::text_rect_bounds(text_width, textstroke);
-                    let text_drawrect = text_rect
-                        .tightened(outline_width * 0.5)
-                        .to_kurbo_rect()
-                        .to_rounded_rect(outline_corner_radius);
+                    let text_width = engine_view.pens_config.typewriter_config.text_width;
+                    let text_bounds = Self::text_rect_bounds(text_width, textstroke);
 
-                    cx.stroke(text_drawrect, &*OUTLINE_COLOR, outline_width);
+                    // Draw text outline
+                    draw_text_outline(cx, text_bounds);
 
                     // Draw the text selection
                     if let ModifyState::Selecting {
@@ -238,7 +248,7 @@ impl DrawOnDocBehaviour for Typewriter {
 
                     // Draw the text width adjust node
                     let adjust_text_width_node_bounds = Self::adjust_text_width_node_bounds(
-                        text_rect.mins.coords,
+                        text_bounds.mins.coords,
                         text_width,
                         engine_view.camera,
                     );
@@ -259,7 +269,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         cx,
                         adjust_text_width_node_state,
                         Self::adjust_text_width_node_center(
-                            text_rect.mins.coords,
+                            text_bounds.mins.coords,
                             text_width,
                             engine_view.camera,
                         ),
@@ -268,7 +278,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     );
 
                     // Draw the translate Node
-                    if let Some(typewriter_bounds) = typewriter_bounds {
+                    if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         let translate_node_bounds =
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera);
                         let translate_node_state = match modify_state {
@@ -557,6 +567,10 @@ fn update_cursors_for_textstroke(
     }
 }
 
+/// The outline color when drawing a text box outline
+static TEXT_OUTLINE_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_BRIGHTS[4].with_alpha(0.941));
+
 impl Typewriter {
     // The size of the translate node, located in the upper left corner.
     const TRANSLATE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
@@ -564,8 +578,12 @@ impl Typewriter {
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.414;
     /// The threshold in x-axis direction where above it adjustments to the text width are applied. In surface coordinates.
     const ADJ_TEXT_WIDTH_THRESHOLD: f64 = 1.0;
-    // The size of the translate node, located in the upper right corner.
+    /// The size of the translate node, located in the upper right corner.
     const ADJUST_TEXT_WIDTH_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
+    /// The text width when the typewriter is in `Start` state.
+    const STATE_START_TEXT_WIDTH: f64 = 10.0;
+    /// The outline stroke width when drawing a text box outline
+    const TEXT_OUTLINE_STROKE_WIDTH: f64 = 2.0;
 
     fn start_audio(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {

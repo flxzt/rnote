@@ -378,20 +378,18 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        static OUTLINE_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.941));
-        static FILL_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.090));
+        static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2]);
+        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.1));
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
             self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
         {
             for selection_rect in selection_rects {
-                let selection_rectpath = transform.to_kurbo() * selection_rect.to_path(0.1);
+                let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
 
-                cx.fill(selection_rectpath.clone(), &*FILL_COLOR);
-                cx.stroke(selection_rectpath, &*OUTLINE_COLOR, outline_width);
+                cx.fill(&outline, &*FILL_COLOR);
+                cx.stroke(&outline, &*OUTLINE_COLOR, outline_width);
             }
         }
     }

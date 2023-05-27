@@ -180,6 +180,14 @@ pub struct Tools {
 }
 
 impl PenBehaviour for Tools {
+    fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
+    fn deinit(&mut self) -> WidgetFlags {
+        WidgetFlags::default()
+    }
+
     fn style(&self) -> PenStyle {
         PenStyle::Tools
     }

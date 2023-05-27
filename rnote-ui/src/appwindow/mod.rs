@@ -359,7 +359,13 @@ impl RnAppWindow {
             .map(|(found, _)| found)
     }
 
-    pub(crate) fn clear_rendering_inactive_tabs(&self) {
+    /// Clears the non-persistent state of all inactive_tabs.
+    ///
+    /// Currently this clears the rendering and deinits the pen.
+    ///
+    /// To reinit the state when a tab becomes active, the rendering must be regenerated
+    /// and the current pen reinstalled.
+    pub(crate) fn clear_state_inactive_tabs(&self) {
         for inactive_page in self
             .overlays()
             .tabview()
@@ -369,14 +375,14 @@ impl RnAppWindow {
             .map(|o| o.downcast::<adw::TabPage>().unwrap())
             .filter(|p| !p.is_selected())
         {
-            inactive_page
+            let canvas = inactive_page
                 .child()
                 .downcast::<RnCanvasWrapper>()
                 .unwrap()
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .clear_rendering();
+                .canvas();
+
+            canvas.engine().borrow_mut().clear_rendering();
+            let _ = canvas.engine().borrow_mut().deinit_current_pen();
         }
     }
 
@@ -844,7 +850,7 @@ impl RnAppWindow {
             active_engine.penholder.pen_mode_state = prev_engine.penholder.pen_mode_state.clone();
             widget_flags
                 .merge(active_engine.change_pen_style(prev_engine.penholder.current_pen_style()));
-            // ensures a clean state for the current pen
+            // ensures a clean and initialized state for the current pen
             widget_flags.merge(active_engine.reinstall_pen_current_style());
             active_engine.import_prefs = prev_engine.import_prefs;
             active_engine.export_prefs = prev_engine.export_prefs;

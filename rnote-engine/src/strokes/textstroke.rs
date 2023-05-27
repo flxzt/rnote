@@ -333,7 +333,7 @@ impl TextStyle {
     ) -> anyhow::Result<()> {
         const CURSOR_COLOR: piet::Color = color::GNOME_DARKS[2];
         const CURSOR_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[0];
-        let text_cursor_width = 3.0 / camera.total_zoom();
+        let text_cursor_width = 2.0 / camera.total_zoom();
 
         if let Ok(cursor_line_metric) =
             self.cursor_line_metric(cx.text(), text.clone(), cursor.cur_cursor())
@@ -352,8 +352,18 @@ impl TextStyle {
                     ),
                 );
 
-            cx.stroke(text_cursor, &CURSOR_OUTLINE_COLOR, text_cursor_width);
-            cx.stroke(text_cursor, &CURSOR_COLOR, text_cursor_width * 0.7);
+            cx.stroke_styled(
+                text_cursor,
+                &CURSOR_OUTLINE_COLOR,
+                text_cursor_width,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
+            );
+            cx.stroke_styled(
+                text_cursor,
+                &CURSOR_COLOR,
+                text_cursor_width * 0.8,
+                &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
+            );
         }
 
         Ok(())
@@ -368,20 +378,18 @@ impl TextStyle {
         transform: &Transform,
         camera: &Camera,
     ) {
-        static OUTLINE_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BLUES[2].with_alpha(0.941));
-        static FILL_COLOR: Lazy<piet::Color> =
-            Lazy::new(|| color::GNOME_BLUES[0].with_alpha(0.090));
+        static OUTLINE_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[2]);
+        static FILL_COLOR: Lazy<piet::Color> = Lazy::new(|| color::GNOME_BLUES[1].with_alpha(0.1));
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
             self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
         {
             for selection_rect in selection_rects {
-                let selection_rectpath = transform.to_kurbo() * selection_rect.to_path(0.1);
+                let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
 
-                cx.fill(selection_rectpath.clone(), &*FILL_COLOR);
-                cx.stroke(selection_rectpath, &*OUTLINE_COLOR, outline_width);
+                cx.fill(&outline, &*FILL_COLOR);
+                cx.stroke(&outline, &*OUTLINE_COLOR, outline_width);
             }
         }
     }

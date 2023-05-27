@@ -216,7 +216,10 @@ mod imp {
             // receive and handle engine tasks
             glib::MainContext::default().spawn_local(
                 clone!(@weak obj as canvas => async move {
-                    let mut task_rx = canvas.engine().borrow_mut().regenerate_channel();
+                    let Some(mut task_rx) = canvas.engine().borrow_mut().tasks_rx.take() else {
+                        log::error!("installing the engine task handler failed, taken tasks_rx is None");
+                        return;
+                    };
 
                     loop {
                         if let Some(task) = task_rx.next().await {

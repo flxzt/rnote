@@ -11,7 +11,7 @@ pub use self::import::ImportPrefs;
 // Imports
 use self::import::XoppImportPrefs;
 use crate::document::{background, Layout};
-use crate::pens::PenStyle;
+use crate::pens::{Pen, PenStyle};
 use crate::pens::{PenMode, PensConfig};
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::{ChronoComponent, StrokeKey};
@@ -96,6 +96,8 @@ pub enum EngineTask {
         /// The generated images
         images: GeneratedStrokeImages,
     },
+    /// Requests that the typewriter cursor should be blinked/toggled
+    BlinkTypewriterCursor,
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -335,9 +337,10 @@ pub struct RnoteEngine {
     #[serde(skip)]
     pub visual_debug: bool,
     // the task sender. Must not be modified, only cloned.
-    // To install a new engine task handler, regenerate the channel through `regenerate_channel()`
     #[serde(skip)]
     pub tasks_tx: EngineTaskSender,
+    #[serde(skip)]
+    pub tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
     pub background_tile_image: Option<render::Image>,
@@ -347,7 +350,7 @@ pub struct RnoteEngine {
 
 impl Default for RnoteEngine {
     fn default() -> Self {
-        let (tasks_tx, _tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
 
         Self {
             document: Document::default(),
@@ -363,6 +366,7 @@ impl Default for RnoteEngine {
             audioplayer: None,
             visual_debug: false,
             tasks_tx,
+            tasks_rx: Some(tasks_rx),
             background_tile_image: None,
             background_rendernodes: Vec::default(),
         }
@@ -374,17 +378,6 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
-    /// Regenerates the tasks channel, saves the sender in the struct and returns the receiver
-    /// which can be awaited in a engine tasks handler through `handle_engine_tasks()`
-    pub fn regenerate_channel(&mut self) -> EngineTaskReceiver {
-        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
-
-        self.tasks_tx = tasks_tx;
-
-        tasks_rx
-    }
-
-    /// Gets the EngineView
     pub fn view(&self) -> EngineView {
         EngineView {
             tasks_tx: self.tasks_tx.clone(),
@@ -396,7 +389,6 @@ impl RnoteEngine {
         }
     }
 
-    /// Gets the EngineViewMut
     pub fn view_mut(&mut self) -> EngineViewMut {
         EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),
@@ -408,12 +400,13 @@ impl RnoteEngine {
         }
     }
 
-    /// whether pen sounds are enabled
+    /// Whether pen sounds are enabled.
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
     }
 
     /// Enables/disables the pen sounds.
+    ///
     /// If pen sound should be enabled, the pkg data dir must be provided.
     pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
         self.pen_sounds = pen_sounds;
@@ -586,10 +579,16 @@ impl RnoteEngine {
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 self.store.append_rendering_images(key, images);
-
                 widget_flags.redraw = true;
             }
+            EngineTask::BlinkTypewriterCursor => {
+                if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+                    typewriter.toggle_cursor_visibility();
+                    widget_flags.redraw = true;
+                }
+            }
             EngineTask::Quit => {
+                widget_flags.merge(self.deinit_current_pen());
                 quit = true;
             }
         }
@@ -698,6 +697,13 @@ impl RnoteEngine {
                 camera: &mut self.camera,
                 audioplayer: &mut self.audioplayer,
             })
+    }
+
+    /// Deinits the current pen.
+    ///
+    /// The pen must be reinitialized or reinstalled again to work as expected.
+    pub fn deinit_current_pen(&mut self) -> WidgetFlags {
+        self.penholder.deinit_current_pen()
     }
 
     /// Generates bounds for each page on the document which contains content.

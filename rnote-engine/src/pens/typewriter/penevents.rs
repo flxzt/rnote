@@ -58,6 +58,7 @@ impl Typewriter {
                 }
 
                 self.state = new_state;
+                self.reset_blink();
 
                 // after setting new state
                 if refresh_state {
@@ -138,6 +139,7 @@ impl Typewriter {
                                         } else {
                                             *cursor = new_cursor;
                                             *pen_down = true;
+                                            self.reset_blink();
                                         }
                                     }
                                 }
@@ -183,13 +185,15 @@ impl Typewriter {
                                                 cursor: new_cursor,
                                                 pen_down: true,
                                             };
+                                            self.reset_blink();
                                         }
                                     } else {
                                         // Updating the cursor for the clicked position
                                         if let Ok(new_cursor) =
                                             textstroke.get_cursor_for_global_coord(element.pos)
                                         {
-                                            *cursor = new_cursor
+                                            *cursor = new_cursor;
+                                            self.reset_blink();
                                         }
                                     }
                                 }
@@ -806,6 +810,8 @@ impl Typewriter {
             }
         };
 
+        self.reset_blink();
+
         (pen_progress, widget_flags)
     }
 
@@ -949,6 +955,8 @@ impl Typewriter {
                 }
             }
         };
+
+        self.reset_blink();
 
         (pen_progress, widget_flags)
     }

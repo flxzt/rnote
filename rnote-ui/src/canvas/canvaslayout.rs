@@ -131,11 +131,11 @@ mod imp {
             );
 
             // Update the camera in the engine
-            engine.update_camera_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
+            engine.camera_update_offset_size(na::vector![hadj.value(), vadj.value()], new_size);
             // only autoexpand when "flagged"
             if self.autoexpand.get() {
                 self.autoexpand.set(false);
-                engine.expand_doc_autoexpand();
+                let _ = engine.doc_expand_autoexpand();
             }
 
             let viewport = engine.camera.viewport();
@@ -150,9 +150,7 @@ mod imp {
                 .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
 
             // always update the background rendering
-            if let Err(e) = engine.update_background_rendering_current_viewport() {
-                log::error!("failed to update background rendering for current viewport in canvas layout allocate, Err: {e:?}");
-            }
+            engine.update_background_rendering_current_viewport();
 
             // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
             // But after zoom ins we need to update old_viewport with layout_manager.update_state()

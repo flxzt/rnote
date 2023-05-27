@@ -300,16 +300,11 @@ impl RnoteEngine {
             .map(|(stroke, layer)| self.store.insert_stroke(stroke, layer))
             .collect::<Vec<StrokeKey>>();
 
-        // resize after inserting the strokes, but before set the inserted strokes selected
-        self.resize_to_fit_strokes();
-
+        // resize after the strokes are inserted, but before they are set selected
+        widget_flags.merge(self.doc_resize_to_fit_strokes());
         self.store.set_selected_keys(&inserted, true);
-
         widget_flags.merge(self.current_pen_update_state());
-
-        if let Err(e) = self.update_rendering_current_viewport() {
-            log::error!("failed to update rendering for current viewport while importing generated strokes, Err: {e:?}");
-        }
+        self.update_rendering_current_viewport();
 
         widget_flags.merge(self.store.record(Instant::now()));
         widget_flags.redraw = true;

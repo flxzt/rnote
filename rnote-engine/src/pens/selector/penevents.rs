@@ -382,9 +382,11 @@ impl Selector {
                     | ModifyState::Rotate { .. }
                     | ModifyState::Resize { .. } => {
                         engine_view.store.update_geometry_for_strokes(selection);
-                        engine_view
-                            .doc
-                            .resize_autoexpand(engine_view.store, engine_view.camera);
+                        widget_flags.merge(
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera),
+                        );
                         engine_view.store.regenerate_rendering_in_viewport_threaded(
                             engine_view.tasks_tx.clone(),
                             false,
@@ -398,7 +400,6 @@ impl Selector {
 
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
-                        widget_flags.resize = true;
                     }
                     _ => {}
                 }

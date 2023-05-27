@@ -211,14 +211,13 @@ impl PenBehaviour for Tools {
                         self.offsetcamera_tool.start = element.pos;
                     }
                 }
-
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
+                widget_flags.merge(
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera),
+                );
 
                 self.state = ToolsState::Active;
-
-                widget_flags.resize = true;
 
                 PenProgress::InProgress
             }
@@ -258,11 +257,12 @@ impl PenBehaviour for Tools {
                         if offset.magnitude() > 1.0 {
                             engine_view.camera.offset -= offset;
 
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
+                            widget_flags.merge(
+                                engine_view
+                                    .doc
+                                    .resize_autoexpand(engine_view.store, engine_view.camera),
+                            );
 
-                            widget_flags.resize = true;
                             widget_flags.update_view = true;
                         }
                     }
@@ -283,9 +283,11 @@ impl PenBehaviour for Tools {
                     ToolStyle::OffsetCamera => {}
                 }
 
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
+                widget_flags.merge(
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera),
+                );
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -294,17 +296,17 @@ impl PenBehaviour for Tools {
                 );
 
                 self.reset(engine_view);
-
-                widget_flags.resize = true;
 
                 PenProgress::Finished
             }
             (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::Cancel) => {
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
+                widget_flags.merge(
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera),
+                );
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -313,8 +315,6 @@ impl PenBehaviour for Tools {
                 );
 
                 self.reset(engine_view);
-
-                widget_flags.resize = true;
 
                 PenProgress::Finished
             }

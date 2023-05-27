@@ -704,6 +704,11 @@ impl Selector {
 
             if let Some(new_bounds) = engine_view.store.bounds_for_strokes(&all_strokes) {
                 engine_view.store.set_selected_keys(&all_strokes, true);
+                widget_flags.merge(
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera),
+                );
 
                 self.state = SelectorState::ModifySelection {
                     modify_state: ModifyState::default(),
@@ -711,11 +716,6 @@ impl Selector {
                     selection_bounds: new_bounds,
                 };
 
-                engine_view
-                    .doc
-                    .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                widget_flags.resize = true;
                 widget_flags.store_modified = true;
                 widget_flags.deselect_color_setters = true;
             }

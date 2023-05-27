@@ -78,17 +78,15 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
                 "clear" => {
                     let prev_empty = canvas.empty();
 
-                    let widget_flags = canvas.engine().borrow_mut().clear();
-                    appwindow.handle_widget_flags(widget_flags, &canvas);
-
+                    let mut widget_flags = canvas.engine().borrow_mut().clear();
                     canvas.return_to_origin_page();
-                    canvas.engine().borrow_mut().resize_autoexpand();
-
+                    widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                     if !prev_empty {
                         canvas.set_unsaved_changes(true);
                     }
                     canvas.set_empty(true);
                     canvas.update_engine_rendering();
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 },
                 _ => {
                 // Cancel
@@ -102,16 +100,14 @@ pub(crate) fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
 
 pub(crate) fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
     let new_doc = |appwindow: &RnAppWindow, canvas: &RnCanvas| {
-        let widget_flags = canvas.engine().borrow_mut().clear();
-        appwindow.handle_widget_flags(widget_flags, canvas);
-
+        let mut widget_flags = canvas.engine().borrow_mut().clear();
         canvas.return_to_origin_page();
-        canvas.engine().borrow_mut().resize_autoexpand();
+        widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
         canvas.update_engine_rendering();
-
         canvas.set_unsaved_changes(false);
         canvas.set_empty(true);
         canvas.set_output_file(None);
+        appwindow.handle_widget_flags(widget_flags, canvas);
     };
 
     if !canvas.unsaved_changes() {

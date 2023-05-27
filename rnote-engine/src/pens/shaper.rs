@@ -146,11 +146,13 @@ impl PenBehaviour for Shaper {
                         self.state = ShaperState::Idle;
 
                         if shapes_emitted {
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
+                            widget_flags.merge(
+                                engine_view
+                                    .doc
+                                    .resize_autoexpand(engine_view.store, engine_view.camera),
+                            );
+
                             widget_flags.merge(engine_view.store.record(Instant::now()));
-                            widget_flags.resize = true;
                             widget_flags.store_modified = true;
                         }
                         PenProgress::Finished

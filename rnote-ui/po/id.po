@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-12 18:52+0200\n"
+"POT-Creation-Date: 2023-05-16 10:57+0200\n"
 "PO-Revision-Date: 2023-03-13 09:11+0000\n"
 "Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/rnote/repo/id/"
@@ -92,7 +92,7 @@ msgid "Clear"
 msgstr "Bersihkan"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
-#: rnote-ui/data/ui/shortcuts.ui:149 rnote-ui/src/canvas/mod.rs:498
+#: rnote-ui/data/ui/shortcuts.ui:149 rnote-ui/src/canvas/mod.rs:534
 msgid "New Document"
 msgstr "Dokumen Baru"
 
@@ -152,7 +152,7 @@ msgstr "Buang Semua"
 msgid "Edit Workspace"
 msgstr "Ubah Ruang kerja"
 
-#: rnote-ui/data/ui/dialogs/dialogs.ui:73 rnote-ui/data/ui/settingspanel.ui:270
+#: rnote-ui/data/ui/dialogs/dialogs.ui:73 rnote-ui/data/ui/settingspanel.ui:285
 #: rnote-ui/src/workspacebrowser/widgethelper.rs:39
 msgid "Apply"
 msgstr "Terapkan"
@@ -170,7 +170,7 @@ msgid "Change the workspace icon"
 msgstr "Ubah ikon ruang kerja"
 
 #: rnote-ui/data/ui/dialogs/dialogs.ui:141
-#: rnote-ui/data/ui/settingspanel.ui:286
+#: rnote-ui/data/ui/settingspanel.ui:301
 msgid "Color"
 msgstr "Warna"
 
@@ -603,37 +603,37 @@ msgid "Split Strokes"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
-#: rnote-ui/data/ui/overlays.ui:45
+#: rnote-ui/data/ui/overlays.ui:46
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
 msgid "Brush"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
-#: rnote-ui/data/ui/overlays.ui:52
+#: rnote-ui/data/ui/overlays.ui:56
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
 msgid "Shaper"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
-#: rnote-ui/data/ui/overlays.ui:60
+#: rnote-ui/data/ui/overlays.ui:67
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
 msgid "Typewriter"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
-#: rnote-ui/data/ui/overlays.ui:68
+#: rnote-ui/data/ui/overlays.ui:78
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
 msgid "Eraser"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
-#: rnote-ui/data/ui/overlays.ui:76
+#: rnote-ui/data/ui/overlays.ui:89
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
 msgid "Selector"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
-#: rnote-ui/data/ui/overlays.ui:84
+#: rnote-ui/data/ui/overlays.ui:100
 #: rnote-ui/src/settingspanel/penshortcutmodels.rs:84
 msgid "Tools"
 msgstr ""
@@ -735,7 +735,7 @@ msgid "Crosshatch"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#: rnote-ui/data/ui/settingspanel.ui:315
+#: rnote-ui/data/ui/settingspanel.ui:330
 msgid "Dots"
 msgstr ""
 
@@ -1029,6 +1029,18 @@ msgstr ""
 msgid "Zoom to Page Width"
 msgstr ""
 
+#: rnote-ui/data/ui/canvasmenu.ui:148
+msgid "Remove Page"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:156
+msgid "Add Page"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:164
+msgid "Resize Document to Fit Strokes"
+msgstr ""
+
 #: rnote-ui/data/ui/colorpicker.ui:19
 msgid "Stroke Color"
 msgstr ""
@@ -1056,11 +1068,11 @@ msgstr ""
 msgid "Duplicate"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:500
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:536
 msgid "Draft"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:124
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:73
 msgid "Reveal/Hide Flap"
 msgstr ""
 
@@ -1068,41 +1080,33 @@ msgstr ""
 msgid "New Tab"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:68 rnote-ui/data/ui/shortcuts.ui:218
-msgid "Undo"
+#: rnote-ui/data/ui/mainheader.ui:53
+msgid "Focus Mode"
 msgstr ""
 
-#: rnote-ui/data/ui/mainheader.ui:76 rnote-ui/data/ui/shortcuts.ui:224
-msgid "Redo"
-msgstr ""
-
-#: rnote-ui/data/ui/mainheader.ui:87
-msgid "Add Page"
-msgstr ""
-
-#: rnote-ui/data/ui/mainheader.ui:94
-msgid "Remove Page"
-msgstr ""
-
-#: rnote-ui/data/ui/mainheader.ui:101
-msgid "Resize Document to Fit Strokes"
-msgstr ""
-
-#: rnote-ui/data/ui/mainheader.ui:116 rnote-ui/data/ui/shortcuts.ui:161
+#: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
 #, fuzzy
 #| msgid "New Document"
 msgid "Save Document"
 msgstr "Dokumen Baru"
 
-#: rnote-ui/data/ui/overlays.ui:151
+#: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
+msgid "Undo"
+msgstr ""
+
+#: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
+msgid "Redo"
+msgstr ""
+
+#: rnote-ui/data/ui/overlays.ui:205
 msgid "Move _Left"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:155
+#: rnote-ui/data/ui/overlays.ui:209
 msgid "Move _Right"
 msgstr ""
 
-#: rnote-ui/data/ui/overlays.ui:161
+#: rnote-ui/data/ui/overlays.ui:215
 msgid "_Close"
 msgstr ""
 
@@ -1163,241 +1167,249 @@ msgid "Set the regular cursor"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:131
-msgid "Drawing Cursor"
+msgid "Show Drawing Cursor"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:132
+msgid "Set whether the drawing cursor is visible"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:146
+msgid "Drawing Cursor"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:147
 msgid "Set the drawing cursor"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:157
+#: rnote-ui/data/ui/settingspanel.ui:172
 msgid "Page Format"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:160
+#: rnote-ui/data/ui/settingspanel.ui:175
 msgid "Format"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:161
+#: rnote-ui/data/ui/settingspanel.ui:176
 msgid "Choose a format"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:165
+#: rnote-ui/data/ui/settingspanel.ui:180
 msgid "A6"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:166
+#: rnote-ui/data/ui/settingspanel.ui:181
 msgid "A5"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:167
+#: rnote-ui/data/ui/settingspanel.ui:182
 msgid "A4"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:168
+#: rnote-ui/data/ui/settingspanel.ui:183
 msgid "A3"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:169
+#: rnote-ui/data/ui/settingspanel.ui:184
 msgid "A2"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:170
+#: rnote-ui/data/ui/settingspanel.ui:185
 msgid "US letter"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:171
+#: rnote-ui/data/ui/settingspanel.ui:186
 msgid "US legal"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:172
+#: rnote-ui/data/ui/settingspanel.ui:187
 msgid "Custom"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:180
+#: rnote-ui/data/ui/settingspanel.ui:195
 msgid "Orientation"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:181
+#: rnote-ui/data/ui/settingspanel.ui:196
 msgid "Set the format orientation"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:193
+#: rnote-ui/data/ui/settingspanel.ui:208
 msgid "Portrait"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:199
+#: rnote-ui/data/ui/settingspanel.ui:214
 msgid "Landscape"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:209
+#: rnote-ui/data/ui/settingspanel.ui:224
 msgid "Width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:210
+#: rnote-ui/data/ui/settingspanel.ui:225
 msgid "Set the format width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:223
+#: rnote-ui/data/ui/settingspanel.ui:238
 msgid "Height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:224
+#: rnote-ui/data/ui/settingspanel.ui:239
 msgid "Set the format height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:237
+#: rnote-ui/data/ui/settingspanel.ui:252
 msgid "Dpi"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:238
+#: rnote-ui/data/ui/settingspanel.ui:253
 msgid "Set the Dpi (dots per inch). Defaults to 96."
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:261
+#: rnote-ui/data/ui/settingspanel.ui:276
 msgid "Revert"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:283
+#: rnote-ui/data/ui/settingspanel.ui:298
 msgid "Document Background"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:287
+#: rnote-ui/data/ui/settingspanel.ui:302
 msgid "Set the background color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:307
+#: rnote-ui/data/ui/settingspanel.ui:322
 msgid "Pattern"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:308
+#: rnote-ui/data/ui/settingspanel.ui:323
 msgid "Choose a background pattern"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:312
+#: rnote-ui/data/ui/settingspanel.ui:327
 msgid "None"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:313
+#: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Lines"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:314
+#: rnote-ui/data/ui/settingspanel.ui:329
 #: rnote-ui/src/penssidebar/shaperpage.rs:388
 msgid "Grid"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:316
+#: rnote-ui/data/ui/settingspanel.ui:331
 msgid "Isometric Grid"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:317
+#: rnote-ui/data/ui/settingspanel.ui:332
 msgid "Isometric Dots"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:325
+#: rnote-ui/data/ui/settingspanel.ui:340
 msgid "Pattern Color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:326
+#: rnote-ui/data/ui/settingspanel.ui:341
 msgid "Set the background pattern color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:346
+#: rnote-ui/data/ui/settingspanel.ui:361
 msgid "Pattern Width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:347
+#: rnote-ui/data/ui/settingspanel.ui:362
 msgid "Set the background pattern width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:360
+#: rnote-ui/data/ui/settingspanel.ui:375
 msgid "Pattern Height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:361
+#: rnote-ui/data/ui/settingspanel.ui:376
 msgid "Set the background pattern height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:377
+#: rnote-ui/data/ui/settingspanel.ui:392
 msgid "Button Shortcuts"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:380
+#: rnote-ui/data/ui/settingspanel.ui:395
 msgid "Stylus Primary Button Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:381
+#: rnote-ui/data/ui/settingspanel.ui:396
 msgid ""
 "Set the action for the\n"
 "primary stylus button"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:393
+#: rnote-ui/data/ui/settingspanel.ui:408
 msgid "Stylus Secondary Button Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:394
+#: rnote-ui/data/ui/settingspanel.ui:409
 msgid ""
 "Set the action for the\n"
 "secondary stylus button"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:406
+#: rnote-ui/data/ui/settingspanel.ui:421
 msgid "Mouse Secondary Button Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:407
+#: rnote-ui/data/ui/settingspanel.ui:422
 msgid ""
 "Set the action for the\n"
 "secondary mouse button"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:419
+#: rnote-ui/data/ui/settingspanel.ui:434
 msgid "Touch Two-Finger Long-Press Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:420
+#: rnote-ui/data/ui/settingspanel.ui:435
 msgid ""
 "Set the action for the touch\n"
 "two-finger long-press gesture"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:432
+#: rnote-ui/data/ui/settingspanel.ui:447
 msgid "Drawing Pad Button 1 Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:433
+#: rnote-ui/data/ui/settingspanel.ui:448
 msgid ""
 "Set the action for button 1\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:445
+#: rnote-ui/data/ui/settingspanel.ui:460
 msgid "Drawing Pad Button 2 Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:446
+#: rnote-ui/data/ui/settingspanel.ui:461
 msgid ""
 "Set the action for button 2\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:458
+#: rnote-ui/data/ui/settingspanel.ui:473
 msgid "Drawing Pad Button 3 Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:459
+#: rnote-ui/data/ui/settingspanel.ui:474
 msgid ""
 "Set the action for button 3\n"
 "on a drawing pad"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:471
+#: rnote-ui/data/ui/settingspanel.ui:486
 msgid "Drawing Pad Button 4 Action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:472
+#: rnote-ui/data/ui/settingspanel.ui:487
 msgid ""
 "Set the action for button 4\n"
 "on a drawing pad"
@@ -1551,50 +1563,50 @@ msgstr ""
 msgid "Edit Selected Workspace"
 msgstr "Ubah ruang kerja"
 
-#: rnote-ui/src/appwindow/mod.rs:496
+#: rnote-ui/src/appwindow/mod.rs:506
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Opening .rnote file failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: rnote-ui/src/appwindow/mod.rs:507
+#: rnote-ui/src/appwindow/mod.rs:517
 #, fuzzy
 #| msgid "Opening vector image file failed."
 msgid "Opening vector image file failed"
 msgstr "Pembukaan berkas gambar vektor gagal."
 
-#: rnote-ui/src/appwindow/mod.rs:518
+#: rnote-ui/src/appwindow/mod.rs:528
 #, fuzzy
 #| msgid "Opening bitmap image file failed."
 msgid "Opening bitmap image file failed"
 msgstr "Pembukaan berkas gambar bitmap gagal."
 
-#: rnote-ui/src/appwindow/mod.rs:529 rnote-ui/src/dialogs/import.rs:364
+#: rnote-ui/src/appwindow/mod.rs:539 rnote-ui/src/dialogs/import.rs:364
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Opening Xournal++ file failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: rnote-ui/src/appwindow/mod.rs:540 rnote-ui/src/dialogs/import.rs:305
+#: rnote-ui/src/appwindow/mod.rs:550 rnote-ui/src/dialogs/import.rs:305
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Opening Pdf file failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: rnote-ui/src/appwindow/mod.rs:549
+#: rnote-ui/src/appwindow/mod.rs:559
 #, fuzzy
 #| msgid "Error: Tried opening folder as file"
 msgid "Failed to open file, tried to open folder as file"
 msgstr "Galat: Mencoba membuka folder sebagai berkas"
 
-#: rnote-ui/src/appwindow/mod.rs:554
+#: rnote-ui/src/appwindow/mod.rs:564
 #, fuzzy
 #| msgid "Failed to open file: Unsupported file type."
 msgid "Failed to open file, unsupported file type"
 msgstr "Gagal membuka file: tipe file tidak didukung."
 
-#: rnote-ui/src/appwindow/imp.rs:261
-#: rnote-ui/src/appwindow/appwindowactions.rs:605
+#: rnote-ui/src/appwindow/imp.rs:275
+#: rnote-ui/src/appwindow/appwindowactions.rs:611
 #: rnote-ui/src/dialogs/export.rs:65 rnote-ui/src/dialogs/import.rs:54
 #: rnote-ui/src/dialogs/mod.rs:144 rnote-ui/src/dialogs/mod.rs:250
 #: rnote-ui/src/dialogs/mod.rs:390
@@ -1603,63 +1615,63 @@ msgstr "Gagal membuka file: tipe file tidak didukung."
 msgid "Saving document failed"
 msgstr "Pencetakan dokumen gagal"
 
-#: rnote-ui/src/appwindow/imp.rs:477
+#: rnote-ui/src/appwindow/imp.rs:491
 msgid "Button 1"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:484
+#: rnote-ui/src/appwindow/imp.rs:498
 msgid "Button 2"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:491
+#: rnote-ui/src/appwindow/imp.rs:505
 msgid "Button 3"
 msgstr ""
 
-#: rnote-ui/src/appwindow/imp.rs:498
+#: rnote-ui/src/appwindow/imp.rs:512
 msgid "Button 4"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:728
+#: rnote-ui/src/appwindow/appwindowactions.rs:734
 msgid "Printing document failed"
 msgstr "Pencetakan dokumen gagal"
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:763
+#: rnote-ui/src/appwindow/appwindowactions.rs:769
 #, fuzzy
 #| msgid "Export selection failed, nothing selected."
 msgid "Exporting selection failed, nothing selected"
 msgstr "Mengekspor seleksi gagal, tidak ada yang dipilih"
 
-#: rnote-ui/src/canvas/mod.rs:698
+#: rnote-ui/src/canvas/mod.rs:750
 msgid "- invalid file name -"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:711
+#: rnote-ui/src/canvas/mod.rs:763
 msgid "- invalid folder path -"
 msgstr ""
 
-#: rnote-ui/src/canvas/mod.rs:735
+#: rnote-ui/src/canvas/mod.rs:787
 #, fuzzy
 #| msgid "Opened file was modified on disk."
 msgid "Opened file was modified on disk"
 msgstr "File yang dibuka telah dimodifikasi pada disk."
 
-#: rnote-ui/src/canvas/mod.rs:736
+#: rnote-ui/src/canvas/mod.rs:788
 msgid "Reload"
 msgstr "Muat ulang"
 
-#: rnote-ui/src/canvas/mod.rs:742
+#: rnote-ui/src/canvas/mod.rs:794
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr "Pembukaan berkas .rnote gagal."
 
-#: rnote-ui/src/canvas/mod.rs:791
+#: rnote-ui/src/canvas/mod.rs:843
 #, fuzzy
 #| msgid "Opened file was renamed on disk."
 msgid "Opened file was renamed on disk"
 msgstr "File yang dibuka diganti nama pada disk"
 
-#: rnote-ui/src/canvas/mod.rs:804
+#: rnote-ui/src/canvas/mod.rs:856
 #, fuzzy
 #| msgid "Opened file was moved or deleted on disk."
 msgid "Opened file was moved or deleted on disk"
@@ -2096,75 +2108,75 @@ msgstr ""
 msgid "Cubic bezier curve"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:761
+#: rnote-ui/src/settingspanel/mod.rs:779
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:762
+#: rnote-ui/src/settingspanel/mod.rs:780
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:763
+#: rnote-ui/src/settingspanel/mod.rs:781
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:764
+#: rnote-ui/src/settingspanel/mod.rs:782
 msgid "Dot (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:765
+#: rnote-ui/src/settingspanel/mod.rs:783
 msgid "Dot (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:766
+#: rnote-ui/src/settingspanel/mod.rs:784
 msgid "Dot (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:767
+#: rnote-ui/src/settingspanel/mod.rs:785
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:768
+#: rnote-ui/src/settingspanel/mod.rs:786
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:769
+#: rnote-ui/src/settingspanel/mod.rs:787
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:770
+#: rnote-ui/src/settingspanel/mod.rs:788
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:771
+#: rnote-ui/src/settingspanel/mod.rs:789
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:772
+#: rnote-ui/src/settingspanel/mod.rs:790
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:773
+#: rnote-ui/src/settingspanel/mod.rs:791
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:774
+#: rnote-ui/src/settingspanel/mod.rs:792
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:775
+#: rnote-ui/src/settingspanel/mod.rs:793
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:776
+#: rnote-ui/src/settingspanel/mod.rs:794
 msgid "Beam (Small)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:777
+#: rnote-ui/src/settingspanel/mod.rs:795
 msgid "Beam (Medium)"
 msgstr ""
 
-#: rnote-ui/src/settingspanel/mod.rs:778
+#: rnote-ui/src/settingspanel/mod.rs:796
 msgid "Beam (Large)"
 msgstr ""
 

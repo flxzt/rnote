@@ -228,6 +228,16 @@ impl RnAppWindow {
             // this updates the canvas adjustment values with the ones from the camera
             canvas.update_camera_offset(camera_offset, true);
         }
+        if widget_flags.zoomed_temporarily {
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            self.mainheader()
+                .canvasmenu()
+                .zoom_reset_button()
+                .set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
+        }
+        if widget_flags.zoomed {
+            canvas.update_viewport_after_zoom();
+        }
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();
         }
@@ -294,7 +304,7 @@ impl RnAppWindow {
                 .borrow_mut()
                 .doc_resize_to_fit_strokes(),
         );
-        new_wrapper.canvas().update_engine_rendering();
+        new_wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &new_wrapper.canvas());
 
         // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview

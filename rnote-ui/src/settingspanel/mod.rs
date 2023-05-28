@@ -573,7 +573,7 @@ impl RnSettingsPanel {
 
                 canvas.engine().borrow_mut().document.format = temporary_format;
                 let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
 
                 imp.background_pattern_width_unitentry.set_dpi_keep_value(temporary_format.dpi);
@@ -588,7 +588,7 @@ impl RnSettingsPanel {
             canvas.engine().borrow_mut().document.format.border_color = format_border_color;
             // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
-            canvas.update_engine_rendering();
+            canvas.update_rendering_current_viewport();
         }));
     }
 
@@ -599,8 +599,8 @@ impl RnSettingsPanel {
             let canvas = appwindow.active_tab().canvas();
 
             canvas.engine().borrow_mut().document.background.color = button.rgba().into_compose_color();
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
+            canvas.background_regenerate_pattern();
+            canvas.update_rendering_current_viewport();
         }));
 
         imp.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_| {
@@ -636,16 +636,16 @@ impl RnSettingsPanel {
                 },
             }
 
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
+            canvas.background_regenerate_pattern();
+            canvas.update_rendering_current_viewport();
         }));
 
         imp.background_pattern_color_button.connect_rgba_notify(clone!(@weak appwindow => move |button| {
             let canvas = appwindow.active_tab().canvas();
 
             canvas.engine().borrow_mut().document.background.pattern_color = button.rgba().into_compose_color();
-            canvas.regenerate_background_pattern();
-            canvas.update_engine_rendering();
+            canvas.background_regenerate_pattern();
+            canvas.update_rendering_current_viewport();
         }));
 
         imp.background_pattern_width_unitentry.get().connect_notify_local(
@@ -656,8 +656,8 @@ impl RnSettingsPanel {
                     let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
                     pattern_size[0] = unit_entry.value_in_px();
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
-                    canvas.regenerate_background_pattern();
-                    canvas.update_engine_rendering();
+                    canvas.background_regenerate_pattern();
+                    canvas.update_rendering_current_viewport();
             }),
         );
 
@@ -668,8 +668,8 @@ impl RnSettingsPanel {
                     let mut pattern_size = canvas.engine().borrow().document.background.pattern_size;
                     pattern_size[1] = unit_entry.value_in_px();
                     canvas.engine().borrow_mut().document.background.pattern_size = pattern_size;
-                    canvas.regenerate_background_pattern();
-                    canvas.update_engine_rendering();
+                    canvas.background_regenerate_pattern();
+                    canvas.update_rendering_current_viewport();
             }),
         );
     }

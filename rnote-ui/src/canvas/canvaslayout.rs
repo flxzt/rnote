@@ -183,12 +183,12 @@ impl RnCanvasLayout {
         glib::Object::new()
     }
 
-    pub(crate) fn flag_allocate_autoexpand(&self, autoexpand: bool) {
+    pub(crate) fn set_allocate_autoexpand(&self, autoexpand: bool) {
         self.imp().autoexpand.set(autoexpand);
     }
 
     // needs to be called after zooming
-    pub(crate) fn update_state(&self, canvas: &RnCanvas) {
+    pub(crate) fn update_old_viewport(&self, canvas: &RnCanvas) {
         self.imp()
             .old_viewport
             .set(canvas.engine().borrow().camera.viewport());

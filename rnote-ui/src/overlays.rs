@@ -349,8 +349,8 @@ impl RnOverlays {
                     }
                 }
 
-                active_canvaswrapper.canvas().regenerate_background_pattern();
-                active_canvaswrapper.canvas().update_engine_rendering();
+                active_canvaswrapper.canvas().background_regenerate_pattern();
+                active_canvaswrapper.canvas().update_rendering_current_viewport();
                 appwindow.refresh_ui_from_engine(&active_canvaswrapper);
             }));
 

@@ -98,6 +98,8 @@ pub enum EngineTask {
     },
     /// Requests that the typewriter cursor should be blinked/toggled
     BlinkTypewriterCursor,
+    /// Change the permanent zoom to the given value
+    Zoom(f64),
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -587,6 +589,17 @@ impl RnoteEngine {
                     widget_flags.redraw = true;
                 }
             }
+            EngineTask::Zoom(zoom) => {
+                widget_flags.merge(self.camera.zoom_temporarily_to(1.0));
+                widget_flags.merge(self.camera.zoom_to(zoom));
+
+                let all_strokes = self.store.stroke_keys_unordered();
+                self.store.set_rendering_dirty_for_strokes(&all_strokes);
+                widget_flags.merge(self.doc_resize_autoexpand());
+
+                self.background_regenerate_pattern();
+                self.update_rendering_current_viewport();
+            }
             EngineTask::Quit => {
                 widget_flags.merge(self.deinit_current_pen());
                 quit = true;
@@ -751,6 +764,13 @@ impl RnoteEngine {
                 .into_iter()
                 .fold(Aabb::new_invalid(), |prev, next| prev.merged(&next)),
         )
+    }
+
+    /// First zoom temporarily and then permanently after a timeout.
+    ///
+    /// Repeated calls to this function reset the timeout.
+    pub fn zoom_w_timeout(&mut self, zoom: f64) -> WidgetFlags {
+        self.camera.zoom_w_timeout(zoom, self.tasks_tx.clone())
     }
 
     /// Resizes the doc to the format and to fit all strokes.

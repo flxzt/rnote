@@ -1,8 +1,14 @@
+use std::time::Duration;
+
 // Imports
 use gtk4::{graphene, gsk};
 use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
 use serde::{Deserialize, Serialize};
+
+use crate::engine::{EngineTask, EngineTaskSender};
+use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
+use crate::WidgetFlags;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "camera")]
@@ -25,6 +31,9 @@ pub struct Camera {
     /// This value could become a non-integer value in the future, so it is stored as float.
     #[serde(rename = "scale_factor")]
     pub scale_factor: f64,
+
+    #[serde(skip)]
+    pub zoom_task_handle: Option<crate::tasks::OneOffTaskHandle>,
 }
 
 impl Default for Camera {
@@ -35,6 +44,7 @@ impl Default for Camera {
             zoom: 1.0,
             temporary_zoom: 1.0,
             scale_factor: 1.0,
+            zoom_task_handle: None,
         }
     }
 }
@@ -43,9 +53,11 @@ impl Camera {
     pub const ZOOM_MIN: f64 = 0.2;
     pub const ZOOM_MAX: f64 = 6.0;
     pub const ZOOM_DEFAULT: f64 = 1.0;
+    // The zoom timeout time.
+    pub(crate) const ZOOM_TIMEOUT: Duration = Duration::from_millis(400);
 
     pub fn with_zoom(mut self, zoom: f64) -> Self {
-        self.set_zoom(zoom);
+        self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
         self
     }
 
@@ -64,8 +76,11 @@ impl Camera {
     }
 
     /// Set the permanent zoom.
-    pub fn set_zoom(&mut self, zoom: f64) {
-        self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX)
+    pub fn zoom_to(&mut self, zoom: f64) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
+        widget_flags.zoomed = true;
+        widget_flags
     }
 
     /// The temporary zoom, to be overlaid on the surface when zooming with a timeout.
@@ -74,9 +89,50 @@ impl Camera {
     }
 
     /// Set the temporary zoom.
-    pub fn set_temporary_zoom(&mut self, temporary_zoom: f64) {
+    pub fn zoom_temporarily_to(&mut self, temporary_zoom: f64) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         self.temporary_zoom =
-            temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom)
+            temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom);
+        widget_flags.zoomed_temporarily = true;
+        widget_flags
+    }
+
+    /// First zoom temporarily and then permanently after a timeout.
+    ///
+    /// Repeated calls to this function reset the timeout.
+    pub(crate) fn zoom_w_timeout(&mut self, zoom: f64, tasks_tx: EngineTaskSender) -> WidgetFlags {
+        let old_zoom = self.zoom();
+        let mut reinstall_zoom_task = false;
+
+        // zoom temporarily immediately
+        let new_temp_zoom = zoom / old_zoom;
+        let widget_flags = self.zoom_temporarily_to(new_temp_zoom);
+
+        let zoom_task = move || {
+            log::warn!("executing zoom task");
+            if let Err(e) = tasks_tx.unbounded_send(EngineTask::Zoom(zoom)) {
+                log::error!("Failed to send `EngineTask::Zoom` from ZoomTask, Err: {e:?}");
+            }
+        };
+        if let Some(handle) = self.zoom_task_handle.as_mut() {
+            match handle.replace_task(zoom_task.clone()) {
+                Ok(()) => {}
+                Err(OneOffTaskError::TimeoutReached) => {
+                    reinstall_zoom_task = true;
+                }
+                Err(e) => {
+                    log::error!("Could not replace task for one off zoom task, Err: {e:?}");
+                }
+            }
+        } else {
+            reinstall_zoom_task = true;
+        }
+
+        if reinstall_zoom_task {
+            self.zoom_task_handle = Some(OneOffTaskHandle::new(zoom_task, Self::ZOOM_TIMEOUT));
+        }
+
+        widget_flags
     }
 
     /// The total zoom of the camera, including the temporary zoom.

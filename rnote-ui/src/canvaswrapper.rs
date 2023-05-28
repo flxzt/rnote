@@ -278,7 +278,7 @@ mod imp {
                                 .unwrap_or_else(|| wrapper_size * 0.5);
                             let new_offset = (((adj_values + adj_offset) / old_zoom) * new_zoom) - adj_offset;
 
-                            canvas.zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                            canvas.zoom_w_timeout(new_zoom);
                             canvas.update_camera_offset(new_offset, true);
                         }
 
@@ -313,7 +313,7 @@ mod imp {
                 );
                 self.canvas_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_engine_rendering();
+                        canvaswrapper.canvas().update_rendering_current_viewport();
                     }),
                 );
             }
@@ -335,7 +335,7 @@ mod imp {
                 );
                 self.canvas_mouse_drag_middle_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_engine_rendering();
+                        canvaswrapper.canvas().update_rendering_current_viewport();
                     }),
                 );
             }
@@ -378,7 +378,7 @@ mod imp {
                             new_zoom.set(zoom_begin.get() * scale);
                             prev_scale.set(scale);
                         }
-                        canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom.get());
+                        canvaswrapper.canvas().zoom_w_timeout(new_zoom.get());
 
                         if let Some(bbcenter_current) = gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
                             let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get() {
@@ -398,14 +398,14 @@ mod imp {
                 self.canvas_zoom_gesture.connect_end(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().update_engine_rendering();
+                        canvaswrapper.canvas().update_rendering_current_viewport();
                     }),
                 );
 
                 self.canvas_zoom_gesture.connect_cancel(
                     clone!(@weak obj as canvaswrapper => move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
-                        canvaswrapper.canvas().update_engine_rendering();
+                        canvaswrapper.canvas().update_rendering_current_viewport();
                     }),
                 );
             }
@@ -437,7 +437,7 @@ mod imp {
 
                 self.canvas_alt_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_engine_rendering();
+                        canvaswrapper.canvas().update_rendering_current_viewport();
                     }),
                 );
             }
@@ -481,7 +481,7 @@ mod imp {
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
                             let current_doc_center = canvaswrapper.canvas().current_view_center_coords();
-                            canvaswrapper.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                            canvaswrapper.canvas().zoom_w_timeout(new_zoom);
                             canvaswrapper.canvas().center_view_around_coords(current_doc_center);
                         }
 
@@ -491,7 +491,7 @@ mod imp {
 
                 self.canvas_alt_shift_drag_gesture.connect_drag_end(
                     clone!(@weak obj as canvaswrapper => move |_, _, _| {
-                        canvaswrapper.canvas().update_engine_rendering();
+                        canvaswrapper.canvas().update_rendering_current_viewport();
                     }),
                 );
             }

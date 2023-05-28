@@ -474,15 +474,10 @@ impl Background {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    pub fn gen_tile_image(&self, image_scale: f64) -> Result<Option<render::Image>, anyhow::Error> {
+    pub fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
         let tile_size = self.tile_size();
         let tile_bounds = Aabb::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
         let svg = self.gen_svg(tile_bounds, true)?;
-
-        Ok(Some(render::Image::gen_image_from_svg(
-            svg,
-            tile_bounds,
-            image_scale,
-        )?))
+        render::Image::gen_image_from_svg(svg, tile_bounds, image_scale)
     }
 }

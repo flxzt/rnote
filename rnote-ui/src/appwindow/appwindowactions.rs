@@ -284,7 +284,7 @@ impl RnAppWindow {
                 } else {
                     widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 }
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
@@ -409,7 +409,7 @@ impl RnAppWindow {
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
@@ -426,7 +426,7 @@ impl RnAppWindow {
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
@@ -444,7 +444,7 @@ impl RnAppWindow {
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
@@ -462,7 +462,7 @@ impl RnAppWindow {
                 widget_flags.merge(canvas.engine().borrow_mut().current_pen_update_state());
                 widget_flags.merge(canvas.engine().borrow_mut().doc_resize_autoexpand());
                 widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
@@ -478,7 +478,7 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let widget_flags = canvas.engine().borrow_mut().undo(Instant::now());
-            canvas.update_engine_rendering();
+            canvas.update_rendering_current_viewport();
 
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
@@ -488,7 +488,7 @@ impl RnAppWindow {
             let canvas = appwindow.active_tab().canvas();
 
             let widget_flags = canvas.engine().borrow_mut().redo(Instant::now());
-            canvas.update_engine_rendering();
+            canvas.update_rendering_current_viewport();
 
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
@@ -538,7 +538,7 @@ impl RnAppWindow {
         action_zoom_to_value.connect_activate(
             clone!(@weak self as appwindow => move |_action_zoom_to_value, target| {
                 let new_zoom = target.unwrap().get::<f64>().unwrap().clamp(Camera::ZOOM_MIN, Camera::ZOOM_MAX);
-                appwindow.active_tab().canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom);
+                appwindow.active_tab().canvas().zoom_w_timeout(new_zoom);
             }));
 
         // Add page to doc in fixed size mode
@@ -547,7 +547,7 @@ impl RnAppWindow {
                 let canvas = appwindow.active_tab().canvas();
 
                 if canvas.engine().borrow_mut().doc_add_page_fixed_size() {
-                    canvas.update_engine_rendering();
+                    canvas.update_rendering_current_viewport();
                 }
             }),
         );
@@ -560,7 +560,7 @@ impl RnAppWindow {
                 let mut widget_flags = WidgetFlags::default();
                 if canvas.engine().borrow_mut().doc_remove_page_fixed_size() {
                     widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
-                    canvas.update_engine_rendering();
+                    canvas.update_rendering_current_viewport();
                 }
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
@@ -572,7 +572,7 @@ impl RnAppWindow {
                 let canvas = appwindow.active_tab().canvas();
 
                 let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
-                canvas.update_engine_rendering();
+                canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }),
         );
@@ -583,7 +583,7 @@ impl RnAppWindow {
 
             canvas.return_to_origin_page();
             let widget_flags = canvas.engine().borrow_mut().doc_resize_autoexpand();
-            canvas.update_engine_rendering();
+            canvas.update_rendering_current_viewport();
             appwindow.handle_widget_flags(widget_flags, &canvas);
         }));
 

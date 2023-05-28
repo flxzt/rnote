@@ -12,6 +12,10 @@ pub struct WidgetFlags {
     pub store_modified: bool,
     /// Update the current view offsets and size.
     pub update_view: bool,
+    /// Indicates that the camera has changed it's temporary zoom.
+    pub zoomed_temporarily: bool,
+    /// Indicates that the camera has changed it's permanent zoom.
+    pub zoomed: bool,
     /// Deselect the elements of the global color picker.
     pub deselect_color_setters: bool,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed.
@@ -32,6 +36,8 @@ impl Default for WidgetFlags {
             refresh_ui: false,
             store_modified: false,
             update_view: false,
+            zoomed_temporarily: false,
+            zoomed: false,
             deselect_color_setters: false,
             hide_undo: None,
             hide_redo: None,
@@ -48,6 +54,8 @@ impl WidgetFlags {
         self.refresh_ui |= other.refresh_ui;
         self.store_modified |= other.store_modified;
         self.update_view |= other.update_view;
+        self.zoomed_temporarily |= other.zoomed_temporarily;
+        self.zoomed |= other.zoomed;
         self.deselect_color_setters |= other.deselect_color_setters;
         if other.hide_undo.is_some() {
             self.hide_undo = other.hide_undo

@@ -14,6 +14,7 @@ librsvg = { git = "https://gitlab.gnome.org/GNOME/librsvg", tag = "2.56.0" }
 
 log = "0.4"
 anyhow = "1"
+thiserror = "1"
 serde = {version = "1", features = ["derive", "rc"]}
 serde_json = { version="1" }
 rand = "0.8"

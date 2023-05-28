@@ -265,7 +265,7 @@ impl PenBehaviour for Typewriter {
         let tasks_tx = engine_view.tasks_tx.clone();
         let blink_task = move || -> crate::tasks::PeriodicTaskResult {
             if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
-                log::error!("Failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
+                log::error!("Failed to send BlinkTypewriterCursor task from blink task, {e:?}");
                 crate::tasks::PeriodicTaskResult::Quit
             } else {
                 crate::tasks::PeriodicTaskResult::Continue

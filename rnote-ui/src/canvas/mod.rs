@@ -7,7 +7,6 @@ mod input;
 pub(crate) use canvaslayout::RnCanvasLayout;
 
 // Imports
-use crate::RnCanvasWrapper;
 use crate::{config, RnAppWindow};
 use futures::StreamExt;
 use gettextrs::gettext;
@@ -645,6 +644,13 @@ impl RnCanvas {
         self.emit_by_name::<()>("handle-widget-flags", &[&WidgetFlagsBoxed(widget_flags)]);
     }
 
+    pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
+        self.layout_manager()
+            .unwrap()
+            .downcast::<RnCanvasLayout>()
+            .unwrap()
+    }
+
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
         self.imp().engine.clone()
     }
@@ -1140,69 +1146,6 @@ impl RnCanvas {
         )
     }
 
-    /// gets the current scrollbar adjustment values
-    pub(crate) fn adj_values(&self) -> na::Vector2<f64> {
-        na::vector![
-            self.hadjustment().unwrap().value(),
-            self.vadjustment().unwrap().value()
-        ]
-    }
-
-    /// updates the camera offset and scrollbar adjustment values
-    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>, autoexpand: bool) {
-        // By setting new adjustment values, the callback connected to their `value` property is called,
-        // Which is where the engine camera offset, size and the rendering is updated.
-        self.hadjustment().unwrap().set_value(new_offset[0]);
-        self.vadjustment().unwrap().set_value(new_offset[1]);
-        self.layout_manager()
-            .unwrap()
-            .downcast::<RnCanvasLayout>()
-            .unwrap()
-            .set_allocate_autoexpand(autoexpand);
-    }
-
-    /// Needs to be called after a permanent zoom has happened
-    pub(crate) fn update_viewport_after_zoom(&self) {
-        self.layout_manager()
-            .unwrap()
-            .downcast::<RnCanvasLayout>()
-            .unwrap()
-            .update_old_viewport(self);
-    }
-
-    /// returns the current view center coords.
-    /// used together with `center_view_around_coords`.
-    pub(crate) fn current_view_center_coords(&self) -> na::Vector2<f64> {
-        let wrapper = self
-            .ancestor(RnCanvasWrapper::static_type())
-            .unwrap()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap();
-        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
-        let total_zoom = self.engine().borrow().camera.total_zoom();
-
-        // we need to use the adj values here, because the camera transform doesn't get updated immediately.
-        // (happens in the reallocation, which gets queued)
-        (self.adj_values() + wrapper_size * 0.5) / total_zoom
-    }
-
-    /// centers the view around the given coords.
-    /// used together with `current_view_center`.
-    ///
-    /// engine rendering then needs to be updated.
-    pub(crate) fn center_view_around_coords(&self, coords: na::Vector2<f64>) {
-        let wrapper = self
-            .ancestor(RnCanvasWrapper::static_type())
-            .unwrap()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap();
-        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
-        let total_zoom = self.engine().borrow().camera.total_zoom();
-        let new_offset = coords * total_zoom - wrapper_size * 0.5;
-
-        self.update_camera_offset(new_offset, true);
-    }
-
     /// Centering the view to the origin page
     ///
     /// engine rendering then needs to be updated.
@@ -1228,14 +1171,8 @@ impl RnCanvas {
                 ]
             };
 
-        self.update_camera_offset(new_offset, true);
-    }
-
-    /// First zooms temporarily and then permanently after a timeout.
-    ///
-    /// Repeated calls to this function reset the timeout.
-    pub(crate) fn zoom_w_timeout(&self, new_zoom: f64) {
-        let widget_flags = self.engine().borrow_mut().zoom_w_timeout(new_zoom);
+        let mut widget_flags = self.engine().borrow_mut().camera_set_offset(new_offset);
+        widget_flags.merge(self.engine().borrow_mut().doc_expand_autoexpand());
         self.emit_handle_widget_flags(widget_flags);
     }
 

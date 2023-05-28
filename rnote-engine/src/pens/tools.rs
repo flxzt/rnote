@@ -4,7 +4,7 @@ use super::pensconfig::toolsconfig::ToolStyle;
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::{DrawOnDocBehaviour, WidgetFlags};
+use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use piet::RenderContext;
@@ -16,7 +16,7 @@ use std::time::Instant;
 #[derive(Clone, Debug)]
 pub struct VerticalSpaceTool {
     start_pos_y: f64,
-    current_pos_y: f64,
+    pos_y: f64,
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -24,7 +24,7 @@ impl Default for VerticalSpaceTool {
     fn default() -> Self {
         Self {
             start_pos_y: 0.0,
-            current_pos_y: 0.0,
+            pos_y: 0.0,
             strokes_below: vec![],
         }
     }
@@ -49,7 +49,7 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
-        let height = self.current_pos_y - self.start_pos_y;
+        let height = self.pos_y - self.start_pos_y;
         let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         Some(tool_bounds)
@@ -66,7 +66,7 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
-        let height = self.current_pos_y - self.start_pos_y;
+        let height = self.pos_y - self.start_pos_y;
         let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         let tool_bounds_rect = kurbo::Rect::from_points(
@@ -119,9 +119,8 @@ static OFFSETCAMERATOOL_OUTLINE_COLOR: Lazy<piet::Color> =
     Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
 
 impl OffsetCameraTool {
-    const DRAW_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
-    const PATH_WIDTH: f64 = 2.0;
-
+    const CURSOR_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
+    const CURSOR_STROKE_WIDTH: f64 = 2.0;
     const CURSOR_PATH: &str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
 }
 
@@ -129,7 +128,7 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
         Some(Aabb::from_half_extents(
             na::Point2::from(self.start),
-            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5)
+            ((Self::CURSOR_SIZE + na::Vector2::repeat(Self::CURSOR_STROKE_WIDTH)) * 0.5)
                 / engine_view.camera.total_zoom(),
         ))
     }
@@ -150,10 +149,95 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
             cx.stroke(
                 bez_path.clone(),
                 &*OFFSETCAMERATOOL_OUTLINE_COLOR,
-                Self::PATH_WIDTH,
+                Self::CURSOR_STROKE_WIDTH,
             );
             cx.fill(bez_path, &*OFFSETCAMERATOOL_FILL_COLOR);
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ZoomTool {
+    pub start: na::Vector2<f64>,
+    pub current: na::Vector2<f64>,
+    pub start_zoom: f64,
+}
+
+impl Default for ZoomTool {
+    fn default() -> Self {
+        Self {
+            start: na::Vector2::zeros(),
+            current: na::Vector2::zeros(),
+            start_zoom: 1.0,
+        }
+    }
+}
+
+static ZOOMTOOL_DARK_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_DARKS[3].with_alpha(0.941));
+static ZOOMTOOL_LIGHT_COLOR: Lazy<piet::Color> =
+    Lazy::new(|| color::GNOME_BRIGHTS[1].with_alpha(0.941));
+
+impl ZoomTool {
+    const CURSOR_RADIUS: f64 = 5.0;
+    const CURSOR_STROKE_WIDTH: f64 = 2.0;
+}
+
+impl DrawOnDocBehaviour for ZoomTool {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+        Some(
+            Aabb::new_positive(na::Point2::from(self.start), na::Point2::from(self.current))
+                .extend_by(
+                    na::Vector2::repeat(Self::CURSOR_RADIUS + Self::CURSOR_STROKE_WIDTH * 0.5)
+                        / engine_view.camera.total_zoom(),
+                ),
+        )
+    }
+
+    fn draw_on_doc(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        engine_view: &EngineView,
+    ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        let total_zoom = engine_view.camera.total_zoom();
+
+        // start circle
+        cx.stroke(
+            kurbo::Circle::new(
+                self.start.to_kurbo_point(),
+                Self::CURSOR_RADIUS / total_zoom,
+            ),
+            &*ZOOMTOOL_LIGHT_COLOR,
+            Self::CURSOR_STROKE_WIDTH / total_zoom,
+        );
+        cx.stroke(
+            kurbo::Circle::new(
+                self.start.to_kurbo_point(),
+                Self::CURSOR_RADIUS / total_zoom,
+            ),
+            &*ZOOMTOOL_LIGHT_COLOR,
+            Self::CURSOR_STROKE_WIDTH * 0.7 / total_zoom,
+        );
+
+        // current circle
+        cx.fill(
+            kurbo::Circle::new(
+                (self.current).to_kurbo_point(),
+                Self::CURSOR_RADIUS * 0.7 / total_zoom,
+            ),
+            &*ZOOMTOOL_LIGHT_COLOR,
+        );
+        cx.fill(
+            kurbo::Circle::new(
+                (self.current).to_kurbo_point(),
+                Self::CURSOR_RADIUS * 0.5 / total_zoom,
+            ),
+            &*ZOOMTOOL_DARK_COLOR,
+        );
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
@@ -176,6 +260,7 @@ impl Default for ToolsState {
 pub struct Tools {
     pub verticalspace_tool: VerticalSpaceTool,
     pub offsetcamera_tool: OffsetCameraTool,
+    pub zoom_tool: ZoomTool,
     state: ToolsState,
 }
 
@@ -209,14 +294,19 @@ impl PenBehaviour for Tools {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
                         self.verticalspace_tool.start_pos_y = element.pos[1];
-                        self.verticalspace_tool.current_pos_y = element.pos[1];
+                        self.verticalspace_tool.pos_y = element.pos[1];
 
                         self.verticalspace_tool.strokes_below = engine_view
                             .store
-                            .keys_below_y(self.verticalspace_tool.current_pos_y);
+                            .keys_below_y(self.verticalspace_tool.pos_y);
                     }
                     ToolStyle::OffsetCamera => {
                         self.offsetcamera_tool.start = element.pos;
+                    }
+                    ToolStyle::Zoom => {
+                        self.zoom_tool.start = element.pos;
+                        self.zoom_tool.current = element.pos;
+                        self.zoom_tool.start_zoom = engine_view.camera.total_zoom();
                     }
                 }
                 widget_flags.merge(
@@ -233,7 +323,7 @@ impl PenBehaviour for Tools {
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 match engine_view.pens_config.tools_config.style {
                     ToolStyle::VerticalSpace => {
-                        let y_offset = element.pos[1] - self.verticalspace_tool.current_pos_y;
+                        let y_offset = element.pos[1] - self.verticalspace_tool.pos_y;
 
                         if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {
                             engine_view.store.translate_strokes(
@@ -245,7 +335,7 @@ impl PenBehaviour for Tools {
                                 na::vector![0.0, y_offset],
                             );
 
-                            self.verticalspace_tool.current_pos_y = element.pos[1];
+                            self.verticalspace_tool.pos_y = element.pos[1];
 
                             widget_flags.store_modified = true;
                         }
@@ -262,17 +352,40 @@ impl PenBehaviour for Tools {
                                 .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
                                 .coords;
 
-                        if offset.magnitude() > 1.0 {
-                            engine_view.camera.offset -= offset;
+                        widget_flags.merge(
+                            engine_view
+                                .camera
+                                .set_offset(engine_view.camera.offset() - offset, engine_view.doc),
+                        );
+                        widget_flags.merge(
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera),
+                        );
+                    }
+                    ToolStyle::Zoom => {
+                        let total_zoom = engine_view.camera.total_zoom();
+                        let viewport_center = engine_view.camera.viewport_center();
+                        let y_offset = (element.pos[1] - self.zoom_tool.start[1]) * total_zoom;
+                        // Drag down zooms out, drag up zooms in
+                        let new_zoom = self.zoom_tool.start_zoom
+                            * (1.0 - y_offset * Camera::DRAG_ZOOM_MAGN_ZOOM_FACTOR);
 
+                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                            widget_flags.merge(
+                                engine_view
+                                    .camera
+                                    .zoom_w_timeout(new_zoom, engine_view.tasks_tx.clone()),
+                            );
+                            widget_flags
+                                .merge(engine_view.camera.set_viewport_center(viewport_center));
                             widget_flags.merge(
                                 engine_view
                                     .doc
                                     .resize_autoexpand(engine_view.store, engine_view.camera),
                             );
-
-                            widget_flags.update_view = true;
                         }
+                        self.zoom_tool.current = element.pos;
                     }
                 }
 
@@ -288,7 +401,7 @@ impl PenBehaviour for Tools {
                         widget_flags.merge(engine_view.store.record(Instant::now()));
                         widget_flags.store_modified = true;
                     }
-                    ToolStyle::OffsetCamera => {}
+                    ToolStyle::OffsetCamera | ToolStyle::Zoom => {}
                 }
 
                 widget_flags.merge(
@@ -339,6 +452,7 @@ impl DrawOnDocBehaviour for Tools {
             ToolsState::Active => match engine_view.pens_config.tools_config.style {
                 ToolStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
                 ToolStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
+                ToolStyle::Zoom => self.zoom_tool.bounds_on_doc(engine_view),
             },
             ToolsState::Idle => None,
         }
@@ -358,6 +472,9 @@ impl DrawOnDocBehaviour for Tools {
             ToolStyle::OffsetCamera => {
                 self.offsetcamera_tool.draw_on_doc(cx, engine_view)?;
             }
+            ToolStyle::Zoom => {
+                self.zoom_tool.draw_on_doc(cx, engine_view)?;
+            }
         }
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -370,10 +487,15 @@ impl Tools {
         match engine_view.pens_config.tools_config.style {
             ToolStyle::VerticalSpace => {
                 self.verticalspace_tool.start_pos_y = 0.0;
-                self.verticalspace_tool.current_pos_y = 0.0;
+                self.verticalspace_tool.pos_y = 0.0;
             }
             ToolStyle::OffsetCamera => {
                 self.offsetcamera_tool.start = na::Vector2::zeros();
+            }
+            ToolStyle::Zoom => {
+                self.zoom_tool.start = na::Vector2::zeros();
+                self.zoom_tool.current = na::Vector2::zeros();
+                self.zoom_tool.start_zoom = engine_view.camera.total_zoom();
             }
         }
         self.state = ToolsState::Idle;

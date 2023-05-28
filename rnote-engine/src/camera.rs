@@ -6,19 +6,20 @@ use p2d::bounding_volume::Aabb;
 use rnote_compose::helpers::AabbHelpers;
 use serde::{Deserialize, Serialize};
 
+use crate::document::Layout;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
-use crate::WidgetFlags;
+use crate::{Document, WidgetFlags};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "camera")]
 pub struct Camera {
     /// The offset in surface coordinates.
     #[serde(rename = "offset")]
-    pub offset: na::Vector2<f64>,
+    offset: na::Vector2<f64>,
     /// The dimensions in surface coordinates.
     #[serde(rename = "size")]
-    pub size: na::Vector2<f64>,
+    size: na::Vector2<f64>,
     /// The camera zoom, origin at (0.0, 0.0).
     #[serde(rename = "zoom")]
     zoom: f64,
@@ -54,7 +55,11 @@ impl Camera {
     pub const ZOOM_MAX: f64 = 6.0;
     pub const ZOOM_DEFAULT: f64 = 1.0;
     // The zoom timeout time.
-    pub(crate) const ZOOM_TIMEOUT: Duration = Duration::from_millis(400);
+    pub const ZOOM_TIMEOUT: Duration = Duration::from_millis(400);
+    // when performing a drag - zoom 0.5% zoom for every pixel in y dir
+    pub const DRAG_ZOOM_MAGN_ZOOM_FACTOR: f64 = 0.005;
+    pub const OVERSHOOT_HORIZONTAL: f64 = 96.0;
+    pub const OVERSHOOT_VERTICAL: f64 = 96.0;
 
     pub fn with_zoom(mut self, zoom: f64) -> Self {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
@@ -68,6 +73,68 @@ impl Camera {
     pub fn with_size(mut self, size: na::Vector2<f64>) -> Self {
         self.size = size;
         self
+    }
+
+    /// The current viewport offset in surface coordinate space.
+    pub fn offset(&self) -> na::Vector2<f64> {
+        self.offset
+    }
+
+    pub fn set_offset(&mut self, offset: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        let (lower, upper) = self.offset_lower_upper(doc);
+        self.offset = na::vector![
+            offset[0].clamp(lower[0], upper[0]),
+            offset[1].clamp(lower[1], upper[1])
+        ];
+
+        widget_flags.update_view = true;
+        widget_flags.resize = true;
+        widget_flags
+    }
+
+    /// The offset minimum and maximum values in surface coordinate space.
+    pub fn offset_lower_upper(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
+        let total_zoom = self.total_zoom();
+
+        let (h_lower, h_upper) = match doc.layout {
+            Layout::FixedSize | Layout::ContinuousVertical => (
+                doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
+                (doc.x + doc.width) * total_zoom + Self::OVERSHOOT_HORIZONTAL,
+            ),
+            Layout::SemiInfinite => (
+                doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
+                (doc.x + doc.width) * total_zoom,
+            ),
+            Layout::Infinite => (doc.x * total_zoom, (doc.x + doc.width) * total_zoom),
+        };
+        let (v_lower, v_upper) = match doc.layout {
+            Layout::FixedSize | Layout::ContinuousVertical => (
+                doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
+                (doc.y + doc.height) * total_zoom + Self::OVERSHOOT_VERTICAL,
+            ),
+            Layout::SemiInfinite => (
+                doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
+                (doc.y + doc.height) * total_zoom,
+            ),
+            Layout::Infinite => (doc.y * total_zoom, (doc.y + doc.height) * total_zoom),
+        };
+
+        (na::vector![h_lower, v_lower], na::vector![h_upper, v_upper])
+    }
+
+    /// The current viewport size in surface coordinate space.
+    pub fn size(&self) -> na::Vector2<f64> {
+        self.size
+    }
+
+    pub fn set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        self.size = size;
+
+        widget_flags.update_view = true;
+        widget_flags.resize = true;
+        widget_flags
     }
 
     /// The permanent zoom.
@@ -105,11 +172,10 @@ impl Camera {
         let mut reinstall_zoom_task = false;
 
         // zoom temporarily immediately
-        let new_temp_zoom = zoom / old_zoom;
-        let widget_flags = self.zoom_temporarily_to(new_temp_zoom);
+        let new_temporary_zoom = zoom / old_zoom;
+        let widget_flags = self.zoom_temporarily_to(new_temporary_zoom);
 
         let zoom_task = move || {
-            log::warn!("executing zoom task");
             if let Err(e) = tasks_tx.unbounded_send(EngineTask::Zoom(zoom)) {
                 log::error!("Failed to send `EngineTask::Zoom` from ZoomTask, Err: {e:?}");
             }
@@ -122,6 +188,7 @@ impl Camera {
                 }
                 Err(e) => {
                     log::error!("Could not replace task for one off zoom task, Err: {e:?}");
+                    reinstall_zoom_task = true;
                 }
             }
         } else {
@@ -149,12 +216,28 @@ impl Camera {
 
     /// The viewport in document coordinate space.
     pub fn viewport(&self) -> Aabb {
-        let inv_zoom = 1.0 / self.total_zoom();
+        let total_zoom = self.total_zoom();
 
         Aabb::new_positive(
-            na::Point2::from(self.offset * inv_zoom),
-            na::Point2::from((self.offset + self.size) * inv_zoom),
+            na::Point2::from(self.offset / total_zoom),
+            na::Point2::from((self.offset + self.size) / total_zoom),
         )
+    }
+
+    /// The current viewport center in document coordinate space.
+    pub fn viewport_center(&self) -> na::Vector2<f64> {
+        (self.offset + self.size * 0.5) / self.total_zoom()
+    }
+
+    /// Set the viewport center.
+    ///
+    /// `center` must be in document coordinate space.
+    pub fn set_viewport_center(&mut self, center: na::Vector2<f64>) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        self.offset = center * self.total_zoom() - self.size * 0.5;
+        widget_flags.update_view = true;
+        widget_flags.resize = true;
+        widget_flags
     }
 
     /// Transform Aabb from document coords to surface coords.

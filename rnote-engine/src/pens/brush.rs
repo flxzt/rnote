@@ -184,7 +184,6 @@ impl PenBehaviour for Brush {
                                 widget_flags.store_modified = true;
                             }
 
-                            // First we draw the last segments immediately,
                             engine_view.store.append_rendering_last_segments(
                                 engine_view.tasks_tx.clone(),
                                 *current_stroke_key,
@@ -194,7 +193,6 @@ impl PenBehaviour for Brush {
                             );
                         }
 
-                        // but then regenerate the entire stroke rendering because it gets rid of some artifacts
                         // Finish up the last stroke
                         engine_view
                             .store

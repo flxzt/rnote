@@ -224,19 +224,26 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = canvas.engine().borrow().camera.offset;
-            // this updates the canvas adjustment values with the ones from the camera
-            canvas.update_camera_offset(camera_offset, true);
+            let camera_offset = canvas.engine().borrow().camera.offset();
+            // Keep the adjustment values in sync
+            canvas.hadjustment().unwrap().set_value(camera_offset[0]);
+            canvas.vadjustment().unwrap().set_value(camera_offset[1]);
         }
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
+
             self.mainheader()
                 .canvasmenu()
-                .zoom_reset_button()
-                .set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
+                .update_zoom_reset_label(total_zoom);
         }
         if widget_flags.zoomed {
-            canvas.update_viewport_after_zoom();
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let viewport = canvas.engine().borrow().camera.viewport();
+
+            canvas.canvas_layout_manager().update_old_viewport(viewport);
+            self.mainheader()
+                .canvasmenu()
+                .update_zoom_reset_label(total_zoom);
         }
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();

@@ -116,6 +116,7 @@
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-verticalspacetool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-offsetcameratool-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-zoomtool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-bold-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-less-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-indent-more-symbolic.svg</file>

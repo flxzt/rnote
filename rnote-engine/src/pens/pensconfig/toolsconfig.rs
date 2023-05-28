@@ -20,6 +20,8 @@ pub enum ToolStyle {
     VerticalSpace,
     #[serde(rename = "offsetcamera")]
     OffsetCamera,
+    #[serde(rename = "zoom")]
+    Zoom,
 }
 
 impl Default for ToolStyle {

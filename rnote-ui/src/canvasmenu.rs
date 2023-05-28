@@ -88,10 +88,6 @@ impl RnCanvasMenu {
         self.imp().popovermenu.get()
     }
 
-    pub(crate) fn zoom_reset_button(&self) -> Button {
-        self.imp().zoom_reset_button.get()
-    }
-
     pub(crate) fn fixedsize_quickactions_box(&self) -> gtk4::Box {
         self.imp().fixedsize_quickactions_box.get()
     }
@@ -100,5 +96,11 @@ impl RnCanvasMenu {
         self.imp()
             .zoom_reset_button
             .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());
+    }
+
+    pub(crate) fn update_zoom_reset_label(&self, zoom: f64) {
+        self.imp()
+            .zoom_reset_button
+            .set_label(format!("{:.0}%", (100.0 * zoom).round()).as_str());
     }
 }

@@ -837,21 +837,31 @@ impl RnoteEngine {
         true
     }
 
-    /// Update the camera and updates doc dimensions with the new offset and size.
+    /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn camera_update_offset_size(
-        &mut self,
-        new_offset: na::Vector2<f64>,
-        new_size: na::Vector2<f64>,
-    ) {
-        self.camera.offset = new_offset;
-        self.camera.size = new_size;
+    pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_offset(offset, &self.document)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_size(size)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_offset_mins_maxs(&mut self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+        self.camera.offset_lower_upper(&self.document)
     }
 
     /// Update the current pen with the current engine state.
     ///
-    /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
+    /// Needs to be called when the engine state was changed outside of pen events.
+    /// ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn current_pen_update_state(&mut self) -> WidgetFlags {
         self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),

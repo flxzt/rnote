@@ -10,6 +10,7 @@ use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
+use anyhow::Context;
 use futures::channel::mpsc::UnboundedSender;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -20,6 +21,7 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
+use std::sync::mpsc;
 use std::time::{Duration, Instant};
 use unicode_segmentation::GraphemeCursor;
 
@@ -68,7 +70,7 @@ struct BlinkTaskHandle {
 
 impl Drop for BlinkTaskHandle {
     fn drop(&mut self) {
-        if let Err(e) = self.tx.send(BlinkTaskHandleTask::Quit) {
+        if let Err(e) = self.quit() {
             log::error!("Could not quit blink task while handle is being dropped, {e:?}");
         }
     }
@@ -80,28 +82,37 @@ impl BlinkTaskHandle {
     fn new(tasks_tx: UnboundedSender<EngineTask>) -> Self {
         let (tx, rx) = std::sync::mpsc::channel::<BlinkTaskHandleTask>();
         std::thread::spawn(move || loop {
-            std::thread::sleep(Self::BLINK_TIME);
-            match rx.try_recv() {
+            match rx.recv_timeout(Self::BLINK_TIME) {
                 Ok(BlinkTaskHandleTask::Skip) => {
                     continue;
                 }
                 Ok(BlinkTaskHandleTask::Quit) => {
                     break;
                 }
-                Err(_) => {}
+                Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
+                    log::error!("Channel sending half has become disconnected, now quitting the BlinkTask. {e:?}");
+                    break;
+                }
+                Err(mpsc::RecvTimeoutError::Timeout) => {}
             }
             if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
-                log::error!("failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
+                log::error!("Failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
             }
         });
 
         Self { tx }
     }
 
-    fn skip(&mut self) {
-        if let Err(e) = self.tx.send(BlinkTaskHandleTask::Skip) {
-            log::error!("could not send BlinkTaskHandleTask::Skip to BlinkTask, {e:?}");
-        }
+    fn skip(&mut self) -> anyhow::Result<()> {
+        self.tx
+            .send(BlinkTaskHandleTask::Skip)
+            .context("Could not send `BlinkTaskHandleTask::Skip` message to BlinkTask")
+    }
+
+    fn quit(&mut self) -> anyhow::Result<()> {
+        self.tx
+            .send(BlinkTaskHandleTask::Quit)
+            .context("Could not send `BlinkTaskHandleTask::Quit` message to BlinkTask")
     }
 }
 
@@ -906,8 +917,8 @@ impl Typewriter {
     /// Resets the blink
     fn reset_blink(&mut self) {
         if let Some(handle) = &mut self.blink_handle {
-            if !self.cursor_visible {
-                handle.skip();
+            if let Err(e) = handle.skip() {
+                log::error!("Skipping blink task failed, {e:?}");
             }
         }
         self.cursor_visible = true;

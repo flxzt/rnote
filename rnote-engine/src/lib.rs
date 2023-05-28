@@ -18,6 +18,7 @@ pub mod pens;
 pub mod render;
 pub mod store;
 pub mod strokes;
+pub mod tasks;
 pub mod utils;
 pub mod widgetflags;
 

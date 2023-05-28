@@ -10,8 +10,6 @@ use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
 use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, WidgetFlags};
-use anyhow::Context;
-use futures::channel::mpsc::UnboundedSender;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
@@ -21,7 +19,6 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::indicators;
 use rnote_compose::{color, Transform};
 use std::ops::Range;
-use std::sync::mpsc;
 use std::time::{Duration, Instant};
 use unicode_segmentation::GraphemeCursor;
 
@@ -58,68 +55,10 @@ pub(super) enum TypewriterState {
     },
 }
 
-enum BlinkTaskHandleTask {
-    Skip,
-    Quit,
-}
-
-#[derive(Debug, Clone)]
-struct BlinkTaskHandle {
-    tx: std::sync::mpsc::Sender<BlinkTaskHandleTask>,
-}
-
-impl Drop for BlinkTaskHandle {
-    fn drop(&mut self) {
-        if let Err(e) = self.quit() {
-            log::error!("Could not quit blink task while handle is being dropped, {e:?}");
-        }
-    }
-}
-
-impl BlinkTaskHandle {
-    const BLINK_TIME: Duration = Duration::from_millis(800);
-
-    fn new(tasks_tx: UnboundedSender<EngineTask>) -> Self {
-        let (tx, rx) = std::sync::mpsc::channel::<BlinkTaskHandleTask>();
-        std::thread::spawn(move || loop {
-            match rx.recv_timeout(Self::BLINK_TIME) {
-                Ok(BlinkTaskHandleTask::Skip) => {
-                    continue;
-                }
-                Ok(BlinkTaskHandleTask::Quit) => {
-                    break;
-                }
-                Err(e @ mpsc::RecvTimeoutError::Disconnected) => {
-                    log::error!("Channel sending half has become disconnected, now quitting the BlinkTask. {e:?}");
-                    break;
-                }
-                Err(mpsc::RecvTimeoutError::Timeout) => {}
-            }
-            if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
-                log::error!("Failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
-            }
-        });
-
-        Self { tx }
-    }
-
-    fn skip(&mut self) -> anyhow::Result<()> {
-        self.tx
-            .send(BlinkTaskHandleTask::Skip)
-            .context("Could not send `BlinkTaskHandleTask::Skip` message to BlinkTask")
-    }
-
-    fn quit(&mut self) -> anyhow::Result<()> {
-        self.tx
-            .send(BlinkTaskHandleTask::Quit)
-            .context("Could not send `BlinkTaskHandleTask::Quit` message to BlinkTask")
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct Typewriter {
     state: TypewriterState,
-    blink_handle: Option<BlinkTaskHandle>,
+    blink_task_handle: Option<crate::tasks::PeriodicTaskHandle>,
     cursor_visible: bool,
 }
 
@@ -127,7 +66,7 @@ impl Default for Typewriter {
     fn default() -> Self {
         Self {
             state: TypewriterState::Idle,
-            blink_handle: None,
+            blink_task_handle: None,
             cursor_visible: true,
         }
     }
@@ -323,12 +262,24 @@ impl DrawOnDocBehaviour for Typewriter {
 
 impl PenBehaviour for Typewriter {
     fn init(&mut self, engine_view: &EngineView) -> WidgetFlags {
-        self.blink_handle = Some(BlinkTaskHandle::new(engine_view.tasks_tx.clone()));
+        let tasks_tx = engine_view.tasks_tx.clone();
+        let blink_task = move || -> crate::tasks::PeriodicTaskResult {
+            if let Err(e) = tasks_tx.unbounded_send(EngineTask::BlinkTypewriterCursor) {
+                log::error!("Failed to send BlinkTypewriterCursor task from BlinkTask, {e:?}");
+                crate::tasks::PeriodicTaskResult::Quit
+            } else {
+                crate::tasks::PeriodicTaskResult::Continue
+            }
+        };
+        self.blink_task_handle = Some(crate::tasks::PeriodicTaskHandle::new(
+            blink_task,
+            Self::BLINK_TIME,
+        ));
         WidgetFlags::default()
     }
 
     fn deinit(&mut self) -> WidgetFlags {
-        self.blink_handle = None;
+        self.blink_task_handle = None;
         WidgetFlags::default()
     }
 
@@ -595,6 +546,8 @@ impl Typewriter {
     const STATE_START_TEXT_WIDTH: f64 = 10.0;
     /// The outline stroke width when drawing a text box outline
     const TEXT_OUTLINE_STROKE_WIDTH: f64 = 2.0;
+    /// The time for the cursor blink.
+    const BLINK_TIME: Duration = Duration::from_millis(800);
 
     fn start_audio(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
@@ -916,7 +869,7 @@ impl Typewriter {
 
     /// Resets the blink
     fn reset_blink(&mut self) {
-        if let Some(handle) = &mut self.blink_handle {
+        if let Some(handle) = &mut self.blink_task_handle {
             if let Err(e) = handle.skip() {
                 log::error!("Skipping blink task failed, {e:?}");
             }

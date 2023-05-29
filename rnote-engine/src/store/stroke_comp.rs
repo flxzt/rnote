@@ -282,7 +282,11 @@ impl StrokeStore {
     ///
     /// Strokes then need to update their rendering.
     pub fn invert_color_brightness(&mut self, keys: &[StrokeKey]) -> WidgetFlags {
-        let mut widget_flags = self.record(Instant::now());
+        let mut widget_flags = WidgetFlags::default();
+
+        if keys.is_empty() {
+            return widget_flags;
+        }
 
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)

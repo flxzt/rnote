@@ -439,18 +439,9 @@ impl RnAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
                 let canvas = appwindow.active_tab().canvas();
 
-                let widget_flags = {
-                    let engine = canvas.engine();
-                    let engine = &mut *engine.borrow_mut();
-
-                    let keys = engine.store.selection_keys_unordered();
-
-                    if keys.is_empty() {
-                        return;
-                    }
-
-                    engine.store.invert_color_brightness(&keys)
-                };
+                let selection_keys = canvas.engine().borrow().store.selection_keys_unordered();
+                let mut widget_flags = canvas.engine().borrow_mut().store.invert_color_brightness(&selection_keys);
+                widget_flags.merge(canvas.engine().borrow_mut().record(Instant::now()));
 
                 appwindow.handle_widget_flags(widget_flags, &canvas);
                 canvas.update_engine_rendering();

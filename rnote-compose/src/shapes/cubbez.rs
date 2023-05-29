@@ -38,10 +38,10 @@ impl TransformBehaviour for CubicBezier {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
-        self.start = (isometry * na::Point2::from(self.start)).coords;
-        self.cp1 = (isometry * na::Point2::from(self.cp1)).coords;
-        self.cp2 = (isometry * na::Point2::from(self.cp2)).coords;
-        self.end = (isometry * na::Point2::from(self.end)).coords;
+        self.start = isometry.transform_point(&self.start.into()).coords;
+        self.cp1 = isometry.transform_point(&self.cp1.into()).coords;
+        self.cp2 = isometry.transform_point(&self.cp2.into()).coords;
+        self.end = isometry.transform_point(&self.end.into()).coords;
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {

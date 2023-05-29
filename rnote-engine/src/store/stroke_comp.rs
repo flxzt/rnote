@@ -639,7 +639,7 @@ impl StrokeStore {
                     stroke
                         .hitboxes()
                         .into_iter()
-                        .any(|hitbox| hitbox.contains_local_point(&na::Point2::from(coord)))
+                        .any(|hitbox| hitbox.contains_local_point(&coord.into()))
                 } else {
                     false
                 }

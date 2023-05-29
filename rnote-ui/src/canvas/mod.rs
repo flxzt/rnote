@@ -7,7 +7,6 @@ mod input;
 pub(crate) use canvaslayout::RnCanvasLayout;
 
 // Imports
-use crate::RnCanvasWrapper;
 use crate::{config, RnAppWindow};
 use futures::StreamExt;
 use gettextrs::gettext;
@@ -25,7 +24,6 @@ use rnote_engine::Document;
 use rnote_engine::{RnoteEngine, WidgetFlags};
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
-use std::time::Duration;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, glib::Boxed)]
 #[boxed_type(name = "WidgetFlagsBoxed")]
@@ -35,7 +33,6 @@ struct WidgetFlagsBoxed(WidgetFlags);
 pub(crate) struct Handlers {
     pub(crate) hadjustment: Option<glib::SignalHandlerId>,
     pub(crate) vadjustment: Option<glib::SignalHandlerId>,
-    pub(crate) zoom_timeout: Option<glib::SourceId>,
     pub(crate) tab_page_output_file: Option<glib::Binding>,
     pub(crate) tab_page_unsaved_changes: Option<glib::Binding>,
     pub(crate) appwindow_output_file: Option<glib::SignalHandlerId>,
@@ -46,7 +43,6 @@ pub(crate) struct Handlers {
     pub(crate) appwindow_regular_cursor: Option<glib::Binding>,
     pub(crate) appwindow_drawing_cursor: Option<glib::Binding>,
     pub(crate) appwindow_drop_target: Option<glib::SignalHandlerId>,
-    pub(crate) appwindow_zoom_changed: Option<glib::SignalHandlerId>,
     pub(crate) appwindow_handle_widget_flags: Option<glib::SignalHandlerId>,
 }
 
@@ -399,12 +395,9 @@ mod imp {
 
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
-                vec![
-                    glib::subclass::Signal::builder("zoom-changed").build(),
-                    glib::subclass::Signal::builder("handle-widget-flags")
-                        .param_types([WidgetFlagsBoxed::static_type()])
-                        .build(),
-                ]
+                vec![glib::subclass::Signal::builder("handle-widget-flags")
+                    .param_types([WidgetFlagsBoxed::static_type()])
+                    .build()]
             });
             SIGNALS.as_ref()
         }
@@ -539,8 +532,6 @@ pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
     once_cell::sync::Lazy::new(|| gettext("Draft"));
 
 impl RnCanvas {
-    // the zoom timeout time
-    pub(crate) const ZOOM_TIMEOUT_TIME: Duration = Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub(crate) const ZOOM_SCROLL_STEP: f64 = 0.1;
     /// A small margin added to the document width, when zooming to fit document width
@@ -649,13 +640,15 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
-    fn emit_zoom_changed(&self) {
-        self.emit_by_name::<()>("zoom-changed", &[]);
-    }
-
-    #[allow(unused)]
     pub(super) fn emit_handle_widget_flags(&self, widget_flags: WidgetFlags) {
         self.emit_by_name::<()>("handle-widget-flags", &[&WidgetFlagsBoxed(widget_flags)]);
+    }
+
+    pub(crate) fn canvas_layout_manager(&self) -> RnCanvasLayout {
+        self.layout_manager()
+            .unwrap()
+            .downcast::<RnCanvasLayout>()
+            .unwrap()
     }
 
     pub(crate) fn engine(&self) -> Rc<RefCell<RnoteEngine>> {
@@ -930,8 +923,8 @@ impl RnCanvas {
                     .store
                     .set_rendering_dirty_for_strokes(&all_strokes);
 
-                canvas.regenerate_background_pattern();
-                canvas.update_engine_rendering();
+                canvas.background_regenerate_pattern();
+                canvas.update_rendering_current_viewport();
             });
 
         // Update titles when there are changes
@@ -992,13 +985,6 @@ impl RnCanvas {
                 false
             }),
         );
-
-        // update ui when zoom changes
-        let appwindow_zoom_changed = self.connect_local("zoom-changed", false, clone!(@weak self as canvas, @weak appwindow => @default-return None, move |_| {
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            appwindow.mainheader().canvasmenu().zoom_reset_button().set_label(format!("{:.0}%", (100.0 * total_zoom).round()).as_str());
-            None
-        }));
 
         // handle widget flags
         let appwindow_handle_widget_flags = self.connect_local(
@@ -1064,12 +1050,6 @@ impl RnCanvas {
             self.imp().drop_target.disconnect(old);
         }
         if let Some(old) = handlers
-            .appwindow_zoom_changed
-            .replace(appwindow_zoom_changed)
-        {
-            self.disconnect(old);
-        }
-        if let Some(old) = handlers
             .appwindow_handle_widget_flags
             .replace(appwindow_handle_widget_flags)
         {
@@ -1105,9 +1085,6 @@ impl RnCanvas {
         }
         if let Some(old) = handlers.appwindow_drop_target.take() {
             self.imp().drop_target.disconnect(old);
-        }
-        if let Some(old) = handlers.appwindow_zoom_changed.take() {
-            self.disconnect(old);
         }
         if let Some(old) = handlers.appwindow_handle_widget_flags.take() {
             self.disconnect(old);
@@ -1169,60 +1146,6 @@ impl RnCanvas {
         )
     }
 
-    /// gets the current scrollbar adjustment values
-    pub(crate) fn adj_values(&self) -> na::Vector2<f64> {
-        na::vector![
-            self.hadjustment().unwrap().value(),
-            self.vadjustment().unwrap().value()
-        ]
-    }
-
-    /// updates the camera offset and scrollbar adjustment values
-    pub(crate) fn update_camera_offset(&self, new_offset: na::Vector2<f64>, autoexpand: bool) {
-        // By setting new adjustment values, the callback connected to their `value` property is called,
-        // Which is where the engine camera offset, size and the rendering is updated.
-        self.hadjustment().unwrap().set_value(new_offset[0]);
-        self.vadjustment().unwrap().set_value(new_offset[1]);
-        self.layout_manager()
-            .unwrap()
-            .downcast::<RnCanvasLayout>()
-            .unwrap()
-            .flag_allocate_autoexpand(autoexpand);
-    }
-
-    /// returns the current view center coords.
-    /// used together with `center_view_around_coords`.
-    pub(crate) fn current_view_center_coords(&self) -> na::Vector2<f64> {
-        let wrapper = self
-            .ancestor(RnCanvasWrapper::static_type())
-            .unwrap()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap();
-        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
-        let total_zoom = self.engine().borrow().camera.total_zoom();
-
-        // we need to use the adj values here, because the camera transform doesn't get updated immediately.
-        // (happens in the reallocation, which gets queued)
-        (self.adj_values() + wrapper_size * 0.5) / total_zoom
-    }
-
-    /// centers the view around the given coords.
-    /// used together with `current_view_center`.
-    ///
-    /// engine rendering then needs to be updated.
-    pub(crate) fn center_view_around_coords(&self, coords: na::Vector2<f64>) {
-        let wrapper = self
-            .ancestor(RnCanvasWrapper::static_type())
-            .unwrap()
-            .downcast::<RnCanvasWrapper>()
-            .unwrap();
-        let wrapper_size = na::vector![wrapper.width() as f64, wrapper.height() as f64];
-        let total_zoom = self.engine().borrow().camera.total_zoom();
-        let new_offset = coords * total_zoom - wrapper_size * 0.5;
-
-        self.update_camera_offset(new_offset, true);
-    }
-
     /// Centering the view to the origin page
     ///
     /// engine rendering then needs to be updated.
@@ -1248,101 +1171,28 @@ impl RnCanvas {
                 ]
             };
 
-        self.update_camera_offset(new_offset, true);
-    }
-
-    /// zooms and regenerates the canvas and its contents to a new zoom
-    /// is private, zooming from other parts of the app should always be done through the "zoom-to-value" action
-    fn zoom_to(&self, new_zoom: f64) {
-        // Remove the timeout if exists
-        if let Some(source_id) = self.imp().handlers.borrow_mut().zoom_timeout.take() {
-            source_id.remove();
-        }
-
-        self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
-        self.engine().borrow_mut().camera.set_zoom(new_zoom);
-
-        let all_strokes = self.engine().borrow_mut().store.stroke_keys_unordered();
-        self.engine()
-            .borrow_mut()
-            .store
-            .set_rendering_dirty_for_strokes(&all_strokes);
-
-        self.regenerate_background_pattern();
-        self.update_engine_rendering();
-
-        // We need to update the layout managers internal state after zooming
-        self.layout_manager()
-            .unwrap()
-            .downcast::<RnCanvasLayout>()
-            .unwrap()
-            .update_state(self);
-    }
-
-    /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
-    /// Repeated calls to this function reset the timeout.
-    /// should only be called from the "zoom-to-value" action.
-    pub(crate) fn zoom_temporarily_then_scale_to_after_timeout(&self, new_zoom: f64) {
-        if let Some(handler_id) = self.imp().handlers.borrow_mut().zoom_timeout.take() {
-            handler_id.remove();
-        }
-
-        let old_perm_zoom = self.engine().borrow().camera.zoom();
-
-        // Zoom temporarily
-        let new_temp_zoom = new_zoom / old_perm_zoom;
-        self.engine()
-            .borrow_mut()
-            .camera
-            .set_temporary_zoom(new_temp_zoom);
-
-        self.emit_zoom_changed();
-
-        // In resize we render the strokes that came into view
-        self.queue_resize();
-
-        if let Some(source_id) = self.imp().handlers.borrow_mut().zoom_timeout.replace(
-            glib::source::timeout_add_local_once(
-                Self::ZOOM_TIMEOUT_TIME,
-                clone!(@weak self as canvas => move || {
-
-                    // After timeout zoom permanent
-                    canvas.zoom_to(new_zoom);
-
-                    // Removing the timeout id
-                    let mut handlers = canvas.imp().handlers.borrow_mut();
-                    if let Some(source_id) = handlers.zoom_timeout.take() {
-                        source_id.remove();
-                    }
-                }),
-            ),
-        ) {
-            source_id.remove();
-        }
+        let mut widget_flags = self.engine().borrow_mut().camera_set_offset(new_offset);
+        widget_flags.merge(self.engine().borrow_mut().doc_expand_autoexpand());
+        self.emit_handle_widget_flags(widget_flags);
     }
 
     /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
-    pub(crate) fn update_engine_rendering(&self) {
+    pub(crate) fn update_rendering_current_viewport(&self) {
         // background rendering is updated in the layout manager
         self.queue_resize();
-
         // update content rendering
         self.engine()
             .borrow_mut()
             .update_content_rendering_current_viewport();
-
         self.queue_draw();
     }
 
     /// updates the background pattern and rendering for the current viewport.
     /// to be called for example when changing the background pattern or zoom.
-    pub(crate) fn regenerate_background_pattern(&self) {
-        if let Err(e) = self.engine().borrow_mut().background_regenerate_pattern() {
-            log::error!("failed to regenerate background, {e:?}")
-        };
-
+    pub(crate) fn background_regenerate_pattern(&self) {
+        self.engine().borrow_mut().background_regenerate_pattern();
         self.queue_draw();
     }
 }

@@ -224,9 +224,28 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.update_view {
-            let camera_offset = canvas.engine().borrow().camera.offset;
-            // this updates the canvas adjustment values with the ones from the camera
-            canvas.update_camera_offset(camera_offset, true);
+            let camera_offset = canvas.engine().borrow().camera.offset();
+            // Keep the adjustment values in sync
+            canvas.hadjustment().unwrap().set_value(camera_offset[0]);
+            canvas.vadjustment().unwrap().set_value(camera_offset[1]);
+        }
+        if widget_flags.zoomed_temporarily {
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+
+            canvas.queue_resize();
+            self.mainheader()
+                .canvasmenu()
+                .update_zoom_reset_label(total_zoom);
+        }
+        if widget_flags.zoomed {
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let viewport = canvas.engine().borrow().camera.viewport();
+
+            canvas.canvas_layout_manager().update_old_viewport(viewport);
+            self.mainheader()
+                .canvasmenu()
+                .update_zoom_reset_label(total_zoom);
+            canvas.queue_resize();
         }
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();
@@ -294,7 +313,7 @@ impl RnAppWindow {
                 .borrow_mut()
                 .doc_resize_to_fit_strokes(),
         );
-        new_wrapper.canvas().update_engine_rendering();
+        new_wrapper.canvas().update_rendering_current_viewport();
         self.handle_widget_flags(widget_flags, &new_wrapper.canvas());
 
         // The tab page connections are handled in page_attached, which is fired when the page is added to the tabview

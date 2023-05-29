@@ -98,6 +98,8 @@ pub enum EngineTask {
     },
     /// Requests that the typewriter cursor should be blinked/toggled
     BlinkTypewriterCursor,
+    /// Change the permanent zoom to the given value
+    Zoom(f64),
     /// Indicates that the application is quitting. Sent to quit the handler which receives the tasks.
     Quit,
 }
@@ -587,6 +589,17 @@ impl RnoteEngine {
                     widget_flags.redraw = true;
                 }
             }
+            EngineTask::Zoom(zoom) => {
+                widget_flags.merge(self.camera.zoom_temporarily_to(1.0));
+                widget_flags.merge(self.camera.zoom_to(zoom));
+
+                let all_strokes = self.store.stroke_keys_unordered();
+                self.store.set_rendering_dirty_for_strokes(&all_strokes);
+                widget_flags.merge(self.doc_resize_autoexpand());
+
+                self.background_regenerate_pattern();
+                self.update_rendering_current_viewport();
+            }
             EngineTask::Quit => {
                 widget_flags.merge(self.deinit_current_pen());
                 quit = true;
@@ -753,6 +766,13 @@ impl RnoteEngine {
         )
     }
 
+    /// First zoom temporarily and then permanently after a timeout.
+    ///
+    /// Repeated calls to this function reset the timeout.
+    pub fn zoom_w_timeout(&mut self, zoom: f64) -> WidgetFlags {
+        self.camera.zoom_w_timeout(zoom, self.tasks_tx.clone())
+    }
+
     /// Resizes the doc to the format and to fit all strokes.
     ///
     /// Background rendering then needs to be updated.
@@ -817,21 +837,31 @@ impl RnoteEngine {
         true
     }
 
-    /// Update the camera and updates doc dimensions with the new offset and size.
+    /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
     /// Background and strokes rendering then need to be updated.
-    pub fn camera_update_offset_size(
-        &mut self,
-        new_offset: na::Vector2<f64>,
-        new_size: na::Vector2<f64>,
-    ) {
-        self.camera.offset = new_offset;
-        self.camera.size = new_size;
+    pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_offset(offset, &self.document)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+        self.camera.set_size(size)
+    }
+
+    /// Update the viewport size of the camera.
+    ///
+    /// Background and strokes rendering then need to be updated.
+    pub fn camera_offset_mins_maxs(&mut self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+        self.camera.offset_lower_upper(&self.document)
     }
 
     /// Update the current pen with the current engine state.
     ///
-    /// Needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
+    /// Needs to be called when the engine state was changed outside of pen events.
+    /// ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn current_pen_update_state(&mut self) -> WidgetFlags {
         self.penholder.current_pen_update_state(&mut EngineViewMut {
             tasks_tx: self.tasks_tx.clone(),

@@ -73,11 +73,15 @@ impl RnoteEngine {
     }
 
     /// Regenerate the background tile image and updates the background rendering.
-    pub fn background_regenerate_pattern(&mut self) -> anyhow::Result<()> {
+    pub fn background_regenerate_pattern(&mut self) {
         let image_scale = self.camera.image_scale();
-        self.background_tile_image = self.document.background.gen_tile_image(image_scale)?;
-        self.update_background_rendering_current_viewport();
-        Ok(())
+        match self.document.background.gen_tile_image(image_scale) {
+            Ok(image) => {
+                self.background_tile_image = Some(image);
+                self.update_background_rendering_current_viewport();
+            }
+            Err(e) => log::error!("regenerating background tile image failed, Err: {e:?}"),
+        }
     }
 
     /// Draws the entire engine (doc, pens, strokes, selection, ..) to a GTK snapshot.

@@ -49,7 +49,7 @@ pub trait DrawOnDocBehaviour {
             // Transform the bounds into surface coords
             let mut bounds_transformed = bounds
                 .scale(engine_view.camera.total_zoom())
-                .translate(-engine_view.camera.offset)
+                .translate(-engine_view.camera.offset())
                 .ceil();
 
             bounds_transformed.ensure_positive();

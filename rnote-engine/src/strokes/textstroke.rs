@@ -441,10 +441,8 @@ impl ShapeBehaviour for TextStroke {
             .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size))
             .maxs(&na::vector![1.0, 1.0]);
 
-        self.transform.transform_aabb(Aabb::new(
-            na::point![0.0, 0.0],
-            na::Point2::from(untransformed_size),
-        ))
+        self.transform
+            .transform_aabb(Aabb::new(na::point![0.0, 0.0], untransformed_size.into()))
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -471,12 +469,14 @@ impl ShapeBehaviour for TextStroke {
         let text_size = text_layout.size();
 
         if hitboxes.is_empty() {
-            hitboxes.push(self.transform.transform_aabb(Aabb::new_positive(
-                na::point![0.0, 0.0],
-                na::Point2::from(
-                    na::vector![text_size.width, text_size.height].maxs(&na::vector![1.0, 1.0]),
-                ),
-            )))
+            hitboxes.push(
+                self.transform.transform_aabb(Aabb::new_positive(
+                    na::point![0.0, 0.0],
+                    na::vector![text_size.width, text_size.height]
+                        .maxs(&na::vector![1.0, 1.0])
+                        .into(),
+                )),
+            )
         }
 
         hitboxes
@@ -588,7 +588,10 @@ impl TextStroke {
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
-            (self.transform.affine.inverse() * na::Point2::from(coord))
+            self.transform
+                .affine
+                .inverse()
+                .transform_point(&coord.into())
                 .coords
                 .to_kurbo_point(),
         );

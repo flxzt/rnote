@@ -3563,6 +3563,7 @@ dependencies = [
  "serde_json",
  "slotmap",
  "svg",
+ "thiserror",
  "unicode-segmentation",
  "usvg",
  "xmlwriter",

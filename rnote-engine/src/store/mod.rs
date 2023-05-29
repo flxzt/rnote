@@ -138,6 +138,7 @@ impl StrokeStore {
         self.rebuild_trash_components_slotmap();
         self.rebuild_render_components_slotmap();
         self.rebuild_rtree();
+        self.clear_history(self.create_history_entry());
     }
 
     /// Rebuild the rtree with the current stored strokes keys and bounds.
@@ -293,8 +294,8 @@ impl StrokeStore {
     }
 
     /// Clear the history.
-    pub(crate) fn clear_history(&mut self) {
-        self.history = VecDeque::from(vec![HistoryEntry::default()]);
+    pub(crate) fn clear_history(&mut self, initial_state: HistoryEntry) {
+        self.history = VecDeque::from(vec![initial_state]);
         self.live_index = 0;
     }
 
@@ -345,7 +346,7 @@ impl StrokeStore {
         Arc::make_mut(&mut self.chrono_components).clear();
 
         self.chrono_counter = 0;
-        self.clear_history();
+        self.clear_history(HistoryEntry::default());
 
         self.render_components.clear();
         self.key_tree.clear();

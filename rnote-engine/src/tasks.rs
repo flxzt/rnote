@@ -163,8 +163,6 @@ impl OneOffTaskHandle {
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {}
                 }
-                // if we reach this there is no possibility for the receiver to send messages.
-                // So from it's perspective the task has finished.
                 timeout_reached_c.store(true, Ordering::Relaxed);
                 task();
                 break;

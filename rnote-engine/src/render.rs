@@ -612,10 +612,7 @@ impl Svg {
                 attributes_indent: xmlwriter::Indent::None,
             },
         };
-        let simplified_bounds = Aabb::new(
-            na::point![0.0, 0.0],
-            na::Point2::from(self.bounds.extents()),
-        );
+        let simplified_bounds = Aabb::new(na::point![0.0, 0.0], self.bounds.extents().into());
         let wrapped_svg_data = rnote_compose::utils::wrap_svg_root(
             &rnote_compose::utils::remove_xml_header(&self.svg_data),
             Some(simplified_bounds),

@@ -79,17 +79,16 @@ impl DrawOnDocBehaviour for Typewriter {
         match &self.state {
             TypewriterState::Idle => None,
             TypewriterState::Start(pos) => Some(Aabb::new(
-                na::Point2::from(*pos),
-                na::Point2::from(
-                    pos + na::vector![
-                        Self::STATE_START_TEXT_WIDTH,
-                        engine_view
-                            .pens_config
-                            .typewriter_config
-                            .text_style
-                            .font_size
-                    ],
-                ),
+                (*pos).into(),
+                (pos + na::vector![
+                    Self::STATE_START_TEXT_WIDTH,
+                    engine_view
+                        .pens_config
+                        .typewriter_config
+                        .text_style
+                        .font_size
+                ])
+                .into(),
             )),
             TypewriterState::Modifying { stroke_key, .. } => {
                 if let Some(Stroke::TextStroke(textstroke)) =
@@ -205,9 +204,7 @@ impl DrawOnDocBehaviour for Typewriter {
                     let adjust_text_width_node_state = match modify_state {
                         ModifyState::AdjustTextWidth { .. } => PenState::Down,
                         ModifyState::Hover(pos) => {
-                            if adjust_text_width_node_bounds
-                                .contains_local_point(&na::Point2::from(*pos))
-                            {
+                            if adjust_text_width_node_bounds.contains_local_point(&(*pos).into()) {
                                 PenState::Proximity
                             } else {
                                 PenState::Up
@@ -234,9 +231,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         let translate_node_state = match modify_state {
                             ModifyState::Translating { .. } => PenState::Down,
                             ModifyState::Hover(pos) => {
-                                if translate_node_bounds
-                                    .contains_local_point(&na::Point2::from(*pos))
-                                {
+                                if translate_node_bounds.contains_local_point(&(*pos).into()) {
                                     PenState::Proximity
                                 } else {
                                     PenState::Up
@@ -562,20 +557,15 @@ impl Typewriter {
     /// The bounds of the text rect enclosing the textstroke.
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> Aabb {
         let origin = textstroke.transform.translation_part();
-        Aabb::new(
-            na::Point2::from(origin),
-            na::point![origin[0] + text_width, origin[1]],
-        )
-        .merged(&textstroke.bounds())
+        Aabb::new(origin.into(), na::point![origin[0] + text_width, origin[1]])
+            .merged(&textstroke.bounds())
     }
 
     /// The bounds of the translate node.
     fn translate_node_bounds(typewriter_bounds: Aabb, camera: &Camera) -> Aabb {
         let total_zoom = camera.total_zoom();
         Aabb::from_half_extents(
-            na::Point2::from(
-                typewriter_bounds.mins.coords + Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom,
-            ),
+            (typewriter_bounds.mins.coords + Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom).into(),
             Self::TRANSLATE_NODE_SIZE * 0.5 / total_zoom,
         )
     }
@@ -602,7 +592,7 @@ impl Typewriter {
         let total_zoom = camera.total_zoom();
         let center = Self::adjust_text_width_node_center(text_rect_origin, text_width, camera);
         Aabb::from_half_extents(
-            na::Point2::from(center),
+            center.into(),
             Self::ADJUST_TEXT_WIDTH_NODE_SIZE * 0.5 / total_zoom,
         )
     }

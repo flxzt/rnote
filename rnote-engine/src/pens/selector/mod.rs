@@ -221,13 +221,13 @@ impl DrawOnDocBehaviour for Selector {
                 let mut path_iter = path.iter();
                 if let Some(first) = path_iter.next() {
                     let mut new_bounds = Aabb::from_half_extents(
-                        na::Point2::from(first.pos),
+                        first.pos.into(),
                         na::Vector2::repeat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
                     );
 
                     path_iter.for_each(|element| {
                         let pos_bounds = Aabb::from_half_extents(
-                            na::Point2::from(element.pos),
+                            element.pos.into(),
                             na::Vector2::repeat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
                         );
                         new_bounds.merge(&pos_bounds);
@@ -477,7 +477,7 @@ impl Selector {
         let rotate_node_state = match modify_state {
             ModifyState::Rotate { .. } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if rotate_node_sphere.contains_local_point(&na::Point2::from(*pos)) {
+                if rotate_node_sphere.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -494,7 +494,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_tl_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_tl_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -511,7 +511,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_tr_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_tr_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -528,7 +528,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_bl_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_bl_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up
@@ -545,7 +545,7 @@ impl Selector {
                 ..
             } => PenState::Down,
             ModifyState::Hover(pos) => {
-                if resize_br_node_bounds.contains_local_point(&na::Point2::from(*pos)) {
+                if resize_br_node_bounds.contains_local_point(&(*pos).into()) {
                     PenState::Proximity
                 } else {
                     PenState::Up

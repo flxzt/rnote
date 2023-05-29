@@ -29,8 +29,8 @@ impl TransformBehaviour for Line {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
-        self.start = (isometry * na::Point2::from(self.start)).coords;
-        self.end = (isometry * na::Point2::from(self.end)).coords;
+        self.start = isometry.transform_point(&self.start.into()).coords;
+        self.end = isometry.transform_point(&self.end.into()).coords;
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
@@ -41,7 +41,7 @@ impl TransformBehaviour for Line {
 
 impl ShapeBehaviour for Line {
     fn bounds(&self) -> Aabb {
-        AabbHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
+        AabbHelpers::new_positive(self.start.into(), self.end.into())
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {

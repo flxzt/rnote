@@ -59,13 +59,17 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            (self.engine().borrow().camera.transform().inverse()
-                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-            .coords
-            .maxs(&na::vector![
-                self.engine().borrow().document.x,
-                self.engine().borrow().document.y
-            ])
+            self.engine()
+                .borrow()
+                .camera
+                .transform()
+                .inverse()
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+                .coords
+                .maxs(&na::vector![
+                    self.engine().borrow().document.x,
+                    self.engine().borrow().document.y
+                ])
         });
 
         // we need the split the import operation between generate_vectorimage_from_bytes() which returns a receiver and import_generated_strokes(),
@@ -93,13 +97,17 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            (self.engine().borrow().camera.transform().inverse()
-                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-            .coords
-            .maxs(&na::vector![
-                self.engine().borrow().document.x,
-                self.engine().borrow().document.y
-            ])
+            self.engine()
+                .borrow()
+                .camera
+                .transform()
+                .inverse()
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+                .coords
+                .maxs(&na::vector![
+                    self.engine().borrow().document.x,
+                    self.engine().borrow().document.y
+                ])
         });
 
         let bitmapimage_receiver = self
@@ -147,13 +155,17 @@ impl RnCanvas {
         page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            (self.engine().borrow().camera.transform().inverse()
-                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-            .coords
-            .maxs(&na::vector![
-                self.engine().borrow().document.x,
-                self.engine().borrow().document.y
-            ])
+            self.engine()
+                .borrow()
+                .camera
+                .transform()
+                .inverse()
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+                .coords
+                .maxs(&na::vector![
+                    self.engine().borrow().document.x,
+                    self.engine().borrow().document.y
+                ])
         });
 
         let strokes_receiver = self
@@ -175,13 +187,17 @@ impl RnCanvas {
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let pos = target_pos.unwrap_or_else(|| {
-            (self.engine().borrow().camera.transform().inverse()
-                * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-            .coords
-            .maxs(&na::vector![
-                self.engine().borrow().document.x,
-                self.engine().borrow().document.y
-            ])
+            self.engine()
+                .borrow()
+                .camera
+                .transform()
+                .inverse()
+                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+                .coords
+                .maxs(&na::vector![
+                    self.engine().borrow().document.x,
+                    self.engine().borrow().document.y
+                ])
         });
 
         let widget_flags = self.engine().borrow_mut().insert_text(text, pos)?;
@@ -204,13 +220,18 @@ impl RnCanvas {
             }
         });
         let content = oneshot_receiver.await??;
-        let pos = (self.engine().borrow().camera.transform().inverse()
-            * na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-        .coords
-        .maxs(&na::vector![
-            self.engine().borrow().document.x,
-            self.engine().borrow().document.y
-        ]);
+        let pos = self
+            .engine()
+            .borrow()
+            .camera
+            .transform()
+            .inverse()
+            .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
+            .coords
+            .maxs(&na::vector![
+                self.engine().borrow().document.x,
+                self.engine().borrow().document.y
+            ]);
 
         let widget_flags = self
             .engine()

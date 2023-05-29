@@ -232,6 +232,7 @@ impl RnAppWindow {
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
 
+            canvas.queue_resize();
             self.mainheader()
                 .canvasmenu()
                 .update_zoom_reset_label(total_zoom);
@@ -244,6 +245,7 @@ impl RnAppWindow {
             self.mainheader()
                 .canvasmenu()
                 .update_zoom_reset_label(total_zoom);
+            canvas.queue_resize();
         }
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();

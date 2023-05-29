@@ -219,8 +219,8 @@ impl Camera {
         let total_zoom = self.total_zoom();
 
         Aabb::new_positive(
-            na::Point2::from(self.offset / total_zoom),
-            na::Point2::from((self.offset + self.size) / total_zoom),
+            (self.offset / total_zoom).into(),
+            ((self.offset + self.size) / total_zoom).into(),
         )
     }
 
@@ -297,7 +297,7 @@ mod tests {
 
         // first zoom, then scale
         assert_relative_eq!(
-            (camera.transform() * p0).coords,
+            camera.transform().transform_point(&p0).coords,
             (p0.coords * zoom) - offset
         );
     }

@@ -84,7 +84,7 @@ impl Typewriter {
                             engine_view.store.get_stroke_ref(*stroke_key),
                         ) {
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
-                                .contains_local_point(&na::Point2::from(element.pos))
+                                .contains_local_point(&element.pos.into())
                             {
                                 // switch to translating state
                                 self.state = TypewriterState::Modifying {
@@ -100,7 +100,7 @@ impl Typewriter {
                                 text_width,
                                 engine_view.camera,
                             )
-                            .contains_local_point(&na::Point2::from(element.pos))
+                            .contains_local_point(&element.pos.into())
                             {
                                 // switch to adjust text width
                                 self.state = TypewriterState::Modifying {
@@ -114,9 +114,7 @@ impl Typewriter {
                                     pen_down: true,
                                 };
                             // This is intentionally **not** the textstroke hitboxes
-                            } else if typewriter_bounds
-                                .contains_local_point(&na::Point2::from(element.pos))
-                            {
+                            } else if typewriter_bounds.contains_local_point(&element.pos.into()) {
                                 if let Some(Stroke::TextStroke(textstroke)) =
                                     engine_view.store.get_stroke_ref(*stroke_key)
                                 {
@@ -158,7 +156,7 @@ impl Typewriter {
                         if let Some(typewriter_bounds) = typewriter_bounds {
                             // Clicking on the translate node
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
-                                .contains_local_point(&na::Point2::from(element.pos))
+                                .contains_local_point(&element.pos.into())
                             {
                                 self.state = TypewriterState::Modifying {
                                     modify_state: ModifyState::Translating {
@@ -168,9 +166,7 @@ impl Typewriter {
                                     cursor: cursor.clone(),
                                     pen_down: true,
                                 };
-                            } else if typewriter_bounds
-                                .contains_local_point(&na::Point2::from(element.pos))
-                            {
+                            } else if typewriter_bounds.contains_local_point(&element.pos.into()) {
                                 if let Some(Stroke::TextStroke(textstroke)) =
                                     engine_view.store.get_stroke_ref(*stroke_key)
                                 {
@@ -290,7 +286,7 @@ impl Typewriter {
                     ModifyState::Up | ModifyState::Hover(_) => {
                         // detect hover state
                         *modify_state = if typewriter_bounds
-                            .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
+                            .map(|b| b.contains_local_point(&element.pos.into()))
                             .unwrap_or(false)
                         {
                             ModifyState::Hover(element.pos)
@@ -380,7 +376,7 @@ impl Typewriter {
             } => {
                 // detect hover state
                 *modify_state = if typewriter_bounds
-                    .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
+                    .map(|b| b.contains_local_point(&element.pos.into()))
                     .unwrap_or(false)
                 {
                     ModifyState::Hover(element.pos)

@@ -28,13 +28,13 @@ pub struct PenPath {
 
 impl ShapeBehaviour for PenPath {
     fn bounds(&self) -> Aabb {
-        let mut bounds = Aabb::from_points(&[na::Point2::from(self.start.pos)]);
+        let mut bounds = Aabb::from_points(&[self.start.pos.into()]);
 
         let mut prev = self.start;
         for seg in self.segments.iter() {
             match seg {
                 Segment::LineTo { end } => {
-                    bounds.take_point(na::Point2::from(end.pos));
+                    bounds.take_point(end.pos.into());
 
                     prev = *end;
                 }

@@ -34,9 +34,9 @@ impl TransformBehaviour for QuadraticBezier {
         let mut isometry = na::Isometry2::identity();
         isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
-        self.start = (isometry * na::Point2::from(self.start)).coords;
-        self.cp = (isometry * na::Point2::from(self.cp)).coords;
-        self.end = (isometry * na::Point2::from(self.end)).coords;
+        self.start = isometry.transform_point(&self.start.into()).coords;
+        self.cp = isometry.transform_point(&self.cp.into()).coords;
+        self.end = isometry.transform_point(&self.end.into()).coords;
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {

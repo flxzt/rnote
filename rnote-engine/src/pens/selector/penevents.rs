@@ -79,7 +79,7 @@ impl Selector {
                                 *selection_bounds = new_bounds;
                             }
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
-                            .contains_local_point(&na::Point2::from(element.pos))
+                            .contains_local_point(&element.pos.into())
                         {
                             // clicking on the rotate node
                             let rotation_angle = {
@@ -98,7 +98,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&na::Point2::from(element.pos))
+                        .contains_local_point(&element.pos.into())
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::TopLeft,
@@ -110,7 +110,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&na::Point2::from(element.pos))
+                        .contains_local_point(&element.pos.into())
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::TopRight,
@@ -122,7 +122,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&na::Point2::from(element.pos))
+                        .contains_local_point(&element.pos.into())
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::BottomLeft,
@@ -134,16 +134,14 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&na::Point2::from(element.pos))
+                        .contains_local_point(&element.pos.into())
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::BottomRight,
                                 start_bounds: *selection_bounds,
                                 start_pos: element.pos,
                             }
-                        } else if selection_bounds
-                            .contains_local_point(&na::Point2::from(element.pos))
-                        {
+                        } else if selection_bounds.contains_local_point(&element.pos.into()) {
                             // clicking inside the selection bounds, triggering translation
                             *modify_state = ModifyState::Translate {
                                 start_pos: element.pos,
@@ -316,10 +314,7 @@ impl Selector {
                     }
                     SelectorStyle::Rectangle => {
                         if let (Some(first), Some(last)) = (path.first(), path.last()) {
-                            let aabb = Aabb::new_positive(
-                                na::Point2::from(first.pos),
-                                na::Point2::from(last.pos),
-                            );
+                            let aabb = Aabb::new_positive(first.pos.into(), last.pos.into());
                             engine_view.store.strokes_hitboxes_contained_in_aabb(
                                 aabb,
                                 engine_view.camera.viewport(),
@@ -405,7 +400,7 @@ impl Selector {
                 }
 
                 *modify_state = if selector_bounds
-                    .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
+                    .map(|b| b.contains_local_point(&element.pos.into()))
                     .unwrap_or(false)
                 {
                     ModifyState::Hover(element.pos)
@@ -435,7 +430,7 @@ impl Selector {
             SelectorState::Selecting { .. } => PenProgress::InProgress,
             SelectorState::ModifySelection { modify_state, .. } => {
                 *modify_state = if selector_bounds
-                    .map(|b| b.contains_local_point(&na::Point2::from(element.pos)))
+                    .map(|b| b.contains_local_point(&element.pos.into()))
                     .unwrap_or(false)
                 {
                     ModifyState::Hover(element.pos)

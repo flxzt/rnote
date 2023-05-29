@@ -104,10 +104,9 @@ impl ShapeBuilderBehaviour for GridBuilder {
         match &self.state {
             GridBuilderState::FirstCell { start, current }
             | GridBuilderState::FirstCellFinished { start, current }
-            | GridBuilderState::Grids { start, current, .. } => Some(
-                Aabb::new_positive(na::Point2::from(*start), na::Point2::from(*current))
-                    .loosened(bounds_margin),
-            ),
+            | GridBuilderState::Grids { start, current, .. } => {
+                Some(Aabb::new_positive((*start).into(), (*current).into()).loosened(bounds_margin))
+            }
         }
     }
 

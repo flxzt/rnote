@@ -458,10 +458,13 @@ impl RnoteEngine {
     ///
     /// The store then needs to update its rendering.
     pub fn load_snapshot(&mut self, snapshot: EngineSnapshot) -> WidgetFlags {
-        self.document = snapshot.document;
-        self.store.import_from_snapshot(&snapshot);
+        let mut widget_flags = WidgetFlags::default();
 
-        self.current_pen_update_state()
+        self.document = snapshot.document;
+        widget_flags.merge(self.store.import_from_snapshot(&snapshot));
+        widget_flags.merge(self.current_pen_update_state());
+
+        widget_flags
     }
 
     /// Records the current store state and saves it as a history entry.
@@ -510,9 +513,12 @@ impl RnoteEngine {
 
     // Clears the entire store.
     pub fn clear(&mut self) -> WidgetFlags {
-        self.store.clear();
+        let mut widget_flags = WidgetFlags::default();
 
-        self.current_pen_update_state()
+        widget_flags.merge(self.store.clear());
+        widget_flags.merge(self.current_pen_update_state());
+
+        widget_flags
     }
 
     /// Handle a received task from tasks_rx.

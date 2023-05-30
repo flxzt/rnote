@@ -973,13 +973,27 @@ impl RnCanvas {
                     na::point![x,y]).coords;
 
                 if value.is::<gio::File>() {
-                    appwindow.open_file_w_dialogs(value.get::<gio::File>().unwrap(), Some(pos), true);
-
-                    return true;
+                    // In some scenarios, get() can fail with `UnexpectedNone` even though is() returned true, e.g. when dealing with trashed files.
+                    match value.get::<gio::File>() {
+                        Ok(file) => {
+                            appwindow.open_file_w_dialogs(file, Some(pos), true);
+                            return true;
+                        },
+                        Err(e) => {
+                            log::error!("failed to get dropped in file, Err: {e:?}");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Inserting file failed"));
+                        },
+                    };
                 } else if value.is::<String>() {
-                    if let Err(e) = canvas.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
-                        log::error!("failed to insert dropped in text, Err: {e:?}");
-                    }
+                    match canvas.load_in_text(value.get::<String>().unwrap(), Some(pos)) {
+                        Ok(_) => {
+                            return true;
+                        },
+                        Err(e) => {
+                            log::error!("failed to insert dropped in text, Err: {e:?}");
+                            appwindow.overlays().dispatch_toast_error(&gettext("Inserting text failed"));
+                        }
+                    };
                 }
 
                 false

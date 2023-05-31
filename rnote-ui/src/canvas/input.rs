@@ -29,13 +29,13 @@ pub(crate) fn handle_pointer_controller_event(
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
-    if reject_pointer_input(
+    if let Some(inhibit) = reject_pointer_input(
         event,
         state,
         input_source == canvas.pen_input_source(),
         touch_drawing,
     ) {
-        return (Inhibit(false), state);
+        return (inhibit, state);
     }
 
     let mut handle_pen_event = false;
@@ -279,27 +279,27 @@ fn debug_gdk_event(event: &gdk::Event) {
     );
 }
 
-/// Returns true if input should be rejected
+/// Returns Option<inhibit> if pointer input should be rejected
 fn reject_pointer_input(
     event: &gdk::Event,
     state: PenState,
     input_source_matches: bool,
     touch_drawing: bool,
-) -> bool {
+) -> Option<Inhibit> {
     // If pen is already down, reject events from other input sources
     if matches!(state, PenState::Down) && !input_source_matches {
-        return true;
+        return Some(Inhibit(true));
     }
     if touch_drawing {
         if event.device().unwrap().num_touches() > 1 {
-            return true;
+            return Some(Inhibit(false));
         }
     } else {
         if event.is_pointer_emulated() || event_is_touchscreen(event) {
-            return true;
+            return Some(Inhibit(false));
         }
     }
-    false
+    None
 }
 
 fn event_is_stylus(event: &gdk::Event) -> bool {

@@ -55,7 +55,7 @@ for loader in glob.glob(f"{msys_path}/mingw64/lib/gdk-pixbuf-2.0/2.10.0/loaders/
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
     )
 
-# Collect necessary GSchema Xml's and compile them into a `gschema.compiled`
+# Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)
 gschemas_dir = os.path.join(build_root, "gschemas")
 

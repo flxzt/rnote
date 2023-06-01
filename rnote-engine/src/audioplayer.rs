@@ -42,7 +42,7 @@ impl std::fmt::Debug for AudioPlayer {
 }
 
 impl AudioPlayer {
-    pub const BRUSH_SOUND_TIMEOUT: Duration = Duration::from_millis(1000);
+    pub const BRUSH_SOUND_TIMEOUT: Duration = Duration::from_millis(600);
     pub const N_SOUND_FILES_MARKER: usize = 15;
     pub const N_SOUND_FILES_TYPEWRITER: usize = 30;
     pub const SOUND_FILE_BRUSH_SEEK_TIMES_MS: [f64; 5] = [0., 910., 4129., 6000., 8560.];

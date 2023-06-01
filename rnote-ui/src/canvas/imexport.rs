@@ -234,7 +234,6 @@ impl RnCanvas {
     /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were executed,
     /// Err(e) when saving failed in any way.
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
-        let recovery_in_progress = || self.recovery_in_progress();
         // skip saving when it is already in progress
         if self.save_in_progress() {
             log::debug!("saving file already in progress");
@@ -282,7 +281,7 @@ impl RnCanvas {
 
         if let Err(e) = res {
             self.set_save_in_progress(false);
-            if recovery_in_progress() {
+            if self.recovery_in_progress() {
                 self.set_recovery_in_progress(false)
             }
 
@@ -298,7 +297,7 @@ impl RnCanvas {
             self.set_unsaved_changes(false);
         }
         self.set_save_in_progress(false);
-        if recovery_in_progress() {
+        if self.recovery_in_progress() {
             self.set_recovery_in_progress(false)
         }
 

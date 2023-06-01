@@ -544,12 +544,6 @@ impl Typewriter {
     /// The time for the cursor blink.
     const BLINK_TIME: Duration = Duration::from_millis(800);
 
-    fn start_audio(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
-        if let Some(audioplayer) = audioplayer {
-            audioplayer.play_typewriter_key_sound(keyboard_key);
-        }
-    }
-
     pub(crate) fn toggle_cursor_visibility(&mut self) {
         self.cursor_visible = !self.cursor_visible;
     }
@@ -865,5 +859,11 @@ impl Typewriter {
             }
         }
         self.cursor_visible = true;
+    }
+}
+
+fn play_sound(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
+    if let Some(audioplayer) = audioplayer {
+        audioplayer.play_typewriter_key_sound(keyboard_key);
     }
 }

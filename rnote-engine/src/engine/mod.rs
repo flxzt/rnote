@@ -607,7 +607,7 @@ impl RnoteEngine {
                 self.update_rendering_current_viewport();
             }
             EngineTask::Quit => {
-                widget_flags.merge(self.deinit_current_pen());
+                widget_flags.merge(self.set_active(false));
                 quit = true;
             }
         }
@@ -718,11 +718,17 @@ impl RnoteEngine {
             })
     }
 
-    /// Deinits the current pen.
-    ///
-    /// The pen must be reinitialized or reinstalled again to work as expected.
-    pub fn deinit_current_pen(&mut self) -> WidgetFlags {
-        self.penholder.deinit_current_pen()
+    /// Sets the engine active or inactive.
+    pub fn set_active(&mut self, active: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if active {
+            self.background_regenerate_pattern();
+            self.update_content_rendering_current_viewport();
+        } else {
+            self.clear_rendering();
+            widget_flags.merge(self.penholder.deinit_current_pen());
+        }
+        widget_flags
     }
 
     /// Generates bounds for each page on the document which contains content.

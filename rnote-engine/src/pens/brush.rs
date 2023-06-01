@@ -71,7 +71,7 @@ impl PenBehaviour for Brush {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
-                    self.start_audio(engine_view);
+                    self.trigger_sound(engine_view);
                     engine_view.pens_config.brush_config.new_style_seeds();
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
@@ -134,7 +134,6 @@ impl PenBehaviour for Brush {
                         .resize_autoexpand(engine_view.store, engine_view.camera),
                 );
 
-                self.stop_audio(engine_view);
                 self.state = BrushState::Idle;
 
                 widget_flags.merge(engine_view.store.record(Instant::now()));
@@ -209,7 +208,6 @@ impl PenBehaviour for Brush {
                                 .resize_autoexpand(engine_view.store, engine_view.camera),
                         );
 
-                        self.stop_audio(engine_view);
                         self.state = BrushState::Idle;
 
                         widget_flags.merge(engine_view.store.record(Instant::now()));
@@ -273,22 +271,16 @@ impl DrawOnDocBehaviour for Brush {
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
 
-    fn start_audio(&self, engine_view: &mut EngineViewMut) {
+    fn trigger_sound(&self, engine_view: &mut EngineViewMut) {
         if let Some(audioplayer) = engine_view.audioplayer {
             match engine_view.pens_config.brush_config.style {
                 BrushStyle::Marker => {
                     audioplayer.play_random_marker_sound();
                 }
                 BrushStyle::Solid | BrushStyle::Textured => {
-                    audioplayer.start_random_brush_sound();
+                    audioplayer.trigger_random_brush_sound();
                 }
             }
-        }
-    }
-
-    fn stop_audio(&self, engine_view: &mut EngineViewMut) {
-        if let Some(audioplayer) = engine_view.audioplayer {
-            audioplayer.stop_random_brush_sond();
         }
     }
 }

@@ -378,13 +378,12 @@ impl RnAppWindow {
             .map(|(found, _)| found)
     }
 
-    /// Clears the non-persistent state of all inactive_tabs.
+    /// sets all unselected tabs inactive.
     ///
-    /// Currently this clears the rendering and deinits the pen.
+    /// Currently this clears the rendering and deinits the current pen of the engine in the tabs.
     ///
-    /// To reinit the state when a tab becomes active, the rendering must be regenerated
-    /// and the current pen reinstalled.
-    pub(crate) fn clear_state_inactive_tabs(&self) {
+    /// To set a tab active again and reinit all necessary state, use `engine().borrow_mut().set_active(true)`.
+    pub(crate) fn set_unselected_tabs_inactive(&self) {
         for inactive_page in self
             .overlays()
             .tabview()
@@ -400,8 +399,8 @@ impl RnAppWindow {
                 .unwrap()
                 .canvas();
 
-            canvas.engine().borrow_mut().clear_rendering();
-            let _ = canvas.engine().borrow_mut().deinit_current_pen();
+            // no need to handle the widget flags, since the tabs become inactive
+            let _ = canvas.engine().borrow_mut().set_active(false);
         }
     }
 

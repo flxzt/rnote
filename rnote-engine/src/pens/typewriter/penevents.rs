@@ -408,7 +408,7 @@ impl Typewriter {
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
-                Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
+                super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
@@ -457,7 +457,7 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
+                        super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(ref mut textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
@@ -660,7 +660,7 @@ impl Typewriter {
                         selection_cursor,
                         finished,
                     } => {
-                        Self::start_audio(Some(keyboard_key), engine_view.audioplayer);
+                        super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
@@ -826,7 +826,7 @@ impl Typewriter {
         let pen_progress = match &mut self.state {
             TypewriterState::Idle => PenProgress::Idle,
             TypewriterState::Start(pos) => {
-                Self::start_audio(None, engine_view.audioplayer);
+                super::play_sound(None, engine_view.audioplayer);
 
                 text_style.ranged_text_attributes.clear();
                 if max_width_enabled {
@@ -866,7 +866,7 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Up | ModifyState::Hover(_) => {
-                        Self::start_audio(None, engine_view.audioplayer);
+                        super::play_sound(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(ref mut textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
@@ -907,7 +907,7 @@ impl Typewriter {
                         selection_cursor,
                         finished,
                     } => {
-                        Self::start_audio(None, engine_view.audioplayer);
+                        super::play_sound(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)

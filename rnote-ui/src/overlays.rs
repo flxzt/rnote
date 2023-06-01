@@ -341,7 +341,7 @@ impl RnOverlays {
             .connect_selected_page_notify(clone!(@weak self as overlays, @weak appwindow => move |_tabview| {
                 let active_tab_page = appwindow.active_tab_page();
                 let active_canvaswrapper = active_tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
-                appwindow.clear_state_inactive_tabs();
+                appwindow.set_unselected_tabs_inactive();
 
                 if let Some(prev_active_tab_page) = overlays.imp().prev_active_tab_page.borrow_mut().replace(active_tab_page.clone()){
                     if prev_active_tab_page != active_tab_page {
@@ -349,8 +349,8 @@ impl RnOverlays {
                     }
                 }
 
-                active_canvaswrapper.canvas().background_regenerate_pattern();
-                active_canvaswrapper.canvas().update_rendering_current_viewport();
+                let widget_flags = active_canvaswrapper.canvas().engine().borrow_mut().set_active(true);
+                appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
                 appwindow.refresh_ui_from_engine(&active_canvaswrapper);
             }));
 

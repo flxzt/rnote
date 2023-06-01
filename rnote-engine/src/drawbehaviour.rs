@@ -22,6 +22,7 @@ pub trait DrawBehaviour {
 pub trait DrawOnDocBehaviour {
     /// Bounds on the document.
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb>;
+
     /// Draw itself on the document.
     ///
     /// The implementors are expected to save/restore the drawing context.
@@ -43,25 +44,19 @@ pub trait DrawOnDocBehaviour {
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             let viewport = engine_view.camera.viewport();
-
-            // Restrict to viewport as maximum bounds. Else cairo will panic for very large bounds
+            // Restrict to viewport as maximum bounds, else cairo is very unperformant
+            // and will even crash for very large bounds
             let bounds = bounds.clamp(None, Some(viewport));
-            // Transform the bounds into surface coords
-            let mut bounds_transformed = bounds
+            let mut bounds_on_surface = bounds
                 .scale(engine_view.camera.total_zoom())
                 .translate(-engine_view.camera.offset())
                 .ceil();
+            bounds_on_surface.ensure_positive();
+            bounds_on_surface.assert_valid()?;
 
-            bounds_transformed.ensure_positive();
-            bounds_transformed.assert_valid()?;
-
-            let cairo_cx =
-                snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_transformed));
+            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_on_surface));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-            // Transform to document coordinate space
             piet_cx.transform(engine_view.camera.transform().to_kurbo());
-
             self.draw_on_doc(&mut piet_cx, engine_view)?;
         }
 

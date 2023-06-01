@@ -462,34 +462,32 @@ impl StrokeStore {
     ) {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
-        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
-            .iter()
-            .for_each(|&key| {
-                if let (Some(stroke), Some(render_comp)) = (
-                    self.stroke_components.get(key),
-                    self.render_components.get(key),
-                ) {
-                    // Draws a placeholder for the given stroke bounds
-                    if render_comp.rendernodes.is_empty() {
-                        snapshot.append_color(
-                            &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.564)),
-                            &graphene::Rect::from_p2d_aabb(stroke.bounds()),
-                        );
-                    }
-
-                    for rendernode in render_comp.rendernodes.iter() {
-                        snapshot.append_node(rendernode);
-                    }
+        for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
+            if let (Some(stroke), Some(render_comp)) = (
+                self.stroke_components.get(key),
+                self.render_components.get(key),
+            ) {
+                // if stroke currently does not have a rendering, draw a placeholder for the given stroke bounds
+                if render_comp.rendernodes.is_empty() {
+                    snapshot.append_color(
+                        &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.564)),
+                        &graphene::Rect::from_p2d_aabb(stroke.bounds()),
+                    );
                 }
-            });
+
+                for rendernode in render_comp.rendernodes.iter() {
+                    snapshot.append_node(rendernode);
+                }
+            }
+        }
 
         snapshot.pop();
     }
 
-    /// Draw the given strokes on a [piet::RenderContext].
+    /// Draw the strokes for the given keys on the [piet::RenderContext].
     ///
     /// This always draws all strokes for the given keys, even trashed ones.
-    pub fn draw_stroke_keys_to_piet(
+    pub fn draw_keys_immediate(
         &self,
         keys: &[StrokeKey],
         piet_cx: &mut impl piet::RenderContext,
@@ -504,68 +502,25 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Draw all strokes on the [piet::RenderContext].
+    /// Draw all strokes intersecting the viewport on the [piet::RenderContext].
     ///
-    /// Immediate, without any cached image.
-    pub fn draw_strokes_immediate_w_piet(
+    /// Immediate without any cached images.
+    pub fn draw_strokes_immediate(
         &self,
         piet_cx: &mut impl piet::RenderContext,
         _doc_bounds: Aabb,
         viewport: Aabb,
         image_scale: f64,
-    ) -> anyhow::Result<()> {
-        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
-            .into_iter()
-            .for_each(|key| {
-                if let Some(stroke) = self.stroke_components.get(key) {
-                    if let Err(e) = || -> anyhow::Result<()> {
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                        stroke
-                            .draw(piet_cx, image_scale)
-                            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                        Ok(())
-                    }() {
-                        log::error!(
-                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err: {e:?}"
-                        );
-                    }
+    ) {
+        for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
+            if let Some(stroke) = self.stroke_components.get(key) {
+                if let Err(e) = stroke.draw(piet_cx, image_scale) {
+                    log::error!(
+                        "drawing stroke in draw_strokes_immediate_w_piet() failed with Err: {e:?}"
+                    );
                 }
-            });
-
-        Ok(())
-    }
-
-    /// Draw the selection on the [piet::RenderContext].
-    ///
-    /// Immediate, without any cached image.
-    pub fn draw_selection_immediate_w_piet(
-        &self,
-        piet_cx: &mut impl piet::RenderContext,
-        _doc_bounds: Aabb,
-        viewport: Aabb,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        self.selection_keys_as_rendered_intersecting_bounds(viewport)
-            .into_iter()
-            .for_each(|key| {
-                if let Some(stroke) = self.stroke_components.get(key) {
-                    if let Err(e) = || -> anyhow::Result<()> {
-                        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                        stroke
-                            .draw(piet_cx, image_scale)
-                            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-                        Ok(())
-                    }() {
-                        log::error!(
-                            "drawing stroke in draw_selection_immediate_w_piet() failed with Err: {e:?}"
-                        );
-                    }
-                }
-            });
-
-        Ok(())
+            }
+        }
     }
 
     /// Draw bounds, positions, etc. for all strokes for visual debugging purposes.
@@ -577,7 +532,7 @@ impl StrokeStore {
     ) -> anyhow::Result<()> {
         let border_widths = 1.0 / engine.camera.total_zoom();
 
-        self.keys_sorted_chrono().into_iter().for_each(|key| {
+        for key in self.keys_sorted_chrono() {
             if let Some(stroke) = self.stroke_components.get(key) {
                 // Push opacity for strokes which are normally hidden
                 if let Some(trash_comp) = self.trash_components.get(key) {
@@ -653,7 +608,7 @@ impl StrokeStore {
                     }
                 }
             }
-        });
+        }
 
         Ok(())
     }

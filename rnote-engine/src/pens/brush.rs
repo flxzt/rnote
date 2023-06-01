@@ -71,7 +71,12 @@ impl PenBehaviour for Brush {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
-                    self.trigger_sound(engine_view);
+                    if engine_view.pens_config.brush_config.style == BrushStyle::Marker {
+                        play_marker_sound(engine_view);
+                    } else {
+                        trigger_brush_sound(engine_view);
+                    }
+
                     engine_view.pens_config.brush_config.new_style_seeds();
 
                     let brushstroke = Stroke::BrushStroke(BrushStroke::new(
@@ -149,8 +154,18 @@ impl PenBehaviour for Brush {
                 pen_event,
             ) => {
                 match path_builder.handle_event(pen_event, now, Constraints::default()) {
-                    PenPathBuilderProgress::InProgress => PenProgress::InProgress,
+                    PenPathBuilderProgress::InProgress => {
+                        if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
+                            trigger_brush_sound(engine_view);
+                        }
+
+                        PenProgress::InProgress
+                    }
                     PenPathBuilderProgress::EmitContinue(segments) => {
+                        if engine_view.pens_config.brush_config.style != BrushStyle::Marker {
+                            trigger_brush_sound(engine_view);
+                        }
+
                         let n_segments = segments.len();
 
                         if n_segments != 0 {
@@ -270,18 +285,17 @@ impl DrawOnDocBehaviour for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+}
 
-    fn trigger_sound(&self, engine_view: &mut EngineViewMut) {
-        if let Some(audioplayer) = engine_view.audioplayer {
-            match engine_view.pens_config.brush_config.style {
-                BrushStyle::Marker => {
-                    audioplayer.play_random_marker_sound();
-                }
-                BrushStyle::Solid | BrushStyle::Textured => {
-                    audioplayer.trigger_random_brush_sound();
-                }
-            }
-        }
+fn play_marker_sound(engine_view: &mut EngineViewMut) {
+    if let Some(audioplayer) = engine_view.audioplayer {
+        audioplayer.play_random_marker_sound();
+    }
+}
+
+fn trigger_brush_sound(engine_view: &mut EngineViewMut) {
+    if let Some(audioplayer) = engine_view.audioplayer.as_mut() {
+        audioplayer.trigger_random_brush_sound();
     }
 }
 

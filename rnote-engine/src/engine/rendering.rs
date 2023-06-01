@@ -105,9 +105,11 @@ impl RnoteEngine {
         snapshot.transform(Some(&camera_transform));
         self.store
             .draw_strokes_to_gtk_snapshot(snapshot, doc_bounds, viewport);
+        snapshot.restore();
         /*
-               let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(viewport));
+               let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
                let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+               piet_cx.transform(self.camera.transform().to_kurbo());
                self.store.draw_strokes_immediate(
                    &mut piet_cx,
                    doc_bounds,
@@ -115,7 +117,6 @@ impl RnoteEngine {
                    self.camera.image_scale(),
                );
         */
-        snapshot.restore();
         self.penholder.draw_on_doc_to_gtk_snapshot(
             snapshot,
             &EngineView {

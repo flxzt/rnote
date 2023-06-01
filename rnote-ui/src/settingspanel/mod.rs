@@ -21,8 +21,6 @@ use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
-
 mod imp {
     use super::*;
 
@@ -45,8 +43,6 @@ mod imp {
         pub(crate) general_recovery_interval_secs_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) general_recovery_interval_secs_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub(crate) general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
         pub(crate) general_show_scrollbars_switch: TemplateChild<Switch>,
         #[template_child]

@@ -104,20 +104,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_format_border_color_row">
-                        <property name="title" translatable="yes">Format Border Color</property>
-                        <property name="subtitle" translatable="yes">Set the format border color</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="general_show_scrollbars_switch">
-                            <property name="valign">center</property>
-                            <child>
-                              <object class="GtkColorButton" id="general_format_border_color_choosebutton"></object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwActionRow" id="general_show_scrollbars_row">
                         <property name="title" translatable="yes">Show Scrollbars</property>
                         <property name="subtitle" translatable="yes">Set whether the scrollbars on the canvas are shown</property>

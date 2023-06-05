@@ -245,8 +245,8 @@ impl ObjectImpl for RnAppWindow {
 
                 self.recovery_interval_secs.replace(recovery_interval_secs);
 
-                if self.autosave.get() {
-                    self.update_autosave_handler();
+                if self.recovery.get() {
+                    self.update_recovery_handler();
                 }
             }
             "righthanded" => {
@@ -342,12 +342,12 @@ impl RnAppWindow {
                         let tmp_file = canvas.get_or_generate_tmp_file();
                         appwindow.overlays().start_pulsing_progressbar();
                         canvas.set_recovery_in_progress(true);
-                        canvas.imp().output_file_cache.replace(canvas.imp().output_file.take());
+                        // canvas.imp().output_file_cache.replace(canvas.imp().output_file.take());
                         if let Err(e) = canvas.save_document_to_file(&tmp_file).await {
                             log::error!("saving document failed, Error: `{e:?}`");
                             appwindow.overlays().dispatch_toast_error(&gettext("Saving document failed"));
                         }
-                        canvas.imp().output_file.replace(canvas.imp().output_file_cache.take());
+                        // canvas.imp().output_file.replace(canvas.imp().output_file_cache.take());
                         canvas.set_recovery_in_progress(false);
                         appwindow.overlays().finish_progressbar();
                     }

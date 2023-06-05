@@ -46,6 +46,7 @@ pub(crate) struct Handlers {
 }
 
 mod imp {
+
     use super::*;
 
     #[derive(Debug)]
@@ -72,7 +73,9 @@ mod imp {
 
         pub(crate) recovery_in_progress: Cell<bool>,
         pub(crate) recovery_file: RefCell<Option<gio::File>>,
-        pub(crate) output_file_cache: RefCell<Option<gio::File>>,
+        // pub(crate) recovery_file_monitor: RefCell<Option<gio::FileMonitor>>,
+        pub(crate) recovery_file_metadata: RefCell<Option<RecoveryMetadata>>,
+        // pub(crate) output_file_cache: RefCell<Option<gio::File>>,
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_monitor: RefCell<Option<gio::FileMonitor>>,
         pub(crate) output_file_monitor_changed_handler: RefCell<Option<glib::SignalHandlerId>>,
@@ -168,7 +171,9 @@ mod imp {
 
                 recovery_in_progress: Cell::new(false),
                 recovery_file: RefCell::new(None),
-                output_file_cache: RefCell::new(None),
+                // recovery_file_monitor: RefCell::new(None),
+                recovery_file_metadata: RefCell::new(None),
+                // output_file_cache: RefCell::new(None),
                 output_file: RefCell::new(None),
                 output_file_monitor: RefCell::new(None),
                 output_file_monitor_changed_handler: RefCell::new(None),
@@ -595,35 +600,33 @@ impl RnCanvas {
         self.imp().recovery_file.replace(tmp_file);
     }
 
-    #[allow(unused)]
-    pub(crate) fn output_file_cache(&self) -> Option<gio::File> {
-        self.imp().recovery_file.borrow().clone()
-    }
-
-    #[allow(unused)]
-    pub(crate) fn set_output_file_cache(&self) -> Option<gio::File> {
-        self.imp().recovery_file.borrow().clone()
-    }
-
     pub(crate) fn get_or_generate_tmp_file(&self) -> gio::File {
-        // if !recovery {
-        // return None;
-        // }
         if self.imp().recovery_file.borrow().is_none() {
-            let mut path = std::path::PathBuf::from("/tmp/rnote-recovery/");
+            let imp = self.imp();
+            let mut rnote_path = dirs::data_dir().expect("Failed to get data dir");
+            rnote_path.push("rnote");
+            rnote_path.push("recovery");
+            if !rnote_path.exists() {
+                std::fs::create_dir_all(&rnote_path).expect("Failed to create directory")
+            };
             let time = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
+                .expect("Failed to get unix time")
                 .as_secs();
 
-            if !path.exists() {
-                std::fs::create_dir(&path).expect("Failed to create tmp dir");
+            if !rnote_path.exists() {
+                std::fs::create_dir(&rnote_path).expect("Failed to create tmp dir");
             }
-            let name = format!("draft-{time}.rnote");
-            path.push(name);
+            let name = format!("{time}.rnote");
+            rnote_path.push(name);
+            let mut metadata_path = rnote_path.clone();
             self.imp()
                 .recovery_file
-                .replace(Some(gio::File::for_path(path)));
+                .replace(Some(gio::File::for_path(&rnote_path)));
+
+            metadata_path.set_extension("json");
+            let metadata = RecoveryMetadata::new(metadata_path, rnote_path);
+            imp.recovery_file_metadata.replace(Some(metadata));
         }
         self.imp().recovery_file.borrow().as_ref().unwrap().clone()
     }
@@ -659,8 +662,8 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
-    pub(crate) fn set_recovery_in_progress(&self, save_in_progress: bool) {
-        self.imp().recovery_in_progress.set(save_in_progress);
+    pub(crate) fn set_recovery_in_progress(&self, recovery_in_progress: bool) {
+        self.imp().recovery_in_progress.set(recovery_in_progress);
     }
 
     #[allow(unused)]
@@ -850,32 +853,26 @@ impl RnCanvas {
     ///
     /// When there is no output-file, falls back to the "New document" string
     pub(crate) fn doc_title_display(&self) -> String {
-        match self.recovery_in_progress() {
-            true => self.output_file_cache(),
-            false => self.output_file(),
-        }
-        .map(|f| {
-            f.basename()
-                .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
-                .unwrap_or_else(|| gettext("- invalid file name -"))
-        })
-        .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
+        self.output_file()
+            .map(|f| {
+                f.basename()
+                    .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
+                    .unwrap_or_else(|| gettext("- invalid file name -"))
+            })
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
     }
 
     /// The document folder path for display. To get the actual path, use output-file
     ///
     /// When there is no output-file, falls back to the "Draft" string
     pub(crate) fn doc_folderpath_display(&self) -> String {
-        match self.recovery_in_progress() {
-            true => self.output_file_cache(),
-            false => self.output_file(),
-        }
-        .map(|f| {
-            f.parent()
-                .and_then(|p| Some(p.path()?.display().to_string()))
-                .unwrap_or_else(|| gettext("- invalid folder path -"))
-        })
-        .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+        self.output_file()
+            .map(|f| {
+                f.parent()
+                    .and_then(|p| Some(p.path()?.display().to_string()))
+                    .unwrap_or_else(|| gettext("- invalid folder path -"))
+            })
+            .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
     }
 
     pub(crate) fn create_output_file_monitor(&self, file: &gio::File, appwindow: &RnAppWindow) {

@@ -267,7 +267,7 @@ impl RnCanvas {
 
         // this **must** come before actually saving the file to disk,
         // else the event might not be caught by the monitor for new or changed files
-        if !skip_set_output_file {
+        if !skip_set_output_file && !self.recovery_in_progress() {
             self.set_output_file(Some(file.to_owned()));
         }
 

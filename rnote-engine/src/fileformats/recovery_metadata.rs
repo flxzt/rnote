@@ -7,7 +7,7 @@ use std::{cell::Cell, path::PathBuf};
 pub struct RecoveryMetadata {
     last_changed: Cell<u64>,
     rnote_path: PathBuf,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     metdata_path: PathBuf,
 }
 

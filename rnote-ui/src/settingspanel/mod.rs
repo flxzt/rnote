@@ -501,15 +501,6 @@ impl RnSettingsPanel {
             .sync_create()
             .build();
 
-        imp.general_autosave_interval_secs_spinbutton
-            .get()
-            .bind_property("value", appwindow, "autosave-interval-secs")
-            .transform_to(|_, val: f64| Some((val.round() as u32).to_value()))
-            .transform_from(|_, val: u32| Some(f64::from(val).to_value()))
-            .sync_create()
-            .bidirectional()
-            .build();
-
         imp.general_recovery_interval_secs_spinbutton
             .get()
             .bind_property("value", appwindow, "recovery-interval-secs")

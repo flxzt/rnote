@@ -5,6 +5,7 @@ mod input;
 
 // Re-exports
 pub(crate) use canvaslayout::RnCanvasLayout;
+use rnote_fileformats::recovery_metadata::RecoveryMetadata;
 
 // Imports
 use crate::{config, RnAppWindow};
@@ -46,6 +47,7 @@ pub(crate) struct Handlers {
 }
 
 mod imp {
+    use rnote_fileformats::recovery_metadata::RecoveryMetadata;
 
     use super::*;
 

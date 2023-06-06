@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-05-16 10:57+0200\n"
-"PO-Revision-Date: 2023-06-06 09:49+0000\n"
-"Last-Translator: Doublonmousse <e0949142@u.nus.edu>\n"
+"PO-Revision-Date: 2023-06-07 14:52+0000\n"
+"Last-Translator: Steph Ma <Stephma@pm.me>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -58,8 +58,6 @@ msgid "Lecture Note 1"
 msgstr "Note de cours 1"
 
 #: rnote-ui/data/app.metainfo.xml.in.in:45
-#, fuzzy
-#| msgid "A PDF annotation"
 msgid "A Pdf annotation"
 msgstr "Une annotation PDF"
 
@@ -210,8 +208,6 @@ msgstr ""
 "sauvegardées. Voulez-vous sauvegarder le document actuel ?"
 
 #: rnote-ui/data/ui/dialogs/import.ui:19
-#, fuzzy
-#| msgid "Import PDF"
 msgid "Import Pdf"
 msgstr "Importer PDF"
 
@@ -225,8 +221,6 @@ msgid "Info"
 msgstr "Info"
 
 #: rnote-ui/data/ui/dialogs/import.ui:91
-#, fuzzy
-#| msgid "PDF Import Preferences"
 msgid "Pdf Import Preferences"
 msgstr "Paramètres d’importation PDF"
 
@@ -243,12 +237,9 @@ msgid "Page Width (%)"
 msgstr "Largeur de page (%)"
 
 #: rnote-ui/data/ui/dialogs/import.ui:126
-#, fuzzy
-#| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr ""
-"Définir la largeur des PDF importés en pourcentage de la largeur du format "
-"de la page"
+"Définir la largeur des PDF importés en pourcentage de la largeur de la page"
 
 #: rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Page Spacing"
@@ -991,7 +982,6 @@ msgid "Draw With _Touch Input"
 msgstr "Dessiner avec la saisie _tactile"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-#, fuzzy
 msgid "Block Pinch to _Zoom"
 msgstr "Bloquer le _Zoom à deux doigts"
 
@@ -1475,7 +1465,7 @@ msgstr "Basculer vers \"Outils\""
 #, fuzzy
 #| msgid "Move View"
 msgid "View"
-msgstr "Déplacer la vue"
+msgstr "Voir"
 
 #: rnote-ui/data/ui/shortcuts.ui:97
 msgid "Alt + Drag"

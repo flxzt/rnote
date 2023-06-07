@@ -605,8 +605,10 @@ impl RnCanvas {
     pub(crate) fn get_or_generate_tmp_file(&self) -> gio::File {
         if self.imp().recovery_file.borrow().is_none() {
             let imp = self.imp();
-            let mut rnote_path = dirs::data_dir().expect("Failed to get data dir");
-            rnote_path.push("rnote");
+            let mut rnote_path = directories::ProjectDirs::from("com.gthub", "flxt", "rnote")
+                .expect("Failed to get ProjectDirs")
+                .data_dir()
+                .to_path_buf();
             rnote_path.push("recovery");
             if !rnote_path.exists() {
                 std::fs::create_dir_all(&rnote_path).expect("Failed to create directory")

@@ -18,4 +18,3 @@
 .toggletasks.json
 *.flatpak
 justfile
-rust-toolchain

@@ -1324,4 +1324,9 @@ impl RnCanvas {
         self.engine_mut().background_regenerate_pattern();
         self.queue_draw();
     }
+    pub(crate) fn update_recovery_file_metadata_last_changed(&self) {
+        if let Some(m) = self.imp().recovery_file_metadata.borrow().as_ref() {
+            m.update_last_changed()
+        }
+    }
 }

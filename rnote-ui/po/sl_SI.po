@@ -1,0 +1,2081 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the rnote package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rnote\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-16 10:57+0200\n"
+"PO-Revision-Date: 2023-06-07 23:56+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: sl_SI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100>=3 && "
+"n%100<=4 ? 2 : 3);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
+#: rnote-ui/src/dialogs/mod.rs:35
+msgid "Sketch and take handwritten notes"
+msgstr "Riši in delaj ročno pisane zapiske"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: rnote-ui/data/app.desktop.in.in:15
+msgid "Gnome;GTK;Office;Graphics;Notes;"
+msgstr "Gnome;GTK;Pisarna;Grafika;Zapiski;"
+
+#: rnote-ui/data/app.desktop.in.in:20
+msgid "New Window"
+msgstr "Novo okno"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:21
+msgid ""
+"Rnote is a vector-based drawing app for sketching, handwritten notes and to "
+"annotate documents and pictures."
+msgstr ""
+"Rnote je aplikacija za vektorsko risanje, ročno pisanje zapiskov ter pisanje "
+"po dokumentih in slikah."
+
+#: rnote-ui/data/app.metainfo.xml.in.in:25
+msgid ""
+"Disclaimer: The file format is still unstable. It might change and break "
+"compatibility between versions."
+msgstr ""
+"Opozorilo: Format datoteke je še vedno nestabilen. Lahko spremeni vsebino in "
+"pokvari združljivost med različicami."
+
+#: rnote-ui/data/app.metainfo.xml.in.in:35
+msgid "An Overview"
+msgstr "Pregled"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:40
+msgid "Lecture Note 1"
+msgstr "Opomba k predavanju 1"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:45
+msgid "A Pdf annotation"
+msgstr "Pdf komentar"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:50
+msgid "Lecture Note 2"
+msgstr "Opomba k predavanju 2"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:5 rnote-ui/data/ui/shortcuts.ui:173
+msgid "Clear Document"
+msgstr "Počisti dokument"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:6
+msgid "This clears the entire document. Please confirm."
+msgstr "To počisti celoten dokument. Prosim, potrdite."
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:10
+#: rnote-ui/data/ui/dialogs/dialogs.ui:22
+#: rnote-ui/data/ui/dialogs/dialogs.ui:39
+#: rnote-ui/data/ui/dialogs/dialogs.ui:56
+#: rnote-ui/data/ui/dialogs/dialogs.ui:68 rnote-ui/data/ui/dialogs/import.ui:10
+#: rnote-ui/data/ui/dialogs/import.ui:22 rnote-ui/data/ui/dialogs/import.ui:223
+#: rnote-ui/data/ui/dialogs/export.ui:10 rnote-ui/data/ui/dialogs/export.ui:136
+#: rnote-ui/data/ui/dialogs/export.ui:348
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:34
+msgid "Cancel"
+msgstr "Prekliči"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:11
+msgid "Clear"
+msgstr "Počisti"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:16 rnote-ui/data/ui/mainheader.ui:18
+#: rnote-ui/data/ui/shortcuts.ui:149 rnote-ui/src/canvas/mod.rs:534
+msgid "New Document"
+msgstr "Nov dokument"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:17
+msgid ""
+"Creating a new document will discard any unsaved changes.\n"
+"Do you want to save the current document?"
+msgstr ""
+"Ustvarjenje novega dokumenta bo zavrglo vse neshranjene spremembe.\n"
+"Ali želite shraniti trenutni dokument?"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:23
+#: rnote-ui/data/ui/dialogs/dialogs.ui:40 rnote-ui/data/ui/dialogs/import.ui:11
+msgid "Discard"
+msgstr "Zavrzi"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:24
+#: rnote-ui/data/ui/dialogs/dialogs.ui:41
+#: rnote-ui/data/ui/dialogs/dialogs.ui:58 rnote-ui/data/ui/dialogs/import.ui:12
+#: rnote-ui/src/dialogs/export.rs:30
+msgid "Save"
+msgstr "Shrani"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:29
+msgid "Close Tab"
+msgstr "Zapri zavihek"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:30
+msgid ""
+"This tab contains unsaved changes. Changes which are not saved will be "
+"permanently lost."
+msgstr ""
+"Ta zavihek vsebuje neshranjene spremembe. Spremembe, katere niso shranjene, "
+"bodo trajno izgubljene."
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:46
+msgid "Close Window"
+msgstr "Zapri okno"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:47
+msgid ""
+"Some opened files contain unsaved changes. Changes which are not saved will "
+"be permanently lost."
+msgstr ""
+"Nekatere odprte datoteke vsebujejo neshranjene spremembe. Spremembe, katere "
+"niso shranjene, bodo trajno izgubljene."
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:52
+msgid "Unsaved Documents"
+msgstr "Neshranjeni dokumenti"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:57
+msgid "Discard All"
+msgstr "Zavrzi vse"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:65
+msgid "Edit Workspace"
+msgstr "Uredi delovno okolje"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:73 rnote-ui/data/ui/settingspanel.ui:285
+#: rnote-ui/src/workspacebrowser/widgethelper.rs:39
+msgid "Apply"
+msgstr "Uporabi"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:115
+msgid "Workspace Name"
+msgstr "Ime delovnega okolja"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:120
+msgid "Icon"
+msgstr "Ikona"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:121
+msgid "Change the workspace icon"
+msgstr "Spremenite ikono delovnega okolja"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:141
+#: rnote-ui/data/ui/settingspanel.ui:301
+msgid "Color"
+msgstr "Barva"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:142
+msgid "Change the workspace color"
+msgstr "Spremenite barvo delovnega okolja"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:156
+msgid "Directory"
+msgstr "Imenik"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:157
+msgid "Change the workspace directory"
+msgstr "Spremenite imenik delovnega okolja"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:166
+#: rnote-ui/data/ui/dialogs/export.ui:223 rnote-ui/src/dialogs/export.rs:307
+#: rnote-ui/src/dialogs/export.rs:346 rnote-ui/src/dialogs/export.rs:354
+#: rnote-ui/src/dialogs/mod.rs:512
+msgid "- no directory selected -"
+msgstr "- imenik ni izbran -"
+
+#: rnote-ui/data/ui/dialogs/dialogs.ui:181
+msgid "Change the directory"
+msgstr "Spremenite imenik"
+
+#: rnote-ui/data/ui/dialogs/import.ui:5 rnote-ui/src/dialogs/import.rs:88
+msgid "Open File"
+msgstr "Odpri datoteko"
+
+#: rnote-ui/data/ui/dialogs/import.ui:6
+msgid ""
+"Opening this file overwrites any unsaved changes. Do you want to save the "
+"current document?"
+msgstr ""
+"Odpiranje te datoteke prepiše vse neshranjene spremembe. Ali želite shraniti "
+"trenutni dokument?"
+
+#: rnote-ui/data/ui/dialogs/import.ui:19
+msgid "Import Pdf"
+msgstr "Uvozi Pdf"
+
+#: rnote-ui/data/ui/dialogs/import.ui:27 rnote-ui/data/ui/dialogs/import.ui:228
+#: rnote-ui/src/dialogs/import.rs:126
+msgid "Import"
+msgstr "Uvozi"
+
+#: rnote-ui/data/ui/dialogs/import.ui:73
+msgid "Info"
+msgstr "Informacije"
+
+#: rnote-ui/data/ui/dialogs/import.ui:91
+msgid "Pdf Import Preferences"
+msgstr "Nastavitve Pdf uvažanja"
+
+#: rnote-ui/data/ui/dialogs/import.ui:95
+msgid "Start Page"
+msgstr "Prva stran"
+
+#: rnote-ui/data/ui/dialogs/import.ui:110
+msgid "End Page"
+msgstr "Zadnja stran"
+
+#: rnote-ui/data/ui/dialogs/import.ui:125
+msgid "Page Width (%)"
+msgstr "Širina strani (%)"
+
+#: rnote-ui/data/ui/dialogs/import.ui:126
+msgid "Set the width of imported Pdf's in percentage to the format width"
+msgstr "Nastavite širino uvoženih datotek Pdf v odstotkih na širino formata"
+
+#: rnote-ui/data/ui/dialogs/import.ui:146
+msgid "Page Spacing"
+msgstr "Razmik med stranmi"
+
+#: rnote-ui/data/ui/dialogs/import.ui:147
+msgid "How Pdf pages are spaced"
+msgstr "Kako so razmaknjene strani Pdf"
+
+#: rnote-ui/data/ui/dialogs/import.ui:151
+msgid "Continuous"
+msgstr "Neprekinjeno"
+
+#: rnote-ui/data/ui/dialogs/import.ui:152
+msgid "One per Document Page"
+msgstr "En na stran dokumenta"
+
+#: rnote-ui/data/ui/dialogs/import.ui:160
+msgid "Pages Type"
+msgstr "Tip strani"
+
+#: rnote-ui/data/ui/dialogs/import.ui:161
+msgid "Set whether Pdf's should be imported as vector or bitmap images"
+msgstr ""
+"Nastavite, ali naj se datoteke Pdf uvozijo kot vektorske ali bitne slike"
+
+#: rnote-ui/data/ui/dialogs/import.ui:173
+msgid "Vector"
+msgstr "Vektorska slika"
+
+#: rnote-ui/data/ui/dialogs/import.ui:180
+msgid "Bitmap"
+msgstr "Bitna slika"
+
+#: rnote-ui/data/ui/dialogs/import.ui:189
+#: rnote-ui/data/ui/dialogs/export.ui:293
+#: rnote-ui/data/ui/dialogs/export.ui:462
+msgid "Bitmap Scale-Factor"
+msgstr "Faktor skaliranja bitne slike"
+
+#: rnote-ui/data/ui/dialogs/import.ui:190
+#: rnote-ui/data/ui/dialogs/export.ui:294
+#: rnote-ui/data/ui/dialogs/export.ui:463
+msgid ""
+"Set the bitmap scale factor in relation\n"
+"to the actual size on the document"
+msgstr ""
+"Nastavi faktor bitne slike relativno\n"
+"dejanski velikosti na dokumentu"
+
+#: rnote-ui/data/ui/dialogs/import.ui:220
+msgid "Import Xournal++ File"
+msgstr "Uvozi Xournal++ datoteko"
+
+#: rnote-ui/data/ui/dialogs/import.ui:259
+msgid "Xournal++ File Import Preferences"
+msgstr "Nastavitve uvoza Xournal++ datoteke"
+
+#: rnote-ui/data/ui/dialogs/import.ui:263
+msgid "DPI"
+msgstr "DPI"
+
+#: rnote-ui/data/ui/dialogs/import.ui:264
+msgid "Set the preferred DPI for the Xournal++ file"
+msgstr "Nastavite želen DPI za datoteko Xournal++"
+
+#: rnote-ui/data/ui/dialogs/export.ui:7 rnote-ui/src/dialogs/export.rs:203
+msgid "Export Document"
+msgstr "Izvozi dokument"
+
+#: rnote-ui/data/ui/dialogs/export.ui:15 rnote-ui/data/ui/dialogs/export.ui:141
+#: rnote-ui/data/ui/dialogs/export.ui:353 rnote-ui/src/dialogs/export.rs:745
+#: rnote-ui/src/dialogs/export.rs:791
+msgid "Export"
+msgstr "Izvozi"
+
+#: rnote-ui/data/ui/dialogs/export.ui:49 rnote-ui/data/ui/dialogs/export.ui:387
+msgid "Export File"
+msgstr "Izvozi datoteko"
+
+#: rnote-ui/data/ui/dialogs/export.ui:50 rnote-ui/data/ui/dialogs/export.ui:388
+msgid "Select the export file"
+msgstr "Izberite datoteko za izvoz"
+
+#. force the user to pick another file
+#: rnote-ui/data/ui/dialogs/export.ui:59 rnote-ui/data/ui/dialogs/export.ui:397
+#: rnote-ui/src/dialogs/export.rs:102 rnote-ui/src/dialogs/export.rs:126
+#: rnote-ui/src/dialogs/export.rs:133 rnote-ui/src/dialogs/export.rs:157
+#: rnote-ui/src/dialogs/export.rs:564 rnote-ui/src/dialogs/export.rs:595
+#: rnote-ui/src/dialogs/export.rs:602 rnote-ui/src/dialogs/export.rs:632
+msgid "- no file selected -"
+msgstr "- nobena datoteka ni izbrana -"
+
+#: rnote-ui/data/ui/dialogs/export.ui:83 rnote-ui/data/ui/dialogs/export.ui:252
+#: rnote-ui/data/ui/dialogs/export.ui:421
+msgid "Export Preferences"
+msgstr "Nastavitve izvoza"
+
+#: rnote-ui/data/ui/dialogs/export.ui:87 rnote-ui/data/ui/dialogs/export.ui:256
+#: rnote-ui/data/ui/dialogs/export.ui:425
+msgid "With Background"
+msgstr "Z ozadjem"
+
+#: rnote-ui/data/ui/dialogs/export.ui:88 rnote-ui/data/ui/dialogs/export.ui:257
+#: rnote-ui/data/ui/dialogs/export.ui:426
+msgid "Set whether the background should be exported"
+msgstr "Izberite, ali se naj ozadje izvozi"
+
+#: rnote-ui/data/ui/dialogs/export.ui:98 rnote-ui/data/ui/dialogs/export.ui:267
+#: rnote-ui/data/ui/dialogs/export.ui:436
+msgid "With Pattern"
+msgstr "Z vzorcem"
+
+#: rnote-ui/data/ui/dialogs/export.ui:99 rnote-ui/data/ui/dialogs/export.ui:268
+#: rnote-ui/data/ui/dialogs/export.ui:437
+msgid "Set whether the background pattern should be exported"
+msgstr "Izberite, ali naj se ozadje izvozi z vzorcem"
+
+#: rnote-ui/data/ui/dialogs/export.ui:109
+#: rnote-ui/data/ui/dialogs/export.ui:278
+#: rnote-ui/data/ui/dialogs/export.ui:447
+msgid "Export Format"
+msgstr "Format izvoza"
+
+#: rnote-ui/data/ui/dialogs/export.ui:110
+#: rnote-ui/data/ui/dialogs/export.ui:279
+msgid "The export format"
+msgstr "Format izvoza"
+
+#: rnote-ui/data/ui/dialogs/export.ui:114
+#: rnote-ui/data/ui/dialogs/export.ui:283
+#: rnote-ui/data/ui/dialogs/export.ui:452 rnote-ui/src/dialogs/export.rs:213
+#: rnote-ui/src/dialogs/export.rs:479 rnote-ui/src/dialogs/export.rs:704
+msgid "Svg"
+msgstr "Svg"
+
+#: rnote-ui/data/ui/dialogs/export.ui:115 rnote-ui/src/dialogs/export.rs:218
+msgid "Pdf"
+msgstr "Pdf"
+
+#: rnote-ui/data/ui/dialogs/export.ui:116 rnote-ui/src/dialogs/export.rs:223
+msgid "Xopp"
+msgstr "Xopp"
+
+#: rnote-ui/data/ui/dialogs/export.ui:133 rnote-ui/src/dialogs/export.rs:457
+msgid "Export Document Pages"
+msgstr "Izvozi strani dokumenta"
+
+#: rnote-ui/data/ui/dialogs/export.ui:192
+msgid "Page Files Naming:"
+msgstr "Poimenovanje strani datotek:"
+
+#: rnote-ui/data/ui/dialogs/export.ui:213
+msgid "Export Directory"
+msgstr "Imenik izvoza"
+
+#: rnote-ui/data/ui/dialogs/export.ui:214
+msgid "Select the export directory"
+msgstr "Izberite imenik za izvoz"
+
+#: rnote-ui/data/ui/dialogs/export.ui:245
+msgid "Export Files Stem Name"
+msgstr ""
+
+#: rnote-ui/data/ui/dialogs/export.ui:284
+#: rnote-ui/data/ui/dialogs/export.ui:453 rnote-ui/src/dialogs/export.rs:484
+#: rnote-ui/src/dialogs/export.rs:709
+msgid "Png"
+msgstr "Png"
+
+#: rnote-ui/data/ui/dialogs/export.ui:285
+#: rnote-ui/data/ui/dialogs/export.ui:454 rnote-ui/src/dialogs/export.rs:490
+#: rnote-ui/src/dialogs/export.rs:715
+msgid "Jpeg"
+msgstr "Jpeg"
+
+#: rnote-ui/data/ui/dialogs/export.ui:315
+#: rnote-ui/data/ui/dialogs/export.ui:484
+msgid "Jpeg Quality"
+msgstr "Jpeg kvalitetno"
+
+#: rnote-ui/data/ui/dialogs/export.ui:316
+#: rnote-ui/data/ui/dialogs/export.ui:485
+msgid "Set the quality of the Jpeg image (1 - 100)"
+msgstr "Nastavite kvaliteto Jpeg slike (1 -100)"
+
+#: rnote-ui/data/ui/dialogs/export.ui:345 rnote-ui/src/dialogs/export.rs:690
+msgid "Export Selection"
+msgstr "Izbor izvoza"
+
+#: rnote-ui/data/ui/dialogs/export.ui:448
+msgid "The export image format"
+msgstr "Format izvoza slike"
+
+# Maby ("Zunanji rob")
+#: rnote-ui/data/ui/dialogs/export.ui:505
+msgid "Margin"
+msgstr "Rob"
+
+#: rnote-ui/data/ui/dialogs/export.ui:506
+msgid "Set the margin around the selected area"
+msgstr "Nastavite rob okoli izbranega območja"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:18
+msgid "Brush Style"
+msgstr "Slog čopiča"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:33
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:133
+msgid "Brush Configuration"
+msgstr "Konfiguracija čopiča"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:64
+msgid "Brush Styles"
+msgstr "Stil čopiča"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:81
+msgid "Marker"
+msgstr "Označevalnik"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:82
+msgid "Mark underneath other strokes"
+msgstr "Označite pod drugimi potezami"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:93
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+msgid "Solid"
+msgstr "Poln"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
+msgid "Draw solid color strokes"
+msgstr "Riši polne barvne poteze"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:105
+msgid "Textured"
+msgstr "S teksturo"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:106
+msgid "Draw textured strokes"
+msgstr "Riši poteze s teksturo"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:142
+msgid "Path Modelling"
+msgstr "Oblikovanje poti"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+msgid "Simple"
+msgstr "Preprosto"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+msgid "Produces line segments from the raw input.\n"
+msgstr "Naredi linijske odseke z surovega formata.\n"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:166
+msgid "Curved"
+msgstr "Ukrivljeno"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+msgid "Produces smooth, curved segments.\n"
+msgstr "Ustvarja gladke, ukrivljene odseke.\n"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:173
+msgid "Modeled"
+msgstr "Oblikovano"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid ""
+"Produces a modeled path with physics based algorithms.\n"
+"Results in the best looking handwriting."
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:183
+msgid "Solid Style"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:186
+msgid "Pressure Curve"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:187
+msgid "Choose a pressure curve"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
+msgid "Constant"
+msgstr "Konstanta"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:192
+msgid "Linear"
+msgstr "Linerano"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:193
+msgid "Square root"
+msgstr "Kvadratni koren"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:194
+msgid "Cubic root"
+msgstr "Kubični koren"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:195
+msgid "Quadratic Parabola"
+msgstr "Kvadratna parabola"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:196
+msgid "Cubic Parabola"
+msgstr "Kubična parabola"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:207
+msgid "Textured Style"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:210
+msgid "Density"
+msgstr "Gostota"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:211
+msgid "The density is the amount of dots per 10x10 area"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:226
+msgid "Stroke Dots Position Distribution"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:227
+msgid "Choose a dots position probability distribution"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:231
+msgid "Uniform"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:232
+msgid "Normal"
+msgstr "Normalno"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:233
+msgid "Exponential"
+msgstr "Eksponentno"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:234
+msgid "Reverse Exponential"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:21
+msgid "Trash Strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/eraserpage.ui:31
+msgid "Split Strokes"
+msgstr "Razdeli poteze"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
+#: rnote-ui/data/ui/overlays.ui:46
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:79
+msgid "Brush"
+msgstr "Čopič"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:33
+#: rnote-ui/data/ui/overlays.ui:56
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:80
+msgid "Shaper"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:49
+#: rnote-ui/data/ui/overlays.ui:67
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:81
+msgid "Typewriter"
+msgstr "Pisalni stroj"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:65
+#: rnote-ui/data/ui/overlays.ui:78
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:82
+msgid "Eraser"
+msgstr "Radirka"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:81
+#: rnote-ui/data/ui/overlays.ui:89
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:83
+msgid "Selector"
+msgstr "Izbirnik"
+
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:97
+#: rnote-ui/data/ui/overlays.ui:100
+#: rnote-ui/src/settingspanel/penshortcutmodels.rs:84
+msgid "Tools"
+msgstr "Orodja"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:22
+msgid "Select With a Polygon"
+msgstr "Izberite s pomočjo poligona"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:32
+msgid "Select With a Rectangle"
+msgstr "Izberite s pomočjo pravokotnika"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:42
+msgid "Select One by One"
+msgstr "Izberite enega po enega"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:52
+msgid "Select Intersecting Path"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:73
+msgid "Lock Aspectratio While Resizing the Selection"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
+msgid "Select All Strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:94
+msgid "Deselect All Strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+#: rnote-ui/data/ui/shortcuts.ui:212
+msgid "Duplicate Selection"
+msgstr "Podvojite izbiro"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:116
+msgid "Delete Selection"
+msgstr "Izbrišite izbiro"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:18
+msgid "Shaper Style"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:31
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:154
+msgid "Shape Configuration"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:61
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:225
+msgid "Shape Builders"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:77
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+msgid "Constraints"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:99
+msgid "Shaper Styles"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:116
+msgid "Smooth"
+msgstr "Gladko"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:127
+msgid "Rough"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+msgid "Rough style"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:168
+msgid "Fill Style"
+msgstr "Zapilnite stil"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+msgid "Choose a fill style"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+msgid "Hachure"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+msgid "Zig-Zag"
+msgstr "Cik-cak"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:176
+msgid "Zig-Zag Line"
+msgstr "Cik-cak črta"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:177
+msgid "Crosshatch"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: rnote-ui/data/ui/settingspanel.ui:330
+msgid "Dots"
+msgstr "S pikami"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+msgid "Dashed"
+msgstr "S črticami"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+msgid "Hachure Angle"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
+msgid "Set the angle of hachure fills"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:270
+msgid "Enabled"
+msgstr "Omogoči"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:271
+msgid ""
+"Hold Ctrl to temporarily\n"
+"enable/disable constraints\n"
+"when this switch is off/on"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:283
+msgid "1:1"
+msgstr "1:1"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:293
+msgid "3:2"
+msgstr "3:2"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:303
+msgid "Golden Ratio (1:1.618)"
+msgstr "Zlati rez (1:1.618)"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:19
+msgid "Insert Vertical Space"
+msgstr "Vstavi vertikalni prostor"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:29
+#: rnote-ui/data/ui/shortcuts.ui:96
+msgid "Move View"
+msgstr "Premakni pogled"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:43
+msgid "Pick And Insert Emoji"
+msgstr "Izberite in vstavite emoji"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
+msgid "Reset Text Attributes"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
+msgid "Bold"
+msgstr "Odebeljeno"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:86
+msgid "Italic"
+msgstr "Poševno"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:95
+msgid "Underline"
+msgstr "Podčrtano"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:104
+msgid "Strikethrough"
+msgstr "Prečrtano"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:126
+msgid "Align Left"
+msgstr "Leva poravnava"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:133
+msgid "Align Center"
+msgstr "Sredinska poravnava"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:140
+msgid "Align Right"
+msgstr "Desna poravnava"
+
+#: rnote-ui/data/ui/penssidebar/typewriterpage.ui:147
+msgid "Fill"
+msgstr "Zapolni"
+
+#: rnote-ui/data/ui/appmenu.ui:24
+msgid "Co_lor Scheme"
+msgstr "_Barvna shema"
+
+#: rnote-ui/data/ui/appmenu.ui:26
+msgid "Use _System Colors"
+msgstr "Uporabi _sistemske barve"
+
+#: rnote-ui/data/ui/appmenu.ui:31
+msgid "Use _Light Colors"
+msgstr "Uporabi s_vetle barve"
+
+#: rnote-ui/data/ui/appmenu.ui:36
+msgid "Use _Dark Colors"
+msgstr "Uporabi _temne barve"
+
+#: rnote-ui/data/ui/appmenu.ui:42
+msgid "De_veloper Mode"
+msgstr "N_ačin razvijalca"
+
+#: rnote-ui/data/ui/appmenu.ui:47
+msgid "Developer _Menu"
+msgstr "_Meni razvijalca"
+
+#: rnote-ui/data/ui/appmenu.ui:52
+msgid "Visual _Debugging"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:56
+msgid "Export Engine _State"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:60
+msgid "Export Engine _Config"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:68
+msgid "_New"
+msgstr "_Novo"
+
+#: rnote-ui/data/ui/appmenu.ui:72
+msgid "_Open"
+msgstr "_Odpri"
+
+#: rnote-ui/data/ui/appmenu.ui:76
+msgid "_Save"
+msgstr "_Shrani"
+
+#: rnote-ui/data/ui/appmenu.ui:80
+msgid "Save _As"
+msgstr "Shrani _kot"
+
+#: rnote-ui/data/ui/appmenu.ui:86
+msgid "_Print"
+msgstr "Na_tisni"
+
+#: rnote-ui/data/ui/appmenu.ui:90
+msgid "_Import File"
+msgstr "_Uvozi datoteko"
+
+#: rnote-ui/data/ui/appmenu.ui:94
+msgid "_Clipboard"
+msgstr "O_dložišče"
+
+#: rnote-ui/data/ui/appmenu.ui:96
+msgid "_Copy"
+msgstr "_Kopiraj"
+
+#: rnote-ui/data/ui/appmenu.ui:100
+msgid "C_ut"
+msgstr "_Izreži"
+
+#: rnote-ui/data/ui/appmenu.ui:104
+msgid "_Paste"
+msgstr "_Prilepi"
+
+#: rnote-ui/data/ui/appmenu.ui:109
+msgid "_Export…"
+msgstr "I_zvozi…"
+
+#: rnote-ui/data/ui/appmenu.ui:111
+msgid "Export _Document"
+msgstr "I_zvozi dokument"
+
+#: rnote-ui/data/ui/appmenu.ui:115
+msgid "Export Document _Pages"
+msgstr "Izvozi s_trani dokumenta"
+
+#: rnote-ui/data/ui/appmenu.ui:119
+msgid "Export _Selection"
+msgstr "Izvozi _Izbor"
+
+#: rnote-ui/data/ui/appmenu.ui:126
+msgid "Se_ttings"
+msgstr "N_astavitve"
+
+#: rnote-ui/data/ui/appmenu.ui:130
+msgid "_Keyboard Shortcuts"
+msgstr "_Bližnice tipkovnice"
+
+#: rnote-ui/data/ui/appmenu.ui:134
+msgid "_Donate 💝"
+msgstr "_Donirajte 💝"
+
+#: rnote-ui/data/ui/appmenu.ui:138
+msgid "A_bout Rnote"
+msgstr "_O Rnote"
+
+#: rnote-ui/data/ui/appmenu.ui:169
+msgid "Sidebar on the Left Side"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:178
+msgid "Sidebar on the Right Side"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:188 rnote-ui/data/ui/shortcuts.ui:44
+msgid "Toggle Fullscreen"
+msgstr ""
+
+#: rnote-ui/data/ui/appwindow.ui:109
+msgid "Close the Folded Flap"
+msgstr ""
+
+#: rnote-ui/data/ui/appwindow.ui:126
+msgid "Workspace"
+msgstr "Delovni prostor"
+
+#: rnote-ui/data/ui/appwindow.ui:137
+msgid "Settings"
+msgstr "Nastavitve"
+
+#: rnote-ui/data/ui/canvasmenu.ui:24
+msgid "_Document Layout"
+msgstr "_Postavitev dokumenta"
+
+#: rnote-ui/data/ui/canvasmenu.ui:27
+msgid "_Fixed Size"
+msgstr "_Fiksna velikost"
+
+#: rnote-ui/data/ui/canvasmenu.ui:32
+msgid "_Continuous Vertical"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:37
+msgid "_Semi Infinite"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:42
+msgid "_Infinite"
+msgstr "_Neskončno"
+
+#: rnote-ui/data/ui/canvasmenu.ui:49
+msgid "Show _Format Borders"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:54
+msgid "Draw With _Touch Input"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:59
+msgid "Block Pinch to _Zoom"
+msgstr ""
+
+#: rnote-ui/data/ui/canvasmenu.ui:64
+msgid "_Pen Sounds"
+msgstr "_Zvok pisala"
+
+#: rnote-ui/data/ui/canvasmenu.ui:71
+msgid "C_lear Document"
+msgstr "_Sprazni dokument"
+
+#: rnote-ui/data/ui/canvasmenu.ui:75
+msgid "_Return to Origin Page"
+msgstr "_Vrnitev na izvorno stran"
+
+#: rnote-ui/data/ui/canvasmenu.ui:105 rnote-ui/data/ui/shortcuts.ui:120
+#: rnote-ui/data/ui/shortcuts.ui:126 rnote-ui/data/ui/shortcuts.ui:132
+msgid "Zoom out"
+msgstr "Oddalji"
+
+#: rnote-ui/data/ui/canvasmenu.ui:114
+msgid "Reset Zoom"
+msgstr "Ponastavi približevanje"
+
+#: rnote-ui/data/ui/canvasmenu.ui:121 rnote-ui/data/ui/shortcuts.ui:102
+#: rnote-ui/data/ui/shortcuts.ui:108 rnote-ui/data/ui/shortcuts.ui:114
+msgid "Zoom in"
+msgstr "Približaj"
+
+#: rnote-ui/data/ui/canvasmenu.ui:133
+msgid "Zoom to Page Width"
+msgstr "Povečaj na širino strani"
+
+#: rnote-ui/data/ui/canvasmenu.ui:148
+msgid "Remove Page"
+msgstr "Odstrani stran"
+
+#: rnote-ui/data/ui/canvasmenu.ui:156
+msgid "Add Page"
+msgstr "Dodaj stran"
+
+#: rnote-ui/data/ui/canvasmenu.ui:164
+msgid "Resize Document to Fit Strokes"
+msgstr ""
+
+#: rnote-ui/data/ui/colorpicker.ui:19
+msgid "Stroke Color"
+msgstr "Barva poteze"
+
+#: rnote-ui/data/ui/colorpicker.ui:26
+msgid "Fill Color"
+msgstr "Zapolni barvo"
+
+#: rnote-ui/data/ui/filerow.ui:58 rnote-ui/src/dialogs/import.rs:90
+msgid "Open"
+msgstr "Odpri"
+
+#: rnote-ui/data/ui/filerow.ui:62
+#: rnote-ui/src/workspacebrowser/filerow/actions/rename.rs:56
+msgid "Rename"
+msgstr "Preimenuj"
+
+#: rnote-ui/data/ui/filerow.ui:66
+msgid "Move to Trash"
+msgstr "Premakni v smeti"
+
+#: rnote-ui/data/ui/filerow.ui:70
+msgid "Duplicate"
+msgstr "Podvoji"
+
+#: rnote-ui/data/ui/mainheader.ui:19 rnote-ui/src/canvas/mod.rs:536
+msgid "Draft"
+msgstr "Osnutek"
+
+#: rnote-ui/data/ui/mainheader.ui:39 rnote-ui/data/ui/mainheader.ui:73
+msgid "Reveal/Hide Flap"
+msgstr ""
+
+#: rnote-ui/data/ui/mainheader.ui:46
+msgid "New Tab"
+msgstr "Nov zavihek"
+
+#: rnote-ui/data/ui/mainheader.ui:53
+msgid "Focus Mode"
+msgstr "Način fokusiranja"
+
+#: rnote-ui/data/ui/mainheader.ui:65 rnote-ui/data/ui/shortcuts.ui:161
+msgid "Save Document"
+msgstr "Shrani dokument"
+
+#: rnote-ui/data/ui/overlays.ui:123 rnote-ui/data/ui/shortcuts.ui:218
+msgid "Undo"
+msgstr "Razveljavi"
+
+#: rnote-ui/data/ui/overlays.ui:134 rnote-ui/data/ui/shortcuts.ui:224
+msgid "Redo"
+msgstr "Ponovi"
+
+#: rnote-ui/data/ui/overlays.ui:205
+msgid "Move _Left"
+msgstr "Premakni _levo"
+
+#: rnote-ui/data/ui/overlays.ui:209
+msgid "Move _Right"
+msgstr "Premakni _desno"
+
+#: rnote-ui/data/ui/overlays.ui:215
+msgid "_Close"
+msgstr "_Zapri"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:11
+msgid "Temporary"
+msgstr "Začasno"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:12
+msgid "Permanent"
+msgstr "Trajno"
+
+#: rnote-ui/data/ui/penshortcutrow.ui:13
+msgid "Toggle"
+msgstr "Preklopi"
+
+#: rnote-ui/data/ui/settingspanel.ui:41 rnote-ui/data/ui/shortcuts.ui:11
+msgid "General"
+msgstr "Splošno"
+
+#: rnote-ui/data/ui/settingspanel.ui:44
+msgid "Autosave"
+msgstr "Samodejno shranjevanje"
+
+#: rnote-ui/data/ui/settingspanel.ui:45
+msgid "Enable or disable autosave"
+msgstr "Omogoči ali onemogoči samodejno shranjevanje"
+
+#: rnote-ui/data/ui/settingspanel.ui:55
+msgid "Autosave Interval (secs)"
+msgstr "Interval samodejnega shranjevanja (sekunde)"
+
+#: rnote-ui/data/ui/settingspanel.ui:56
+msgid "Set the autosave interval in seconds"
+msgstr "Nastavite interval samodejnega shranjevanja v sekundah"
+
+#: rnote-ui/data/ui/settingspanel.ui:76
+msgid "Format Border Color"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:77
+msgid "Set the format border color"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:97
+msgid "Show Scrollbars"
+msgstr "Prikaži drsnike"
+
+#: rnote-ui/data/ui/settingspanel.ui:98
+msgid "Set whether the scrollbars on the canvas are shown"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:108
+msgid "Regular Cursor"
+msgstr "Privzeta kazalka"
+
+#: rnote-ui/data/ui/settingspanel.ui:109
+msgid "Set the regular cursor"
+msgstr "Nastavite privzeto kazalko"
+
+#: rnote-ui/data/ui/settingspanel.ui:131
+msgid "Show Drawing Cursor"
+msgstr "Prikaži kazalko risanja"
+
+#: rnote-ui/data/ui/settingspanel.ui:132
+msgid "Set whether the drawing cursor is visible"
+msgstr "Nastavite, ali je kazalka risanja vidna"
+
+#: rnote-ui/data/ui/settingspanel.ui:146
+msgid "Drawing Cursor"
+msgstr "Kazalka risanja"
+
+#: rnote-ui/data/ui/settingspanel.ui:147
+msgid "Set the drawing cursor"
+msgstr "Nastavite kazalko risanja"
+
+#: rnote-ui/data/ui/settingspanel.ui:172
+msgid "Page Format"
+msgstr "Format strani"
+
+#: rnote-ui/data/ui/settingspanel.ui:175
+msgid "Format"
+msgstr "Format"
+
+#: rnote-ui/data/ui/settingspanel.ui:176
+msgid "Choose a format"
+msgstr "Izberite format"
+
+#: rnote-ui/data/ui/settingspanel.ui:180
+msgid "A6"
+msgstr "A6"
+
+#: rnote-ui/data/ui/settingspanel.ui:181
+msgid "A5"
+msgstr "A5"
+
+#: rnote-ui/data/ui/settingspanel.ui:182
+msgid "A4"
+msgstr "A4"
+
+#: rnote-ui/data/ui/settingspanel.ui:183
+msgid "A3"
+msgstr "A3"
+
+#: rnote-ui/data/ui/settingspanel.ui:184
+msgid "A2"
+msgstr "A2"
+
+#: rnote-ui/data/ui/settingspanel.ui:185
+msgid "US letter"
+msgstr "US letter"
+
+#: rnote-ui/data/ui/settingspanel.ui:186
+msgid "US legal"
+msgstr "US legal"
+
+#: rnote-ui/data/ui/settingspanel.ui:187
+msgid "Custom"
+msgstr "Po meri"
+
+#: rnote-ui/data/ui/settingspanel.ui:195
+msgid "Orientation"
+msgstr "Postavitev"
+
+#: rnote-ui/data/ui/settingspanel.ui:196
+msgid "Set the format orientation"
+msgstr "Nastavite postavitev formata"
+
+#: rnote-ui/data/ui/settingspanel.ui:208
+msgid "Portrait"
+msgstr "Pokončno"
+
+#: rnote-ui/data/ui/settingspanel.ui:214
+msgid "Landscape"
+msgstr "Ležeče"
+
+#: rnote-ui/data/ui/settingspanel.ui:224
+msgid "Width"
+msgstr "Širina"
+
+#: rnote-ui/data/ui/settingspanel.ui:225
+msgid "Set the format width"
+msgstr "Nastavite širino formata"
+
+#: rnote-ui/data/ui/settingspanel.ui:238
+msgid "Height"
+msgstr "Višina"
+
+#: rnote-ui/data/ui/settingspanel.ui:239
+msgid "Set the format height"
+msgstr "Nastavite višino formata"
+
+#: rnote-ui/data/ui/settingspanel.ui:252
+msgid "Dpi"
+msgstr "Dpi"
+
+#: rnote-ui/data/ui/settingspanel.ui:253
+msgid "Set the Dpi (dots per inch). Defaults to 96."
+msgstr "Nastavite Dpi (število pik na inch). Privzeto je 96."
+
+#: rnote-ui/data/ui/settingspanel.ui:276
+msgid "Revert"
+msgstr "Povrni"
+
+#: rnote-ui/data/ui/settingspanel.ui:298
+msgid "Document Background"
+msgstr "Ozadje dokumenta"
+
+#: rnote-ui/data/ui/settingspanel.ui:302
+msgid "Set the background color"
+msgstr "Nastavite barvo ozadja"
+
+#: rnote-ui/data/ui/settingspanel.ui:322
+msgid "Pattern"
+msgstr "Vzorec"
+
+#: rnote-ui/data/ui/settingspanel.ui:323
+msgid "Choose a background pattern"
+msgstr "Izberite vzorec ozadja"
+
+#: rnote-ui/data/ui/settingspanel.ui:327
+msgid "None"
+msgstr "Nič"
+
+#: rnote-ui/data/ui/settingspanel.ui:328
+msgid "Lines"
+msgstr "Črte"
+
+#: rnote-ui/data/ui/settingspanel.ui:329
+#: rnote-ui/src/penssidebar/shaperpage.rs:388
+msgid "Grid"
+msgstr "Mreža"
+
+#: rnote-ui/data/ui/settingspanel.ui:331
+msgid "Isometric Grid"
+msgstr "Izometrična mreža"
+
+#: rnote-ui/data/ui/settingspanel.ui:332
+msgid "Isometric Dots"
+msgstr "Izometrične pike"
+
+#: rnote-ui/data/ui/settingspanel.ui:340
+msgid "Pattern Color"
+msgstr "Barva vzorca"
+
+#: rnote-ui/data/ui/settingspanel.ui:341
+msgid "Set the background pattern color"
+msgstr "Nastavite barvo vzorca ozadja"
+
+#: rnote-ui/data/ui/settingspanel.ui:361
+msgid "Pattern Width"
+msgstr "Širina vzorca"
+
+#: rnote-ui/data/ui/settingspanel.ui:362
+msgid "Set the background pattern width"
+msgstr "Nastavite širino vzorca ozadja"
+
+#: rnote-ui/data/ui/settingspanel.ui:375
+msgid "Pattern Height"
+msgstr "Višina vzorca"
+
+#: rnote-ui/data/ui/settingspanel.ui:376
+msgid "Set the background pattern height"
+msgstr "Nastavite višino vzorca ozadja"
+
+#: rnote-ui/data/ui/settingspanel.ui:392
+msgid "Button Shortcuts"
+msgstr "Bližnjice gumbov"
+
+#: rnote-ui/data/ui/settingspanel.ui:395
+msgid "Stylus Primary Button Action"
+msgstr "Dejanje primarnega gumba pisala (stylus)"
+
+#: rnote-ui/data/ui/settingspanel.ui:396
+msgid ""
+"Set the action for the\n"
+"primary stylus button"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:408
+msgid "Stylus Secondary Button Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:409
+msgid ""
+"Set the action for the\n"
+"secondary stylus button"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:421
+msgid "Mouse Secondary Button Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:422
+msgid ""
+"Set the action for the\n"
+"secondary mouse button"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:434
+msgid "Touch Two-Finger Long-Press Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:435
+msgid ""
+"Set the action for the touch\n"
+"two-finger long-press gesture"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:447
+msgid "Drawing Pad Button 1 Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:448
+msgid ""
+"Set the action for button 1\n"
+"on a drawing pad"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:460
+msgid "Drawing Pad Button 2 Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:461
+msgid ""
+"Set the action for button 2\n"
+"on a drawing pad"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:473
+msgid "Drawing Pad Button 3 Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:474
+msgid ""
+"Set the action for button 3\n"
+"on a drawing pad"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:486
+msgid "Drawing Pad Button 4 Action"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:487
+msgid ""
+"Set the action for button 4\n"
+"on a drawing pad"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:14
+msgid "Show Keyboard Shortcuts"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:20
+msgid "Close the Active Tab"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:26
+msgid "Quit the Application"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:32
+msgid "Open the Canvas-Menu"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:38
+msgid "Open the App-Menu"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:52
+msgid "Navigation"
+msgstr "Navigacija"
+
+#: rnote-ui/data/ui/shortcuts.ui:55
+msgid "Switch to the 'Brush'"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:61
+msgid "Switch to the 'Shaper'"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:67
+msgid "Switch to the 'Typewriter'"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:73
+msgid "Switch to the 'Eraser'"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:79
+msgid "Switch to the 'Selector'"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:85
+msgid "Switch to the 'Tools'"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:93
+msgid "View"
+msgstr "Pogled"
+
+#: rnote-ui/data/ui/shortcuts.ui:97
+msgid "Alt + Drag"
+msgstr "Alt + povlecite"
+
+#: rnote-ui/data/ui/shortcuts.ui:138
+msgid "Zoom in/out"
+msgstr "Povečava/pomanjšava"
+
+#: rnote-ui/data/ui/shortcuts.ui:139
+msgid "Alt + Shift + Drag"
+msgstr "Alt + Shift + premik"
+
+#: rnote-ui/data/ui/shortcuts.ui:146 rnote-ui/src/dialogs/mod.rs:613
+msgid "Document"
+msgstr "Dokument"
+
+#: rnote-ui/data/ui/shortcuts.ui:155
+msgid "Open Document"
+msgstr "Odpri dokument"
+
+#: rnote-ui/data/ui/shortcuts.ui:167 rnote-ui/src/dialogs/export.rs:28
+msgid "Save Document As"
+msgstr "Shrani dokument kot"
+
+#: rnote-ui/data/ui/shortcuts.ui:179
+msgid "Print Document"
+msgstr "Natisni dokument"
+
+#: rnote-ui/data/ui/shortcuts.ui:185 rnote-ui/src/dialogs/import.rs:124
+msgid "Import File"
+msgstr "Uvozi datoteko"
+
+#: rnote-ui/data/ui/shortcuts.ui:191
+msgid "Drawing"
+msgstr ""
+
+#: rnote-ui/data/ui/shortcuts.ui:194
+msgid "Copy to Clipboard"
+msgstr "Kopiraj v odložišče"
+
+#: rnote-ui/data/ui/shortcuts.ui:200
+msgid "Cut to Clipboard"
+msgstr "Izreži v odložišče"
+
+#: rnote-ui/data/ui/shortcuts.ui:206
+msgid "Paste Clipboard"
+msgstr "Prilepi odložišče"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:64
+msgid "Move Directory up"
+msgstr "Pojdi imenik navzgor"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:81
+msgid "Workspace Directory Actions"
+msgstr ""
+
+#: rnote-ui/data/ui/workspacebrowser.ui:161
+msgid "Create new Folder"
+msgstr "Ustvari novo mapo"
+
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:54
+msgid "Move Selected Workspace Up"
+msgstr ""
+
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:63
+msgid "Move Selected Workspace Down"
+msgstr ""
+
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:72
+msgid "Add Workspace"
+msgstr "Dodaj delovno okolje"
+
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:81
+msgid "Remove Selected Workspace"
+msgstr "Odstrani izbrano delovno okolje"
+
+#: rnote-ui/data/ui/workspacesbar/workspacesbar.ui:91
+msgid "Edit Selected Workspace"
+msgstr "Uredi izbrano delovno okolje"
+
+#: rnote-ui/src/appwindow/mod.rs:506
+msgid "Opening .rnote file failed"
+msgstr "Odpiranje .rnote datoteke je spodletelo"
+
+#: rnote-ui/src/appwindow/mod.rs:517
+msgid "Opening vector image file failed"
+msgstr "Odpiranje vektorske slike je spodletelo"
+
+#: rnote-ui/src/appwindow/mod.rs:528
+msgid "Opening bitmap image file failed"
+msgstr "Odpiranje bitne slike je spodletelo"
+
+#: rnote-ui/src/appwindow/mod.rs:539 rnote-ui/src/dialogs/import.rs:364
+msgid "Opening Xournal++ file failed"
+msgstr "Odpiranje Xournal++ datoteke je spodletelo"
+
+#: rnote-ui/src/appwindow/mod.rs:550 rnote-ui/src/dialogs/import.rs:305
+msgid "Opening Pdf file failed"
+msgstr "Odpiranje Pdf datoteke spodletelo"
+
+#: rnote-ui/src/appwindow/mod.rs:559
+msgid "Failed to open file, tried to open folder as file"
+msgstr "Spodletelo odpiranje datoteke, poskušanje odpiranja mape kot datoteko"
+
+#: rnote-ui/src/appwindow/mod.rs:564
+msgid "Failed to open file, unsupported file type"
+msgstr ""
+
+#: rnote-ui/src/appwindow/imp.rs:275
+#: rnote-ui/src/appwindow/appwindowactions.rs:611
+#: rnote-ui/src/dialogs/export.rs:65 rnote-ui/src/dialogs/import.rs:54
+#: rnote-ui/src/dialogs/mod.rs:144 rnote-ui/src/dialogs/mod.rs:250
+#: rnote-ui/src/dialogs/mod.rs:390
+msgid "Saving document failed"
+msgstr "Shranjevanje dokumenta je spodletelo"
+
+#: rnote-ui/src/appwindow/imp.rs:491
+msgid "Button 1"
+msgstr "Gumb 1"
+
+#: rnote-ui/src/appwindow/imp.rs:498
+msgid "Button 2"
+msgstr "Gumb 2"
+
+#: rnote-ui/src/appwindow/imp.rs:505
+msgid "Button 3"
+msgstr "Gumb 3"
+
+#: rnote-ui/src/appwindow/imp.rs:512
+msgid "Button 4"
+msgstr "Gumb 4"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:734
+msgid "Printing document failed"
+msgstr "Tiskanje dokumenta je spodletelo"
+
+#: rnote-ui/src/appwindow/appwindowactions.rs:769
+msgid "Exporting selection failed, nothing selected"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:750
+msgid "- invalid file name -"
+msgstr "- neveljavno ime datoteke -"
+
+#: rnote-ui/src/canvas/mod.rs:763
+msgid "- invalid folder path -"
+msgstr "- neveljavno ime poti mape -"
+
+#: rnote-ui/src/canvas/mod.rs:787
+msgid "Opened file was modified on disk"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:788
+msgid "Reload"
+msgstr "Znova naloži"
+
+#: rnote-ui/src/canvas/mod.rs:794
+msgid "Reloading .rnote file from disk failed"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:843
+msgid "Opened file was renamed on disk"
+msgstr ""
+
+#: rnote-ui/src/canvas/mod.rs:856
+msgid "Opened file was moved or deleted on disk"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:25 rnote-ui/src/dialogs/import.rs:85
+msgid ".rnote"
+msgstr ".rnote"
+
+#: rnote-ui/src/dialogs/export.rs:54
+msgid "Saved document successfully"
+msgstr "Uspešno shranjen dokument"
+
+#: rnote-ui/src/dialogs/export.rs:177
+msgid "Exporting document failed"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:179
+msgid "Exported document successfully"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:185
+msgid "Exporting document failed, no file selected"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:205 rnote-ui/src/dialogs/export.rs:459
+#: rnote-ui/src/dialogs/export.rs:692 rnote-ui/src/dialogs/mod.rs:494
+msgid "Select"
+msgstr "Izberi"
+
+#: rnote-ui/src/dialogs/export.rs:431
+msgid "Exporting document pages failed"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:433
+msgid "Exported document pages successfully"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:439
+msgid "Exporting document pages failed, no directory selected"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:664
+msgid "Exporting selection failed"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:666
+msgid "Exported selection successfully"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:672
+msgid "Exporting selection failed, no file selected"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:735 rnote-ui/src/dialogs/export.rs:781
+msgid "Json"
+msgstr "Json"
+
+#: rnote-ui/src/dialogs/export.rs:743
+msgid "Export Engine State"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:762
+msgid "Exporting engine state failed"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:766
+msgid "Exported engine state successfully"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:789
+msgid "Export Engine Config"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:808
+msgid "Exporting engine config failed"
+msgstr ""
+
+#: rnote-ui/src/dialogs/export.rs:812
+msgid "Exported engine config successfully"
+msgstr ""
+
+#: rnote-ui/src/dialogs/import.rs:37
+msgid "Opening file failed"
+msgstr ""
+
+#: rnote-ui/src/dialogs/import.rs:121
+msgid "Jpg, Pdf, Png, Svg, Xopp"
+msgstr "Jpg, Pdf, Png, Svg, Xopp"
+
+#: rnote-ui/src/dialogs/import.rs:241
+msgid "- no file name -"
+msgstr "- brez imena datoteke -"
+
+#: rnote-ui/src/dialogs/import.rs:246
+msgid "- no title -"
+msgstr "- brez naslova -"
+
+#: rnote-ui/src/dialogs/import.rs:249
+msgid "- no author -"
+msgstr "- brez avtorja -"
+
+#: rnote-ui/src/dialogs/import.rs:253
+msgid "- no date -"
+msgstr "- brez datuma -"
+
+#: rnote-ui/src/dialogs/import.rs:260
+msgid "File name:"
+msgstr "Ime datoteke:"
+
+#: rnote-ui/src/dialogs/import.rs:264
+msgid "Title:"
+msgstr "Naslov:"
+
+#: rnote-ui/src/dialogs/import.rs:268
+msgid "Author:"
+msgstr "Avtor:"
+
+#: rnote-ui/src/dialogs/import.rs:272
+msgid "Modification date:"
+msgstr "Datum spremembe:"
+
+#: rnote-ui/src/dialogs/import.rs:276
+msgid "Pages:"
+msgstr "Strani:"
+
+#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+#: rnote-ui/src/dialogs/mod.rs:47
+msgid "translator-credits"
+msgstr "Aleks Marinič"
+
+#: rnote-ui/src/dialogs/mod.rs:218 rnote-ui/src/dialogs/mod.rs:336
+msgid "- unable to find a valid save folder -"
+msgstr "- nemogoče najti veljavno mapo za shranjevanje -"
+
+#: rnote-ui/src/dialogs/mod.rs:492
+msgid "Change Workspace Directory"
+msgstr "Spremeni imenik delovnega okolja"
+
+#: rnote-ui/src/dialogs/mod.rs:600
+msgid "Band-Aid"
+msgstr "Obliž"
+
+#: rnote-ui/src/dialogs/mod.rs:601
+msgid "Bank"
+msgstr "Banka"
+
+#: rnote-ui/src/dialogs/mod.rs:602
+msgid "Bookmark"
+msgstr "Zaznamek"
+
+#: rnote-ui/src/dialogs/mod.rs:603
+msgid "Book"
+msgstr "Knjiga"
+
+#: rnote-ui/src/dialogs/mod.rs:604
+msgid "Bread"
+msgstr "Kruh"
+
+#: rnote-ui/src/dialogs/mod.rs:605
+msgid "Calendar"
+msgstr "Koledar"
+
+#: rnote-ui/src/dialogs/mod.rs:606
+msgid "Camera"
+msgstr "Kamera"
+
+#: rnote-ui/src/dialogs/mod.rs:607
+msgctxt "as in computer chip"
+msgid "Chip"
+msgstr "Čip"
+
+#: rnote-ui/src/dialogs/mod.rs:608
+msgid "Clock"
+msgstr "ura"
+
+#: rnote-ui/src/dialogs/mod.rs:609
+msgid "Code"
+msgstr "Koda"
+
+#: rnote-ui/src/dialogs/mod.rs:610
+msgid "Compose"
+msgstr "Sestavljanje"
+
+#: rnote-ui/src/dialogs/mod.rs:611
+msgctxt "as in plant"
+msgid "Crop"
+msgstr "Sadika"
+
+#: rnote-ui/src/dialogs/mod.rs:612
+msgid "Dictionary"
+msgstr "Slovar"
+
+#: rnote-ui/src/dialogs/mod.rs:614
+msgid "Drinks"
+msgstr "Pijače"
+
+#: rnote-ui/src/dialogs/mod.rs:615
+msgid "Flag"
+msgstr "Zastava"
+
+#: rnote-ui/src/dialogs/mod.rs:616
+msgid "Folder"
+msgstr "Mapa"
+
+#: rnote-ui/src/dialogs/mod.rs:617
+msgid "Footprints"
+msgstr "Sledi"
+
+#: rnote-ui/src/dialogs/mod.rs:618
+msgid "Gamepad"
+msgstr "Igralni plošček"
+
+#: rnote-ui/src/dialogs/mod.rs:619
+msgid "Gear"
+msgstr "Orodje"
+
+#: rnote-ui/src/dialogs/mod.rs:620
+msgid "Globe"
+msgstr "Globus"
+
+#: rnote-ui/src/dialogs/mod.rs:621
+msgid "Hammer"
+msgstr "Kladivo"
+
+#: rnote-ui/src/dialogs/mod.rs:622
+msgid "Heart"
+msgstr "Srce"
+
+#: rnote-ui/src/dialogs/mod.rs:623
+msgid "Hourglass"
+msgstr "Peščena ura"
+
+#: rnote-ui/src/dialogs/mod.rs:624
+msgid "Key"
+msgstr "Ključ"
+
+#: rnote-ui/src/dialogs/mod.rs:625
+msgid "Language"
+msgstr "Jezik"
+
+#: rnote-ui/src/dialogs/mod.rs:626
+msgid "Library"
+msgstr "Knjižnica"
+
+#: rnote-ui/src/dialogs/mod.rs:627
+msgid "Lightbulb"
+msgstr "Žarnica"
+
+#: rnote-ui/src/dialogs/mod.rs:628
+msgid "Mathematics"
+msgstr "Matematika"
+
+#: rnote-ui/src/dialogs/mod.rs:629
+msgid "Meeting"
+msgstr "Sestanek"
+
+#: rnote-ui/src/dialogs/mod.rs:630
+msgid "Money"
+msgstr "Denar"
+
+#: rnote-ui/src/dialogs/mod.rs:631
+msgid "Musical Note"
+msgstr "Glasbena nota"
+
+#: rnote-ui/src/dialogs/mod.rs:632
+msgid "Nature"
+msgstr "Narava"
+
+#: rnote-ui/src/dialogs/mod.rs:633
+msgid "Open Book"
+msgstr "Odprta knjiga"
+
+#: rnote-ui/src/dialogs/mod.rs:634
+msgid "Paintbrush"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:635
+msgid "Pencil and Paper"
+msgstr "Svinčnik in papir"
+
+#: rnote-ui/src/dialogs/mod.rs:636
+msgid "People"
+msgstr "Ljudje"
+
+#: rnote-ui/src/dialogs/mod.rs:637
+msgid "Person"
+msgstr "Oseba"
+
+#: rnote-ui/src/dialogs/mod.rs:638
+msgid "Projector"
+msgstr "Projektor"
+
+#: rnote-ui/src/dialogs/mod.rs:639
+msgid "Science"
+msgstr "Znanost"
+
+#: rnote-ui/src/dialogs/mod.rs:640
+msgid "Scratchpad"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:641
+msgid "Shapes"
+msgstr "Oblike"
+
+#: rnote-ui/src/dialogs/mod.rs:642
+msgid "Shopping"
+msgstr "Nakupovanje"
+
+#: rnote-ui/src/dialogs/mod.rs:643
+msgid "Speech Bubble"
+msgstr "Govorni mehurček"
+
+#: rnote-ui/src/dialogs/mod.rs:644
+msgid "Speedometer"
+msgstr ""
+
+#: rnote-ui/src/dialogs/mod.rs:645
+msgid "Star"
+msgstr "Zvezda"
+
+#: rnote-ui/src/dialogs/mod.rs:647
+msgctxt "as in terminal software"
+msgid "Terminal"
+msgstr "Terminal"
+
+#: rnote-ui/src/dialogs/mod.rs:649
+msgid "Text"
+msgstr "Besedilo"
+
+#: rnote-ui/src/dialogs/mod.rs:650
+msgid "Travel"
+msgstr "Potovanje"
+
+#: rnote-ui/src/dialogs/mod.rs:651
+msgid "Weather"
+msgstr "Vreme"
+
+#: rnote-ui/src/dialogs/mod.rs:652
+msgid "Weight"
+msgstr "Teža"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:348
+msgid "Miscellaneous"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:357
+msgid "Coordinate Systems"
+msgstr "Koordinatni sistem"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:365
+msgid "Ellipses"
+msgstr "Elipse"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:372
+msgid "Curves"
+msgstr "Krivulje"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:385
+msgid "Arrow"
+msgstr "Puščica"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:386
+msgid "Line"
+msgstr "Črta"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:387
+msgid "Rectangle"
+msgstr "Pravokotnik"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:389
+msgid "2D coordinate system"
+msgstr "2D koordinatni sistem"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:390
+msgid "3D coordinate system"
+msgstr "3D koordinatni sistem"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:391
+msgid "2D single quadrant coordinate system"
+msgstr "2D koordinatni sitem z enim kvadrantom"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:392
+msgid "Ellipse"
+msgstr "Elipsa"
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:393
+msgid "Ellipse with foci"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:394
+msgid "Quadratic bezier curve"
+msgstr ""
+
+#: rnote-ui/src/penssidebar/shaperpage.rs:395
+msgid "Cubic bezier curve"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:779
+msgid "Crosshair (Small)"
+msgstr "Križ (majhen)"
+
+#: rnote-ui/src/settingspanel/mod.rs:780
+msgid "Crosshair (Medium)"
+msgstr "Križ (srednja velikost)"
+
+#: rnote-ui/src/settingspanel/mod.rs:781
+msgid "Crosshair (Large)"
+msgstr "Križ (velik)"
+
+#: rnote-ui/src/settingspanel/mod.rs:782
+msgid "Dot (Small)"
+msgstr "Pika (majhna)"
+
+#: rnote-ui/src/settingspanel/mod.rs:783
+msgid "Dot (Medium)"
+msgstr "Pika (srednja velikost)"
+
+#: rnote-ui/src/settingspanel/mod.rs:784
+msgid "Dot (Large)"
+msgstr "Pika (velika)"
+
+#: rnote-ui/src/settingspanel/mod.rs:785
+msgid "Teardrop North-West (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:786
+msgid "Teardrop North-West (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:787
+msgid "Teardrop North-West (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:788
+msgid "Teardrop North-East (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:789
+msgid "Teardrop North-East (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:790
+msgid "Teardrop North-East (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:791
+msgid "Teardrop North (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:792
+msgid "Teardrop North (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:793
+msgid "Teardrop North (Large)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:794
+msgid "Beam (Small)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:795
+msgid "Beam (Medium)"
+msgstr ""
+
+#: rnote-ui/src/settingspanel/mod.rs:796
+msgid "Beam (Large)"
+msgstr ""
+
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:56
+msgid "Folder Name"
+msgstr "Ime mape"
+
+#: rnote-ui/src/workspacebrowser/workspaceactions/createfolder.rs:64
+msgid "New Folder"
+msgstr "Nova mapa"

@@ -16,8 +16,6 @@ mod imp {
         #[template_child]
         pub(crate) main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
-        pub(crate) main_title_unsaved_recovery_indicator: TemplateChild<Label>,
-        #[template_child]
         pub(crate) left_flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) right_flapreveal_toggle: TemplateChild<ToggleButton>,
@@ -81,10 +79,6 @@ impl RnMainHeader {
 
     pub(crate) fn main_title_unsaved_indicator(&self) -> Label {
         self.imp().main_title_unsaved_indicator.get()
-    }
-
-    pub(crate) fn main_title_unsaved_recovery_indicator(&self) -> Label {
-        self.imp().main_title_unsaved_recovery_indicator.get()
     }
 
     pub(crate) fn left_flapreveal_toggle(&self) -> ToggleButton {

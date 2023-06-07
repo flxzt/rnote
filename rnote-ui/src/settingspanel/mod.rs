@@ -9,7 +9,7 @@ use crate::{RnAppWindow, RnCanvasWrapper, RnIconPicker, RnUnitEntry};
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
-    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
+    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorDialogButton,
     CompositeTemplate, MenuButton, ScrolledWindow, SpinButton, StringList, Switch, ToggleButton,
     Widget,
 };
@@ -37,6 +37,8 @@ mod imp {
         pub(crate) general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
+        pub(crate) general_recovery_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
         pub(crate) general_recovery_enable_switch: TemplateChild<Switch>,
         #[template_child]
@@ -771,6 +773,10 @@ impl RnSettingsPanel {
             .set_value_in_px(revert_format.width);
         imp.format_height_unitentry
             .set_value_in_px(revert_format.height);
+    }
+
+    pub(crate) fn general_recovery_unsaved_indicator(&self) -> Label {
+        self.imp().general_recovery_unsaved_indicator.get()
     }
 }
 

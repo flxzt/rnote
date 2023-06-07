@@ -76,6 +76,10 @@
                         <property name="title" translatable="yes">Recovery</property>
                         <property name="subtitle" translatable="yes">Enable or disable document recovery</property>
                         <child type="suffix">
+                          <object class="GtkLabel" id="general_recovery_unsaved_indicator">
+                            <property name="label">•</property>
+                            <property name="visible">false</property>
+                          </object>
                           <object class="GtkSwitch" id="general_recovery_enable_switch">
                             <property name="valign">center</property>
                           </object>

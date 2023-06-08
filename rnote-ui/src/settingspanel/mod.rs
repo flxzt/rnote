@@ -20,7 +20,6 @@ use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
-use std::rc::Rc;
 
 mod imp {
     use super::*;
@@ -28,7 +27,7 @@ mod imp {
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub(crate) struct RnSettingsPanel {
-        pub(crate) temporary_format: Rc<RefCell<Format>>,
+        pub(crate) temporary_format: RefCell<Format>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -557,7 +556,6 @@ impl RnSettingsPanel {
 
     fn setup_format(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let temporary_format = imp.temporary_format.clone();
 
         // revert format
         imp.format_revert_button.get().connect_clicked(
@@ -568,12 +566,12 @@ impl RnSettingsPanel {
 
         // Apply format
         imp.format_apply_button.get().connect_clicked(
-            clone!(@weak temporary_format, @weak self as settingspanel, @weak appwindow => move |_| {
+            clone!(@weak self as settingspanel, @weak appwindow => move |_| {
                 let imp = settingspanel.imp();
-                let temporary_format = *temporary_format.borrow();
+                let temporary_format = imp.temporary_format.borrow();
                 let canvas = appwindow.active_tab().canvas();
 
-                canvas.engine().borrow_mut().document.format = temporary_format;
+                canvas.engine().borrow_mut().document.format = temporary_format.clone();
                 let widget_flags = canvas.engine().borrow_mut().doc_resize_to_fit_strokes();
                 canvas.update_rendering_current_viewport();
                 appwindow.handle_widget_flags(widget_flags, &canvas);

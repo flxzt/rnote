@@ -133,13 +133,13 @@ impl Document {
     /// Generate bounds for each page for the doc bounds, extended to fit the format.
     ///
     /// May contain many empty pages (in infinite mode)
-    pub fn pages_bounds(&self) -> Vec<Aabb> {
+    pub fn pages_bounds(&self, split_direction: SplitDirection) -> Vec<Aabb> {
         let doc_bounds = self.bounds();
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
             doc_bounds.split_extended_origin_aligned(
                 na::vector![self.format.width, self.format.height],
-                SplitDirection::default(),
+                split_direction,
             )
         } else {
             vec![]

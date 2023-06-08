@@ -808,8 +808,8 @@ impl RnoteEngine {
     }
 
     /// Generates bounds which contain all pages on the doc with content, extended to fit the current format.
-    pub fn bounds_w_content_extended(&self, split_direction: SplitDirection) -> Option<Aabb> {
-        let pages_bounds = self.pages_bounds_w_content(split_direction);
+    pub fn bounds_w_content_extended(&self) -> Option<Aabb> {
+        let pages_bounds = self.pages_bounds_w_content(SplitDirection::default());
 
         if pages_bounds.is_empty() {
             return None;

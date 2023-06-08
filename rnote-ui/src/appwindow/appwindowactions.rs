@@ -354,7 +354,7 @@ impl RnAppWindow {
                 // If there is only one tab left, request to close the entire window.
                 appwindow.close();
             } else {
-                appwindow.overlays().tabview().close_page(&active_tab_page);
+                appwindow.close_tab_request(&active_tab_page);
             }
         }));
 

@@ -230,7 +230,7 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
             let doc_title = doc_title.clone();
             match response {
                 "discard" => {
-                    appwindow.overlays().tabview().close_page_finish(&tab_page, true);
+                    appwindow.close_tab_finish(&tab_page, true);
                 },
                 "save" => {
                     glib::MainContext::default().spawn_local(clone!(@weak tab_page, @weak canvas, @weak appwindow => async move {
@@ -250,18 +250,12 @@ pub(crate) fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::TabPage)
                             // No success toast on saving without dialog, success is already indicated in the header title
                         }
                         // only close if saving was successful
-                        appwindow
-                            .overlays()
-                            .tabview()
-                            .close_page_finish(
-                                &tab_page,
-                                !canvas.unsaved_changes()
-                            );
+                        appwindow.close_tab_finish(&tab_page, !canvas.unsaved_changes());
                     }));
                 },
                 _ => {
                 // Cancel
-                    appwindow.overlays().tabview().close_page_finish(&tab_page, false);
+                    appwindow.close_tab_finish(&tab_page, false);
                 }
             }
         }),

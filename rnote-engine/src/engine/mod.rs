@@ -718,7 +718,7 @@ impl RnoteEngine {
             })
     }
 
-    /// Sets the engine active or inactive.
+    /// Set the engine active or inactive.
     pub fn set_active(&mut self, active: bool) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if active {
@@ -731,7 +731,7 @@ impl RnoteEngine {
         widget_flags
     }
 
-    /// Generates bounds for each page on the document which contains content.
+    /// Generate bounds for each page on the document which contains content.
     pub fn pages_bounds_w_content(&self) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();
         let keys = self.store.stroke_keys_as_rendered();

@@ -319,7 +319,7 @@ impl RnWorkspacesBar {
 
         workspace_listbox.bind_model(
             Some(&self.imp().workspace_list),
-            clone!(@strong appwindow => move |obj| {
+            clone!(@weak appwindow => @default-panic, move |obj| {
                 let entry = obj.to_owned().downcast::<RnWorkspaceListEntry>().unwrap();
                 let workspacerow = RnWorkspaceRow::new(&entry);
                 workspacerow.init(&appwindow);

@@ -440,8 +440,8 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     }));
 
     dir_button.connect_clicked(
-        clone!(@strong preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
-            glib::MainContext::default().spawn_local(clone!(@strong preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
+        clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
+            glib::MainContext::default().spawn_local(clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
                 dialog.hide();
 
                 let filedialog = FileDialog::builder()
@@ -477,24 +477,28 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
         }),
     );
 
-    dialog.connect_response(
-        clone!(@weak preview_row, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    // update the actual selected entry
-                    appwindow.workspacebrowser().workspacesbar().replace_selected_workspacelistentry(preview_row.entry());
-                    // refreshing the files list
-                    appwindow.workspacebrowser().refresh_dirlist_selected_workspace();
-                    // And save the state
-                    appwindow.workspacebrowser().workspacesbar().save_to_settings(&appwindow.app_settings());
-                }
-                _ => {}
-            }
-
-            dialog.close();
-        }));
-
-    dialog.present();
+    match dialog.run_future().await {
+        ResponseType::Apply => {
+            // update the actual selected entry
+            appwindow
+                .workspacebrowser()
+                .workspacesbar()
+                .replace_selected_workspacelistentry(preview_row.entry());
+            // refreshing the files list
+            appwindow
+                .workspacebrowser()
+                .refresh_dirlist_selected_workspace();
+            // And save the state
+            appwindow
+                .workspacebrowser()
+                .workspacesbar()
+                .save_to_settings(&appwindow.app_settings());
+        }
+        _ => {
+            // Cancel
+        }
+    }
+    dialog.close();
 }
 
 const WORKSPACELISTENTRY_ICONS_LIST: &[&str] = &[

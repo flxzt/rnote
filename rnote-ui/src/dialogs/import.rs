@@ -134,7 +134,7 @@ pub(crate) async fn filedialog_import_file(appwindow: &RnAppWindow) {
     }
 }
 
-pub(crate) fn dialog_import_pdf_w_prefs(
+pub(crate) async fn dialog_import_pdf_w_prefs(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
@@ -280,45 +280,37 @@ pub(crate) fn dialog_import_pdf_w_prefs(
         pdf_page_end_spinbutton.set_value(n_pages.into());
     }
 
-    dialog.connect_response(
-        clone!(@weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    dialog.close();
+    match dialog.run_future().await {
+        ResponseType::Apply => {
+            appwindow.overlays().start_pulsing_progressbar();
 
-                    let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
-
-                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak canvas, @weak appwindow => async move {
-                        appwindow.overlays().start_pulsing_progressbar();
-
-                        let result = input_file.load_bytes_future().await;
-
-                        if let Ok((file_bytes, _)) = result {
-                            if let Err(e) = canvas.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Pdf file failed"));
-                                log::error!(
-                                    "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
-                                );
-                            }
-                        }
-
-                        appwindow.overlays().finish_progressbar();
-                    }));
-                }
-                ResponseType::Cancel => {
-                    dialog.close();
-                }
-                _ => {
-                    dialog.close();
+            let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)
+                ..pdf_page_end_spinbutton.value() as u32;
+            let result = input_file.load_bytes_future().await;
+            if let Ok((file_bytes, _)) = result {
+                if let Err(e) = canvas
+                    .load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range))
+                    .await
+                {
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Opening Pdf file failed"));
+                    log::error!(
+                        "load_in_rnote_bytes() failed in dialog import pdf with Err: {e:?}"
+                    );
                 }
             }
-        }),
-    );
 
-    dialog.present();
+            appwindow.overlays().finish_progressbar();
+        }
+        _ => {
+            // Cancel
+        }
+    }
+    dialog.close();
 }
 
-pub(crate) fn dialog_import_xopp_w_prefs(
+pub(crate) async fn dialog_import_xopp_w_prefs(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
@@ -341,38 +333,27 @@ pub(crate) fn dialog_import_xopp_w_prefs(
         canvas.engine().borrow_mut().import_prefs.xopp_import_prefs.dpi = spinbutton.value();
     }));
 
-    dialog.connect_response(
-        clone!(@weak canvas, @weak appwindow => move |dialog, responsetype| {
-            match responsetype {
-                ResponseType::Apply => {
-                    dialog.close();
+    match dialog.run_future().await {
+        ResponseType::Apply => {
+            appwindow.overlays().start_pulsing_progressbar();
 
-                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @weak appwindow => async move {
-                        appwindow.overlays().start_pulsing_progressbar();
-
-                        let result = input_file.load_bytes_future().await;
-
-                        if let Ok((file_bytes, _)) = result {
-                            if let Err(e) = canvas.load_in_xopp_bytes(file_bytes.to_vec()).await {
-                                appwindow.overlays().dispatch_toast_error(&gettext("Opening Xournal++ file failed"));
-                                log::error!(
-                                    "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
-                                );
-                            }
-                        }
-
-                        appwindow.overlays().finish_progressbar();
-                    }));
-                }
-                ResponseType::Cancel => {
-                    dialog.close();
-                }
-                _ => {
-                    dialog.close();
+            let result = input_file.load_bytes_future().await;
+            if let Ok((file_bytes, _)) = result {
+                if let Err(e) = canvas.load_in_xopp_bytes(file_bytes.to_vec()).await {
+                    appwindow
+                        .overlays()
+                        .dispatch_toast_error(&gettext("Opening Xournal++ file failed"));
+                    log::error!(
+                        "load_in_xopp_bytes() failed in dialog import xopp with Err: {e:?}"
+                    );
                 }
             }
-        }),
-    );
 
-    dialog.present();
+            appwindow.overlays().finish_progressbar();
+        }
+        _ => {
+            // Cancel
+        }
+    }
+    dialog.close();
 }

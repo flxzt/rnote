@@ -506,22 +506,31 @@ impl RnAppWindow {
                 }
             }
             crate::utils::FileType::XoppFile => {
-                // open a new tab for xopp file import
-                let new_tab = self.new_tab();
-                let canvas = new_tab
-                    .child()
-                    .downcast::<RnCanvasWrapper>()
-                    .unwrap()
-                    .canvas();
+                glib::MainContext::default().spawn_local(clone!(@weak input_file, @weak self as appwindow => async move {
+                    // open a new tab for xopp file import
+                    let new_tab = appwindow.new_tab();
+                    let canvas = new_tab
+                        .child()
+                        .downcast::<RnCanvasWrapper>()
+                        .unwrap()
+                        .canvas();
 
-                dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file);
+                    dialogs::import::dialog_import_xopp_w_prefs(&appwindow, &canvas, input_file).await;
+                }));
             }
             crate::utils::FileType::PdfFile => {
-                dialogs::import::dialog_import_pdf_w_prefs(
-                    self,
-                    &self.active_tab().canvas(),
-                    input_file,
-                    target_pos,
+                glib::MainContext::default().spawn_local(
+                    clone!(@weak input_file, @weak self as appwindow => async move {
+                        let canvas =
+                            appwindow.active_tab().canvas();
+
+                        dialogs::import::dialog_import_pdf_w_prefs(
+                            &appwindow,
+                            &canvas,
+                            input_file,
+                            target_pos,
+                        ).await;
+                    }),
                 );
             }
             crate::utils::FileType::Folder => {

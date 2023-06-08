@@ -45,8 +45,8 @@ mod imp {
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            let document = canvas.engine().borrow().document;
+            let total_zoom = canvas.engine_ref().camera.total_zoom();
+            let document = canvas.engine_ref().document;
 
             if orientation == Orientation::Horizontal {
                 let natural_width = (document.width * total_zoom
@@ -66,8 +66,7 @@ mod imp {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
-            let engine = canvas.engine();
-            let mut engine = engine.borrow_mut();
+            let engine = &mut *canvas.engine_mut();
 
             let (offset_mins, offset_maxs) = engine.camera_offset_mins_maxs();
             let new_size = na::vector![width as f64, height as f64];

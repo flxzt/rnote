@@ -257,11 +257,9 @@ impl RnOverlays {
                 clone!(@weak appwindow => move |colorpicker, _paramspec| {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let canvas = appwindow.active_tab().canvas();
-                    let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
-                    let engine = canvas.engine();
-                    let engine = &mut *engine.borrow_mut();
+                    let engine = &mut *canvas.engine_mut();
 
-                    match stroke_style {
+                    match engine.penholder.current_pen_style_w_override() {
                         PenStyle::Typewriter => {
                             if engine.pens_config.typewriter_config.text_style.color != stroke_color {
                                 if let Pen::Typewriter(typewriter) = engine.penholder.current_pen_mut() {
@@ -308,9 +306,8 @@ impl RnOverlays {
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let fill_color = colorpicker.fill_color().into_compose_color();
                 let canvas = appwindow.active_tab().canvas();
-                let stroke_style = canvas.engine().borrow().penholder.current_pen_style_w_override();
-                let engine = canvas.engine();
-                let engine = &mut *engine.borrow_mut();
+                let stroke_style = canvas.engine_ref().penholder.current_pen_style_w_override();
+                let engine = &mut *canvas.engine_mut();
 
                 match stroke_style {
                     PenStyle::Selector => {
@@ -350,7 +347,7 @@ impl RnOverlays {
                 }
                 overlays.imp().prev_active_tab_page.set(Some(&active_tab_page));
 
-                let widget_flags = active_canvaswrapper.canvas().engine().borrow_mut().set_active(true);
+                let widget_flags = active_canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &active_canvaswrapper.canvas());
                 appwindow.refresh_ui_from_engine(&active_canvaswrapper);
             }));
@@ -360,7 +357,7 @@ impl RnOverlays {
                 let canvaswrapper = page.child().downcast::<RnCanvasWrapper>().unwrap();
                 canvaswrapper.init_reconnect(&appwindow);
                 canvaswrapper.connect_to_tab_page(page);
-                let widget_flags = canvaswrapper.canvas().engine().borrow_mut().set_active(true);
+                let widget_flags = canvaswrapper.canvas().engine_mut().set_active(true);
                 appwindow.handle_widget_flags(widget_flags, &canvaswrapper.canvas());
             }),
         );
@@ -374,7 +371,7 @@ impl RnOverlays {
                     overlays.imp().prev_active_tab_page.set(None);
                 }
 
-                let _ = canvaswrapper.canvas().engine().borrow_mut().set_active(false);
+                let _ = canvaswrapper.canvas().engine_mut().set_active(false);
                 canvaswrapper.disconnect_handlers();
             }),
         );

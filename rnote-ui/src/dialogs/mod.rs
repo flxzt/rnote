@@ -440,8 +440,8 @@ pub(crate) async fn dialog_edit_selected_workspace(appwindow: &RnAppWindow) {
     }));
 
     dir_button.connect_clicked(
-        clone!(@strong preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
-            glib::MainContext::default().spawn_local(clone!(@strong preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
+        clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => move |_| {
+            glib::MainContext::default().spawn_local(clone!(@weak preview_row, @weak dir_label, @weak name_entryrow, @weak dialog, @weak appwindow => async move {
                 dialog.hide();
 
                 let filedialog = FileDialog::builder()

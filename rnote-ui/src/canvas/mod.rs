@@ -1071,8 +1071,9 @@ impl RnCanvas {
         }
     }
 
-    /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
-    pub(crate) fn disconnect_handlers(&self, _appwindow: &RnAppWindow) {
+    /// Disconnect all handlers with references to external objects
+    /// to prepare moving the widget to another appwindow or closing it when inside a tab page.
+    pub(crate) fn disconnect_handlers(&self) {
         self.clear_output_file_monitor();
 
         let mut handlers = self.imp().handlers.borrow_mut();

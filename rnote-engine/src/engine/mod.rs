@@ -722,6 +722,7 @@ impl RnoteEngine {
     pub fn set_active(&mut self, active: bool) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if active {
+            widget_flags.merge(self.reinstall_pen_current_style());
             self.background_regenerate_pattern();
             self.update_content_rendering_current_viewport();
         } else {

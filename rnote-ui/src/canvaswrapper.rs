@@ -657,10 +657,10 @@ impl RnCanvasWrapper {
     }
 
     /// This disconnects all handlers with references to external objects, to prepare moving the widget to another appwindow.
-    pub(crate) fn disconnect_handlers(&self, appwindow: &RnAppWindow) {
+    pub(crate) fn disconnect_handlers(&self) {
         let imp = self.imp();
 
-        self.canvas().disconnect_handlers(appwindow);
+        self.canvas().disconnect_handlers();
 
         if let Some(old) = imp.appwindow_block_pinch_zoom_bind.borrow_mut().take() {
             old.unbind();

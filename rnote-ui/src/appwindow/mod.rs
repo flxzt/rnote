@@ -263,7 +263,9 @@ impl RnAppWindow {
     }
 
     /// Get the active (selected) tab page.
-    /// Panics if there is none (but should never be the case, since we add one initially and the UI hides closing the last tab)
+    ///
+    /// Panics if there is none, but this should never be the case,
+    /// since a first one is added initially and the UI hides closing the last tab.
     pub(crate) fn active_tab_page(&self) -> adw::TabPage {
         self.imp()
             .overlays
@@ -417,14 +419,10 @@ impl RnAppWindow {
     /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be can again.
     pub(crate) fn close_tab_finish(&self, tab_page: &adw::TabPage, confirm: bool) {
         if confirm {
-            let _ = tab_page
-                .child()
-                .downcast::<RnCanvasWrapper>()
-                .unwrap()
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .set_active(false);
+            let wrapper = tab_page.child().downcast::<RnCanvasWrapper>().unwrap();
+            let _ = wrapper.canvas().engine().borrow_mut().set_active(false);
+            //let _ = wrapper.canvas().engine().borrow_mut().clear();
+            wrapper.disconnect_handlers();
         }
         self.overlays()
             .tabview()
@@ -883,7 +881,7 @@ impl RnAppWindow {
         prev_tab: &adw::TabPage,
         active_tab: &adw::TabPage,
     ) {
-        if prev_tab == active_tab {
+        if *prev_tab == *active_tab {
             return;
         }
         let prev_canvas_wrapper = prev_tab.child().downcast::<RnCanvasWrapper>().unwrap();
